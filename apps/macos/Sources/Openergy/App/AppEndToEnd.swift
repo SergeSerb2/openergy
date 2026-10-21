@@ -3,7 +3,7 @@ import SwiftUI
 
 /// End-to-end check of the app against a real daemon, with no visible windows.
 ///
-///   OPENERGY_SOCKET=/tmp/x.sock Openergy --e2e <output-dir> [--join host:port]
+///   OPENERGY_SOCKET=/tmp/x.sock Openergy --e2e <output-dir> [--join host:port] [--host-port N]
 ///
 /// It connects through the real `AppModel` and IPC client, drives the same intents the
 /// UI buttons call, waits for the daemon to reflect each change in `status`/`config`,
@@ -18,10 +18,14 @@ enum AppEndToEnd {
 
     static func run(outputDirectory: URL) {
         NSApplication.shared.setActivationPolicy(.prohibited)
+        // E2E daemons must never be allowed to host on the live Synergy port.
+        setenv("OPENERGY_ALLOW_PORT_24800", "0", 1)
         try? FileManager.default.createDirectory(at: outputDirectory, withIntermediateDirectories: true)
         let arguments = ProcessInfo.processInfo.arguments
         let joinAddress = arguments.firstIndex(of: "--join").flatMap { arguments.indices.contains($0 + 1) ? arguments[$0 + 1] : nil }
             ?? "127.0.0.1:24999"
+        let hostPort = arguments.firstIndex(of: "--host-port")
+            .flatMap { arguments.indices.contains($0 + 1) ? Int(arguments[$0 + 1]) : nil } ?? 24992
 
         Task { @MainActor in
             let model = AppModel(demo: nil)
@@ -62,9 +66,9 @@ enum AppEndToEnd {
             record("clipboard on", clipboardOn, "config.clipboard.enabled=\(String(describing: model.config.clipboard?.enabled))")
             render(model, .clipboard, "05-clipboard", outputDirectory)
 
-            // Never bind the real Synergy port in tests: host on loopback, port 24992.
-            model.patch("server", ["port": 24992, "listen": "127.0.0.1:24992"])
-            let port = await waitUntil(seconds: 10) { model.config.server?.port == 24992 }
+            // Never bind the real Synergy port in tests: host on loopback, on --host-port (default 24992).
+            model.patch("server", ["port": .number(Double(hostPort)), "listen": .string("127.0.0.1:\(hostPort)")])
+            let port = await waitUntil(seconds: 10) { model.config.server?.port == hostPort }
             record("test port", port, "server=\(model.config.server?.listen ?? "nil")")
             model.setRole(.server)
             let hosting = await waitUntil(seconds: 10) { model.status.role == .server && [.listening, .error].contains(model.state) }

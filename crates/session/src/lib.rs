@@ -1,5 +1,5 @@
-//! Frozen session state-machine shapes (architecture-r2 §2.4). Bodies land in WP6.
-#![allow(dead_code)]
+//! Deterministic session machines. All time, I/O, and platform effects enter as events.
+
 use openergy_config::Config;
 use openergy_ipc::Event as IpcEvent;
 use openergy_platform::{ClipboardData, InputEvent};
@@ -44,6 +44,13 @@ pub enum ServerEvent {
     TimerTick { now_ms: u64 },
     ConfigChanged(Arc<Config>),
     DisplayChanged,
+    LocalScreen { rect: layout::Rect, cursor: (i32, i32) },
+    ConnectionMetadata { conn: ConnId, fingerprint: Option<String> },
+    PermissionLost,
+    CaptureOverflow,
+    LocalSecureInput { app: Option<String> },
+    LocalScreenSaver { on: bool },
+    Shutdown,
 }
 #[derive(Debug)]
 pub enum ClientEvent {
@@ -55,6 +62,10 @@ pub enum ClientEvent {
     TimerTick { now_ms: u64 },
     ConfigChanged(Arc<Config>),
     DisplayChanged,
+    LocalScreen { rect: layout::Rect, cursor: (i32, i32) },
+    PermissionLost,
+    ReconnectTimer,
+    Shutdown,
 }
 
 #[derive(Debug)]
@@ -87,6 +98,10 @@ pub enum Action {
         max_bytes: usize,
     },
     HideLocalCursor(bool),
+    WarpLocalCursor {
+        x: i32,
+        y: i32,
+    },
     ReleaseAllLocal,
     Notify(IpcEvent),
 }
@@ -102,77 +117,18 @@ impl fmt::Display for SessionError {
 }
 impl std::error::Error for SessionError {}
 
-pub mod layout {
-    use openergy_config::{Config, Edge};
-    #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-    pub struct Rect {
-        pub x: i32,
-        pub y: i32,
-        pub w: i32,
-        pub h: i32,
-    }
-    #[derive(Clone, Debug, PartialEq, Eq)]
-    pub struct Link {
-        pub from: usize,
-        pub edge: Edge,
-        pub from_range: (u8, u8),
-        pub to: usize,
-        pub to_range: (u8, u8),
-    }
-    #[derive(Debug, Clone, PartialEq, Eq)]
-    pub enum LayoutError {
-        Validation(String),
-        NotImplemented,
-    }
-    pub struct Layout {
-        links: Vec<Link>,
-    }
-    impl Layout {
-        pub fn from_config(_cfg: &Config) -> Result<Self, LayoutError> {
-            Err(LayoutError::NotImplemented)
-        }
-        pub fn switch_target(
-            &mut self,
-            _current: usize,
-            _x: i32,
-            _y: i32,
-            _dx: i32,
-            _dy: i32,
-            _now_ms: u64,
-        ) -> Option<(usize, i32, i32)> {
-            None
-        }
-        pub fn links(&self) -> &[Link] {
-            &self.links
-        }
-    }
-}
+mod client;
+pub mod clipboard;
+mod common;
+pub mod layout;
+mod server;
+pub use client::Client;
+pub use common::{PeerSnapshot, SessionSnapshot};
+pub use server::Server;
 
-pub struct Server {
-    config: Arc<Config>,
-}
-impl Server {
-    pub fn new(config: Arc<Config>) -> Self {
-        Self { config }
-    }
-    pub fn config(&self) -> &Config {
-        &self.config
-    }
-    pub fn handle(&mut self, _ev: ServerEvent, _out: &mut Vec<Action>) {}
-}
-pub struct Client {
-    config: Arc<Config>,
-    screen_name: String,
-}
-impl Client {
-    pub fn new(config: Arc<Config>, screen_name: String) -> Self {
-        Self { config, screen_name }
-    }
-    pub fn config(&self) -> &Config {
-        &self.config
-    }
-    pub fn screen_name(&self) -> &str {
-        &self.screen_name
-    }
-    pub fn handle(&mut self, _ev: ClientEvent, _out: &mut Vec<Action>) {}
+pub(crate) fn notify(event: &str, data: serde_json::Value, out: &mut Vec<Action>) {
+    out.push(Action::Notify(IpcEvent {
+        event: event.into(),
+        data,
+    }));
 }

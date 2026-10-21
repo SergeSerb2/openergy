@@ -1,0 +1,24 @@
+mode=Native seed=1000 double_click_interval=0.5s (dry-run poster; zero native events)
+kCGEventLeftMouseDown wire_button=1 CG_button=0 kCGMouseEventNumber=1001 click_state=1
+kCGEventLeftMouseDragged wire_button=1 CG_button=0 kCGMouseEventNumber=1001 click_state=1
+kCGEventLeftMouseDragged wire_button=1 CG_button=0 kCGMouseEventNumber=1001 click_state=1
+kCGEventLeftMouseUp wire_button=1 CG_button=0 kCGMouseEventNumber=1001 click_state=1
+kCGEventLeftMouseDown wire_button=1 CG_button=0 kCGMouseEventNumber=1002 click_state=1
+kCGEventLeftMouseUp wire_button=1 CG_button=0 kCGMouseEventNumber=1002 click_state=1
+kCGEventLeftMouseDown wire_button=1 CG_button=0 kCGMouseEventNumber=1003 click_state=2
+kCGEventLeftMouseUp wire_button=1 CG_button=0 kCGMouseEventNumber=1003 click_state=2
+kCGEventRightMouseDown wire_button=3 CG_button=1 kCGMouseEventNumber=1004 click_state=1
+kCGEventRightMouseUp wire_button=3 CG_button=1 kCGMouseEventNumber=1004 click_state=1
+verified: increasing native down numbers; drag/up reuse; click states 1,1,2,1; ledger empty
+mode=Legacy seed=1000 double_click_interval=0.5s (dry-run poster; zero native events)
+kCGEventLeftMouseDown wire_button=1 CG_button=0 kCGMouseEventNumber=unset click_state=1
+kCGEventLeftMouseDragged wire_button=1 CG_button=0 kCGMouseEventNumber=unset click_state=1
+kCGEventLeftMouseDragged wire_button=1 CG_button=0 kCGMouseEventNumber=unset click_state=1
+kCGEventLeftMouseUp wire_button=1 CG_button=0 kCGMouseEventNumber=unset click_state=1
+kCGEventLeftMouseDown wire_button=1 CG_button=0 kCGMouseEventNumber=unset click_state=1
+kCGEventLeftMouseUp wire_button=1 CG_button=0 kCGMouseEventNumber=unset click_state=1
+kCGEventLeftMouseDown wire_button=1 CG_button=0 kCGMouseEventNumber=unset click_state=2
+kCGEventLeftMouseUp wire_button=1 CG_button=0 kCGMouseEventNumber=unset click_state=2
+kCGEventRightMouseDown wire_button=3 CG_button=1 kCGMouseEventNumber=unset click_state=1
+kCGEventRightMouseUp wire_button=3 CG_button=1 kCGMouseEventNumber=unset click_state=1
+verified: increasing native down numbers; drag/up reuse; click states 1,1,2,1; ledger empty

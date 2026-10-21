@@ -82,3 +82,18 @@ Every real backend exposes `pub fn create(options: <BackendOptions>) -> Result<o
 `openergy_platform_linux::create(X11Options { display: Option<String> })`,
 `openergy_platform_windows::create(WindowsOptions {})`.
 `VirtualControl` methods and JSON shapes are documented in `crates/platform/VIRTUAL.md`.
+
+## 3. Addenda (live apply and permission prompts)
+
+- `NetCommand::Shutdown` closes the listener and every connection (one `Disconnected` each) but
+  leaves the `NetDriver` reusable; later `Listen`/`Connect` work. New `NetCommand::StopListening`
+  closes only listeners. `reconfigure(NetConfig)` then `Listen`/`Connect` uses the new settings.
+- `ScreenSystem` gains a default method
+  `fn request_permission(&mut self, kind: PermissionKind) -> Result<Grant, PlatformError>`
+  (default: return the current state). The virtual backend records the request and returns the
+  scripted grant; macOS overrides it with AXIsProcessTrustedWithOptions (prompt),
+  CGRequestListenEventAccess and CGRequestPostEventAccess. The daemon's `permissions.request`
+  calls it.
+- IPC stays on its own threads: requests go to the io thread as
+  `IoCommand::Ipc { req, reply }` over a channel plus `waker.wake()`; the io loop drains it
+  every iteration. No IPC sockets in the net reactor.
