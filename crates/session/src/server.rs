@@ -308,6 +308,7 @@ impl Server {
             return;
         }
         if matches!(msg, Message::Bye) {
+            log::info!("peer goodbye");
             self.remove(conn, out);
             close(conn, CloseReason::Normal, out);
             return;

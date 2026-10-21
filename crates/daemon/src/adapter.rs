@@ -69,8 +69,7 @@ pub fn virtual_request(
         }
         m::VIRTUAL_CLIPBOARD => {
             if let Some(data) = params.get("set") {
-                let data: openergy_platform::ClipboardData =
-                    serde_json::from_value(data.clone()).map_err(|e| invalid(e.to_string()))?;
+                let data = crate::clipboard_json::decode(data)?;
                 control.clipboard_set(data).map_err(failed)?;
             } else if let Some(text) = params.get("text").and_then(Value::as_str) {
                 control
@@ -101,7 +100,7 @@ pub fn virtual_request(
                     "bytes":snapshot.data.total_bytes(),"formats":snapshot.data.formats.iter().map(|f|f.kind.as_str()).collect::<Vec<_>>()}),
                 )
             } else {
-                serde_json::to_value(control.clipboard_get()).map_err(|e| invalid(e.to_string()))
+                Ok(crate::clipboard_json::encode(control.clipboard_get()))
             }
         }
         m::VIRTUAL_SET_SCREENS => {

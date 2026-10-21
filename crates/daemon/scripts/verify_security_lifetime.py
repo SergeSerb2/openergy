@@ -85,35 +85,32 @@ def run():
         case('S17 stale incumbent replacement',stale_plain)
 
         def parent_exit():
-            # This parent is ours. It stays alive until an IPC-triggered filesystem marker.
-            cfg = base/'parent.toml'
-            off = server.call('config.get')['config']
-            off['role']='client';off['name']='client';off['tls']['enabled']=False
-            # A raw parent launches the real daemon; only JSON/TOML translation uses IPC.
+            duplicate.call('connection.disconnect')
+            client.call('connection.disconnect')
+            cfg=base/'parent.toml';cfg.write_bytes(client.config.read_bytes())
             parent_socket=base/'parent.sock';marker=base/'parent-exit'
-            helper = '''import os,subprocess,sys,time,json
-p=subprocess.Popen([sys.argv[1],'daemon','--platform','virtual','--config',sys.argv[2],'--socket',sys.argv[3],'--parent-pid',str(os.getpid())])
-open(sys.argv[4],'w').write(str(p.pid))
-while not os.path.exists(sys.argv[5]): time.sleep(.02)
-p.wait(timeout=5) if p.poll() is not None else None
-'''
-            # The separate config is written by a temporary daemon's config.set API.
-            temp=Node(base,'parent-config')
-            temp.patch({'name':'parent-client','role':'off','tls':{'enabled':False}})
-            cfg.write_bytes(temp.config.read_bytes());temp.stop()
-            pidfile=base/'parent.pid'
+            helper='import os,sys,time\nwhile not os.path.exists(sys.argv[1]): time.sleep(.02)\n'
+            parent=subprocess.Popen([sys.executable,'-c',helper,str(marker)])
             parentlog=open(base/'parent.stderr','wb')
-            parent=subprocess.Popen([sys.executable,'-c',helper,str(BIN),str(cfg),str(parent_socket),str(pidfile),str(marker)],stdout=parentlog,stderr=parentlog)
+            child=subprocess.Popen([str(BIN),'daemon','--platform','virtual','--config',str(cfg),'--socket',str(parent_socket),'--parent-pid',str(parent.pid)],stdout=parentlog,stderr=parentlog)
+            def ctl(method,params=None):
+                result=subprocess.run([str(BIN),'ctl',method,'--socket',str(parent_socket),'--json',json.dumps(params or {}),'--raw'],text=True,capture_output=True,timeout=3)
+                if result.returncode:raise RuntimeError(result.stderr or result.stdout)
+                return json.loads(result.stdout)
             try:
-                wait(lambda: pidfile.exists() and parent_socket.exists())
-                pid=int(pidfile.read_text())
-                subprocess.run([str(BIN),'ctl','status.get','--socket',str(parent_socket),'--raw'],check=True,capture_output=True)
-                marker.touch();parent.wait(timeout=4)
-                wait(lambda: not parent_socket.exists(),timeout=4,message='parent-watched daemon exit')
-                return {'parent_exit':parent.returncode,'child_pid':pid,'socket_removed':True}
+                wait(lambda:ctl('status.get')['state']=='connected')
+                server.inject({'move_abs':[1000,540]})
+                server.inject({'move_abs':[1920,540]},{'key_down':'a'})
+                wait(lambda:ctl('virtual.recorded')['stats']['pressed_keys']>0)
+                marker.touch();parent.wait(timeout=4);code=child.wait(timeout=4)
+                require(code==0,f'watched daemon exit code {code}')
+                wait(lambda:not parent_socket.exists(),timeout=4)
+                wait(lambda:not any(p['connected'] for p in server.status()['peers']))
+                require(any('peer goodbye' in line for line in server.call('logs.tail',{'lines':100})),'server did not observe CBYE')
+                return {'watched_pid':parent.pid,'child_exit':code,'peer_goodbye':True,'socket_removed':True}
             finally:
-                if parent.poll() is None:
-                    marker.touch();parent.wait(timeout=4)
+                if parent.poll() is None:marker.touch();parent.wait(timeout=4)
+                if child.poll() is None:child.terminate();child.wait(timeout=4)
         case('S20 parent exit watcher',parent_exit)
     finally:
         for node in reversed(NODES):node.stop()

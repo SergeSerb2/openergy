@@ -68,7 +68,7 @@ pub fn bind(path: &Path) -> Result<(UnixListener, SocketLock), String> {
         std::fs::remove_file(path).map_err(|e| e.to_string())?;
     }
     let listener = UnixListener::bind(path).map_err(|e| format!("bind {}: {e}", path.display()))?;
-    mode(path, 0o600);
+    mode(path, 0o600)?;
     Ok((
         listener,
         SocketLock {
@@ -78,9 +78,9 @@ pub fn bind(path: &Path) -> Result<(UnixListener, SocketLock), String> {
     ))
 }
 #[cfg(unix)]
-fn mode(path: &Path, n: u32) {
+fn mode(path: &Path, n: u32) -> Result<(), String> {
     use std::os::unix::fs::PermissionsExt;
-    let _ = std::fs::set_permissions(path, std::fs::Permissions::from_mode(n));
+    std::fs::set_permissions(path, std::fs::Permissions::from_mode(n)).map_err(|e| e.to_string())
 }
 #[cfg(unix)]
 pub fn serve(
