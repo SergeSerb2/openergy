@@ -35,6 +35,12 @@ impl Client {
             ledger: Ledger::default(),
         }
     }
+    pub fn next_deadline_ms(&self) -> u64 {
+        self.peer
+            .as_ref()
+            .map(|(_, p)| p.next_deadline(self.now, false))
+            .unwrap_or(self.now + 1000)
+    }
     pub fn config(&self) -> &Config {
         &self.config
     }

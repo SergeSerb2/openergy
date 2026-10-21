@@ -56,6 +56,14 @@ impl Server {
             slots: [Slot::default(), Slot::default()],
         }
     }
+    pub fn next_deadline_ms(&self) -> u64 {
+        self.peers
+            .values()
+            .map(|p| p.next_deadline(self.now, true))
+            .min()
+            .unwrap_or(self.now + 1000)
+            .min(self.layout.next_deadline(self.now))
+    }
     pub fn config(&self) -> &Config {
         &self.config
     }
@@ -196,7 +204,7 @@ impl Server {
                     self.remove(c, out);
                     close(c, CloseReason::Normal, out);
                 }
-                if self.last_motion != (0, 0) {
+                if self.last_motion != (0, 0) && self.layout.waiting() {
                     self.motion(
                         self.cursor.0,
                         self.cursor.1,

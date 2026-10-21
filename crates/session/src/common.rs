@@ -193,6 +193,21 @@ impl Peer {
             warned: false,
         }
     }
+    pub fn next_deadline(&self, now: u64, server: bool) -> u64 {
+        if self.transfers.pending() {
+            return now.saturating_add(4);
+        }
+        if self.phase != Phase::Ready {
+            return self.since.saturating_add(2001).max(now.saturating_add(100));
+        }
+        if self.options.heartbeat == 0 {
+            return now.saturating_add(1000);
+        }
+        let last = if server { self.last_rx } else { self.last_alive };
+        self.last_sent
+            .saturating_add(self.options.heartbeat)
+            .min(last.saturating_add(self.options.heartbeat.saturating_mul(3)))
+    }
     pub fn snapshot(&self, conn: ConnId) -> PeerSnapshot {
         PeerSnapshot {
             conn,

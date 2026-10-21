@@ -123,6 +123,14 @@ impl Layout {
     pub fn rect(&self, screen: usize) -> Rect {
         self.rects.get(screen).copied().unwrap_or_default()
     }
+    pub fn waiting(&self) -> bool {
+        self.candidate.is_some()
+    }
+    pub fn next_deadline(&self, now: u64) -> u64 {
+        self.candidate
+            .map(|(_, _, _, since)| since.saturating_add(self.delay_ms).max(now + 4))
+            .unwrap_or(now + 1000)
+    }
     pub fn reset(&mut self) {
         self.candidate = None;
         self.tap = None;
