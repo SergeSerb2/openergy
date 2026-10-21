@@ -3,6 +3,7 @@ use crate::{
     native::{connect, error},
 };
 use openergy_platform::{InputEvent, InputSink, Modifiers, PlatformError};
+use openergy_protocol::keys;
 use std::collections::{BTreeMap, BTreeSet};
 use x11rb::{
     connection::Connection,
@@ -80,9 +81,9 @@ impl Sink {
             .mask;
         let actual = self.map.modifiers(state.into()).0;
         for (mask, lock_key) in [
-            (Modifiers::CAPS_LOCK, 0xefe5),
-            (Modifiers::NUM_LOCK, 0xef7f),
-            (Modifiers::SCROLL_LOCK, 0xef14),
+            (Modifiers::CAPS_LOCK, keys::CAPS_LOCK),
+            (Modifiers::NUM_LOCK, keys::NUM_LOCK),
+            (Modifiers::SCROLL_LOCK, keys::SCROLL_LOCK),
         ] {
             if (actual ^ mods.0) & mask != 0 && key != lock_key {
                 if let Some(code) = self.map.modifier_code(mask) {
@@ -123,7 +124,7 @@ impl Sink {
             modifiers: Vec::new(),
             restore,
         };
-        let printable = !(0xe000..=0xefff).contains(&key) && key >= 0x20;
+        let printable = !(0xe000..=keys::DELETE).contains(&key) && key >= keys::SPACE;
         let caps =
             mods.0 & Modifiers::CAPS_LOCK != 0 && char::from_u32(u32::from(key)).is_some_and(char::is_alphabetic);
         let row = self.map.row(code);

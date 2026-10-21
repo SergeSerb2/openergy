@@ -33,7 +33,9 @@ const LIMIT: usize = 256 * 1024 * 1024;
 const CHUNK: usize = 64 * 1024;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Selection {
+    /// The only selection routed through the v1 shared Backend (clipboard id 0).
     Clipboard,
+    /// Compiled local support for a post-v1 extension; v1 does not route clipboard id 1.
     Primary,
 }
 impl Selection {
@@ -53,7 +55,7 @@ pub struct X11Clipboard {
 struct Inner {
     tx: SyncSender<Command>,
     wake: UnixStream,
-    stamp: Arc<AtomicU64>,
+    stamps: Arc<[AtomicU64; 2]>,
     thread: std::sync::Mutex<Option<JoinHandle<()>>>,
 }
 enum Command {
@@ -67,7 +69,7 @@ impl X11Clipboard {
         let (tx, rx) = mpsc::sync_channel(16);
         let (w, mut r) = UnixStream::pair().map_err(error)?;
         r.set_nonblocking(true).map_err(error)?;
-        let stamp = worker.stamp.clone();
+        let stamps = worker.stamps.clone();
         let thread = std::thread::Builder::new()
             .name("oe-x11-clipboard".into())
             .spawn(move || {
@@ -104,13 +106,14 @@ impl X11Clipboard {
             inner: Arc::new(Inner {
                 tx,
                 wake: w,
-                stamp,
+                stamps,
                 thread: std::sync::Mutex::new(Some(thread)),
             }),
             selection,
         })
     }
-    /// Select id 0 (CLIPBOARD) or id 1 (PRIMARY) without opening another worker.
+    /// Select a local selection without opening another worker.
+    /// PRIMARY is a post-v1 extension; `create` routes only CLIPBOARD through the shared backend.
     pub fn for_selection(&self, selection: Selection) -> Self {
         Self {
             inner: self.inner.clone(),
@@ -141,7 +144,7 @@ impl X11Clipboard {
 }
 impl ClipboardBackend for X11Clipboard {
     fn change_stamp(&self) -> u64 {
-        self.inner.stamp.load(Ordering::Acquire)
+        self.inner.stamps[self.selection.index()].load(Ordering::Acquire)
     }
     fn read(&mut self, max_bytes: usize) -> Result<ClipboardData, PlatformError> {
         self.read_selection(self.selection, max_bytes)
@@ -202,7 +205,7 @@ struct Worker {
     c: RustConnection,
     window: u32,
     atoms: Atoms,
-    stamp: Arc<AtomicU64>,
+    stamps: Arc<[AtomicU64; 2]>,
     data: [BTreeMap<u32, Arc<Vec<u8>>>; 2],
     outgoing: BTreeMap<(u32, u32), Transfer>,
 }
@@ -245,7 +248,7 @@ impl Worker {
             c,
             window,
             atoms,
-            stamp: Arc::new(AtomicU64::new(0)),
+            stamps: Arc::new([AtomicU64::new(0), AtomicU64::new(0)]),
             data: [BTreeMap::new(), BTreeMap::new()],
             outgoing: BTreeMap::new(),
         })
@@ -295,7 +298,7 @@ impl Worker {
             return Err(error("X11 selection ownership was refused"));
         }
         self.data[selection.index()] = targets;
-        self.stamp.fetch_add(1, Ordering::AcqRel);
+        self.stamps[selection.index()].fetch_add(1, Ordering::AcqRel);
         Ok(())
     }
     fn request(&mut self, request: SelectionRequestEvent) -> Result<(), PlatformError> {
@@ -385,8 +388,15 @@ impl Worker {
                     log::debug!("X11 selection request ended: {e}");
                 }
             }
-            Event::XfixesSelectionNotify(_) => {
-                self.stamp.fetch_add(1, Ordering::AcqRel);
+            Event::XfixesSelectionNotify(e) => {
+                if let Some(index) = self
+                    .atoms
+                    .selections
+                    .iter()
+                    .position(|selection| *selection == e.selection)
+                {
+                    self.stamps[index].fetch_add(1, Ordering::AcqRel);
+                }
             }
             Event::SelectionClear(e) => {
                 if let Some(index) = self.atoms.selections.iter().position(|s| *s == e.selection) {

@@ -10,5 +10,6 @@ openergy-platform = { path = "../platform" }
 log.workspace = true
 
 [target.'cfg(target_os = "linux")'.dependencies]
+openergy-protocol = { path = "../protocol" }
 x11rb = { version = "=0.13.2", features = ["xinput", "xtest", "xfixes", "randr", "extra-traits", "screensaver", "xkb"] }
 libc = "=0.2.191"

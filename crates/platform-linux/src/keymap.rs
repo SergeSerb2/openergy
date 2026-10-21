@@ -1,34 +1,35 @@
-//! Original translation of the public KeyID constants in 03-core-protocol §7/App A.
+//! Translate the shared protocol::keys KeyIDs into native X11 keysyms.
 use crate::native::error;
 use openergy_platform::{Modifiers, PlatformError};
+use openergy_protocol::keys;
 use x11rb::{connection::Connection, protocol::xproto::ConnectionExt, rust_connection::RustConnection};
 
 const MEDIA: &[(u16, u32)] = &[
-    (0xe001, 0x1008ff2c),
-    (0xe05f, 0x1008ff2f),
-    (0xe0a6, 0x1008ff26),
-    (0xe0a7, 0x1008ff27),
-    (0xe0a8, 0x1008ff29),
-    (0xe0a9, 0x1008ff28),
-    (0xe0aa, 0x1008ff1b),
-    (0xe0ab, 0x1008ff30),
-    (0xe0ac, 0x1008ff18),
-    (0xe0ad, 0x1008ff12),
-    (0xe0ae, 0x1008ff11),
-    (0xe0af, 0x1008ff13),
-    (0xe0b0, 0x1008ff17),
-    (0xe0b1, 0x1008ff16),
-    (0xe0b2, 0x1008ff15),
-    (0xe0b3, 0x1008ff14),
-    (0xe0b4, 0x1008ff19),
-    (0xe0b5, 0x1008ff32),
-    (0xe0b6, 0x1008ff40),
-    (0xe0b7, 0x1008ff41),
+    (keys::EJECT, 0x1008ff2c),
+    (keys::SLEEP, 0x1008ff2f),
+    (keys::WWW_BACK, 0x1008ff26),
+    (keys::WWW_FORWARD, 0x1008ff27),
+    (keys::WWW_REFRESH, 0x1008ff29),
+    (keys::WWW_STOP, 0x1008ff28),
+    (keys::WWW_SEARCH, 0x1008ff1b),
+    (keys::WWW_FAVORITES, 0x1008ff30),
+    (keys::WWW_HOME, 0x1008ff18),
+    (keys::AUDIO_MUTE, 0x1008ff12),
+    (keys::AUDIO_DOWN, 0x1008ff11),
+    (keys::AUDIO_UP, 0x1008ff13),
+    (keys::AUDIO_NEXT, 0x1008ff17),
+    (keys::AUDIO_PREV, 0x1008ff16),
+    (keys::AUDIO_STOP, 0x1008ff15),
+    (keys::AUDIO_PLAY, 0x1008ff14),
+    (keys::APP_MAIL, 0x1008ff19),
+    (keys::APP_MEDIA, 0x1008ff32),
+    (keys::APP_USER1, 0x1008ff40),
+    (keys::APP_USER2, 0x1008ff41),
 ];
 pub fn keysym(key: u16) -> u32 {
     match key {
-        0xef00..=0xefff => u32::from(key) + 0x1000,
-        0xee20 => 0xfe20,
+        0xef00..=keys::DELETE => u32::from(key) + 0x1000,
+        keys::LEFT_TAB => 0xfe20,
         _ => MEDIA
             .iter()
             .find(|(k, _)| *k == key)
@@ -45,8 +46,8 @@ pub fn keysym(key: u16) -> u32 {
 pub fn keyid(sym: u32) -> Option<u16> {
     match sym {
         0xff00..=0xffff => Some((sym - 0x1000) as u16),
-        0xfe20 => Some(0xee20),
-        0xfe03 => Some(0xef7e),
+        0xfe20 => Some(keys::LEFT_TAB),
+        0xfe03 => Some(keys::ALT_GR),
         0x20..=0xff => Some(sym as u16),
         0x01000100..=0x0100ffff => Some(sym as u16),
         _ => MEDIA.iter().find(|(_, s)| *s == sym).map(|(k, _)| *k).or_else(|| {

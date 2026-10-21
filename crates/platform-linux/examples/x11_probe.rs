@@ -14,9 +14,11 @@ fn main() {
 #[cfg(target_os = "linux")]
 mod probe {
     use openergy_platform::{
-        CaptureDecision, ClipboardBackend, ClipboardData, ClipboardFormat, FormatKind, InputEvent, Modifiers,
+        CaptureDecision, ClipboardBackend, ClipboardData, ClipboardFormat, FormatKind, Grant, InputEvent, Modifiers,
+        PermissionKind,
     };
     use openergy_platform_linux::{create, Selection, X11Clipboard, X11Options};
+    use openergy_protocol::keys;
     use std::{
         error::Error,
         fs,
@@ -109,7 +111,17 @@ mod probe {
             .get_keyboard_mapping(setup.min_keycode, setup.max_keycode - setup.min_keycode + 1)?
             .reply()?
             .keysyms;
-        let mut b = create(X11Options::default())?;
+        let mut b: openergy_platform::Backend = create(X11Options::default())?;
+        for kind in [
+            PermissionKind::Accessibility,
+            PermissionKind::InputMonitoring,
+            PermissionKind::PostEvents,
+        ] {
+            if b.screens.request_permission(kind)? != Grant::NotRequired {
+                return Err("X11 permission should be NotRequired".into());
+            }
+        }
+        println!("construction: shared Backend and default permission requests passed");
         let s = &mut b.sink;
         s.inject(&InputEvent::MouseMoveAbs { x: 100, y: 120 })?;
         s.inject(&InputEvent::MouseMoveRel { dx: 17, dy: 13 })?;
@@ -131,7 +143,7 @@ mod probe {
         s.inject(&InputEvent::MouseDown { button: 1 })?;
         s.inject(&InputEvent::MouseMoveAbs { x: 160, y: 170 })?;
         s.inject(&InputEvent::MouseUp { button: 1 })?;
-        for (index, key) in ['a' as u16, 'A' as u16, 'é' as u16, '€' as u16, 0xef0d]
+        for (index, key) in ['a' as u16, 'A' as u16, 'é' as u16, '€' as u16, keys::RETURN]
             .into_iter()
             .enumerate()
         {
@@ -191,7 +203,7 @@ mod probe {
             }
             CaptureDecision::PassToOs
         }))?;
-        for key in [0xefb1, 0xef9c] {
+        for key in [keys::KP_1, keys::KP_END] {
             keypad.store(0, Ordering::Release);
             s.inject(&InputEvent::KeyDown {
                 key,
@@ -216,7 +228,7 @@ mod probe {
             s.inject(&InputEvent::MouseWheel { dx: 30, dy: 30 })?;
         }
         s.inject(&InputEvent::KeyDown {
-            key: 0xefe3,
+            key: keys::CONTROL_L,
             modifiers: Modifiers::NONE,
             button: 77,
         })?;
@@ -263,6 +275,11 @@ mod probe {
         command("xclip", &["-selection", selection, "-target", target, "-o"])
     }
     fn clip_in(backend: &X11Clipboard, selection: &str, target: &str, bytes: &[u8]) -> Result<Process> {
+        let backend = backend.for_selection(if selection == "primary" {
+            Selection::Primary
+        } else {
+            Selection::Clipboard
+        });
         let stamp = backend.change_stamp();
         let (c, _) = x11rb::connect(None)?;
         let atom = c
@@ -403,6 +420,16 @@ mod probe {
             "clipboard backend -> xclip INCR: {} bytes equal; oversize read rejected",
             large.len()
         );
+        let mut shared: openergy_platform::Backend = create(X11Options::default())?;
+        let clipboard_only = b"v1 CLIPBOARD only";
+        shared.clipboard.write(&ClipboardData {
+            formats: vec![ClipboardFormat {
+                kind: FormatKind::TextUtf8,
+                bytes: clipboard_only.to_vec(),
+            }],
+        })?;
+        equal_format(&shared.clipboard.read(1024)?, FormatKind::TextUtf8, clipboard_only)?;
+        let clipboard_stamp = shared.clipboard.change_stamp();
         b.write_selection(
             Selection::Primary,
             &ClipboardData {
@@ -423,6 +450,11 @@ mod probe {
                 b"external primary",
             )?;
         }
+        equal_format(&shared.clipboard.read(1024)?, FormatKind::TextUtf8, clipboard_only)?;
+        if shared.clipboard.change_stamp() != clipboard_stamp {
+            return Err("PRIMARY changed the shared v1 CLIPBOARD stamp".into());
+        }
+        println!("clipboard v1 routing: PRIMARY does not change shared CLIPBOARD data or stamp");
         // Empty owner and malformed content must not poison the worker.
         b.write(&ClipboardData::default())?;
         if !b.read(1024)?.formats.is_empty() {

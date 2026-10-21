@@ -4,8 +4,8 @@ This is a native implementation, compile-checked for `x86_64-pc-windows-msvc`.
 It has **not been run on a real Windows computer**. No input, clipboard or display
 operation from this crate was executed on the live macOS workstation.
 
-`create(WindowsOptions {})` returns input capture/injection, screen enumeration
-and a real clipboard worker. On other targets it returns a typed platform error.
+`create(WindowsOptions {})` returns the shared `openergy_platform::Backend` with
+input capture/injection, screen enumeration and a real clipboard worker. On other targets it returns a typed platform error.
 
 - A dedicated message thread installs WH_KEYBOARD_LL and WH_MOUSE_LL hooks.
   Capture decisions return nonzero to swallow remote input. A hidden window
@@ -17,7 +17,7 @@ and a real clipboard worker. On other targets it returns a typed platform error.
   It normalizes absolute positions against the entire virtual desktop, supports
   buttons 1–5 and fractional wheel/hwheel accumulation, and retains a pressed
   ledger with shared modifier ownership for release-all. Keys and modifier masks
-  use the frozen KeyID constants. AltGr uses right Alt and the layout's Ctrl+Alt
+  use the shared `openergy_protocol::keys` KeyID constants. AltGr uses right Alt and the layout's Ctrl+Alt
   requirements; the capture mask identifies AltGr separately.
 - A message-only clipboard window uses AddClipboardFormatListener. CF_UNICODETEXT
   converts UTF-16/CRLF to wire UTF-8/LF. `HTML Format` uses byte-correct CF_HTML
@@ -46,11 +46,12 @@ cargo clippy -p openergy-platform-windows --target x86_64-pc-windows-msvc --all-
 ```
 
 All commands passed without warnings on 2026-10-21 with Rust 1.99.1.
-See the Linux crate's VERIFICATION.md for the full workspace release gates.
+See the Linux crate's VERIFICATION.md for the package release gates after integration.
+The shared default permission request returns `NotRequired`; native Windows execution
+remains untested.
 
 ## Integration
 
-`contract_shim::Backend` duplicates the binding construction type because the
-shared type is absent in this worktree. At integration replace its import with
-`use openergy_platform::Backend;` and remove the shim module. No frozen shared
-signature or file outside WP8 ownership was edited.
+The construction shim was removed after merging `t3/synergy-open-source-reimplementation`.
+`create` returns `openergy_platform::Backend` directly. V1 shares only clipboard id 0.
+No shared signature or daemon implementation change is required for this follow-up.

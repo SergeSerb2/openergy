@@ -1,5 +1,6 @@
 use crate::{keymap, native::error};
 use openergy_platform::{InputEvent, InputSink, Modifiers, PlatformError};
+use openergy_protocol::keys;
 use std::collections::{BTreeMap, BTreeSet};
 use windows_sys::Win32::UI::{Input::KeyboardAndMouse::*, WindowsAndMessaging::*};
 pub const TAG: usize = 0x4f454e47;
@@ -22,7 +23,9 @@ impl Stroke {
             vk: if scan == 0 { vk } else { 0 },
             scan: (scan & 0xff) as u16,
             flags: if scan == 0 { 0 } else { KEYEVENTF_SCANCODE }
-                | if (scan & 0xff00 == 0xe000 && !(0xef95..=0xef9f).contains(&key)) || keymap::extended(key, vk) {
+                | if (scan & 0xff00 == 0xe000 && !(keys::KP_HOME..=keys::KP_DELETE).contains(&key))
+                    || keymap::extended(key, vk)
+                {
                     KEYEVENTF_EXTENDEDKEY
                 } else {
                     0
@@ -86,9 +89,9 @@ impl Sink {
             return Ok(());
         }
         for (mask, vk, lock_key) in [
-            (Modifiers::CAPS_LOCK, VK_CAPITAL, 0xefe5),
-            (Modifiers::NUM_LOCK, VK_NUMLOCK, 0xef7f),
-            (Modifiers::SCROLL_LOCK, VK_SCROLL, 0xef14),
+            (Modifiers::CAPS_LOCK, VK_CAPITAL, keys::CAPS_LOCK),
+            (Modifiers::NUM_LOCK, VK_NUMLOCK, keys::NUM_LOCK),
+            (Modifiers::SCROLL_LOCK, VK_SCROLL, keys::SCROLL_LOCK),
         ] {
             // Safety: GetKeyState reads the toggle state for this scalar virtual key.
             let current = unsafe { GetKeyState(i32::from(vk)) } & 1 != 0;
@@ -100,12 +103,12 @@ impl Sink {
                 self.pending_toggles.remove(&vk);
             }
         }
-        let printable = !(0xe000..=0xefff).contains(&key) && key >= 0x20;
+        let printable = !(0xe000..=keys::DELETE).contains(&key) && key >= keys::SPACE;
         let mut required = if printable { mods.0 & !Modifiers::SHIFT } else { mods.0 };
         let stroke = if let Some(vk) = keymap::virtual_key(key) {
             Stroke::vk(key, vk)
         } else {
-            if (0xe000..=0xefff).contains(&key) || char::from_u32(u32::from(key)).is_none() {
+            if (0xe000..=keys::DELETE).contains(&key) || char::from_u32(u32::from(key)).is_none() {
                 return Err(error("Unsupported Windows KeyID"));
             }
             // Safety: current keyboard layout is a borrowed OS handle; VkKeyScanExW reads scalars.
@@ -141,14 +144,14 @@ impl Sink {
             modifiers: Vec::new(),
         };
         self.keys.insert(button, held);
-        let keypad_digit = (0xefb0..=0xefb9).contains(&key) || key == 0xefae;
-        let keypad_navigation = (0xef95..=0xef9f).contains(&key);
+        let keypad_digit = (keys::KP_0..=keys::KP_9).contains(&key) || key == keys::KP_DECIMAL;
+        let keypad_navigation = (keys::KP_HOME..=keys::KP_DELETE).contains(&key);
         if (keypad_digit && mods.0 & Modifiers::NUM_LOCK == 0)
             || (keypad_navigation && mods.0 & Modifiers::NUM_LOCK != 0)
         {
             required |= Modifiers::SHIFT;
         }
-        if key == 0xee20 {
+        if key == keys::LEFT_TAB {
             required |= Modifiers::SHIFT;
         }
         for (mask, vk) in [

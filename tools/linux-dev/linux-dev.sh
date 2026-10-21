@@ -6,7 +6,7 @@ image=$prefix:rust-1.99
 case ${1:-} in
  build)
   docker build -t "$image" "$root/tools/linux-dev"
-  "$0" shell cargo build --release
+  "$0" shell cargo build --release -p openergy-platform-linux -p openergy-platform-windows
   ;;
  run|shell)
   action=$1; shift

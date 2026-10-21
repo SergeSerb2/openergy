@@ -1,18 +1,5 @@
 //! Win32 backend. Compile-checked on MSVC; real Windows acceptance is still required.
-use openergy_platform::PlatformError;
-/// Temporary copy of integration-contract §2 until WP3 lands the shared type.
-/// Replace `use contract_shim::Backend` with the shared import at integration.
-pub mod contract_shim {
-    use openergy_platform::{ClipboardBackend, InputSink, InputSource, ScreenSystem};
-    pub struct Backend {
-        pub name: &'static str,
-        pub source: Box<dyn InputSource>,
-        pub sink: Box<dyn InputSink>,
-        pub screens: Box<dyn ScreenSystem>,
-        pub clipboard: Box<dyn ClipboardBackend>,
-    }
-}
-use contract_shim::Backend;
+use openergy_platform::{Backend, PlatformError};
 #[derive(Clone, Debug, Default)]
 pub struct WindowsOptions {}
 #[cfg(target_os = "windows")]
