@@ -203,13 +203,6 @@ struct InputPane: View {
                 }
             }
 
-            Section("Keyboard") {
-                Toggle(isOn: model.bool("input.sync_language", { $0.input?.syncLanguage }, default: true)) {
-                    Text("Match keyboard layout")
-                    Text("Switches this Mac's input source to the language used on the other computer.")
-                }
-            }
-
             Section {
                 ValuePicker(title: "Wait at the edge",
                             value: model.number("switch.delay_ms", { $0.switch?.delayMs }, default: 0),
