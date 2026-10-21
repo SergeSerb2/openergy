@@ -1,0 +1,62 @@
+# Requirement: Openergy export emits classic ranged-link grammar accepted by the real barrier server.
+name = "I5-barrier-export"
+requirement = "Openergy export emits classic ranged-link grammar accepted by the real barrier server."
+blocked_by = ["WP2", "WP6"]
+timeout_ms = 5000
+
+[[node]]
+id = "exporter"
+kind = "openergy"
+role = "server"
+platform = "virtual"
+
+[[node]]
+id = "lab"
+kind = "lab"
+peer = "barrier"
+role = "server"
+name = "lab"
+autostart = false
+
+[[node]]
+id = "probe"
+kind = "raw"
+role = "client"
+remote = "lab"
+autostart = false
+
+[[step]]
+do = "config_patch"
+node = "exporter"
+patch = {"screen" = [{"name" = "lab", "rect" = {"x" = 0, "y" = 0, "w" = 1920, "h" = 1080}}, {"name" = "client", "rect" = {"x" = 1920, "y" = 540, "w" = 1920, "h" = 1080}}]}
+
+[[step]]
+do = "cli"
+node = "exporter"
+args = ["export-synergy-conf", "--config", "${exporter.config}", "--out", "${dir}/export.conf"]
+
+[[step]]
+do = "set_lab_screens"
+node = "lab"
+path = "${dir}/export.conf"
+
+[[step]]
+do = "start"
+node = "lab"
+
+[[step]]
+do = "lab_ctl"
+node = "lab"
+args = ["status"]
+regex = "(running|pid)"
+
+[[step]]
+do = "start"
+node = "probe"
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "hello"
+product = "Barrier"
+minor = 6

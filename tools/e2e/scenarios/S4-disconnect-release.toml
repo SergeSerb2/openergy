@@ -1,0 +1,119 @@
+# Requirement: Abrupt server death releases held key and reconnect permits fresh input.
+name = "S4-disconnect-release"
+requirement = "Abrupt server death releases held key and reconnect permits fresh input."
+blocked_by = ["WP6"]
+timeout_ms = 1800
+
+[[node]]
+id = "server"
+kind = "openergy"
+role = "server"
+platform = "virtual"
+tls = false
+
+[[node]]
+id = "client"
+kind = "openergy"
+role = "client"
+platform = "virtual"
+remote = "server"
+tls = false
+
+[[step]]
+do = "wait_connected"
+node = "client"
+peer = "server"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+peer = "client"
+
+[[step]]
+do = "set_screens"
+node = "server"
+rects = [{"x" = 0, "y" = 0, "w" = 1920, "h" = 1080, "scale" = 1.0}]
+
+[[step]]
+do = "set_screens"
+node = "client"
+rects = [{"x" = 0, "y" = 0, "w" = 1920, "h" = 1080, "scale" = 1.0}]
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 1919, "y" = 540}, {"type" = "mouse_move_rel", "dx" = 20, "dy" = 0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "client"}
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "key_down", "key" = 97, "modifiers" = 1, "button" = 1}]
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+expect = [{"event" = {"type" = "key_down", "key" = 97, "modifiers" = 1, "button" = 1}}]
+
+[[step]]
+do = "kill"
+node = "server"
+signal = "KILL"
+
+[[step]]
+do = "assert_recorded_tail"
+node = "client"
+expect = [{"event" = {"type" = "key_up", "key" = 97, "modifiers" = 1, "button" = 1}}, {"release_all" = true}]
+timeout_ms = 5000
+
+[[step]]
+do = "wait_status"
+node = "client"
+fields = {"state" = "reconnecting"}
+
+[[step]]
+do = "stop"
+node = "server"
+force = true
+
+[[step]]
+do = "start"
+node = "server"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "set_screens"
+node = "server"
+rects = [{"x" = 0, "y" = 0, "w" = 1920, "h" = 1080, "scale" = 1.0}]
+
+[[step]]
+do = "set_screens"
+node = "client"
+rects = [{"x" = 0, "y" = 0, "w" = 1920, "h" = 1080, "scale" = 1.0}]
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 1919, "y" = 540}, {"type" = "mouse_move_rel", "dx" = 20, "dy" = 0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "client"}
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "key_down", "key" = 97, "modifiers" = 1, "button" = 1}, {"type" = "key_up", "key" = 97, "modifiers" = 1, "button" = 1}]
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+expect = [{"event" = {"type" = "key_down", "key" = 97, "modifiers" = 1, "button" = 1}}, {"event" = {"type" = "key_up", "key" = 97, "modifiers" = 1, "button" = 1}}]

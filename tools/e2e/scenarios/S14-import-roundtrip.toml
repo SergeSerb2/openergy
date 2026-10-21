@@ -1,0 +1,74 @@
+# Requirement: Synthetic Synergy config/db v17/INI import and export retain ranged links, port, caps and warnings, then boot a real pair.
+name = "S14-import-roundtrip"
+requirement = "Synthetic Synergy config/db v17/INI import and export retain ranged links, port, caps and warnings, then boot a real pair."
+blocked_by = ["WP2", "WP6"]
+timeout_ms = 1800
+
+[[node]]
+id = "server"
+kind = "openergy"
+role = "server"
+platform = "virtual"
+autostart = false
+
+[[node]]
+id = "client"
+kind = "openergy"
+role = "client"
+platform = "virtual"
+remote = "server"
+autostart = false
+
+[[step]]
+do = "write_file"
+path = "${fixtures}/import/synergy.conf"
+fixture = "${fixtures}/synergy.conf.template"
+
+[[step]]
+do = "write_file"
+path = "${fixtures}/import/synergy-core.conf"
+fixture = "${fixtures}/synergy-core.conf.template"
+
+[[step]]
+do = "write_file"
+path = "${fixtures}/import/db.json"
+fixture = "${fixtures}/db.json.template"
+
+[[step]]
+do = "cli"
+node = "server"
+args = ["import-synergy", "--from", "${fixtures}/import", "--out", "${server.config}"]
+output_regex = "(warning|Warning|unmapped_fixture_setting)"
+
+[[step]]
+do = "assert_file"
+path = "${server.config}"
+toml_expect = {"name" = "server", "server" = {"port" = "${server.port}", "heartbeat_ms" = 500}, "clipboard" = {"max_bytes" = 67108864}, "tls" = {"enabled" = false}}
+
+[[step]]
+do = "cli"
+node = "server"
+args = ["export-synergy-conf", "--config", "${server.config}", "--out", "${dir}/export.conf"]
+
+[[step]]
+do = "assert_file"
+path = "${dir}/export.conf"
+regex = "right\\(50,100\\)"
+
+[[step]]
+do = "start"
+node = "server"
+
+[[step]]
+do = "start"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+peer = "server"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+peer = "client"

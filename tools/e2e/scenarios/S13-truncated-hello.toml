@@ -1,0 +1,37 @@
+# Requirement: Truncated hello-back is closed without allocation growth or daemon death.
+name = "S13-truncated-hello"
+requirement = "Truncated hello-back is closed without allocation growth or daemon death."
+blocked_by = ["WP1", "WP6"]
+timeout_ms = 1800
+
+[[node]]
+id = "server"
+kind = "openergy"
+role = "server"
+platform = "virtual"
+
+[[node]]
+id = "probe"
+kind = "raw"
+role = "client"
+remote = "server"
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+hex = "0000006453796e657267790001"
+shutdown_write = true
+
+[[step]]
+do = "raw_expect_closed"
+node = "probe"
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"role" = "server"}

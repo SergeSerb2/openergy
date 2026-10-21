@@ -1,0 +1,65 @@
+# Requirement: Duplicate-name matrix: one missed heartbeat permits replacement of a stale incumbent.
+name = "S17-stale"
+requirement = "Duplicate-name matrix: one missed heartbeat permits replacement of a stale incumbent."
+blocked_by = ["WP6"]
+timeout_ms = 1800
+
+[[node]]
+id = "server"
+kind = "openergy"
+role = "server"
+platform = "virtual"
+tls = false
+
+[[node]]
+id = "client"
+kind = "openergy"
+role = "client"
+platform = "virtual"
+remote = "server"
+tls = false
+
+[[node]]
+id = "newcomer"
+kind = "openergy"
+role = "client"
+platform = "virtual"
+name = "client"
+remote = "server"
+tls = false
+autostart = false
+
+[[step]]
+do = "wait_connected"
+node = "client"
+peer = "server"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+peer = "client"
+
+[[step]]
+do = "pause"
+node = "client"
+
+[[step]]
+do = "sleep"
+ms = 650
+
+[[step]]
+do = "start"
+node = "newcomer"
+
+[[step]]
+do = "wait_connected"
+node = "newcomer"
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"peers" = {"$len" = 1}}
+
+[[step]]
+do = "resume"
+node = "client"

@@ -1,0 +1,62 @@
+# Requirement: Unknown TLS identity holds input; approval persists trust and permits reconnect.
+name = "S6-trust-approval"
+requirement = "Unknown TLS identity holds input; approval persists trust and permits reconnect."
+blocked_by = ["WP4", "WP6"]
+timeout_ms = 1800
+
+[[node]]
+id = "server"
+kind = "openergy"
+role = "server"
+platform = "virtual"
+tls = true
+
+[[node]]
+id = "client"
+kind = "openergy"
+role = "client"
+platform = "virtual"
+remote = "server"
+tls = true
+
+[[step]]
+do = "subscribe"
+node = "client"
+
+[[step]]
+do = "wait_status"
+node = "client"
+fields = {"pending_trust" = {"$len" = 1}}
+save = "pending"
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "peer.untrusted"
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+expect = []
+
+[[step]]
+do = "cli"
+node = "client"
+args = ["trust", "approve", "${pending.pending_trust.0.fingerprint}", "--config", "${client.config}"]
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "assert_file"
+path = "${client.dir}/tls/trusted-servers"
+regex = "v2:sha256:[0-9a-f]{64}"
+
+[[step]]
+do = "restart"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "client"

@@ -1,0 +1,105 @@
+# Requirement: Malformed oversized closes only the offending connection; the daemon still serves a new client.
+name = "S13-oversized"
+requirement = "Malformed oversized closes only the offending connection; the daemon still serves a new client."
+blocked_by = ["WP1", "WP6"]
+timeout_ms = 1800
+
+[[node]]
+id = "server"
+kind = "openergy"
+role = "server"
+platform = "virtual"
+
+[[node]]
+id = "probe"
+kind = "raw"
+role = "client"
+remote = "server"
+
+[[node]]
+id = "client"
+kind = "openergy"
+role = "client"
+platform = "virtual"
+remote = "server"
+autostart = false
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "hello_back"
+name = "client"
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "QINF"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "screen_info"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "oversized"
+
+[[step]]
+do = "raw_expect_closed"
+node = "probe"
+
+[[step]]
+do = "stop"
+node = "probe"
+force = true
+
+[[step]]
+do = "start"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+peer = "server"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+peer = "client"
+
+[[step]]
+do = "set_screens"
+node = "server"
+rects = [{"x" = 0, "y" = 0, "w" = 1920, "h" = 1080, "scale" = 1.0}]
+
+[[step]]
+do = "set_screens"
+node = "client"
+rects = [{"x" = 0, "y" = 0, "w" = 1920, "h" = 1080, "scale" = 1.0}]
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 1919, "y" = 540}, {"type" = "mouse_move_rel", "dx" = 20, "dy" = 0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "client"}
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "key_down", "key" = 97, "modifiers" = 1, "button" = 1}, {"type" = "key_up", "key" = 97, "modifiers" = 1, "button" = 1}]
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+expect = [{"event" = {"type" = "key_down", "key" = 97, "modifiers" = 1, "button" = 1}}, {"event" = {"type" = "key_up", "key" = 97, "modifiers" = 1, "button" = 1}}]

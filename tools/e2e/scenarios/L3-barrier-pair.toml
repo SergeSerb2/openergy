@@ -1,0 +1,52 @@
+# Requirement: Two isolated real barrier peers connect across Docker loopback publication; edge transfer delivers a click.
+name = "L3-barrier-pair"
+requirement = "Two isolated real barrier peers connect across Docker loopback publication; edge transfer delivers a click."
+blocked_by = []
+timeout_ms = 5000
+
+[[node]]
+id = "labserver"
+kind = "lab"
+peer = "barrier"
+role = "server"
+name = "lab"
+screens = "lab,labclient"
+
+[[node]]
+id = "labclient"
+kind = "lab"
+peer = "barrier"
+role = "client"
+name = "labclient"
+remote = "labserver"
+
+[[step]]
+do = "lab_ctl"
+node = "labclient"
+args = ["events", "start"]
+
+[[step]]
+do = "lab_drive"
+node = "labserver"
+args = ["mousemove", "1919", "540", "sleep", "0.2", "mousemove_relative", "--", "20", "0"]
+
+[[step]]
+do = "lab_drive"
+node = "labserver"
+args = ["click", "1"]
+
+[[step]]
+do = "lab_pointer"
+node = "labclient"
+fields = {"x" = {"$gte" = 0}, "y" = {"$gte" = 0}}
+
+[[step]]
+do = "lab_ctl"
+node = "labserver"
+args = ["logs", "barrier"]
+regex = "(connected to client|client .*connected|connected to server)"
+
+[[step]]
+do = "lab_events_dump"
+node = "labclient"
+regex = "ButtonPress"

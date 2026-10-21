@@ -1,0 +1,73 @@
+# Requirement: Merge patch writes TOML and changes the live role/port; invalid patch reports an error and preserves exact file bytes.
+name = "S19-config-patch"
+requirement = "Merge patch writes TOML and changes the live role/port; invalid patch reports an error and preserves exact file bytes."
+blocked_by = ["WP2", "WP6"]
+timeout_ms = 1800
+
+[[node]]
+id = "local"
+kind = "openergy"
+role = "off"
+platform = "virtual"
+
+[[node]]
+id = "spare"
+kind = "raw"
+role = "server"
+autostart = false
+
+[[step]]
+do = "stop"
+node = "spare"
+force = true
+
+[[step]]
+do = "config_patch"
+node = "local"
+patch = {"role" = "server", "server" = {"port" = "${local.port}"}}
+
+[[step]]
+do = "wait_status"
+node = "local"
+fields = {"role" = "server", "state" = "listening"}
+
+[[step]]
+do = "assert_file"
+path = "${local.config}"
+toml_expect = {"role" = "server", "server" = {"port" = "${local.port}"}}
+save = "before"
+
+[[step]]
+do = "config_patch"
+node = "local"
+patch = {"server" = {"port" = "${spare.port}"}}
+
+[[step]]
+do = "wait_status"
+node = "local"
+fields = {"server.listen" = "127.0.0.1:${spare.port}"}
+
+[[step]]
+do = "assert_file"
+path = "${local.config}"
+save = "before_invalid"
+
+[[step]]
+do = "config_patch"
+node = "local"
+patch = {"clipboard" = {"max_bytes" = -1}}
+expect_error = "invalid_config"
+
+[[step]]
+do = "assert_file"
+path = "${local.config}"
+sha256 = "${before_invalid.sha256}"
+
+[[step]]
+do = "restart"
+node = "local"
+
+[[step]]
+do = "wait_status"
+node = "local"
+fields = {"role" = "server", "server.listen" = "127.0.0.1:${spare.port}"}

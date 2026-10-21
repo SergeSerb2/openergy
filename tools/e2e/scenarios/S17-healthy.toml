@@ -1,0 +1,53 @@
+# Requirement: Duplicate-name matrix: healthy incumbent rejects newcomer with EBSY.
+name = "S17-healthy"
+requirement = "Duplicate-name matrix: healthy incumbent rejects newcomer with EBSY."
+blocked_by = ["WP6"]
+timeout_ms = 1800
+
+[[node]]
+id = "server"
+kind = "openergy"
+role = "server"
+platform = "virtual"
+tls = false
+
+[[node]]
+id = "client"
+kind = "openergy"
+role = "client"
+platform = "virtual"
+remote = "server"
+tls = false
+
+[[node]]
+id = "newcomer"
+kind = "openergy"
+role = "client"
+platform = "virtual"
+name = "client"
+remote = "server"
+tls = false
+autostart = false
+
+[[step]]
+do = "wait_connected"
+node = "client"
+peer = "server"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+peer = "client"
+
+[[step]]
+do = "start"
+node = "newcomer"
+
+[[step]]
+do = "wait_status"
+node = "newcomer"
+fields = {"last_error.code" = "busy", "client.attempt" = {"$gte" = 1}}
+
+[[step]]
+do = "wait_connected"
+node = "client"

@@ -1,0 +1,32 @@
+# Requirement: Wrong preseeded SHA-256 pin refuses the real deskflow TLS server without plaintext fallback.
+name = "I2-deskflow-wrong-pin"
+requirement = "Wrong preseeded SHA-256 pin refuses the real deskflow TLS server without plaintext fallback."
+blocked_by = ["WP4", "WP6"]
+timeout_ms = 5000
+
+[[node]]
+id = "lab"
+kind = "lab"
+peer = "deskflow"
+role = "server"
+name = "lab"
+screens = "lab,client"
+tls = true
+
+[[node]]
+id = "client"
+kind = "openergy"
+role = "client"
+remote = "lab"
+tls = true
+trust = {"trusted-servers" = ["v2:sha256:0000000000000000000000000000000000000000000000000000000000000000"]}
+
+[[step]]
+do = "wait_status"
+node = "client"
+fields = {"last_error.code" = {"$exists" = true}, "tls.enabled" = true, "peers" = {"$len" = 0}}
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+expect = []
