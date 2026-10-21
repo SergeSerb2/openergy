@@ -293,7 +293,8 @@ fn import_db(
     }
     // Keep the editor coordinate system. It is already a uniform layout-unit system.
     // Freeze service-converter ranges before any later UI move or coordinate scaling.
-    let derived = derive_links(&cfg.screens);
+    let (derived, layout_warnings) = crate::layout::derive_synergy3_links(&cfg.screens);
+    report.warnings.extend(layout_warnings);
     for screen in &mut cfg.screens {
         let mut links = disconnected();
         links.ranges = derived

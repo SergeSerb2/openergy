@@ -1,7 +1,9 @@
 # WP2 verification
 
 Date: 2026-10-21. Branch: `t3/synergy-config-import-export`.
-Implementation commit: `dc2015ff8f0d9b1b8b7903a1aa6c4f38dbd9aa12`.
+Original implementation commit: `dc2015ff8f0d9b1b8b7903a1aa6c4f38dbd9aa12`.
+This evidence was refreshed for the native-layout architecture decision.
+The follow-up starts from `ebb2067068f40f9794aba94320af39d6a8b6bf32`.
 All committed edits are under `crates/config/`. No new dependencies.
 
 ## Release gates
@@ -11,9 +13,9 @@ $ export PATH="$HOME/.cargo/bin:$PATH"
 $ cargo fmt -p openergy-config -- --check
 (no output; exit 0)
 $ cargo build --release
-    Finished `release` profile [optimized] target(s) in 14.29s
+    Finished `release` profile [optimized] target(s) in 15.94s
 $ cargo clippy --release -p openergy-config -- -D warnings
-    Finished `release` profile [optimized] target(s) in 0.50s
+    Finished `release` profile [optimized] target(s) in 0.11s
 ```
 
 Whole-workspace release build: zero warnings. Config Clippy: zero warnings.
@@ -27,9 +29,9 @@ and then reads its persisted TOML through a fresh CLI process.
 
 ```text
 $ python3 crates/config/verify.py
-PASS: CLI import/export round trips; JSON and source precedence; strict failures; partial layout, L layout and ranged overrides; invalid patches preserve file and live state.
+PASS: CLI import/export round trips; JSON and source precedence; strict failures; native edge geometry, Synergy editor fidelity, L layout and ranged overrides; invalid patches preserve file and live state.
 invalid patch sha256 before/after: 6f9b817eda101d6284f2494a7f9cc41294f4f6fd42d2251ee41200609790eb63 / 6f9b817eda101d6284f2494a7f9cc41294f4f6fd42d2251ee41200609790eb63
-Real CLI invocations: 63
+Real CLI invocations: 83
 Evidence: /tmp/oe-wp2/verification.log
 ```
 
@@ -430,8 +432,10 @@ injection, cursor changes, clipboard writes or TCC requests occurred. The
 Step 0 daemon opens no TCP listener or connector. No LAN host or port 24800
 was contacted. No Synergy core or Docker container was started.
 
-The unmodified zero-spacing partial fixture returns this `derived_links`
-excerpt (see LAYOUT.md for all worked numbers and the extra right-link caveat):
+The unmodified zero-spacing partial fixture returns exactly these two
+`derived_links`. The native path uses original screen points; it applies no
+Synergy expansion or probes. There is no backward PC.right → Mac link.
+See LAYOUT.md for the hand-computed 0–100 and 21–89 endpoints.
 
 ```json
 [
@@ -460,25 +464,14 @@ excerpt (see LAYOUT.md for all worked numbers and the extra right-link caveat):
       0,
       100
     ]
-  },
-  {
-    "edge": "right",
-    "from": "studio-pc",
-    "from_range": [
-      21,
-      89
-    ],
-    "to": "macbook",
-    "to_range": [
-      0,
-      100
-    ]
   }
 ]
 ```
 
-An explicit `studio-pc.links.right = ""` produces just the first two links.
-Moving the PC to x=1513 also produces just those two links:
+An explicit `macbook.links.right = ""` removes only the first link. An explicit
+`right = "studio-pc"` overrides that edge's partial destination range with
+`[0,100]`. Both cases pass through config.patch and config.get.
+Moving PC x to 1513 stays within the inclusive one-point tolerance:
 
 ```sh
 /Users/serge/.t3/worktrees/openergy/t3-f6288390/target/release/openergy ctl config.patch --socket /tmp/oe-wp2/oe-wp2.sock --raw --json '{"patch":{"screen":[{"aliases":[],"name":"macbook","rect":{"h":982.0,"w":1512.0,"x":0.0,"y":300.0}},{"aliases":[],"name":"studio-pc","rect":{"h":1440.0,"w":2560.0,"x":1513,"y":0.0}}]}}'
@@ -514,6 +507,75 @@ Moving the PC to x=1513 also produces just those two links:
   }
 ]
 ```
+
+Moving PC x to 1513.01 produces no links. Further real daemon checks confirm:
+
+- Exactly one point of perpendicular overlap produces no link.
+- Two points of overlap on 100-point spans produce ranges `[98,100]` and
+  `[0,2]` with the correct reciprocal directions.
+- Two points on 10,000-point spans round to empty ranges; config.patch warns
+  and config.get returns no links. The export CLI also prints the warning.
+- Explicitly disconnecting both affected edges removes that rounding warning.
+- Adjacent 0.25-point-wide screens produce only the facing right/left pair.
+- Rects sharing only a corner produce no links.
+
+Actual rounded-empty warning:
+
+```text
+Layout overlap rounds to an empty integer percentage range; link omitted
+```
+
+The db.json-only path still uses the separate service converter. Its normal
+editor fixture retains the PC source range `[22,91]`, rather than the
+`[23,91]` produced by unexpanded native geometry. A zero-spacing editor import
+retains the historical extra direction as an explicit imported link:
+
+```json
+[
+  {
+    "edge": "left",
+    "from": "studio-pc",
+    "from_range": [
+      22,
+      91
+    ],
+    "to": "mac-book",
+    "to_range": [
+      0,
+      100
+    ]
+  },
+  {
+    "edge": "right",
+    "from": "studio-pc",
+    "from_range": [
+      22,
+      91
+    ],
+    "to": "mac-book",
+    "to_range": [
+      0,
+      100
+    ]
+  },
+  {
+    "edge": "right",
+    "from": "mac-book",
+    "from_range": [
+      0,
+      100
+    ],
+    "to": "studio-pc",
+    "to_range": [
+      22,
+      91
+    ]
+  }
+]
+```
+
+This confirms the two paths use different rules through the real interfaces.
+The native three-screen L fixture now uses exact touching edges at x/y=1000.
 
 The three-screen L returns:
 
@@ -625,7 +687,7 @@ pub fn write_atomic(path: &std::path::Path, text: &str)
     -> Result<(), openergy_config::ConfigError>
 ```
 
-## Read-only live-data import, redacted
+## Read-only live-data import from the initial WP2 run, redacted
 
 The real preferences import used `--from ~/Library/Preferences/Synergy`
 and `--json --out /tmp/oe-wp2/private-real-config.toml`. Stdout/stderr were
@@ -644,12 +706,12 @@ All frozen function signatures remain unchanged. Additive fields in the owned
 crate carry ranged links, screen/global core options and trust candidates;
 their exact types and compatibility notes are in LAYOUT.md.
 
-The frozen converter's zero-spacing extra directions and rounded-empty
-intervals are documented rather than hidden. Recommend an architecture
-amendment that checks facing original edges before probing. It requires no
-signature change: `pub fn derive_links(screens: &[ScreenCfg]) -> DerivedLinks`
-can remain unchanged. WP2 currently follows the specified expanded/probe
-algorithm, with warnings and explicit overrides available.
+The orchestrator's architecture decision is implemented. Native layouts use
+facing original edges within one point, with more than one point of
+perpendicular overlap. The expanded/probe service converter is separate and
+is called only by the Synergy 3 db.json importer. No function signature change
+was required. Explicit overrides, integer percentages and warning behavior
+remain available. No layout architecture question remains open for WP2.
 
 The daemon config.get/config.patch wiring works; derived links were verified.
 WP6 owns the remaining daemon persistence-mode and socket-parent-permission
