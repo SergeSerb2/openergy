@@ -1,17 +1,61 @@
-//! Frozen wire codec types (architecture-r2 §2.3). Bodies land in WP1.
-#![allow(dead_code)]
+//! Bounded, incremental Synergy/Barrier wire codec (architecture-r2 §2.3).
+//!
+//! `encode` appends one complete frame to its output. Reuse and clear that
+//! buffer between writes, or append multiple frames for one socket write.
+//! `Decoder::feed` checks frame lengths before copying payload bytes; drain
+//! `next_message` after each feed and close the connection on any error.
+//! Each connection starts with Hello or HelloBack. The decoder classifies it
+//! from the first frame; a later hello is an error. Version/role policy and
+//! clipboard transfer reassembly belong to session, outside this codec.
+#![forbid(unsafe_code)]
+
+mod clipboard;
+mod codec;
+pub mod keys;
+pub use clipboard::{marshal_clipboard, unmarshal_clipboard};
+pub use codec::{encode, Decoder};
 use std::fmt;
 
 pub const DEFAULT_PORT: u16 = 24800;
 pub const MAX_FRAME_LEN: u32 = 4 * 1024 * 1024;
 pub const MAX_STRING_LEN: u32 = 1024 * 1024;
 pub const MAX_HELLO_BACK_LEN: usize = 1024;
+pub const MAX_VECTOR_LEN: u32 = 1_048_576;
+pub const MAX_LANGUAGE_LEN: usize = 64;
+pub const MAX_SECURE_INPUT_LEN: usize = 255;
+pub const CLIPBOARD_CHUNK_LEN: usize = 32 * 1024;
 pub const WIRE_MAJOR: u16 = 1;
 pub const WIRE_MINOR: u16 = 8;
 pub const PRODUCT_SYNERGY: &str = "Synergy";
 pub const PRODUCT_BARRIER: &str = "Barrier";
 
 pub mod options {
+    pub const HART: u32 = HEARTBEAT;
+    pub const SSCM: u32 = SWITCH_CORNERS;
+    pub const SSCS: u32 = SWITCH_CORNER_SIZE;
+    pub const SSWT: u32 = SWITCH_DELAY;
+    pub const SSTT: u32 = SWITCH_DOUBLE_TAP;
+    pub const SSNS: u32 = SWITCH_NEEDS_SHIFT;
+    pub const SSNC: u32 = SWITCH_NEEDS_CONTROL;
+    pub const SSNA: u32 = SWITCH_NEEDS_ALT;
+    pub const MDLT: u32 = RELATIVE_MOUSE_MOVES;
+    pub const _KFW: u32 = WIN32_KEEP_FOREGROUND;
+    pub const LTSS: u32 = DEFAULT_LOCK_TO_SCREEN_STATE;
+    pub const DLTS: u32 = DISABLE_LOCK_TO_SCREEN;
+    pub const CLPS: u32 = CLIPBOARD_SHARING;
+    pub const CLSZ: u32 = CLIPBOARD_SHARING_SIZE;
+    pub const HDCL: u32 = HALF_DUPLEX_CAPS_LOCK;
+    pub const HDNL: u32 = HALF_DUPLEX_NUM_LOCK;
+    pub const HDSL: u32 = HALF_DUPLEX_SCROLL_LOCK;
+    pub const MMFS: u32 = MOD_SHIFT;
+    pub const MMFC: u32 = MOD_CTRL;
+    pub const MMFA: u32 = MOD_ALT;
+    pub const MMFG: u32 = MOD_ALTGR;
+    pub const MMFM: u32 = MOD_META;
+    pub const MMFR: u32 = MOD_SUPER;
+    pub const XTXU: u32 = XTEST_XINERAMA_UNAWARE;
+    pub const SFOC: u32 = PRESERVE_FOCUS;
+
     pub const HEARTBEAT: u32 = 0x4841_5254;
     pub const SWITCH_CORNERS: u32 = 0x5353_434D;
     pub const SWITCH_CORNER_SIZE: u32 = 0x5353_4353;
@@ -173,6 +217,7 @@ pub enum Message {
     ErrorBad,
     Unknown {
         code: [u8; 4],
+        /// Bytes after the code, excluding the outer length prefix.
         payload_len: usize,
     },
 }
@@ -203,35 +248,3 @@ impl fmt::Display for EncodeError {
     }
 }
 impl std::error::Error for EncodeError {}
-
-pub struct Decoder {
-    max_frame_len: u32,
-    buf: Vec<u8>,
-}
-impl Decoder {
-    pub fn new(max_frame_len: u32) -> Self {
-        Self {
-            max_frame_len,
-            buf: Vec::new(),
-        }
-    }
-    pub fn max_frame_len(&self) -> u32 {
-        self.max_frame_len
-    }
-    pub fn feed(&mut self, bytes: &[u8]) -> Result<(), DecodeError> {
-        self.buf.extend_from_slice(bytes);
-        Err(DecodeError::NotImplemented)
-    }
-    pub fn next_message(&mut self) -> Option<Result<Message, DecodeError>> {
-        None
-    }
-}
-pub fn encode(_msg: &Message, _out: &mut Vec<u8>) -> Result<(), EncodeError> {
-    Err(EncodeError::NotImplemented)
-}
-pub fn marshal_clipboard(_formats: &[(u32, &[u8])], _out: &mut Vec<u8>) -> Result<(), EncodeError> {
-    Err(EncodeError::NotImplemented)
-}
-pub fn unmarshal_clipboard(_bytes: &[u8]) -> Result<Vec<(u32, Vec<u8>)>, DecodeError> {
-    Err(DecodeError::NotImplemented)
-}
