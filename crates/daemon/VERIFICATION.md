@@ -1,12 +1,11 @@
-# WP6 verification — 2026-10-21
+# WP6 adversarial verification — 2026-10-21
 
-All checks use real executables, local IPC, real TCP/TLS sockets, or real
-Deskflow/Barrier processes in Docker. No unit tests, mocks, or test doubles were
-added. Source references are the project contracts and documented wire facts.
+The final engine passes the complete 73-scenario catalogue, all standalone
+real-process drivers, the eight Docker interop combinations, and all 14 app E2E
+steps. All checks use real binaries, IPC, TCP/TLS, or isolated X11. No unit tests,
+mocks, test doubles, or native input/pasteboard operations on this Mac were used.
 
 ## Build gates
-
-macOS ARM64, Rust 1.99.1:
 
 ```sh
 export PATH="$HOME/.cargo/bin:$PATH"
@@ -14,299 +13,318 @@ cargo build --release --workspace
 cargo clippy --release --workspace --all-targets -- -D warnings
 ```
 
-```text
-Finished `release` profile [optimized]
-Finished `release` profile [optimized]
-```
-
-Both commands exit 0 with zero warnings. `SwitchCfg` derives `Default`.
-Native clipboard backends return typed limit errors so the daemon publishes
-`clipboard.blocked`, including aggregate size/limit, without fetching oversized
-payloads where the OS offers length metadata. The Linux check exercises that
-path with a real X11 selection.
-
-The Linux workspace also builds and passes the same clippy command in the
-isolated `oe-linux-dev-wp8:rust-1.99` image. macOS-only example entry points are
-cfg-gated so Linux all-targets checks compile.
+Both exit 0 with zero warnings. Exact logs:
+`/tmp/oe-wp6-adversarial-build.log` and
+`/tmp/oe-wp6-adversarial-clippy.log`.
 
 ## Full catalogue
 
 ```sh
-LAB_NAME=oe-lab-wp6 LAB_PORT_RANGE=24950-24959 \
-OPENERGY_ALLOW_PORT_24800=0 target/release/openergy-e2e run \
-  --port-range 24980-24983 --lab-port-range 24950-24958 --keep \
-  --report /tmp/oe-wp6-e2e-final.json
+export LAB_NAME=oe-lab-wp6 LAB_PORT_RANGE=24950-24959
+export OPENERGY_ALLOW_PORT_24800=0
+target/release/openergy-e2e run --port-range 24980-24983 \
+  --lab-port-range 24950-24958 --keep \
+  --report /tmp/oe-wp6-e2e-adversarial-final.json
 ```
 
 ```text
-61/61 passed; JSON report: /tmp/oe-wp6-e2e-final.json
+73/73 passed; JSON report: /tmp/oe-wp6-e2e-adversarial-final.json
 ```
 
 | Scenario | Result | Time (ms) |
-| --- | --- | ---: |
-| I1-barrier-plain | PASS | 31688 |
-| I1-barrier-tls | PASS | 32534 |
-| I1-deskflow-plain | PASS | 31790 |
-| I1-deskflow-tls | PASS | 32430 |
-| I2-barrier-plain | PASS | 2622 |
-| I2-barrier-tls | PASS | 3158 |
-| I2-barrier-wrong-pin | PASS | 1924 |
-| I2-deskflow-plain | PASS | 2775 |
-| I2-deskflow-tls | PASS | 3301 |
-| I2-deskflow-wrong-pin | PASS | 3725 |
-| I3-barrier-plain | PASS | 4954 |
-| I3-barrier-tls | PASS | 5064 |
-| I3-deskflow-plain | PASS | 4522 |
-| I3-deskflow-tls | PASS | 4873 |
-| I4-barrier-plain | PASS | 3550 |
-| I4-barrier-tls | PASS | 4008 |
-| I4-deskflow-plain | PASS | 3620 |
-| I4-deskflow-tls | PASS | 3668 |
-| I5-barrier-export | PASS | 1968 |
-| I5-deskflow-export | PASS | 2086 |
-| L1-barrier-hello | PASS | 1558 |
-| L1-deskflow-hello | PASS | 1632 |
-| L2-barrier-clipboard | PASS | 3621 |
-| L2-deskflow-clipboard | PASS | 3642 |
-| L3-barrier-pair | PASS | 4914 |
-| L3-deskflow-pair | PASS | 5306 |
-| L4-barrier-raw-client | PASS | 1419 |
-| L4-deskflow-raw-client | PASS | 1556 |
-| R1-control-files | PASS | 1185 |
-| R2-lifecycle | PASS | 1127 |
-| S0-smoke | PASS | 384 |
-| S1-connect | PASS | 686 |
-| S10-clipboard-cap | PASS | 2046 |
-| S11-heartbeat | PASS | 2392 |
-| S12-display-change | PASS | 601 |
-| S13-flood | PASS | 8457 |
-| S13-garbage | PASS | 612 |
-| S13-oversized | PASS | 604 |
-| S13-truncated-hello | PASS | 311 |
-| S13-truncated | PASS | 630 |
-| S13-unknown | PASS | 1104 |
-| S14-import-roundtrip | PASS | 724 |
-| S15-resources-latency | PASS | 121810 |
-| S16-permissions | PASS | 606 |
-| S17-healthy | PASS | 887 |
-| S17-same-fingerprint | PASS | 1117 |
-| S17-stale | PASS | 1584 |
-| S18-click-numbering | PASS | 632 |
-| S19-config-patch | PASS | 696 |
-| S2-edge-mapping | PASS | 615 |
+|---|---|---:|
+| A1-modifier-and-receiver-wheel | PASS | 696 |
+| A10-unsupported-hello-close | PASS | 370 |
+| A11-input-backpressure-release | PASS | 2492 |
+| A12-restart-connected-roles | PASS | 907 |
+| A2-client-direction-version-heartbeat-sequence | PASS | 3705 |
+| A3-heartbeat-close-flush | PASS | 1808 |
+| A4-config-live-rollback | PASS | 595 |
+| A5-unavailable-clipboard-readback | PASS | 1880 |
+| A6-clipboard-backpressure | PASS | 520 |
+| A7-trust-lock-crash | PASS | 574 |
+| A8-config-save-rollback | PASS | 608 |
+| A9-tls-trusted-status | PASS | 1095 |
+| I1-barrier-plain | PASS | 32153 |
+| I1-barrier-tls | PASS | 32810 |
+| I1-deskflow-plain | PASS | 31947 |
+| I1-deskflow-tls | PASS | 32599 |
+| I2-barrier-plain | PASS | 2523 |
+| I2-barrier-tls | PASS | 3233 |
+| I2-barrier-wrong-pin | PASS | 1758 |
+| I2-deskflow-plain | PASS | 2474 |
+| I2-deskflow-tls | PASS | 3196 |
+| I2-deskflow-wrong-pin | PASS | 1755 |
+| I3-barrier-plain | PASS | 3793 |
+| I3-barrier-tls | PASS | 4479 |
+| I3-deskflow-plain | PASS | 3925 |
+| I3-deskflow-tls | PASS | 4800 |
+| I4-barrier-plain | PASS | 3722 |
+| I4-barrier-tls | PASS | 3592 |
+| I4-deskflow-plain | PASS | 3915 |
+| I4-deskflow-tls | PASS | 4826 |
+| I5-barrier-export | PASS | 2387 |
+| I5-deskflow-export | PASS | 2342 |
+| L1-barrier-hello | PASS | 1376 |
+| L1-deskflow-hello | PASS | 1325 |
+| L2-barrier-clipboard | PASS | 2911 |
+| L2-deskflow-clipboard | PASS | 3207 |
+| L3-barrier-pair | PASS | 4316 |
+| L3-deskflow-pair | PASS | 4528 |
+| L4-barrier-raw-client | PASS | 1312 |
+| L4-deskflow-raw-client | PASS | 1341 |
+| R1-control-files | PASS | 2115 |
+| R2-lifecycle | PASS | 1114 |
+| S0-smoke | PASS | 375 |
+| S1-connect | PASS | 1680 |
+| S10-clipboard-cap | PASS | 1650 |
+| S11-heartbeat | PASS | 2364 |
+| S12-display-change | PASS | 599 |
+| S13-flood | PASS | 9320 |
+| S13-garbage | PASS | 586 |
+| S13-oversized | PASS | 617 |
+| S13-truncated-hello | PASS | 296 |
+| S13-truncated | PASS | 608 |
+| S13-unknown | PASS | 1092 |
+| S14-import-roundtrip | PASS | 682 |
+| S15-resources-latency | PASS | 121436 |
+| S16-permissions | PASS | 610 |
+| S17-healthy | PASS | 892 |
+| S17-same-fingerprint | PASS | 1137 |
+| S17-stale | PASS | 1570 |
+| S18-click-numbering | PASS | 600 |
+| S19-config-patch | PASS | 675 |
+| S2-edge-mapping | PASS | 599 |
 | S2-wire-order | PASS | 302 |
-| S20-parent-exit | PASS | 759 |
-| S20-parent-off | PASS | 530 |
-| S21-fingerprint-import | PASS | 1180 |
-| S3-input-order | PASS | 598 |
-| S4-disconnect-release | PASS | 852 |
-| S5-disconnect-release | PASS | 943 |
-| S6-trust-approval | PASS | 1645 |
-| S7-wrong-pin | PASS | 731 |
-| S8-text-clipboard | PASS | 1199 |
-| S9-large-dib | PASS | 2419 |
+| S20-parent-exit | PASS | 756 |
+| S20-parent-off | PASS | 388 |
+| S21-fingerprint-import | PASS | 1172 |
+| S3-input-order | PASS | 596 |
+| S4-disconnect-release | PASS | 863 |
+| S5-disconnect-release | PASS | 867 |
+| S6-trust-approval | PASS | 1573 |
+| S7-wrong-pin | PASS | 706 |
+| S8-text-clipboard | PASS | 1172 |
+| S9-large-dib | PASS | 2084 |
 
-The catalogue checks the real IPC/config/status shapes, handshake/wire ordering,
-layout mapping, input ordering, releases after death/disconnect/permission loss,
-clipboard contents and hashes, cap events, hostile framing/floods, trust holds and
-pins, replacement rules, click numbering, lifecycle, import/export and file modes.
-The I-series covers Deskflow 1.27.0 and Barrier 2.4.0, both roles, TLS on/off.
-The L-series independently checks the Docker lab with real peers and raw sockets.
+A1–A12 cover exactly one held-modifier release, receiver wheel settings,
+client-only message direction, negotiated hello versions, absent spontaneous
+heartbeats, sequence-zero clipboard pushes, close flushing, live/save rollback,
+unavailable readback, real queue pressure, SIGKILL during a held trust lock,
+actual TLS trust status, unsupported-major close, and connected-role restarts.
+A11 fills the actual input queue, keeps both peers after lost repeats, then
+loses a key-up and verifies DKUP/DMUP/COUT before FIN for only that peer.
 
-Corrections made during integration:
+Hello-back uses `min(server minor, 8)`, with major 1. It echoes the server's
+product spelling and accepts product names case-insensitively. Barrier 2.4 gets
+1.6; Synergy/Deskflow 1.8 gets 1.8; a future 1.9+ gets 1.8 with one log entry.
+The client never sends EICV, CROP, DSOP, or an unsolicited CALV.
 
-- Input follows the observed CINN transition in lab scenarios; one xdotool chain
-  could click before the peer completed switching.
-- Touching equal-height screens offset by half a height derive half-to-half
-  ranges. Source y=810 maps to destination y=270, as physical geometry requires.
-- CLSZ is measured in KiB. A 512-byte fixture rounded to zero and disabled
-  sharing; the peer-cap case now advertises 1 KiB and sends a larger container.
-- I3 explicitly configures a 4 MiB cap. Barrier does not advertise Synergy's CLSZ
-  option. Peer-limit negotiation is independently checked in S10.
-- S7 supplies an explicit wrong fingerprint. An unrelated global trust-file
-  entry is not a host-specific pin and correctly produces a TOFU hold instead.
-- CLI import requires a confined output path; fingerprint/trust accept
-  `--config`, which selects the same identity directory as the daemon.
-- Barrier exports omit unsupported Synergy options and warn about the lost
-  clipboard limit/lock/modifier controls. Both real peers accept ranged links.
+The S10 receiver-cap phase checks the receiver's block event. A client's local
+cap cannot be advertised by client DSOP, because DSOP is server-to-client only.
+Advertised server limits still constrain outbound client clipboard transfers.
 
-## Real-process drivers
+## Idle resources, retained clipboard, and latency
 
-```sh
-python3 crates/daemon/scripts/verify_virtual.py --port-base 24986
-python3 crates/daemon/scripts/verify_security_lifetime.py
-python3 crates/daemon/scripts/verify_memory.py
-python3 crates/daemon/scripts/verify_latency.py
-python3 crates/daemon/scripts/verify_errors.py
-python3 crates/daemon/scripts/verify_interop.py
-python3 crates/daemon/scripts/verify_app.py
-```
-
-Final driver artifacts:
-
-| Driver | Result | Artifact |
-| --- | --- | --- |
-| Virtual S1–S19 coverage | PASS | `/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-wp6-oc13i17a/report.json` |
-| TLS/replacement/parent exit | PASS | `/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-wp6-security-28jbbwn5/report.json` |
-| Idle + retained memory | PASS | `/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-wp6-memory-5beo91r2/report.json` |
-| Timestamped move latency | PASS | `/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-wp6-latency-f_gm2zmu/report.json` |
-| Connector errors | PASS | `/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-wp6-errors-tqacfidr/report.json` |
-| Docker input interop | 8/8 PASS | `/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-wp6-interop-8pg6q4uh/report.json` |
-| Updated app E2E | 14/14 PASS | `/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-wp6-app-9x95_f8n/output/report.json` |
-
-Trimmed real output:
-
-```text
-PASS S9 8 MiB DIB with typing: typing_before_complete=True
-PASS S11 heartbeat death: SIGSTOP server -> timeout and release
-PASS S13 hostile framing: unknown frame skipped after hello
-PASS S17 healthy incumbent EBSY: incumbent stayed connected
-PASS S17 stale incumbent replacement: before 3-heartbeat death deadline
-PASS S20 parent exit watcher: child_exit=0 peer_goodbye=True socket_removed=True
-```
-
-Connector failures now use stable codes and plain sentences. Real socket/OS
-resolver checks passed:
-
-```text
-connect_refused: No server is listening at 127.0.0.1:24989.
-dns_failed: Can't find host openergy-not-a-host.invalid.
-connect_timeout: No answer from 127.0.0.1:24987.
-tls_pin_mismatch: The server's identity changed — check its fingerprint.
-```
-
-The refusal check covers Darwin SO_ERROR handling. TCP_NODELAY is set after an
-outbound connection completes. No peer_addr/repeated connect masks a refused
-socket. Unreachable OS errors map separately to `host_unreachable`; that path
-was not forced with a non-loopback target on this workstation.
-
-## Memory and latency
-
-Idle daemons without a large clipboard use about 10 MB RSS each. A separate
-fresh pair measured:
-
-| Node | Baseline RSS | RSS after 8 MiB transfer | Bound: baseline + 2 × payload |
-| --- | ---: | ---: | ---: |
-| Server | 10,010,624 | 18,595,840 | 26,787,840 |
-| Client | 9,830,400 | 19,152,896 | 26,607,616 |
-
-The current clipboard remains available. Reassembly and outgoing transfer blobs
-are dropped after completion; the server reads the platform clipboard again when
-needed later. macOS daemon allocations of at least 1 MiB bypass malloc's retained
-large-block cache and unmap on drop. Input events continue to use fixed state.
-
-The 1,000-move same-host timestamp sample measured:
-
-```text
-capture_to_sink_p50_ms: 0.027
-capture_to_sink_p99_ms: 0.435
-IPC-observed p50_ms:   0.092
-IPC-observed p99_ms:   1.6985
-```
-
-Capture and sink timestamps exclude the observer's extra IPC requests. They use
-the shared host wall clock and assume it does not step during the short sample.
-The final catalogue also measured the following. Each idle window lasts 60
-seconds; its limits are RSS <30,000,000 bytes and CPU <0.1%.
+The catalogue measures each idle daemon separately for 60 seconds, without a
+retained large clipboard. Exact observations:
 
 ```json
 [
   {
-    "cpu_percent": 0.09992209136987198,
+    "cpu_percent": 0.03331751794735495,
     "kind": "resources",
-    "rss_peak_bytes": 9371648,
-    "window_ms": 60046
+    "rss_peak_bytes": 9338880,
+    "window_ms": 60028
   },
   {
-    "cpu_percent": 0.09987754319554687,
+    "cpu_percent": 0.03331460060281979,
     "kind": "resources",
-    "rss_peak_bytes": 9273344,
-    "window_ms": 60073
+    "rss_peak_bytes": 9306112,
+    "window_ms": 60033
   },
   {
     "kind": "capture_to_recorded_upper_bound",
-    "max_ms": 4.605042,
-    "p50_ms": 0.714125,
-    "p95_ms": 2.6211659999999997,
-    "p99_ms": 3.7015,
+    "max_ms": 1.393708,
+    "p50_ms": 0.696666,
+    "p95_ms": 0.79925,
+    "p99_ms": 0.887084,
     "samples": 1000
   }
 ]
 ```
 
-The catalogue's latency includes additional observer IPC and has a 5 ms p99 gate.
+The independent 1000-move capture-to-sink measurement uses timestamps from the
+server capture audit and client sink audit on this host. It does not include
+external IPC observation overhead. The IPC observer is reported separately.
 
-## App and native platform checks
+```json
+{
+  "samples": 1000,
+  "p50_ms": 0.20425,
+  "p95_ms": 0.364375,
+  "p99_ms": 0.473,
+  "max_ms": 0.748958,
+  "kind": "IPC capture-to-recorded upper bound",
+  "capture_to_sink_p99_ms": 0.18,
+  "capture_to_sink_p50_ms": 0.07,
+  "server_rss_bytes": 10387456,
+  "client_rss_bytes": 10240000,
+  "process_sample": "77906   0.5  10160\n77908   0.2  10000"
+}
+```
 
-The app was rebuilt from its existing sources:
+The retained-memory check measures both 8 MiB transfer directions after a
+one-second settling period. Each result is below baseline plus 16,777,216 bytes.
+The current remote payload is shared with the virtual clipboard. Reassembly,
+serialized transfer blobs, and queued chunks are released after completion.
+
+| Daemon | Idle baseline RSS | After server → client | After client → server | Bound |
+|---|---:|---:|---:|---:|
+| server | 10,108,928 | 18,612,224 | 19,365,888 | 26,886,144 |
+| client | 9,928,704 | 19,218,432 | 19,316,736 | 26,705,920 |
+
+## Standalone real-process checks
 
 ```sh
-cd apps/macos && swift build
+python3 crates/daemon/scripts/verify_virtual.py --port-base 24986
+python3 crates/daemon/scripts/verify_security_lifetime.py
+python3 crates/daemon/scripts/verify_errors.py
+python3 crates/daemon/scripts/verify_memory.py
+python3 crates/daemon/scripts/verify_latency.py
+python3 crates/daemon/scripts/verify_interop.py
+swift build --package-path apps/macos
+python3 crates/daemon/scripts/verify_app.py
 ```
+
+All exit 0. Trimmed output:
 
 ```text
-Build complete! (1.96 secs.)
-```
-
-The app driver creates isolated configs/sockets, starts a virtual server at
-127.0.0.1:24984, then runs the app's own offscreen E2E entry point:
-
-```sh
-OPENERGY_SOCKET=<private-app-socket> OPENERGY_CONFIG=<private-config.toml> \
-OPENERGY_DAEMON="$PWD/target/release/openergy" \
-OPENERGY_DAEMON_ARGS="--platform virtual" OPENERGY_ALLOW_PORT_24800=0 \
-apps/macos/.build/debug/Openergy --e2e <private-output> \
-  --join 127.0.0.1:24984 --host-port 24985
-```
-
-```text
-PASS join ... state=connected
-PASS role server ... state=listening
-PASS layout keeps imported fields
-PASS derived links arrive
-PASS rename keeps layout entry
-PASS live log lines
+PASS S1 connect
+PASS S4 kill mid-keypress
+PASS S5 kill mid-drag
+PASS S9 8 MiB DIB with typing: typing_before_complete=True
+PASS S10 peer cap visible block: bytes=5242892 limit=4194304
+PASS S11 heartbeat death
+PASS S16 permission revocation
+PASS S17 same TLS fingerprint replacement
+PASS S17 healthy incumbent EBSY
+PASS S17 stale incumbent replacement
+PASS S20 parent exit watcher
+PASS connect refused: connect_refused
+PASS DNS failed: dns_failed
+PASS silent handshake timeout: connect_timeout
+PASS idle and retained memory
 E2E PASSED (14 steps)
 ```
 
-The safe native constructor check does not start capture or observers:
+Real artifact reports:
+
+- virtual: `/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-wp6-7d14e9mf/report.json`
+- security: `/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-wp6-security-9j1zg21a/report.json`
+- errors: `/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-wp6-errors-9vk98kaz/report.json`
+- memory: `/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-wp6-memory-zjvtyck6/report.json`
+- latency: `/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-wp6-latency-p45ypdt3/report.json`
+- interop: `/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-wp6-interop-rxck9f4k/report.json`
+- app: `/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-wp6-app-m_7hfm34/output/report.json`
+
+## Docker interoperability and Linux
+
+The standalone interop driver copies the lab scripts to its private artifact
+directory, uses `LAB_NAME=oe-lab-wp6`, publishes only `24959`, and calls `lab.sh
+down` in its cleanup. Its server uses host loopback port `24984`. The catalogue
+uses distinct assigned containers and ports `24950–24958`.
+
+| Peer | Our role | Plain | TLS |
+|---|---|---|---|
+| Deskflow 1.27 | Client | PASS | PASS |
+| Deskflow 1.27 | Server | PASS | PASS |
+| Barrier 2.4 | Client | PASS | PASS |
+| Barrier 2.4 | Server | PASS | PASS |
+
+Both directions show real keyboard, mouse, and wheel events; server direction
+also verifies the Docker X11 pointer and native key/button recorder.
 
 ```sh
-cargo run --release -p openergy-platform-macos --example mac_probe -- create
-```
-
-```text
-backend=macos permissions=...; capture not started
-invalid lines_per_notch rejected before construction
-create_with_notices backend=macos; shared Backend type; notice queue empty; observers not started
-```
-
-Linux verification uses a read-only source mount, disposable `/work`, Xvfb :99,
-and no host display, device, clipboard or published port. Run with the existing
-linux-dev image, target and Cargo caches:
-
-```sh
-docker run --rm --name oe-linux-dev-wp6-final --network bridge \
+docker run --rm --name oe-linux-dev-wp6-adversarial --network bridge \
   -e OPENERGY_DISABLE_DISCOVERY=1 -v "$PWD:/src:ro" \
   -v oe-linux-dev-wp8-target:/target -v oe-linux-dev-wp8-cargo:/cargo \
-  --tmpfs /work:exec,size=512m oe-linux-dev-wp8:rust-1.99 bash -c \
+  --tmpfs /work:exec,size=1536m oe-linux-dev-wp8:rust-1.99 bash -c \
   'cargo build --release --workspace && cargo clippy --release --workspace --all-targets -- -D warnings && ln -s /target /work/target && OPENERGY_X11_PROBE_ISOLATED=1 python3 crates/daemon/scripts/verify_linux.py'
 ```
 
 ```text
+Finished `release` profile [optimized]
+Finished `release` profile [optimized]
+PASS Linux native clipboard cap: visible clipboard.blocked status
 PASS Linux daemon: X11 backend, DSOP, native edge capture, key/click forwarding, clipboard both directions
 ```
 
-## Safety, cleanup and limits
+Full Linux log: `/tmp/oe-wp6-adversarial-linux.log`. The initial 512 MiB source
+copy tmpfs was too small after app build artifacts grew; the successful run
+uses 1536 MiB. No host display, input device, or pasteboard was mounted.
 
-All host input E2E uses the virtual backend. Native macOS input posting, event
-taps, cursor changes, pasteboard writes and permission prompts were not run.
-No test used port 24800 or a LAN peer. Docker peers ran only in owned lab
-containers; copied lab scripts isolated state, set LAB_NAME/LAB_PORT_RANGE,
-and ran `lab.sh down`. Driver cleanup resumes/stops only children it created.
+## Safe native DIB probe
 
-Windows named-pipe IPC remains unavailable in the daemon; its non-Unix entry
-returns a typed error. Windows runtime/E2E is not claimed. Native Mac capture,
-TCC revocation, sleep/lock/wake, and activation behavior remain manual checks on
-an isolated or explicitly authorized workstation. No contract-change request is
-needed for the completed macOS/Linux integration.
+```sh
+cargo build --release -p openergy-platform-macos --example mac_probe
+target/release/examples/mac_probe dib /tmp/oe-wp6-dib-adversarial-final
+```
+
+```text
+opaque: 64x48 ... decoded RGBA exactly equal (12288 bytes)
+alpha: 64x48 ... decoded RGBA exactly equal (12288 bytes)
+PASS 24-bottom-up: 3x2, padded rows, exact RGBA
+PASS 24-top-down: 3x2, padded rows, exact RGBA
+PASS: malformed image, empty DIB, and small cap rejected
+```
+
+The probe generates fixtures and uses native image decoding only. It does not
+read/write the pasteboard, post input, or request permissions.
+
+## Fix commits
+
+| Fixes | Commits |
+|---|---|
+| H1/H2/H4, M2/M3, L1/L2: input ledger, message direction, receiver wheel, language/version/heartbeat rules | `1a39109`, `7a3bb49`, `1cfdadd` |
+| H3 and retained memory: unavailable readback, retained origin after disconnect, shared current payload | `1613172`, `b2d903d` |
+| H5 and M7: Windows DIB variants, crash-released trust lock | `137d332` |
+| M1/M4: typed pressure errors, peer-specific release, reserved cleanup capacity and ordering | `eccbc52`, `452ed13`, `1613172`, `902864e` |
+| M5/L7: cached native preflight/layout state, change-driven status and idle cadence | `383ca58`, `eccbc52`, `7a3bb49` |
+| M6: transport transaction and session rollback on save failure | `eccbc52`, `c4d7c5b` |
+| L3/L5: listening-only production-port guard, connected state, verified trust status | `1a39109`, `eccbc52` |
+| M8/L4/L6: documented Windows IPC and v1 option limits | `2238335` |
+| Connected-role restart found during verification | `b4379b9` |
+| Real-process regressions and current clippy | `2751cd3`, `20c993a`, `3a6a110`, `5274523`, plus scenarios in the related fixes |
+
+## Limits and safety
+
+Windows named-pipe IPC is not implemented in v1. The daemon returns a typed
+unsupported-platform error; Windows daemon E2E is not claimed. This is also
+stated in `crates/platform-windows/README.md`.
+
+Native macOS input capture/injection, live permission prompts, and hardware
+layout-change behavior remain untested on this live Synergy workstation. The
+native crate builds and passes all-target clippy; the input regressions run on
+virtual backends. No requested engine fix is left incomplete.
+
+`input.sync_language`, half-duplex options, and modifier key-ID remapping limits
+are documented in `crates/config/V1-LIMITS.md`. `connect HOST` intentionally
+rewrites and saves client config. No IPC shape or cross-crate contract change
+request remains open; new clipboard sharing uses a default additive trait method.
+
+All test TCP ports stay within the assigned ranges. Port 24800 and LAN hosts
+were never contacted. Only processes started by these drivers were stopped.
+All assigned lab containers are stopped; Linux's disposable container is removed.
+
+Final release binaries (SHA-256):
+
+```text
+29014824af54e8131303954bc2ec290d589eea0efdebb338f21a3303287a825c  openergy
+4cfa0369bcc6140bf2e14d543aea882e54c1f968c85a2614abf978bbfc40057c  openergy-e2e
+```
+
+Engine source commit: `b2d903d5c83a72d09b8e1eb82c631defb0b4cd29` on
+`t3/synergy-open-source-reimplementation`. The evidence commit changes this
+report only. Final build and clippy checks also exit 0 after the complete run.
+`docker ps` lists no running containers from these checks; `oe-lab-wp6` is exited.
