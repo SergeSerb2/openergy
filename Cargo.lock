@@ -154,10 +154,11 @@ dependencies = [
 name = "openergy-e2e"
 version = "0.1.0"
 dependencies = [
- "openergy-config",
  "openergy-ipc",
  "serde",
  "serde_json",
+ "sha2",
+ "toml",
 ]
 
 [[package]]
@@ -203,6 +204,7 @@ version = "0.1.0"
 dependencies = [
  "log",
  "openergy-platform",
+ "openergy-protocol",
 ]
 
 [[package]]
