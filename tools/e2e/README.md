@@ -307,10 +307,10 @@ python3 tools/e2e/verify_teardown.py --port-range 24998-24999 --lab-port-range 2
 
 ## Adversarial engine coverage
 
-A1–A11 exercise held modifiers, receiver wheel settings, hello negotiation,
+A1–A12 exercise held modifiers, receiver wheel settings, hello negotiation,
 client-only protocol direction, heartbeat close flushing, live/config-save
 rollback, unavailable clipboard readback, transport pressure, killed trust
-writers, TLS trust status, and unsupported-major close behavior.
+writers, TLS trust status, unsupported-major close behavior, and connected-role restart.
 
 `raw_expect_absent` reads real framed traffic for `timeout_ms` and rejects any
 listed `codes`. `raw_expect_closed` with `reject_bytes = true` also rejects any

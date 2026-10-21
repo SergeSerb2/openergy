@@ -1078,6 +1078,7 @@ impl Runtime {
                 );
                 self.enabled = true;
                 self.retry = None;
+                self.state = "idle".into();
                 self.start_connection();
                 Ok(json!({"restarting":true}))
             }
