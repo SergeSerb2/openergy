@@ -25,13 +25,6 @@ impl MacScreens {
             assertion: None,
         }
     }
-    /// Binding contract addendum: move this exact method into the trait impl
-    /// when WP3's default request_permission method reaches this checkout.
-    /// Explicit request only. NEVER called by mac_probe or construction.
-    pub fn request_permission(&mut self, kind: PermissionKind) -> Result<Grant> {
-        let granted = permissions::request(kind)?;
-        Ok(if granted { Grant::Granted } else { Grant::Denied })
-    }
     fn set_prevent_sleep(&mut self, on: bool) -> Result<()> {
         match (on, self.assertion) {
             (true, None) => {
@@ -98,6 +91,11 @@ impl ScreenSystem for MacScreens {
     }
     fn permissions(&self) -> Permissions {
         permissions::platform()
+    }
+    /// Explicit TCC request only. Construction and safe probes never call it.
+    fn request_permission(&mut self, kind: PermissionKind) -> Result<Grant> {
+        let granted = permissions::request(kind)?;
+        Ok(if granted { Grant::Granted } else { Grant::Denied })
     }
     fn on_display_changed(&mut self, cb: DisplayCallback) {
         // One lifecycle thread, no polling when idle. Replacing callback joins

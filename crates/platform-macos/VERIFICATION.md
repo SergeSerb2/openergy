@@ -1,4 +1,119 @@
-# WP5 verification — 2026-10-21
+# WP5 shared-contract follow-up — 2026-10-21
+
+The authorized merge of `t3/synergy-open-source-reimplementation` completed without
+conflicts. Merge commit: `0c17956c19f2ce67456617d26a24db65af7c9ff6`; merged integration
+head: `c36f877`. All follow-up source and evidence changes are in
+`crates/platform-macos/`. No tests, mocks or external dependencies were added.
+
+## Shared contract changes
+
+- Deleted `contract_shim`. Both constructors return the real
+  `openergy_platform::Backend`. The create probe explicitly assigns the public
+  return type and constructs the public notice-enabled API too.
+- Removed the local Click struct/history, distance calculation, time window and
+  exhaustion logic. The small MouseState event adapter now owns only the shared
+  ClickNumberer plus Native/Legacy mode. Shared `on_down_at`, `on_drag_at`,
+  `on_up_clear` and `reset_click_history` supply every assignment and count.
+  Every down still reads the real HID left/right/other-down seed. System double
+  click interval and monotonic seconds convert to the shared u64 milliseconds.
+  Legacy uses the same shared history and omits number setters on its nil-source
+  CGEvents. Model failures leave press/history state unchanged; the model's
+  one-time exhaustion log flag is retained. Exhaustion now follows the shared
+  policy: a typed error before posting, never wrap or duplicate at i64::MAX.
+- Moved request_permission into the ScreenSystem override. Accessibility uses
+  AXIsProcessTrustedWithOptions and the prompt option; Input Monitoring and Post
+  Events use their respective request APIs. These paths were compiled only.
+- Reused protocol::keys for named logical keys, modifier masks, buttons and wheel
+  units. The four unnamed Appendix B IDs have no named shared constants and are
+  documented numeric entries. Native virtual keycodes remain Mac-specific.
+- Kept create_with_notices/MacNotice public and additive. README documents the
+  sleep/wake/lock/unlock/display stream, explicit observer startup, thread
+  ownership and safe leave/resume duties. No daemon code was changed.
+
+## Follow-up verification
+
+The user's follow-up gate replaces the previous whole-workspace build gate. No
+whole-workspace build or daemon smoke was attempted; the integration daemon's
+pending WP4 dependency is outside this work package.
+
+Exact commands from the repository root:
+
+```sh
+export PATH="$HOME/.cargo/bin:$PATH"
+cargo fmt -p openergy-platform-macos
+cargo build --release -p openergy-platform-macos --examples
+cargo clippy -p openergy-platform-macos --all-targets --release -- -D warnings
+cargo fmt -p openergy-platform-macos --check
+./target/release/examples/mac_probe keymap
+./target/release/examples/mac_probe events-dry
+./target/release/examples/mac_probe perms
+./target/release/examples/mac_probe displays
+./target/release/examples/mac_probe pasteboard-info
+./target/release/examples/mac_probe dib crates/platform-macos/verification/shared-contract/fixtures
+./target/release/examples/mac_probe create
+./target/release/examples/focuslab_inject --help
+```
+
+All returned 0. Release examples and Clippy produced zero warnings. Formatting
+produced no output. No CGEvent was posted, tap created/enabled, cursor changed,
+pasteboard payload read/written, permission requested or power assertion created.
+No input source changed, LAN host contacted, port 24800 used or synergy-core run.
+Only read-only metadata and real in-memory CGEvent/image paths ran.
+
+Trimmed real output:
+
+```text
+$ cargo build --release -p openergy-platform-macos --examples
+    Finished `release` profile [optimized] target(s) in 6.18s
+$ cargo clippy -p openergy-platform-macos --all-targets --release -- -D warnings
+    Finished `release` profile [optimized] target(s) in 0.62s
+$ ./target/release/examples/mac_probe events-dry
+mode=Native double_click_interval=0.5s; real CGEvents built, ZERO posts
+01 type=1 ... number=1097 click=1 ... hid_seed=1096
+02 type=6 ... number=1097 click=1 ... hid_seed=1096
+PASS: rising native downs above HID seed, retained drag/up identity, click states [1, 1, 2, 3, 1, 1, 1], fractional wheel [3, -3, 1, 2, -1, -2], Unicode fallback, tag; release resets click history; ledger empty
+mode=Legacy double_click_interval=0.5s; real CGEvents built, ZERO posts
+(same click/wheel checks pass; all event numbers remain zero)
+$ ./target/release/examples/mac_probe create
+backend=macos permissions=Permissions { accessibility: Granted, input_monitoring: Granted, post_events: Granted }; capture not started
+invalid lines_per_notch rejected before construction
+create_with_notices backend=macos; shared Backend type; notice queue empty; observers not started
+```
+
+The extra seventh click occurs inside the double-click interval immediately after
+release_all. Its count returns to one while its number remains above the previous
+down. Both modes pass through the shared model. Existing keymap, permission,
+display and pasteboard metadata results are unchanged. The image paths again
+preserve 12,288 canonical RGBA bytes exactly for both synthetic fixtures; malformed
+input, empty DIB and small caps are rejected.
+
+Full [build](verification/shared-contract/build.txt),
+[Clippy](verification/shared-contract/clippy.txt),
+[CGEvents](verification/shared-contract/events-dry.txt),
+[create](verification/shared-contract/create.txt),
+[keymap](verification/shared-contract/keymap.txt),
+[permissions](verification/shared-contract/perms.txt),
+[displays](verification/shared-contract/displays.txt),
+[pasteboard metadata](verification/shared-contract/pasteboard-info.txt),
+[images](verification/shared-contract/dib.txt), and
+[environment/binary hashes](verification/shared-contract/environment.txt) are retained.
+
+Adding the protocol workspace path dependency makes Cargo generate one root
+Cargo.lock entry. To keep WP5 changes inside the owned crate, the generated
+[lockfile patch](verification/shared-contract/Cargo.lock.patch) is supplied for the
+integration owner. The root lockfile is restored to the merged version after
+verification. No versions or external dependencies change; an ordinary Cargo build
+also regenerates that one entry.
+
+The shared Backend/click-model/permission-override merge requests from the initial
+report below are resolved. Native lifecycle wiring still uses the documented
+additive notice API. Existing language-group/CINN modifier surface questions and
+all real posting/capture/clipboard/lifecycle/power/performance acceptance remain
+for the integration owner and separate [test Mac](TEST-MAC.md).
+
+---
+
+# Initial WP5 verification — before the shared-contract merge
 
 Branch: `t3/platform-macos-backend`. Changes and evidence are confined to
 `crates/platform-macos/`. No unit tests, mocks, or `#[cfg(test)]` were added.

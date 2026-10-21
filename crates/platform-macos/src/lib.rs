@@ -3,7 +3,6 @@
 #![cfg(target_os = "macos")]
 #![deny(unsafe_op_in_unsafe_fn)]
 
-pub mod contract_shim;
 pub mod displays;
 mod ffi;
 pub mod inject;
@@ -20,8 +19,8 @@ use std::sync::{
     Arc, Mutex,
 };
 
-pub use contract_shim::Backend;
 pub use inject::ClickNumbering;
+pub use openergy_platform::Backend;
 
 pub(crate) type EnterPosition = Arc<Mutex<Option<(i32, i32)>>>;
 

@@ -2,8 +2,8 @@
 
 Original Rust port of `spikes/macos-input`, using public CoreGraphics,
 Carbon, CoreFoundation, AppKit, ImageIO, IOKit and Objective-C runtime APIs.
-No new Cargo dependency, async runtime, private framework, or copied upstream
-implementation is used.
+No new external crate, async runtime, private framework, or copied upstream
+implementation is used. The backend depends on the shared platform and protocol crates.
 
 ```rust,ignore
 use openergy_platform_macos::{create, ClickNumbering, MacOptions};
@@ -21,17 +21,25 @@ Move `source` to the capture owner, `sink` and `screens` to the io owner, and
 
 ## Integration points
 
-- This checkout has Step 0's `ClickNumberer`, but no shared `Backend`.
-  `contract_shim::Backend` has the exact binding construction fields. Switch its
-  export/import to `openergy_platform::Backend` after WP3 merges. Mouse number
-  identity already calls the shared Step 0 `ClickNumberer`; time, 4-point distance,
-  held state and drag invalidation are in `inject::MouseState`. Consolidate that
-  history with WP3's full model after it is available. Native down numbers saturate
-  and log once on i64 exhaustion; they never wrap.
-- The binding `ScreenSystem::request_permission` addition is not in this checkout.
-  `MacScreens` has the exact inherent method. Move its body into the trait impl
-  when WP3's method arrives. It calls the requested public TCC request API only
-  after an explicit call. No safe probe calls it.
+- `create` returns `openergy_platform::Backend` directly. There is no local
+  backend shim. Mouse press identity, click count, time, four-point Euclidean
+  distance, drag invalidation and exhaustion behavior use the shared
+  `openergy_platform::ClickNumberer`. Each down supplies a fresh HID counter seed;
+  `NSEvent.doubleClickInterval` and monotonic times convert to the model's u64
+  milliseconds. Both modes use the same model. Legacy leaves the CGEvent number
+  unset. Number exhaustion returns an error before posting; it never wraps.
+  `release_all` resets click history without resetting the rising number.
+- `MacScreens` overrides `ScreenSystem::request_permission` through the shared
+  trait. It calls the selected public TCC request API only after an explicit
+  request. Construction and all safe probes use preflight checks only.
+- Named wire KeyIDs, modifier masks, button IDs and wheel units come from
+  `openergy_protocol::keys`. The Appendix B native keycodes remain Mac-specific,
+  including the intentional left/right aliases. Four unnamed Appendix B KeyIDs
+  have no shared named constant and remain documented numeric entries.
+- The new protocol path dependency adds one root Cargo.lock dependency entry.
+  That file is outside WP5's owned paths. The generated update is supplied as
+  [Cargo.lock.patch](verification/shared-contract/Cargo.lock.patch) for the
+  integration owner; normal Cargo commands also regenerate that entry.
 - The frozen traits have no sleep/wake, lock/unlock or capture-error channel.
   `create_with_notices` is an additive macOS entry point that returns the same
   backend plus a bounded `Receiver<MacNotice>`. Retain and drain it on the io
@@ -41,8 +49,8 @@ Move `source` to the capture owner, `sink` and `screens` to the io owner, and
   observer failure and CaptureStopped as leave/release-all triggers. Woke and
   ScreenUnlocked require permission/geometry/secure-input refresh before resume.
   The consumer must drain promptly; queue overflow logs a metadata-only error.
-  A common lifecycle callback/channel in `openergy-platform` would let the daemon
-  retain its binding `create` call across every OS. No other crate was changed here.
+  This macOS API stays public and additive; the binding `create` entry point
+  remains available for callers that do not need a notice receiver.
 - `source.warp_cursor` is the CINN path: warp, then associate. A shared metadata
   handoff updates the sink's cached position before its next input. Ordinary
   sink moves synthesize move/drag events with location and deltas. Remote capture
@@ -59,6 +67,30 @@ Move `source` to the capture owner, `sink` and `screens` to the io owner, and
   and orderly shutdown. The sink retains failed releases for retry and logs no
   input content. `prevent_sleep(true)` means remote-active only, never idle.
   The sink has no implicit posting Drop; the daemon owns cleanup order.
+
+## Daemon lifecycle API
+
+Use the additive constructor when wiring macOS lifecycle events:
+
+```rust,ignore
+use openergy_platform_macos::{create_with_notices, MacNotice, MacOptions};
+let (mut backend, notices): (
+    openergy_platform::Backend,
+    std::sync::mpsc::Receiver<MacNotice>,
+) = create_with_notices(MacOptions::default())?;
+backend.screens.on_display_changed(Box::new(|| {
+    // Queue a geometry refresh to the daemon io owner.
+}));
+// Move each backend part to its thread owner; drain notices on the io thread.
+```
+
+Observation starts only when `on_display_changed` is registered. The receiver
+carries `Sleeping`, `Woke`, `ScreenLocked`, `ScreenUnlocked` and `DisplaysChanged`
+plus capture/observer failure notices. Sleep/wake comes from IOKit; lock/unlock
+uses distributed notifications; display changes debounce for 250 ms. No power
+assertion is created by observation. The io owner must leave/release and update
+status on failure, sleep or lock. It must recheck state before resuming after
+wake/unlock. Do not call permission requests from polling or observation callbacks.
 
 ## Native behavior
 

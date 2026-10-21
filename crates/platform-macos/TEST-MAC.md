@@ -170,9 +170,10 @@ Use the real integrated daemon/app and normal input on this separate test Mac:
 ## 4. Daemon smoke after WP3/WP6 integration
 
 Do not mistake Step 0's `platform: macos` status string for a running backend.
-First confirm daemon code constructs this backend, uses the shared Backend type,
-retains lifecycle notices, and dispatches the permission trait override. Those
-integration points are listed in README.md. If they are absent, record BLOCKED;
+First confirm daemon code constructs this backend, retains lifecycle notices,
+and dispatches the permission trait override. This backend now returns the shared
+Backend and implements that trait override; daemon wiring remains an integration
+gate. If it is absent, record BLOCKED;
 do not count the following commands as native runtime proof.
 
 On the separate test Mac only:
@@ -222,9 +223,8 @@ wait "$LAB_DAEMON_PID"
 ```
 
 Then connect to a second disposable Openergy peer on loopback port 27186 or a
-separately authorized test host. Use WP3's merged `VIRTUAL.md` and WP7's merged
-scenario interface for the virtual peer commands; their JSON payload contract is
-not in this checkout. Exercise CINN, keys, drags, clipboard, forced network loss,
+separately authorized test host. Use `crates/platform/VIRTUAL.md` and `crates/daemon/VIRTUAL-IPC.md` for virtual peer
+commands, and WP7's scenario interface once it lands. Exercise CINN, keys, drags, clipboard, forced network loss,
 reconnect and normal shutdown through the real daemon. Retain status/log evidence
 without logging key identities or clipboard payloads. The pending group/modifier
 contract gaps must be resolved before claiming complete Synergy language sync.

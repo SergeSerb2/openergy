@@ -4,6 +4,7 @@ use inject::{ClickNumbering, Injector, NativePoster, INJECTION_TAG};
 use mac::types::SUPER;
 use openergy_platform::{InputEvent, InputSink, Modifiers};
 use openergy_platform_macos::{self as mac, displays, inject, keymap, pasteboard, permissions, MacOptions};
+use openergy_protocol::keys;
 use std::collections::HashMap;
 use std::path::Path;
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
@@ -40,7 +41,7 @@ fn run() -> Result<()> {
                 .unwrap_or("crates/platform-macos/verification/fixtures"),
         ))?,
         Some("create") if args.len() == 1 => {
-            let backend = mac::create(MacOptions::default())?;
+            let backend: openergy_platform::Backend = mac::create(MacOptions::default())?;
             println!(
                 "backend={} permissions={:?}; capture not started",
                 backend.name,
@@ -55,6 +56,15 @@ fn run() -> Result<()> {
                 return Err("invalid options unexpectedly accepted".into());
             }
             println!("invalid lines_per_notch rejected before construction");
+            let (backend, notices): (openergy_platform::Backend, std::sync::mpsc::Receiver<mac::MacNotice>) =
+                mac::create_with_notices(MacOptions::default())?;
+            if !matches!(notices.try_recv(), Err(std::sync::mpsc::TryRecvError::Empty)) {
+                return Err("construction unexpectedly emitted a lifecycle notice".into());
+            }
+            println!(
+                "create_with_notices backend={}; shared Backend type; notice queue empty; observers not started",
+                backend.name
+            );
         }
         Some("--help") if args.len() == 1 => help(),
         _ => {
@@ -100,14 +110,14 @@ fn keymap_dump() -> openergy_platform_macos::Result<()> {
         );
     }
     for (name, key, mask) in [
-        ("Return", 0xEF0D, 0),
-        ("Tab", 0xEF09, 0),
-        ("F5", 0xEFC2, 0),
-        ("Left", 0xEF51, 0),
-        ("Right", 0xEF53, 0),
-        ("Up", 0xEF52, 0),
-        ("Down", 0xEF54, 0),
-        ("KP_5", 0xEFB5, 0),
+        ("Return", keys::RETURN, 0),
+        ("Tab", keys::TAB, 0),
+        ("F5", keys::F5, 0),
+        ("Left", keys::LEFT, 0),
+        ("Right", keys::RIGHT, 0),
+        ("Up", keys::UP, 0),
+        ("Down", keys::DOWN, 0),
+        ("KP_5", keys::KP_5, 0),
         ("Super+c", b'c' as u16, SUPER),
     ] {
         println!("{name} {key:#06X} mask={mask:#06X}: {:?}", keymap.plan(key, mask)?);
@@ -125,7 +135,7 @@ fn keymap_dump() -> openergy_platform_macos::Result<()> {
     }
     println!("Unicode fallback U+2603: {:?}", keymap.plan(0x2603, 0)?);
     // Unsupported named keys must not become private-use Unicode text.
-    match keymap.plan(0xEFE0, 0) {
+    match keymap.plan(keys::F35, 0) {
         Err(err) => println!("F35 unsupported (expected): {err}"),
         Ok(plan) => println!("F35: {plan:?}"),
     }
@@ -191,7 +201,7 @@ fn events_dry(mode: ClickNumbering) -> Result<()> {
     // Verify disconnect cleanup through the real ledger and real native builder,
     // while the inspection capability still makes posting impossible.
     sink.inject(&InputEvent::KeyDown {
-        key: 0xEFC2,
+        key: keys::F5,
         modifiers: Modifiers::NONE,
         button: 10,
     })?;
@@ -200,6 +210,11 @@ fn events_dry(mode: ClickNumbering) -> Result<()> {
     if sink.held_count() != 0 {
         return Err("release_all left held inputs".into());
     }
+    // A new session within the double-click interval starts a fresh click chain,
+    // while the same shared model keeps its rising event-number counter.
+    sink.mouse_down_at(2, 4.0 + interval + interval / 4.0)?;
+    sink.inject(&InputEvent::MouseUp { button: 2 })?;
+
     let mut held = HashMap::new();
     let mut last_number = 0;
     let mut counts = Vec::new();
@@ -245,13 +260,13 @@ fn events_dry(mode: ClickNumbering) -> Result<()> {
             _ => {}
         }
     }
-    if !held.is_empty() || counts != [1, 1, 2, 3, 1, 1] || wheel != [3, -3, 1, 2, -1, -2] {
+    if !held.is_empty() || counts != [1, 1, 2, 3, 1, 1, 1] || wheel != [3, -3, 1, 2, -1, -2] {
         return Err("unbalanced click sequence or incorrect click/wheel counts".into());
     }
     if sink.poster().observations().iter().all(|e| e.unicode != [0x2603]) {
         return Err("Unicode fallback absent".into());
     }
-    println!("PASS: rising native downs above HID seed, retained drag/up identity, click states {counts:?}, fractional wheel {wheel:?}, Unicode fallback, tag; ledger empty");
+    println!("PASS: rising native downs above HID seed, retained drag/up identity, click states {counts:?}, fractional wheel {wheel:?}, Unicode fallback, tag; release resets click history; ledger empty");
     Ok(())
 }
 

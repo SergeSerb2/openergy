@@ -4,6 +4,7 @@ use crate::inject::{cg_to_wire_button, INJECTION_TAG};
 use crate::keymap::{self, CapturedKey, Keymap, CG_CAPS};
 use crate::{error, ffi, permissions, MacNotice, Notices, Result};
 use openergy_platform::{CaptureDecision, InputEvent, InputSource, Modifiers, PermissionKind, PlatformError};
+use openergy_protocol::keys;
 use std::sync::{
     atomic::{AtomicBool, Ordering},
     mpsc, Arc, Mutex,
@@ -530,7 +531,7 @@ impl CallbackState {
                         } else {
                             ffi::CGEventGetDoubleValueField(event, line)
                         };
-                        let units = self.wheel[i] + lines * 120.0 / self.lines;
+                        let units = self.wheel[i] + lines * f64::from(keys::WHEEL_UNITS_PER_NOTCH) / self.lines;
                         if !units.is_finite() {
                             return out;
                         }

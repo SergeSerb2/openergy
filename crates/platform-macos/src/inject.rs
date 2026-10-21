@@ -1,14 +1,14 @@
 //! Global HID injection. Only `NativePoster::post` calls CGEventPost.
 //! Inspection mode constructs and reads the same CGEvents without posting them.
 use std::collections::HashMap;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
-use crate::contract_shim::ClickNumberer;
 use crate::ffi::{self, OwnedCf};
 use crate::keymap::{self, InjectionPlan, Keymap, CG_CAPS, CG_COMMAND, CG_CONTROL, CG_OPTION, CG_SHIFT};
 use crate::types::{KeyButton, KeyId, ModifierMask};
 use crate::{error, Result};
-use openergy_platform::{InputEvent, InputSink};
+use openergy_platform::{ClickNumberer, InputEvent, InputSink};
+use openergy_protocol::keys::{self, buttons};
 
 /// Public Openergy self-event tag. The tap passes these events through.
 pub const INJECTION_TAG: i64 = 0x4F50_454E_4552_4759; // "OPENERGY"
@@ -332,22 +332,22 @@ fn cg_status(status: i32, name: &str) -> Result<()> {
 
 pub fn wire_to_cg_button(button: u8) -> Option<u32> {
     match button {
-        1 => Some(0),
-        2 => Some(2),
-        3 => Some(1),
-        4 => Some(3),
-        5 => Some(4),
+        buttons::LEFT => Some(0),
+        buttons::MIDDLE => Some(2),
+        buttons::RIGHT => Some(1),
+        buttons::EXTRA_1 => Some(3),
+        buttons::EXTRA_2 => Some(4),
         _ => None,
     }
 }
 
 pub fn cg_to_wire_button(button: u32) -> Option<u8> {
     match button {
-        0 => Some(1),
-        1 => Some(3),
-        2 => Some(2),
-        3 => Some(4),
-        4 => Some(5),
+        0 => Some(buttons::LEFT),
+        1 => Some(buttons::RIGHT),
+        2 => Some(buttons::MIDDLE),
+        3 => Some(buttons::EXTRA_1),
+        4 => Some(buttons::EXTRA_2),
         _ => None,
     }
 }
@@ -393,73 +393,33 @@ pub fn event_type_name(event: &SynthEvent) -> &'static str {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
-struct Click {
-    down_at: f64,
-    x: f64,
-    y: f64,
-    state: i64,
-    held: bool,
-    dragged: bool,
-}
-
-/// Pure mouse identity and multi-click state, shared by real and dry posters.
+/// Native event adapter over the shared click model. All time/distance,
+/// per-button click history, press identity and exhaustion policy live in
+/// openergy-platform. Legacy suppresses number assignment only on the CGEvent.
 #[derive(Debug, Clone)]
 pub struct MouseState {
     pub numbering: ClickNumberer,
-    exhausted_reported: bool,
-    clicks: [Option<Click>; 5],
     mode: ClickNumbering,
-    double_click_interval: f64,
 }
 
 impl MouseState {
     pub fn new(mode: ClickNumbering, double_click_interval: f64) -> Result<Self> {
-        if !double_click_interval.is_finite() || double_click_interval <= 0.0 {
+        let milliseconds = monotonic_millis(double_click_interval)?;
+        if milliseconds == 0 {
             return Err(error("invalid double-click interval"));
         }
         Ok(Self {
-            numbering: ClickNumberer::default(),
-            exhausted_reported: false,
-            clicks: [None; 5],
+            numbering: ClickNumberer::with_double_click_interval(milliseconds),
             mode,
-            double_click_interval,
         })
     }
 
     fn down(&mut self, button: u8, x: f64, y: f64, now: f64, seed: i64, flags: u64) -> Result<SynthEvent> {
-        let index = button_index(button)?;
-        if self.clicks[index].is_some_and(|click| click.held) {
-            return Err(error("mouse button is already down"));
-        }
-        let state = self.clicks[index]
-            .filter(|last| {
-                !last.dragged
-                    && now >= last.down_at
-                    && now - last.down_at <= self.double_click_interval
-                    && distance_squared(x, y, last.x, last.y) <= 16.0
-            })
-            .map_or(1, |last| last.state.saturating_add(1));
-        let number = if self.mode == ClickNumbering::Native {
-            let base = self.numbering.last_number.max(seed);
-            if base == i64::MAX && !self.exhausted_reported {
-                log::error!("mouse event number exhausted; saturating without wrap");
-                self.exhausted_reported = true;
-            }
-            let number = self.numbering.on_down(button, seed);
-            self.numbering.pressed_click_state[button as usize] = Some(state);
-            Some(number)
-        } else {
-            None
-        };
-        self.clicks[index] = Some(Click {
-            down_at: now,
-            x,
-            y,
-            state,
-            held: true,
-            dragged: false,
-        });
+        valid_button(button)?;
+        let assignment = self
+            .numbering
+            .on_down_at(button, seed, monotonic_millis(now)?, x, y)
+            .map_err(|err| error(format!("mouse down: {err}")))?;
         Ok(SynthEvent::Mouse {
             kind: MouseKind::Down,
             button,
@@ -467,21 +427,18 @@ impl MouseState {
             y,
             dx: 0.0,
             dy: 0.0,
-            number,
-            click_state: state,
+            number: (self.mode == ClickNumbering::Native).then_some(assignment.number),
+            click_state: assignment.state,
             flags,
         })
     }
 
     fn motion(&mut self, button: u8, x: f64, y: f64, dx: f64, dy: f64, flags: u64) -> Result<SynthEvent> {
-        let index = button_index(button)?;
-        let click = self.clicks[index]
-            .as_mut()
-            .ok_or_else(|| error("drag without mouse down"))?;
-        if !click.held {
-            return Err(error("drag without held mouse button"));
-        }
-        click.dragged |= distance_squared(x, y, click.x, click.y) > 16.0;
+        valid_button(button)?;
+        let assignment = self
+            .numbering
+            .on_drag_at(button, x, y)
+            .ok_or_else(|| error("drag without held mouse button"))?;
         Ok(SynthEvent::Mouse {
             kind: MouseKind::Drag,
             button,
@@ -489,22 +446,21 @@ impl MouseState {
             y,
             dx,
             dy,
-            number: self.numbering.on_drag_or_up(button),
-            click_state: click.state,
+            number: (self.mode == ClickNumbering::Native).then_some(assignment.number),
+            click_state: assignment.state,
             flags,
         })
     }
 
     fn up(&mut self, button: u8, x: f64, y: f64, flags: u64) -> Result<SynthEvent> {
-        let index = button_index(button)?;
-        let click = self.clicks[index]
-            .as_mut()
-            .ok_or_else(|| error("mouse up without down"))?;
-        if !click.held {
-            return Err(error("mouse button is already up"));
-        }
-        click.held = false;
-        click.dragged |= distance_squared(x, y, click.x, click.y) > 16.0;
+        valid_button(button)?;
+        // Up can include a final position change. Let the shared model break
+        // the next chain, but retain this down's assignment on the up event.
+        let assignment = self
+            .numbering
+            .on_drag_at(button, x, y)
+            .ok_or_else(|| error("mouse up without held mouse button"))?;
+        self.numbering.on_up_clear(button);
         Ok(SynthEvent::Mouse {
             kind: MouseKind::Up,
             button,
@@ -512,20 +468,23 @@ impl MouseState {
             y,
             dx: 0.0,
             dy: 0.0,
-            number: self.numbering.on_drag_or_up(button),
-            click_state: click.state,
+            number: (self.mode == ClickNumbering::Native).then_some(assignment.number),
+            click_state: assignment.state,
             flags,
         })
     }
 }
 
-fn button_index(button: u8) -> Result<usize> {
+fn valid_button(button: u8) -> Result<()> {
     wire_to_cg_button(button)
-        .map(|_| usize::from(button - 1))
+        .map(|_| ())
         .ok_or_else(|| error("wire mouse button must be 1..=5"))
 }
-fn distance_squared(x: f64, y: f64, other_x: f64, other_y: f64) -> f64 {
-    (x - other_x).powi(2) + (y - other_y).powi(2)
+
+fn monotonic_millis(seconds: f64) -> Result<u64> {
+    let duration =
+        Duration::try_from_secs_f64(seconds).map_err(|_| error("invalid mouse timestamp or click interval"))?;
+    u64::try_from(duration.as_millis()).map_err(|_| error("mouse timestamp or click interval exceeds u64 milliseconds"))
 }
 
 pub fn system_double_click_interval() -> f64 {
@@ -644,14 +603,22 @@ impl<P: EventPoster> Injector<P> {
             return Err(error("invalid click timestamp"));
         }
         let mut next = self.mouse.clone();
-        let event = next.down(
+        let event = match next.down(
             button,
             self.x,
             self.y,
             seconds,
             self.poster.mouse_counter_seed(),
             self.flags,
-        )?;
+        ) {
+            Ok(event) => event,
+            Err(err) => {
+                // The shared model leaves assignments/history unchanged on
+                // failure, but retains its one-time exhaustion-log flag.
+                self.mouse = next;
+                return Err(err);
+            }
+        };
         self.poster.post(&event)?;
         self.mouse = next;
         self.ledger.push(Pressed::Mouse(button));
@@ -662,7 +629,6 @@ impl<P: EventPoster> Injector<P> {
         let mut next = self.mouse.clone();
         let event = next.up(button, self.x, self.y, self.flags)?;
         self.poster.post(&event)?;
-        next.numbering.on_up_clear(button);
         self.mouse = next;
         self.ledger
             .retain(|pressed| !matches!(pressed, Pressed::Mouse(held) if *held == button));
@@ -683,7 +649,7 @@ impl<P: EventPoster> Injector<P> {
         } else {
             SynthEvent::Mouse {
                 kind: MouseKind::Move,
-                button: 1,
+                button: buttons::LEFT,
                 x,
                 y,
                 dx,
@@ -695,8 +661,8 @@ impl<P: EventPoster> Injector<P> {
         };
         self.poster.post(&event)?;
         // Invalidate multi-click chains for ALL held buttons after a drag.
-        for click in next.clicks.iter_mut().flatten().filter(|click| click.held) {
-            click.dragged |= distance_squared(x, y, click.x, click.y) > 16.0;
+        for button in buttons::LEFT..=buttons::EXTRA_2 {
+            next.numbering.on_drag_at(button, x, y);
         }
         self.mouse = next;
         (self.x, self.y) = (x, y);
@@ -722,8 +688,8 @@ impl<P: EventPoster> Injector<P> {
 
     pub fn wheel(&mut self, dx: i32, dy: i32) -> Result<()> {
         let totals = [
-            self.wheel_remainder[0] + f64::from(dx) * self.lines_per_notch / 120.0,
-            self.wheel_remainder[1] + f64::from(dy) * self.lines_per_notch / 120.0,
+            self.wheel_remainder[0] + f64::from(dx) * self.lines_per_notch / f64::from(keys::WHEEL_UNITS_PER_NOTCH),
+            self.wheel_remainder[1] + f64::from(dy) * self.lines_per_notch / f64::from(keys::WHEEL_UNITS_PER_NOTCH),
         ];
         if totals
             .iter()
@@ -1003,6 +969,7 @@ impl<P: EventPoster> Injector<P> {
             }
         }
         self.wheel_remainder = [0.0; 2];
+        self.mouse.numbering.reset_click_history();
         first_error.map_or(Ok(()), Err)
     }
 
