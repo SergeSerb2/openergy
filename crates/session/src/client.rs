@@ -37,6 +37,13 @@ impl Client {
             ledger: Ledger::default(),
         }
     }
+    pub fn abort_clipboard(&mut self, conn: ConnId, id: ClipboardId) {
+        if let Some((c, peer)) = &mut self.peer {
+            if *c == conn {
+                peer.transfers.cancel(id);
+            }
+        }
+    }
     pub fn next_deadline_ms(&self) -> u64 {
         self.peer
             .as_ref()
@@ -212,7 +219,12 @@ impl Client {
                 send(
                     c,
                     Message::HelloBack {
-                        product,
+                        product: if product.eq_ignore_ascii_case("Barrier") {
+                            "Barrier"
+                        } else {
+                            "Synergy"
+                        }
+                        .into(),
                         version: openergy_protocol::ProtocolVersion { major: 1, minor: 8 },
                         name: self.screen_name.clone(),
                     },

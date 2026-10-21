@@ -74,6 +74,8 @@ pub struct ConnInfo {
     pub tls_version: Option<String>,
     pub fingerprint: Option<Fingerprint>,
     pub queued_bytes: usize,
+    /// True only after a matching explicit pin or trust-store certificate.
+    pub certificate_verified: bool,
 }
 
 #[derive(Default)]
@@ -366,6 +368,17 @@ impl Connection {
             tls_version: self.version.clone(),
             fingerprint: self.fingerprint,
             queued_bytes: self.queues.len(),
+            certificate_verified: self.tls.is_some()
+                && self.fingerprint.is_some_and(|fp| {
+                    self.expected == Some(fp)
+                        || TrustStore::load(&self.trust_dir).is_ok_and(|store| {
+                            if self.outbound {
+                                store.is_trusted_server(&fp)
+                            } else {
+                                store.is_trusted_client(&fp)
+                            }
+                        })
+                }),
         }
     }
     fn is_trusted(&self) -> Result<bool, NetError> {
@@ -849,6 +862,65 @@ impl NetDriver {
         self.discovery = discovery;
         Ok(())
     }
+    /// Apply a transport/listener transaction. Existing peers remain alive on
+    /// any preparation or persistence error. The callback runs after live apply.
+    pub fn reconfigure_transaction(
+        &mut self,
+        config: NetConfig,
+        listen: Option<SocketAddr>,
+        persist: impl FnOnce() -> Result<(), NetError>,
+    ) -> Result<(), NetError> {
+        let trust = TrustStore::load(&config.tls_dir).map_err(failed)?;
+        let PreparedConfig {
+            factory,
+            fingerprint,
+            discovery,
+        } = Self::prepare_config(&config)?;
+        let keep_listener = self.listener.as_ref().and_then(|l| l.local_addr().ok()) == listen;
+        let mut replacement = if !keep_listener {
+            if let Some(addr) = listen {
+                Self::check_port(addr.port())?;
+                let mut listener = TcpListener::bind(addr).map_err(failed)?;
+                self.poll
+                    .registry()
+                    .register(&mut listener, LISTENER, Interest::READABLE)
+                    .map_err(failed)?;
+                Some(listener)
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+        let old_listener = if keep_listener {
+            None
+        } else {
+            std::mem::replace(&mut self.listener, replacement.take())
+        };
+        let old_config = std::mem::replace(&mut self.config, config);
+        let old_trust = std::mem::replace(&mut self.trust, trust);
+        let old_factory = std::mem::replace(&mut self.factory, factory);
+        let old_fingerprint = std::mem::replace(&mut self.fingerprint, fingerprint);
+        let old_discovery = std::mem::replace(&mut self.discovery, discovery);
+        if let Err(error) = persist() {
+            if !keep_listener {
+                if let Some(mut listener) = self.listener.take() {
+                    let _ = self.poll.registry().deregister(&mut listener);
+                }
+                self.listener = old_listener;
+            }
+            self.config = old_config;
+            self.trust = old_trust;
+            self.factory = old_factory;
+            self.fingerprint = old_fingerprint;
+            self.discovery = old_discovery;
+            return Err(error);
+        }
+        if let Some(mut old_listener) = old_listener {
+            let _ = self.poll.registry().deregister(&mut old_listener);
+        }
+        Ok(())
+    }
     /// Diagnostic frame mode can be enabled only before opening any connections.
     pub fn set_transport_mode(&mut self, mode: TransportMode) -> Result<(), NetError> {
         if !self.conns.is_empty() || !self.pending.is_empty() {
@@ -881,6 +953,25 @@ impl NetDriver {
         Ok(())
     }
     pub fn execute(&mut self, cmd: NetCommand, out: &mut Vec<NetEvent>) {
+        if let Err(error) = self.execute_checked(cmd, out) {
+            out.push(NetEvent::Error {
+                conn: None,
+                message: error.to_string(),
+            });
+        }
+    }
+    /// Preserve typed send failures for the session owner.
+    pub fn execute_checked(&mut self, cmd: NetCommand, out: &mut Vec<NetEvent>) -> Result<(), NetError> {
+        if let NetCommand::Send {
+            conn,
+            priority: Priority::Input,
+            ..
+        } = &cmd
+        {
+            if self.conns.get(conn).is_some_and(|c| c.queues.high_bytes >= HIGH_WATER) {
+                return Err(NetError::QueueFull);
+            }
+        }
         let command = if matches!(cmd, NetCommand::Send { .. } | NetCommand::SendFrame { .. }) {
             self.handle.inner.prepare(cmd)
         } else {
@@ -888,14 +979,26 @@ impl NetDriver {
             // especially Shutdown/Close while the peer is already backpressured.
             Reservation::new(&self.handle.inner.budget, 0, None).map(|reservation| Command::Public(cmd, reservation))
         };
-        match command {
-            Ok(command) => self.command(command, out),
-            Err(e) => out.push(NetEvent::Error {
-                conn: None,
-                message: e.to_string(),
-            }),
+        let command = command?;
+        if let Command::Packet(conn, packet) = &command {
+            if packet.priority == Priority::Input
+                && self
+                    .conns
+                    .get(conn)
+                    .is_some_and(|c| c.queues.high_bytes.saturating_add(packet.bytes.len()) > HIGH_WATER)
+            {
+                return Err(NetError::QueueFull);
+            }
+        }
+        self.command(command, out);
+        Ok(())
+    }
+    pub fn cancel_clipboard(&mut self, conn: ConnId) {
+        if let Some(connection) = self.conns.get_mut(&conn) {
+            connection.queues.bulk.clear();
         }
     }
+
     fn command(&mut self, command: Command, out: &mut Vec<NetEvent>) {
         match command {
             Command::Packet(id, packet) => {
@@ -982,9 +1085,11 @@ impl NetDriver {
                 NetCommand::ReloadTrust => {
                     self.refresh_trust(out);
                 }
-                NetCommand::Shutdown => {
-                    if let Some(mut listener) = self.listener.take() {
-                        let _ = self.poll.registry().deregister(&mut listener);
+                command @ (NetCommand::Shutdown | NetCommand::DisconnectAll) => {
+                    if matches!(command, NetCommand::Shutdown) {
+                        if let Some(mut listener) = self.listener.take() {
+                            let _ = self.poll.registry().deregister(&mut listener);
+                        }
                     }
                     for (_, p) in std::mem::take(&mut self.pending) {
                         out.push(NetEvent::ConnectFailed {
@@ -1009,6 +1114,9 @@ impl NetDriver {
     }
     fn listen(&mut self, addr: SocketAddr) -> Result<(), NetError> {
         Self::check_port(addr.port())?;
+        if self.listener.as_ref().and_then(|l| l.local_addr().ok()) == Some(addr) {
+            return Ok(());
+        }
         let mut listener = TcpListener::bind(addr).map_err(failed)?;
         if let Some(mut old) = self.listener.take() {
             self.poll.registry().deregister(&mut old).map_err(failed)?;

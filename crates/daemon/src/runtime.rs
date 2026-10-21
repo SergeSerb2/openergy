@@ -36,6 +36,7 @@ struct Connection {
     fingerprint: Option<String>,
     tls: bool,
     tls_version: Option<String>,
+    certificate_verified: bool,
     since: u64,
 }
 enum Machine {
@@ -161,6 +162,7 @@ struct Runtime {
     retry: Option<u64>,
     healthy_since: Option<u64>,
     enabled: bool,
+    status_dirty: bool,
     last_status: Value,
     last_status_ms: u64,
     last_health: u64,
@@ -182,6 +184,7 @@ impl Runtime {
     }
     fn error(&mut self, code: &str, message: impl Into<String>) {
         let message = message.into();
+        self.status_dirty = true;
         log::warn!("{code}: {message}");
         self.last_error = Some(ipc::LastError {
             code: code.into(),
@@ -196,7 +199,81 @@ impl Runtime {
         });
     }
     fn execute(&mut self, cmd: NetCommand) {
-        self.driver.execute(cmd, &mut self.net_events);
+        let send = match &cmd {
+            NetCommand::Send { conn, msg, priority } => Some((
+                *conn,
+                matches!(msg, Message::KeyUp { .. } | Message::MouseUp { .. }),
+                if let Message::ClipboardData { id, .. } = msg {
+                    Some(*id)
+                } else {
+                    None
+                },
+                (*priority == Priority::Input).then(|| msg.clone()),
+            )),
+            _ => None,
+        };
+        if let Err(error) = self.driver.execute_checked(cmd, &mut self.net_events) {
+            self.error("network_queue_full", format!("Can't send data: {error}."));
+            if let Some((conn, lost_up, clipboard, input)) = send {
+                if let Some(id) = clipboard {
+                    match &mut self.machine {
+                        Machine::Server(s) => s.abort_clipboard(conn, id),
+                        Machine::Client(c) => c.abort_clipboard(conn, id),
+                        Machine::Off => {}
+                    }
+                    self.driver.cancel_clipboard(conn);
+                    let blocked = ipc::ClipboardBlocked {
+                        bytes: None,
+                        limit: None,
+                        peer: self.connections.get(&conn).map(|c| c.address.clone()),
+                        unix_ms: Some(unix_ms()),
+                    };
+                    self.publish(
+                        "clipboard.blocked",
+                        serde_json::to_value(&blocked).unwrap_or(Value::Null),
+                    );
+                    self.last_blocked = Some(blocked);
+                    self.error(
+                        "clipboard_queue_full",
+                        "Clipboard transfer stopped because the network queue is full.",
+                    );
+                } else if lost_up {
+                    // Retry the lost release in the reserved control path, then leave
+                    // only this peer. Other peers and their ledgers stay intact.
+                    if let Some(msg) = input {
+                        self.driver.execute(
+                            NetCommand::Send {
+                                conn,
+                                msg,
+                                priority: Priority::Control,
+                            },
+                            &mut self.net_events,
+                        );
+                    }
+                    match &mut self.machine {
+                        Machine::Server(s) => s.handle(
+                            ServerEvent::ClientDisconnected {
+                                conn,
+                                reason: openergy_session::DisconnectReason::SlowPeer,
+                            },
+                            &mut self.actions,
+                        ),
+                        Machine::Client(c) => c.handle(
+                            ClientEvent::ServerDisconnected {
+                                conn,
+                                reason: openergy_session::DisconnectReason::SlowPeer,
+                            },
+                            &mut self.actions,
+                        ),
+                        Machine::Off => {}
+                    }
+                    self.actions.push(Action::Close {
+                        conn,
+                        reason: openergy_session::CloseReason::SlowPeer,
+                    });
+                }
+            }
+        }
     }
     fn status(&self) -> Status {
         let mut s = Status::idle(VERSION, std::process::id(), &self.platform);
@@ -261,7 +338,7 @@ impl Runtime {
                         enabled: conn.is_some_and(|c| c.tls),
                         version: conn.and_then(|c| c.tls_version.clone()),
                         fingerprint: conn.and_then(|c| c.fingerprint.clone()),
-                        trusted: conn.filter(|c| c.tls).map(|_| true),
+                        trusted: conn.filter(|c| c.tls).map(|c| c.certificate_verified),
                     },
                     secure_input_app: p.secure_input_app.clone(),
                 }
@@ -285,6 +362,7 @@ impl Runtime {
         s
     }
     fn apply_actions(&mut self) {
+        self.status_dirty |= !self.actions.is_empty();
         let mut count = 0;
         while !self.actions.is_empty() && count < 1024 {
             let mut actions = std::mem::take(&mut self.actions);
@@ -521,7 +599,7 @@ impl Runtime {
         // Connecting is idempotent, including a TLS connection waiting for approval.
         if (self.cfg.role == Role::Client
             && (matches!(self.state.as_str(), "connecting" | "connected") || !self.pending.is_empty()))
-            || (self.cfg.role == Role::Server && matches!(self.state.as_str(), "starting" | "listening"))
+            || (self.cfg.role == Role::Server && matches!(self.state.as_str(), "starting" | "listening" | "connected"))
         {
             return;
         }
@@ -576,6 +654,7 @@ impl Runtime {
             rounds += 1;
             let events = std::mem::take(&mut self.net_events);
             for event in events {
+                self.status_dirty = true;
                 match event {
                     NetEvent::Listening { addr } => {
                         self.state = "listening".into();
@@ -583,7 +662,11 @@ impl Runtime {
                     }
                     NetEvent::ListenFailed { addr, error } => {
                         self.state = "error".into();
-                        self.error("listen_failed", format!("{addr}: {error}"));
+                        log::warn!("listener {addr}: {error}");
+                        self.error(
+                            "listen_failed",
+                            format!("Can't listen at {addr}. Check the port and listen address."),
+                        );
                     }
                     NetEvent::ConnectFailed { host, port, error } => {
                         if error != "shutdown" && self.enabled {
@@ -624,6 +707,10 @@ impl Runtime {
                                 fingerprint: fingerprint.map(|f| f.to_colon_hex()),
                                 tls,
                                 tls_version,
+                                certificate_verified: self
+                                    .driver
+                                    .conn_info(conn)
+                                    .is_some_and(|c| c.certificate_verified),
                                 since: unix_ms(),
                             },
                         );
@@ -690,8 +777,14 @@ impl Runtime {
                         self.discovery=json!(peers.into_iter().map(|p|json!({"name":p.name,"host":p.host,"port":p.port,"fingerprint_hint":p.fingerprint_hint})).collect::<Vec<_>>());
                         self.publish("discovery.changed", self.discovery.clone());
                     }
-                    #[allow(unreachable_patterns)]
-                    _ => log::warn!("transport emitted a diagnostic-only event"),
+                    NetEvent::Error { conn, message } => {
+                        log::warn!("transport error peer={conn:?}: {message}");
+                        self.error("network_failed", format!("Network operation failed: {message}."));
+                    }
+                    NetEvent::Frame { conn, .. } => {
+                        log::warn!("unexpected diagnostic frame from peer {}", conn.0);
+                        self.error("protocol_error", "An unexpected diagnostic frame was received.");
+                    }
                 }
             }
             self.apply_actions();
@@ -718,6 +811,7 @@ impl Runtime {
     fn refresh_health(&mut self) {
         let secure = self.screens.secure_input_app();
         if secure != self.local_secure {
+            self.status_dirty = true;
             self.local_secure = secure.clone();
             if let Machine::Server(s) = &mut self.machine {
                 s.handle(ServerEvent::LocalSecureInput { app: secure }, &mut self.actions);
@@ -725,6 +819,7 @@ impl Runtime {
         }
         let displays = self.screens.screens();
         let changed = displays != self.displays;
+        self.status_dirty |= changed;
         self.displays = displays;
         self.machine.geometry(
             display_rect(&self.displays),
@@ -733,7 +828,9 @@ impl Runtime {
             &mut self.actions,
         );
         let permissions = self.screens.permissions();
+        self.sink.permissions_changed(&permissions);
         if permissions != self.permissions {
+            self.status_dirty = true;
             let denied = matches!(permissions.accessibility, Grant::Denied)
                 || matches!(permissions.input_monitoring, Grant::Denied)
                 || matches!(permissions.post_events, Grant::Denied);
@@ -766,22 +863,30 @@ impl Runtime {
     fn apply_config(&mut self, mut cfg: Config) -> Result<(), String> {
         normalize(&mut cfg);
         cfg.validate().map_err(|e| e.to_string())?;
-        write_config(&self.path, &cfg)?;
         let reconnect = cfg.role != self.cfg.role
             || cfg.server != self.cfg.server
             || cfg.client.remote != self.cfg.client.remote
             || cfg.tls != self.cfg.tls
             || cfg.name != self.cfg.name;
         if reconnect {
+            let listen = if cfg.role == Role::Server {
+                Some(cfg.server.listen.parse().map_err(|_| "Invalid listen address")?)
+            } else {
+                None
+            };
+            self.driver
+                .reconfigure_transaction(
+                    adapter::net_config(&cfg, &self.dir, self.platform == "virtual"),
+                    listen,
+                    || write_config(&self.path, &cfg).map_err(openergy_net::NetError::Failed),
+                )
+                .map_err(|error| error.to_string())?;
             self.machine.shutdown(&mut self.actions);
             self.apply_actions();
-            self.execute(NetCommand::Shutdown);
+            self.execute(NetCommand::DisconnectAll);
             self.process_net();
             self.connections.clear();
             self.pending.clear();
-            self.driver
-                .reconfigure(adapter::net_config(&cfg, &self.dir, self.platform == "virtual"))
-                .map_err(|e| e.to_string())?;
             self.cfg = cfg;
             self.machine = Machine::new(Arc::new(self.cfg.clone()));
             self.enabled = self.cfg.role != Role::Off && (self.cfg.role != Role::Client || self.cfg.client.autoconnect);
@@ -797,6 +902,9 @@ impl Runtime {
             );
             self.start_connection();
         } else {
+            // Session-only changes cannot fail after strict config validation.
+            // Preserve the live machine until the atomic save succeeds.
+            write_config(&self.path, &cfg)?;
             self.cfg = cfg;
             let cfg = Arc::new(self.cfg.clone());
             match &mut self.machine {
@@ -827,6 +935,7 @@ impl Runtime {
         Ok(())
     }
     fn dispatch(&mut self, req: &Request, queue: &Arc<EventQueue>) -> Result<Value, IpcError> {
+        self.status_dirty |= req.method != m::STATUS_GET;
         let invalid = |msg: &str| IpcError::new("invalid_params", msg);
         match req.method.as_str() {
             m::STATUS_GET => Ok(self.status().to_json()),
@@ -1249,6 +1358,7 @@ pub fn run_daemon(
             retry: None,
             healthy_since: None,
             enabled,
+            status_dirty: true,
             last_status: Value::Null,
             last_status_ms: 0,
             last_health: 0,
@@ -1340,7 +1450,16 @@ pub fn run_daemon(
             rt.machine.tick(now, &mut rt.actions);
             rt.apply_actions();
             rt.process_net();
-            if rt.display_changed.swap(false, Ordering::AcqRel) || now.saturating_sub(rt.last_health) >= 250 {
+            let health_interval = if rt.permissions.accessibility != Grant::Granted
+                || rt.permissions.input_monitoring != Grant::Granted
+                || rt.permissions.post_events != Grant::Granted
+            {
+                250
+            } else {
+                2000
+            };
+            if rt.display_changed.swap(false, Ordering::AcqRel) || now.saturating_sub(rt.last_health) >= health_interval
+            {
                 rt.last_health = now;
                 rt.refresh_health();
                 rt.apply_actions();
@@ -1364,13 +1483,14 @@ pub fn run_daemon(
             if rt.retry.is_some_and(|t| now >= t) {
                 rt.start_connection();
             }
-            if now.saturating_sub(rt.last_status_ms) >= 100 {
+            if rt.status_dirty && now.saturating_sub(rt.last_status_ms) >= 100 {
                 let status = rt.status().to_json();
                 if status != rt.last_status {
                     rt.last_status = status.clone();
                     rt.publish("status.changed", status);
                 }
                 rt.last_status_ms = now;
+                rt.status_dirty = false;
             }
             let now = rt.now();
             let session_deadline = match &rt.machine {
@@ -1378,11 +1498,14 @@ pub fn run_daemon(
                 Machine::Client(c) => c.next_deadline_ms(),
                 _ => now + 1000,
             };
-            let mut deadline = session_deadline.min(rt.last_health + 250).min(rt.last_status_ms + 100);
+            let mut deadline = session_deadline.min(rt.last_health + health_interval);
+            if rt.status_dirty {
+                deadline = deadline.min(rt.last_status_ms + 100);
+            }
             if let Some(retry) = rt.retry {
                 deadline = deadline.min(retry);
             }
-            let timeout = Duration::from_millis(deadline.saturating_sub(now).clamp(1, 100));
+            let timeout = Duration::from_millis(deadline.saturating_sub(now).clamp(1, 2000));
             if let Err(e) = rt.driver.poll(Some(timeout), &mut rt.net_events) {
                 rt.error("network_failed", e.to_string());
                 break;

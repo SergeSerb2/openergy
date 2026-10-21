@@ -58,6 +58,11 @@ impl Server {
             slots: [Slot::default(), Slot::default()],
         }
     }
+    pub fn abort_clipboard(&mut self, conn: ConnId, id: ClipboardId) {
+        if let Some(peer) = self.peers.get_mut(&conn) {
+            peer.transfers.cancel(id);
+        }
+    }
     pub fn next_deadline_ms(&self) -> u64 {
         self.peers
             .values()

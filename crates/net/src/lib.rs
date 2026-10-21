@@ -117,6 +117,8 @@ pub enum NetCommand {
     StopListening,
     /// Reset transport state. The driver, handle, and waker remain reusable.
     Shutdown,
+    /// Close connections while keeping the current listener and driver reusable.
+    DisconnectAll,
 }
 #[derive(Debug)]
 pub enum NetEvent {
