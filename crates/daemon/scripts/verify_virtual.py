@@ -124,7 +124,9 @@ def connected(server, client):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--out', type=Path)
+    parser.add_argument('--port-base', type=int, choices=(24980,24986), default=24980)
     opts = parser.parse_args()
+    port = opts.port_base
     base = opts.out or Path(tempfile.mkdtemp(prefix='oe-wp6-'))
     base.mkdir(exist_ok=True)
     print(f'ARTIFACTS {base}', flush=True)
@@ -136,9 +138,9 @@ def main():
     ]
     try:
         def setup():
-            server.patch({'name': 'server', 'screen': screens, 'tls': {'enabled': False}, 'server': {'listen': '127.0.0.1:24980', 'port': 24980}, 'role': 'server'})
+            server.patch({'name': 'server', 'screen': screens, 'tls': {'enabled': False}, 'server': {'listen': f'127.0.0.1:{port}', 'port': port}, 'role': 'server'})
             client.call('virtual.set_screens', {'rects': [{'x': 0, 'y': 0, 'w': 1920, 'h': 720, 'scale': 1.0}]})
-            client.patch({'name': 'client', 'tls': {'enabled': False}, 'client': {'remote': '127.0.0.1:24980'}, 'role': 'client'})
+            client.patch({'name': 'client', 'tls': {'enabled': False}, 'client': {'remote': f'127.0.0.1:{port}'}, 'role': 'client'})
             connected(server, client)
             return 'two real virtual daemons completed DSOP setup'
         case('S1 connect', setup)
@@ -274,7 +276,7 @@ def main():
                 while len(payload) < n:
                     payload += sock.recv(n-len(payload))
                 return payload
-            sock = socket.create_connection(('127.0.0.1', 24980), timeout=2)
+            sock = socket.create_connection(('127.0.0.1', port), timeout=2)
             require(recv_frame(sock).startswith(b'Synergy'), 'wrong server hello')
             name = b'raw-unknown-name'
             payload = b'Synergy'+struct.pack('!HHI', 1, 8, len(name))+name
@@ -287,7 +289,7 @@ def main():
             if response.startswith(b'LSYN'):response=recv_frame(sock)
             require(response == b'CIAK', 'unknown code disconnected socket')
             sock.close()
-            sock = socket.create_connection(('127.0.0.1', 24980), timeout=2)
+            sock = socket.create_connection(('127.0.0.1', port), timeout=2)
             recv_frame(sock)
             sock.sendall(struct.pack('!I', 4*1024*1024+1))
             require(sock.recv(1) == b'', 'oversized frame stayed open')
@@ -325,9 +327,9 @@ def main():
         case('S18 click generations', numbering)
 
         def patch_roundtrip():
-            result = server.patch({'server': {'port': 24982}, 'role': 'server'})
-            require(result['config']['server']['listen'] == '127.0.0.1:24982', 'listen/port mismatch')
-            wait(lambda: server.status()['server']['listen'] == '127.0.0.1:24982')
+            result = server.patch({'server': {'port': port+2}, 'role': 'server'})
+            require(result['config']['server']['listen'] == f'127.0.0.1:{port+2}', 'listen/port mismatch')
+            wait(lambda: server.status()['server']['listen'] == f'127.0.0.1:{port+2}')
             before = server.config.read_bytes()
             try:
                 server.patch({'server': {'port': 70000}})
@@ -335,7 +337,7 @@ def main():
             except RuntimeError as exc:
                 require('invalid_config' in str(exc), str(exc))
             require(server.config.read_bytes() == before, 'invalid patch wrote config')
-            server.patch({'server': {'port': 24980}})
+            server.patch({'server': {'port': port}})
             return 'port patch changes listener and persisted TOML; invalid patch leaves file identical'
         case('S19 live config round trip', patch_roundtrip)
     finally:

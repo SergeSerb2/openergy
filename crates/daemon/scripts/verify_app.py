@@ -22,7 +22,7 @@ def main():
         print(result.stdout,flush=True)
         require(result.returncode==0,'app E2E failed; see app.stderr')
         report=json.loads((base/'output/report.json').read_text())
-        require(len(report)==8 and all(r['passed'] for r in report),'app did not pass all eight steps')
+        require(len(report)>=8 and all(r['passed'] for r in report),'app did not pass every E2E step')
         wait(lambda:not helper.sock.exists(),message='app child daemon parent-exit cleanup')
         print(f'REPORT {base / "output/report.json"}',flush=True)
     finally:

@@ -14,8 +14,8 @@ def run():
     screens = [{'name':'server','rect':{'x':0,'y':0,'w':1920,'h':1080}}, {'name':'client','rect':{'x':1920,'y':0,'w':1920,'h':1080}}]
     try:
         def tls():
-            server.patch({'name':'server','screen':screens,'role':'server','tls':{'enabled':True},'server':{'listen':'127.0.0.1:24983','port':24983}})
-            client.patch({'name':'client','role':'client','tls':{'enabled':True},'client':{'remote':'127.0.0.1:24983'}})
+            server.patch({'name':'server','screen':screens,'role':'server','tls':{'enabled':True},'server':{'listen':'127.0.0.1:24989','port':24989}})
+            client.patch({'name':'client','role':'client','tls':{'enabled':True},'client':{'remote':'127.0.0.1:24989'}})
             held = wait(lambda: client.status()['pending_trust'])
             require(not client.status()['peers'], 'messages crossed unknown server hold')
             client.call('trust.approve', {'fingerprint':held[0]['fingerprint']})
@@ -51,7 +51,7 @@ def run():
             duplicate.stop()
             shutil.copytree(client.dir/'tls',duplicate.dir/'tls',dirs_exist_ok=True)
             duplicate.start()
-            duplicate.patch({'name':'client','role':'client','tls':{'enabled':True},'client':{'remote':'127.0.0.1:24983'}})
+            duplicate.patch({'name':'client','role':'client','tls':{'enabled':True},'client':{'remote':'127.0.0.1:24989'}})
             wait(lambda: duplicate.status()['state']=='connected')
             client.call('connection.disconnect')
             require(len([p for p in server.status()['peers'] if p['name']=='client' and p['connected']])==1,'duplicate adoption count')
