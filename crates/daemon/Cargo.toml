@@ -18,5 +18,16 @@ openergy-session = { path = "../session" }
 openergy-net = { path = "../net" }
 serde = { workspace = true }
 serde_json = { workspace = true }
-log = { workspace = true }
+log = { version = "0.4", features = ["std"] }
 libc = { workspace = true }
+mio = { version = "1.2", features = ["os-poll", "net", "os-ext"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+openergy-platform-macos = { path = "../platform-macos" }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+openergy-platform-linux = { path = "../platform-linux" }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+openergy-platform-windows = { path = "../platform-windows" }
+windows-sys = { version = "0.61.2", features = ["Win32_NetworkManagement_IpHelper", "Win32_NetworkManagement_Ndis", "Win32_Networking_WinSock"] }

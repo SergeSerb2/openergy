@@ -35,6 +35,12 @@ impl Client {
             ledger: Ledger::default(),
         }
     }
+    pub fn next_deadline_ms(&self) -> u64 {
+        self.peer
+            .as_ref()
+            .map(|(_, p)| p.next_deadline(self.now, false))
+            .unwrap_or(self.now + 1000)
+    }
     pub fn config(&self) -> &Config {
         &self.config
     }
@@ -114,7 +120,9 @@ impl Client {
                 }
             }
             ClientEvent::ConfigChanged(cfg) => {
+                let was_active = self.active;
                 self.leave(out);
+                self.active = was_active;
                 self.config = cfg;
                 self.screen_name = self.config.name.clone();
                 if let Some((c, p)) = &mut self.peer {
@@ -227,6 +235,8 @@ impl Client {
             Message::LanguageSync { languages } if p.phase == Phase::Info => {
                 if languages.len() % 2 != 0 {
                     log::warn!("odd language list ignored");
+                } else {
+                    p.languages = languages.as_bytes().chunks_exact(2).map(|c| [c[0], c[1]]).collect();
                 }
             }
             Message::KeepAlive => {
@@ -259,6 +269,8 @@ impl Client {
                 sequence,
                 modifiers,
             } if p.phase == Phase::Ready => {
+                self.ledger.clear();
+                out.push(Action::ReleaseAllLocal);
                 self.active = true;
                 self.sequence = sequence;
                 self.cursor = self.screen.clamp(i32::from(x), i32::from(y));
@@ -320,8 +332,8 @@ impl Client {
                 log::info!("peer secure-input status changed");
             }
             Message::ScreenSaver { on } => notify("peer.screensaver", serde_json::json!({"on":on}), out),
-            Message::FileTransfer { payload, .. } => log::warn!("file transfer declined: bytes={}", payload.len()),
-            Message::DragInfo { payload, .. } => log::warn!("drag transfer declined: bytes={}", payload.len()),
+            Message::FileTransfer { payload, .. } => p.decline(payload.len(), out),
+            Message::DragInfo { payload, .. } => p.decline(payload.len(), out),
             other => {
                 if self.active && p.phase == Phase::Ready {
                     if let Some(mut ev) = input_message(other, &p.options) {

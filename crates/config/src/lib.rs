@@ -1,7 +1,16 @@
-//! Frozen config model (architecture-r2 §2.8). Importer/derivation bodies land in WP2.
-#![allow(dead_code)]
+//! Config model, layout derivation, and Synergy migration (architecture-r2 §2.8).
 use serde::{Deserialize, Serialize};
-use std::{fmt, path::Path};
+use std::fmt;
+
+pub mod cli;
+mod layout;
+mod model;
+mod synergy;
+mod synergy3;
+pub use layout::derive_links;
+pub use model::{apply_merge_patch, merge_patch};
+pub use synergy::{export_synergy_conf, import_synergy_conf};
+pub use synergy3::{import_synergy3_db, import_synergy_dir};
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -22,6 +31,7 @@ impl Role {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct LayoutRect {
     pub x: f64,
     pub y: f64,
@@ -39,6 +49,7 @@ pub enum Edge {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct DerivedLink {
     pub from: String,
     pub edge: Edge,
@@ -49,7 +60,11 @@ pub struct DerivedLink {
 pub type DerivedLinks = Vec<DerivedLink>;
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
 pub struct LinksCfg {
+    /// Ranged overrides. A direction in this list overrides geometric derivation.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ranges: Vec<RangedLink>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub left: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -61,6 +76,7 @@ pub struct LinksCfg {
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
 pub struct ModifierRemap {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shift: Option<String>,
@@ -77,6 +93,7 @@ pub struct ModifierRemap {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ScreenCfg {
     pub name: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -87,11 +104,14 @@ pub struct ScreenCfg {
     pub modifiers: Option<ModifierRemap>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub os: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub options: Option<ScreenOptions>,
     #[serde(default)]
     pub aliases: Vec<String>,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
 pub struct ServerCfg {
     pub listen: String,
     pub port: u16,
@@ -107,6 +127,7 @@ impl Default for ServerCfg {
     }
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
 pub struct ClientCfg {
     pub remote: String,
     pub autoconnect: bool,
@@ -122,6 +143,7 @@ impl Default for ClientCfg {
     }
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
 pub struct TlsCfg {
     pub enabled: bool,
     pub require_client_trust: bool,
@@ -135,6 +157,7 @@ impl Default for TlsCfg {
     }
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
 pub struct ClipboardCfg {
     pub enabled: bool,
     pub send: bool,
@@ -152,6 +175,7 @@ impl Default for ClipboardCfg {
     }
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
 pub struct InputCfg {
     pub relative_mouse: bool,
     pub invert_scroll_y: bool,
@@ -178,24 +202,16 @@ pub enum Corner {
     BottomLeft,
     BottomRight,
 }
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
 pub struct SwitchCfg {
     pub delay_ms: u64,
     pub double_tap_ms: u64,
     pub dead_corners: Vec<Corner>,
     pub corner_size_px: u32,
 }
-impl Default for SwitchCfg {
-    fn default() -> Self {
-        Self {
-            delay_ms: 0,
-            double_tap_ms: 0,
-            dead_corners: Vec::new(),
-            corner_size_px: 0,
-        }
-    }
-}
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
 pub struct HotkeysCfg {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lock_to_screen: Option<String>,
@@ -208,12 +224,16 @@ pub enum ClickNumbering {
     Legacy,
 }
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
 pub struct MacosCfg {
     pub click_numbering: ClickNumbering,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
 pub struct Config {
+    #[serde(default, skip_serializing_if = "SynergyOptions::is_default")]
+    pub options: SynergyOptions,
     pub version: u32,
     pub role: Role,
     pub name: String,
@@ -239,6 +259,7 @@ pub struct Config {
 impl Default for Config {
     fn default() -> Self {
         Self {
+            options: SynergyOptions::default(),
             version: 1,
             role: Role::Off,
             name: String::new(),
@@ -264,101 +285,62 @@ pub enum ConfigError {
 }
 impl fmt::Display for ConfigError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{self:?}")
+        match self {
+            Self::Parse(message) => write!(f, "parse error: {message}"),
+            Self::Validation(message) => write!(f, "invalid config: {message}"),
+            Self::Io(message) => write!(f, "I/O error: {message}"),
+            Self::NotImplemented => f.write_str("config operation is not implemented"),
+        }
     }
 }
 impl std::error::Error for ConfigError {}
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ImportReport {
     pub warnings: Vec<String>,
+    /// Candidate pins only. Importing never modifies a trust store.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub trusted_servers: Vec<String>,
 }
 
-impl Config {
-    pub fn load_toml(text: &str) -> Result<Self, ConfigError> {
-        let cfg: Self = toml::from_str(text).map_err(|e| ConfigError::Parse(e.to_string()))?;
-        cfg.validate()?;
-        Ok(cfg)
-    }
-    pub fn to_toml(&self) -> String {
-        toml::to_string(self).unwrap_or_default()
-    }
-    pub fn validate(&self) -> Result<(), ConfigError> {
-        if self.version != 1 {
-            return Err(ConfigError::Validation(format!(
-                "unsupported config version {}",
-                self.version
-            )));
-        }
-        let mut seen = std::collections::BTreeSet::new();
-        for s in &self.screens {
-            if s.name.is_empty() || !seen.insert(s.name.clone()) {
-                return Err(ConfigError::Validation(format!(
-                    "duplicate or empty screen name {:?}",
-                    s.name
-                )));
-            }
-        }
-        Ok(())
-    }
-    pub fn to_json(&self) -> serde_json::Value {
-        serde_json::to_value(self).unwrap_or(serde_json::Value::Null)
-    }
-    pub fn from_json(v: &serde_json::Value) -> Result<Self, ConfigError> {
-        let cfg: Self = serde_json::from_value(v.clone()).map_err(|e| ConfigError::Parse(e.to_string()))?;
-        cfg.validate()?;
-        Ok(cfg)
-    }
+/// An explicit half-open percentage mapping on one screen edge.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct RangedLink {
+    pub edge: Edge,
+    pub from_range: (u8, u8),
+    pub to: String,
+    pub to_range: (u8, u8),
 }
 
-/// RFC 7386 JSON merge patch. Full validation lands in WP2/WP6.
-pub fn merge_patch(target: &mut serde_json::Value, patch: &serde_json::Value) {
-    match (target, patch) {
-        (serde_json::Value::Object(t), serde_json::Value::Object(p)) => {
-            for (k, v) in p {
-                if v.is_null() {
-                    t.remove(k);
-                } else {
-                    merge_patch(t.entry(k.clone()).or_insert(serde_json::Value::Null), v);
-                }
-            }
-        }
-        (t, p) => {
-            *t = p.clone();
-        }
-    }
-}
-pub fn apply_merge_patch(cfg: &Config, patch: &serde_json::Value) -> Result<(Config, Vec<String>), ConfigError> {
-    let mut v = cfg.to_json();
-    merge_patch(&mut v, patch);
-    Ok((Config::from_json(&v)?, Vec::new()))
-}
-pub fn derive_links(_screens: &[ScreenCfg]) -> DerivedLinks {
-    Vec::new()
-}
-pub fn import_synergy_conf(_text: &str) -> Result<(Config, ImportReport), ConfigError> {
-    Err(ConfigError::NotImplemented)
-}
-pub fn import_synergy3_db(_json: &str, _core_ini: Option<&str>) -> Result<(Config, ImportReport), ConfigError> {
-    Err(ConfigError::NotImplemented)
-}
-pub fn import_synergy_dir(_path: &Path) -> Result<(Config, ImportReport), ConfigError> {
-    Err(ConfigError::NotImplemented)
-}
-pub fn export_synergy_conf(_cfg: &Config) -> Result<String, ConfigError> {
-    Err(ConfigError::NotImplemented)
+/// Optional overrides retain global fallback semantics for each screen.
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
+pub struct ScreenOptions {
+    pub half_duplex_caps_lock: Option<bool>,
+    pub half_duplex_num_lock: Option<bool>,
+    pub half_duplex_scroll_lock: Option<bool>,
+    pub dead_corners: Option<Vec<Corner>>,
+    pub corner_size_px: Option<u32>,
+    pub xtest_is_xinerama_unaware: Option<bool>,
+    pub preserve_focus: Option<bool>,
 }
 
-/// Command-line handlers for config subcommands of the `openergy` binary.
-/// The daemon crate only dispatches to these; WP2 owns their behaviour.
-pub mod cli {
-    /// `openergy import-synergy --from <Synergy prefs dir> [--out config.toml]`
-    pub fn import_synergy(_args: &[String]) -> Result<i32, String> {
-        Err("import-synergy: not implemented yet (WP2)".into())
-    }
-
-    /// `openergy export-synergy-conf [--config <path>] [--out synergy.conf]`
-    pub fn export_synergy_conf(_args: &[String]) -> Result<i32, String> {
-        Err("export-synergy-conf: not implemented yet (WP2)".into())
+/// Synergy controls not represented by the initial UI fields.
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
+pub struct SynergyOptions {
+    pub barrier: bool,
+    pub win32_keep_foreground: bool,
+    pub disable_lock_to_screen: bool,
+    pub default_lock_to_screen: bool,
+    pub switch_needs_shift: bool,
+    pub switch_needs_control: bool,
+    pub switch_needs_alt: bool,
+}
+impl SynergyOptions {
+    fn is_default(&self) -> bool {
+        self == &Self::default()
     }
 }

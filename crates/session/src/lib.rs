@@ -47,6 +47,9 @@ pub enum ServerEvent {
     LocalScreen { rect: layout::Rect, cursor: (i32, i32) },
     ConnectionMetadata { conn: ConnId, fingerprint: Option<String> },
     PermissionLost,
+    CaptureOverflow,
+    LocalSecureInput { app: Option<String> },
+    LocalScreenSaver { on: bool },
     Shutdown,
 }
 #[derive(Debug)]

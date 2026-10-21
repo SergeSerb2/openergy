@@ -101,6 +101,9 @@ pub(crate) struct Transfers {
     outgoing: VecDeque<Outgoing>,
 }
 impl Transfers {
+    pub fn pending(&self) -> bool {
+        !self.outgoing.is_empty()
+    }
     pub fn cancel(&mut self, id: ClipboardId) {
         if self.incoming.as_ref().is_some_and(|i| i.id == id) {
             self.incoming = None;

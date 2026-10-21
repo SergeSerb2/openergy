@@ -56,6 +56,14 @@ impl Server {
             slots: [Slot::default(), Slot::default()],
         }
     }
+    pub fn next_deadline_ms(&self) -> u64 {
+        self.peers
+            .values()
+            .map(|p| p.next_deadline(self.now, true))
+            .min()
+            .unwrap_or(self.now + 1000)
+            .min(self.layout.next_deadline(self.now))
+    }
     pub fn config(&self) -> &Config {
         &self.config
     }
@@ -139,8 +147,16 @@ impl Server {
                 send(
                     conn,
                     Message::Hello {
-                        product: "Synergy".into(),
-                        version: ProtocolVersion::V1_8,
+                        product: if self.config.options.barrier {
+                            "Barrier"
+                        } else {
+                            "Synergy"
+                        }
+                        .into(),
+                        version: ProtocolVersion {
+                            major: 1,
+                            minor: if self.config.options.barrier { 6 } else { 8 },
+                        },
                     },
                     out,
                 );
@@ -156,7 +172,9 @@ impl Server {
             ServerEvent::ClientDisconnected { conn, .. } => self.remove(conn, out),
             ServerEvent::LocalInput(ev) => self.input(ev, out),
             ServerEvent::LocalScreen { rect, cursor } => {
-                self.layout.set_rect(self.primary, rect);
+                if self.layout.rect(self.primary) != rect {
+                    self.layout.set_rect(self.primary, rect);
+                }
                 if self.active == self.primary {
                     self.cursor = rect.clamp(cursor.0, cursor.1);
                 }
@@ -196,7 +214,7 @@ impl Server {
                     self.remove(c, out);
                     close(c, CloseReason::Normal, out);
                 }
-                if self.last_motion != (0, 0) {
+                if self.last_motion != (0, 0) && self.layout.waiting() {
                     self.motion(
                         self.cursor.0,
                         self.cursor.1,
@@ -234,7 +252,7 @@ impl Server {
                         send(
                             c,
                             Message::SetOptions {
-                                options: config_options(&self.config, true),
+                                options: screen_options(&self.config, &p.name),
                             },
                             out,
                         );
@@ -244,9 +262,33 @@ impl Server {
                     self.shutdown(out);
                 }
             }
+            ServerEvent::CaptureOverflow => self.leave(out),
             ServerEvent::PermissionLost => {
                 self.leave(out);
                 notice("permission_denied", "Input permission lost", out);
+            }
+            ServerEvent::LocalSecureInput { app } => {
+                if let Some(name) = app {
+                    let name = name
+                        .chars()
+                        .scan(0usize, |len, c| {
+                            *len += c.len_utf8();
+                            (*len <= 255).then_some(c)
+                        })
+                        .collect::<String>();
+                    for (&conn, p) in &self.peers {
+                        if p.phase == Phase::Ready && p.version.minor >= 7 {
+                            send(conn, Message::SecureInputNotification { name: name.clone() }, out);
+                        }
+                    }
+                }
+            }
+            ServerEvent::LocalScreenSaver { on } => {
+                for (&conn, p) in &self.peers {
+                    if p.phase == Phase::Ready {
+                        send(conn, Message::ScreenSaver { on }, out);
+                    }
+                }
             }
             ServerEvent::Shutdown => self.shutdown(out),
         }
@@ -266,6 +308,7 @@ impl Server {
             return;
         }
         if matches!(msg, Message::Bye) {
+            log::info!("peer goodbye");
             self.remove(conn, out);
             close(conn, CloseReason::Normal, out);
             return;
@@ -342,7 +385,7 @@ impl Server {
                 send(
                     conn,
                     Message::SetOptions {
-                        options: config_options(&self.config, true),
+                        options: screen_options(&self.config, &canonical),
                     },
                     out,
                 );
@@ -391,8 +434,11 @@ impl Server {
                         slot.sequence = sequence;
                         slot.owner = Some(conn);
                         slot.data = None;
-                        for peer in self.peers.values_mut() {
+                        for (&other, peer) in &mut self.peers {
                             peer.transfers.cancel(id);
+                            if other != conn && peer.phase == Phase::Ready && peer.version.minor >= 6 {
+                                send(other, Message::ClipboardGrab { id, sequence: 0 }, out);
+                            }
                         }
                     }
                 }
@@ -418,18 +464,42 @@ impl Server {
                 }
             }
             Message::SecureInputNotification { name } => p.secure_input = (!name.is_empty()).then_some(name),
-            Message::FileTransfer { payload, .. } => log::warn!("file transfer declined: bytes={}", payload.len()),
-            Message::DragInfo { payload, .. } => log::warn!("drag transfer declined: bytes={}", payload.len()),
+            Message::FileTransfer { payload, .. } => p.decline(payload.len(), out),
+            Message::DragInfo { payload, .. } => p.decline(payload.len(), out),
             Message::Noop | Message::ScreenSaver { .. } | Message::LanguageSync { .. } => {}
             _ => {}
         }
     }
     fn input(&mut self, ev: InputEvent, out: &mut Vec<Action>) {
-        if let InputEvent::KeyDown { key: 0xef14, .. } = ev {
-            if !self.opts.disable_lock {
-                self.opts.locked = !self.opts.locked;
-                self.layout.reset();
-            }
+        let hotkey = if let InputEvent::KeyDown { key, modifiers, .. } = &ev {
+            self.config.hotkeys.lock_to_screen.as_deref().is_some_and(|chord| {
+                let mut mask = 0;
+                let mut code = None;
+                for part in chord.split('+').map(str::trim) {
+                    match part.to_ascii_lowercase().as_str() {
+                        "ctrl" | "control" => mask |= 2,
+                        "alt" => mask |= 4,
+                        "shift" => mask |= 1,
+                        "super" | "command" | "cmd" => mask |= 16,
+                        k => {
+                            let mut chars = k.chars();
+                            if let (Some(c), None) = (chars.next(), chars.next()) {
+                                code = Some(c as u16);
+                            }
+                        }
+                    }
+                }
+                code == Some(*key) && modifiers.0 & 0x3f == mask
+            })
+        } else {
+            false
+        };
+        if (matches!(ev, InputEvent::KeyDown { key: 0xef14, .. }) || hotkey) && !self.opts.disable_lock {
+            self.opts.locked = !self.opts.locked;
+            self.layout.reset();
+        }
+        if hotkey {
+            return;
         }
         self.local.observe(&ev);
         match ev {

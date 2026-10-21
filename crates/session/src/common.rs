@@ -169,6 +169,8 @@ pub(crate) struct Peer {
     pub unknown: BTreeSet<[u8; 4]>,
     pub secure_input: Option<String>,
     pub warned: bool,
+    pub languages: Vec<[u8; 2]>,
+    pub declined: bool,
 }
 impl Peer {
     pub fn new(now: u64) -> Self {
@@ -191,7 +193,24 @@ impl Peer {
             unknown: BTreeSet::new(),
             secure_input: None,
             warned: false,
+            languages: Vec::new(),
+            declined: false,
         }
+    }
+    pub fn next_deadline(&self, now: u64, server: bool) -> u64 {
+        if self.transfers.pending() {
+            return now.saturating_add(4);
+        }
+        if self.phase != Phase::Ready {
+            return self.since.saturating_add(2001).max(now.saturating_add(100));
+        }
+        if self.options.heartbeat == 0 {
+            return now.saturating_add(1000);
+        }
+        let last = if server { self.last_rx } else { self.last_alive };
+        self.last_sent
+            .saturating_add(self.options.heartbeat)
+            .min(last.saturating_add(self.options.heartbeat.saturating_mul(3)))
     }
     pub fn snapshot(&self, conn: ConnId) -> PeerSnapshot {
         PeerSnapshot {
@@ -209,6 +228,13 @@ impl Peer {
         self.last_alive = now;
         if let Some(sent) = self.ping.take() {
             self.rtt = Some(now.saturating_sub(sent) as f64);
+        }
+    }
+    pub fn decline(&mut self, bytes: usize, out: &mut Vec<Action>) {
+        if !self.declined {
+            self.declined = true;
+            log::warn!("file/drag transfer declined: bytes={bytes}");
+            notice("transfer_unsupported", "File and drag transfer are disabled", out);
         }
     }
     pub fn unknown(&mut self, code: [u8; 4]) {
@@ -232,7 +258,9 @@ impl Peer {
         if hb > 0 && now.saturating_sub(self.last_sent) >= hb {
             send(conn, Message::KeepAlive, out);
             self.last_sent = now;
-            self.ping.get_or_insert(now);
+            if server {
+                self.ping.get_or_insert(now);
+            }
         }
         self.transfers.tick(conn, now, out);
         false
@@ -275,6 +303,15 @@ pub(crate) fn config_options(cfg: &Config, server: bool) -> Vec<(u32, i32)> {
         }
     });
     vec![
+        (
+            o::DEFAULT_LOCK_TO_SCREEN_STATE,
+            i32::from(cfg.options.default_lock_to_screen),
+        ),
+        (o::DISABLE_LOCK_TO_SCREEN, i32::from(cfg.options.disable_lock_to_screen)),
+        (o::SWITCH_NEEDS_SHIFT, i32::from(cfg.options.switch_needs_shift)),
+        (o::SWITCH_NEEDS_CONTROL, i32::from(cfg.options.switch_needs_control)),
+        (o::SWITCH_NEEDS_ALT, i32::from(cfg.options.switch_needs_alt)),
+        (o::WIN32_KEEP_FOREGROUND, i32::from(cfg.options.win32_keep_foreground)),
         (
             o::HEARTBEAT,
             if server {
@@ -384,4 +421,65 @@ pub(crate) fn input_message(msg: Message, opts: &Options) -> Option<InputEvent> 
         },
         _ => return None,
     })
+}
+
+pub(crate) fn screen_options(cfg: &Config, screen_name: &str) -> Vec<(u32, i32)> {
+    let mut options = config_options(cfg, true);
+    if let Some(screen) = cfg.screens.iter().find(|s| s.name == screen_name) {
+        if screen.os.as_deref().is_some_and(|s| s.eq_ignore_ascii_case("windows")) {
+            options.push((o::WIN32_KEEP_FOREGROUND, 1));
+        }
+        if let Some(opts) = &screen.options {
+            for (id, v) in [
+                (o::HALF_DUPLEX_CAPS_LOCK, opts.half_duplex_caps_lock),
+                (o::HALF_DUPLEX_NUM_LOCK, opts.half_duplex_num_lock),
+                (o::HALF_DUPLEX_SCROLL_LOCK, opts.half_duplex_scroll_lock),
+                (o::XTEST_XINERAMA_UNAWARE, opts.xtest_is_xinerama_unaware),
+                (o::PRESERVE_FOCUS, opts.preserve_focus),
+            ] {
+                if let Some(v) = v {
+                    options.push((id, i32::from(v)));
+                }
+            }
+            if let Some(corners) = &opts.dead_corners {
+                let mask = corners.iter().fold(0, |mask, c| {
+                    mask | match c {
+                        Corner::TopLeft => 1,
+                        Corner::TopRight => 2,
+                        Corner::BottomLeft => 4,
+                        Corner::BottomRight => 8,
+                    }
+                });
+                options.push((o::SWITCH_CORNERS, mask));
+            }
+            if let Some(size) = opts.corner_size_px {
+                options.push((o::SWITCH_CORNER_SIZE, size.min(i32::MAX as u32) as i32));
+            }
+        }
+        if let Some(remap) = &screen.modifiers {
+            for (id, value) in [
+                (o::MOD_SHIFT, &remap.shift),
+                (o::MOD_CTRL, &remap.ctrl),
+                (o::MOD_ALT, &remap.alt),
+                (o::MOD_ALTGR, &remap.altgr),
+                (o::MOD_META, &remap.meta),
+                (o::MOD_SUPER, &remap.super_),
+            ] {
+                if let Some(value) = value {
+                    let target = match value.to_ascii_lowercase().as_str() {
+                        "none" => 0,
+                        "shift" => 1,
+                        "ctrl" | "control" => 2,
+                        "alt" => 3,
+                        "meta" => 4,
+                        "super" | "command" => 5,
+                        "altgr" => 6,
+                        _ => continue,
+                    };
+                    options.push((id, target));
+                }
+            }
+        }
+    }
+    options
 }

@@ -1,7 +1,13 @@
-//! Frozen platform traits (architecture-r2 §2.5). Virtual backend lands in WP3.
-#![allow(dead_code)]
+//! Frozen platform traits (architecture-r2 §2.5) and the headless virtual backend.
+mod click;
+mod script;
+pub mod virtual_backend;
+
+pub use click::{ClickAssignment, ClickError};
+pub use script::{InjectRequest, ScriptEvent};
 use serde::{Deserialize, Serialize};
 use std::fmt;
+pub use virtual_backend::{VirtualConfig, VirtualControl, VirtualPlatform};
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Modifiers(pub u16);
@@ -198,6 +204,15 @@ pub trait ScreenSystem: Send {
     fn cursor_pos(&self) -> (i32, i32);
     fn clipboard(&mut self) -> &mut dyn ClipboardBackend;
     fn permissions(&self) -> Permissions;
+    /// Backends may request an OS grant; the default returns current state.
+    fn request_permission(&mut self, kind: PermissionKind) -> Result<Grant, PlatformError> {
+        let permissions = self.permissions();
+        Ok(match kind {
+            PermissionKind::Accessibility => permissions.accessibility,
+            PermissionKind::InputMonitoring => permissions.input_monitoring,
+            PermissionKind::PostEvents => permissions.post_events,
+        })
+    }
     fn on_display_changed(&mut self, cb: Box<dyn FnMut() + Send>);
     fn prevent_sleep(&mut self, on: bool);
     fn secure_input_app(&self) -> Option<String> {
@@ -205,16 +220,33 @@ pub trait ScreenSystem: Send {
     }
 }
 
+/// One backend split by thread ownership: capture owns source, I/O owns sink
+/// and screens, and the clipboard worker owns clipboard.
+pub struct Backend {
+    pub name: &'static str,
+    pub source: Box<dyn InputSource>,
+    pub sink: Box<dyn InputSink>,
+    pub screens: Box<dyn ScreenSystem>,
+    pub clipboard: Box<dyn ClipboardBackend>,
+}
+
 /// Pure click-numbering model shared by the virtual backend (WP3) and macOS (WP5).
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug)]
 pub struct ClickNumberer {
     pub last_number: i64,
     pub pressed_number: [Option<i64>; 8],
     pub pressed_click_state: [Option<i64>; 8],
+    history: [click::ClickHistory; 8],
+    double_click_ms: u64,
+    exhaustion_logged: bool,
 }
 impl ClickNumberer {
     pub fn on_down(&mut self, button: u8, seed: i64) -> i64 {
-        let n = self.last_number.max(seed).saturating_add(1);
+        let base = self.last_number.max(seed);
+        if base == i64::MAX {
+            self.log_exhaustion();
+        }
+        let n = base.saturating_add(1);
         self.last_number = n;
         if let Some(slot) = self.pressed_number.get_mut(button as usize) {
             *slot = Some(n);
