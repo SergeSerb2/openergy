@@ -12,7 +12,11 @@ fn arguments(args: &[String]) -> Result<(PathBuf, Vec<String>), String> {
             if dir.is_some() {
                 return Err("--dir may appear only once".into());
             }
-            dir = Some(PathBuf::from(args.next().ok_or("--dir requires a directory")?));
+            let value = args
+                .next()
+                .filter(|value| !value.is_empty() && !value.starts_with("--"))
+                .ok_or("--dir requires a directory")?;
+            dir = Some(PathBuf::from(value));
         } else {
             rest.push(arg.clone());
         }
@@ -25,12 +29,19 @@ fn arguments(args: &[String]) -> Result<(PathBuf, Vec<String>), String> {
         rest,
     ))
 }
+fn usage_error(message: &str) -> Result<i32, String> {
+    eprintln!("openergy: {message}");
+    Ok(2)
+}
 pub fn fingerprint(args: &[String]) -> Result<i32, String> {
-    let (dir, rest) = arguments(args)?;
+    let (dir, rest) = match arguments(args) {
+        Ok(args) => args,
+        Err(message) => return usage_error(&message),
+    };
     let synergy = match rest.as_slice() {
         [] => false,
         [flag] if flag == "--synergy" => true,
-        _ => return Err("usage: openergy fingerprint [--dir D] [--synergy]".into()),
+        _ => return usage_error("usage: openergy fingerprint [--dir D] [--synergy]"),
     };
     let name = std::env::var("HOSTNAME").unwrap_or_else(|_| "computer".into());
     let identity = Identity::load_or_create(&dir, &name).map_err(|e| e.to_string())?;
@@ -44,7 +55,10 @@ pub fn fingerprint(args: &[String]) -> Result<i32, String> {
     Ok(0)
 }
 pub fn trust(args: &[String]) -> Result<i32, String> {
-    let (dir, rest) = arguments(args)?;
+    let (dir, rest) = match arguments(args) {
+        Ok(args) => args,
+        Err(message) => return usage_error(&message),
+    };
     let mut store = TrustStore::load(&dir.join("tls")).map_err(|e| e.to_string())?;
     match rest.as_slice() {
         [command] if command == "list" => {
@@ -76,7 +90,9 @@ pub fn trust(args: &[String]) -> Result<i32, String> {
             return Err("live rejection requires daemon IPC: openergy ctl trust.reject".into())
         }
         _ => {
-            return Err("usage: openergy trust list|approve <fp>|revoke <fp>|import-synergy <tls-dir> [--dir D]".into())
+            return usage_error(
+                "usage: openergy trust list|approve <fp>|revoke <fp>|import-synergy <tls-dir> [--dir D]",
+            )
         }
     }
     Ok(0)
