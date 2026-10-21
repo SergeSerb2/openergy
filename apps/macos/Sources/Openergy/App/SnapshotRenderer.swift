@@ -87,6 +87,9 @@ enum SnapshotRenderer {
             target.cacheDisplay(in: bounds, to: rep)
         }
         try? rep.representation(using: .png, properties: [:])?.write(to: url)
+        // Detach the view so a closed snapshot window stops observing the model (E2E keeps
+        // driving the same model after each render).
+        window.contentViewController = nil
         window.close()
     }
 }

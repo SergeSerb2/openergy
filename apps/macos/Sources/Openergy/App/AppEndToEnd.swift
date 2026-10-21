@@ -73,8 +73,52 @@ enum AppEndToEnd {
             model.setRole(.server)
             let hosting = await waitUntil(seconds: 10) { model.status.role == .server && [.listening, .error].contains(model.state) }
             record("role server", hosting, "role=\(model.status.role?.rawValue ?? "nil") state=\(model.state.rawValue) listen=\(model.status.server?.listen ?? "nil")")
-            render(model, .layout, "06-layout-hosting", outputDirectory)
             render(model, .security, "07-security", outputDirectory)
+
+            // Layout: an imported screen with extra fields, then a drag that puts it LEFT of this
+            // Mac (a negative x before the app normalises the layout).
+            let local = model.localName
+            model.patch("screen", .array([
+                ["name": .string(local), "rect": ["x": 0, "y": 0, "w": 1512, "h": 982]],
+                ["name": "e2e-pc", "aliases": ["e2e-pc-alias"], "rect": ["x": 1512, "y": 0, "w": 1920, "h": 1080]],
+            ]))
+            let seeded = await waitUntil(seconds: 10) { model.config.screens?.contains { $0.name == "e2e-pc" } == true }
+            record("layout seeded", seeded, "screens=\(model.config.screens?.map(\.name) ?? []) error=\(model.lastActionError ?? "none")")
+            model.saveLayout([
+                .init(name: local, rect: .init(x: 0, y: 0, w: 1512, h: 982), os: "macos"),
+                .init(name: "e2e-pc", rect: .init(x: -1920, y: -49, w: 1920, h: 1080), os: "windows"),
+            ])
+            let leftOf = await waitUntil(seconds: 10) {
+                let rects = Dictionary(uniqueKeysWithValues: (model.config.screens ?? []).compactMap { s in s.rect.map { (s.name, $0) } })
+                return rects["e2e-pc"]?.x == 0 && rects[local]?.x == 1920
+                    && model.lastActionError == nil
+            }
+            record("layout left of this Mac", leftOf,
+                   "rects=\((model.config.screens ?? []).map { "\($0.name)@\(Int($0.rect?.x ?? -1)),\(Int($0.rect?.y ?? -1))" }) error=\(model.lastActionError ?? "none")")
+            let kept = await waitUntil(seconds: 5) {
+                model.config.rawScreens.contains { $0["name"]?.stringValue == "e2e-pc" && $0["aliases"] != nil }
+            }
+            record("layout keeps imported fields", kept, "raw e2e-pc=\(model.config.rawScreens.first { $0["name"]?.stringValue == "e2e-pc" }.map { "\($0)" } ?? "missing")")
+            let linked = await waitUntil(seconds: 10) {
+                (model.config.derivedLinks ?? []).contains { $0.from == local && $0.edge == "left" && $0.to == "e2e-pc" }
+            }
+            record("derived links arrive", linked, "links=\((model.config.derivedLinks ?? []).map { "\($0.from).\($0.edge)→\($0.to)" })")
+            render(model, .layout, "06-layout-hosting", outputDirectory)
+
+            // Live logs reach the Activity pane.
+            model.subscribeLogs(true)
+            let tail = await waitUntil(seconds: 10) { !model.logLines.isEmpty }
+            let before = model.logLines.count
+            model.renameLocal(to: "e2e-mac")
+            let renamed = await waitUntil(seconds: 10) {
+                model.config.name == "e2e-mac" && model.config.screens?.contains { $0.name == "e2e-mac" && $0.rect != nil } == true
+                    && model.config.screens?.contains { $0.name == local } == false
+            }
+            record("rename keeps layout entry", renamed, "name=\(model.config.name ?? "nil") screens=\(model.config.screens?.map(\.name) ?? [])")
+            let live = await waitUntil(seconds: 10) { model.logLines.count > before }
+            record("live log lines", tail && live, "tail=\(before) now=\(model.logLines.count) last=\(model.logLines.last.map { LogLine($0).display } ?? "none")")
+            render(model, .activity, "08-activity", outputDirectory)
+            model.subscribeLogs(false)
 
             model.setRole(.off)
             let offAgain = await waitUntil(seconds: 10) { model.status.role == .off }

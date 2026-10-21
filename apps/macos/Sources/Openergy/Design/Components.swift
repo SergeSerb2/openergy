@@ -143,6 +143,7 @@ struct RolePicker: View {
         }
         .pickerStyle(.segmented)
         .labelsHidden()
+        .disabled(!model.isReady)
         .help("Off: not sharing. Host: share this Mac's keyboard and mouse. Join: use another computer's.")
     }
 }

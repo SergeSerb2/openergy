@@ -26,6 +26,10 @@ extension AppModel {
             var item = items[screen.name] ?? LayoutItem(name: screen.name, os: screen.os, size: CGSize(width: 1920, height: 1080),
                                                         isLocal: false, peer: nil, rect: nil)
             item.rect = screen.rect?.cgRect
+            // A saved size is real data: keep it until the screen reports its live size.
+            if !item.isLocal, let rect = screen.rect, rect.w > 0, rect.h > 0 {
+                item.size = CGSize(width: rect.w, height: rect.h)
+            }
             item.os = item.os ?? screen.os
             items[screen.name] = item
         }
@@ -109,6 +113,14 @@ struct LayoutEditor: View {
             .onKeyPress(keys: [.leftArrow, .rightArrow, .upArrow, .downArrow]) { press in
                 nudge(press.key, placed: placed) ? .handled : .ignored
             }
+            .onKeyPress(.tab) {
+                // Tab walks through the placed screens so the arrow keys work without a mouse.
+                let names = placed.map(\.name)
+                guard !names.isEmpty else { return .ignored }
+                let next = selection.flatMap { names.firstIndex(of: $0) }.map { ($0 + 1) % names.count } ?? 0
+                selection = names[next]
+                return .handled
+            }
             .onKeyPress(.delete) {
                 guard let selection, let item = placed.first(where: { $0.name == selection }), !item.isLocal else { return .ignored }
                 unplace(item, placed: placed)
@@ -124,8 +136,13 @@ struct LayoutEditor: View {
         }
         .task(id: placed.contains(where: \.isLocal)) {
             // A server always owns a screen in its layout: put this Mac on the canvas first.
-            if let local = items.first(where: \.isLocal), local.rect == nil {
-                place(local, at: nil, placed: placed)
+            // Wait briefly so a config that is still arriving (an import, another window) wins.
+            guard model.layoutItems.contains(where: { $0.isLocal && $0.rect == nil }) else { return }
+            try? await Task.sleep(for: .milliseconds(300))
+            guard !Task.isCancelled, model.role == .server else { return }
+            let current = model.layoutItems
+            if let local = current.first(where: \.isLocal), local.rect == nil {
+                place(local, at: nil, placed: current.filter { $0.rect != nil })
             }
         }
         .inspector(isPresented: $showInspector) {
@@ -188,9 +205,19 @@ struct LayoutEditor: View {
                     }
             )
             .accessibilityElement(children: .combine)
-            .accessibilityLabel("\(item.name), \(item.isOnline ? "connected" : "offline")")
-            .accessibilityHint("Drag to arrange. Use arrow keys to move next to another screen.")
-            .accessibilityAddTraits(selection == item.name ? .isSelected : [])
+            .accessibilityLabel("\(item.name), \(item.isLocal ? "this Mac" : (item.isOnline ? "connected" : "offline"))")
+            .accessibilityHint("Drag to arrange, or use the actions to move it beside another screen.")
+            .accessibilityAddTraits(selection == item.name ? [.isButton, .isSelected] : .isButton)
+            .accessibilityAction { selection = item.name; showInspector = true }
+            .accessibilityAction(named: "Move Left") { selection = item.name; _ = nudge(.leftArrow, placed: placed) }
+            .accessibilityAction(named: "Move Right") { selection = item.name; _ = nudge(.rightArrow, placed: placed) }
+            .accessibilityAction(named: "Move Up") { selection = item.name; _ = nudge(.upArrow, placed: placed) }
+            .accessibilityAction(named: "Move Down") { selection = item.name; _ = nudge(.downArrow, placed: placed) }
+            .accessibilityActions {
+                if !item.isLocal {
+                    Button("Remove from Layout") { unplace(item, placed: placed) }
+                }
+            }
     }
 
     private func linkBars(_ placed: [LayoutItem], transform: CanvasTransform) -> some View {
@@ -274,9 +301,13 @@ struct LayoutEditor: View {
     }
 
     private func unplace(_ item: LayoutItem, placed: [LayoutItem]) {
-        let remaining = placed.filter { $0.name != item.name }
-        let screens = remaining.map { OpenergyConfig.Screen(name: $0.name, rect: $0.rect.map(OpenergyConfig.LayoutRect.init), os: $0.os) }
-            + [OpenergyConfig.Screen(name: item.name, rect: nil, os: item.os)]
+        var screens = placed.filter { $0.name != item.name }
+            .map { OpenergyConfig.Screen(name: $0.name, rect: $0.rect.map(OpenergyConfig.LayoutRect.init), os: $0.os) }
+        screens.append(OpenergyConfig.Screen(name: item.name, rect: nil, os: item.os))
+        // Keep screens the config already lists without a position.
+        for screen in model.config.screens ?? [] where !screens.contains(where: { $0.name == screen.name }) {
+            screens.append(.init(name: screen.name, rect: nil, os: screen.os))
+        }
         withAnimation(.smooth) { model.saveLayout(screens) }
         selection = nil
     }
@@ -436,23 +467,26 @@ struct UnplacedTray: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     ForEach(items) { item in
-                        HStack(spacing: 6) {
-                            OSSymbol(os: item.os)
-                            Text(item.name)
-                            Circle().fill(item.isOnline ? Brand.good : Color.secondary.opacity(0.5)).frame(width: 6, height: 6)
+                        Button { place(item) } label: {
+                            HStack(spacing: 6) {
+                                OSSymbol(os: item.os)
+                                Text(item.name)
+                                Circle().fill(item.isOnline ? Brand.good : Color.secondary.opacity(0.5)).frame(width: 6, height: 6)
+                            }
+                            .font(.callout)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                            .background(.quaternary.opacity(0.6), in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                    .strokeBorder(Color.primary.opacity(0.2), style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
+                            )
                         }
-                        .font(.callout)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 5)
-                        .background(.quaternary.opacity(0.6), in: RoundedRectangle(cornerRadius: 7, style: .continuous))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                .strokeBorder(Color.primary.opacity(0.2), style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
-                        )
+                        .buttonStyle(.plain)
                         .draggable(item.name)
-                        .onTapGesture(count: 2) { place(item) }
                         .contextMenu { Button("Place on Layout") { place(item) } }
-                        .help("Drag onto the layout, or double-click to place it")
+                        .help("Drag onto the layout, or click to place it beside the others")
+                        .accessibilityLabel("Place \(item.name) on the layout")
                     }
                 }
             }

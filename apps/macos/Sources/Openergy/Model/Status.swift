@@ -239,7 +239,7 @@ struct DiscoveredPeer: Codable, Equatable, Sendable, Identifiable {
     var name: String
     var host: String
     var port: Int?
-    var fingerprint: String?
+    var fingerprintHint: String?
     var id: String { "\(name)@\(host):\(port ?? 0)" }
 
     var address: String { port.map { "\(host):\($0)" } ?? host }

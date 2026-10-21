@@ -12,6 +12,9 @@ final class DaemonClient {
 
     var isConnected: Bool { socket != nil }
 
+    /// `OPENERGY_IPC_TRACE=1` prints every request (development only; never contains secrets).
+    private static let trace = ProcessInfo.processInfo.environment["OPENERGY_IPC_TRACE"] == "1"
+
     func connect(path: String) throws {
         disconnect()
         let socket = try IPCSocket(path: path)
@@ -41,6 +44,7 @@ final class DaemonClient {
 
         let request: JSONValue = ["id": .number(Double(id)), "method": .string(method), "params": params]
         let payload = try JSONEncoder().encode(request)
+        if Self.trace { print("IPC → \(String(decoding: payload, as: UTF8.self).prefix(400))") }
 
         return try await withCheckedThrowingContinuation { continuation in
             pending[id] = continuation

@@ -92,7 +92,7 @@ struct AppIconView: View {
 enum MenuBarIcon {
     /// Template image for the status item. Half brightness shows state:
     /// both halves = connected, right half dim = waiting, both dim = off.
-    static func image(for tone: AppModel.Tone, role: Role) -> NSImage {
+    static func image(for tone: AppModel.Tone, role: Role, headline: String = "") -> NSImage {
         let left: CGFloat = role == .off ? 0.35 : 1
         let right: CGFloat
         switch (role, tone) {
@@ -122,10 +122,20 @@ enum MenuBarIcon {
             let dot: CGFloat = 1.5
             NSColor.black.withAlphaComponent(left).setFill()
             NSBezierPath(ovalIn: NSRect(x: center.x - dot, y: center.y - dot, width: dot * 2, height: dot * 2)).fill()
+
+            // Attention badge: a solid dot in the top-right corner, with a clear ring around it.
+            if tone == .warning || tone == .bad {
+                let badge = NSRect(x: rect.maxX - 6.5, y: rect.maxY - 6.5, width: 6, height: 6)
+                NSGraphicsContext.current?.compositingOperation = .clear
+                NSBezierPath(ovalIn: badge.insetBy(dx: -1.2, dy: -1.2)).fill()
+                NSGraphicsContext.current?.compositingOperation = .sourceOver
+                NSColor.black.setFill()
+                NSBezierPath(ovalIn: badge).fill()
+            }
             return true
         }
         image.isTemplate = true
-        image.accessibilityDescription = "Openergy"
+        image.accessibilityDescription = headline.isEmpty ? "Openergy" : "Openergy, \(headline)"
         return image
     }
 }

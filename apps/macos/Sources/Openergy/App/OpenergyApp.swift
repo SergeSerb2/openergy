@@ -62,7 +62,7 @@ struct MenuBarLabel: View {
     @AppStorage("didCompleteFirstRun") private var didCompleteFirstRun = false
 
     var body: some View {
-        Image(nsImage: MenuBarIcon.image(for: model.tone, role: model.role))
+        Image(nsImage: MenuBarIcon.image(for: model.tone, role: model.role, headline: model.headline))
             .task {
                 model.start()
                 if !didCompleteFirstRun {
@@ -70,6 +70,12 @@ struct MenuBarLabel: View {
                     openWindow(id: WindowID.main)
                     NSApp.activate()
                 }
+            }
+            // A held connection is dropped after 30 s, so bring the approval sheet forward now.
+            .onChange(of: model.pendingTrust.first?.fingerprint) { _, fingerprint in
+                guard fingerprint != nil else { return }
+                openWindow(id: WindowID.main)
+                NSApp.activate()
             }
     }
 }

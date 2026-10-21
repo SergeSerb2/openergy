@@ -22,7 +22,7 @@ export PATH="$HOME/.cargo/bin:$PATH"
 
 step() { printf '\n==> %s\n' "$*"; }
 
-ARCHS=(arm64)
+ARCHS=("$(uname -m)")
 [[ "${UNIVERSAL:-0}" == "1" ]] && ARCHS=(arm64 x86_64)
 
 step "Building the openergy daemon (${ARCHS[*]})"
@@ -68,7 +68,10 @@ if [[ -z "$IDENTITY" ]]; then
     | grep -E '"(Developer ID Application|Apple Development):' | head -1 | sed -E 's/.*"(.*)"/\1/' || true)"
 fi
 IDENTITY="${IDENTITY:--}"
-SIGN_FLAGS=(--force --options runtime --timestamp=none --sign "$IDENTITY")
+# Developer ID builds need a secure timestamp for notarization; local builds skip the network.
+TIMESTAMP=--timestamp=none
+[[ "$IDENTITY" == Developer\ ID\ Application:* ]] && TIMESTAMP=--timestamp
+SIGN_FLAGS=(--force --options runtime "$TIMESTAMP" --sign "$IDENTITY")
 codesign "${SIGN_FLAGS[@]}" --identifier dev.openergy.daemon "$APP/Contents/Helpers/openergy"
 codesign "${SIGN_FLAGS[@]}" "$APP"
 codesign --verify --deep --strict "$APP"

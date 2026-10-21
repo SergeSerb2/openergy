@@ -16,6 +16,14 @@ struct OpenergyConfig: Codable, Equatable, Sendable {
     var screen: [Screen]?
     var derivedLinks: [Link]?
     var macos: MacOS?
+    /// Each `[[screen]]` entry exactly as the daemon sent it. Layout saves change only `rect`
+    /// (and renames change only `name`), so aliases, links, modifiers and options survive:
+    /// a merge patch replaces arrays whole.
+    var rawScreens: [JSONValue] = []
+
+    private enum CodingKeys: String, CodingKey {
+        case role, name, server, client, tls, clipboard, input, `switch`, hotkeys, screen, derivedLinks, macos
+    }
 
     var screens: [Screen]? {
         get { screen }
@@ -24,7 +32,9 @@ struct OpenergyConfig: Codable, Equatable, Sendable {
 
     /// `config.get` and `config.patch` answer `{config, derived_links}`.
     static func decode(fromResult result: JSONValue) throws -> OpenergyConfig {
-        var config = try (result["config"] ?? result).decode(OpenergyConfig.self)
+        let body = result["config"] ?? result
+        var config = try body.decode(OpenergyConfig.self)
+        if case .array(let items)? = body["screen"] { config.rawScreens = items }
         if let links = result["derived_links"], let decoded = try? links.decode([Link].self) {
             config.derivedLinks = decoded
         }

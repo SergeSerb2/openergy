@@ -2,6 +2,7 @@ import AppKit
 import Observation
 import OSLog
 import ServiceManagement
+import SystemConfiguration
 
 /// The app's single source of truth. It mirrors daemon state and sends user intent back.
 @MainActor
@@ -20,16 +21,26 @@ final class AppModel {
     private(set) var logLines: [String] = []
     private(set) var link: ServiceLink = .connecting
     private(set) var lastActionError: String?
+    /// Non-error information from the last action, e.g. config warnings or import notes.
+    private(set) var notice: String?
     private(set) var launchAtLogin = SMAppService.mainApp.status == .enabled
+    private(set) var launchAtLoginNeedsApproval = SMAppService.mainApp.status == .requiresApproval
     let isDemo: Bool
 
     static let shared = AppModel()
+
+    /// The Mac's user-visible name, read once (Host.current() can block on the network).
+    static let computerName: String = {
+        if let name = SCDynamicStoreCopyComputerName(nil, nil) as String?, !name.isEmpty { return name }
+        return ProcessInfo.processInfo.hostName.replacingOccurrences(of: ".local", with: "")
+    }()
 
     private let client = DaemonClient()
     private let supervisor = DaemonSupervisor()
     private let log = Logger(subsystem: "dev.openergy.app", category: "model")
     private var connectTask: Task<Void, Never>?
-    private var logsSubscribed = false
+    /// What the Activity pane wants; re-applied after every reconnect.
+    private var logsWanted = false
 
     init(demo: DemoScenario? = DemoScenario.fromEnvironment) {
         isDemo = demo != nil
@@ -50,7 +61,20 @@ final class AppModel {
     var connectedPeers: [Peer] { (status.peers ?? []).filter { $0.connected == true } }
     var missingPermissions: [PermissionKind] { status.permissions?.missing(for: role) ?? [] }
     var pendingTrust: [PendingTrust] { status.pendingTrust ?? [] }
-    var localName: String { status.name ?? config.name ?? Host.current().localizedName ?? "This Mac" }
+    var isReady: Bool { link == .connected }
+
+    var localName: String {
+        if let name = status.name, !name.isEmpty { return name }
+        if let name = config.name, !name.isEmpty { return name }
+        return Self.computerName
+    }
+
+    /// True while the shared pointer is on this Mac. A client only learns this from its server,
+    /// so with no server connected the pointer is, by definition, local.
+    var pointerOnThisMac: Bool {
+        guard role == .client, !connectedPeers.isEmpty else { return true }
+        return status.activeScreen == localName
+    }
 
     var headline: String {
         switch link {
@@ -83,13 +107,16 @@ final class AppModel {
             return "Choose Host or Join to start."
         case .server:
             if let error = status.lastError?.message, state == .error { return error }
-            let listen = status.server?.listen ?? "port \(config.server?.port ?? 24800)"
-            return connectedPeers.isEmpty ? "Listening on \(listen)" : "This Mac's keyboard and mouse"
+            guard connectedPeers.isEmpty else { return "This Mac's keyboard and mouse" }
+            let port = config.server?.port ?? 24800
+            let address = LocalAddresses.joinable().first.map { port == 24800 ? $0 : "\($0):\(port)" }
+            return address.map { "Other computers join \($0)" } ?? "Listening on port \(port)"
         case .client:
             if let peer = connectedPeers.first {
                 return "\(peer.address ?? "") · \(peer.tls?.enabled == true ? (peer.tls?.version ?? "TLS") : "Not encrypted")"
             }
-            if let error = status.lastError?.message, state != .connected {
+            // After Disconnect the daemon is idle: an old error would only confuse.
+            if let error = status.lastError?.message, [.connecting, .reconnecting, .error].contains(state) {
                 guard let retry = status.client?.nextRetryMs, retry > 0 else { return error }
                 return "\(error) Trying again in \(Int((retry / 1000).rounded(.up))) s."
             }
@@ -133,6 +160,7 @@ final class AppModel {
         link = .connecting
         var delay: Duration = .milliseconds(100)
         var waited: Duration = .zero
+        var lastError: Error?
         while !Task.isCancelled {
             do {
                 try client.connect(path: DaemonSupervisor.socketPath)
@@ -140,26 +168,31 @@ final class AppModel {
                 link = .connected
                 supervisor.markHealthy()
                 await refreshAll()
-                return
+                if logsWanted { await applyLogSubscription() }
+                // The socket can close while refreshing; then keep looping instead of stopping here.
+                if client.isConnected { return }
+                link = .connecting
             } catch {
-                if !supervisor.isRunning, DaemonSupervisor.executableURL != nil {
+                lastError = error
+                // Start the daemon once; after that the supervisor owns restarts and their backoff.
+                if !supervisor.hasStarted, DaemonSupervisor.executableURL != nil {
                     supervisor.start()
                 } else if DaemonSupervisor.executableURL == nil {
                     link = .unavailable("The openergy service binary is missing from the app.")
                 }
                 if waited > .seconds(8) {
-                    link = .unavailable("The Openergy service is not responding. Retrying…")
+                    let reason = (lastError as? IPCError)?.errorDescription ?? "The Openergy service is not responding."
+                    link = .unavailable("\(reason) Retrying…")
                 }
-                try? await Task.sleep(for: delay)
-                waited += delay
-                delay = min(delay * 2, .seconds(2))
             }
+            try? await Task.sleep(for: delay)
+            waited += delay
+            delay = min(delay * 2, .seconds(2))
         }
     }
 
     private func handleDisconnect() {
         link = .connecting
-        logsSubscribed = false
         if connectTask == nil {
             connectTask = Task { [weak self] in await self?.connectLoop() }
         }
@@ -174,7 +207,10 @@ final class AppModel {
         case "discovery.changed":
             if let next = try? data.decode([DiscoveredPeer].self) { discovered = next }
         case "log.line":
-            if let line = data.stringValue { appendLog(line) }
+            if let line = data["line"]?.stringValue ?? data.stringValue { appendLog(line) }
+        case "peer.untrusted":
+            // Bring the approval into view right away; the status event may be coalesced.
+            Task { if let next = try? await client.call("status.get").decode(DaemonStatus.self) { status = next } }
         default:
             break
         }
@@ -204,15 +240,30 @@ final class AppModel {
         perform("config.patch", ["patch": JSONValue.patch(path, value)])
     }
 
+    /// Join a server. Works again after Disconnect, also with the same address.
     func join(_ address: String) {
         let trimmed = address.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return }
         mutateDemo { $0.config.client = .init(remote: trimmed, autoconnect: true); $0.config.role = .client; $0.status.role = .client }
-        perform("config.patch", ["patch": ["role": "client", "client": ["remote": .string(trimmed), "autoconnect": true]]])
+        guard !isDemo else { return }
+        Task {
+            do {
+                let result = try await client.call("config.patch", ["patch": [
+                    "role": "client", "client": ["remote": .string(trimmed), "autoconnect": true],
+                ]])
+                applyPatchResult(result)
+                // Disconnect switches connecting off; connect without a host switches it on again.
+                try await client.call("connection.connect")
+                if let next = try? await client.call("status.get").decode(DaemonStatus.self) { status = next }
+                lastActionError = nil
+            } catch {
+                lastActionError = error.localizedDescription
+            }
+        }
     }
 
     func reconnect() { perform("connection.restart") }
-    func disconnect() { perform("connection.disconnect") }
+    func disconnect() { perform("connection.disconnect", refresh: true) }
 
     func approve(_ fingerprint: String) {
         mutateDemo { $0.status.pendingTrust?.removeAll { $0.fingerprint == fingerprint } }
@@ -243,9 +294,12 @@ final class AppModel {
         Task {
             do {
                 let result = try await client.call("config.import_synergy", ["path": .string(path), "apply": true])
-                if let warnings = result["report"]?["warnings"], case .array(let items) = warnings, !items.isEmpty {
-                    lastActionError = "Imported with notes: " + items.compactMap(\.stringValue).joined(separator: " ")
+                if case .array(let items)? = result["report"]?["warnings"], !items.isEmpty {
+                    notice = "Imported with notes: " + items.compactMap(\.stringValue).joined(separator: " ")
+                } else {
+                    notice = "Imported your Synergy settings."
                 }
+                lastActionError = nil
                 await refreshAll()
             } catch {
                 lastActionError = error.localizedDescription
@@ -254,19 +308,46 @@ final class AppModel {
     }
 
     /// Saves the whole server layout after a drag. Rects use screen points.
+    /// The daemon accepts only non-negative origins, so the layout is shifted to start at (0, 0);
+    /// only relative positions matter for links.
     func saveLayout(_ screens: [OpenergyConfig.Screen]) {
-        mutateDemo { $0.config.screens = screens }
-        config.screens = screens
-        let items: [JSONValue] = screens.map { screen in
-            var object: [String: JSONValue] = ["name": .string(screen.name)]
-            if let rect = screen.rect {
-                object["rect"] = ["x": .number(rect.x.rounded()), "y": .number(rect.y.rounded()),
-                                  "w": .number(rect.w.rounded()), "h": .number(rect.h.rounded())]
+        let placed = screens.compactMap(\.rect)
+        let dx = placed.map(\.x).min() ?? 0
+        let dy = placed.map(\.y).min() ?? 0
+        let normalized = screens.map { screen -> OpenergyConfig.Screen in
+            var screen = screen
+            if var rect = screen.rect {
+                rect.x = (rect.x - dx).rounded()
+                rect.y = (rect.y - dy).rounded()
+                rect.w = rect.w.rounded()
+                rect.h = rect.h.rounded()
+                screen.rect = rect
             }
-            if let os = screen.os { object["os"] = .string(os) }
-            return .object(object)
+            return screen
         }
-        perform("config.patch", ["patch": ["screen": .array(items)]])
+        mutateDemo { $0.config.screens = normalized }
+        config.screens = normalized
+        sendScreens(normalized.map { ($0.name, $0) })
+    }
+
+    /// Renames this Mac. While hosting, its layout entry is renamed in the same patch so its
+    /// position and links stay attached.
+    func renameLocal(to newName: String) {
+        let name = newName.trimmingCharacters(in: .whitespaces)
+        guard !name.isEmpty, name != localName else { return }
+        guard !isDemo else { return }
+        let oldName = localName
+        let screens = config.screens ?? []
+        var patch: [String: JSONValue] = ["name": .string(name)]
+        if screens.contains(where: { $0.name == oldName }) {
+            let renamed = screens.map { screen -> (String, OpenergyConfig.Screen) in
+                var copy = screen
+                if screen.name == oldName { copy.name = name }
+                return (screen.name, copy)
+            }
+            patch["screen"] = .array(screenObjects(renamed))
+        }
+        perform("config.patch", ["patch": .object(patch)])
     }
 
     func setLaunchAtLogin(_ enabled: Bool) {
@@ -275,21 +356,29 @@ final class AppModel {
         } catch {
             lastActionError = "Could not change the login item: \(error.localizedDescription)"
         }
+        refreshLoginItem()
+        if launchAtLoginNeedsApproval { SMAppService.openSystemSettingsLoginItems() }
+    }
+
+    func refreshLoginItem() {
         launchAtLogin = SMAppService.mainApp.status == .enabled
+        launchAtLoginNeedsApproval = SMAppService.mainApp.status == .requiresApproval
     }
 
     func clearActionError() { lastActionError = nil }
+    func clearNotice() { notice = nil }
 
     func subscribeLogs(_ on: Bool) {
-        guard !isDemo, on != logsSubscribed else { return }
-        logsSubscribed = on
-        Task {
-            if on, let lines = try? await client.call("logs.tail", ["lines": 400]),
-               case .array(let items) = lines {
-                logLines = items.compactMap(\.stringValue)
-            }
-            _ = try? await client.call(on ? "logs.subscribe" : "logs.unsubscribe")
+        guard !isDemo, on != logsWanted else { return }
+        logsWanted = on
+        Task { await applyLogSubscription() }
+    }
+
+    private func applyLogSubscription() async {
+        if logsWanted, case .array(let items)? = try? await client.call("logs.tail", ["lines": 400]) {
+            logLines = items.compactMap { $0["line"]?.stringValue ?? $0.stringValue }
         }
+        _ = try? await client.call(logsWanted ? "logs.subscribe" : "logs.unsubscribe")
     }
 
     func revealConfigFile() {
@@ -299,13 +388,47 @@ final class AppModel {
 
     // MARK: Plumbing
 
+    /// Builds `[[screen]]` objects from the daemon's raw entries (looked up by their current name),
+    /// changing only `name` and `rect`, so imported aliases, links, modifiers and options survive.
+    private func screenObjects(_ screens: [(String, OpenergyConfig.Screen)]) -> [JSONValue] {
+        var raw: [String: [String: JSONValue]] = [:]
+        for item in config.rawScreens {
+            if let object = item.objectValue, let name = object["name"]?.stringValue { raw[name] = object }
+        }
+        return screens.map { originalName, screen in
+            var object = raw[originalName] ?? [:]
+            object["name"] = .string(screen.name)
+            if let rect = screen.rect {
+                object["rect"] = ["x": .number(rect.x), "y": .number(rect.y), "w": .number(rect.w), "h": .number(rect.h)]
+            } else {
+                object.removeValue(forKey: "rect")
+            }
+            if object["os"] == nil, let os = screen.os { object["os"] = .string(os) }
+            return .object(object)
+        }
+    }
+
+    private func sendScreens(_ screens: [(String, OpenergyConfig.Screen)]) {
+        perform("config.patch", ["patch": ["screen": .array(screenObjects(screens))]])
+    }
+
+    private func applyPatchResult(_ result: JSONValue) {
+        guard var next = try? OpenergyConfig.decode(fromResult: result) else { return }
+        // `config.patch` answers without derived links; keep the last ones until config.changed.
+        if next.derivedLinks == nil { next.derivedLinks = config.derivedLinks }
+        config = next
+        if case .array(let warnings)? = result["warnings"], !warnings.isEmpty {
+            notice = warnings.compactMap(\.stringValue).joined(separator: " ")
+        }
+    }
+
     private func perform(_ method: String, _ params: JSONValue = [:], refresh: Bool = false) {
         guard !isDemo else { return }
         Task {
             do {
                 let result = try await client.call(method, params)
                 if method == "config.patch" {
-                    if let next = try? OpenergyConfig.decode(fromResult: result) { config = next }
+                    applyPatchResult(result)
                     // The daemon also pushes status.changed; fetching once keeps the UI in step even if
                     // that event is coalesced or arrives after the next user action.
                     if let next = try? await client.call("status.get").decode(DaemonStatus.self) { status = next }

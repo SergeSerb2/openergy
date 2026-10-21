@@ -101,6 +101,12 @@ final class IPCSocket: @unchecked Sendable {
                     onFrame(try readExactly(Int(length)))
                 }
             } catch {
+                // Only the reader closes the descriptor, after it has stopped reading, and under the
+                // lock: a new socket can then never reuse the number while it is still in use here.
+                lock.lock()
+                isClosed = true
+                Darwin.close(fd)
+                lock.unlock()
                 onClose(error)
             }
         }
@@ -109,13 +115,13 @@ final class IPCSocket: @unchecked Sendable {
         thread.start()
     }
 
+    /// Stops both directions; the reader thread wakes up, exits and closes the descriptor.
     func close() {
         lock.lock()
         defer { lock.unlock() }
         guard !isClosed else { return }
         isClosed = true
         shutdown(fd, SHUT_RDWR)
-        Darwin.close(fd)
     }
 
     private func readExactly(_ count: Int) throws -> Data {

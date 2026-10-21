@@ -34,7 +34,14 @@ enum Pane: String, CaseIterable, Identifiable, Hashable {
 struct MainWindow: View {
     let model: AppModel
     var initialPane: Pane?
-    @State private var pane: Pane? = .layout
+    @State private var pane: Pane?
+
+    init(model: AppModel, initialPane: Pane? = nil) {
+        self.model = model
+        self.initialPane = initialPane
+        // Start on the requested pane so no other pane (and its side effects) renders first.
+        _pane = State(initialValue: initialPane ?? .layout)
+    }
     @SceneStorage("pane") private var storedPane = Pane.layout.rawValue
 
     var body: some View {
@@ -57,7 +64,13 @@ struct MainWindow: View {
             }
             .navigationSplitViewColumnWidth(min: 190, ideal: 210, max: 260)
         } detail: {
-            detail(for: pane ?? .layout)
+            Group {
+                if model.isReady || pane == .activity || pane == .permissions {
+                    detail(for: pane ?? .layout)
+                } else {
+                    ServiceStartingView(model: model)
+                }
+            }
                 .frame(minWidth: 560, minHeight: 460)
                 .navigationTitle((pane ?? .layout).title)
                 .toolbar {
@@ -128,6 +141,11 @@ struct MainWindow: View {
 
     @ViewBuilder
     private var actionErrorBar: some View {
+        if let notice = model.notice, model.lastActionError == nil {
+            Banner(kind: .info, title: "Note", message: notice, actionTitle: "OK") { model.clearNotice() }
+                .padding(12)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+        }
         if let message = model.lastActionError {
             Banner(kind: .error, title: "Something went wrong", message: message, actionTitle: "Dismiss") {
                 model.clearActionError()
@@ -135,5 +153,26 @@ struct MainWindow: View {
             .padding(12)
             .transition(.move(edge: .bottom).combined(with: .opacity))
         }
+    }
+}
+
+
+/// Shown while the app waits for the background service, so no action can fail early.
+struct ServiceStartingView: View {
+    let model: AppModel
+
+    var body: some View {
+        VStack(spacing: 12) {
+            if case .unavailable(let message) = model.link {
+                Image(systemName: "exclamationmark.triangle").font(.system(size: 28)).foregroundStyle(.orange)
+                Text("The Openergy service is not running").font(.headline)
+                Text(message).font(.callout).foregroundStyle(.secondary).multilineTextAlignment(.center)
+            } else {
+                ProgressView()
+                Text("Starting Openergy…").font(.headline)
+            }
+        }
+        .padding(32)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }

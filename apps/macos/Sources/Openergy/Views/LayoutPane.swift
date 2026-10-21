@@ -114,7 +114,7 @@ struct JoinOverview: View {
                                 highlighted: server == nil || pointerOnThisMac)
                     ConnectionLine(active: server != nil, waiting: model.state == .connecting || model.state == .reconnecting)
                         .frame(width: 140, height: 40)
-                    MachineCard(symbol: OSSymbol.name(for: server?.os ?? "windows"),
+                    MachineCard(symbol: OSSymbol.name(for: server?.os),
                                 name: server?.name ?? serverLabel,
                                 caption: server != nil ? "Keyboard and mouse" : "Server",
                                 online: server != nil, highlighted: server != nil && !pointerOnThisMac)
@@ -155,9 +155,7 @@ struct JoinOverview: View {
         .onAppear { address = model.config.client?.remote ?? "" }
     }
 
-    private var pointerOnThisMac: Bool {
-        model.status.activeScreen == nil || model.status.activeScreen == model.localName
-    }
+    private var pointerOnThisMac: Bool { model.pointerOnThisMac }
 
     private var serverLabel: String {
         model.config.client?.remote ?? "Choose a server"

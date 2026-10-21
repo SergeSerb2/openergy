@@ -61,6 +61,11 @@ enum JSONValue: Codable, Equatable, Sendable, ExpressibleByDictionaryLiteral,
         return nil
     }
 
+    var objectValue: [String: JSONValue]? {
+        if case .object(let value) = self { return value }
+        return nil
+    }
+
     var stringValue: String? {
         if case .string(let value) = self { return value }
         return nil

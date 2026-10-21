@@ -37,6 +37,8 @@ final class DaemonSupervisor {
     }
 
     var isRunning: Bool { process?.isRunning ?? false }
+    /// After the first start, only the supervisor restarts the daemon (with its own backoff).
+    private(set) var hasStarted = false
 
     func start() {
         guard process == nil else { return }
@@ -45,6 +47,7 @@ final class DaemonSupervisor {
             return
         }
         stopping = false
+        hasStarted = true
 
         let process = Process()
         process.executableURL = executable
@@ -61,7 +64,8 @@ final class DaemonSupervisor {
         process.environment = environment
         process.standardInput = FileHandle.nullDevice
         process.standardOutput = FileHandle.nullDevice
-        process.standardError = FileHandle.nullDevice
+        // Keep the daemon's stderr (startup failures, aborts) next to its own log files.
+        process.standardError = Self.stderrLog() ?? FileHandle.nullDevice
         process.terminationHandler = { [weak self] finished in
             let status = finished.terminationStatus
             let reason = finished.terminationReason
@@ -95,6 +99,20 @@ final class DaemonSupervisor {
             RunLoop.current.run(until: Date().addingTimeInterval(0.05))
         }
         if process.isRunning { kill(process.processIdentifier, SIGKILL) }
+    }
+
+    private static func stderrLog() -> FileHandle? {
+        let url = supportDirectory.appendingPathComponent("daemon-stderr.log")
+        if !FileManager.default.fileExists(atPath: url.path) {
+            FileManager.default.createFile(atPath: url.path, contents: nil, attributes: [.posixPermissions: 0o600])
+        }
+        // Start fresh when the file grows past 1 MB.
+        if let size = try? FileManager.default.attributesOfItem(atPath: url.path)[.size] as? Int, size > 1_000_000 {
+            try? Data().write(to: url)
+        }
+        guard let handle = try? FileHandle(forWritingTo: url) else { return nil }
+        handle.seekToEndOfFile()
+        return handle
     }
 
     private func handleExit(status: Int32, reason: Process.TerminationReason) {

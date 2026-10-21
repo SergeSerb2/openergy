@@ -212,11 +212,11 @@ struct MiniMap: View {
 
     private func clientMap(size: CGSize) -> some View {
         let server = model.connectedPeers.first
-        let onThisMac = model.status.activeScreen == nil || model.status.activeScreen == model.localName
+        let onThisMac = model.pointerOnThisMac
         return HStack(spacing: 10) {
             miniScreen(name: "This Mac", symbol: "apple.logo", active: server != nil && onThisMac)
             ConnectionLine(active: server != nil, waiting: server == nil).frame(width: 46, height: 14)
-            miniScreen(name: server?.name ?? "Server", symbol: OSSymbol.name(for: server?.os ?? "windows"),
+            miniScreen(name: server?.name ?? "Server", symbol: OSSymbol.name(for: server?.os),
                        active: server != nil && !onThisMac)
         }
         .frame(width: size.width, height: size.height)

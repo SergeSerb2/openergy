@@ -27,8 +27,8 @@ struct ConnectionPane: View {
                 LabeledContent("Mode") {
                     Text("\(model.role.title) · \(model.role.summary)").foregroundStyle(.secondary)
                 }
-                TextField("Computer name", text: $name, prompt: Text(Host.current().localizedName ?? "This Mac"))
-                    .onSubmit { model.patch("name", .string(name)) }
+                TextField("Computer name", text: $name, prompt: Text(AppModel.computerName))
+                    .onSubmit { model.renameLocal(to: name) }
             } header: {
                 Text("This Mac")
             } footer: {
@@ -122,8 +122,13 @@ struct ConnectionPane: View {
                 }
             LabeledContent("Join with") {
                 VStack(alignment: .trailing, spacing: 2) {
-                    ForEach(LocalAddresses.ipv4(), id: \.self) { ip in
-                        Text(ip).textSelection(.enabled).font(.body.monospacedDigit())
+                    let port = model.config.server?.port ?? 24800
+                    let addresses = LocalAddresses.joinable()
+                    if addresses.isEmpty {
+                        Text("Not connected to a network").foregroundStyle(.secondary)
+                    }
+                    ForEach(addresses, id: \.self) { ip in
+                        Text(port == 24800 ? ip : "\(ip):\(port)").textSelection(.enabled).font(.body.monospacedDigit())
                     }
                 }
             }
@@ -148,7 +153,13 @@ struct ConnectionPane: View {
 }
 
 enum LocalAddresses {
-    static func ipv4() -> [String] {
+    /// Addresses another computer on the LAN can use: Wi-Fi and Ethernet (en*), not bridges,
+    /// VPN tunnels or virtual machine networks.
+    static func joinable() -> [String] {
+        ipv4(interfaces: { $0.hasPrefix("en") })
+    }
+
+    static func ipv4(interfaces include: (String) -> Bool = { _ in true }) -> [String] {
         var result: [String] = []
         var pointer: UnsafeMutablePointer<ifaddrs>?
         guard getifaddrs(&pointer) == 0, let first = pointer else { return [] }
@@ -156,13 +167,14 @@ enum LocalAddresses {
         for entry in sequence(first: first, next: { $0.pointee.ifa_next }) {
             let flags = Int32(entry.pointee.ifa_flags)
             guard let address = entry.pointee.ifa_addr, address.pointee.sa_family == UInt8(AF_INET),
-                  flags & IFF_UP != 0, flags & IFF_LOOPBACK == 0 else { continue }
+                  flags & IFF_UP != 0, flags & IFF_LOOPBACK == 0,
+                  include(String(cString: entry.pointee.ifa_name)) else { continue }
             var host = [CChar](repeating: 0, count: Int(NI_MAXHOST))
             if getnameinfo(address, socklen_t(address.pointee.sa_len), &host, socklen_t(host.count), nil, 0, NI_NUMERICHOST) == 0 {
                 result.append(String(decoding: host.prefix { $0 != 0 }.map { UInt8(bitPattern: $0) }, as: UTF8.self))
             }
         }
-        return result.isEmpty ? ["No network"] : result
+        return result
     }
 }
 
@@ -177,9 +189,10 @@ struct InputPane: View {
                 LabeledContent("Scroll speed") {
                     HStack {
                         Image(systemName: "tortoise").foregroundStyle(.secondary)
-                        Slider(value: model.number("input.scroll_sensitivity", { $0.input?.scrollSensitivity }, default: 1),
-                               in: 0.25...3, step: 0.25)
-                            .frame(width: 200)
+                        CommitSlider(value: model.config.input?.scrollSensitivity ?? 1, range: 0.25...3, step: 0.25) {
+                            model.patch("input.scroll_sensitivity", .number($0))
+                        }
+                        .frame(width: 200)
                         Image(systemName: "hare").foregroundStyle(.secondary)
                     }
                 }
@@ -198,17 +211,14 @@ struct InputPane: View {
             }
 
             Section {
-                Picker("Wait at the edge", selection: model.number("switch.delay_ms", { $0.switch?.delayMs }, default: 0)) {
-                    Text("Off").tag(0.0)
-                    Text("150 ms").tag(150.0)
-                    Text("250 ms").tag(250.0)
-                    Text("500 ms").tag(500.0)
-                }
-                Picker("Double-tap the edge", selection: model.number("switch.double_tap_ms", { $0.switch?.doubleTapMs }, default: 0)) {
-                    Text("Off").tag(0.0)
-                    Text("Within 250 ms").tag(250.0)
-                    Text("Within 400 ms").tag(400.0)
-                }
+                ValuePicker(title: "Wait at the edge",
+                            value: model.number("switch.delay_ms", { $0.switch?.delayMs }, default: 0),
+                            options: [("Off", 0), ("150 ms", 150), ("250 ms", 250), ("500 ms", 500)],
+                            custom: { "\(Int($0)) ms" })
+                ValuePicker(title: "Double-tap the edge",
+                            value: model.number("switch.double_tap_ms", { $0.switch?.doubleTapMs }, default: 0),
+                            options: [("Off", 0), ("Within 250 ms", 250), ("Within 400 ms", 400)],
+                            custom: { "Within \(Int($0)) ms" })
                 LabeledContent("Blocked corners") {
                     DeadCornersPicker(model: model)
                 }
@@ -292,13 +302,12 @@ struct ClipboardPane: View {
                     Text("Share clipboard")
                     Text("Copy on one computer and paste on another. Text, rich text and images.")
                 }
-                Picker("Largest item", selection: model.number("clipboard.max_bytes", { $0.clipboard?.maxBytes }, default: 64 * 1024 * 1024)) {
-                    Text("4 MB").tag(4.0 * 1024 * 1024)
-                    Text("16 MB").tag(16.0 * 1024 * 1024)
-                    Text("64 MB").tag(64.0 * 1024 * 1024)
-                    Text("256 MB").tag(256.0 * 1024 * 1024)
-                }
-                .disabled(model.config.clipboard?.enabled == false)
+                ValuePicker(title: "Largest item",
+                            value: model.number("clipboard.max_bytes", { $0.clipboard?.maxBytes }, default: 64 * 1024 * 1024),
+                            options: [("4 MB", 4 * 1024 * 1024), ("16 MB", 16 * 1024 * 1024),
+                                      ("64 MB", 64 * 1024 * 1024), ("256 MB", 256 * 1024 * 1024)],
+                            custom: { ByteText.string($0) })
+                    .disabled(model.config.clipboard?.enabled == false)
             } footer: {
                 FooterText("Large items move in the background, so typing and the pointer never wait. Synergy computers accept at most their own limit, often 4 MB.")
             }
@@ -479,6 +488,12 @@ struct AdvancedPane: View {
 
             Section("General") {
                 Toggle("Open at login", isOn: Binding(get: { model.launchAtLogin }, set: { model.setLaunchAtLogin($0) }))
+                    .onAppear { model.refreshLoginItem() }
+                if model.launchAtLoginNeedsApproval {
+                    Text("Allow Openergy in System Settings → General → Login Items.")
+                        .font(.callout)
+                        .foregroundStyle(.orange)
+                }
                 Button("Show Configuration File in Finder") { model.revealConfigFile() }
             }
 
@@ -506,9 +521,9 @@ struct ActivityPane: View {
     @State private var warningsOnly = false
 
     var body: some View {
-        let lines = model.logLines.filter { line in
-            (filter.isEmpty || line.localizedCaseInsensitiveContains(filter))
-                && (!warningsOnly || line.contains(" warn ") || line.contains(" error "))
+        let lines = model.logLines.map(LogLine.init).filter { line in
+            (filter.isEmpty || line.text.localizedCaseInsensitiveContains(filter))
+                && (!warningsOnly || line.level == .warning || line.level == .error)
         }
         VStack(spacing: 0) {
             HStack {
@@ -520,7 +535,7 @@ struct ActivityPane: View {
                 Spacer()
                 Button {
                     NSPasteboard.general.clearContents()
-                    NSPasteboard.general.setString(lines.joined(separator: "\n"), forType: .string)
+                    NSPasteboard.general.setString(lines.map(\.display).joined(separator: "\n"), forType: .string)
                 } label: {
                     Label("Copy", systemImage: "doc.on.doc")
                 }
@@ -529,9 +544,9 @@ struct ActivityPane: View {
             Divider()
             ScrollViewReader { proxy in
                 List(Array(lines.enumerated()), id: \.offset) { index, line in
-                    Text(line)
+                    Text(line.display)
                         .font(.system(.caption, design: .monospaced))
-                        .foregroundStyle(color(for: line))
+                        .foregroundStyle(line.level.color)
                         .textSelection(.enabled)
                         .id(index)
                 }
@@ -545,10 +560,45 @@ struct ActivityPane: View {
         .onDisappear { model.subscribeLogs(false) }
     }
 
-    private func color(for line: String) -> Color {
-        if line.contains(" error ") { return .red }
-        if line.contains(" warn ") { return .orange }
-        return .primary
+}
+
+/// One daemon log line, e.g. "1792621985143 INFO openergy::runtime: connected".
+struct LogLine {
+    enum Level {
+        case error, warning, info, debug
+        var color: Color {
+            switch self {
+            case .error: .red
+            case .warning: .orange
+            case .info: .primary
+            case .debug: .secondary
+            }
+        }
+    }
+
+    let text: String
+    let level: Level
+    let display: String
+
+    init(_ text: String) {
+        self.text = text
+        let parts = text.split(separator: " ", maxSplits: 2, omittingEmptySubsequences: true)
+        let token = parts.count > 1 ? parts[1].uppercased() : ""
+        let level: Level = switch token {
+        case "ERROR": .error
+        case "WARN", "WARNING": .warning
+        case "DEBUG", "TRACE": .debug
+        default: text.range(of: " error ", options: .caseInsensitive) != nil ? .error
+            : (text.range(of: " warn", options: .caseInsensitive) != nil ? .warning : .info)
+        }
+        self.level = level
+        // Daemon lines start with Unix milliseconds; show local time instead.
+        if let first = parts.first, let ms = Double(first), ms > 1_000_000_000_000, parts.count == 3 {
+            let time = Date(timeIntervalSince1970: ms / 1000).formatted(.dateTime.hour().minute().second())
+            display = "\(time) \(parts[1]) \(parts[2])"
+        } else {
+            display = text
+        }
     }
 }
 
@@ -580,8 +630,8 @@ struct TrustApprovalSheet: View {
                 Spacer()
                 Button("Don't Trust", role: .cancel) { model.reject(pending.fingerprint) }
                     .keyboardShortcut(.cancelAction)
+                // No default (Return) shortcut: trusting must be a deliberate click.
                 Button("Trust") { model.approve(pending.fingerprint) }
-                    .keyboardShortcut(.defaultAction)
             }
         }
         .padding(24)
@@ -597,5 +647,45 @@ struct FooterText: View {
         Text(text)
             .multilineTextAlignment(.leading)
             .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+
+/// A picker for numeric settings. A value set elsewhere (for example by a Synergy import)
+/// that matches no option is shown as its own entry instead of a blank picker.
+struct ValuePicker: View {
+    let title: String
+    @Binding var value: Double
+    let options: [(String, Double)]
+    let custom: (Double) -> String
+
+    var body: some View {
+        Picker(title, selection: $value) {
+            ForEach(options, id: \.1) { label, option in
+                Text(label).tag(option)
+            }
+            if !options.contains(where: { $0.1 == value }) {
+                Text(custom(value)).tag(value)
+            }
+        }
+    }
+}
+
+/// A slider that saves once, when the drag ends, so responses for older values cannot pull
+/// the knob back while it moves.
+struct CommitSlider: View {
+    let value: Double
+    let range: ClosedRange<Double>
+    let step: Double
+    let commit: (Double) -> Void
+    @State private var draft: Double?
+
+    var body: some View {
+        Slider(value: Binding(get: { draft ?? value }, set: { draft = $0 }), in: range, step: step) { editing in
+            if !editing, let final = draft {
+                commit(final)
+                draft = nil
+            }
+        }
     }
 }

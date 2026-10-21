@@ -54,16 +54,16 @@ struct DemoScenario {
     }
 
     private static let sampleLogs: [String] = [
-        "2026-10-21 14:02:11.204 info daemon: Openergy 0.1.0 started (macos, pid 4211)",
-        "2026-10-21 14:02:11.219 info net: TLS identity loaded, fingerprint 3F:A2:91:0C…0D:A1",
-        "2026-10-21 14:02:11.240 info client: connecting to 192.168.1.20:24800",
-        "2026-10-21 14:02:11.262 info net: TLS 1.3 established with 192.168.1.20 (trusted)",
-        "2026-10-21 14:02:11.270 info client: server speaks Synergy 1.8, screen name accepted",
-        "2026-10-21 14:02:11.271 info client: options: heartbeat 5000 ms, clipboard 4000 KB, relative moves on",
-        "2026-10-21 14:03:40.118 info client: entered screen at 1511,604",
-        "2026-10-21 14:03:52.902 info clipboard: received 2 formats (text, html), 1.8 KB",
-        "2026-10-21 14:04:05.311 info client: left screen",
-        "2026-10-21 14:06:13.774 warn clipboard: not sent — 6.2 MB exceeds studio-pc's limit of 4.0 MB",
+        "1792623731204 INFO openergy::daemon: Openergy 0.1.0 started (macos, pid 4211)",
+        "1792623731219 INFO openergy_net::identity: TLS identity loaded, fingerprint 3F:A2:91:0C…0D:A1",
+        "1792623731240 INFO openergy::runtime: connecting to 192.168.1.20:24800",
+        "1792623731262 INFO openergy_net::tls: TLS 1.3 established with 192.168.1.20:24800 (trusted)",
+        "1792623731270 INFO openergy_session::client: server speaks Synergy 1.8; screen name accepted",
+        "1792623731271 INFO openergy_session::client: options: heartbeat 3000 ms, clipboard 4000 KiB",
+        "1792623820118 INFO openergy_session::client: entered at 1511,604",
+        "1792623832902 INFO openergy::clipboard: received 2 formats (text, html), 1.8 KB",
+        "1792623845311 INFO openergy_session::client: left screen",
+        "1792623973774 WARN openergy::clipboard: not sent: 6.2 MB exceeds studio-pc's limit of 4000 KiB",
     ]
 
     static let client = DemoScenario(
@@ -99,8 +99,8 @@ struct DemoScenario {
         ),
         config: baseConfig(role: .client),
         discovered: [
-            DiscoveredPeer(name: "studio-pc", host: "192.168.1.20", port: 24800, fingerprint: pcFingerprint),
-            DiscoveredPeer(name: "studio-linux", host: "192.168.1.31", port: 24800, fingerprint: linuxFingerprint),
+            DiscoveredPeer(name: "studio-pc", host: "192.168.1.20", port: 24800, fingerprintHint: String(pcFingerprint.prefix(23))),
+            DiscoveredPeer(name: "studio-linux", host: "192.168.1.31", port: 24800, fingerprintHint: String(linuxFingerprint.prefix(23))),
         ],
         trusted: TrustList(servers: [pcFingerprint], clients: []),
         logs: sampleLogs
@@ -163,7 +163,7 @@ struct DemoScenario {
         scenario.status.state = .reconnecting
         scenario.status.peers = []
         scenario.status.client = .init(remote: "192.168.1.20:24800", nextRetryMs: 4_000, attempt: 5)
-        scenario.status.lastError = .init(code: "connect_timeout", message: "No answer from 192.168.1.20:24800. Retrying in 4 s.", unixMs: nil)
+        scenario.status.lastError = .init(code: "connect_timeout", message: "No answer from 192.168.1.20:24800.", unixMs: nil)
         return scenario
     }()
 }
