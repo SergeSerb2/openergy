@@ -195,7 +195,10 @@ pub enum TrustError {
 }
 impl fmt::Display for TrustError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{self:?}")
+        match self {
+            Self::NotImplemented => f.write_str("This trust operation is unavailable."),
+            Self::Failed(message) => f.write_str(message),
+        }
     }
 }
 impl std::error::Error for TrustError {}

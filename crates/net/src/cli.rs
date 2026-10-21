@@ -8,7 +8,7 @@ fn arguments(args: &[String]) -> Result<(PathBuf, Vec<String>), String> {
     let mut rest = Vec::new();
     let mut args = args.iter();
     while let Some(arg) = args.next() {
-        if arg == "--dir" {
+        if arg == "--dir" || arg == "--config" {
             if dir.is_some() {
                 return Err("--dir may appear only once".into());
             }
@@ -16,7 +16,15 @@ fn arguments(args: &[String]) -> Result<(PathBuf, Vec<String>), String> {
                 .next()
                 .filter(|value| !value.is_empty() && !value.starts_with("--"))
                 .ok_or("--dir requires a directory")?;
-            dir = Some(PathBuf::from(value));
+            let path = PathBuf::from(value);
+            dir = Some(if arg == "--config" {
+                path.parent()
+                    .filter(|p| !p.as_os_str().is_empty())
+                    .unwrap_or_else(|| std::path::Path::new("."))
+                    .to_owned()
+            } else {
+                path
+            });
         } else {
             rest.push(arg.clone());
         }

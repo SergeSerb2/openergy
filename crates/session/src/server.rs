@@ -424,7 +424,7 @@ impl Server {
                 p.options = Options::default();
                 p.last_alive = self.now;
             }
-            Message::ClipboardGrab { id, sequence } if id.0 < 2 && self.config.clipboard.enabled => {
+            Message::ClipboardGrab { id, sequence } if id.0 == 0 && self.config.clipboard.enabled => {
                 if let Some(slot) = self.slots.get_mut(id.0 as usize) {
                     if sequence >= slot.sequence {
                         slot.sequence = sequence;
@@ -439,7 +439,7 @@ impl Server {
                 }
             }
             Message::ClipboardData { id, sequence, chunk }
-                if id.0 < 2 && self.config.clipboard.enabled && self.config.clipboard.receive =>
+                if id.0 == 0 && self.config.clipboard.enabled && self.config.clipboard.receive =>
             {
                 let valid = self
                     .slots

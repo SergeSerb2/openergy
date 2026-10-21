@@ -150,6 +150,7 @@ struct Runtime {
     state: String,
     connections: BTreeMap<ConnId, Connection>,
     pending: BTreeMap<ConnId, ipc::PendingTrust>,
+    expected_pin: Option<(String, Fingerprint)>,
     discovery: Value,
     last_error: Option<ipc::LastError>,
     last_transfer: Option<ipc::ClipboardTransfer>,
@@ -554,7 +555,19 @@ impl Runtime {
                         "reconnecting"
                     }
                     .into();
-                    self.execute(NetCommand::Connect { host, port });
+                    if let Some((_, fingerprint)) = self
+                        .expected_pin
+                        .as_ref()
+                        .filter(|(address, _)| address == &self.cfg.client.remote)
+                    {
+                        self.execute(NetCommand::ConnectPinned {
+                            host,
+                            port,
+                            fingerprint: *fingerprint,
+                        });
+                    } else {
+                        self.execute(NetCommand::Connect { host, port });
+                    }
                 }
                 Err(e) => {
                     self.state = "error".into();
@@ -872,20 +885,37 @@ impl Runtime {
                     cfg.role = Role::Client;
                     cfg.client.remote = host_port(&host, port);
                     cfg.client.autoconnect = true;
+                    if let Some(text) = req.params.get("fingerprint") {
+                        let fingerprint = text
+                            .as_str()
+                            .and_then(Fingerprint::parse)
+                            .ok_or_else(|| invalid("fingerprint must be a SHA-256 fingerprint"))?;
+                        // Explicit pins are scoped to this address for this daemon's
+                        // lifetime; retries retain the pin and cannot use plaintext.
+                        if !cfg.tls.enabled {
+                            return Err(invalid("an explicit fingerprint requires TLS"));
+                        }
+                        self.expected_pin = Some((cfg.client.remote.clone(), fingerprint));
+                        self.enabled = false;
+                        self.machine.shutdown(&mut self.actions);
+                        self.apply_actions();
+                        self.execute(NetCommand::Shutdown);
+                        self.process_net();
+                        self.state = "idle".into();
+                    }
                     self.apply_config(cfg).map_err(|e| IpcError::new("connect_failed", e))?;
-                } else {
-                    self.enabled = true;
-                    self.retry = None;
-                    self.start_connection();
-                    let _ = self
-                        .capture
-                        .commands
-                        .try_send(CaptureCommand::Enable(self.cfg.role == Role::Server));
-                    let _ = self
-                        .clipboard
-                        .commands
-                        .try_send(ClipboardCommand::Enabled(self.cfg.clipboard.enabled));
                 }
+                self.enabled = true;
+                self.retry = None;
+                self.start_connection();
+                let _ = self
+                    .capture
+                    .commands
+                    .try_send(CaptureCommand::Enable(self.cfg.role == Role::Server));
+                let _ = self
+                    .clipboard
+                    .commands
+                    .try_send(ClipboardCommand::Enabled(self.cfg.clipboard.enabled));
                 Ok(json!({"connecting":true}))
             }
             m::CONNECTION_DISCONNECT => {
@@ -1211,6 +1241,7 @@ pub fn run_daemon(
             state: "idle".into(),
             connections: BTreeMap::new(),
             pending: BTreeMap::new(),
+            expected_pin: None,
             discovery: json!([]),
             last_error: None,
             last_transfer: None,
