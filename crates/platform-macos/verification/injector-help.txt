@@ -1,0 +1,3 @@
+focuslab_inject serve --socket /private/path/input.sock --click-numbering native|legacy --i-understand-this-moves-the-pointer
+focuslab_inject --socket /private/path/input.sock --click-numbering native|legacy move|down|up|drag left|right|middle x y
+focuslab_inject --socket /private/path/input.sock stop
