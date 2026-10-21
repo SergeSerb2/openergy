@@ -204,6 +204,15 @@ pub trait ScreenSystem: Send {
     fn cursor_pos(&self) -> (i32, i32);
     fn clipboard(&mut self) -> &mut dyn ClipboardBackend;
     fn permissions(&self) -> Permissions;
+    /// Backends may request an OS grant; the default returns current state.
+    fn request_permission(&mut self, kind: PermissionKind) -> Result<Grant, PlatformError> {
+        let permissions = self.permissions();
+        Ok(match kind {
+            PermissionKind::Accessibility => permissions.accessibility,
+            PermissionKind::InputMonitoring => permissions.input_monitoring,
+            PermissionKind::PostEvents => permissions.post_events,
+        })
+    }
     fn on_display_changed(&mut self, cb: Box<dyn FnMut() + Send>);
     fn prevent_sleep(&mut self, on: bool);
     fn secure_input_app(&self) -> Option<String> {

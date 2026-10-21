@@ -79,6 +79,8 @@ pub fn clipboard_get(&self) -> ClipboardSnapshot;
 pub fn clipboard_set(&self, data: ClipboardData) -> Result<u64, PlatformError>;
 pub fn set_screens(&self, screens: Vec<ScreenRect>) -> Result<(), PlatformError>;
 pub fn set_permissions(&self, permissions: Permissions);
+pub fn configure_permissions(&self, request: PermissionsRequest);
+pub fn set_permission_request_result(&self, kind: PermissionKind, grant: Option<Grant>);
 pub fn set_secure_input(&self, app: Option<String>);
 pub fn set_hid_seed(&self, seed: i64);
 ```
@@ -238,7 +240,7 @@ one ring. Reads clone a snapshot and do not remove records. At sequence-number
 exhaustion new records are counted as dropped and `sequence_exhausted=true`;
 input/release state remains usable.
 
-Every `detail` shape is listed below. Cursor and clipboard markers have
+Every `detail` shape is listed below. Cursor, clipboard, and permission markers have
 `event=null`, `release_all=false`, and null click metadata. Capture entries have
 the captured tagged event and null click metadata. Only release markers set
 `release_all=true`.
@@ -252,6 +254,7 @@ the captured tagged event and null click metadata. Only release markers set
 {"kind":"cursor_warp","x":100,"y":200}
 {"kind":"cursor_visible","visible":false}
 {"kind":"clipboard_write","stamp":2,"own_write":true,"bytes":16}
+{"kind":"permission_request","permission":"accessibility","previous":"denied","grant":"granted"}
 ```
 
 The pressed ledger is independent of ring retention. Each distinct key/source
@@ -316,9 +319,13 @@ updates leave state unchanged. Changed geometry invokes the registered display
 callback outside state locks; identical geometry invokes nothing. The callback
 runs on the setter's thread and may query/change the backend. Concurrent or
 reentrant updates during a callback coalesce into a subsequent notification.
-Registration replaces the prior callback. The daemon owns any display debounce.
+Registration replaces the prior callback. Dropping the ScreenSystem that registered
+it removes that registration, including a callback that holds a control handle.
+This prevents an Arc cycle. The daemon owns any display debounce.
 
-`virtual.set_permissions` decodes frozen `Permissions` directly:
+`virtual.set_permissions` can decode the provided `virtual_backend::PermissionsRequest`
+and call `control.configure_permissions(request)`. Without `on_request`, its flat
+shape is exactly the frozen `Permissions` shape:
 
 ```json
 {"accessibility":"not_required","input_monitoring":"denied","post_events":"granted"}
@@ -326,6 +333,38 @@ Registration replaces the prior callback. The daemon owns any display debounce.
 
 All three fields are required. Each accepts `granted`, `denied`, `unknown`, or
 `not_required`. No OS permissions are requested.
+
+To script a grant change when the daemon handles `permissions.request`, add
+`on_request` with all three target grants:
+
+```json
+{
+  "accessibility":"denied", "input_monitoring":"unknown", "post_events":"denied",
+  "on_request":{"accessibility":"granted","input_monitoring":"granted","post_events":"granted"}
+}
+```
+
+The flat fields apply at once. Each `on_request` field is a one-shot result for
+that permission's next request. A virtual `screens.request_permission(kind)`
+consumes that result, changes the current grant, records `permission_request`
+with previous/resulting grants, and returns `Ok(grant)`. With no pending result,
+it records the request and returns the current grant. A denial is state
+(`Ok(Grant::Denied)`), not an error or an OS prompt. The setter can script future
+request outcomes for each kind independently; `None` clears one pending outcome.
+`set_permissions(Permissions)` and a `configure_permissions` call without
+`on_request` clear all pending request outcomes. Scripted results for other kinds
+remain pending until their own requests.
+
+The additive trait method is:
+
+```rust
+fn request_permission(&mut self, kind: PermissionKind) -> Result<Grant, PlatformError>;
+```
+
+Its default implementation returns the corresponding current grant, so existing
+backends keep compiling. The virtual override records requests and applies
+scripted outcomes. macOS may override it to show a real OS prompt; that backend
+is outside this work package.
 
 If the daemon adds a script operation for secure input, decode an `Option<String>`:
 `null` disables it, `"scripted-owner"` enables it. Pass the value to

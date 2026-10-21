@@ -99,12 +99,30 @@ pub enum RecordedDecision {
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum RecordKind {
     Sink,
-    Capture { decision: RecordedDecision },
+    Capture {
+        decision: RecordedDecision,
+    },
     ReleaseAll,
-    CursorCaptured { captured: bool },
-    CursorWarp { x: i32, y: i32 },
-    CursorVisible { visible: bool },
-    ClipboardWrite { stamp: u64, own_write: bool, bytes: usize },
+    CursorCaptured {
+        captured: bool,
+    },
+    CursorWarp {
+        x: i32,
+        y: i32,
+    },
+    CursorVisible {
+        visible: bool,
+    },
+    ClipboardWrite {
+        stamp: u64,
+        own_write: bool,
+        bytes: usize,
+    },
+    PermissionRequest {
+        permission: PermissionKind,
+        previous: Grant,
+        grant: Grant,
+    },
 }
 /// Additive wrapper; the Step 0 RecordedEvent type remains unchanged.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -160,6 +178,39 @@ pub struct ScreensRequest {
     pub rects: Vec<ScreenRect>,
 }
 
+/// Flat virtual.set_permissions params, with optional one-shot prompt results.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PermissionsRequest {
+    pub accessibility: Grant,
+    pub input_monitoring: Grant,
+    pub post_events: Grant,
+    #[serde(default)]
+    pub on_request: Option<Permissions>,
+}
+
+fn permission_index(kind: PermissionKind) -> usize {
+    match kind {
+        PermissionKind::Accessibility => 0,
+        PermissionKind::InputMonitoring => 1,
+        PermissionKind::PostEvents => 2,
+    }
+}
+fn permission(permissions: &Permissions, kind: PermissionKind) -> Grant {
+    match kind {
+        PermissionKind::Accessibility => permissions.accessibility,
+        PermissionKind::InputMonitoring => permissions.input_monitoring,
+        PermissionKind::PostEvents => permissions.post_events,
+    }
+}
+fn assign_permission(permissions: &mut Permissions, kind: PermissionKind, grant: Grant) {
+    match kind {
+        PermissionKind::Accessibility => permissions.accessibility = grant,
+        PermissionKind::InputMonitoring => permissions.input_monitoring = grant,
+        PermissionKind::PostEvents => permissions.post_events = grant,
+    }
+}
+
 /// Clone to give capture, sink, and clipboard workers independent trait objects.
 /// Only the instance that calls start owns its capture worker; dropping that
 /// instance stops and joins it. Clones and VirtualControl share all OS state.
@@ -167,6 +218,7 @@ pub struct VirtualPlatform {
     shared: Arc<Shared>,
     worker: Option<JoinHandle<()>>,
     clipboard: VirtualClipboard,
+    display_registration: Option<u64>,
 }
 impl Clone for VirtualPlatform {
     fn clone(&self) -> Self {
@@ -174,6 +226,7 @@ impl Clone for VirtualPlatform {
             shared: Arc::clone(&self.shared),
             worker: None,
             clipboard: self.clipboard.clone(),
+            display_registration: None,
         }
     }
 }
@@ -188,7 +241,13 @@ pub struct VirtualClipboard {
 struct Shared {
     state: Mutex<State>,
     capture: Mutex<Option<CaptureEndpoint>>,
-    display_callback: Mutex<Option<DisplayCallback>>,
+    display_callback: Mutex<DisplaySlot>,
+}
+#[derive(Default)]
+struct DisplaySlot {
+    next_id: u64,
+    owner_id: Option<u64>,
+    callback: Option<DisplayCallback>,
 }
 #[derive(Clone)]
 struct CaptureEndpoint {
@@ -226,6 +285,7 @@ struct State {
     screens: Vec<ScreenRect>,
     display_generation: u64,
     permissions: Permissions,
+    permission_request_results: [Option<Grant>; 3],
     secure_input: Option<String>,
     cursor: [i32; 2],
     cursor_captured: bool,
@@ -509,6 +569,7 @@ impl VirtualPlatform {
                 }],
                 display_generation: 0,
                 permissions: Permissions::not_required(),
+                permission_request_results: [None; 3],
                 secure_input: None,
                 cursor: [0, 0],
                 cursor_captured: false,
@@ -520,7 +581,7 @@ impl VirtualPlatform {
                 max_clipboard_bytes: config.max_clipboard_bytes,
             }),
             capture: Mutex::new(None),
-            display_callback: Mutex::new(None),
+            display_callback: Mutex::new(DisplaySlot::default()),
         });
         Self {
             clipboard: VirtualClipboard {
@@ -528,6 +589,7 @@ impl VirtualPlatform {
             },
             shared,
             worker: None,
+            display_registration: None,
         }
     }
     pub fn control(&self) -> VirtualControl {
@@ -539,6 +601,20 @@ impl VirtualPlatform {
 impl Drop for VirtualPlatform {
     fn drop(&mut self) {
         self.stop();
+        if let Some(owner_id) = self.display_registration.take() {
+            let callback = {
+                let mut slot = lock(&self.shared.display_callback);
+                if slot.owner_id == Some(owner_id) {
+                    slot.owner_id = None;
+                    slot.callback.take()
+                } else {
+                    None
+                }
+            };
+            // A callback can own a control handle. Drop it outside locks to break
+            // that reference cycle when its ScreenSystem owner goes away.
+            drop(callback);
+        }
     }
 }
 
@@ -639,7 +715,11 @@ impl VirtualControl {
         }
         // Take the callback out before calling user code. Reentrant and concurrent
         // updates coalesce by generation; callbacks may query or change this backend.
-        let Some(mut callback) = lock(&self.shared.display_callback).take() else {
+        let (callback, owner_id) = {
+            let mut slot = lock(&self.shared.display_callback);
+            (slot.callback.take(), slot.owner_id)
+        };
+        let Some(mut callback) = callback else {
             return Ok(());
         };
         loop {
@@ -647,18 +727,40 @@ impl VirtualControl {
             callback();
             let state = lock(&self.shared.state);
             let mut slot = lock(&self.shared.display_callback);
-            if slot.is_some() {
-                break; // A callback registered during delivery replaces this one.
+            if slot.owner_id != owner_id || slot.callback.is_some() {
+                break; // Registration changed, or its owning ScreenSystem was dropped.
             }
             if state.display_generation == generation {
-                *slot = Some(callback);
+                slot.callback = Some(callback);
                 break;
             }
         }
         Ok(())
     }
     pub fn set_permissions(&self, permissions: Permissions) {
-        lock(&self.shared.state).permissions = permissions;
+        let mut state = lock(&self.shared.state);
+        state.permissions = permissions;
+        state.permission_request_results = [None; 3];
+    }
+    /// Apply flat virtual.set_permissions params and optional one-shot prompt results.
+    pub fn configure_permissions(&self, request: PermissionsRequest) {
+        let mut state = lock(&self.shared.state);
+        state.permissions = Permissions {
+            accessibility: request.accessibility,
+            input_monitoring: request.input_monitoring,
+            post_events: request.post_events,
+        };
+        state.permission_request_results = request.on_request.map_or([None; 3], |grants| {
+            [
+                Some(grants.accessibility),
+                Some(grants.input_monitoring),
+                Some(grants.post_events),
+            ]
+        });
+    }
+    /// Script one permission's next request. None restores current-state behavior.
+    pub fn set_permission_request_result(&self, kind: PermissionKind, grant: Option<Grant>) {
+        lock(&self.shared.state).permission_request_results[permission_index(kind)] = grant;
     }
     /// None disables secure input; Some(name) reports its scripted owner.
     pub fn set_secure_input(&self, app: Option<String>) {
@@ -858,8 +960,33 @@ impl ScreenSystem for VirtualPlatform {
     fn permissions(&self) -> Permissions {
         lock(&self.shared.state).permissions.clone()
     }
+    fn request_permission(&mut self, kind: PermissionKind) -> Result<Grant, PlatformError> {
+        let mut state = lock(&self.shared.state);
+        let previous = permission(&state.permissions, kind);
+        let grant = state.permission_request_results[permission_index(kind)]
+            .take()
+            .unwrap_or(previous);
+        assign_permission(&mut state.permissions, kind, grant);
+        state.record(
+            None,
+            RecordKind::PermissionRequest {
+                permission: kind,
+                previous,
+                grant,
+            },
+            None,
+        );
+        Ok(grant)
+    }
     fn on_display_changed(&mut self, cb: DisplayCallback) {
-        *lock(&self.shared.display_callback) = Some(cb);
+        let previous = {
+            let mut slot = lock(&self.shared.display_callback);
+            slot.next_id = slot.next_id.saturating_add(1);
+            slot.owner_id = Some(slot.next_id);
+            self.display_registration = slot.owner_id;
+            slot.callback.replace(cb)
+        };
+        drop(previous);
     }
     fn prevent_sleep(&mut self, on: bool) {
         lock(&self.shared.state).prevent_sleep = on;
