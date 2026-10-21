@@ -3,6 +3,8 @@
 //! The daemon io thread owns the driver and its single `mio::Poll`. Cross-thread commands use
 //! [`NetHandle`] and its mio waker. No transport thread or async runtime is created.
 pub mod cli;
+mod connect_error;
+pub use connect_error::ConnectErrorKind;
 pub mod discovery;
 mod identity;
 mod reactor;
@@ -174,7 +176,14 @@ pub enum NetError {
 }
 impl fmt::Display for NetError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{self:?}")
+        match self {
+            Self::NotImplemented => f.write_str("This transport is unavailable"),
+            Self::Failed(message) => f.write_str(message),
+            Self::QueueFull => f.write_str("Network queue is full"),
+            Self::InvalidFrame => f.write_str("Invalid network frame"),
+            Self::ProductionPortDenied => f.write_str("Production port requires explicit authorization"),
+            Self::Shutdown => f.write_str("Transport is stopped"),
+        }
     }
 }
 impl std::error::Error for NetError {}

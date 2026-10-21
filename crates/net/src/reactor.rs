@@ -309,7 +309,6 @@ impl Connection {
         while let Some(addr) = self.alternate_addresses.pop_front() {
             let result = (|| {
                 let mut stream = TcpStream::connect(addr)?;
-                stream.set_nodelay(true)?;
                 registry.register(&mut stream, self.token(), Interest::READABLE.add(Interest::WRITABLE))?;
                 if self.registered {
                     let _ = registry.deregister(&mut self.stream);
@@ -1097,7 +1096,7 @@ impl NetDriver {
                     let addresses = (job.host.as_str(), job.port)
                         .to_socket_addrs()
                         .map(|a| a.collect())
-                        .map_err(|e| e.to_string());
+                        .map_err(|e| format!("dns_failed: {e}"));
                     if results.send(ResolveResult { id: job.id, addresses }).is_err() {
                         break;
                     }
@@ -1115,7 +1114,7 @@ impl NetDriver {
         expected: Option<Fingerprint>,
         deadline: Instant,
     ) -> Result<(), NetError> {
-        let stream = TcpStream::connect(addr).map_err(failed)?;
+        let stream = TcpStream::connect(addr).map_err(crate::connect_error::io_failure)?;
         let tls = self.factory.as_ref().map(|f| f.client(&host, expected)).transpose()?;
         self.add_connection(
             stream,
@@ -1138,7 +1137,11 @@ impl NetDriver {
             expected,
             deadline,
         } = params;
-        stream.set_nodelay(true).map_err(failed)?;
+        // On Darwin, socket options on a refused pending connect can return
+        // EINVAL before SO_ERROR is read. Wait for completion for outbound TCP.
+        if !outbound {
+            stream.set_nodelay(true).map_err(failed)?;
+        }
         let id = ConnId(self.next_id);
         self.next_id = self
             .next_id
@@ -1264,10 +1267,11 @@ impl NetDriver {
                 out.push(NetEvent::ConnectFailed {
                     host: c.host,
                     port: c.port,
-                    error: c
-                        .failure
-                        .take()
-                        .map_or_else(|| format!("{reason:?}"), |e| format!("{reason:?}: {e}")),
+                    error: c.failure.take().unwrap_or_else(|| match reason {
+                        DisconnectReason::TlsFailure => "tls_error: TLS handshake failed".into(),
+                        DisconnectReason::Shutdown => "shutdown".into(),
+                        _ => "connect_failed: connection closed".into(),
+                    }),
                 });
                 if reason == DisconnectReason::Shutdown {
                     out.push(NetEvent::Disconnected { conn: id, reason });
@@ -1365,12 +1369,12 @@ impl NetDriver {
                 continue;
             };
             let error = if p.deadline <= Instant::now() {
-                Some("connect timeout".into())
+                Some("connect_timeout: no response before deadline".into())
             } else {
                 match result.addresses {
                     Ok(addresses) => {
                         let mut addresses = addresses.into_iter();
-                        let mut error = Some("hostname has no usable address".into());
+                        let mut error = Some("dns_failed: hostname has no usable address".into());
                         while let Some(addr) = addresses.next() {
                             let id = ConnId(self.next_id);
                             match self.add_outbound(p.host.clone(), addr, p.expected, p.deadline) {
@@ -1408,7 +1412,7 @@ impl NetDriver {
                 out.push(NetEvent::ConnectFailed {
                     host: p.host,
                     port: p.port,
-                    error: "connect timeout".into(),
+                    error: "connect_timeout: no response before deadline".into(),
                 });
             }
         }
@@ -1431,7 +1435,10 @@ impl NetDriver {
                 Some(DisconnectReason::Flood)
             } else if c.slow.is_some_and(|d| now >= d) {
                 Some(DisconnectReason::SlowPeer)
-            } else if c.held.is_some_and(|d| now >= d) || (!c.established && c.held.is_none() && now >= c.deadline) {
+            } else if !c.established && c.held.is_none() && now >= c.deadline {
+                c.failure = Some("connect_timeout: no response before deadline".into());
+                Some(DisconnectReason::Other)
+            } else if c.held.is_some_and(|d| now >= d) {
                 Some(DisconnectReason::TlsFailure)
             } else if c.close_at.is_some_and(|d| now >= d) {
                 Some(DisconnectReason::Shutdown)
@@ -1552,8 +1559,9 @@ impl NetDriver {
                 }
                 if c.connecting && (readable || writable || closed) {
                     match c.stream.take_error() {
-                        Ok(None) if c.stream.peer_addr().is_ok() => {
+                        Ok(None) => {
                             c.connecting = false;
+                            let _ = c.stream.set_nodelay(true);
                             if c.tls.is_some() {
                                 c.client_hello_at = Some(Instant::now() + c.client_hello_delay);
                             }
@@ -1563,7 +1571,7 @@ impl NetDriver {
                                 continue;
                             }
                             c.failure = Some(match result {
-                                Ok(Some(e)) | Err(e) => e.to_string(),
+                                Ok(Some(e)) | Err(e) => crate::connect_error::io_failure(e).to_string(),
                                 _ => "TCP connect failed".into(),
                             });
                             self.remove(ConnId(token.0 as u64), DisconnectReason::Other, out);

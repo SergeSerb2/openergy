@@ -372,7 +372,24 @@ impl Runtime {
                                 self.last_transfer = serde_json::from_value(event.data.clone()).ok();
                             }
                             "error" => {
-                                self.last_error = serde_json::from_value(event.data.clone()).ok();
+                                let mut error: Option<ipc::LastError> = serde_json::from_value(event.data.clone()).ok();
+                                if let Some(error) = &mut error {
+                                    let server = remote(&self.cfg.client.remote, None)
+                                        .map(|(host, _)| host)
+                                        .unwrap_or_else(|_| "The server".into());
+                                    error.message = match error.code.as_str() {
+                                        "busy" => format!(
+                                            "{server} says a computer named {} is already connected; retrying.",
+                                            self.cfg.name
+                                        ),
+                                        "unknown_screen" => {
+                                            format!("{server} has no screen named {} in its layout.", self.cfg.name)
+                                        }
+                                        "protocol_error" => format!("{server} rejected the connection protocol."),
+                                        _ => error.message.clone(),
+                                    };
+                                }
+                                self.last_error = error;
                             }
                             _ => {}
                         }
@@ -501,6 +518,13 @@ impl Runtime {
         log::warn!("{reason}: reconnect attempt={} delay_ms={delay}", self.attempt);
     }
     fn start_connection(&mut self) {
+        // Connecting is idempotent, including a TLS connection waiting for approval.
+        if (self.cfg.role == Role::Client
+            && (matches!(self.state.as_str(), "connecting" | "connected") || !self.pending.is_empty()))
+            || (self.cfg.role == Role::Server && matches!(self.state.as_str(), "starting" | "listening"))
+        {
+            return;
+        }
         self.retry = None;
         if !self.enabled {
             return;
@@ -555,8 +579,28 @@ impl Runtime {
                         self.error("listen_failed", format!("{addr}: {error}"));
                     }
                     NetEvent::ConnectFailed { host, port, error } => {
-                        self.error("connect_failed", format!("{host}:{port}: {error}"));
-                        self.reconnect();
+                        if error != "shutdown" && self.enabled {
+                            log::warn!("connector: {host}:{port}: {error}");
+                            let kind = openergy_net::ConnectErrorKind::from_message(&error);
+                            let address = host_port(&host, port);
+                            let message = match kind {
+                                openergy_net::ConnectErrorKind::Refused => {
+                                    format!("No server is listening at {address}.")
+                                }
+                                openergy_net::ConnectErrorKind::Timeout => format!("No answer from {address}."),
+                                openergy_net::ConnectErrorKind::Unreachable => format!("Can't reach {address}."),
+                                openergy_net::ConnectErrorKind::Dns => format!("Can't find host {host}."),
+                                openergy_net::ConnectErrorKind::PinMismatch => {
+                                    "The server's identity changed — check its fingerprint.".into()
+                                }
+                                openergy_net::ConnectErrorKind::Tls => {
+                                    format!("Can't establish a secure connection to {address}.")
+                                }
+                                openergy_net::ConnectErrorKind::Other => format!("Can't connect to {address}."),
+                            };
+                            self.error(kind.code(), message);
+                            self.reconnect();
+                        }
                     }
                     NetEvent::Connected {
                         conn,

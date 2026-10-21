@@ -136,7 +136,7 @@ impl Client {
                 self.screen_name = self.config.name.clone();
                 if let Some((c, p)) = &mut self.peer {
                     p.transfers = Default::default();
-                    if p.phase == Phase::Ready {
+                    if p.phase == Phase::Ready && p.version.minor >= 8 {
                         send(*c, Message::ResetOptions, out);
                         send(
                             *c,
@@ -205,8 +205,10 @@ impl Client {
             if matches!(msg, Message::ErrorBusy) {
                 log::warn!("server rejected duplicate name (EBSY); retry with backoff");
                 notice("busy", "Server name is busy; reconnect will back off", out);
+            } else if matches!(msg, Message::ErrorUnknown) {
+                notice("unknown_screen", "The server has no screen with this name.", out);
             } else if !matches!(msg, Message::Bye) {
-                notice("protocol_rejected", "Server rejected session setup", out);
+                notice("protocol_error", "The server rejected the connection protocol.", out);
             }
             self.disconnect(out);
             return;
@@ -265,13 +267,17 @@ impl Client {
                 p.last_alive = self.now;
                 if p.phase != Phase::Ready {
                     p.phase = Phase::Ready;
-                    send(
-                        c,
-                        Message::SetOptions {
-                            options: config_options(&self.config, false),
-                        },
-                        out,
-                    );
+                    // Client option advertisements are a 1.8 extension. Barrier 1.6
+                    // treats a client DSOP as a protocol error and disconnects.
+                    if p.version.minor >= 8 {
+                        send(
+                            c,
+                            Message::SetOptions {
+                                options: config_options(&self.config, false),
+                            },
+                            out,
+                        );
+                    }
                     notify("peer.connected", serde_json::json!({"name":"server"}), out);
                 }
             }
