@@ -108,8 +108,9 @@ impl Transfers {
         if self.incoming.as_ref().is_some_and(|i| i.id == id) {
             self.incoming = None;
         }
-        // Already-started wire transfers must finish before a newer transfer starts.
-        self.outgoing.retain(|o| o.id != id || o.started);
+        // A newer grab abandons the old transfer; the receiver also clears its partial
+        // state on that grab. The next Start begins a new serialized transfer.
+        self.outgoing.retain(|o| o.id != id);
     }
     pub fn enqueue(&mut self, id: ClipboardId, sequence: u32, bytes: Arc<Vec<u8>>) {
         self.outgoing.retain(|o| o.id != id || o.started);

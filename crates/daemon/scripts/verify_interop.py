@@ -9,6 +9,13 @@ def main():
     labroot = base/'lab'
     shutil.copytree(ROOT/'tools/interop-lab',labroot,ignore=shutil.ignore_patterns('.state','__pycache__'))
     env=dict(os.environ,LAB_NAME='oe-lab-wp6',LAB_PORT_RANGE='24950-24959')
+    existing=subprocess.run(['docker','container','inspect','oe-lab-wp6'],capture_output=True,text=True)
+    if existing.returncode==0:
+        info=json.loads(existing.stdout)[0]
+        require(info['Config']['Labels'].get('org.openergy.interop-lab')=='1','assigned container has another owner')
+        require(not info['State']['Running'],'assigned lab is already running; leave it untouched')
+        # Only the stopped, disposable lab container is removed. Bind-mounted artifacts remain.
+        subprocess.run(['docker','rm','oe-lab-wp6'],check=True,capture_output=True)
     def lab(*args):
         result=subprocess.run([str(labroot/'lab.sh'),*args],env=env,capture_output=True,text=True,timeout=30)
         if result.returncode:

@@ -171,6 +171,7 @@ pub(crate) struct Peer {
     pub warned: bool,
     pub languages: Vec<[u8; 2]>,
     pub declined: bool,
+    unknown_saturated: bool,
 }
 impl Peer {
     pub fn new(now: u64) -> Self {
@@ -195,6 +196,7 @@ impl Peer {
             warned: false,
             languages: Vec::new(),
             declined: false,
+            unknown_saturated: false,
         }
     }
     pub fn next_deadline(&self, now: u64, server: bool) -> u64 {
@@ -238,8 +240,15 @@ impl Peer {
         }
     }
     pub fn unknown(&mut self, code: [u8; 4]) {
-        if self.unknown.insert(code) {
+        if self.unknown.contains(&code) {
+            return;
+        }
+        if self.unknown.len() < 64 {
+            self.unknown.insert(code);
             log::warn!("skipping unknown frame code={code:02x?}");
+        } else if !self.unknown_saturated {
+            self.unknown_saturated = true;
+            log::warn!("unknown-code log limit reached; further unknown frames are skipped");
         }
     }
     pub fn tick(&mut self, conn: ConnId, now: u64, server: bool, out: &mut Vec<Action>) -> bool {
