@@ -94,6 +94,10 @@ pub enum Action {
         new: ConnId,
     },
     Inject(InputEvent),
+    SetClipboardShared {
+        id: ClipboardId,
+        data: Arc<ClipboardData>,
+    },
     SetClipboard {
         id: ClipboardId,
         data: ClipboardData,

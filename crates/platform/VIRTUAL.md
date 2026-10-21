@@ -449,3 +449,9 @@ visible block event without reading the oversized data.
 backend read return an empty, unavailable payload without changing its stored
 clipboard, stamp, or owner. `get` still inspects stored bytes. This scripts the
 same unavailable read that native own-write suppression can produce.
+
+Clipboard worker writes share an `Arc<ClipboardData>` with the session's current
+remote clipboard. The virtual backend retains that same payload. Serialized
+transfer blobs are dropped after their final sender completes. The additive
+`ClipboardBackend::write_shared` default delegates to `write`, so native
+backends need no trait implementation change.

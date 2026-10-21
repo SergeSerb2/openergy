@@ -16,7 +16,7 @@ struct Slot {
     data: Option<Arc<Vec<u8>>>,
     available: bool,
     readback: bool,
-    remote_origin: bool,
+    remote_payload: Option<Arc<ClipboardData>>,
 }
 #[derive(Clone)]
 pub struct Server {
@@ -207,7 +207,7 @@ impl Server {
                         slot.data = None;
                         slot.available = false;
                         slot.readback = false;
-                        slot.remote_origin = false;
+                        slot.remote_payload = None;
                     }
                     for p in self.peers.values_mut() {
                         p.transfers.cancel(id);
@@ -227,9 +227,9 @@ impl Server {
                     .filter_map(|(&c, p)| p.tick(c, now_ms, true, out).then_some(c))
                     .collect::<Vec<_>>();
                 // Transfers own their shared blobs until End is queued. Keep
-                // only the platform's current clipboard after the final sender.
+                // only the shared current payload after the final sender.
                 for slot in &mut self.slots {
-                    if !slot.remote_origin && slot.data.as_ref().is_some_and(|data| Arc::strong_count(data) == 1) {
+                    if slot.data.as_ref().is_some_and(|data| Arc::strong_count(data) == 1) {
                         slot.data = None;
                     }
                 }
@@ -443,7 +443,7 @@ impl Server {
                         slot.data = None;
                         slot.available = false;
                         slot.readback = false;
-                        slot.remote_origin = false;
+                        slot.remote_payload = None;
                         for peer in self.peers.values_mut() {
                             peer.transfers.cancel(id);
                         }
@@ -620,6 +620,17 @@ impl Server {
         }
         for (i, s) in self.slots.iter_mut().enumerate() {
             if s.owner != Some(conn) {
+                if s.data.is_none() {
+                    if let Some(data) = &s.remote_payload {
+                        match clipboard::marshal(data, self.config.clipboard.max_bytes) {
+                            Ok(bytes) => s.data = Some(Arc::new(bytes)),
+                            Err(_) => {
+                                clipboard::blocked(data.total_bytes(), self.config.clipboard.max_bytes, &p.name, out);
+                                continue;
+                            }
+                        }
+                    }
+                }
                 if let Some(bytes) = &s.data {
                     let limit = p.options.limit.min(self.config.clipboard.max_bytes);
                     if bytes.len() > limit {
@@ -660,7 +671,6 @@ impl Server {
         }
         match clipboard::marshal(&data, self.config.clipboard.max_bytes) {
             Ok(bytes) => {
-                slot.remote_origin |= owner.is_some();
                 slot.data = Some(Arc::new(bytes));
                 slot.available = true;
             }
@@ -671,7 +681,9 @@ impl Server {
         }
         if owner.is_some() && !readback {
             clipboard::transferred(&data, "in", out);
-            out.push(Action::SetClipboard { id, data });
+            let data = Arc::new(data);
+            slot.remote_payload = Some(data.clone());
+            out.push(Action::SetClipboardShared { id, data });
         } else {
             clipboard::transferred(&data, "out", out);
         }

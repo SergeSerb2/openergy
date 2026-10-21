@@ -440,11 +440,21 @@ impl Runtime {
                             self.error("clipboard_busy", "Clipboard worker queue is full");
                         }
                     }
-                    Action::SetClipboard { id: _, data } => {
+                    Action::SetClipboardShared { id: _, data } => {
                         if self
                             .clipboard
                             .commands
                             .try_send(ClipboardCommand::Write { data })
+                            .is_err()
+                        {
+                            self.error("clipboard_busy", "Clipboard worker queue is full");
+                        }
+                    }
+                    Action::SetClipboard { id: _, data } => {
+                        if self
+                            .clipboard
+                            .commands
+                            .try_send(ClipboardCommand::Write { data: Arc::new(data) })
                             .is_err()
                         {
                             self.error("clipboard_busy", "Clipboard worker queue is full");

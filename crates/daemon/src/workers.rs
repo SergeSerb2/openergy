@@ -128,7 +128,7 @@ pub fn capture(mut source: Box<dyn InputSource>, waker: Arc<mio::Waker>) -> Capt
 }
 pub enum ClipboardCommand {
     Read { id: ClipboardId, max: usize },
-    Write { data: ClipboardData },
+    Write { data: Arc<ClipboardData> },
     Enabled(bool),
     Stop,
 }
@@ -172,7 +172,7 @@ pub fn clipboard(mut backend: Box<dyn ClipboardBackend>, waker: Arc<mio::Waker>)
                     let _ = waker.wake();
                 }
                 Ok(ClipboardCommand::Write { data }) => {
-                    if let Err(e) = backend.write(&data) {
+                    if let Err(e) = backend.write_shared(data) {
                         let _ = tx.try_send(ClipboardEvent::Failure(e.to_string()));
                     }
                     // Own writes never become a new local grab.

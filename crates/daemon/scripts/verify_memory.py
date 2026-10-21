@@ -25,6 +25,14 @@ def main():
             result=subprocess.run(['vmmap','-summary',str(n.proc.pid)],capture_output=True,text=True)
             (n.dir/'vmmap.txt').write_text(result.stdout+result.stderr)
         require(all(retained[k]<=v+2*8*1024*1024 for k,v in baseline.items()),'retained RSS exceeds baseline + 2 payloads')
+        client.call('virtual.clipboard',{'dib_bytes':8*1024*1024})
+        wait(lambda:server.call('virtual.clipboard',{'summary':True})['own_write'])
+        time.sleep(1)
+        reverse={n.dir.name:n.status()['stats']['rss_bytes'] for n in (server,client)}
+        report['retained_reverse_rss_bytes']=reverse
+        (base/'report.json').write_text(json.dumps(report,indent=2))
+        print('REVERSE',json.dumps(reverse),flush=True)
+        require(all(reverse[k]<=v+2*8*1024*1024 for k,v in baseline.items()),'reverse retained RSS exceeds baseline + 2 payloads')
         print(f'PASS idle and retained memory; REPORT {base / "report.json"}',flush=True)
     finally:
         for n in reversed(NODES):n.stop()

@@ -212,6 +212,10 @@ pub trait ClipboardBackend: Send {
     fn change_stamp(&self) -> u64;
     fn read(&mut self, max_bytes: usize) -> Result<ClipboardData, PlatformError>;
     fn write(&mut self, data: &ClipboardData) -> Result<(), PlatformError>;
+    /// Share the current payload where the backend can retain owned data.
+    fn write_shared(&mut self, data: std::sync::Arc<ClipboardData>) -> Result<(), PlatformError> {
+        self.write(&data)
+    }
 }
 pub trait ScreenSystem: Send {
     fn screens(&self) -> Vec<ScreenRect>;

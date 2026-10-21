@@ -302,7 +302,7 @@ struct State {
     cursor_captured: bool,
     cursor_visible: bool,
     prevent_sleep: bool,
-    clipboard: ClipboardData,
+    clipboard: Arc<ClipboardData>,
     clipboard_stamp: u64,
     clipboard_read_available: bool,
     own_write_stamp: Option<u64>,
@@ -522,6 +522,9 @@ impl State {
         Ok(())
     }
     fn clipboard_set(&mut self, data: ClipboardData, own_write: bool) -> Result<u64, PlatformError> {
+        self.clipboard_set_shared(Arc::new(data), own_write)
+    }
+    fn clipboard_set_shared(&mut self, data: Arc<ClipboardData>, own_write: bool) -> Result<u64, PlatformError> {
         self.validate_clipboard(&data)?;
         let stamp = self
             .clipboard_stamp
@@ -593,7 +596,7 @@ impl VirtualPlatform {
                 cursor_captured: false,
                 cursor_visible: true,
                 prevent_sleep: false,
-                clipboard: ClipboardData::default(),
+                clipboard: Arc::new(ClipboardData::default()),
                 clipboard_stamp: 0,
                 clipboard_read_available: true,
                 own_write_stamp: None,
@@ -719,7 +722,7 @@ impl VirtualControl {
     pub fn clipboard_get(&self) -> ClipboardSnapshot {
         let state = lock(&self.shared.state);
         ClipboardSnapshot {
-            data: state.clipboard.clone(),
+            data: (*state.clipboard).clone(),
             stamp: state.clipboard_stamp,
             own_write: state.own_write_stamp == Some(state.clipboard_stamp),
             last_own_write_stamp: state.own_write_stamp,
@@ -996,7 +999,11 @@ impl ClipboardBackend for VirtualClipboard {
                 limit: max_bytes,
             });
         }
-        Ok(state.clipboard.clone())
+        Ok((*state.clipboard).clone())
+    }
+    fn write_shared(&mut self, data: Arc<ClipboardData>) -> Result<(), PlatformError> {
+        lock(&self.shared.state).clipboard_set_shared(data, true)?;
+        Ok(())
     }
     fn write(&mut self, data: &ClipboardData) -> Result<(), PlatformError> {
         let mut state = lock(&self.shared.state);
@@ -1014,6 +1021,9 @@ impl ClipboardBackend for VirtualPlatform {
     }
     fn write(&mut self, data: &ClipboardData) -> Result<(), PlatformError> {
         self.clipboard.write(data)
+    }
+    fn write_shared(&mut self, data: Arc<ClipboardData>) -> Result<(), PlatformError> {
+        self.clipboard.write_shared(data)
     }
 }
 impl ScreenSystem for VirtualPlatform {
