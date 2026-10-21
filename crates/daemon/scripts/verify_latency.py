@@ -40,6 +40,8 @@ def main():
         try:
             last=sink.call('virtual.recorded')['stats']['last_sequence']
             times=[]
+            capture_times=[]
+            source_last=source.call('virtual.recorded',{'audit':True})['stats']['last_sequence']
             for index in range(1000):
                 started=time.perf_counter_ns()
                 source.call('virtual.inject',{'events':[{'move_abs':[200+index%1000,300]}]})
@@ -48,15 +50,24 @@ def main():
                     result=sink.call('virtual.recorded',{'since':last})
                     moves=[r for r in result['events'] if r.get('event') and r['event']['type']=='mouse_move_abs']
                     if moves:
-                        last=max(r['sequence'] for r in moves);break
+                        last=max(r['sequence'] for r in moves)
+                        received=moves[-1]['timestamp_unix_us']
+                        break
                     if time.monotonic()>deadline:raise RuntimeError('move was not recorded')
                 times.append((time.perf_counter_ns()-started)/1e6)
+                captured=source.call('virtual.recorded',{'audit':True,'since':source_last})
+                rows=[r for r in captured['events'] if r.get('event') and r['event']['type']=='mouse_move_abs' and r['detail']['kind']=='capture']
+                require(rows,'capture audit record missing')
+                source_last=captured['stats']['last_sequence']
+                capture_times.append(max(0,received-rows[-1]['timestamp_unix_us'])/1000)
             times.sort()
-            result={'samples':len(times),'p50_ms':times[499],'p95_ms':times[949],'p99_ms':times[989],'max_ms':times[-1],'kind':'IPC capture-to-recorded upper bound'}
+            capture_times.sort()
+            result={'samples':len(times),'p50_ms':times[499],'p95_ms':times[949],'p99_ms':times[989],'max_ms':times[-1],'kind':'IPC capture-to-recorded upper bound','capture_to_sink_p99_ms':capture_times[989],'capture_to_sink_p50_ms':capture_times[499]}
             time.sleep(1)
             result['server_rss_bytes']=server.status()['stats']['rss_bytes'];result['client_rss_bytes']=client.status()['stats']['rss_bytes']
             result['process_sample']=subprocess.run(['ps','-p',f'{server.proc.pid},{client.proc.pid}','-o','pid=,%cpu=,rss='],capture_output=True,text=True).stdout.strip()
             (base/'report.json').write_text(json.dumps(result,indent=2));print(json.dumps(result,indent=2));print(f'REPORT {base / "report.json"}')
+            require(result['capture_to_sink_p99_ms']<1,'capture-to-sink p99 >=1 ms')
             require(result['p99_ms']<5,'capture-to-recorded p99 >=5 ms')
             require(result['client_rss_bytes']<30*1024*1024 and result['server_rss_bytes']<30*1024*1024,'idle RSS >=30 MiB')
             return 0

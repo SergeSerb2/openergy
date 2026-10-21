@@ -130,6 +130,8 @@ pub struct VirtualRecord {
     #[serde(flatten)]
     pub recorded: RecordedEvent,
     pub timestamp_us: u64,
+    /// Shared wall clock permits external capture-to-sink latency measurement.
+    pub timestamp_unix_us: u64,
     pub detail: RecordKind,
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -364,6 +366,11 @@ impl State {
                 click_state: click.map(|value| value.state),
             },
             timestamp_us: self.start.elapsed().as_micros().min(u128::from(u64::MAX)) as u64,
+            timestamp_unix_us: std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_micros()
+                .min(u128::from(u64::MAX)) as u64,
             detail,
         });
     }

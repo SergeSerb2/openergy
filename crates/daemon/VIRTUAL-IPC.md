@@ -24,3 +24,15 @@ them when dropped. Smaller allocations use the system allocator. This prevents
 Darwin's malloc cache from retaining freed clipboard and IPC copies. The server
 also drops its marshalled cache after all senders drain; later entry reads the
 current platform clipboard again. No allocator work runs for input events.
+
+`virtual.recorded {"audit":true}` includes capture and other audit markers.
+Each record also includes `timestamp_unix_us` so an external driver can compare
+capture and sink timestamps across two local daemons without timing its IPC
+observer. `timestamp_us` remains monotonic relative to backend creation. The
+latency driver checks a 1,000-move same-host sample and reports both measurements;
+wall-clock comparison assumes the host clock does not step during that sample.
+
+`connection.connect` accepts an optional SHA-256 `fingerprint` with `host` and
+`port`. It requires TLS and pins that address through retries for the daemon's
+lifetime. A mismatch yields `status.last_error.code = tls_pin_mismatch` and no
+application data. Normal TOFU approval continues to use the role's trust file.

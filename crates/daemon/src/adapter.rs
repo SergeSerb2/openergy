@@ -171,15 +171,24 @@ pub fn virtual_request(
             serde_json::to_value(control.inject(events).map_err(failed)?).map_err(|e| invalid(e.to_string()))
         }
         m::VIRTUAL_RECORDED => {
+            let mut fields = params.clone();
+            let audit = fields
+                .as_object_mut()
+                .and_then(|fields| fields.remove("audit"))
+                .map(|audit| audit.as_bool().ok_or_else(|| invalid("audit must be a boolean".into())))
+                .transpose()?
+                .unwrap_or(false);
             let request: virtual_backend::RecordedRequest =
-                serde_json::from_value(params.clone()).map_err(|e| invalid(e.to_string()))?;
+                serde_json::from_value(fields).map_err(|e| invalid(e.to_string()))?;
             let mut ledger = control.ledger(request.since);
-            ledger.events.retain(|record| {
-                matches!(
-                    record.detail,
-                    virtual_backend::RecordKind::Sink | virtual_backend::RecordKind::ReleaseAll
-                )
-            });
+            if !audit {
+                ledger.events.retain(|record| {
+                    matches!(
+                        record.detail,
+                        virtual_backend::RecordKind::Sink | virtual_backend::RecordKind::ReleaseAll
+                    )
+                });
+            }
             serde_json::to_value(ledger).map_err(|e| invalid(e.to_string()))
         }
         m::VIRTUAL_CLIPBOARD => {
