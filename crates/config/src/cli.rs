@@ -173,6 +173,9 @@ pub fn export_synergy_conf(args: &[String]) -> Result<i32, String> {
         .unwrap_or_else(default_config)?;
     let cfg = Config::load_toml(&read_text(&path).map_err(|e| e.to_string())?).map_err(|e| e.to_string())?;
     let text = crate::export_synergy_conf(&cfg).map_err(|e| e.to_string())?;
+    if cfg.options.barrier {
+        eprintln!("warning: Barrier 2.4 cannot represent the clipboard size limit or Synergy-specific lock/switch modifier options; enforce them in Openergy");
+    }
     if !cfg.clipboard.send || !cfg.clipboard.receive {
         eprintln!("warning: synergy.conf cannot represent directional clipboard send/receive permissions");
     }

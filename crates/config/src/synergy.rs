@@ -621,7 +621,7 @@ pub fn export_synergy_conf(cfg: &Config) -> Result<String, ConfigError> {
     };
     let _ = writeln!(
         out,
-        "    protocol = {}\n    address = {address}\n    heartbeat = {heartbeat}",
+        "    # protocol: {} (select the peer binary dialect at startup)\n    address = {address}\n    heartbeat = {heartbeat}",
         if cfg.options.barrier { "barrier" } else { "synergy" }
     );
     for (key, value) in [
@@ -634,9 +634,31 @@ pub fn export_synergy_conf(cfg: &Config) -> Result<String, ConfigError> {
         ("switchNeedsControl", cfg.options.switch_needs_control),
         ("switchNeedsAlt", cfg.options.switch_needs_alt),
     ] {
+        if cfg.options.barrier
+            && matches!(
+                key,
+                "disableLockToScreen"
+                    | "defaultLockToScreenState"
+                    | "switchNeedsShift"
+                    | "switchNeedsControl"
+                    | "switchNeedsAlt"
+            )
+        {
+            continue;
+        }
         let _ = writeln!(out, "    {key} = {value}");
     }
-    let _=writeln!(out,"    clipboardSharingSize = {}\n    switchDelay = {}\n    switchDoubleTap = {}\n    switchCorners = {}\n    switchCornerSize = {}",cfg.clipboard.max_bytes/1024,cfg.switch.delay_ms,cfg.switch.double_tap_ms,corner_string(&cfg.switch.dead_corners),cfg.switch.corner_size_px);
+    if !cfg.options.barrier {
+        let _ = writeln!(out, "    clipboardSharingSize = {}", cfg.clipboard.max_bytes / 1024);
+    }
+    let _ = writeln!(
+        out,
+        "    switchDelay = {}\n    switchDoubleTap = {}\n    switchCorners = {}\n    switchCornerSize = {}",
+        cfg.switch.delay_ms,
+        cfg.switch.double_tap_ms,
+        corner_string(&cfg.switch.dead_corners),
+        cfg.switch.corner_size_px
+    );
     if let Some(stroke) = &cfg.hotkeys.lock_to_screen {
         let trigger = if let Some(inner) = stroke.strip_prefix("mousebutton(").and_then(|s| s.strip_suffix(')')) {
             format!("mousebutton({})", core_stroke(inner))

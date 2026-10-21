@@ -86,7 +86,14 @@ fn set_port(cfg: &mut Config, port: u64) -> Result<(), ConfigError> {
         .ok()
         .filter(|v| *v != 0)
         .ok_or_else(|| bad("core port", "expected 1..=65535"))?;
-    cfg.server.listen = format!("0.0.0.0:{}", cfg.server.port);
+    let ip = cfg
+        .server
+        .listen
+        .parse::<std::net::SocketAddr>()
+        .map(|addr| addr.ip())
+        .or_else(|_| cfg.server.listen.parse::<std::net::IpAddr>())
+        .unwrap_or(std::net::IpAddr::V4(std::net::Ipv4Addr::UNSPECIFIED));
+    cfg.server.listen = std::net::SocketAddr::new(ip, cfg.server.port).to_string();
     Ok(())
 }
 
@@ -806,6 +813,16 @@ fn apply_ini(cfg: &mut Config, text: &str, report: &mut ImportReport) -> Result<
                         .push("core INI computerName overrides local.json name".into());
                 }
                 cfg.name = value;
+            }
+            "core/interface" => {
+                let ip = if value.is_empty() || value == "*" {
+                    std::net::IpAddr::V4(std::net::Ipv4Addr::UNSPECIFIED)
+                } else {
+                    value
+                        .parse::<std::net::IpAddr>()
+                        .map_err(|_| bad("core/interface", "expected a numeric IP address"))?
+                };
+                cfg.server.listen = std::net::SocketAddr::new(ip, cfg.server.port).to_string();
             }
             "core/port" => set_port(cfg, value.parse().map_err(|_| bad("core/port", "invalid integer"))?)?,
             "core/preventSleep" => cfg.input.prevent_sleep = bool_value()?,
