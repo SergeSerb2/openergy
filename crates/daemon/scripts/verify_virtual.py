@@ -239,7 +239,7 @@ def main():
             client.patch({'clipboard': {'max_bytes': 4*1024*1024}})
             time.sleep(.2)
             server.call('virtual.clipboard', {'dib_bytes': 5*1024*1024, 'summary': True})
-            result = wait(lambda: server.status()['clipboard']['last_blocked'])
+            result = wait(lambda: client.status()['clipboard']['last_blocked'])
             require(result['limit'] == 4*1024*1024, f'wrong peer cap: {result}')
             client.patch({'clipboard': {'max_bytes': 64*1024*1024}})
             return result

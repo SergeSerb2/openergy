@@ -1,6 +1,6 @@
-# Requirement: Our clipboard cap and a low advertised peer cap emit clipboard.blocked, deliver no partial, and recover for a small clip.
+# Requirement: Local and receiver clipboard caps emit clipboard.blocked, deliver no partial, and recover for a small clip.
 name = "S10-clipboard-cap"
-requirement = "Our clipboard cap and a low advertised peer cap emit clipboard.blocked, deliver no partial, and recover for a small clip."
+requirement = "Local and receiver clipboard caps emit clipboard.blocked, deliver no partial, and recover for a small clip."
 blocked_by = ["WP3", "WP6"]
 timeout_ms = 1800
 
@@ -83,6 +83,10 @@ node = "server"
 patch = {"clipboard" = {"max_bytes" = 67108864}}
 
 [[step]]
+do = "subscribe"
+node = "client"
+
+[[step]]
 do = "config_patch"
 node = "client"
 patch = {"clipboard" = {"max_bytes" = 1024}}
@@ -94,7 +98,7 @@ text = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 [[step]]
 do = "wait_event"
-node = "server"
+node = "client"
 event = "clipboard.blocked"
 expect = {"limit" = 1024}
 
