@@ -11,6 +11,8 @@ use openergy_config::Config;
 use openergy_ipc::{methods, read_frame, write_frame, Request, Response};
 
 mod adapter;
+#[cfg(target_os = "macos")]
+mod allocator;
 mod clipboard_json;
 mod events;
 mod interfaces;

@@ -14,6 +14,8 @@ struct Slot {
     sequence: u32,
     owner: Option<ConnId>,
     data: Option<Arc<Vec<u8>>>,
+    available: bool,
+    readback: bool,
 }
 pub struct Server {
     config: Arc<Config>,
@@ -194,12 +196,11 @@ impl Server {
                         slot.sequence = self.sequence;
                         slot.owner = None;
                         slot.data = None;
+                        slot.available = false;
+                        slot.readback = false;
                     }
-                    for (&conn, p) in &mut self.peers {
+                    for p in self.peers.values_mut() {
                         p.transfers.cancel(id);
-                        if p.phase == Phase::Ready && p.version.minor >= 6 {
-                            send(conn, Message::ClipboardGrab { id, sequence: 0 }, out);
-                        }
                     }
                     out.push(Action::ReadClipboard {
                         id,
@@ -215,6 +216,13 @@ impl Server {
                     .iter_mut()
                     .filter_map(|(&c, p)| p.tick(c, now_ms, true, out).then_some(c))
                     .collect::<Vec<_>>();
+                // Transfers own their shared blobs until End is queued. Keep
+                // only the platform's current clipboard after the final sender.
+                for slot in &mut self.slots {
+                    if slot.data.as_ref().is_some_and(|data| Arc::strong_count(data) == 1) {
+                        slot.data = None;
+                    }
+                }
                 for c in dead {
                     log::warn!("peer heartbeat/setup timeout");
                     self.remove(c, out);
@@ -422,11 +430,10 @@ impl Server {
                         slot.sequence = sequence;
                         slot.owner = Some(conn);
                         slot.data = None;
-                        for (&other, peer) in &mut self.peers {
+                        slot.available = false;
+                        slot.readback = false;
+                        for peer in self.peers.values_mut() {
                             peer.transfers.cancel(id);
-                            if other != conn && peer.phase == Phase::Ready && peer.version.minor >= 6 {
-                                send(other, Message::ClipboardGrab { id, sequence: 0 }, out);
-                            }
                         }
                     }
                 }
@@ -599,15 +606,29 @@ impl Server {
         if p.version.minor < 6 || !p.options.clipboard || !self.config.clipboard.send {
             return;
         }
-        for (i, s) in self.slots.iter().enumerate() {
+        for (i, s) in self.slots.iter_mut().enumerate() {
             if s.owner != Some(conn) {
                 if let Some(bytes) = &s.data {
                     let limit = p.options.limit.min(self.config.clipboard.max_bytes);
                     if bytes.len() > limit {
                         clipboard::blocked(bytes.len(), limit, &p.name, out);
                     } else {
+                        send(
+                            conn,
+                            Message::ClipboardGrab {
+                                id: ClipboardId(i as u8),
+                                sequence: 0,
+                            },
+                            out,
+                        );
                         p.transfers.enqueue(ClipboardId(i as u8), 0, bytes.clone());
                     }
+                } else if s.available && !s.readback {
+                    s.readback = true;
+                    out.push(Action::ReadClipboard {
+                        id: ClipboardId(i as u8),
+                        max_bytes: self.config.clipboard.max_bytes.min(clipboard::HARD_CAP),
+                    });
                 }
             }
         }
@@ -616,17 +637,23 @@ impl Server {
         let Some(slot) = self.slots.get_mut(id.0 as usize) else {
             return;
         };
+        let readback = owner.is_none() && slot.readback;
+        let owner = if readback { slot.owner } else { owner };
+        slot.readback = false;
         if slot.owner != owner {
             return;
         }
         match clipboard::marshal(&data, self.config.clipboard.max_bytes) {
-            Ok(bytes) => slot.data = Some(Arc::new(bytes)),
+            Ok(bytes) => {
+                slot.data = Some(Arc::new(bytes));
+                slot.available = true;
+            }
             Err(_) => {
                 clipboard::blocked(data.total_bytes(), self.config.clipboard.max_bytes, "local", out);
                 return;
             }
         }
-        if owner.is_some() {
+        if owner.is_some() && !readback {
             clipboard::transferred(&data, "in", out);
             out.push(Action::SetClipboard { id, data });
         } else {
