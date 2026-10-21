@@ -409,7 +409,7 @@ impl Context {
             }
         } else {
             let name = format!(
-                "oe-lab-wp7-{}-{}-{}",
+                "oe-lab-wp6-{}-{}-{}",
                 std::process::id(),
                 self.dir.file_name().unwrap_or_default().to_string_lossy(),
                 id

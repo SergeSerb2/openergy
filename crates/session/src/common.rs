@@ -203,7 +203,7 @@ impl Peer {
     }
     pub fn next_deadline(&self, now: u64, server: bool) -> u64 {
         if self.transfers.pending() {
-            return now.saturating_add(4);
+            return self.transfers.deadline(now);
         }
         if self.phase != Phase::Ready {
             return self.since.saturating_add(2001).max(now.saturating_add(100));

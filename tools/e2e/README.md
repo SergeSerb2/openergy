@@ -55,7 +55,7 @@ The existing `openergy-interop:latest` image must be built first using
 For every lab node it copies `lab.sh`, `container.sh`, and `session.sh` into
 its private node directory. This is necessary because the lab script mounts
 `.state` relative to itself even when `LAB_NAME` changes. It exports a unique
-`LAB_NAME=oe-lab-wp7-PID-sN-NODE` and an assigned one-port `LAB_PORT_RANGE` on
+`LAB_NAME=oe-lab-wp6-PID-sN-NODE` and an assigned one-port `LAB_PORT_RANGE` on
 **every** command. Each lab node has its own container, display, and trust
 files. Docker clients use the lab-approved `host.docker.internal:assigned-port`
 alias; host listeners and publications remain bound to 127.0.0.1.

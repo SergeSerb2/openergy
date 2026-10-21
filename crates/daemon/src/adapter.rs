@@ -198,12 +198,12 @@ pub fn virtual_request(
                     })
                     .map_err(failed)?;
             }
-            if params.get("summary").and_then(Value::as_bool) == Some(true) {
-                let snapshot = control.clipboard_get();
-                Ok(
-                    json!({"stamp":snapshot.stamp,"own_write":snapshot.own_write,"last_own_write_stamp":snapshot.last_own_write_stamp,
-                    "bytes":snapshot.data.total_bytes(),"formats":snapshot.data.formats.iter().map(|f|f.kind.as_str()).collect::<Vec<_>>()}),
-                )
+            let wrote =
+                params.get("set").is_some() || params.get("text").is_some() || params.get("dib_bytes").is_some();
+            if params.get("summary").and_then(Value::as_bool) == Some(true)
+                || (wrote && params.get("get").and_then(Value::as_bool) != Some(true))
+            {
+                serde_json::to_value(control.clipboard_summary()).map_err(|e| invalid(e.to_string()))
             } else {
                 Ok(crate::clipboard_json::encode(control.clipboard_get()))
             }

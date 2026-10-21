@@ -5,7 +5,8 @@ use openergy_protocol::{Chunk, ClipboardId};
 use std::collections::VecDeque;
 use std::sync::Arc;
 
-pub const CHUNK_BYTES: usize = 32 * 1024;
+// DCLP has 14 payload header bytes plus the four-byte frame prefix.
+pub const CHUNK_BYTES: usize = 32 * 1024 - 18;
 pub const HARD_CAP: usize = 64 * 1024 * 1024;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -99,8 +100,12 @@ struct Outgoing {
 pub(crate) struct Transfers {
     incoming: Option<Incoming>,
     outgoing: VecDeque<Outgoing>,
+    next_chunk_ms: u64,
 }
 impl Transfers {
+    pub fn deadline(&self, now: u64) -> u64 {
+        self.next_chunk_ms.max(now)
+    }
     pub fn pending(&self) -> bool {
         !self.outgoing.is_empty()
     }
@@ -132,7 +137,11 @@ impl Transfers {
         {
             self.incoming = None;
         }
+        if now < self.next_chunk_ms {
+            return;
+        }
         let Some(o) = self.outgoing.front_mut() else { return };
+        self.next_chunk_ms = now.saturating_add(1);
         let chunk = if !o.started {
             o.started = true;
             Chunk::Start {
@@ -193,6 +202,15 @@ impl Transfers {
                 {
                     self.incoming = None;
                     return Err(ClipboardError::Malformed);
+                }
+                let needed = i.bytes.len() + bytes.len();
+                if needed > i.bytes.capacity() {
+                    // Growth stays below the declared, validated total. An 8 MiB
+                    // payload plus its container must not retain a 16 MiB buffer.
+                    let capacity = needed.next_power_of_two().min(i.total);
+                    i.bytes
+                        .try_reserve_exact(capacity - i.bytes.len())
+                        .map_err(|_| ClipboardError::TooLarge)?;
                 }
                 i.bytes.extend(bytes);
             }

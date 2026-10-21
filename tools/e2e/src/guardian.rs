@@ -92,7 +92,7 @@ pub fn guardian_main() {
                 }
             }
         } else if value["kind"] == "lab" {
-            if let Some(name) = value["name"].as_str().filter(|s| s.starts_with("oe-lab-wp7-")) {
+            if let Some(name) = value["name"].as_str().filter(|s| s.starts_with("oe-lab-wp6-")) {
                 if add {
                     labs.insert(name.to_owned(), value);
                 } else {

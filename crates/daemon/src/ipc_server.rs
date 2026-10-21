@@ -144,8 +144,7 @@ fn client(
                 ) => {}
             Err(_) => return,
         }
-        loop {
-            let Some(h) = buf.get(..4) else { break };
+        while let Some(h) = buf.get(..4) {
             let Ok(header) = <[u8; 4]>::try_from(h) else { return };
             let n = u32::from_be_bytes(header) as usize;
             if n > 16 * 1024 * 1024 {

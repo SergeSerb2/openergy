@@ -185,7 +185,7 @@ def main():
             server.patch({'options':{'switch_needs_control':False},'input':{'relative_mouse':True}})
             enter(server,client)
             before=len(events(client))
-            server.inject({'key_down':'Scroll_Lock'},{'key_up':'Scroll_Lock'},{'move_rel':[8,4]})
+            server.inject({'key_down':'ScrollLock'},{'key_up':'ScrollLock'},{'move_rel':[8,4]})
             wait(lambda:len(events(client))>=before+3)
             require(events(client)[-1]['type']=='mouse_move_rel','locked relative forwarding missing')
             server.patch({'input':{'relative_mouse':False}})
@@ -224,7 +224,7 @@ def main():
             enter(server, client)
             before = len(events(client))
             server.call('virtual.clipboard', {'dib_bytes': 8*1024*1024, 'summary': True})
-            time.sleep(.3)
+            wait(lambda:server.status()['clipboard']['last_transfer'] and server.status()['clipboard']['last_transfer']['bytes']==8*1024*1024,message='clipboard sender started')
             require(client.call('virtual.clipboard', {'summary': True})['bytes'] != 8*1024*1024, 'transfer already completed before input')
             server.inject({'key_down': 'b'}, {'key_up': 'b'})
             wait(lambda: len(events(client)) >= before+2)
@@ -264,8 +264,11 @@ def main():
 
         def hostile():
             def recv_frame(sock):
-                hdr = sock.recv(4)
-                require(len(hdr) == 4, 'missing frame')
+                hdr=b''
+                while len(hdr)<4:
+                    part=sock.recv(4-len(hdr))
+                    require(part,'missing frame')
+                    hdr+=part
                 n = struct.unpack('!I', hdr)[0]
                 payload = b''
                 while len(payload) < n:
@@ -273,11 +276,16 @@ def main():
                 return payload
             sock = socket.create_connection(('127.0.0.1', 24980), timeout=2)
             require(recv_frame(sock).startswith(b'Synergy'), 'wrong server hello')
-            sock.sendall(struct.pack('!I', 7)+b'ZZZZabc')
             name = b'raw-unknown-name'
             payload = b'Synergy'+struct.pack('!HHI', 1, 8, len(name))+name
             sock.sendall(struct.pack('!I', len(payload))+payload)
-            require(recv_frame(sock) == b'QINF', 'unknown code disconnected socket')
+            require(recv_frame(sock) == b'QINF', 'missing QINF')
+            sock.sendall(struct.pack('!I', 7)+b'ZZZZabc')
+            info=b'DINF'+struct.pack('!hhhhhhh',0,0,1920,1080,0,0,0)
+            sock.sendall(struct.pack('!I',len(info))+info)
+            response=recv_frame(sock)
+            if response.startswith(b'LSYN'):response=recv_frame(sock)
+            require(response == b'CIAK', 'unknown code disconnected socket')
             sock.close()
             sock = socket.create_connection(('127.0.0.1', 24980), timeout=2)
             recv_frame(sock)
@@ -285,7 +293,7 @@ def main():
             require(sock.recv(1) == b'', 'oversized frame stayed open')
             sock.close()
             require(server.proc.poll() is None, 'daemon crashed')
-            return 'unknown frame skipped before QINF; oversized prefix closed only its connection'
+            return 'unknown frame skipped after hello; oversized prefix closed only its connection'
         case('S13 hostile framing', hostile)
 
         def idle():

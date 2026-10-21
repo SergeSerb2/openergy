@@ -154,6 +154,14 @@ pub struct VirtualStats {
     pub prevent_sleep: bool,
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct ClipboardSummary {
+    pub stamp: u64,
+    pub own_write: bool,
+    pub last_own_write_stamp: Option<u64>,
+    pub bytes: usize,
+    pub formats: Vec<String>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ClipboardSnapshot {
     pub data: ClipboardData,
     pub stamp: u64,
@@ -678,6 +686,22 @@ impl VirtualControl {
     }
     pub fn click_assignment(&self, button: u8) -> Option<crate::ClickAssignment> {
         lock(&self.shared.state).click.assignment(button)
+    }
+    /// Sizes and stamps without cloning clipboard payload buffers.
+    pub fn clipboard_summary(&self) -> ClipboardSummary {
+        let state = lock(&self.shared.state);
+        ClipboardSummary {
+            stamp: state.clipboard_stamp,
+            own_write: state.own_write_stamp == Some(state.clipboard_stamp),
+            last_own_write_stamp: state.own_write_stamp,
+            bytes: state.clipboard.total_bytes(),
+            formats: state
+                .clipboard
+                .formats
+                .iter()
+                .map(|f| f.kind.as_str().to_string())
+                .collect(),
+        }
     }
     pub fn clipboard_get(&self) -> ClipboardSnapshot {
         let state = lock(&self.shared.state);
