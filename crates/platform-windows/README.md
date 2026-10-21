@@ -55,3 +55,7 @@ remains untested.
 The construction shim was removed after merging `t3/synergy-open-source-reimplementation`.
 `create` returns `openergy_platform::Backend` directly. V1 shares only clipboard id 0.
 No shared signature or daemon implementation change is required for this follow-up.
+
+The Windows daemon IPC named-pipe server is not implemented in v1. It returns a
+typed unsupported-platform error. The backend compile check does not establish
+that the Windows daemon or app works end to end.
