@@ -6,7 +6,8 @@ This file lists what the app needs. Round 2 freezes it into the `ipc` crate.
 ## Process model on macOS (decision)
 
 - `Openergy.app/Contents/MacOS/Openergy` is the SwiftUI menu-bar app.
-- `Openergy.app/Contents/MacOS/openergy` is the Rust daemon/CLI binary.
+- `Openergy.app/Contents/Helpers/openergy` is the Rust daemon/CLI binary (not Contents/MacOS:
+  on case-insensitive volumes `openergy` and `Openergy` are the same file name).
 - On launch, the app connects to the IPC socket. If no daemon answers, the app
   spawns `openergy daemon --parent-pid <app pid>` as a child process.
   - The child inherits the app as its TCC "responsible process". The user grants

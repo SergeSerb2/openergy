@@ -25,15 +25,15 @@ final class DaemonSupervisor {
         return supportDirectory.appendingPathComponent("openergy.sock").path
     }
 
-    /// The daemon binary: next to the app executable, or `OPENERGY_DAEMON` for development.
+    /// The daemon binary: `Contents/Helpers/openergy` in the app bundle, or `OPENERGY_DAEMON`
+    /// for development. (Not Contents/MacOS: on case-insensitive volumes `openergy` would
+    /// collide with the app's own `Openergy` executable.)
     static var executableURL: URL? {
         if let override = ProcessInfo.processInfo.environment["OPENERGY_DAEMON"] {
             return URL(fileURLWithPath: override)
         }
-        if let bundled = Bundle.main.url(forAuxiliaryExecutable: "openergy") {
-            return bundled
-        }
-        return nil
+        let bundled = Bundle.main.bundleURL.appendingPathComponent("Contents/Helpers/openergy")
+        return FileManager.default.isExecutableFile(atPath: bundled.path) ? bundled : nil
     }
 
     var isRunning: Bool { process?.isRunning ?? false }

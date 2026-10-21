@@ -1,5 +1,6 @@
 #!/bin/bash
-# Builds Openergy.app: the SwiftUI menu-bar app plus the Rust `openergy` daemon, signed.
+# Builds Openergy.app: the SwiftUI menu-bar app (Contents/MacOS/Openergy) plus the Rust
+# `openergy` daemon and CLI (Contents/Helpers/openergy), both signed with one identity.
 #
 #   apps/macos/scripts/bundle.sh                 # release build into dist/Openergy.app
 #   UNIVERSAL=1 apps/macos/scripts/bundle.sh     # arm64 + x86_64
@@ -41,12 +42,15 @@ APP_BIN="$(cd "$APP_SRC" && swift build -c release "${SWIFT_ARCH_FLAGS[@]}" --sh
 
 step "Assembling $APP"
 rm -rf "$APP"
-mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
+# The daemon lives in Contents/Helpers: on the default case-insensitive file system,
+# Contents/MacOS/openergy and Contents/MacOS/Openergy would be the same file.
+mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Helpers" "$APP/Contents/Resources"
 cp "$APP_BIN" "$APP/Contents/MacOS/Openergy"
+strip -x "$APP/Contents/MacOS/Openergy"   # local symbols only; about 60% smaller
 if [[ ${#DAEMON_BINS[@]} -gt 1 ]]; then
-  lipo -create "${DAEMON_BINS[@]}" -output "$APP/Contents/MacOS/openergy"
+  lipo -create "${DAEMON_BINS[@]}" -output "$APP/Contents/Helpers/openergy"
 else
-  cp "${DAEMON_BINS[0]}" "$APP/Contents/MacOS/openergy"
+  cp "${DAEMON_BINS[0]}" "$APP/Contents/Helpers/openergy"
 fi
 
 ICONSET="$(mktemp -d)/AppIcon.iconset"
@@ -65,9 +69,13 @@ if [[ -z "$IDENTITY" ]]; then
 fi
 IDENTITY="${IDENTITY:--}"
 SIGN_FLAGS=(--force --options runtime --timestamp=none --sign "$IDENTITY")
-codesign "${SIGN_FLAGS[@]}" --identifier dev.openergy.daemon "$APP/Contents/MacOS/openergy"
+codesign "${SIGN_FLAGS[@]}" --identifier dev.openergy.daemon "$APP/Contents/Helpers/openergy"
 codesign "${SIGN_FLAGS[@]}" "$APP"
 codesign --verify --deep --strict "$APP"
+for binary in "$APP/Contents/MacOS/Openergy" "$APP/Contents/Helpers/openergy"; do
+  [[ -x "$binary" ]] || { echo "missing $binary" >&2; exit 1; }
+done
+"$APP/Contents/Helpers/openergy" version
 echo "Signed with: $([[ "$IDENTITY" == "-" ]] && echo ad-hoc || echo "$IDENTITY")"
 
 step "Done"
