@@ -304,3 +304,22 @@ python3 tools/e2e/verify_teardown.py
 # Optional ranges stay separate from other active scenario runs.
 python3 tools/e2e/verify_teardown.py --port-range 24998-24999 --lab-port-range 24938-24939
 ```
+
+## Adversarial engine coverage
+
+A1–A11 exercise held modifiers, receiver wheel settings, hello negotiation,
+client-only protocol direction, heartbeat close flushing, live/config-save
+rollback, unavailable clipboard readback, transport pressure, killed trust
+writers, TLS trust status, and unsupported-major close behavior.
+
+`raw_expect_absent` reads real framed traffic for `timeout_ms` and rejects any
+listed `codes`. `raw_expect_closed` with `reject_bytes = true` also rejects any
+bytes before FIN. Field predicates accept `{ "$null" = true }`.
+
+`inject_burst` sends bounded batches through `virtual.inject` until the actual
+input queue rejects a packet. Its `event`, `batch_size` (maximum 512), and
+`repeat` (maximum 1000) are bounded; it fails if no queue error occurs.
+
+`trust_crash_recovery` runs the real `openergy trust approve` CLI against an
+isolated populated trust store, observes its exclusive kernel lock, kills that
+owned writer with SIGKILL, and then verifies a second approval persists.
