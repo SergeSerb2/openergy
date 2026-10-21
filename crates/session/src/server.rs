@@ -67,6 +67,12 @@ impl Server {
     pub fn config(&self) -> &Config {
         &self.config
     }
+    pub fn remote_active(&self) -> bool {
+        self.active != self.primary
+    }
+    pub fn is_connected(&self) -> bool {
+        self.peers.values().any(|p| p.phase == Phase::Ready)
+    }
     pub fn snapshot(&self) -> SessionSnapshot {
         SessionSnapshot {
             active_screen: Some(self.name(self.active).into()),
@@ -405,24 +411,6 @@ impl Server {
             }
             Message::SetOptions { options } => {
                 p.options.apply(&options);
-                self.opts.apply(&options);
-                let raw = &self.opts.raw;
-                self.layout.set_gates(
-                    raw.get(&openergy_protocol::options::SWITCH_DELAY)
-                        .copied()
-                        .unwrap_or(self.config.switch.delay_ms as i32)
-                        .max(0) as u64,
-                    raw.get(&openergy_protocol::options::SWITCH_DOUBLE_TAP)
-                        .copied()
-                        .unwrap_or(self.config.switch.double_tap_ms as i32)
-                        .max(0) as u64,
-                    raw.get(&openergy_protocol::options::SWITCH_CORNERS)
-                        .copied()
-                        .unwrap_or(0),
-                    raw.get(&openergy_protocol::options::SWITCH_CORNER_SIZE)
-                        .copied()
-                        .unwrap_or(0),
-                );
             }
             Message::ResetOptions => {
                 p.options = Options::default();

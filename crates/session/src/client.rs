@@ -14,6 +14,7 @@ pub struct Client {
     active: bool,
     ignore_mouse: bool,
     sequence: u32,
+    synthetic_modifiers: u16,
     clip_sequences: [u32; 2],
     local_owner: [bool; 2],
     ledger: Ledger,
@@ -30,6 +31,7 @@ impl Client {
             active: false,
             ignore_mouse: true,
             sequence: 0,
+            synthetic_modifiers: 0,
             clip_sequences: [0; 2],
             local_owner: [false; 2],
             ledger: Ledger::default(),
@@ -47,6 +49,12 @@ impl Client {
     pub fn screen_name(&self) -> &str {
         &self.screen_name
     }
+    pub fn remote_active(&self) -> bool {
+        self.active
+    }
+    pub fn is_connected(&self) -> bool {
+        self.peer.as_ref().is_some_and(|(_, p)| p.phase == Phase::Ready)
+    }
     pub fn snapshot(&self) -> SessionSnapshot {
         SessionSnapshot {
             active_screen: self.active.then(|| self.screen_name.clone()),
@@ -59,6 +67,7 @@ impl Client {
     fn leave(&mut self, out: &mut Vec<Action>) {
         self.active = false;
         self.ledger.clear();
+        self.synthetic_modifiers = 0;
         out.push(Action::ReleaseAllLocal);
         out.push(Action::HideLocalCursor(false));
         if let Some((_, p)) = &mut self.peer {
@@ -274,24 +283,30 @@ impl Client {
                 self.active = true;
                 self.sequence = sequence;
                 self.cursor = self.screen.clamp(i32::from(x), i32::from(y));
+                let modifiers = p.options.mapped_mask(modifiers);
                 self.ledger.modifiers = modifiers;
+                self.synthetic_modifiers = modifiers & 0x3f;
                 out.push(Action::HideLocalCursor(false));
                 out.push(Action::Inject(InputEvent::MouseMoveAbs {
                     x: self.cursor.0,
                     y: self.cursor.1,
                 }));
-                for (mask, key, button) in [
-                    (Modifiers::SHIFT, 0xefe1, 0x38),
-                    (Modifiers::CONTROL, 0xefe3, 0x3b),
-                    (Modifiers::ALT, 0xefe9, 0x3a),
-                    (Modifiers::SUPER, 0xefeb, 0x37),
+                for (mask, key) in [
+                    (Modifiers::SHIFT, 0xefe1),
+                    (Modifiers::CONTROL, 0xefe3),
+                    (Modifiers::ALT, 0xefe9),
+                    (Modifiers::META, 0xefe7),
+                    (Modifiers::SUPER, 0xefeb),
+                    (Modifiers::ALTGR, 0xef7e),
                 ] {
+                    let button = key;
                     if modifiers & mask != 0 {
                         let ev = InputEvent::KeyDown {
                             key,
                             modifiers: Modifiers(modifiers),
                             button,
                         };
+
                         self.ledger.observe(&ev);
                         out.push(Action::Inject(ev));
                     }
@@ -357,6 +372,35 @@ impl Client {
                                     .clamp(self.cursor.0.saturating_add(dx), self.cursor.1.saturating_add(dy));
                             }
                             _ => {}
+                        }
+                        if let InputEvent::KeyUp { key, modifiers, .. } = &ev {
+                            let mask = match *key {
+                                0xefe1 | 0xefe2 => 1,
+                                0xefe3 | 0xefe4 => 2,
+                                0xefe9 | 0xefea => 4,
+                                0xefe7 | 0xefe8 => 8,
+                                0xefeb | 0xefec => 16,
+                                0xef7e => 32,
+                                _ => 0,
+                            };
+                            if self.synthetic_modifiers & mask != 0 {
+                                self.synthetic_modifiers &= !mask;
+                                let synthetic_key = match mask {
+                                    1 => 0xefe1,
+                                    2 => 0xefe3,
+                                    4 => 0xefe9,
+                                    8 => 0xefe7,
+                                    16 => 0xefeb,
+                                    _ => 0xef7e,
+                                };
+                                let release = InputEvent::KeyUp {
+                                    key: synthetic_key,
+                                    modifiers: *modifiers,
+                                    button: synthetic_key,
+                                };
+                                self.ledger.observe(&release);
+                                out.push(Action::Inject(release));
+                            }
                         }
                         self.ledger.observe(&ev);
                         out.push(Action::Inject(ev));

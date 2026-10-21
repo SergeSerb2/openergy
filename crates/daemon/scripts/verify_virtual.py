@@ -159,6 +159,39 @@ def main():
             return [e['type'] for e in tail]
         case('S3 typing modifiers repeat wheel', typing)
 
+        def gates():
+            server.patch({'switch':{'delay_ms':150}})
+            server.inject({'move_abs':[1920,540]})
+            require(server.status()['active_screen']=='server','switch delay skipped')
+            wait(lambda:server.status()['active_screen']=='client',message='switch delay timer')
+            server.patch({'switch':{'delay_ms':0,'double_tap_ms':500}})
+            server.inject({'move_abs':[1920,540]})
+            require(server.status()['active_screen']=='server','first double tap switched')
+            server.inject({'move_abs':[1800,540]})
+            server.inject({'move_abs':[1920,540]})
+            wait(lambda:server.status()['active_screen']=='client',message='second edge tap')
+            server.patch({'switch':{'double_tap_ms':0,'dead_corners':['top_right'],'corner_size_px':64}})
+            server.inject({'move_abs':[1920,0]})
+            require(server.status()['active_screen']=='server','dead corner allowed switch')
+            server.inject({'move_abs':[1920,540]})
+            wait(lambda:server.status()['active_screen']=='client')
+            server.patch({'switch':{'dead_corners':[],'corner_size_px':0},'options':{'switch_needs_control':True}})
+            server.inject({'move_abs':[1920,540]})
+            require(server.status()['active_screen']=='server','modifier gate ignored')
+            server.inject({'key_down':{'key':'Control_L','modifiers':['control']}},{'move_abs':[1920,540]})
+            wait(lambda:server.status()['active_screen']=='client')
+            server.inject({'key_up':'Control_L'})
+            server.patch({'options':{'switch_needs_control':False},'input':{'relative_mouse':True}})
+            enter(server,client)
+            before=len(events(client))
+            server.inject({'key_down':'Scroll_Lock'},{'key_up':'Scroll_Lock'},{'move_rel':[8,4]})
+            wait(lambda:len(events(client))>=before+3)
+            require(events(client)[-1]['type']=='mouse_move_rel','locked relative forwarding missing')
+            server.patch({'input':{'relative_mouse':False}})
+            return 'delay timer, retreat plus second tap, dead corner, modifier gate, and locked relative moves'
+        case('S2 switch gates',gates)
+
+
         def crash_press(mouse=False):
             enter(server, client)
             server.inject({'mouse_down': 1} if mouse else {'key_down': 'a'})

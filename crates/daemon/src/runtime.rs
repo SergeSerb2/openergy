@@ -51,6 +51,20 @@ impl Machine {
             Role::Client => Self::Client(Client::new(cfg.clone(), cfg.name.clone())),
         }
     }
+    fn connected(&self) -> bool {
+        match self {
+            Self::Server(s) => s.is_connected(),
+            Self::Client(c) => c.is_connected(),
+            Self::Off => false,
+        }
+    }
+    fn remote_active(&self) -> bool {
+        match self {
+            Self::Server(s) => s.remote_active(),
+            Self::Client(c) => c.remote_active(),
+            Self::Off => false,
+        }
+    }
     fn snapshot(&self) -> SessionSnapshot {
         match self {
             Self::Off => SessionSnapshot::default(),
@@ -268,9 +282,9 @@ impl Runtime {
     fn apply_actions(&mut self) {
         let mut count = 0;
         while !self.actions.is_empty() && count < 1024 {
-            let actions = std::mem::take(&mut self.actions);
+            let mut actions = std::mem::take(&mut self.actions);
             count += actions.len();
-            for action in actions {
+            for action in actions.drain(..) {
                 match action {
                     Action::Send { conn, msg } => {
                         let priority = if matches!(
@@ -362,11 +376,14 @@ impl Runtime {
                     }
                 }
             }
+            if self.actions.is_empty() {
+                self.actions = actions;
+            }
         }
         self.update_sleep_assertion();
     }
     fn update_sleep_assertion(&mut self) {
-        let on = self.enabled && self.cfg.input.prevent_sleep && self.machine.snapshot().remote_active;
+        let on = self.enabled && self.cfg.input.prevent_sleep && self.machine.remote_active();
         if on != self.preventing_sleep {
             self.preventing_sleep = on;
             self.screens.prevent_sleep(on);
@@ -544,8 +561,8 @@ impl Runtime {
             }
             self.apply_actions();
         }
-        let snapshot = self.machine.snapshot();
-        if self.cfg.role == Role::Client && snapshot.connected {
+        let connected = self.machine.connected();
+        if self.cfg.role == Role::Client && connected {
             if self.state != "connected" {
                 self.last_error = None;
             }
@@ -556,7 +573,7 @@ impl Runtime {
             if now.saturating_sub(since) >= 60_000 {
                 self.attempt = 0;
             }
-        } else if self.cfg.role == Role::Server && self.enabled && snapshot.connected {
+        } else if self.cfg.role == Role::Server && self.enabled && connected {
             self.state = "listening".into();
         }
     }
@@ -930,19 +947,52 @@ fn remote(text: &str, override_port: Option<u16>) -> Result<(String, u16), Strin
     Ok((text.into(), override_port.unwrap_or(24800)))
 }
 fn normalize(cfg: &mut Config) {
-    let host = if let Ok(addr) = cfg.server.listen.parse::<std::net::SocketAddr>() {
+    let listen = &cfg.server.listen;
+    let host = if let Ok(addr) = listen.parse::<std::net::SocketAddr>() {
         addr.ip().to_string()
+    } else if listen.parse::<std::net::IpAddr>().is_ok() || listen.starts_with('[') {
+        listen.clone()
     } else {
-        cfg.server.listen.clone()
+        listen
+            .rsplit_once(':')
+            .map(|(host, _)| host.to_string())
+            .unwrap_or_else(|| listen.clone())
     };
     cfg.server.listen = host_port(&host, cfg.server.port);
     if cfg.name.is_empty() {
-        cfg.name = std::env::var("HOSTNAME")
-            .ok()
-            .filter(|s| !s.is_empty())
-            .unwrap_or_else(|| "openergy".into());
+        cfg.name = host_name();
     }
 }
+fn host_name() -> String {
+    let mut name = std::env::var("HOSTNAME")
+        .or_else(|_| std::env::var("COMPUTERNAME"))
+        .unwrap_or_default();
+    #[cfg(unix)]
+    if name.is_empty() {
+        let mut bytes = [0u8; 256];
+        // Safety: gethostname writes at most the fixed output buffer length and has no side effects.
+        if unsafe { libc::gethostname(bytes.as_mut_ptr().cast(), bytes.len()) } == 0 {
+            let length = bytes.iter().position(|b| *b == 0).unwrap_or(bytes.len());
+            name = String::from_utf8_lossy(bytes.get(..length).unwrap_or_default()).into_owned();
+        }
+    }
+    let name = name
+        .chars()
+        .map(|c| {
+            if c.is_ascii_alphanumeric() || "-._".contains(c) {
+                c
+            } else {
+                '-'
+            }
+        })
+        .collect::<String>();
+    if name.is_empty() {
+        "openergy".into()
+    } else {
+        name
+    }
+}
+
 fn write_config(path: &Path, cfg: &Config) -> Result<(), String> {
     use std::io::Write;
     if let Some(parent) = path.parent() {
