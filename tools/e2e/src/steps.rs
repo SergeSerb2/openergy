@@ -745,15 +745,15 @@ fn numbering(ledger: &[Value], step: &Step) -> Result<()> {
     let mut last = seed;
     let mut held = std::collections::BTreeMap::new();
     let mut states = Vec::new();
-    let mut sequences = 0;
+    let mut previous_sequence = None;
     for record in ledger {
         let sequence = record["sequence"]
             .as_u64()
             .ok_or_else(|| Failure::product("numbering ledger lacks sequence"))?;
-        if sequence <= sequences {
+        if previous_sequence.is_some_and(|previous| sequence <= previous) {
             return Err(Failure::product("ledger sequence is not strictly increasing"));
         }
-        sequences = sequence;
+        previous_sequence = Some(sequence);
         if record["release_all"] == true {
             held.clear();
             continue;
