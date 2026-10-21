@@ -1295,15 +1295,6 @@ pub fn run_daemon(
                 rt.execute(NetCommand::Shutdown);
                 rt.process_net();
             }
-            while let Ok(IoCommand::Ipc { req, reply, events }) = rx.try_recv() {
-                let response = match rt.dispatch(&req, &events) {
-                    Ok(value) => Response::ok(req.id, value),
-                    Err(error) => Response::err(req.id, error),
-                };
-                rt.apply_actions();
-                rt.process_net();
-                let _ = reply.send(response);
-            }
             while let Ok(packet) = rt.capture.events.try_recv() {
                 if let Some(movement) = packet.movement {
                     rt.input(movement);
@@ -1313,6 +1304,20 @@ pub fn run_daemon(
             let movement = rt.capture.movement.try_lock().ok().and_then(|mut s| s.take());
             if let Some(movement) = movement {
                 rt.input(movement);
+            }
+            // Input gets the first turn. A busy IPC observer must not keep a
+            // captured move behind an unbounded request drain.
+            for _ in 0..8 {
+                let Ok(IoCommand::Ipc { req, reply, events }) = rx.try_recv() else {
+                    break;
+                };
+                let response = match rt.dispatch(&req, &events) {
+                    Ok(value) => Response::ok(req.id, value),
+                    Err(error) => Response::err(req.id, error),
+                };
+                rt.apply_actions();
+                rt.process_net();
+                let _ = reply.send(response);
             }
             while let Ok(event) = rt.clipboard.events.try_recv() {
                 match event {
