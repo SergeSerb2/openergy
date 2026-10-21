@@ -426,6 +426,7 @@ pub fn dib_to_image(dib: &[u8], max_bytes: usize) -> Result<RgbaImage> {
     let native = bitmap_from_data(&bmp)?;
     // Safety: native is a live owned NSBitmapImageRep; pixelsWide returns NSInteger.
     let native_width: isize = unsafe { ffi::msg0(native.0, c"pixelsWide") };
+    // Safety: native is a live NSBitmapImageRep; pixelsHigh returns NSInteger.
     let native_height: isize = unsafe { ffi::msg0(native.0, c"pixelsHigh") };
     if native_width != info.width as isize || native_height != info.height as isize {
         return Err(error("native BMP decoder dimensions differ from DIB"));

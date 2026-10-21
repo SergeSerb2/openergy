@@ -82,6 +82,7 @@ impl NativePoster {
         // Source state HIDSystemState=1; posting location HIDEventTap=0.
         // Safety: HIDSystemState is a public enum value; NULL is checked by OwnedCf.
         let source = OwnedCf::new(unsafe { ffi::CGEventSourceCreate(1) }, "CG HID event source")?;
+        // Safety: source is a live owned CGEventSource; these setters change its metadata only.
         unsafe {
             ffi::CGEventSourceSetPixelsPerLine(source.0, 10.0);
             ffi::CGEventSourceSetLocalEventsSuppressionInterval(source.0, 0.0);
@@ -307,6 +308,7 @@ impl EventPoster for NativePoster {
         }
         // Safety: public main-display query has no pointer arguments or mutation.
         let display = self.hidden_display.unwrap_or_else(|| unsafe { ffi::CGMainDisplayID() });
+        // Safety: explicit live visibility request balances this poster's own cursor hide.
         let status = unsafe {
             if visible {
                 ffi::CGDisplayShowCursor(display)
