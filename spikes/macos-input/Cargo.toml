@@ -1,0 +1,17 @@
+[package]
+name = "openergy-macos-input-spike"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[lib]
+name = "macos_input"
+
+[[bin]]
+name = "spike"
+path = "src/main.rs"
+
+# This experiment must remain independent of the concurrent root workspace.
+[workspace]
+
+[dependencies]
