@@ -63,7 +63,23 @@ pub fn capture(mut source: Box<dyn InputSource>, waker: Arc<mio::Waker>) -> Capt
                                         *dx = dx.saturating_add(*x);
                                         *dy = dy.saturating_add(*y);
                                     }
-                                    _ => *slot = Some(event),
+                                    (Some(InputEvent::MouseMoveAbs { .. }), InputEvent::MouseMoveAbs { .. })
+                                    | (None, _) => *slot = Some(event),
+                                    _ => {
+                                        if let Some(previous) = slot.take() {
+                                            if tx
+                                                .try_send(Captured {
+                                                    movement: None,
+                                                    event: previous,
+                                                })
+                                                .is_err()
+                                            {
+                                                over.store(true, Ordering::Relaxed);
+                                                return CaptureDecision::PassToOs;
+                                            }
+                                        }
+                                        *slot = Some(event);
+                                    }
                                 }
                             } else {
                                 let movement = slot.take();

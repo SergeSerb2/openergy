@@ -169,6 +169,8 @@ pub(crate) struct Peer {
     pub unknown: BTreeSet<[u8; 4]>,
     pub secure_input: Option<String>,
     pub warned: bool,
+    pub languages: Vec<[u8; 2]>,
+    pub declined: bool,
 }
 impl Peer {
     pub fn new(now: u64) -> Self {
@@ -191,6 +193,8 @@ impl Peer {
             unknown: BTreeSet::new(),
             secure_input: None,
             warned: false,
+            languages: Vec::new(),
+            declined: false,
         }
     }
     pub fn next_deadline(&self, now: u64, server: bool) -> u64 {
@@ -226,6 +230,13 @@ impl Peer {
             self.rtt = Some(now.saturating_sub(sent) as f64);
         }
     }
+    pub fn decline(&mut self, bytes: usize, out: &mut Vec<Action>) {
+        if !self.declined {
+            self.declined = true;
+            log::warn!("file/drag transfer declined: bytes={bytes}");
+            notice("transfer_unsupported", "File and drag transfer are disabled", out);
+        }
+    }
     pub fn unknown(&mut self, code: [u8; 4]) {
         if self.unknown.insert(code) {
             log::warn!("skipping unknown frame code={code:02x?}");
@@ -247,7 +258,9 @@ impl Peer {
         if hb > 0 && now.saturating_sub(self.last_sent) >= hb {
             send(conn, Message::KeepAlive, out);
             self.last_sent = now;
-            self.ping.get_or_insert(now);
+            if server {
+                self.ping.get_or_insert(now);
+            }
         }
         self.transfers.tick(conn, now, out);
         false
@@ -399,4 +412,38 @@ pub(crate) fn input_message(msg: Message, opts: &Options) -> Option<InputEvent> 
         },
         _ => return None,
     })
+}
+
+pub(crate) fn screen_options(cfg: &Config, screen_name: &str) -> Vec<(u32, i32)> {
+    let mut options = config_options(cfg, true);
+    if let Some(screen) = cfg.screens.iter().find(|s| s.name == screen_name) {
+        if screen.os.as_deref().is_some_and(|s| s.eq_ignore_ascii_case("windows")) {
+            options.push((o::WIN32_KEEP_FOREGROUND, 1));
+        }
+        if let Some(remap) = &screen.modifiers {
+            for (id, value) in [
+                (o::MOD_SHIFT, &remap.shift),
+                (o::MOD_CTRL, &remap.ctrl),
+                (o::MOD_ALT, &remap.alt),
+                (o::MOD_ALTGR, &remap.altgr),
+                (o::MOD_META, &remap.meta),
+                (o::MOD_SUPER, &remap.super_),
+            ] {
+                if let Some(value) = value {
+                    let target = match value.to_ascii_lowercase().as_str() {
+                        "none" => 0,
+                        "shift" => 1,
+                        "ctrl" | "control" => 2,
+                        "alt" => 3,
+                        "meta" => 4,
+                        "super" | "command" => 5,
+                        "altgr" => 6,
+                        _ => continue,
+                    };
+                    options.push((id, target));
+                }
+            }
+        }
+    }
+    options
 }

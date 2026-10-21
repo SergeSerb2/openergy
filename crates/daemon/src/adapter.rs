@@ -20,7 +20,7 @@ pub fn net_config(config: &Config, dir: &Path, virtual_platform: bool) -> NetCon
         }),
     }
 }
-pub fn platform(name: &str, cfg: &Config) -> Result<(Backend, Option<VirtualControl>), PlatformError> {
+pub fn platform(name: &str, _cfg: &Config) -> Result<(Backend, Option<VirtualControl>), PlatformError> {
     match name {
         "virtual" => {
             let (b, c) = virtual_backend::create(VirtualOptions {
@@ -32,11 +32,7 @@ pub fn platform(name: &str, cfg: &Config) -> Result<(Backend, Option<VirtualCont
             Ok((b, Some(c)))
         }
         #[cfg(target_os = "macos")]
-        "macos" => openergy_platform_macos::create(openergy_platform_macos::MacOptions {
-            click_numbering: cfg.macos.click_numbering,
-            lines_per_notch: 3.0,
-        })
-        .map(|b| (b, None)),
+        "macos" => Err(PlatformError::NotImplemented),
         #[cfg(target_os = "linux")]
         "x11" => openergy_platform_linux::create(openergy_platform_linux::X11Options {
             display: std::env::var("DISPLAY").ok(),
@@ -51,12 +47,74 @@ pub fn platform(name: &str, cfg: &Config) -> Result<(Backend, Option<VirtualCont
 }
 
 pub fn virtual_request(
-    _control: &VirtualControl,
-    _method: &str,
-    _params: &serde_json::Value,
+    control: &VirtualControl,
+    method: &str,
+    params: &serde_json::Value,
 ) -> Result<serde_json::Value, openergy_ipc::IpcError> {
-    Err(openergy_ipc::IpcError::new(
-        "virtual_api_pending",
-        "VirtualControl methods have not landed yet",
-    ))
+    use openergy_ipc::{methods as m, IpcError};
+    use serde_json::{json, Value};
+    let invalid = |e: String| IpcError::new("invalid_params", e);
+    let failed = |e: PlatformError| IpcError::new("virtual_failed", e.to_string());
+    match method {
+        m::VIRTUAL_INJECT => {
+            let request: openergy_platform::InjectRequest =
+                serde_json::from_value(params.clone()).map_err(|e| invalid(e.to_string()))?;
+            serde_json::to_value(control.inject(request.into_events()).map_err(failed)?)
+                .map_err(|e| invalid(e.to_string()))
+        }
+        m::VIRTUAL_RECORDED => {
+            let request: virtual_backend::RecordedRequest =
+                serde_json::from_value(params.clone()).map_err(|e| invalid(e.to_string()))?;
+            serde_json::to_value(control.ledger(request.since)).map_err(|e| invalid(e.to_string()))
+        }
+        m::VIRTUAL_CLIPBOARD => {
+            if let Some(data) = params.get("set") {
+                let data: openergy_platform::ClipboardData =
+                    serde_json::from_value(data.clone()).map_err(|e| invalid(e.to_string()))?;
+                control.clipboard_set(data).map_err(failed)?;
+            } else if let Some(text) = params.get("text").and_then(Value::as_str) {
+                control
+                    .clipboard_set(openergy_platform::ClipboardData {
+                        formats: vec![openergy_platform::ClipboardFormat {
+                            kind: openergy_platform::FormatKind::TextUtf8,
+                            bytes: text.as_bytes().to_vec(),
+                        }],
+                    })
+                    .map_err(failed)?;
+            } else if let Some(size) = params.get("dib_bytes").and_then(Value::as_u64) {
+                if size > 64 * 1024 * 1024 {
+                    return Err(invalid("dib_bytes exceeds 64 MiB".into()));
+                }
+                control
+                    .clipboard_set(openergy_platform::ClipboardData {
+                        formats: vec![openergy_platform::ClipboardFormat {
+                            kind: openergy_platform::FormatKind::Dib,
+                            bytes: vec![0; size as usize],
+                        }],
+                    })
+                    .map_err(failed)?;
+            }
+            if params.get("summary").and_then(Value::as_bool) == Some(true) {
+                let snapshot = control.clipboard_get();
+                Ok(
+                    json!({"stamp":snapshot.stamp,"own_write":snapshot.own_write,"last_own_write_stamp":snapshot.last_own_write_stamp,
+                    "bytes":snapshot.data.total_bytes(),"formats":snapshot.data.formats.iter().map(|f|f.kind.as_str()).collect::<Vec<_>>()}),
+                )
+            } else {
+                serde_json::to_value(control.clipboard_get()).map_err(|e| invalid(e.to_string()))
+            }
+        }
+        m::VIRTUAL_SET_SCREENS => {
+            let request: virtual_backend::ScreensRequest =
+                serde_json::from_value(params.clone()).map_err(|e| invalid(e.to_string()))?;
+            control.set_screens(request.rects).map_err(failed)?;
+            Ok(json!({"ok":true}))
+        }
+        m::VIRTUAL_SET_PERMISSIONS => {
+            let permissions = serde_json::from_value(params.clone()).map_err(|e| invalid(e.to_string()))?;
+            control.set_permissions(permissions);
+            Ok(json!({"ok":true}))
+        }
+        _ => Err(IpcError::new("unknown_method", format!("unknown method {method}"))),
+    }
 }

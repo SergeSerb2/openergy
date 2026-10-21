@@ -520,6 +520,8 @@ impl Runtime {
                         self.discovery=json!(peers.into_iter().map(|p|json!({"name":p.name,"host":p.host,"port":p.port,"fingerprint_hint":p.fingerprint_hint})).collect::<Vec<_>>());
                         self.publish("discovery.changed", self.discovery.clone());
                     }
+                    #[allow(unreachable_patterns)]
+                    _ => log::warn!("transport emitted a diagnostic-only event"),
                 }
             }
             self.apply_actions();
@@ -567,6 +569,9 @@ impl Runtime {
             );
         }
         if self.capture.overflow.swap(false, Ordering::Relaxed) {
+            if let Machine::Server(s) = &mut self.machine {
+                s.handle(ServerEvent::CaptureOverflow, &mut self.actions);
+            }
             self.error("capture_overflow", "Capture channel full; event passed to the local OS");
         }
     }
@@ -612,6 +617,12 @@ impl Runtime {
                 Machine::Off => {}
             }
         }
+        self.machine.geometry(
+            display_rect(&self.displays),
+            self.screens.cursor_pos(),
+            false,
+            &mut self.actions,
+        );
         let _ = self
             .capture
             .commands
@@ -797,14 +808,17 @@ impl Runtime {
                 if !["accessibility", "input_monitoring", "post_events"].contains(&kind) {
                     return Err(invalid("unknown permission kind"));
                 }
-                if self.platform == "virtual" {
-                    Ok(json!(self.screens.permissions()))
-                } else {
-                    Err(IpcError::new(
-                        "permission_request_unavailable",
-                        "This backend does not expose permission prompting; open the app's permission settings",
-                    ))
-                }
+                let kind = match kind {
+                    "accessibility" => openergy_platform::PermissionKind::Accessibility,
+                    "input_monitoring" => openergy_platform::PermissionKind::InputMonitoring,
+                    _ => openergy_platform::PermissionKind::PostEvents,
+                };
+                let grant = self
+                    .screens
+                    .request_permission(kind)
+                    .map_err(|e| IpcError::new("permission_request_failed", e.to_string()))?;
+                self.refresh_health();
+                Ok(json!({"grant":grant,"permissions":self.screens.permissions()}))
             }
             m::PERMISSIONS_OPEN_SETTINGS => Err(IpcError::new(
                 "settings_unavailable",
@@ -826,7 +840,11 @@ impl Runtime {
             .control
             .as_ref()
             .ok_or_else(|| IpcError::new("virtual_unavailable", "virtual.* requires --platform virtual"))?;
-        crate::adapter::virtual_request(control, method, params)
+        let result = crate::adapter::virtual_request(control, method, params);
+        if result.is_ok() && matches!(method, m::VIRTUAL_SET_SCREENS | m::VIRTUAL_SET_PERMISSIONS) {
+            self.refresh_health();
+        }
+        result
     }
 }
 fn display_rect(screens: &[ScreenRect]) -> Rect {

@@ -26,6 +26,9 @@ fn main() {
         Ok(code) => std::process::exit(code),
         Err(msg) => {
             eprintln!("openergy: {msg}");
+            if msg.starts_with("unknown ") && !msg.contains("usage:") {
+                eprintln!("{}", usage());
+            }
             std::process::exit(if msg.starts_with("unknown ") || msg.starts_with("usage:") {
                 2
             } else {
