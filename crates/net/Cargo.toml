@@ -3,7 +3,7 @@ name = "openergy-net"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-rust-version.workspace = true
+rust-version = "1.99"
 
 [dependencies]
 openergy-protocol = { path = "../protocol" }
@@ -11,4 +11,8 @@ openergy-session = { path = "../session" }
 openergy-ipc = { path = "../ipc" }
 sha2.workspace = true
 log.workspace = true
-
+mio = { version = "1.2", features = ["os-poll", "net", "os-ext"] }
+rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
+rustls-pemfile = "2.2"
+rcgen = { version = "0.14", default-features = false, features = ["crypto", "ring", "pem"] }
+mdns-sd = "0.21"
