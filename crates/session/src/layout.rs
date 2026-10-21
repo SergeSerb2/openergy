@@ -50,6 +50,8 @@ pub struct Layout {
     double_tap_ms: u64,
     corners: Vec<Corner>,
     corner_size: i32,
+    screen_corners: Vec<Option<Vec<Corner>>>,
+    screen_sizes: Vec<Option<i32>>,
     candidate: Option<(usize, Edge, usize, u64)>,
     tap: Option<(usize, Edge, u64, bool)>,
 }
@@ -98,6 +100,21 @@ impl Layout {
             double_tap_ms: cfg.switch.double_tap_ms,
             corners: cfg.switch.dead_corners.clone(),
             corner_size: cfg.switch.corner_size_px.min(i32::MAX as u32) as i32,
+            screen_corners: cfg
+                .screens
+                .iter()
+                .map(|s| s.options.as_ref().and_then(|o| o.dead_corners.clone()))
+                .collect(),
+            screen_sizes: cfg
+                .screens
+                .iter()
+                .map(|s| {
+                    s.options
+                        .as_ref()
+                        .and_then(|o| o.corner_size_px)
+                        .map(|n| n.min(i32::MAX as u32) as i32)
+                })
+                .collect(),
             candidate: None,
             tap: None,
         })
@@ -110,6 +127,8 @@ impl Layout {
             double_tap_ms: 0,
             corners: Vec::new(),
             corner_size: 0,
+            screen_corners: Vec::new(),
+            screen_sizes: Vec::new(),
             candidate: None,
             tap: None,
         }
@@ -182,8 +201,18 @@ impl Layout {
             }
             return None;
         };
-        let n = self.corner_size;
-        if self.corners.iter().any(|c| match c {
+        let n = self
+            .screen_sizes
+            .get(current)
+            .copied()
+            .flatten()
+            .unwrap_or(self.corner_size);
+        let corners = self
+            .screen_corners
+            .get(current)
+            .and_then(Option::as_ref)
+            .unwrap_or(&self.corners);
+        if corners.iter().any(|c| match c {
             Corner::TopLeft => x < r.x + n && y < r.y + n,
             Corner::TopRight => x > right - n && y < r.y + n,
             Corner::BottomLeft => x < r.x + n && y > bottom - n,

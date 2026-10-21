@@ -304,6 +304,15 @@ pub(crate) fn config_options(cfg: &Config, server: bool) -> Vec<(u32, i32)> {
     });
     vec![
         (
+            o::DEFAULT_LOCK_TO_SCREEN_STATE,
+            i32::from(cfg.options.default_lock_to_screen),
+        ),
+        (o::DISABLE_LOCK_TO_SCREEN, i32::from(cfg.options.disable_lock_to_screen)),
+        (o::SWITCH_NEEDS_SHIFT, i32::from(cfg.options.switch_needs_shift)),
+        (o::SWITCH_NEEDS_CONTROL, i32::from(cfg.options.switch_needs_control)),
+        (o::SWITCH_NEEDS_ALT, i32::from(cfg.options.switch_needs_alt)),
+        (o::WIN32_KEEP_FOREGROUND, i32::from(cfg.options.win32_keep_foreground)),
+        (
             o::HEARTBEAT,
             if server {
                 cfg.server.heartbeat_ms
@@ -419,6 +428,33 @@ pub(crate) fn screen_options(cfg: &Config, screen_name: &str) -> Vec<(u32, i32)>
     if let Some(screen) = cfg.screens.iter().find(|s| s.name == screen_name) {
         if screen.os.as_deref().is_some_and(|s| s.eq_ignore_ascii_case("windows")) {
             options.push((o::WIN32_KEEP_FOREGROUND, 1));
+        }
+        if let Some(opts) = &screen.options {
+            for (id, v) in [
+                (o::HALF_DUPLEX_CAPS_LOCK, opts.half_duplex_caps_lock),
+                (o::HALF_DUPLEX_NUM_LOCK, opts.half_duplex_num_lock),
+                (o::HALF_DUPLEX_SCROLL_LOCK, opts.half_duplex_scroll_lock),
+                (o::XTEST_XINERAMA_UNAWARE, opts.xtest_is_xinerama_unaware),
+                (o::PRESERVE_FOCUS, opts.preserve_focus),
+            ] {
+                if let Some(v) = v {
+                    options.push((id, i32::from(v)));
+                }
+            }
+            if let Some(corners) = &opts.dead_corners {
+                let mask = corners.iter().fold(0, |mask, c| {
+                    mask | match c {
+                        Corner::TopLeft => 1,
+                        Corner::TopRight => 2,
+                        Corner::BottomLeft => 4,
+                        Corner::BottomRight => 8,
+                    }
+                });
+                options.push((o::SWITCH_CORNERS, mask));
+            }
+            if let Some(size) = opts.corner_size_px {
+                options.push((o::SWITCH_CORNER_SIZE, size.min(i32::MAX as u32) as i32));
+            }
         }
         if let Some(remap) = &screen.modifiers {
             for (id, value) in [

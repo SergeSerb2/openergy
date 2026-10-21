@@ -39,7 +39,12 @@ pub fn bind(path: &Path) -> Result<(UnixListener, SocketLock), String> {
     if let Some(parent) = path.parent() {
         if !parent.exists() {
             std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
-            mode(parent, 0o700);
+        }
+        use std::os::unix::fs::PermissionsExt;
+        let metadata = std::fs::metadata(parent).map_err(|e| e.to_string())?;
+        // Shared sticky directories such as /tmp must retain their system mode.
+        if metadata.permissions().mode() & 0o1000 == 0 {
+            std::fs::set_permissions(parent, std::fs::Permissions::from_mode(0o700)).map_err(|e| e.to_string())?;
         }
     }
     let lock_path = path.with_extension("sock.lock");

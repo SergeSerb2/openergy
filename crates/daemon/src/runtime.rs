@@ -146,6 +146,7 @@ struct Runtime {
     last_status_ms: u64,
     last_health: u64,
     permissions: Permissions,
+    local_secure: Option<String>,
     displays: Vec<ScreenRect>,
     rng: u64,
     stop: Arc<AtomicBool>,
@@ -528,9 +529,11 @@ impl Runtime {
         }
         let snapshot = self.machine.snapshot();
         if self.cfg.role == Role::Client && snapshot.connected {
+            if self.state != "connected" {
+                self.last_error = None;
+            }
             self.state = "connected".into();
             self.retry = None;
-            self.last_error = None;
             let now = self.now();
             let since = *self.healthy_since.get_or_insert(now);
             if now.saturating_sub(since) >= 60_000 {
@@ -541,6 +544,13 @@ impl Runtime {
         }
     }
     fn refresh_health(&mut self) {
+        let secure = self.screens.secure_input_app();
+        if secure != self.local_secure {
+            self.local_secure = secure.clone();
+            if let Machine::Server(s) = &mut self.machine {
+                s.handle(ServerEvent::LocalSecureInput { app: secure }, &mut self.actions);
+            }
+        }
         let displays = self.screens.screens();
         let changed = displays != self.displays;
         self.displays = displays;
@@ -699,6 +709,14 @@ impl Runtime {
                     self.enabled = true;
                     self.retry = None;
                     self.start_connection();
+                    let _ = self
+                        .capture
+                        .commands
+                        .try_send(CaptureCommand::Enable(self.cfg.role == Role::Server));
+                    let _ = self
+                        .clipboard
+                        .commands
+                        .try_send(ClipboardCommand::Enabled(self.cfg.clipboard.enabled));
                 }
                 Ok(json!({"connecting":true}))
             }
@@ -716,9 +734,11 @@ impl Runtime {
                 Ok(json!({"disconnected":true}))
             }
             m::CONNECTION_RESTART => {
+                self.enabled = false;
                 self.machine.shutdown(&mut self.actions);
                 self.apply_actions();
                 self.execute(NetCommand::Shutdown);
+                self.process_net();
                 self.machine = Machine::new(Arc::new(self.cfg.clone()));
                 self.machine.geometry(
                     display_rect(&self.displays),
@@ -992,6 +1012,7 @@ pub fn run_daemon(
             last_status_ms: 0,
             last_health: 0,
             permissions,
+            local_secure: None,
             displays,
             rng: unix_ms() ^ u64::from(std::process::id()),
             stop: stop.clone(),

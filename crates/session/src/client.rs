@@ -120,7 +120,9 @@ impl Client {
                 }
             }
             ClientEvent::ConfigChanged(cfg) => {
+                let was_active = self.active;
                 self.leave(out);
+                self.active = was_active;
                 self.config = cfg;
                 self.screen_name = self.config.name.clone();
                 if let Some((c, p)) = &mut self.peer {
@@ -267,6 +269,8 @@ impl Client {
                 sequence,
                 modifiers,
             } if p.phase == Phase::Ready => {
+                self.ledger.clear();
+                out.push(Action::ReleaseAllLocal);
                 self.active = true;
                 self.sequence = sequence;
                 self.cursor = self.screen.clamp(i32::from(x), i32::from(y));

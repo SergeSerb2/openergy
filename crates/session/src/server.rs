@@ -147,8 +147,16 @@ impl Server {
                 send(
                     conn,
                     Message::Hello {
-                        product: "Synergy".into(),
-                        version: ProtocolVersion::V1_8,
+                        product: if self.config.options.barrier {
+                            "Barrier"
+                        } else {
+                            "Synergy"
+                        }
+                        .into(),
+                        version: ProtocolVersion {
+                            major: 1,
+                            minor: if self.config.options.barrier { 6 } else { 8 },
+                        },
                     },
                     out,
                 );
@@ -425,8 +433,11 @@ impl Server {
                         slot.sequence = sequence;
                         slot.owner = Some(conn);
                         slot.data = None;
-                        for peer in self.peers.values_mut() {
+                        for (&other, peer) in &mut self.peers {
                             peer.transfers.cancel(id);
+                            if other != conn && peer.phase == Phase::Ready && peer.version.minor >= 6 {
+                                send(other, Message::ClipboardGrab { id, sequence: 0 }, out);
+                            }
                         }
                     }
                 }
