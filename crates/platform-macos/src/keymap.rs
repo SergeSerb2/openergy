@@ -268,8 +268,7 @@ impl Keymap {
         &self.layout.id
     }
 
-    /// Compare the current layout ID and keyboard type before each public
-    /// translation. This avoids a notification/run-loop lifetime dependency.
+    /// Refresh outside the event path after a keyboard-layout notification.
     pub fn refresh(&mut self) -> Result<bool> {
         let current = Layout::current()?;
         if current.id == self.layout.id && current.keyboard_type == self.layout.keyboard_type {

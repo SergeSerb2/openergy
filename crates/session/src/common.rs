@@ -173,6 +173,7 @@ pub(crate) struct Peer {
     pub declined: bool,
     unknown_saturated: bool,
     pub language_warned: bool,
+    language_logged: bool,
 }
 impl Peer {
     pub fn new(now: u64) -> Self {
@@ -199,6 +200,7 @@ impl Peer {
             declined: false,
             unknown_saturated: false,
             language_warned: false,
+            language_logged: false,
         }
     }
     pub fn next_deadline(&self, now: u64, server: bool) -> u64 {
@@ -242,6 +244,14 @@ impl Peer {
             self.declined = true;
             log::warn!("file/drag transfer declined: bytes={bytes}");
             notice("transfer_unsupported", "File and drag transfer are disabled", out);
+        }
+    }
+    pub fn observe_language(&mut self, message: &Message) {
+        if matches!(message, Message::LanguageSync { languages: lang } | Message::KeyDown { lang: Some(lang), .. } | Message::KeyRepeat { lang, .. } if !lang.is_empty())
+            && !self.language_logged
+        {
+            self.language_logged = true;
+            log::info!("peer keyboard language ignored; language sync is not implemented");
         }
     }
     pub fn unknown(&mut self, code: [u8; 4]) {

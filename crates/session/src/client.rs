@@ -179,6 +179,7 @@ impl Client {
         let Some((conn, p)) = &mut self.peer else { return };
         let c = *conn;
         p.last_rx = self.now;
+        p.observe_language(&msg);
         if let Message::Unknown { code, .. } = msg {
             p.unknown(code);
             return;
@@ -359,12 +360,6 @@ impl Client {
             Message::FileTransfer { payload, .. } => p.decline(payload.len(), out),
             Message::DragInfo { payload, .. } => p.decline(payload.len(), out),
             other => {
-                if matches!(&other, Message::KeyDown { lang: Some(lang), .. } | Message::KeyRepeat { lang, .. } if !lang.is_empty())
-                    && !p.language_warned
-                {
-                    p.language_warned = true;
-                    log::info!("peer keyboard language ignored; language sync is not implemented");
-                }
                 if self.active && p.phase == Phase::Ready {
                     if let Some(mut ev) = input_message(other, &p.options) {
                         match ev {

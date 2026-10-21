@@ -322,6 +322,7 @@ impl Server {
     fn message(&mut self, conn: ConnId, msg: Message, out: &mut Vec<Action>) {
         let Some(p) = self.peers.get_mut(&conn) else { return };
         p.last_rx = self.now;
+        p.observe_language(&msg);
         if let Message::Unknown { code, .. } = msg {
             p.unknown(code);
             return;

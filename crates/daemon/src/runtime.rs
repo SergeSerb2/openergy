@@ -802,8 +802,10 @@ impl Runtime {
                 self.attempt = 0;
             }
         } else if self.cfg.role == Role::Server && self.enabled && connected {
+            if self.state != "connected" {
+                self.last_error = None;
+            }
             self.state = "connected".into();
-            self.last_error = None;
         } else if self.cfg.role == Role::Server && self.enabled && self.state == "connected" {
             self.state = "listening".into();
         }
@@ -1403,6 +1405,7 @@ pub fn run_daemon(
                 rt.process_net();
             }
             while let Ok(packet) = rt.capture.events.try_recv() {
+                rt.status_dirty = true;
                 if let Some(movement) = packet.movement {
                     rt.input(movement);
                 }
@@ -1450,9 +1453,9 @@ pub fn run_daemon(
             rt.machine.tick(now, &mut rt.actions);
             rt.apply_actions();
             rt.process_net();
-            let health_interval = if rt.permissions.accessibility != Grant::Granted
-                || rt.permissions.input_monitoring != Grant::Granted
-                || rt.permissions.post_events != Grant::Granted
+            let health_interval = if matches!(rt.permissions.accessibility, Grant::Denied | Grant::Unknown)
+                || matches!(rt.permissions.input_monitoring, Grant::Denied | Grant::Unknown)
+                || matches!(rt.permissions.post_events, Grant::Denied | Grant::Unknown)
             {
                 250
             } else {
