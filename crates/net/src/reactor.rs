@@ -89,11 +89,12 @@ struct Reservation {
     bulk_conn: Option<ConnId>,
 }
 impl Reservation {
-    fn new(budget: &Arc<Budget>, bytes: usize, bulk_conn: Option<ConnId>) -> Result<Self, NetError> {
+    fn new(budget: &Arc<Budget>, bytes: usize, bulk_conn: Option<ConnId>, control: bool) -> Result<Self, NetError> {
         budget
             .bytes
             .try_update(Ordering::AcqRel, Ordering::Acquire, |n| {
-                n.checked_add(bytes).filter(|v| *v <= MAILBOX_BYTES)
+                n.checked_add(bytes)
+                    .filter(|v| *v <= MAILBOX_BYTES + if control { 1024 * 1024 } else { 0 })
             })
             .map_err(|_| NetError::QueueFull)?;
         if let Some(conn) = bulk_conn {
@@ -171,7 +172,12 @@ impl Mailbox {
                 bytes.extend_from_slice(&payload);
                 (conn, bytes, priority, false, false, true)
             }
-            other => return Ok(Command::Public(other, Reservation::new(&self.budget, 128, None)?)),
+            other => {
+                return Ok(Command::Public(
+                    other,
+                    Reservation::new(&self.budget, 128, None, false)?,
+                ))
+            }
         };
         if bytes.len() < 8
             || bytes.len() > MAX_FRAME_LEN as usize + 4
@@ -179,7 +185,12 @@ impl Mailbox {
         {
             return Err(NetError::InvalidFrame);
         }
-        let reservation = Reservation::new(&self.budget, bytes.len(), (priority == Priority::Bulk).then_some(conn))?;
+        let reservation = Reservation::new(
+            &self.budget,
+            bytes.len(),
+            (priority == Priority::Bulk).then_some(conn),
+            priority == Priority::Control,
+        )?;
         Ok(Command::Packet(
             conn,
             Packet {
@@ -977,7 +988,8 @@ impl NetDriver {
         } else {
             // Same-thread control must remain available at the mailbox byte limit,
             // especially Shutdown/Close while the peer is already backpressured.
-            Reservation::new(&self.handle.inner.budget, 0, None).map(|reservation| Command::Public(cmd, reservation))
+            Reservation::new(&self.handle.inner.budget, 0, None, true)
+                .map(|reservation| Command::Public(cmd, reservation))
         };
         let command = command?;
         if let Command::Packet(conn, packet) = &command {

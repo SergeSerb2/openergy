@@ -144,13 +144,14 @@ impl Raw {
         }
         Ok(())
     }
-    pub fn expect_closed(&mut self, timeout: Duration) -> Result<()> {
+    pub fn expect_closed(&mut self, timeout: Duration, reject_bytes: bool) -> Result<()> {
         let deadline = Instant::now() + timeout;
         let stream = self.socket(timeout)?;
         let mut buf = [0; 4096];
         loop {
             check_deadline(deadline, "raw close")?;
             match stream.read(&mut buf) {
+                Ok(n) if n > 0 && reject_bytes => return Err(Failure::product("unexpected bytes before FIN")),
                 Ok(0) => return Ok(()),
                 Err(e)
                     if matches!(

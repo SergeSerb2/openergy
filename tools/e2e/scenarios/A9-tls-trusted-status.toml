@@ -1,0 +1,44 @@
+name = "A9-tls-trusted-status"
+requirement = "Server connected state clears old errors; TLS status distinguishes an unverified client from a verified server pin."
+timeout_ms = 3000
+
+[[node]]
+id = "server"
+role = "server"
+tls = true
+require_client_trust = false
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+tls = true
+
+[[step]]
+do = "wait_status"
+node = "client"
+fields = {"pending_trust" = {"$len" = 1}}
+save = "pending"
+
+[[step]]
+do = "cli"
+node = "client"
+args = ["trust", "approve", "${pending.pending_trust.0.fingerprint}", "--config", "${client.config}"]
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "assert_status"
+node = "client"
+fields = {"peers.0.tls.trusted" = true}
+
+[[step]]
+do = "assert_status"
+node = "server"
+fields = {"state" = "connected", "peers.0.tls.enabled" = true, "peers.0.tls.trusted" = false, "last_error" = {"$null" = true}}

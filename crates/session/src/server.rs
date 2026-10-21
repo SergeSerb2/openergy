@@ -16,6 +16,7 @@ struct Slot {
     data: Option<Arc<Vec<u8>>>,
     available: bool,
     readback: bool,
+    remote_origin: bool,
 }
 #[derive(Clone)]
 pub struct Server {
@@ -143,7 +144,6 @@ impl Server {
             for slot in &mut self.slots {
                 if slot.owner == Some(conn) {
                     slot.owner = None;
-                    slot.data = None;
                 }
             }
         }
@@ -207,6 +207,7 @@ impl Server {
                         slot.data = None;
                         slot.available = false;
                         slot.readback = false;
+                        slot.remote_origin = false;
                     }
                     for p in self.peers.values_mut() {
                         p.transfers.cancel(id);
@@ -228,7 +229,7 @@ impl Server {
                 // Transfers own their shared blobs until End is queued. Keep
                 // only the platform's current clipboard after the final sender.
                 for slot in &mut self.slots {
-                    if slot.owner.is_none() && slot.data.as_ref().is_some_and(|data| Arc::strong_count(data) == 1) {
+                    if !slot.remote_origin && slot.data.as_ref().is_some_and(|data| Arc::strong_count(data) == 1) {
                         slot.data = None;
                     }
                 }
@@ -442,6 +443,7 @@ impl Server {
                         slot.data = None;
                         slot.available = false;
                         slot.readback = false;
+                        slot.remote_origin = false;
                         for peer in self.peers.values_mut() {
                             peer.transfers.cancel(id);
                         }
@@ -658,6 +660,7 @@ impl Server {
         }
         match clipboard::marshal(&data, self.config.clipboard.max_bytes) {
             Ok(bytes) => {
+                slot.remote_origin |= owner.is_some();
                 slot.data = Some(Arc::new(bytes));
                 slot.available = true;
             }

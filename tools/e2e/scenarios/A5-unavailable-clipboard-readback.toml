@@ -49,6 +49,10 @@ do = "sleep"
 ms = 500
 
 [[step]]
+do = "stop"
+node = "first"
+
+[[step]]
 do = "start"
 node = "late"
 

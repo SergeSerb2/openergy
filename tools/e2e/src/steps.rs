@@ -277,7 +277,7 @@ impl Context {
                 Ok(json!({"absent": codes}))
             }
             "raw_expect_closed" => {
-                self.raw(&id)?.expect_closed(timeout)?;
+                self.raw(&id)?.expect_closed(timeout, step.flag("reject_bytes"))?;
                 Ok(json!({"closed":true}))
             }
             "lab_drive" | "lab_pointer" | "lab_events_dump" | "lab_clipboard" | "lab_ctl" => {
