@@ -18,6 +18,8 @@ enum AppEndToEnd {
 
     static func run(outputDirectory: URL) {
         NSApplication.shared.setActivationPolicy(.prohibited)
+        // E2E daemons must never be allowed to host on the live Synergy port.
+        setenv("OPENERGY_ALLOW_PORT_24800", "0", 1)
         try? FileManager.default.createDirectory(at: outputDirectory, withIntermediateDirectories: true)
         let arguments = ProcessInfo.processInfo.arguments
         let joinAddress = arguments.firstIndex(of: "--join").flatMap { arguments.indices.contains($0 + 1) ? arguments[$0 + 1] : nil }
