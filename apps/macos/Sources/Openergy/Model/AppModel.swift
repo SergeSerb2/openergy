@@ -89,8 +89,12 @@ final class AppModel {
             if let peer = connectedPeers.first {
                 return "\(peer.address ?? "") · \(peer.tls?.enabled == true ? (peer.tls?.version ?? "TLS") : "Not encrypted")"
             }
-            if let error = status.lastError?.message, state != .connected { return error }
-            return config.client?.remote.map { "Server \($0)" } ?? "Choose a computer to join"
+            if let error = status.lastError?.message, state != .connected {
+                guard let retry = status.client?.nextRetryMs, retry > 0 else { return error }
+                return "\(error) Trying again in \(Int((retry / 1000).rounded(.up))) s."
+            }
+            if let remote = config.client?.remote, !remote.isEmpty { return "Server \(remote)" }
+            return "Choose a computer to join"
         }
     }
 

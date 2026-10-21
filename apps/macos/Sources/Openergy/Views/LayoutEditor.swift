@@ -122,6 +122,12 @@ struct LayoutEditor: View {
                 }
             }
         }
+        .task(id: placed.contains(where: \.isLocal)) {
+            // A server always owns a screen in its layout: put this Mac on the canvas first.
+            if let local = items.first(where: \.isLocal), local.rect == nil {
+                place(local, at: nil, placed: placed)
+            }
+        }
         .inspector(isPresented: $showInspector) {
             ScreenInspector(model: model, item: items.first { $0.name == selection }, placed: placed) { item in
                 unplace(item, placed: placed)
