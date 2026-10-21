@@ -427,3 +427,14 @@ creation, result snapshots, clipboard contents, and screen lists may allocate.
 They are outside the sink event hot path. Queue/ring/pressed limits bound retained
 input state; clipboard bytes have their own cap. No full-daemon RSS or native
 activation result is claimed by this crate-level demonstration.
+
+## Scripted click policy (daemon E2E controls)
+
+`VirtualControl::set_numbering_controls(now_ms: Option<u64>,
+click_interval_ms: Option<u64>, click_distance: Option<f64>) -> Result<(), PlatformError>`
+updates only supplied values. A scripted `now_ms` remains fixed until the next
+update; only the click model uses it. Audit timestamps keep the real monotonic
+clock. The interval must be at most 60,000 ms. Distance is finite, nonnegative,
+and at most 1,000,000 points. Invalid controls leave all values unchanged.
+The default distance remains four points for every backend. Native backends
+continue to use the real clock and system interval.

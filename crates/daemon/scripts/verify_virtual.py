@@ -2,6 +2,7 @@
 """Exercise real openergy processes through ctl and raw loopback sockets only."""
 import argparse
 import atexit
+import base64
 import json
 import os
 from pathlib import Path
@@ -209,10 +210,10 @@ def main():
         def clipboard_text():
             text = 'Openergy bidirectional λ'
             server.call('virtual.clipboard', {'text': text})
-            wait(lambda: client.call('virtual.clipboard')['data']['formats'] == [{'kind': 'text_utf8', 'bytes': list(text.encode())}])
+            wait(lambda: client.call('virtual.clipboard')['data']['formats'] == [{'kind': 'text_utf8', 'bytes_base64': base64.b64encode(text.encode()).decode()}])
             text2 = 'Client return λ'
             client.call('virtual.clipboard', {'text': text2})
-            wait(lambda: server.call('virtual.clipboard')['data']['formats'] == [{'kind': 'text_utf8', 'bytes': list(text2.encode())}])
+            wait(lambda: server.call('virtual.clipboard')['data']['formats'] == [{'kind': 'text_utf8', 'bytes_base64': base64.b64encode(text2.encode()).decode()}])
             stamp = server.call('virtual.clipboard')['stamp']
             time.sleep(.7)
             require(server.call('virtual.clipboard')['stamp'] == stamp, 'clipboard loop detected')

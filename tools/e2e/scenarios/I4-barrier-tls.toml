@@ -9,6 +9,7 @@ id = "server"
 kind = "openergy"
 role = "server"
 platform = "virtual"
+config = {options = {barrier = true}}
 tls = true
 
 [[node]]

@@ -238,6 +238,7 @@ pub struct ClickNumberer {
     pub pressed_click_state: [Option<i64>; 8],
     history: [click::ClickHistory; 8],
     double_click_ms: u64,
+    click_distance: f64,
     exhaustion_logged: bool,
 }
 impl ClickNumberer {

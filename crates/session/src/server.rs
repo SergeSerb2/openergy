@@ -439,12 +439,23 @@ impl Server {
                     .get(id.0 as usize)
                     .is_some_and(|s| s.owner == Some(conn) && sequence >= s.sequence);
                 if valid {
+                    let declared = if let openergy_protocol::Chunk::Start { total_len } = &chunk {
+                        Some(*total_len as usize)
+                    } else {
+                        None
+                    };
                     match p
                         .transfers
                         .receive(id, sequence, chunk, self.config.clipboard.max_bytes, self.now)
                     {
                         Ok(Some(data)) => self.payload(Some(conn), id, data, out),
                         Ok(None) => {}
+                        Err(clipboard::ClipboardError::TooLarge) => clipboard::blocked(
+                            declared.unwrap_or(0),
+                            self.config.clipboard.max_bytes.min(clipboard::HARD_CAP),
+                            &p.name,
+                            out,
+                        ),
                         Err(e) => {
                             log::warn!("discarded clipboard: {e:?}");
                         }

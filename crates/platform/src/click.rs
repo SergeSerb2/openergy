@@ -46,6 +46,7 @@ impl ClickNumberer {
             pressed_click_state: [None; 8],
             history: [ClickHistory::default(); 8],
             double_click_ms,
+            click_distance: 4.0,
             exhaustion_logged: false,
         }
     }
@@ -79,7 +80,7 @@ impl ClickNumberer {
             .time_ms
             .and_then(|time| now_ms.checked_sub(time))
             .is_some_and(|elapsed| elapsed <= self.double_click_ms);
-        let close = within_distance(previous.x, previous.y, x, y);
+        let close = within_distance(previous.x, previous.y, x, y, self.click_distance);
         let state = if timely && close && !previous.dragged {
             previous.state.saturating_add(1)
         } else {
@@ -102,7 +103,7 @@ impl ClickNumberer {
     pub fn on_drag_at(&mut self, button: u8, x: f64, y: f64) -> Option<ClickAssignment> {
         let assignment = self.assignment(button)?;
         let history = &mut self.history[usize::from(button)];
-        if !within_distance(history.x, history.y, x, y) {
+        if !within_distance(history.x, history.y, x, y, self.click_distance) {
             history.dragged = true;
         }
         Some(assignment)
@@ -130,8 +131,8 @@ impl ClickNumberer {
     }
 }
 
-fn within_distance(ax: f64, ay: f64, bx: f64, by: f64) -> bool {
+fn within_distance(ax: f64, ay: f64, bx: f64, by: f64, distance: f64) -> bool {
     let dx = ax - bx;
     let dy = ay - by;
-    dx * dx + dy * dy <= 16.0
+    dx * dx + dy * dy <= distance * distance
 }

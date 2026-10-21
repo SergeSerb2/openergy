@@ -139,6 +139,10 @@ struct Runtime {
     sink: Box<dyn InputSink>,
     screens: Box<dyn ScreenSystem>,
     control: Option<openergy_platform::virtual_backend::VirtualControl>,
+    notices: adapter::Notices,
+    suspended: bool,
+    resume_enabled: bool,
+    close_at: Option<u64>,
     capture: workers::Capture,
     clipboard: workers::ClipboardWorker,
     bus: Arc<EventBus>,
@@ -390,9 +394,89 @@ impl Runtime {
         }
     }
     fn input(&mut self, event: InputEvent) {
+        if !self.enabled || self.suspended {
+            return;
+        }
         self.events_in += 1;
         if let Machine::Server(s) = &mut self.machine {
             s.handle(ServerEvent::LocalInput(event), &mut self.actions);
+        }
+    }
+    fn notice(&mut self, notice: adapter::Notice) {
+        use adapter::Notice;
+        match notice {
+            Notice::Sleep | Notice::Lock => {
+                if self.suspended {
+                    return;
+                }
+                self.suspended = true;
+                self.resume_enabled = self.enabled;
+                self.enabled = false;
+                self.retry = None;
+                self.machine.shutdown(&mut self.actions);
+                self.apply_actions();
+                self.execute(NetCommand::StopListening);
+                self.close_at = Some(self.now() + 250);
+                self.state = "idle".into();
+                let _ = self.capture.commands.try_send(CaptureCommand::Enable(false));
+                let _ = self.clipboard.commands.try_send(ClipboardCommand::Enabled(false));
+            }
+            Notice::Wake | Notice::Unlock => {
+                if self.suspended {
+                    self.suspended = false;
+                    self.displays = self.screens.screens();
+                    self.permissions = self.screens.permissions();
+                    self.local_secure = self.screens.secure_input_app();
+                    self.enabled = self.resume_enabled;
+                    self.close_at = None;
+                    self.execute(NetCommand::Shutdown);
+                    self.process_net();
+                    self.attempt = 0;
+                    self.retry = None;
+                    self.machine = Machine::new(Arc::new(self.cfg.clone()));
+                    self.machine.geometry(
+                        display_rect(&self.displays),
+                        self.screens.cursor_pos(),
+                        false,
+                        &mut self.actions,
+                    );
+                    self.start_connection();
+                    let _ = self
+                        .capture
+                        .commands
+                        .try_send(CaptureCommand::Enable(self.enabled && self.cfg.role == Role::Server));
+                    let _ = self
+                        .clipboard
+                        .commands
+                        .try_send(ClipboardCommand::Enabled(self.enabled && self.cfg.clipboard.enabled));
+                } else if self.cfg.role == Role::Client && self.retry.is_some() {
+                    self.attempt = 0;
+                    self.retry = Some(self.now());
+                }
+            }
+            Notice::Displays => self.display_changed.store(true, Ordering::Release),
+            Notice::Permission | Notice::CaptureStopped | Notice::CaptureError => {
+                if self.suspended || !self.enabled || self.cfg.role != Role::Server {
+                    return;
+                }
+                if let Machine::Server(s) = &mut self.machine {
+                    s.handle(ServerEvent::CaptureOverflow, &mut self.actions);
+                }
+                self.error("capture_unavailable", "Platform capture stopped or lost permission");
+                let _ = self.capture.commands.try_send(CaptureCommand::Enable(false));
+                self.refresh_health();
+            }
+            Notice::NotificationError => {
+                match &mut self.machine {
+                    Machine::Server(s) => s.handle(ServerEvent::CaptureOverflow, &mut self.actions),
+                    Machine::Client(c) => c.handle(ClientEvent::PermissionLost, &mut self.actions),
+                    _ => {}
+                }
+                self.error(
+                    "platform_notifications",
+                    "Platform lifecycle notifications are unavailable",
+                );
+            }
         }
     }
     fn reconnect(&mut self) {
@@ -1040,7 +1124,8 @@ pub fn run_daemon(
         let bus = Arc::new(EventBus::default());
         let logger = Logger::new(&dir, bus.clone());
         logger.install();
-        let (mut backend, control) = adapter::platform(&platform, &config).map_err(|e| e.to_string())?;
+        let parts = adapter::platform(&platform, &config).map_err(|e| e.to_string())?;
+        let (mut backend, control, notices) = (parts.backend, parts.control, parts.notices);
         let (driver, _net_handle) =
             NetDriver::new(adapter::net_config(&config, &dir, platform == "virtual")).map_err(|e| e.to_string())?;
         let waker = driver.waker();
@@ -1071,6 +1156,10 @@ pub fn run_daemon(
             sink: backend.sink,
             screens: backend.screens,
             control,
+            notices,
+            suspended: false,
+            resume_enabled: false,
+            close_at: None,
             capture,
             clipboard,
             bus,
@@ -1123,6 +1212,14 @@ pub fn run_daemon(
         rt.start_connection();
         log::info!("openergy {VERSION} daemon listening on {}", socket_path.display());
         while !stop.load(Ordering::Relaxed) && !lifetime::SIGNALLED.load(Ordering::Relaxed) && !parent.exited() {
+            for notice in (rt.notices)() {
+                rt.notice(notice);
+            }
+            if rt.close_at.is_some_and(|deadline| rt.now() >= deadline) {
+                rt.close_at = None;
+                rt.execute(NetCommand::Shutdown);
+                rt.process_net();
+            }
             while let Ok(IoCommand::Ipc { req, reply, events }) = rx.try_recv() {
                 let response = match rt.dispatch(&req, &events) {
                     Ok(value) => Response::ok(req.id, value),

@@ -1,7 +1,7 @@
 # Requirement: Openergy virtual server sends ordered typing/clicks to the real Docker barrier client; server death permits clean later input.
 name = "I4-barrier-plain"
 requirement = "Openergy virtual server sends ordered typing/clicks to the real Docker barrier client; server death permits clean later input."
-blocked_by = ["WP6", "wire dialect selection (no frozen daemon control)"]
+blocked_by = ["WP6"]
 timeout_ms = 5000
 
 [[node]]
@@ -9,6 +9,7 @@ id = "server"
 kind = "openergy"
 role = "server"
 platform = "virtual"
+config = {options = {barrier = true}}
 tls = false
 
 [[node]]

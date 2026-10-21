@@ -18,6 +18,9 @@ pub fn decode(value: &Value) -> Result<ClipboardData, IpcError> {
     for item in items {
         let kind: FormatKind =
             serde_json::from_value(item.get("kind").cloned().ok_or_else(invalid)?).map_err(|_| invalid())?;
+        if item.get("bytes").is_some() == item.get("bytes_base64").is_some() {
+            return Err(invalid());
+        }
         let bytes = if let Some(text) = item.get("bytes_base64").and_then(Value::as_str) {
             unbase64(text, CAP.saturating_sub(total))?
         } else {
@@ -32,9 +35,6 @@ pub fn decode(value: &Value) -> Result<ClipboardData, IpcError> {
     Ok(ClipboardData { formats })
 }
 pub fn encode(snapshot: ClipboardSnapshot) -> Value {
-    if snapshot.data.total_bytes() <= 1024 * 1024 {
-        return serde_json::to_value(snapshot).unwrap_or(Value::Null);
-    }
     json!({"stamp":snapshot.stamp,"own_write":snapshot.own_write,"last_own_write_stamp":snapshot.last_own_write_stamp,
         "data":{"formats":snapshot.data.formats.iter().map(|f|json!({"kind":f.kind,"bytes_base64":base64(&f.bytes)})).collect::<Vec<_>>()}})
 }

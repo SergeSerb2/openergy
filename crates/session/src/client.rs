@@ -243,7 +243,10 @@ impl Client {
             Message::InfoAck => self.ignore_mouse = false,
             Message::LanguageSync { languages } if p.phase == Phase::Info => {
                 if languages.len() % 2 != 0 {
-                    log::warn!("odd language list ignored");
+                    if !p.language_warned {
+                        p.language_warned = true;
+                        log::warn!("odd language list ignored");
+                    }
                 } else {
                     p.languages = languages.as_bytes().chunks_exact(2).map(|c| [c[0], c[1]]).collect();
                 }
@@ -326,6 +329,11 @@ impl Client {
                 if id.0 < 2 && self.config.clipboard.enabled && self.config.clipboard.receive =>
             {
                 if self.clip_sequences.get(id.0 as usize).is_some_and(|s| sequence >= *s) {
+                    let declared = if let openergy_protocol::Chunk::Start { total_len } = &chunk {
+                        Some(*total_len as usize)
+                    } else {
+                        None
+                    };
                     match p
                         .transfers
                         .receive(id, sequence, chunk, self.config.clipboard.max_bytes, self.now)
@@ -338,6 +346,12 @@ impl Client {
                             out.push(Action::SetClipboard { id, data });
                         }
                         Ok(None) => {}
+                        Err(clipboard::ClipboardError::TooLarge) => clipboard::blocked(
+                            declared.unwrap_or(0),
+                            self.config.clipboard.max_bytes.min(clipboard::HARD_CAP),
+                            &p.name,
+                            out,
+                        ),
                         Err(e) => log::warn!("discarded clipboard: {e:?}"),
                     }
                 }

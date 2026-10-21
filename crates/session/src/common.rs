@@ -172,6 +172,7 @@ pub(crate) struct Peer {
     pub languages: Vec<[u8; 2]>,
     pub declined: bool,
     unknown_saturated: bool,
+    pub language_warned: bool,
 }
 impl Peer {
     pub fn new(now: u64) -> Self {
@@ -197,6 +198,7 @@ impl Peer {
             languages: Vec::new(),
             declined: false,
             unknown_saturated: false,
+            language_warned: false,
         }
     }
     pub fn next_deadline(&self, now: u64, server: bool) -> u64 {

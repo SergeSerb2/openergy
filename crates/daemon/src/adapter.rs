@@ -20,26 +20,82 @@ pub fn net_config(config: &Config, dir: &Path, virtual_platform: bool) -> NetCon
         }),
     }
 }
-pub fn platform(name: &str, _cfg: &Config) -> Result<(Backend, Option<VirtualControl>), PlatformError> {
+pub enum Notice {
+    Permission,
+    CaptureError,
+    CaptureStopped,
+    Displays,
+    Sleep,
+    Wake,
+    Lock,
+    Unlock,
+    NotificationError,
+}
+pub type Notices = Box<dyn FnMut() -> Vec<Notice> + Send>;
+pub struct Platform {
+    pub backend: Backend,
+    pub control: Option<VirtualControl>,
+    pub notices: Notices,
+}
+fn parts(backend: Backend, control: Option<VirtualControl>) -> Platform {
+    Platform {
+        backend,
+        control,
+        notices: Box::new(Vec::new),
+    }
+}
+pub fn platform(name: &str, _cfg: &Config) -> Result<Platform, PlatformError> {
     match name {
         "virtual" => {
-            let (b, c) = virtual_backend::create(VirtualOptions {
+            let (backend, control) = virtual_backend::create(VirtualOptions {
                 screen_w: 1920,
                 screen_h: 1080,
                 hid_seed: 100,
                 double_click_ms: 500,
             });
-            Ok((b, Some(c)))
+            Ok(parts(backend, Some(control)))
         }
         #[cfg(target_os = "macos")]
-        "macos" => Err(PlatformError::NotImplemented),
+        "macos" => {
+            use openergy_platform_macos::{ClickNumbering, MacNotice, MacOptions};
+            let click_numbering = match _cfg.macos.click_numbering {
+                openergy_config::ClickNumbering::Native => ClickNumbering::Native,
+                openergy_config::ClickNumbering::Legacy => ClickNumbering::Legacy,
+            };
+            let (backend, rx) = openergy_platform_macos::create_with_notices(MacOptions {
+                click_numbering,
+                lines_per_notch: 3.0,
+            })?;
+            let notices: Notices = Box::new(move || {
+                rx.try_iter()
+                    .map(|n| match n {
+                        MacNotice::CapturePermissionProblem => Notice::Permission,
+                        MacNotice::CaptureTranslationProblem => Notice::CaptureError,
+                        MacNotice::CaptureStopped => Notice::CaptureStopped,
+                        MacNotice::DisplaysChanged => Notice::Displays,
+                        MacNotice::Sleeping => Notice::Sleep,
+                        MacNotice::Woke => Notice::Wake,
+                        MacNotice::ScreenLocked => Notice::Lock,
+                        MacNotice::ScreenUnlocked => Notice::Unlock,
+                        MacNotice::NotificationSetupFailed => Notice::NotificationError,
+                    })
+                    .collect()
+            });
+            Ok(Platform {
+                backend,
+                control: None,
+                notices,
+            })
+        }
         #[cfg(target_os = "linux")]
         "x11" => openergy_platform_linux::create(openergy_platform_linux::X11Options {
             display: std::env::var("DISPLAY").ok(),
         })
-        .map(|b| (b, None)),
+        .map(|b| parts(b, None)),
         #[cfg(target_os = "windows")]
-        "windows" => openergy_platform_windows::create(openergy_platform_windows::WindowsOptions {}).map(|b| (b, None)),
+        "windows" => {
+            openergy_platform_windows::create(openergy_platform_windows::WindowsOptions {}).map(|b| parts(b, None))
+        }
         _ => Err(PlatformError::Failed(format!(
             "platform {name} is unavailable on this OS"
         ))),
@@ -57,10 +113,59 @@ pub fn virtual_request(
     let failed = |e: PlatformError| IpcError::new("virtual_failed", e.to_string());
     match method {
         m::VIRTUAL_INJECT => {
+            let object = params
+                .as_object()
+                .ok_or_else(|| invalid("expected virtual injection object".into()))?;
+            if object.keys().any(|k| {
+                ![
+                    "events",
+                    "seed",
+                    "hid_seed",
+                    "now_ms",
+                    "click_interval_ms",
+                    "click_distance",
+                ]
+                .contains(&k.as_str())
+            }) {
+                return Err(invalid("unknown virtual injection parameter".into()));
+            }
             let request: openergy_platform::InjectRequest =
-                serde_json::from_value(params.clone()).map_err(|e| invalid(e.to_string()))?;
-            serde_json::to_value(control.inject(request.into_events()).map_err(failed)?)
-                .map_err(|e| invalid(e.to_string()))
+                serde_json::from_value(json!({"events":params.get("events").cloned().unwrap_or(json!([]))}))
+                    .map_err(|e| invalid(e.to_string()))?;
+            let seed = params
+                .get("seed")
+                .or_else(|| params.get("hid_seed"))
+                .map(|v| v.as_i64().ok_or_else(|| invalid("seed must fit i64".into())))
+                .transpose()?;
+            let now = params
+                .get("now_ms")
+                .map(|v| v.as_u64().ok_or_else(|| invalid("now_ms must fit u64".into())))
+                .transpose()?;
+            let interval = params
+                .get("click_interval_ms")
+                .map(|v| {
+                    v.as_u64()
+                        .ok_or_else(|| invalid("click_interval_ms must fit u64".into()))
+                })
+                .transpose()?;
+            let distance = params
+                .get("click_distance")
+                .map(|v| {
+                    v.as_f64()
+                        .ok_or_else(|| invalid("click_distance must be a finite number".into()))
+                })
+                .transpose()?;
+            control
+                .set_numbering_controls(now, interval, distance)
+                .map_err(failed)?;
+            if let Some(seed) = seed {
+                control.set_hid_seed(seed);
+            }
+            let events = request.into_events();
+            if events.is_empty() {
+                return Ok(json!({"delivered":0,"passed":0,"swallowed":0}));
+            }
+            serde_json::to_value(control.inject(events).map_err(failed)?).map_err(|e| invalid(e.to_string()))
         }
         m::VIRTUAL_RECORDED => {
             let request: virtual_backend::RecordedRequest =

@@ -282,6 +282,7 @@ struct State {
     released: bool,
     click: ClickNumberer,
     hid_seed: i64,
+    click_now_ms: Option<u64>,
     screens: Vec<ScreenRect>,
     display_generation: u64,
     permissions: Permissions,
@@ -431,7 +432,7 @@ impl State {
         }
         let click = match *event {
             InputEvent::MouseDown { button } => {
-                let now = self.elapsed_ms();
+                let now = self.click_now_ms.unwrap_or_else(|| self.elapsed_ms());
                 Some(
                     self.click
                         .on_down_at(
@@ -560,6 +561,7 @@ impl VirtualPlatform {
                 released: false,
                 click: ClickNumberer::with_double_click_interval(config.double_click_ms),
                 hid_seed: 0,
+                click_now_ms: None,
                 screens: vec![ScreenRect {
                     x: 0,
                     y: 0,
@@ -765,6 +767,31 @@ impl VirtualControl {
     /// None disables secure input; Some(name) reports its scripted owner.
     pub fn set_secure_input(&self, app: Option<String>) {
         lock(&self.shared.state).secure_input = app;
+    }
+    /// Set virtual numbering time and policy. None keeps the current value.
+    /// All values are validated before any state changes.
+    pub fn set_numbering_controls(
+        &self,
+        now_ms: Option<u64>,
+        click_interval_ms: Option<u64>,
+        click_distance: Option<f64>,
+    ) -> Result<(), PlatformError> {
+        if click_interval_ms.is_some_and(|n| n > 60_000)
+            || click_distance.is_some_and(|n| !n.is_finite() || !(0.0..=1_000_000.0).contains(&n))
+        {
+            return Err(failed("invalid click interval or distance"));
+        }
+        let mut state = lock(&self.shared.state);
+        if let Some(now) = now_ms {
+            state.click_now_ms = Some(now);
+        }
+        if let Some(interval) = click_interval_ms {
+            state.click.double_click_ms = interval;
+        }
+        if let Some(distance) = click_distance {
+            state.click.click_distance = distance;
+        }
+        Ok(())
     }
     /// The simulated sum of HID counters, re-read on every sink down.
     pub fn set_hid_seed(&self, seed: i64) {
