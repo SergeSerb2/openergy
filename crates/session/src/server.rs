@@ -219,7 +219,7 @@ impl Server {
                 // Transfers own their shared blobs until End is queued. Keep
                 // only the platform's current clipboard after the final sender.
                 for slot in &mut self.slots {
-                    if slot.data.as_ref().is_some_and(|data| Arc::strong_count(data) == 1) {
+                    if slot.owner.is_none() && slot.data.as_ref().is_some_and(|data| Arc::strong_count(data) == 1) {
                         slot.data = None;
                     }
                 }
@@ -640,6 +640,9 @@ impl Server {
         let readback = owner.is_none() && slot.readback;
         let owner = if readback { slot.owner } else { owner };
         slot.readback = false;
+        if data.formats.is_empty() {
+            return;
+        }
         if slot.owner != owner {
             return;
         }

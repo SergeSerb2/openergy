@@ -715,7 +715,7 @@ impl<P: EventPoster> Injector<P> {
             return Err(error("source key button zero is reserved"));
         }
         if self.keys.contains_key(&button) {
-            return Err(error("source key button is already down; use key_repeat"));
+            return self.key_repeat(button, 1);
         }
         let plan = self
             .keymap
@@ -832,11 +832,9 @@ impl<P: EventPoster> Injector<P> {
     }
 
     pub fn key_up(&mut self, button: KeyButton) -> Result<()> {
-        let held = self
-            .keys
-            .get(&button)
-            .cloned()
-            .ok_or_else(|| error("key up without key down"))?;
+        let Some(held) = self.keys.get(&button).cloned() else {
+            return Ok(());
+        };
         if held.unicode.is_empty() && keymap::modifier_for_code(held.keycode).is_some() {
             let mut desired = self.lock_flags;
             for (source, other) in &self.keys {

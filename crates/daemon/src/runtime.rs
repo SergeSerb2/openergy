@@ -327,7 +327,6 @@ impl Runtime {
                     Action::Inject(ev) => {
                         if let Err(e) = self.sink.inject(&ev) {
                             self.error("injection_failed", e.to_string());
-                            self.sink.release_all();
                         }
                     }
                     Action::ReleaseAllLocal => self.sink.release_all(),
@@ -544,11 +543,6 @@ impl Runtime {
             }
             Role::Client => match remote(&self.cfg.client.remote, None) {
                 Ok((host, port)) => {
-                    if port == 24800 && self.platform == "virtual" {
-                        self.state = "error".into();
-                        self.error("unsafe_port", "Virtual clients refuse port 24800");
-                        return;
-                    }
                     self.state = if self.attempt == 0 {
                         "connecting"
                     } else {
@@ -715,6 +709,9 @@ impl Runtime {
                 self.attempt = 0;
             }
         } else if self.cfg.role == Role::Server && self.enabled && connected {
+            self.state = "connected".into();
+            self.last_error = None;
+        } else if self.cfg.role == Role::Server && self.enabled && self.state == "connected" {
             self.state = "listening".into();
         }
     }

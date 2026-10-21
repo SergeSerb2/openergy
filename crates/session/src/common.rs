@@ -212,9 +212,12 @@ impl Peer {
             return now.saturating_add(1000);
         }
         let last = if server { self.last_rx } else { self.last_alive };
-        self.last_sent
-            .saturating_add(self.options.heartbeat)
-            .min(last.saturating_add(self.options.heartbeat.saturating_mul(3)))
+        let dead = last.saturating_add(self.options.heartbeat.saturating_mul(3));
+        if server {
+            self.last_sent.saturating_add(self.options.heartbeat).min(dead)
+        } else {
+            dead
+        }
     }
     pub fn snapshot(&self, conn: ConnId) -> PeerSnapshot {
         PeerSnapshot {
@@ -266,7 +269,7 @@ impl Peer {
         if hb > 0 && now.saturating_sub(last) >= hb.saturating_mul(3) {
             return true;
         }
-        if hb > 0 && now.saturating_sub(self.last_sent) >= hb {
+        if server && hb > 0 && now.saturating_sub(self.last_sent) >= hb {
             send(conn, Message::KeepAlive, out);
             self.last_sent = now;
             if server {
@@ -350,13 +353,13 @@ pub(crate) fn config_options(cfg: &Config, server: bool) -> Vec<(u32, i32)> {
         ),
     ]
 }
-pub(crate) fn wire_input(ev: &InputEvent, minor: u16, cfg: &Config) -> Message {
+pub(crate) fn wire_input(ev: &InputEvent, _minor: u16, _cfg: &Config) -> Message {
     match *ev {
         InputEvent::KeyDown { key, modifiers, button } => Message::KeyDown {
             key,
             modifiers: modifiers.0,
             button,
-            lang: (minor >= 8 && cfg.input.sync_language).then(String::new),
+            lang: None,
         },
         InputEvent::KeyRepeat {
             key,
@@ -383,10 +386,8 @@ pub(crate) fn wire_input(ev: &InputEvent, minor: u16, cfg: &Config) -> Message {
             dy: i16c(dy),
         },
         InputEvent::MouseWheel { dx, dy } => Message::MouseWheel {
-            dx: i16c((dx as f64 * cfg.input.scroll_sensitivity) as i32),
-            dy: i16c(
-                (dy as f64 * cfg.input.scroll_sensitivity * if cfg.input.invert_scroll_y { -1.0 } else { 1.0 }) as i32,
-            ),
+            dx: i16c(dx),
+            dy: i16c(dy),
         },
     }
 }

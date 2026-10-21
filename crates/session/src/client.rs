@@ -134,18 +134,8 @@ impl Client {
                 self.active = was_active;
                 self.config = cfg;
                 self.screen_name = self.config.name.clone();
-                if let Some((c, p)) = &mut self.peer {
+                if let Some((_, p)) = &mut self.peer {
                     p.transfers = Default::default();
-                    if p.phase == Phase::Ready && p.version.minor >= 8 {
-                        send(*c, Message::ResetOptions, out);
-                        send(
-                            *c,
-                            Message::SetOptions {
-                                options: config_options(&self.config, false),
-                            },
-                            out,
-                        );
-                    }
                 }
             }
             ClientEvent::LocalClipboardChanged { id } => {
@@ -207,10 +197,14 @@ impl Client {
         }
         if p.phase == Phase::Hello {
             if let Message::Hello { product, version } = msg {
-                if version.major != 1 || version.minor > 8 || !(product == "Synergy" || product == "Barrier") {
-                    send(c, Message::ErrorIncompatible { major: 1, minor: 8 }, out);
+                if version.major != 1
+                    || !(product.eq_ignore_ascii_case("Synergy") || product.eq_ignore_ascii_case("Barrier"))
+                {
                     self.disconnect(out);
                     return;
+                }
+                if version.minor > 8 {
+                    log::info!("server protocol minor {} accepted as 1.8", version.minor);
                 }
                 p.product = product.clone();
                 p.version = version;
@@ -219,7 +213,7 @@ impl Client {
                     c,
                     Message::HelloBack {
                         product,
-                        version,
+                        version: openergy_protocol::ProtocolVersion { major: 1, minor: 8 },
                         name: self.screen_name.clone(),
                     },
                     out,
@@ -259,17 +253,6 @@ impl Client {
                 p.last_alive = self.now;
                 if p.phase != Phase::Ready {
                     p.phase = Phase::Ready;
-                    // Client option advertisements are a 1.8 extension. Barrier 1.6
-                    // treats a client DSOP as a protocol error and disconnects.
-                    if p.version.minor >= 8 {
-                        send(
-                            c,
-                            Message::SetOptions {
-                                options: config_options(&self.config, false),
-                            },
-                            out,
-                        );
-                    }
                     notify("peer.connected", serde_json::json!({"name":"server"}), out);
                 }
             }
@@ -326,36 +309,34 @@ impl Client {
             Message::ClipboardData { id, sequence, chunk }
                 if id.0 == 0 && self.config.clipboard.enabled && self.config.clipboard.receive =>
             {
-                if self.clip_sequences.get(id.0 as usize).is_some_and(|s| sequence >= *s) {
-                    let declared = if let openergy_protocol::Chunk::Start { total_len } = &chunk {
-                        Some(*total_len as usize)
-                    } else {
-                        None
-                    };
-                    match p
-                        .transfers
-                        .receive(id, sequence, chunk, self.config.clipboard.max_bytes, self.now)
-                    {
-                        Ok(Some(data)) => {
-                            if let Some(v) = self.local_owner.get_mut(id.0 as usize) {
-                                *v = false;
-                            }
-                            // The platform clipboard is shared on macOS. An empty
-                            // X11 selection must not erase a populated normal clip.
-                            if id.0 == 0 || !data.formats.is_empty() {
-                                clipboard::transferred(&data, "in", out);
-                                out.push(Action::SetClipboard { id, data });
-                            }
+                let declared = if let openergy_protocol::Chunk::Start { total_len } = &chunk {
+                    Some(*total_len as usize)
+                } else {
+                    None
+                };
+                match p
+                    .transfers
+                    .receive(id, sequence, chunk, self.config.clipboard.max_bytes, self.now)
+                {
+                    Ok(Some(data)) => {
+                        if let Some(v) = self.local_owner.get_mut(id.0 as usize) {
+                            *v = false;
                         }
-                        Ok(None) => {}
-                        Err(clipboard::ClipboardError::TooLarge) => clipboard::blocked(
-                            declared.unwrap_or(0),
-                            self.config.clipboard.max_bytes.min(clipboard::HARD_CAP),
-                            &p.name,
-                            out,
-                        ),
-                        Err(e) => log::warn!("discarded clipboard: {e:?}"),
+                        // The platform clipboard is shared on macOS. An empty
+                        // X11 selection must not erase a populated normal clip.
+                        if id.0 == 0 || !data.formats.is_empty() {
+                            clipboard::transferred(&data, "in", out);
+                            out.push(Action::SetClipboard { id, data });
+                        }
                     }
+                    Ok(None) => {}
+                    Err(clipboard::ClipboardError::TooLarge) => clipboard::blocked(
+                        declared.unwrap_or(0),
+                        self.config.clipboard.max_bytes.min(clipboard::HARD_CAP),
+                        &p.name,
+                        out,
+                    ),
+                    Err(e) => log::warn!("discarded clipboard: {e:?}"),
                 }
             }
             Message::SecureInputNotification { name } => {
@@ -366,6 +347,12 @@ impl Client {
             Message::FileTransfer { payload, .. } => p.decline(payload.len(), out),
             Message::DragInfo { payload, .. } => p.decline(payload.len(), out),
             other => {
+                if matches!(&other, Message::KeyDown { lang: Some(lang), .. } | Message::KeyRepeat { lang, .. } if !lang.is_empty())
+                    && !p.language_warned
+                {
+                    p.language_warned = true;
+                    log::info!("peer keyboard language ignored; language sync is not implemented");
+                }
                 if self.active && p.phase == Phase::Ready {
                     if let Some(mut ev) = input_message(other, &p.options) {
                         match ev {
@@ -386,6 +373,15 @@ impl Client {
                                 self.cursor = self
                                     .screen
                                     .clamp(self.cursor.0.saturating_add(dx), self.cursor.1.saturating_add(dy));
+                            }
+                            InputEvent::MouseWheel { dx, dy } => {
+                                ev = InputEvent::MouseWheel {
+                                    dx: (dx as f64 * self.config.input.scroll_sensitivity) as i32,
+                                    dy: (dy as f64
+                                        * self.config.input.scroll_sensitivity
+                                        * if self.config.input.invert_scroll_y { -1.0 } else { 1.0 })
+                                        as i32,
+                                };
                             }
                             _ => {}
                         }
@@ -416,6 +412,7 @@ impl Client {
                                 };
                                 self.ledger.observe(&release);
                                 out.push(Action::Inject(release));
+                                return;
                             }
                         }
                         self.ledger.observe(&ev);

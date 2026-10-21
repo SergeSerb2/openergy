@@ -1030,7 +1030,6 @@ impl NetDriver {
     }
     fn connect(&mut self, host: String, port: u16, expected: Option<Fingerprint>, out: &mut Vec<NetEvent>) {
         let result = (|| {
-            Self::check_port(port)?;
             if self.conns.len() + self.pending.len() >= MAX_CONNECTIONS {
                 return Err(failed("16-connection limit"));
             }
@@ -1256,7 +1255,7 @@ impl NetDriver {
             self.remove(id, DisconnectReason::Shutdown, out);
             return;
         }
-        c.queues.discard_low();
+        c.queues.bulk.clear();
         c.close_at = Some(Instant::now() + CLOSE_TIMEOUT);
     }
     fn remove(&mut self, id: ConnId, reason: DisconnectReason, out: &mut Vec<NetEvent>) {
