@@ -1,0 +1,22 @@
+[package]
+name = "openergy-daemon"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "openergy"
+path = "src/main.rs"
+
+[dependencies]
+openergy-protocol = { path = "../protocol" }
+openergy-platform = { path = "../platform" }
+openergy-config = { path = "../config" }
+openergy-ipc = { path = "../ipc" }
+openergy-session = { path = "../session" }
+openergy-net = { path = "../net" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+log = { workspace = true }
+libc = { workspace = true }

@@ -1,0 +1,34 @@
+[workspace]
+resolver = "2"
+members = [
+  "crates/protocol", "crates/platform", "crates/config", "crates/ipc",
+  "crates/session", "crates/net", "crates/platform-macos",
+  "crates/platform-windows", "crates/platform-linux", "crates/daemon",
+  "tools/e2e",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+rust-version = "1.85"
+
+[workspace.dependencies]
+mio = { version = "1.2", features = ["os-poll", "net", "os-ext"] }
+rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
+rustls-pemfile = "2.2"
+rcgen = "0.14"
+sha2 = "0.11"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.9"
+mdns-sd = "0.21"
+log = "0.4"
+libc = "0.2"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+panic = "abort"
+strip = "symbols"
