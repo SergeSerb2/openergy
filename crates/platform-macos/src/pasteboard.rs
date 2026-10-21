@@ -340,6 +340,9 @@ struct DibInfo {
     height: usize,
     offset: usize,
     masks: [u32; 4],
+    top_down: bool,
+    stride: usize,
+    pixel_bytes: usize,
 }
 
 fn parse_dib(dib: &[u8], maximum: usize) -> Result<DibInfo> {
@@ -350,14 +353,15 @@ fn parse_dib(dib: &[u8], maximum: usize) -> Result<DibInfo> {
     }
     let width = get_u32(dib, 4)? as i32;
     let height = get_u32(dib, 8)? as i32;
-    if width <= 0 || height <= 0 {
-        return Err(error("DIB must have positive width and bottom-up height"));
+    if width <= 0 || height == 0 || height == i32::MIN {
+        return Err(error("DIB dimensions are invalid"));
     }
-    if get_u16(dib, 12)? != 1 || get_u16(dib, 14)? != 32 {
-        return Err(error("only single-plane 32-bpp DIB is supported"));
+    let bpp = get_u16(dib, 14)?;
+    if get_u16(dib, 12)? != 1 || ![24, 32].contains(&bpp) {
+        return Err(error("only single-plane 24/32-bpp DIB is supported"));
     }
     let compression = get_u32(dib, 16)?;
-    if compression != 0 && compression != 3 {
+    if (compression != 0 && compression != 3) || (bpp == 24 && compression != 0) {
         return Err(error("DIB must be BI_RGB or BI_BITFIELDS"));
     }
     // For 32-bit data, a palette is neither required nor accepted. Its size
@@ -366,7 +370,18 @@ fn parse_dib(dib: &[u8], maximum: usize) -> Result<DibInfo> {
         return Err(error("32-bpp DIB palettes are unsupported"));
     }
     let offset = if compression == 3 && header == 40 { 52 } else { header };
-    let length = bounded_image_len(width as usize, height as usize, offset, maximum)?;
+    let pixel_bytes = usize::from(bpp / 8);
+    let height_abs = height.unsigned_abs() as usize;
+    bounded_image_len(width as usize, height_abs, offset, maximum)?;
+    let stride = (width as usize)
+        .checked_mul(pixel_bytes)
+        .and_then(|n| n.checked_add(3))
+        .map(|n| n & !3)
+        .ok_or_else(|| error("DIB row overflow"))?;
+    let length = stride
+        .checked_mul(height_abs)
+        .ok_or_else(|| error("DIB size overflow"))?;
+    add_bounded(offset, length, maximum)?;
     if dib.len() < offset + length {
         return Err(error("truncated DIB pixel data"));
     }
@@ -407,9 +422,12 @@ fn parse_dib(dib: &[u8], maximum: usize) -> Result<DibInfo> {
     }
     Ok(DibInfo {
         width: width as usize,
-        height: height as usize,
+        height: height_abs,
         offset,
         masks,
+        top_down: height < 0,
+        stride,
+        pixel_bytes,
     })
 }
 
@@ -444,8 +462,13 @@ pub fn dib_to_image(dib: &[u8], max_bytes: usize) -> Result<RgbaImage> {
     let mut pixels = vec![0u8; info.width * info.height * 4];
     for y in 0..info.height {
         for x in 0..info.width {
-            let source = info.offset + ((info.height - 1 - y) * info.width + x) * 4;
-            let value = get_u32(dib, source)?;
+            let row = if info.top_down { y } else { info.height - 1 - y };
+            let source = info.offset + row * info.stride + x * info.pixel_bytes;
+            let value = if info.pixel_bytes == 3 {
+                u32::from(dib[source]) | (u32::from(dib[source + 1]) << 8) | (u32::from(dib[source + 2]) << 16)
+            } else {
+                get_u32(dib, source)?
+            };
             let target = (y * info.width + x) * 4;
             for channel in 0..4 {
                 let mask = info.masks[channel];

@@ -99,16 +99,26 @@ fn restrict_key(_path: &Path) -> std::io::Result<()> {
     Ok(())
 }
 
-pub(crate) struct DirectoryLock(PathBuf);
+/// The kernel releases this advisory lock even when the process is killed.
+pub(crate) struct DirectoryLock {
+    _file: File,
+}
 impl DirectoryLock {
     pub(crate) fn acquire(path: &Path) -> std::io::Result<Self> {
-        fs::create_dir(path)?;
-        Ok(Self(path.to_owned()))
-    }
-}
-impl Drop for DirectoryLock {
-    fn drop(&mut self) {
-        let _ = fs::remove_dir(&self.0);
+        // Migrate the old empty directory sentinel without deleting user data.
+        if path.is_dir() {
+            fs::remove_dir(path)?;
+        }
+        let mut options = OpenOptions::new();
+        options.read(true).write(true).create(true).truncate(false);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(0o600);
+        }
+        let file = options.open(path)?;
+        file.lock()?;
+        Ok(Self { _file: file })
     }
 }
 
