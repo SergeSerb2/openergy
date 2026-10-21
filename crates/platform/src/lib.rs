@@ -173,12 +173,24 @@ pub struct RecordedEvent {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum PlatformError {
     PermissionDenied(PermissionKind),
+    ClipboardTooLarge { bytes: usize, limit: usize },
     NotImplemented,
     Failed(String),
 }
 impl fmt::Display for PlatformError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{self:?}")
+        match self {
+            Self::Failed(message) => f.write_str(message),
+            Self::NotImplemented => f.write_str("This platform feature is unavailable."),
+            Self::ClipboardTooLarge { bytes, limit } => {
+                write!(f, "Clipboard size {bytes} exceeds the {limit} byte limit.")
+            }
+            Self::PermissionDenied(kind) => f.write_str(match kind {
+                PermissionKind::Accessibility => "Accessibility permission is required.",
+                PermissionKind::InputMonitoring => "Input Monitoring permission is required.",
+                PermissionKind::PostEvents => "Permission to send input is required.",
+            }),
+        }
     }
 }
 impl std::error::Error for PlatformError {}

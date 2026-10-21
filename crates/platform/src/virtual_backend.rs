@@ -975,7 +975,10 @@ impl ClipboardBackend for VirtualClipboard {
     fn read(&mut self, max_bytes: usize) -> Result<ClipboardData, PlatformError> {
         let state = lock(&self.shared.state);
         if state.clipboard.total_bytes() > max_bytes {
-            return Err(failed("clipboard exceeds caller byte limit"));
+            return Err(PlatformError::ClipboardTooLarge {
+                bytes: state.clipboard.total_bytes(),
+                limit: max_bytes,
+            });
         }
         Ok(state.clipboard.clone())
     }

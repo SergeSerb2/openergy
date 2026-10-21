@@ -150,7 +150,7 @@ impl Client {
             }
             ClientEvent::LocalClipboardChanged { id } => {
                 if id.0 < 2 && self.config.clipboard.enabled && self.config.clipboard.send {
-                    if let Some((c, p)) = &mut self.peer {
+                    if let Some((_, p)) = &mut self.peer {
                         if p.phase == Phase::Ready && p.version.minor >= 6 {
                             if let Some(v) = self.local_owner.get_mut(id.0 as usize) {
                                 *v = true;
@@ -159,14 +159,6 @@ impl Client {
                                 *v = self.sequence;
                             }
                             p.transfers.cancel(id);
-                            send(
-                                *c,
-                                Message::ClipboardGrab {
-                                    id,
-                                    sequence: self.sequence,
-                                },
-                                out,
-                            );
                             out.push(Action::ReadClipboard {
                                 id,
                                 max_bytes: self.config.clipboard.max_bytes.min(clipboard::HARD_CAP),
@@ -322,7 +314,7 @@ impl Client {
                 }
             }
             Message::Leave => self.leave(out),
-            Message::ClipboardGrab { id, sequence: _ } if id.0 < 2 => {
+            Message::ClipboardGrab { id, sequence: _ } if id.0 == 0 => {
                 if let Some(v) = self.local_owner.get_mut(id.0 as usize) {
                     *v = false;
                 }
@@ -332,7 +324,7 @@ impl Client {
                 p.transfers.cancel(id);
             }
             Message::ClipboardData { id, sequence, chunk }
-                if id.0 < 2 && self.config.clipboard.enabled && self.config.clipboard.receive =>
+                if id.0 == 0 && self.config.clipboard.enabled && self.config.clipboard.receive =>
             {
                 if self.clip_sequences.get(id.0 as usize).is_some_and(|s| sequence >= *s) {
                     let declared = if let openergy_protocol::Chunk::Start { total_len } = &chunk {
@@ -348,8 +340,12 @@ impl Client {
                             if let Some(v) = self.local_owner.get_mut(id.0 as usize) {
                                 *v = false;
                             }
-                            clipboard::transferred(&data, "in", out);
-                            out.push(Action::SetClipboard { id, data });
+                            // The platform clipboard is shared on macOS. An empty
+                            // X11 selection must not erase a populated normal clip.
+                            if id.0 == 0 || !data.formats.is_empty() {
+                                clipboard::transferred(&data, "in", out);
+                                out.push(Action::SetClipboard { id, data });
+                            }
                         }
                         Ok(None) => {}
                         Err(clipboard::ClipboardError::TooLarge) => clipboard::blocked(
@@ -433,13 +429,23 @@ impl Client {
         if id.0 > 1 || !self.local_owner.get(id.0 as usize).copied().unwrap_or(false) {
             return;
         }
-        let Some((_, p)) = &mut self.peer else { return };
+        let Some((conn, p)) = &mut self.peer else { return };
         if p.phase != Phase::Ready || !p.options.clipboard {
             return;
         }
         let limit = p.options.limit.min(self.config.clipboard.max_bytes);
         match clipboard::marshal(&data, self.config.clipboard.max_bytes) {
             Ok(bytes) if bytes.len() < limit => {
+                // A blocked payload must not take ownership from a peer that
+                // still has a useful clipboard.
+                send(
+                    *conn,
+                    Message::ClipboardGrab {
+                        id,
+                        sequence: self.sequence,
+                    },
+                    out,
+                );
                 p.transfers.enqueue(id, self.sequence, Arc::new(bytes));
                 clipboard::transferred(&data, "out", out);
             }

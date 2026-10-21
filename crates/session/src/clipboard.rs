@@ -2,6 +2,7 @@
 use crate::{notify, Action, ConnId};
 use openergy_platform::{ClipboardData, ClipboardFormat, FormatKind};
 use openergy_protocol::{Chunk, ClipboardId};
+use std::borrow::Cow;
 use std::collections::VecDeque;
 use std::sync::Arc;
 
@@ -20,7 +21,24 @@ pub fn marshal(data: &ClipboardData, cap: usize) -> Result<Vec<u8>, ClipboardErr
     let mut formats = data
         .formats
         .iter()
-        .filter_map(|f| f.kind.wire_id().map(|id| (id, &f.bytes)))
+        .filter_map(|f| {
+            f.kind.wire_id().map(|id| {
+                let bytes = if id == 0 && f.bytes.windows(2).any(|pair| pair == b"\r\n") {
+                    Cow::Owned(
+                        f.bytes
+                            .iter()
+                            .enumerate()
+                            .filter_map(|(index, byte)| {
+                                (*byte != b'\r' || f.bytes.get(index + 1) != Some(&b'\n')).then_some(*byte)
+                            })
+                            .collect::<Vec<_>>(),
+                    )
+                } else {
+                    Cow::Borrowed(f.bytes.as_slice())
+                };
+                (id, bytes)
+            })
+        })
         .collect::<Vec<_>>();
     formats.sort_by_key(|(id, _)| *id);
     formats.dedup_by_key(|(id, _)| *id);
@@ -34,12 +52,12 @@ pub fn marshal(data: &ClipboardData, cap: usize) -> Result<Vec<u8>, ClipboardErr
     let mut bytes = Vec::with_capacity(total);
     bytes.extend_from_slice(&(formats.len() as u32).to_be_bytes());
     for (id, b) in formats {
-        if id < 2 && std::str::from_utf8(b).is_err() {
+        if id < 2 && std::str::from_utf8(&b).is_err() {
             return Err(ClipboardError::InvalidUtf8);
         }
         bytes.extend_from_slice(&id.to_be_bytes());
         bytes.extend_from_slice(&(b.len() as u32).to_be_bytes());
-        bytes.extend_from_slice(b);
+        bytes.extend_from_slice(&b);
     }
     Ok(bytes)
 }

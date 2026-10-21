@@ -133,6 +133,7 @@ pub enum ClipboardCommand {
     Stop,
 }
 pub enum ClipboardEvent {
+    Blocked { bytes: usize, limit: usize },
     Changed,
     Payload { id: ClipboardId, data: ClipboardData },
     Failure(String),
@@ -157,6 +158,9 @@ pub fn clipboard(mut backend: Box<dyn ClipboardBackend>, waker: Arc<mio::Waker>)
                 Ok(ClipboardCommand::Read { id, max }) => {
                     let ev = match backend.read(max) {
                         Ok(data) => ClipboardEvent::Payload { id, data },
+                        Err(openergy_platform::PlatformError::ClipboardTooLarge { bytes, limit }) => {
+                            ClipboardEvent::Blocked { bytes, limit }
+                        }
                         Err(e) => ClipboardEvent::Failure(e.to_string()),
                     };
                     if tx.try_send(ev).is_err() {

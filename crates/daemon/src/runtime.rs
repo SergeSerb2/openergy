@@ -1288,6 +1288,19 @@ pub fn run_daemon(
                     ClipboardEvent::Changed => rt.machine.clipboard_changed(&mut rt.actions),
                     ClipboardEvent::Payload { id, data } => rt.machine.payload(id, data, &mut rt.actions),
                     ClipboardEvent::Failure(error) => rt.error("clipboard_failed", error),
+                    ClipboardEvent::Blocked { bytes, limit } => {
+                        let blocked = ipc::ClipboardBlocked {
+                            bytes: Some(bytes),
+                            limit: Some(limit),
+                            peer: Some("local".into()),
+                            unix_ms: Some(unix_ms()),
+                        };
+                        rt.publish(
+                            "clipboard.blocked",
+                            serde_json::to_value(&blocked).unwrap_or(Value::Null),
+                        );
+                        rt.last_blocked = Some(blocked);
+                    }
                 }
             }
             let now = rt.now();

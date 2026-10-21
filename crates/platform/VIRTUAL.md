@@ -438,3 +438,9 @@ clock. The interval must be at most 60,000 ms. Distance is finite, nonnegative,
 and at most 1,000,000 points. Invalid controls leave all values unchanged.
 The default distance remains four points for every backend. Native backends
 continue to use the real clock and system interval.
+
+`VirtualControl::clipboard_summary()` returns kinds, sizes, and stamps without
+cloning clipboard payloads. `clipboard_get()` retains its full snapshot API.
+A clipboard read over the caller's limit returns
+`PlatformError::ClipboardTooLarge { bytes, limit }` so the daemon can publish a
+visible block event without reading the oversized data.
