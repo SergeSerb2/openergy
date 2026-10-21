@@ -95,6 +95,22 @@ pub fn virtual_key(key: u16) -> Option<u16> {
 }
 pub fn named_key(vk: u16, scan: u32, extended: bool) -> Option<u16> {
     match vk {
+        VK_HOME | VK_LEFT | VK_UP | VK_RIGHT | VK_DOWN | VK_PRIOR | VK_NEXT | VK_END | VK_INSERT | VK_DELETE
+            if !extended =>
+        {
+            Some(match vk {
+                VK_HOME => 0xef95,
+                VK_LEFT => 0xef96,
+                VK_UP => 0xef97,
+                VK_RIGHT => 0xef98,
+                VK_DOWN => 0xef99,
+                VK_PRIOR => 0xef9a,
+                VK_NEXT => 0xef9b,
+                VK_END => 0xef9c,
+                VK_INSERT => 0xef9e,
+                _ => 0xef9f,
+            })
+        }
         VK_SPACE => Some(0x20),
         VK_RETURN if !extended => Some(0xef0d),
         VK_SNAPSHOT => Some(0xef61),

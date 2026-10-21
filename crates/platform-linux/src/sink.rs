@@ -126,8 +126,14 @@ impl Sink {
         let printable = !(0xe000..=0xefff).contains(&key) && key >= 0x20;
         let caps =
             mods.0 & Modifiers::CAPS_LOCK != 0 && char::from_u32(u32::from(key)).is_some_and(char::is_alphabetic);
+        let row = self.map.row(code);
+        let keypad_num = mods.0 & Modifiers::NUM_LOCK != 0
+            && row.first().is_some_and(|a| (0xff95..=0xff9f).contains(a))
+            && row
+                .get(1)
+                .is_some_and(|b| (0xffb0..=0xffb9).contains(b) || *b == 0xffae);
         let required = (if printable { mods.0 & !Modifiers::SHIFT } else { mods.0 })
-            | if shift ^ caps { Modifiers::SHIFT } else { 0 }
+            | if shift ^ caps ^ keypad_num { Modifiers::SHIFT } else { 0 }
             | if altgr { Modifiers::ALTGR } else { 0 };
         // Record before any post so release_all recovers partial injection failures.
         self.keys.insert(button, held);

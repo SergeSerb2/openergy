@@ -152,7 +152,10 @@ impl Keymap {
             && keyid(a)
                 .and_then(|key| char::from_u32(u32::from(key)))
                 .is_some_and(char::is_alphabetic);
-        keyid(if shift ^ caps { b } else { a })
+        let keypad_num = mask & Modifiers::NUM_LOCK != 0
+            && (0xff95..=0xff9f).contains(&a)
+            && ((0xffb0..=0xffb9).contains(&b) || b == 0xffae);
+        keyid(if shift ^ caps ^ keypad_num { b } else { a })
     }
     pub fn find(&self, sym: u32) -> Option<(u8, bool, bool)> {
         self.symbols.chunks(self.width).enumerate().find_map(|(i, row)| {

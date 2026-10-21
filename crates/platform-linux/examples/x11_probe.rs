@@ -23,7 +23,7 @@ mod probe {
         io::Write,
         process::{Child, Command, Stdio},
         sync::{
-            atomic::{AtomicBool, AtomicUsize, Ordering},
+            atomic::{AtomicBool, AtomicU16, AtomicUsize, Ordering},
             Arc,
         },
         time::{Duration, Instant},
@@ -183,6 +183,34 @@ mod probe {
             modifiers: Modifiers::NONE,
             button: 102,
         })?;
+        let keypad = Arc::new(AtomicU16::new(0));
+        let observed = keypad.clone();
+        b.source.start(Box::new(move |event| {
+            if let InputEvent::KeyDown { key, .. } = event {
+                observed.store(key, Ordering::Release);
+            }
+            CaptureDecision::PassToOs
+        }))?;
+        for key in [0xefb1, 0xef9c] {
+            keypad.store(0, Ordering::Release);
+            s.inject(&InputEvent::KeyDown {
+                key,
+                modifiers: Modifiers(Modifiers::NUM_LOCK),
+                button: 210,
+            })?;
+            pause();
+            if keypad.load(Ordering::Acquire) != key {
+                return Err("Num Lock keypad capture/injection mismatch".into());
+            }
+            s.inject(&InputEvent::KeyUp {
+                key,
+                modifiers: Modifiers(Modifiers::NUM_LOCK),
+                button: 210,
+            })?;
+            pause();
+        }
+        b.source.stop();
+        println!("inject/capture Num Lock: keypad digit and shifted keypad navigation passed");
         // Fractional values produce exactly one vertical and one horizontal notch.
         for _ in 0..4 {
             s.inject(&InputEvent::MouseWheel { dx: 30, dy: 30 })?;

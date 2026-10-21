@@ -22,7 +22,7 @@ impl Stroke {
             vk: if scan == 0 { vk } else { 0 },
             scan: (scan & 0xff) as u16,
             flags: if scan == 0 { 0 } else { KEYEVENTF_SCANCODE }
-                | if scan & 0xff00 == 0xe000 || keymap::extended(key, vk) {
+                | if (scan & 0xff00 == 0xe000 && !(0xef95..=0xef9f).contains(&key)) || keymap::extended(key, vk) {
                     KEYEVENTF_EXTENDEDKEY
                 } else {
                     0
@@ -141,6 +141,13 @@ impl Sink {
             modifiers: Vec::new(),
         };
         self.keys.insert(button, held);
+        let keypad_digit = (0xefb0..=0xefb9).contains(&key) || key == 0xefae;
+        let keypad_navigation = (0xef95..=0xef9f).contains(&key);
+        if (keypad_digit && mods.0 & Modifiers::NUM_LOCK == 0)
+            || (keypad_navigation && mods.0 & Modifiers::NUM_LOCK != 0)
+        {
+            required |= Modifiers::SHIFT;
+        }
         if key == 0xee20 {
             required |= Modifiers::SHIFT;
         }

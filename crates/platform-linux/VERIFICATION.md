@@ -18,10 +18,10 @@ cargo clippy -p openergy-platform-windows --target x86_64-pc-windows-msvc --all-
 ```
 
 ```text
-Finished `release` profile [optimized] target(s) in 8.43s
+Finished `release` profile [optimized] target(s) in 0.16s
 Checking openergy-platform-windows v0.1.0 (.../crates/platform-windows)
-Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.72s
-Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.16s
+Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.67s
+Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.42s
 ```
 
 The complete workspace release build had **zero warnings** on macOS. No native
@@ -52,8 +52,8 @@ Finished `release` profile [optimized] target(s) in 13.61s
 Both completed with **zero warnings**:
 
 ```text
-Finished `release` profile [optimized] target(s) in 0.03s
-Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.10s
+Finished `release` profile [optimized] target(s) in 4.29s
+Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.43s
 ```
 
 `run all` invokes the actual release example and the independent Python pixel
@@ -62,6 +62,7 @@ comparison. This is the final real output, with Cargo's routine header omitted:
 ```text
 fixtures: small dynamic-DEFLATE PNG; large PNG bytes=10498508
 inject pointer: X=117 Y=133
+inject/capture Num Lock: keypad digit and shifted keypad navigation passed
 inject release_all: Virtual core XTEST keyboard: all up
 inject release_all: Virtual core XTEST pointer: all up
 inject keymap restored; shared modifiers and repeats passed
@@ -85,6 +86,8 @@ independent pixels: PNG -> DIB -> PNG preserves RGBA; 10 MB INCR DIB pixels equa
   mouse button is up after two `release_all` calls during a held key and button.
   The complete native keymap before/after proves spare mapping restoration.
   A two-key chord proves one release does not drop the other key's synthetic Shift.
+  A real source/sink round trip checks keypad digits and shifted keypad navigation
+  while Num Lock is set.
 - Clipboard checks compare bytes read by independent xclip clients for UTF8_STRING,
   text/plain;charset=utf-8, text/html, image/png and image/bmp. The backend requests
   selections from real xclip owners. A 10,498,508-byte PNG transfers through INCR
