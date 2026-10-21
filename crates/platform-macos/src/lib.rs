@@ -1,6 +1,7 @@
 //! Native macOS backend. Construction and the `mac_probe` binary never start capture.
 //! Side effects occur only through explicit trait methods; see TEST-MAC.md.
 #![cfg(target_os = "macos")]
+#![deny(unsafe_op_in_unsafe_fn)]
 
 pub mod contract_shim;
 pub mod displays;
