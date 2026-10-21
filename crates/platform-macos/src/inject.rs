@@ -74,6 +74,7 @@ pub struct NativePoster {
     hidden_display: Option<u32>,
     mode: ClickNumbering,
     inspect: bool,
+    post_allowed: bool,
     observations: Vec<NativeEventFields>,
     last_seed: std::cell::Cell<i64>,
 }
@@ -92,6 +93,7 @@ impl NativePoster {
             hidden_display: None,
             mode,
             inspect: false,
+            post_allowed: crate::permissions::preflight().post,
             observations: Vec::new(),
             last_seed: std::cell::Cell::new(0),
         })
@@ -172,7 +174,7 @@ impl NativeEventFields {
 
 impl EventPoster for NativePoster {
     fn post(&mut self, event: &SynthEvent) -> Result<()> {
-        if !self.inspect && !crate::permissions::preflight().post {
+        if !self.inspect && !self.post_allowed {
             return Err(openergy_platform::PlatformError::PermissionDenied(
                 openergy_platform::PermissionKind::PostEvents,
             ));
@@ -525,6 +527,7 @@ pub struct Injector<P: EventPoster = NativePoster> {
     wheel_remainder: [f64; 2],
     epoch: Instant,
     enter_position: Option<crate::EnterPosition>,
+    layout_dirty: Option<std::sync::Arc<std::sync::atomic::AtomicBool>>,
 }
 
 impl Injector<NativePoster> {
@@ -576,7 +579,12 @@ impl<P: EventPoster> Injector<P> {
             wheel_remainder: [0.0; 2],
             epoch: Instant::now(),
             enter_position: None,
+            layout_dirty: None,
         })
+    }
+
+    pub(crate) fn set_layout_dirty(&mut self, dirty: std::sync::Arc<std::sync::atomic::AtomicBool>) {
+        self.layout_dirty = Some(dirty);
     }
 
     pub(crate) fn set_enter_position(&mut self, position: crate::EnterPosition) {
@@ -716,6 +724,15 @@ impl<P: EventPoster> Injector<P> {
         }
         if self.keys.contains_key(&button) {
             return self.key_repeat(button, 1);
+        }
+        if self
+            .layout_dirty
+            .as_ref()
+            .is_some_and(|dirty| dirty.swap(false, std::sync::atomic::Ordering::AcqRel))
+        {
+            if let Some(keymap) = &mut self.keymap {
+                keymap.refresh()?;
+            }
         }
         let plan = self
             .keymap
@@ -1012,6 +1029,9 @@ fn finite_point(x: f64, y: f64) -> Result<()> {
 }
 
 impl InputSink for Injector<NativePoster> {
+    fn permissions_changed(&mut self, permissions: &openergy_platform::Permissions) {
+        self.poster.post_allowed = permissions.post_events == openergy_platform::Grant::Granted;
+    }
     fn inject(&mut self, ev: &InputEvent) -> Result<()> {
         if let Some(position) = &self.enter_position {
             if let Some((x, y)) = position.lock().map_err(|_| error("enter position poisoned"))?.take() {
@@ -1056,6 +1076,7 @@ impl InputSink for Injector<NativePoster> {
         }
     }
     fn set_cursor_visible(&mut self, visible: bool) {
+        self.poster.post_allowed = crate::permissions::preflight().post;
         let result = if visible {
             // Leave force-shows all hides owned by this injector, without
             // unbalancing a cursor hide owned by another process.

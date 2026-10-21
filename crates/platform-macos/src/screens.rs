@@ -15,14 +15,16 @@ pub struct MacScreens {
     notices: Notices,
     monitor: Option<Monitor>,
     assertion: Option<u32>,
+    layout_dirty: Arc<AtomicBool>,
 }
 impl MacScreens {
-    pub(crate) fn new(notices: Notices, clipboard: MacClipboard) -> Self {
+    pub(crate) fn new(notices: Notices, clipboard: MacClipboard, layout_dirty: Arc<AtomicBool>) -> Self {
         Self {
             clipboard,
             notices,
             monitor: None,
             assertion: None,
+            layout_dirty,
         }
     }
     fn set_prevent_sleep(&mut self, on: bool) -> Result<()> {
@@ -101,7 +103,7 @@ impl ScreenSystem for MacScreens {
         // One lifecycle thread, no polling when idle. Replacing callback joins
         // the old observer before installing the new one.
         self.monitor.take();
-        match Monitor::start(self.notices.clone(), cb) {
+        match Monitor::start(self.notices.clone(), cb, self.layout_dirty.clone()) {
             Ok(monitor) => self.monitor = Some(monitor),
             Err(_) => {
                 self.notices.send(MacNotice::NotificationSetupFailed);
@@ -143,7 +145,7 @@ struct Monitor {
     thread: Option<JoinHandle<()>>,
 }
 impl Monitor {
-    fn start(notices: Notices, mut callback: DisplayCallback) -> Result<Self> {
+    fn start(notices: Notices, mut callback: DisplayCallback, layout_dirty: Arc<AtomicBool>) -> Result<Self> {
         let stopping = Arc::new(AtomicBool::new(false));
         let thread_stopping = stopping.clone();
         let (tx, rx) = mpsc::sync_channel(1);
@@ -166,6 +168,7 @@ impl Monitor {
                         port: std::ptr::null_mut(),
                         notifier: 0,
                         display_registered: false,
+                        layout_dirty,
                     });
                     let user = (&mut *state as *mut ObserverState).cast();
                     // Safety: stable ObserverState outlives all registered callbacks.
@@ -194,6 +197,14 @@ impl Monitor {
                     // Safety: names are copied by the center; observer remains alive until removal.
                     unsafe {
                         let center = ffi::CFNotificationCenterGetDistributedCenter();
+                        ffi::CFNotificationCenterAddObserver(
+                            center,
+                            user,
+                            keyboard_layout_changed,
+                            ffi::kTISNotifySelectedKeyboardInputSourceChanged,
+                            ffi::null(),
+                            4,
+                        );
                         ffi::CFNotificationCenterAddObserver(
                             center,
                             user,
@@ -287,6 +298,7 @@ struct ObserverState {
     port: ffi::MutRef,
     notifier: u32,
     display_registered: bool,
+    layout_dirty: Arc<AtomicBool>,
 }
 impl Drop for ObserverState {
     fn drop(&mut self) {
@@ -364,5 +376,20 @@ unsafe extern "C" fn lock_changed(_: ffi::Ref, user: ffi::MutRef, name: ffi::Ref
             "com.apple.screenIsUnlocked" => state.notices.send(MacNotice::ScreenUnlocked),
             _ => {}
         }
+    }
+}
+
+unsafe extern "C" fn keyboard_layout_changed(
+    _: ffi::Ref,
+    observer: ffi::MutRef,
+    _: ffi::Ref,
+    _: ffi::Ref,
+    _: ffi::Ref,
+) {
+    if !observer.is_null() {
+        // Safety: observer is the registered stable ObserverState until removal.
+        unsafe { &*observer.cast::<ObserverState>() }
+            .layout_dirty
+            .store(true, Ordering::Release);
     }
 }

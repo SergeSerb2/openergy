@@ -309,7 +309,6 @@ impl Keymap {
     }
 
     pub fn plan(&mut self, key: KeyId, mask: ModifierMask) -> Result<InjectionPlan> {
-        self.refresh()?;
         let requested = mask_to_flags(mask);
         if let Some(keycode) = special_to_code(key) {
             return Ok(InjectionPlan::Keycodes(vec![KeyStroke {

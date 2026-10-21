@@ -331,6 +331,33 @@ fn dib(dir: &Path) -> Result<()> {
             return Err("image cap not enforced".into());
         }
     }
+    // Generated CF_DIB fixtures only; no pasteboard or input API is used.
+    for top_down in [false, true] {
+        let (width, height, stride) = (3usize, 2usize, 12usize);
+        let mut dib = vec![0u8; 40 + stride * height];
+        dib[..4].copy_from_slice(&40u32.to_le_bytes());
+        dib[4..8].copy_from_slice(&(width as i32).to_le_bytes());
+        dib[8..12].copy_from_slice(&(if top_down { -(height as i32) } else { height as i32 }).to_le_bytes());
+        dib[12..14].copy_from_slice(&1u16.to_le_bytes());
+        dib[14..16].copy_from_slice(&24u16.to_le_bytes());
+        let expected = vec![
+            255, 0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 10, 20, 30, 255, 40, 50, 60, 255, 70, 80, 90, 255,
+        ];
+        for y in 0..height {
+            for x in 0..width {
+                let pixel = &expected[(y * width + x) * 4..][..4];
+                let row = if top_down { y } else { height - 1 - y };
+                dib[40 + row * stride + x * 3..][..3].copy_from_slice(&[pixel[2], pixel[1], pixel[0]]);
+            }
+        }
+        let image = pasteboard::dib_to_image(&dib, CAP)?;
+        if image.pixels != expected {
+            return Err("24-bpp DIB orientation/colors differ".into());
+        }
+        let name = if top_down { "24-top-down" } else { "24-bottom-up" };
+        std::fs::write(dir.join(format!("{name}.dib")), &dib)?;
+        println!("PASS {name}: {width}x{height}, padded rows, exact RGBA");
+    }
     if pasteboard::image_to_dib(b"invalid image", CAP).is_ok() || pasteboard::dib_to_png(&[], CAP).is_ok() {
         return Err("malformed image accepted".into());
     }

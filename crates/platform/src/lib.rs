@@ -202,6 +202,8 @@ pub trait InputSource: Send {
     fn warp_cursor(&mut self, x: i32, y: i32) -> Result<(), PlatformError>;
 }
 pub trait InputSink: Send {
+    /// Update cached permission state outside the input event path.
+    fn permissions_changed(&mut self, _permissions: &Permissions) {}
     fn inject(&mut self, ev: &InputEvent) -> Result<(), PlatformError>;
     fn release_all(&mut self);
     fn set_cursor_visible(&mut self, visible: bool);

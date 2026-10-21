@@ -85,8 +85,10 @@ pub fn create_with_notices(options: MacOptions) -> Result<(Backend, Receiver<Mac
     let (sender, receiver) = mpsc::sync_channel(64);
     let notices = Notices(sender);
     let enter_position = EnterPosition::default();
+    let layout_dirty = Arc::new(std::sync::atomic::AtomicBool::new(false));
     let mut sink = inject::Injector::new(options.click_numbering)?;
     sink.set_enter_position(enter_position.clone());
+    sink.set_layout_dirty(layout_dirty.clone());
     sink.set_lines_per_notch(options.lines_per_notch)?;
     let clipboard = MacClipboard::default();
     let backend = Backend {
@@ -97,7 +99,7 @@ pub fn create_with_notices(options: MacOptions) -> Result<(Backend, Receiver<Mac
             enter_position,
         )),
         sink: Box::new(sink),
-        screens: Box::new(screens::MacScreens::new(notices, clipboard.clone())),
+        screens: Box::new(screens::MacScreens::new(notices, clipboard.clone(), layout_dirty)),
         clipboard: Box::new(clipboard),
     };
     Ok((backend, receiver))
