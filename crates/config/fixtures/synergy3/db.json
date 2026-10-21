@@ -1,0 +1,35 @@
+{
+  "version": {"schemaVersion": 17, "syncVersion": 3},
+  "data": {
+    "computers": [
+      {
+        "id": "pc", "name": "Studio", "hostname": "studio-pc", "isRemoved": false,
+        "scroll_sensitivity": 1.0,
+        "modifier": {"Shift":"Shift","Ctrl":"Ctrl","Alt":"Alt","Meta":"Meta","Super":"Super"},
+        "fix": {"capslock":false,"num_lock":false,"scr_lock":false,"xtest":false,"sync_language":true,"invert_scroll":false,"prevent_sleep":true},
+        "dead_corners": {"top-left":8,"top-right":"","bottom-left":"","bottom-right":""},
+        "misc": {"left":201,"top":0,"width":200,"height":110,"os":"windows","screenCount":1}
+      },
+      {
+        "id": "book", "name": "Mac", "hostname": "macbook", "isRemoved": false,
+        "scroll_sensitivity": 1.25,
+        "modifier": {"Shift":"Shift","Ctrl":"Super","Alt":"Alt","Meta":"Meta","Super":"Ctrl"},
+        "fix": {"capslock":true,"num_lock":false,"scr_lock":false,"xtest":false,"sync_language":false,"invert_scroll":true,"prevent_sleep":false},
+        "dead_corners": {"top-left":"","top-right":"","bottom-left":"","bottom-right":""},
+        "misc": {"left":0,"top":25,"width":200,"height":75,"os":"macos","screenCount":1}
+      },
+      {"id":"old","name":"Removed","isRemoved":true}
+    ],
+    "mainID": {"id":"pc"},
+    "keyboard": {"altgr":false,"lock_to_screen":true},
+    "mouse": {"relative":false},
+    "performance": {"allow_copy":true,"limit":4000,"sync":true},
+    "security": {"encryption":true,"key_length":4096},
+    "local-network": {"keep_alive":true,"interval":3000},
+    "developers": {"corePort":25020,"switchDelay":100,"shouldSwitchDoubleTap":true,"switchDoubleTap":250,"dragAndDrop":false},
+    "hotkeys": {
+      "lock": {"enabled":true,"keystroke":{"type":"keystroke","control":true,"alt":true,"meta":false,"shift":false,"key":"KeyL"},"actions":[{"enabled":true,"trigger":0,"type":"LOCK_CURSOR","lockType":"toggle"}]},
+      "next": {"enabled":true,"keystroke":{"type":"mousebutton","button":"4"},"actions":[{"enabled":true,"trigger":0,"type":"SWITCH_IN_DIRECTION","target":"left"}]}
+    }
+  }
+}

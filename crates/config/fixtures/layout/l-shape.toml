@@ -1,0 +1,15 @@
+version = 1
+role = "server"
+name = "studio-pc"
+[server]
+listen = "127.0.0.1:25020"
+port = 25020
+[[screen]]
+name = "studio-pc"
+rect = {x = 0.0, y = 0.0, w = 1000.0, h = 1000.0}
+[[screen]]
+name = "macbook"
+rect = {x = 1001.0, y = 0.0, w = 1000.0, h = 1000.0}
+[[screen]]
+name = "linux-box"
+rect = {x = 0.0, y = 1001.0, w = 500.0, h = 1000.0}
