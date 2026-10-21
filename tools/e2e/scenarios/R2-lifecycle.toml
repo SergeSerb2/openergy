@@ -1,0 +1,62 @@
+# Requirement: Owned process STOP/CONT/KILL, forced stop, start, restart and exit status operate on real virtual daemons.
+name = "R2-lifecycle"
+requirement = "Owned process STOP/CONT/KILL, forced stop, start, restart and exit status operate on real virtual daemons."
+blocked_by = []
+timeout_ms = 1800
+
+[[node]]
+id = "local"
+kind = "openergy"
+role = "off"
+platform = "virtual"
+
+[[step]]
+do = "pause"
+node = "local"
+
+[[step]]
+do = "resume"
+node = "local"
+
+[[step]]
+do = "kill"
+node = "local"
+signal = "KILL"
+
+[[step]]
+do = "stop"
+node = "local"
+force = true
+
+[[step]]
+do = "start"
+node = "local"
+
+[[step]]
+do = "ctl"
+node = "local"
+method = "daemon.stop"
+expect = {"stopping" = true}
+
+[[step]]
+do = "wait_exit"
+node = "local"
+code = 0
+
+[[step]]
+do = "stop"
+node = "local"
+force = true
+
+[[step]]
+do = "start"
+node = "local"
+
+[[step]]
+do = "restart"
+node = "local"
+
+[[step]]
+do = "wait_status"
+node = "local"
+fields = {"role" = "off"}

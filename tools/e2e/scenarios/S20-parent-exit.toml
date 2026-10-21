@@ -1,0 +1,111 @@
+# Requirement: Watched parent exit triggers release-all, CBYE observed on a real socket, and daemon exit code zero.
+name = "S20-parent-exit"
+requirement = "Watched parent exit triggers release-all, CBYE observed on a real socket, and daemon exit code zero."
+blocked_by = ["WP6"]
+timeout_ms = 1800
+
+[[node]]
+id = "server"
+kind = "openergy"
+role = "server"
+platform = "virtual"
+tls = false
+parent = true
+config = {"screen" = [{"name" = "server", "rect" = {"x" = 0, "y" = 0, "w" = 1920, "h" = 1080}}, {"name" = "client", "rect" = {"x" = 1920, "y" = 0, "w" = 1920, "h" = 1080}}, {"name" = "observer", "rect" = {"x" = 3840, "y" = 0, "w" = 1920, "h" = 1080}}]}
+
+[[node]]
+id = "client"
+kind = "openergy"
+role = "client"
+platform = "virtual"
+remote = "server"
+tls = false
+
+[[node]]
+id = "probe"
+kind = "raw"
+role = "client"
+remote = "server"
+autostart = true
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "hello_back"
+name = "observer"
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "QINF"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "screen_info"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+peer = "server"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+peer = "client"
+
+[[step]]
+do = "set_screens"
+node = "server"
+rects = [{"x" = 0, "y" = 0, "w" = 1920, "h" = 1080, "scale" = 1.0}]
+
+[[step]]
+do = "set_screens"
+node = "client"
+rects = [{"x" = 0, "y" = 0, "w" = 1920, "h" = 1080, "scale" = 1.0}]
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 1919, "y" = 540}, {"type" = "mouse_move_rel", "dx" = 20, "dy" = 0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "client"}
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "key_down", "key" = 97, "modifiers" = 1, "button" = 1}, {"type" = "mouse_down", "button" = 1}]
+
+[[step]]
+do = "parent_exit"
+node = "server"
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "CBYE"
+framed = true
+payload_only = true
+scan = true
+timeout_ms = 5000
+
+[[step]]
+do = "wait_exit"
+node = "server"
+code = 0
+timeout_ms = 5000
+
+[[step]]
+do = "assert_recorded_tail"
+node = "client"
+expect = [{"event" = {"type" = "key_up", "key" = 97, "modifiers" = 1, "button" = 1}}, {"event" = {"type" = "mouse_up", "button" = 1}}, {"release_all" = true}]

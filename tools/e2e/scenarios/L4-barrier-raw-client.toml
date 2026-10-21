@@ -1,0 +1,85 @@
+# Requirement: Real barrier client exchanges hello-back/info/CBYE with an original scripted TCP probe.
+name = "L4-barrier-raw-client"
+requirement = "Real barrier client exchanges hello-back/info/CBYE with an original scripted TCP probe."
+blocked_by = []
+timeout_ms = 5000
+
+[[node]]
+id = "probe"
+kind = "raw"
+role = "server"
+
+[[node]]
+id = "lab"
+kind = "lab"
+peer = "barrier"
+role = "client"
+name = "lab"
+remote = "probe"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "hello"
+product = "Barrier"
+minor = 6
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "hello_back"
+product = "Barrier"
+minor = 6
+name = "lab"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "code"
+code = "QINF"
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "DINF"
+payload_only = true
+framed = true
+scan = true
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "code"
+code = "CIAK"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "options"
+values = []
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "code"
+code = "CALV"
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "CALV"
+payload_only = true
+framed = true
+scan = true
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "code"
+code = "CBYE"
+
+[[step]]
+do = "raw_expect_closed"
+node = "probe"

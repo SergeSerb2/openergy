@@ -1,0 +1,101 @@
+# Requirement: UTF-8 clipboard travels in both directions with CRLF normalization and no bounce-back.
+name = "S8-text-clipboard"
+requirement = "UTF-8 clipboard travels in both directions with CRLF normalization and no bounce-back."
+blocked_by = ["WP6"]
+timeout_ms = 1800
+
+[[node]]
+id = "server"
+kind = "openergy"
+role = "server"
+platform = "virtual"
+tls = false
+
+[[node]]
+id = "client"
+kind = "openergy"
+role = "client"
+platform = "virtual"
+remote = "server"
+tls = false
+
+[[step]]
+do = "wait_connected"
+node = "client"
+peer = "server"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+peer = "client"
+
+[[step]]
+do = "clipboard_set"
+node = "server"
+text = "Bonjour Ω 🙂\r\nline two"
+
+[[step]]
+do = "set_screens"
+node = "server"
+rects = [{"x" = 0, "y" = 0, "w" = 1920, "h" = 1080, "scale" = 1.0}]
+
+[[step]]
+do = "set_screens"
+node = "client"
+rects = [{"x" = 0, "y" = 0, "w" = 1920, "h" = 1080, "scale" = 1.0}]
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 1919, "y" = 540}, {"type" = "mouse_move_rel", "dx" = 20, "dy" = 0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "client"}
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+text = "Bonjour Ω 🙂\nline two"
+
+[[step]]
+do = "clipboard_get"
+node = "client"
+save = "clipboard_before"
+
+[[step]]
+do = "clipboard_set"
+node = "client"
+text = "Client → server\n終"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 0, "y" = 540}, {"type" = "mouse_move_rel", "dx" = -20, "dy" = 0}]
+
+[[step]]
+do = "assert_clipboard"
+node = "server"
+text = "Client → server\n終"
+
+[[step]]
+do = "clipboard_get"
+node = "server"
+save = "clipboard_after"
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "status.get"
+save = "stable"
+
+[[step]]
+do = "sleep"
+ms = 200
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"clipboard.last_transfer.unix_ms" = "${stable.clipboard.last_transfer.unix_ms}"}
+timeout_ms = 300

@@ -1,0 +1,65 @@
+{
+  "version": {
+    "schemaVersion": 17,
+    "syncVersion": 1
+  },
+  "data": {
+    "computers": [
+      {
+        "id": "synthetic-server",
+        "name": "server",
+        "misc": {
+          "left": 0,
+          "top": 0,
+          "width": 200,
+          "height": 110,
+          "os": "macos"
+        },
+        "hostname": "server",
+        "isRemoved": false,
+        "fix": {
+          "sync_language": true,
+          "prevent_sleep": false,
+          "invert_scroll": false
+        }
+      },
+      {
+        "id": "synthetic-client",
+        "name": "client",
+        "misc": {
+          "left": 200,
+          "top": 55,
+          "width": 200,
+          "height": 110,
+          "os": "windows"
+        },
+        "hostname": "client",
+        "isRemoved": false,
+        "fix": {
+          "sync_language": true,
+          "prevent_sleep": false,
+          "invert_scroll": false
+        }
+      }
+    ],
+    "performance": {
+      "allow_copy": true,
+      "limit": 65536,
+      "sync": true
+    },
+    "security": {
+      "encryption": false
+    },
+    "developers": {
+      "corePort": ${server.port}
+    },
+    "local-network": {
+      "keep_alive": true,
+      "interval": 500
+    },
+    "unmapped_fixture_setting": true,
+    "mainID": {
+      "id": "synthetic-server"
+    }
+  }
+}

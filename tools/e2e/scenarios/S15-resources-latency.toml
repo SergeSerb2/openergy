@@ -1,0 +1,74 @@
+# Requirement: Each idle daemon stays below 30 MB and 0.1% CPU over 60 s; 1000 moves have localhost p99 below 5 ms.
+name = "S15-resources-latency"
+requirement = "Each idle daemon stays below 30 MB and 0.1% CPU over 60 s; 1000 moves have localhost p99 below 5 ms."
+blocked_by = ["WP6"]
+timeout_ms = 1800
+
+[[node]]
+id = "server"
+kind = "openergy"
+role = "server"
+platform = "virtual"
+tls = false
+
+[[node]]
+id = "client"
+kind = "openergy"
+role = "client"
+platform = "virtual"
+remote = "server"
+tls = false
+
+[[step]]
+do = "wait_connected"
+node = "client"
+peer = "server"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+peer = "client"
+
+[[step]]
+do = "measure"
+node = "server"
+kind = "resources"
+window_ms = 60000
+rss_bytes = 30000000
+cpu_percent = 0.1
+
+[[step]]
+do = "measure"
+node = "client"
+kind = "resources"
+window_ms = 60000
+rss_bytes = 30000000
+cpu_percent = 0.1
+
+[[step]]
+do = "set_screens"
+node = "server"
+rects = [{"x" = 0, "y" = 0, "w" = 1920, "h" = 1080, "scale" = 1.0}]
+
+[[step]]
+do = "set_screens"
+node = "client"
+rects = [{"x" = 0, "y" = 0, "w" = 1920, "h" = 1080, "scale" = 1.0}]
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 1919, "y" = 540}, {"type" = "mouse_move_rel", "dx" = 20, "dy" = 0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "client"}
+
+[[step]]
+do = "measure"
+node = "server"
+kind = "latency"
+receiver = "client"
+count = 1000
+p99_ms = 5.0

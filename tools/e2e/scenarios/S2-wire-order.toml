@@ -1,0 +1,87 @@
+# Requirement: Raw protocol observation proves leave COUT precedes the next enter CINN.
+name = "S2-wire-order"
+requirement = "Raw protocol observation proves leave COUT precedes the next enter CINN."
+blocked_by = ["WP6"]
+timeout_ms = 1800
+
+[[node]]
+id = "server"
+kind = "openergy"
+role = "server"
+platform = "virtual"
+config = {"screen" = [{"name" = "server", "rect" = {"x" = 0, "y" = 0, "w" = 1920, "h" = 1080}}, {"name" = "client", "rect" = {"x" = 1920, "y" = 0, "w" = 1920, "h" = 1080}}]}
+
+[[node]]
+id = "probe"
+kind = "raw"
+role = "client"
+remote = "server"
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "hello_back"
+name = "client"
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "QINF"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "screen_info"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+peer = "client"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 1919, "y" = 540}, {"type" = "mouse_move_rel", "dx" = 20, "dy" = 0}]
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "CINN"
+framed = true
+payload_only = true
+scan = true
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 0, "y" = 540}, {"type" = "mouse_move_rel", "dx" = -20, "dy" = 0}]
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 1919, "y" = 540}, {"type" = "mouse_move_rel", "dx" = 20, "dy" = 0}]
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "COUT"
+framed = true
+payload_only = true
+scan = true
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "CINN"
+framed = true
+payload_only = true
+scan = true

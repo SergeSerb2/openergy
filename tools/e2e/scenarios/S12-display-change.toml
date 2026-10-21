@@ -1,0 +1,60 @@
+# Requirement: Changing virtual displays updates peer screen dimensions and remaps an edge without disconnect.
+name = "S12-display-change"
+requirement = "Changing virtual displays updates peer screen dimensions and remaps an edge without disconnect."
+blocked_by = ["WP6"]
+timeout_ms = 1800
+
+[[node]]
+id = "server"
+kind = "openergy"
+role = "server"
+platform = "virtual"
+tls = false
+
+[[node]]
+id = "client"
+kind = "openergy"
+role = "client"
+platform = "virtual"
+remote = "server"
+tls = false
+
+[[step]]
+do = "wait_connected"
+node = "client"
+peer = "server"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+peer = "client"
+
+[[step]]
+do = "set_screens"
+node = "client"
+rects = [{"x" = 0, "y" = 0, "w" = 2560, "h" = 1440, "scale" = 1.0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"peers" = {"$contains" = {"name" = "client", "connected" = true, "screen" = {"w" = 2560, "h" = 1440}}}}
+
+[[step]]
+do = "set_screens"
+node = "server"
+rects = [{"x" = 0, "y" = 0, "w" = 1920, "h" = 1080, "scale" = 1.0}]
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 1919, "y" = 540}, {"type" = "mouse_move_rel", "dx" = 20, "dy" = 0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "client"}
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "client", "cursor.y" = {"$gte" = 710, "$lte" = 730}}

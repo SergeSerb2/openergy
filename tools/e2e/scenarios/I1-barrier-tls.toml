@@ -1,0 +1,49 @@
+# Requirement: Openergy virtual client connects to pinned barrier server, TLS True, and remains connected across heartbeats.
+name = "I1-barrier-tls"
+requirement = "Openergy virtual client connects to pinned barrier server, TLS True, and remains connected across heartbeats."
+blocked_by = ["WP4", "WP6"]
+timeout_ms = 5000
+
+[[node]]
+id = "lab"
+kind = "lab"
+peer = "barrier"
+role = "server"
+name = "lab"
+screens = "lab,client"
+tls = true
+
+[[node]]
+id = "client"
+kind = "openergy"
+role = "client"
+platform = "virtual"
+remote = "lab"
+tls = true
+
+[[step]]
+do = "lab_ctl"
+node = "lab"
+args = ["fingerprint", "barrier"]
+save = "labfp"
+
+[[step]]
+do = "write_file"
+path = "${client.dir}/tls/trusted-servers"
+text = "${labfp.synergy}\n"
+
+[[step]]
+do = "restart"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "sleep"
+ms = 30000
+
+[[step]]
+do = "wait_connected"
+node = "client"
