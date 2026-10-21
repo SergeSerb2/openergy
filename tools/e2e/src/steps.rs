@@ -945,7 +945,7 @@ pub fn dib8() -> Vec<u8> {
     bytes[12..14].copy_from_slice(&1u16.to_le_bytes());
     bytes[14..16].copy_from_slice(&32u16.to_le_bytes());
     bytes[20..24].copy_from_slice(&(pixels as u32).to_le_bytes());
-    for (i, pixel) in bytes[40..].chunks_exact_mut(4).enumerate() {
+    for (i, pixel) in bytes[40..].as_chunks_mut::<4>().0.iter_mut().enumerate() {
         pixel.copy_from_slice(&[(i % 251) as u8, ((i / 251) % 251) as u8, ((i * 17) % 251) as u8, 255]);
     }
     bytes
@@ -971,11 +971,11 @@ fn base64(bytes: &[u8]) -> String {
     out
 }
 fn decode_base64(text: &str) -> Result<Vec<u8>> {
-    if text.len() % 4 != 0 || text.len() > 24 * 1024 * 1024 {
+    if !text.len().is_multiple_of(4) || text.len() > 24 * 1024 * 1024 {
         return Err(Failure::product("invalid clipboard base64 length"));
     }
     let mut out = Vec::new();
-    for (index, chunk) in text.as_bytes().chunks_exact(4).enumerate() {
+    for (index, chunk) in text.as_bytes().as_chunks::<4>().0.iter().enumerate() {
         let last = (index + 1) * 4 == text.len();
         let mut values = [0u8; 4];
         for i in 0..4 {

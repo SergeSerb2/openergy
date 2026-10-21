@@ -140,12 +140,14 @@ pub fn digest(bytes: &[u8]) -> String {
 }
 pub fn hex(text: &str) -> Result<Vec<u8>> {
     let compact: String = text.chars().filter(|c| !c.is_whitespace() && *c != '_').collect();
-    if compact.len() % 2 != 0 || !compact.is_ascii() || compact.len() > 32 * 1024 * 1024 {
+    if !compact.len().is_multiple_of(2) || !compact.is_ascii() || compact.len() > 32 * 1024 * 1024 {
         return Err(Failure::runner("invalid or oversized hex payload"));
     }
     compact
         .as_bytes()
-        .chunks_exact(2)
+        .as_chunks::<2>()
+        .0
+        .iter()
         .map(|pair| {
             let hi = (pair[0] as char).to_digit(16);
             let lo = (pair[1] as char).to_digit(16);
