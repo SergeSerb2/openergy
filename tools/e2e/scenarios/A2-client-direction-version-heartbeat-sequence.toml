@@ -1,5 +1,5 @@
 name = "A2-client-direction-version-heartbeat-sequence"
-requirement = "Client uses fixed 1.8, accepts mixed-case future server, sends no options or spontaneous heartbeat, and accepts sequence-zero push."
+requirement = "Client caps its hello at 1.8, accepts mixed-case future server, sends no options or spontaneous heartbeat, and accepts sequence-zero push."
 timeout_ms = 3000
 
 [[node]]
@@ -24,6 +24,7 @@ minor = 12
 do = "raw_expect"
 node = "server"
 builder = "hello_back"
+product = "sYnErGy"
 name = "client"
 minor = 8
 

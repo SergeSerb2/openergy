@@ -4,6 +4,7 @@ use openergy_platform::{ClipboardData, InputEvent, Modifiers};
 use openergy_protocol::{ClipboardId, Message};
 use std::sync::Arc;
 
+#[derive(Clone)]
 pub struct Client {
     config: Arc<Config>,
     screen_name: String,
@@ -208,6 +209,11 @@ impl Client {
                 if version.major != 1
                     || !(product.eq_ignore_ascii_case("Synergy") || product.eq_ignore_ascii_case("Barrier"))
                 {
+                    notice(
+                        "protocol_error",
+                        "The server uses an unsupported protocol version.",
+                        out,
+                    );
                     self.disconnect(out);
                     return;
                 }
@@ -215,18 +221,17 @@ impl Client {
                     log::info!("server protocol minor {} accepted as 1.8", version.minor);
                 }
                 p.product = product.clone();
+                let version = openergy_protocol::ProtocolVersion {
+                    major: 1,
+                    minor: version.minor.min(8),
+                };
                 p.version = version;
                 p.phase = Phase::Info;
                 send(
                     c,
                     Message::HelloBack {
-                        product: if product.eq_ignore_ascii_case("Barrier") {
-                            "Barrier"
-                        } else {
-                            "Synergy"
-                        }
-                        .into(),
-                        version: openergy_protocol::ProtocolVersion { major: 1, minor: 8 },
+                        product,
+                        version,
                         name: self.screen_name.clone(),
                     },
                     out,
