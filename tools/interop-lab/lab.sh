@@ -2,7 +2,7 @@
 set -euo pipefail
 ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 IMAGE=openergy-interop:latest
-CONTAINER=openergy-interop
+CONTAINER=${LAB_NAME:-openergy-interop}
 OWNER=org.openergy.interop-lab
 RANGE=${LAB_PORT_RANGE:-24900-24910}
 fail() { printf 'lab: %s\n' "$*" >&2; exit 1; }
@@ -19,6 +19,7 @@ Usage: lab.sh build|up|down|status
        lab.sh events start|stop|dump
        lab.sh logs|stop|fingerprint deskflow|barrier
 LAB_PORT_RANGE sets published localhost ports (default 24900-24910).
+LAB_NAME sets the container name (default openergy-interop), so parallel runs can use separate labs.
 EOF
 }
 exists() { docker container inspect "$CONTAINER" >/dev/null 2>&1; }
