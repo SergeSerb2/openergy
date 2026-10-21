@@ -79,6 +79,14 @@ shutil.copyfile(FIX / "synergy3/db.json", db_only / "db.json")
 result = imported(db_only, OUT / "db-only.toml")
 assert result["config"]["role"] == "off"
 assert result["derived_links"] == [link("studio-pc", "left", [22, 91], "mac-book", [0, 100]), link("mac-book", "right", [0, 100], "studio-pc", [22, 91])]
+# The import-only service converter retains its historical zero-spacing behavior.
+service_db = json.loads((FIX / "synergy3/db.json").read_text())
+service_db["data"]["computers"][0]["misc"]["left"] = 200
+(db_only / "db.json").write_text(json.dumps(service_db))
+service = imported(db_only, OUT / "service-zero-spacing.toml")
+assert service["derived_links"] == [link("studio-pc", "left", [22, 91], "mac-book", [0, 100]), link("studio-pc", "right", [22, 91], "mac-book", [0, 100]), link("mac-book", "right", [0, 100], "studio-pc", [22, 91])]
+assert any("imported service links can include extra directions" in w for w in service["report"]["warnings"])
+(OUT / "service-zero-spacing.json").write_text(json.dumps(service, indent=2))
 # Editor object enumeration order must determine the last nonempty corner size.
 db = json.loads((FIX / "synergy3/db.json").read_text())
 db["data"]["computers"][0]["dead_corners"] = {"top-left": 9, "bottom-right": 17}
@@ -171,20 +179,59 @@ try:
     # RFC 7386 object-on-null: deleting a missing nested bool must not set it to null.
     ctl("config.patch", {"patch": {"options": {"barrier": None}}})
     (OUT / "partial-get.json").write_text(json.dumps(initial, indent=2))
-    # Literal architecture-r2 converter has the documented extra PC.right at zero spacing.
-    expected = [link("macbook", "right", [0, 100], "studio-pc", [21, 89]), link("studio-pc", "left", [21, 89], "macbook", [0, 100]), link("studio-pc", "right", [21, 89], "macbook", [0, 100])]
+    # Native zero-spacing rects produce exactly the two facing links, without warnings.
+    expected = [link("macbook", "right", [0, 100], "studio-pc", [21, 89]), link("studio-pc", "left", [21, 89], "macbook", [0, 100])]
     assert initial["derived_links"] == expected
+    run("export-synergy-conf", "--config", live, "--out", OUT / "native-partial.conf")
+    assert imported(OUT / "native-partial.conf", OUT / "native-partial-roundtrip.toml")["derived_links"] == expected
     screens = copy.deepcopy(initial["config"]["screen"])
-    screens[1]["links"] = {"right": ""}
+    screens[0]["links"] = {"right": ""}
+    patched = ctl("config.patch", {"patch": {"screen": screens}})
+    assert patched["warnings"] == []
+    assert ctl("config.get")["derived_links"] == expected[1:]
+    # A full-edge explicit target overrides the native partial destination interval.
+    screens[0]["links"]["right"] = "studio-pc"
     ctl("config.patch", {"patch": {"screen": screens}})
-    assert ctl("config.get")["derived_links"] == expected[:2]
-    # Move to the editor's one-unit spacing: only the expected reciprocal pair remains.
-    screens[1].pop("links")
+    assert ctl("config.get")["derived_links"] == [link("macbook", "right", [0, 100], "studio-pc", [0, 100]), expected[1]]
+    screens[0].pop("links")
+    # Exactly one point of edge tolerance is included; anything beyond it is excluded.
     screens[1]["rect"]["x"] = 1513
     patched = ctl("config.patch", {"patch": {"screen": screens}})
+    assert patched["warnings"] == []
     moved = ctl("config.get")
-    assert moved["derived_links"] == expected[:2]
+    assert moved["derived_links"] == expected
     (OUT / "moved-get.json").write_text(json.dumps(moved, indent=2))
+    screens[1]["rect"]["x"] = 1513.01
+    ctl("config.patch", {"patch": {"screen": screens}})
+    assert ctl("config.get")["derived_links"] == []
+    # Perpendicular overlap must exceed one point, not merely touch that boundary.
+    boundary = [{"name": "studio-pc", "rect": {"x": 0, "y": 0, "w": 100, "h": 100}}, {"name": "macbook", "rect": {"x": 100, "y": 99, "w": 100, "h": 100}}]
+    patched = ctl("config.patch", {"patch": {"screen": boundary}})
+    assert patched["warnings"] == [] and ctl("config.get")["derived_links"] == []
+    boundary[1]["rect"]["y"] = 98
+    ctl("config.patch", {"patch": {"screen": boundary}})
+    assert ctl("config.get")["derived_links"] == [link("studio-pc", "right", [98, 100], "macbook", [0, 2]), link("macbook", "left", [0, 2], "studio-pc", [98, 100])]
+    # A real >1-point overlap can still collapse at the frozen integer precision.
+    boundary[0]["rect"]["h"] = 10000
+    boundary[1]["rect"].update(y=9998, h=10000)
+    rounded = ctl("config.patch", {"patch": {"screen": boundary}})
+    assert any("rounds to an empty integer percentage range" in w for w in rounded["warnings"])
+    assert ctl("config.get")["derived_links"] == []
+    exported = run("export-synergy-conf", "--config", live)
+    assert "rounds to an empty integer percentage range" in exported.stderr
+    (OUT / "rounded-empty.json").write_text(json.dumps(rounded, indent=2))
+    boundary[0]["links"], boundary[1]["links"] = {"right": ""}, {"left": ""}
+    assert ctl("config.patch", {"patch": {"screen": boundary}})["warnings"] == []
+    # Sub-point widths must not generate a backward edge within the 1-point tolerance.
+    narrow = [{"name": "studio-pc", "rect": {"x": 0, "y": 0, "w": 0.25, "h": 100}}, {"name": "macbook", "rect": {"x": 0.25, "y": 0, "w": 0.25, "h": 100}}]
+    ctl("config.patch", {"patch": {"screen": narrow}})
+    assert ctl("config.get")["derived_links"] == [link("studio-pc", "right", [0, 100], "macbook", [0, 100]), link("macbook", "left", [0, 100], "studio-pc", [0, 100])]
+    # Sharing a corner creates no directional link.
+    corner = [{"name": "studio-pc", "rect": {"x": 0, "y": 0, "w": 100, "h": 100}}, {"name": "macbook", "rect": {"x": 100, "y": 100, "w": 100, "h": 100}}]
+    ctl("config.patch", {"patch": {"screen": corner}})
+    assert ctl("config.get")["derived_links"] == []
+    screens[1]["rect"]["x"] = 1513
+    ctl("config.patch", {"patch": {"screen": screens}})
     # Keep the exact file and live config unchanged for every invalid patch.
     errors = []
     overlap = copy.deepcopy(screens)
@@ -204,7 +251,7 @@ try:
     result = ctl("config.patch", {"patch": {"server": {"port": 25021}}})
     assert "server.port overrides the port in server.listen" in result["warnings"]
     # Three-screen L: one full pair and one half/full pair.
-    l_screens = [{"name": "studio-pc", "rect": {"x": 0, "y": 0, "w": 1000, "h": 1000}}, {"name": "macbook", "rect": {"x": 1001, "y": 0, "w": 1000, "h": 1000}}, {"name": "linux-box", "rect": {"x": 0, "y": 1001, "w": 500, "h": 1000}}]
+    l_screens = [{"name": "studio-pc", "rect": {"x": 0, "y": 0, "w": 1000, "h": 1000}}, {"name": "macbook", "rect": {"x": 1000, "y": 0, "w": 1000, "h": 1000}}, {"name": "linux-box", "rect": {"x": 0, "y": 1000, "w": 500, "h": 1000}}]
     ctl("config.patch", {"patch": {"screen": l_screens}})
     l_result = ctl("config.get")
     assert l_result["derived_links"] == [link("studio-pc", "right", [0, 100], "macbook", [0, 100]), link("studio-pc", "bottom", [0, 50], "linux-box", [0, 100]), link("macbook", "left", [0, 100], "studio-pc", [0, 100]), link("linux-box", "top", [0, 100], "studio-pc", [0, 50])]
@@ -233,7 +280,7 @@ run("export-synergy-conf", "--config", live, "--out", OUT / "persisted.conf")
 persisted = imported(OUT / "persisted.conf", OUT / "persisted-roundtrip.toml")
 assert persisted["derived_links"] == [link("studio-pc", "right", [0, 50], "macbook", [0, 100]), link("studio-pc", "right", [50, 100], "linux-box", [0, 100])]
 assert persisted["config"]["server"]["port"] == 25021
-print("PASS: CLI import/export round trips; JSON and source precedence; strict failures; partial layout, L layout and ranged overrides; invalid patches preserve file and live state.")
+print("PASS: CLI import/export round trips; JSON and source precedence; strict failures; native edge geometry, Synergy editor fidelity, L layout and ranged overrides; invalid patches preserve file and live state.")
 print("invalid patch sha256 before/after: " + errors[0]["before"] + " / " + errors[0]["after"])
 LOG.close()
 print("Real CLI invocations: " + str(COUNT))
