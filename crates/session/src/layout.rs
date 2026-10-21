@@ -43,6 +43,7 @@ pub enum LayoutError {
     NotImplemented,
 }
 
+#[derive(Clone)]
 pub struct Layout {
     links: Vec<Link>,
     rects: Vec<Rect>,

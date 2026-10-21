@@ -39,6 +39,7 @@ struct Connection {
     certificate_verified: bool,
     since: u64,
 }
+#[derive(Clone)]
 enum Machine {
     Off,
     Server(Server),
@@ -904,16 +905,22 @@ impl Runtime {
             );
             self.start_connection();
         } else {
-            // Session-only changes cannot fail after strict config validation.
-            // Preserve the live machine until the atomic save succeeds.
-            write_config(&self.path, &cfg)?;
-            self.cfg = cfg;
-            let cfg = Arc::new(self.cfg.clone());
+            let previous = self.machine.clone();
+            let action_count = self.actions.len();
+            let cfg = Arc::new(cfg);
             match &mut self.machine {
-                Machine::Server(s) => s.handle(ServerEvent::ConfigChanged(cfg), &mut self.actions),
-                Machine::Client(c) => c.handle(ClientEvent::ConfigChanged(cfg), &mut self.actions),
+                Machine::Server(s) => s.handle(ServerEvent::ConfigChanged(cfg.clone()), &mut self.actions),
+                Machine::Client(c) => c.handle(ClientEvent::ConfigChanged(cfg.clone()), &mut self.actions),
                 Machine::Off => {}
             }
+            // Apply to the live state before saving. Platform/network effects
+            // remain queued until persistence commits; rollback preserves peers.
+            if let Err(error) = write_config(&self.path, &cfg) {
+                self.machine = previous;
+                self.actions.truncate(action_count);
+                return Err(error);
+            }
+            self.cfg = Arc::unwrap_or_clone(cfg);
         }
         self.machine.geometry(
             display_rect(&self.displays),
@@ -1272,13 +1279,15 @@ fn write_config(path: &Path, cfg: &Config) -> Result<(), String> {
         use std::os::unix::fs::OpenOptionsExt;
         options.mode(0o600);
     }
+    let mut created = false;
     let result = (|| {
         let mut file = options.open(&tmp).map_err(|e| e.to_string())?;
+        created = true;
         file.write_all(cfg.to_toml().as_bytes()).map_err(|e| e.to_string())?;
         file.sync_all().map_err(|e| e.to_string())?;
         std::fs::rename(&tmp, path).map_err(|e| e.to_string())
     })();
-    if result.is_err() {
+    if result.is_err() && created {
         let _ = std::fs::remove_file(tmp);
     }
     result

@@ -29,7 +29,7 @@ pub(crate) enum Phase {
     Info,
     Ready,
 }
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub(crate) struct Ledger {
     keys: BTreeMap<u16, (u16, u16)>,
     pub buttons: BTreeSet<u8>,
@@ -150,6 +150,7 @@ impl Options {
         result
     }
 }
+#[derive(Clone)]
 pub(crate) struct Peer {
     pub name: String,
     pub product: String,

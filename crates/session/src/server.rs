@@ -9,7 +9,7 @@ use openergy_platform::{ClipboardData, InputEvent};
 use openergy_protocol::{ClipboardId, Message, ProtocolVersion};
 use std::{collections::BTreeMap, sync::Arc};
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 struct Slot {
     sequence: u32,
     owner: Option<ConnId>,
@@ -17,6 +17,7 @@ struct Slot {
     available: bool,
     readback: bool,
 }
+#[derive(Clone)]
 pub struct Server {
     config: Arc<Config>,
     peers: BTreeMap<ConnId, Peer>,

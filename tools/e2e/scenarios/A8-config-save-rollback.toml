@@ -1,0 +1,82 @@
+name = "A8-config-save-rollback"
+requirement = "A real atomic-save failure rolls back session-only and transport config without closing the old peer."
+timeout_ms = 3000
+
+[[node]]
+id = "server"
+role = "server"
+tls = false
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+tls = false
+
+[[node]]
+id = "spare"
+kind = "raw"
+role = "server"
+autostart = false
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "status.get"
+save = "running"
+
+[[step]]
+do = "assert_file"
+path = "${server.config}"
+save = "before"
+
+[[step]]
+do = "write_file"
+path = "${server.dir}/config.toml.${running.daemon.pid}.tmp"
+text = "occupied temp file"
+
+[[step]]
+do = "config_patch"
+node = "server"
+patch = {"input" = {"scroll_sensitivity" = 2.0}}
+expect_error = "config_apply_failed"
+
+[[step]]
+do = "assert_file"
+path = "${server.config}"
+sha256 = "${before.sha256}"
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "config.get"
+fields = {"config.input.scroll_sensitivity" = 1.0}
+
+[[step]]
+do = "config_patch"
+node = "server"
+patch = {"server" = {"port" = "${spare.port}"}}
+expect_error = "config_apply_failed"
+
+[[step]]
+do = "assert_file"
+path = "${server.config}"
+sha256 = "${before.sha256}"
+
+[[step]]
+do = "assert_status"
+node = "server"
+fields = {"server.listen" = "127.0.0.1:${server.port}", "state" = "connected"}
+
+[[step]]
+do = "assert_status"
+node = "client"
+fields = {"state" = "connected"}

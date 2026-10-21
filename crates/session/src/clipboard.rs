@@ -100,6 +100,7 @@ pub fn unmarshal(bytes: &[u8]) -> Result<ClipboardData, ClipboardError> {
     Ok(data)
 }
 
+#[derive(Clone)]
 struct Incoming {
     id: ClipboardId,
     sequence: u32,
@@ -107,6 +108,7 @@ struct Incoming {
     bytes: Vec<u8>,
     since: u64,
 }
+#[derive(Clone)]
 struct Outgoing {
     id: ClipboardId,
     sequence: u32,
@@ -114,7 +116,7 @@ struct Outgoing {
     offset: usize,
     started: bool,
 }
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub(crate) struct Transfers {
     incoming: Option<Incoming>,
     outgoing: VecDeque<Outgoing>,
