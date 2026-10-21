@@ -179,6 +179,7 @@ impl Scenario {
                 | "lab_events_dump"
                 | "trust_crash_recovery" => &["node"],
                 "inject" => &["node", "events"],
+                "inject_burst" => &["node", "event"],
                 "assert_recorded" | "assert_recorded_tail" => &["node"],
                 "clipboard_set" | "assert_clipboard" => &["node"],
                 "set_screens" => &["node", "rects"],

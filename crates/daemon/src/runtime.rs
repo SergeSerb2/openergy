@@ -477,7 +477,11 @@ impl Runtime {
                                         "unknown_screen" => {
                                             format!("{server} has no screen named {} in its layout.", self.cfg.name)
                                         }
-                                        "protocol_error" => format!("{server} rejected the connection protocol."),
+                                        "protocol_error"
+                                            if error.message == "The server rejected the connection protocol." =>
+                                        {
+                                            format!("{server} rejected the connection protocol.")
+                                        }
                                         _ => error.message.clone(),
                                     };
                                 }

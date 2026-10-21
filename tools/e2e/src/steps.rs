@@ -51,6 +51,24 @@ impl Context {
                 }
                 self.ipc(&id, "virtual.inject", params, timeout)
             }
+            "inject_burst" => {
+                let batch_size = step.number("batch_size", 512).min(512) as usize;
+                let repeats = step.number("repeat", 1000).min(1000);
+                let events = vec![step.value("event"); batch_size];
+                let deadline = Instant::now() + timeout;
+                for batch in 0..repeats {
+                    self.ipc(&id, "virtual.inject", json!({"events":events}), Duration::from_secs(1))?;
+                    std::thread::sleep(Duration::from_millis(1));
+                    let status = self.ipc(&id, "status.get", json!({}), Duration::from_secs(1))?;
+                    if status["last_error"]["code"] == "network_queue_full" {
+                        return Ok(json!({"queue_full_after_batches": batch + 1}));
+                    }
+                    if Instant::now() >= deadline {
+                        break;
+                    }
+                }
+                Err(Failure::product("input burst did not reach queue limit"))
+            }
             "assert_recorded" | "assert_recorded_tail" => {
                 let expect_value = step
                     .fields

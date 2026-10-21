@@ -246,9 +246,9 @@ impl Queues {
         self.active = if slow || !handshake_done {
             self.control.pop_front()
         } else {
-            self.input
+            self.control
                 .pop_front()
-                .or_else(|| self.control.pop_front())
+                .or_else(|| self.input.pop_front())
                 .or_else(|| self.bulk.pop_front())
         };
     }
@@ -1376,7 +1376,7 @@ impl NetDriver {
             self.remove(id, DisconnectReason::Shutdown, out);
             return;
         }
-        c.queues.bulk.clear();
+        c.queues.discard_low();
         c.close_at = Some(Instant::now() + CLOSE_TIMEOUT);
     }
     fn remove(&mut self, id: ConnId, reason: DisconnectReason, out: &mut Vec<NetEvent>) {
