@@ -139,6 +139,8 @@ enum AppEndToEnd {
     }
 
     private static func render(_ model: AppModel, _ pane: Pane, _ name: String, _ directory: URL) {
+        // OPENERGY_E2E_NO_RENDER=1 measures the app's model/IPC footprint without window buffers.
+        guard ProcessInfo.processInfo.environment["OPENERGY_E2E_NO_RENDER"] != "1" else { return }
         SnapshotRenderer.renderWindow(MainWindow(model: model, initialPane: pane).tint(Brand.accent),
                                       title: pane.title, appearance: .darkAqua,
                                       to: directory.appendingPathComponent("\(name).png"))
