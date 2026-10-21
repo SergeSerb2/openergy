@@ -1,12 +1,18 @@
-//! Frozen net surface (architecture-r2 §2.7/§2.9). Transport bodies land in WP4.
-#![allow(dead_code)]
+//! Synchronous transport, identity, pin trust, and discovery.
+//!
+//! The daemon io thread owns the driver and its single `mio::Poll`. Cross-thread commands use
+//! [`NetHandle`] and its mio waker. No transport thread or async runtime is created.
+pub mod cli;
+pub mod discovery;
+mod identity;
+mod reactor;
+mod tls;
+mod trust;
+pub use identity::{default_config_dir, Identity};
 use openergy_protocol::Message;
 use openergy_session::{ConnId, DisconnectReason};
-use std::{
-    fmt,
-    net::SocketAddr,
-    path::{Path, PathBuf},
-};
+pub use reactor::{ConnInfo, MdnsConfig, NetConfig, NetDriver, TransportMode, BULK_SLICE};
+use std::{fmt, net::SocketAddr, path::PathBuf};
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub struct Fingerprint(pub [u8; 32]);
@@ -30,13 +36,19 @@ impl Fingerprint {
     pub fn parse(text: &str) -> Option<Self> {
         let t = text.trim();
         let hex = t.strip_prefix("v2:sha256:").unwrap_or(t);
-        let clean: String = hex.chars().filter(|c| *c != ':').collect();
+        let clean: String = if hex.len() == 64 {
+            hex.to_owned()
+        } else if hex.len() == 95 && hex.split(':').all(|part| part.len() == 2) {
+            hex.replace(':', "")
+        } else {
+            return None;
+        };
         if clean.len() != 64 || !clean.chars().all(|c| c.is_ascii_hexdigit()) {
             return None;
         }
         let mut out = [0u8; 32];
-        for i in 0..32 {
-            out[i] = u8::from_str_radix(clean.get(i * 2..i * 2 + 2)?, 16).ok()?;
+        for (i, byte) in out.iter_mut().enumerate() {
+            *byte = u8::from_str_radix(clean.get(i * 2..i * 2 + 2)?, 16).ok()?;
         }
         Some(Self(out))
     }
@@ -79,6 +91,29 @@ pub enum NetCommand {
     Close {
         conn: ConnId,
     },
+    /// Pin a specific outbound identity. A mismatch fails the TLS handshake.
+    ConnectPinned {
+        host: String,
+        port: u16,
+        fingerprint: Fingerprint,
+    },
+    /// Diagnostic frame mode only: payload excludes its u32 length prefix.
+    SendFrame {
+        conn: ConnId,
+        payload: Vec<u8>,
+        priority: Priority,
+    },
+    /// Persist approval in the correct role's file, then resume the held peer.
+    Approve {
+        conn: ConnId,
+    },
+    Reject {
+        conn: ConnId,
+    },
+    ReloadTrust,
+    /// Stop accepting new peers without touching established connections.
+    StopListening,
+    /// Reset transport state. The driver, handle, and waker remain reusable.
     Shutdown,
 }
 #[derive(Debug)]
@@ -106,13 +141,36 @@ pub enum NetEvent {
         fingerprint: Fingerprint,
         addr: SocketAddr,
     },
+    ListenFailed {
+        addr: SocketAddr,
+        error: String,
+    },
+    ConnectFailed {
+        host: String,
+        port: u16,
+        error: String,
+    },
     Discovered(Vec<DiscoveredPeer>),
+    /// Available only when explicitly configured with TransportMode::Frames.
+    Frame {
+        conn: ConnId,
+        payload: Vec<u8>,
+    },
+    /// Command/connect errors with no established peer also reach the daemon.
+    Error {
+        conn: Option<ConnId>,
+        message: String,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum NetError {
     NotImplemented,
     Failed(String),
+    QueueFull,
+    InvalidFrame,
+    ProductionPortDenied,
+    Shutdown,
 }
 impl fmt::Display for NetError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -133,64 +191,20 @@ impl fmt::Display for TrustError {
 }
 impl std::error::Error for TrustError {}
 
+/// A cloneable bounded command mailbox. Successful submission wakes the io loop.
+#[derive(Clone)]
+pub struct NetHandle {
+    inner: std::sync::Arc<reactor::Mailbox>,
+}
+impl NetHandle {
+    pub fn send(&self, cmd: NetCommand) -> Result<(), NetError> {
+        self.inner.submit(cmd)
+    }
+}
+
+/// TrustStore paths refer to the TLS directory, not its parent config directory.
 pub struct TrustStore {
     dir: PathBuf,
     servers: Vec<Fingerprint>,
     clients: Vec<Fingerprint>,
-}
-impl TrustStore {
-    pub fn load(dir: &Path) -> Result<Self, TrustError> {
-        Ok(Self {
-            dir: dir.to_path_buf(),
-            servers: Vec::new(),
-            clients: Vec::new(),
-        })
-    }
-    pub fn dir(&self) -> &Path {
-        &self.dir
-    }
-    pub fn is_trusted_server(&self, fp: &Fingerprint) -> bool {
-        self.servers.contains(fp)
-    }
-    pub fn is_trusted_client(&self, fp: &Fingerprint) -> bool {
-        self.clients.contains(fp)
-    }
-    pub fn trust_server(&mut self, _fp: Fingerprint) -> Result<(), TrustError> {
-        Err(TrustError::NotImplemented)
-    }
-    pub fn trust_client(&mut self, _fp: Fingerprint) -> Result<(), TrustError> {
-        Err(TrustError::NotImplemented)
-    }
-    pub fn revoke(&mut self, _fp: &Fingerprint) -> Result<(), TrustError> {
-        Err(TrustError::NotImplemented)
-    }
-    pub fn servers(&self) -> &[Fingerprint] {
-        &self.servers
-    }
-    pub fn clients(&self) -> &[Fingerprint] {
-        &self.clients
-    }
-}
-
-pub struct NetHandle {
-    _private: (),
-}
-impl NetHandle {
-    pub fn send(&self, _cmd: NetCommand) -> Result<(), NetError> {
-        Err(NetError::NotImplemented)
-    }
-}
-
-/// Command-line handlers for trust and identity subcommands of the `openergy` binary.
-/// The daemon crate only dispatches to these; WP4 owns their behaviour.
-pub mod cli {
-    /// `openergy trust list|approve <fp>|reject <fp>|revoke <fp>|import-synergy <dir>`
-    pub fn trust(_args: &[String]) -> Result<i32, String> {
-        Err("trust: not implemented yet (WP4)".into())
-    }
-
-    /// `openergy fingerprint [--synergy]`: print this machine's TLS identity fingerprint.
-    pub fn fingerprint(_args: &[String]) -> Result<i32, String> {
-        Err("no TLS identity exists yet (identity generation lands in WP4)".into())
-    }
 }
