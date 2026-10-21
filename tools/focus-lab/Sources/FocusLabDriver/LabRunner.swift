@@ -1,4 +1,5 @@
 import AppKit
+import ApplicationServices
 import FocusLabSupport
 
 // The handler only sets a sig_atomic_t. Cleanup runs synchronously on main.
@@ -283,6 +284,10 @@ final class LabRunner {
         try requireExposed(start)
         try injector!.send(.move, at: start); pause(0.08)
         try injector!.send(.down, at: start); pause(0.12)
+        // The window server anchors a title-bar drag at the FIRST drag event (verified on macOS 27
+        // with every injector, including a Synergy-style one). A physical mouse starts with a
+        // 1-2 pt movement, so start the same way; the window then follows the remaining motion.
+        try injector!.send(.drag, at: CGPoint(x: start.x + 1, y: start.y)); pause(0.04)
         for step in 1...10 {
             try checkInterrupted()
             let next = CGPoint(x: start.x + Double(step) * 12, y: start.y + Double(step) * 8)
@@ -292,7 +297,8 @@ final class LabRunner {
         let after = try a.command("query")
         guard let newFrame = ScreenCoordinates.rect(after["frame"]) else { throw LabError("A frame missing after drag") }
         let dx = newFrame.minX - oldFrame.minX, dy = newFrame.minY - oldFrame.minY
-        return ["assertions": ["deltaX": abs(dx - 120) <= 2, "deltaY": abs(dy - 80) <= 2],
+        // Expected: the pointer's motion after the 1-pt drag start, i.e. (+119, +80) ± 2.
+        return ["assertions": ["deltaX": abs(dx - 119) <= 2, "deltaY": abs(dy - 80) <= 2],
                 "before": before, "after": after, "delta": ["x": dx, "y": dy], "steps": 10]
     }
 
@@ -404,14 +410,32 @@ final class LabRunner {
         pause(NSEvent.doubleClickInterval + 0.1)
     }
 
+    /// SETUP ONLY: arrange which fixture is in front before a scenario. This never runs between a
+    /// scenario's synthetic events, so it cannot help the click path under test.
     private func front(_ name: String) throws {
         let fixture = try fixture(name)
-        _ = try fixture.command("front")
-        try waitUntil("\(name) frontmost and key") {
+        let pid = fixture.process.processIdentifier
+        func isFront() throws -> Bool {
             let state = try fixture.command("query")
-            return NSWorkspace.shared.frontmostApplication?.processIdentifier == fixture.process.processIdentifier &&
+            return NSWorkspace.shared.frontmostApplication?.processIdentifier == pid &&
                 state["active"] as? Bool == true && state["key"] as? Bool == true
         }
+        _ = try fixture.command("front")
+        // Since macOS 14, an app's own NSApp.activate() is only a request; when the lab runs from a
+        // background host (SSH, remote agent) the system can refuse it. Fall back to the
+        // Accessibility frontmost attribute, which the driver's Accessibility grant allows.
+        if (try? waitUntil("\(name) frontmost (self-activation)", timeout: 1.5, condition: isFront)) == nil {
+            let app = AXUIElementCreateApplication(pid)
+            AXUIElementSetAttributeValue(app, kAXFrontmostAttribute as CFString, kCFBooleanTrue)
+            var windows: CFTypeRef?
+            if AXUIElementCopyAttributeValue(app, kAXWindowsAttribute as CFString, &windows) == .success,
+               let first = (windows as? [AXUIElement])?.first {
+                AXUIElementSetAttributeValue(app, kAXMainWindowAttribute as CFString, first)
+                AXUIElementPerformAction(first, kAXRaiseAction as CFString)
+            }
+            _ = try fixture.command("front")
+        }
+        try waitUntil("\(name) frontmost and key", condition: isFront)
     }
 
     private func resetFrames() throws {
