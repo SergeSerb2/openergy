@@ -180,3 +180,17 @@ impl NetHandle {
         Err(NetError::NotImplemented)
     }
 }
+
+/// Command-line handlers for trust and identity subcommands of the `openergy` binary.
+/// The daemon crate only dispatches to these; WP4 owns their behaviour.
+pub mod cli {
+    /// `openergy trust list|approve <fp>|reject <fp>|revoke <fp>|import-synergy <dir>`
+    pub fn trust(_args: &[String]) -> Result<i32, String> {
+        Err("trust: not implemented yet (WP4)".into())
+    }
+
+    /// `openergy fingerprint [--synergy]`: print this machine's TLS identity fingerprint.
+    pub fn fingerprint(_args: &[String]) -> Result<i32, String> {
+        Err("no TLS identity exists yet (identity generation lands in WP4)".into())
+    }
+}

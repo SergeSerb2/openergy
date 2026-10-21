@@ -348,3 +348,17 @@ pub fn import_synergy_dir(_path: &Path) -> Result<(Config, ImportReport), Config
 pub fn export_synergy_conf(_cfg: &Config) -> Result<String, ConfigError> {
     Err(ConfigError::NotImplemented)
 }
+
+/// Command-line handlers for config subcommands of the `openergy` binary.
+/// The daemon crate only dispatches to these; WP2 owns their behaviour.
+pub mod cli {
+    /// `openergy import-synergy --from <Synergy prefs dir> [--out config.toml]`
+    pub fn import_synergy(_args: &[String]) -> Result<i32, String> {
+        Err("import-synergy: not implemented yet (WP2)".into())
+    }
+
+    /// `openergy export-synergy-conf [--config <path>] [--out synergy.conf]`
+    pub fn export_synergy_conf(_args: &[String]) -> Result<i32, String> {
+        Err("export-synergy-conf: not implemented yet (WP2)".into())
+    }
+}

@@ -48,10 +48,10 @@ fn run(args: &[String]) -> Result<i32, String> {
         "connect" => ctl_call(&args[1..], methods::CONNECTION_CONNECT, serde_json::json!({}), false),
         "disconnect" => ctl_call(&args[1..], methods::CONNECTION_DISCONNECT, serde_json::json!({}), false),
         "restart" => ctl_call(&args[1..], methods::CONNECTION_RESTART, serde_json::json!({}), false),
-        "trust" => Err("trust: not implemented in Step 0 (WP4/WP6)".into()),
-        "fingerprint" => cmd_fingerprint(&args[1..]),
-        "import-synergy" => Err("import-synergy: not implemented in Step 0 (WP2)".into()),
-        "export-synergy-conf" => Err("export-synergy-conf: not implemented in Step 0 (WP2)".into()),
+        "trust" => openergy_net::cli::trust(&args[1..]),
+        "fingerprint" => openergy_net::cli::fingerprint(&args[1..]),
+        "import-synergy" => openergy_config::cli::import_synergy(&args[1..]),
+        "export-synergy-conf" => openergy_config::cli::export_synergy_conf(&args[1..]),
         "help" | "--help" | "-h" => {
             println!("{}", usage());
             Ok(0)
@@ -466,14 +466,6 @@ fn write_config_atomic(state: &DaemonState, cfg: &Config) -> Result<(), String> 
     std::fs::rename(&tmp, path).map_err(|e| e.to_string())
 }
 
-fn cmd_fingerprint(args: &[String]) -> Result<i32, String> {
-    let synergy = args.iter().any(|a| a == "--synergy");
-    if synergy {
-        // Step 0 has no TLS identity yet (WP4). Say so instead of printing a fake pin.
-        return Err("no TLS identity exists yet (Step 0; identity generation lands in WP4)".into());
-    }
-    Err("no TLS identity exists yet (Step 0; identity generation lands in WP4)".into())
-}
 
 fn cmd_ctl(args: &[String]) -> Result<i32, String> {
     let opts = parse_opts(args, &["socket", "json"])?;
