@@ -162,9 +162,22 @@ impl Scenario {
         for step in &self.steps {
             let required: &[&str] = match step.op.as_str() {
                 "wait_status" | "assert_status" => &["node", "fields"],
-                "wait_connected" | "assert_numbering" | "ledger_mark" | "clipboard_get" | "kill" | "pause"
-                | "resume" | "stop" | "start" | "restart" | "subscribe" | "parent_exit" | "wait_exit"
-                | "lab_pointer" | "lab_events_dump" => &["node"],
+                "wait_connected"
+                | "assert_numbering"
+                | "ledger_mark"
+                | "clipboard_get"
+                | "kill"
+                | "pause"
+                | "resume"
+                | "stop"
+                | "start"
+                | "restart"
+                | "subscribe"
+                | "parent_exit"
+                | "wait_exit"
+                | "lab_pointer"
+                | "lab_events_dump"
+                | "trust_crash_recovery" => &["node"],
                 "inject" => &["node", "events"],
                 "assert_recorded" | "assert_recorded_tail" => &["node"],
                 "clipboard_set" | "assert_clipboard" => &["node"],
@@ -173,7 +186,7 @@ impl Scenario {
                 "config_patch" => &["node", "patch"],
                 "ctl" => &["node", "method"],
                 "wait_event" => &["node", "event"],
-                "raw_send" | "raw_expect" | "raw_expect_closed" => &["node"],
+                "raw_send" | "raw_expect" | "raw_expect_closed" | "raw_expect_absent" => &["node"],
                 "lab_drive" | "lab_ctl" | "cli" => &["node", "args"],
                 "lab_clipboard" => &["node"],
                 "assert_file" | "write_file" | "fixture_dib" => &["path"],

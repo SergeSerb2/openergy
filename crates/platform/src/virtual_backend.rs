@@ -304,6 +304,7 @@ struct State {
     prevent_sleep: bool,
     clipboard: ClipboardData,
     clipboard_stamp: u64,
+    clipboard_read_available: bool,
     own_write_stamp: Option<u64>,
     max_clipboard_bytes: usize,
 }
@@ -594,6 +595,7 @@ impl VirtualPlatform {
                 prevent_sleep: false,
                 clipboard: ClipboardData::default(),
                 clipboard_stamp: 0,
+                clipboard_read_available: true,
                 own_write_stamp: None,
                 max_clipboard_bytes: config.max_clipboard_bytes,
             }),
@@ -693,6 +695,10 @@ impl VirtualControl {
     }
     pub fn click_assignment(&self, button: u8) -> Option<crate::ClickAssignment> {
         lock(&self.shared.state).click.assignment(button)
+    }
+    /// Script an unavailable read without changing clipboard ownership or bytes.
+    pub fn set_clipboard_read_available(&self, available: bool) {
+        lock(&self.shared.state).clipboard_read_available = available;
     }
     /// Sizes and stamps without cloning clipboard payload buffers.
     pub fn clipboard_summary(&self) -> ClipboardSummary {
@@ -981,6 +987,9 @@ impl ClipboardBackend for VirtualClipboard {
     }
     fn read(&mut self, max_bytes: usize) -> Result<ClipboardData, PlatformError> {
         let state = lock(&self.shared.state);
+        if !state.clipboard_read_available {
+            return Ok(ClipboardData::default());
+        }
         if state.clipboard.total_bytes() > max_bytes {
             return Err(PlatformError::ClipboardTooLarge {
                 bytes: state.clipboard.total_bytes(),

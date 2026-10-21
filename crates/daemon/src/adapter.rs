@@ -192,6 +192,9 @@ pub fn virtual_request(
             serde_json::to_value(ledger).map_err(|e| invalid(e.to_string()))
         }
         m::VIRTUAL_CLIPBOARD => {
+            if let Some(available) = params.get("read_available").and_then(Value::as_bool) {
+                control.set_clipboard_read_available(available);
+            }
             if let Some(data) = params.get("set") {
                 let data = crate::clipboard_json::decode(data)?;
                 control.clipboard_set(data).map_err(failed)?;

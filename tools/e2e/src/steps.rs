@@ -198,6 +198,57 @@ impl Context {
                     Ok(json!({"exit_code":expected}))
                 }
             }
+            "trust_crash_recovery" => {
+                let dir = self.state(&id)?.dir.join("crash-trust");
+                let tls = dir.join("tls");
+                crate::util::private_dir(&tls)?;
+                // A real populated trust file keeps the writer in its locked
+                // read/merge interval long enough to observe kernel ownership.
+                let mut records = String::new();
+                for n in 0..8192 {
+                    records.push_str(&format!("v2:sha256:{n:064x}\n"));
+                }
+                write_private(&tls.join("trusted-servers"), records.as_bytes())?;
+                let lock = std::fs::OpenOptions::new()
+                    .read(true)
+                    .write(true)
+                    .create(true)
+                    .truncate(false)
+                    .open(tls.join(".trust-lock"))?;
+                let fingerprint = "ff".repeat(32);
+                let mut command = Command::new(&self.options.binary);
+                command.args(["trust", "approve", &fingerprint, "--dir"]).arg(&dir);
+                isolated_env(&mut command, &dir, &dir.join("unused.sock"));
+                let mut writer = crate::process::Process::spawn(&mut command, &dir, "interrupted-approve")?;
+                let deadline = Instant::now() + timeout;
+                loop {
+                    match lock.try_lock() {
+                        Ok(()) => {
+                            lock.unlock()?;
+                        }
+                        Err(std::fs::TryLockError::WouldBlock) => break,
+                        Err(std::fs::TryLockError::Error(error)) => return Err(error.into()),
+                    }
+                    if writer.poll()?.is_some() || Instant::now() >= deadline {
+                        return Err(Failure::product("could not observe approval lock ownership"));
+                    }
+                    std::thread::sleep(Duration::from_micros(100));
+                }
+                writer.signal("KILL")?;
+                writer.wait(Duration::from_secs(2))?;
+                lock.try_lock()
+                    .map_err(|e| Failure::product(format!("lock survived killed writer: {e}")))?;
+                lock.unlock()?;
+                let (code, _) = command_output(&mut command, &dir, "retry-approve", timeout)?;
+                if code != 0 {
+                    return Err(Failure::product("approval after killed writer failed"));
+                }
+                let pins = std::fs::read_to_string(tls.join("trusted-servers"))?;
+                if !pins.contains(&fingerprint) {
+                    return Err(Failure::product("retry approval did not save pin"));
+                }
+                Ok(json!({"killed_while_locked":true,"retry_approved":true}))
+            }
             "raw_send" => {
                 let data = wire::build(step)?;
                 self.raw(&id)?.send(&data, step, timeout)?;
@@ -208,6 +259,22 @@ impl Context {
                 self.raw(&id)?
                     .expect(&data, timeout, step.flag("framed"), step.flag("scan"))?;
                 Ok(json!({"expected_bytes":data.len()}))
+            }
+            "raw_expect_absent" => {
+                let codes = step.value("codes");
+                let codes = codes
+                    .as_array()
+                    .ok_or_else(|| Failure::runner("codes must be an array"))?;
+                let codes = codes
+                    .iter()
+                    .map(|v| {
+                        v.as_str()
+                            .map(str::to_owned)
+                            .ok_or_else(|| Failure::runner("code must be a string"))
+                    })
+                    .collect::<Result<Vec<_>>>()?;
+                self.raw(&id)?.expect_absent(&codes, timeout)?;
+                Ok(json!({"absent": codes}))
             }
             "raw_expect_closed" => {
                 self.raw(&id)?.expect_closed(timeout)?;

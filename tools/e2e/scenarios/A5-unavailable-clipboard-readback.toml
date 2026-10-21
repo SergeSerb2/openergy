@@ -1,0 +1,62 @@
+name = "A5-unavailable-clipboard-readback"
+requirement = "A remote payload stays available to a late peer even when the server cannot read its pasteboard back."
+timeout_ms = 3000
+
+[[node]]
+id = "server"
+role = "server"
+tls = false
+
+[[node]]
+id = "first"
+role = "client"
+remote = "server"
+tls = false
+
+[[node]]
+id = "late"
+role = "client"
+remote = "server"
+tls = false
+autostart = false
+
+[[step]]
+do = "wait_connected"
+node = "first"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "virtual.clipboard"
+params = {"read_available" = false}
+
+[[step]]
+do = "clipboard_set"
+node = "first"
+text = "remote retained"
+
+[[step]]
+do = "assert_clipboard"
+node = "server"
+text = "remote retained"
+
+[[step]]
+do = "sleep"
+ms = 500
+
+[[step]]
+do = "start"
+node = "late"
+
+[[step]]
+do = "wait_connected"
+node = "late"
+
+[[step]]
+do = "assert_clipboard"
+node = "late"
+text = "remote retained"

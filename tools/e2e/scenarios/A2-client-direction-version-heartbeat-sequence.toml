@@ -1,0 +1,155 @@
+name = "A2-client-direction-version-heartbeat-sequence"
+requirement = "Client uses fixed 1.8, accepts mixed-case future server, sends no options or spontaneous heartbeat, and accepts sequence-zero push."
+timeout_ms = 3000
+
+[[node]]
+id = "server"
+kind = "raw"
+role = "server"
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+tls = false
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "hello"
+product = "sYnErGy"
+minor = 12
+
+[[step]]
+do = "raw_expect"
+node = "server"
+builder = "hello_back"
+name = "client"
+minor = 8
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "QINF"
+payload_hex = ""
+
+[[step]]
+do = "raw_expect"
+node = "server"
+builder = "code"
+code = "DINF"
+payload_only = true
+framed = true
+scan = true
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "LSYN"
+payload_hex = "00000002656e"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "CIAK"
+payload_hex = ""
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "CROP"
+payload_hex = ""
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "options"
+values = []
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "raw_expect_absent"
+node = "server"
+codes = ["DSOP", "CROP", "CALV", "EICV"]
+timeout_ms = 3200
+
+[[step]]
+do = "config_patch"
+node = "client"
+patch = {"input" = {"scroll_sensitivity" = 2.0}}
+
+[[step]]
+do = "raw_expect_absent"
+node = "server"
+codes = ["DSOP", "CROP", "CALV", "EICV"]
+timeout_ms = 200
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "CINN"
+payload_hex = "0014001e0000004d0000"
+
+[[step]]
+do = "clipboard_set"
+node = "client"
+text = "old"
+
+[[step]]
+do = "raw_expect"
+node = "server"
+builder = "code"
+code = "CCLP"
+payload_only = true
+framed = true
+scan = true
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "000000000001000000023137"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "000000000002000000110000000100000000000000056672657368"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "00000000000300000000"
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+text = "fresh"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "CALV"
+payload_hex = ""
+
+[[step]]
+do = "raw_expect"
+node = "server"
+builder = "code"
+code = "CALV"
+payload_only = true
+framed = true
+scan = true

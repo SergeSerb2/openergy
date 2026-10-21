@@ -111,6 +111,39 @@ impl Raw {
             }
         }
     }
+    pub fn expect_absent(&mut self, codes: &[String], timeout: Duration) -> Result<()> {
+        let stream = self.socket(timeout)?;
+        let deadline = Instant::now() + timeout;
+        let mut bytes = Vec::new();
+        let mut buffer = [0; 4096];
+        while Instant::now() < deadline {
+            match stream.read(&mut buffer) {
+                Ok(0) => return Err(Failure::product("peer closed during absence check")),
+                Ok(n) => bytes.extend_from_slice(&buffer[..n]),
+                Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                    std::thread::sleep(Duration::from_millis(2));
+                }
+                Err(e) => return Err(e.into()),
+            }
+            while bytes.len() >= 4 {
+                let n = u32::from_be_bytes(bytes[..4].try_into().map_err(|_| Failure::runner("header"))?) as usize;
+                if !(4..=4 * 1024 * 1024).contains(&n) {
+                    return Err(Failure::product("invalid frame length"));
+                }
+                if bytes.len() < n + 4 {
+                    break;
+                }
+                if codes.iter().any(|code| bytes[4..8] == *code.as_bytes()) {
+                    return Err(Failure::product("forbidden frame received"));
+                }
+                bytes.drain(..n + 4);
+            }
+        }
+        if !bytes.is_empty() {
+            return Err(Failure::product("partial frame at absence deadline"));
+        }
+        Ok(())
+    }
     pub fn expect_closed(&mut self, timeout: Duration) -> Result<()> {
         let deadline = Instant::now() + timeout;
         let stream = self.socket(timeout)?;

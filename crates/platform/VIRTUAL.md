@@ -444,3 +444,8 @@ cloning clipboard payloads. `clipboard_get()` retains its full snapshot API.
 A clipboard read over the caller's limit returns
 `PlatformError::ClipboardTooLarge { bytes, limit }` so the daemon can publish a
 visible block event without reading the oversized data.
+
+`virtual.clipboard` also accepts `read_available: bool`. False makes the worker's
+backend read return an empty, unavailable payload without changing its stored
+clipboard, stamp, or owner. `get` still inspects stored bytes. This scripts the
+same unavailable read that native own-write suppression can produce.

@@ -77,6 +77,7 @@ pub fn matches(actual: &Value, expected: &Value) -> bool {
 pub fn predicate(actual: Option<&Value>, expected: &Value) -> bool {
     if let Some(ops) = expected.as_object().filter(|m| m.keys().any(|k| k.starts_with('$'))) {
         return ops.iter().all(|(op, rhs)| match op.as_str() {
+            "$null" => actual.is_some_and(Value::is_null) == rhs.as_bool().unwrap_or(true),
             "$exists" => actual.is_some() == rhs.as_bool().unwrap_or(true),
             "$ne" => actual != Some(rhs),
             "$gte" => actual
