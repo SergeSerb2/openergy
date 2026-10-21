@@ -64,9 +64,13 @@ pub fn read(max_bytes: usize) -> Result<Clipboard> {
             let bytes = read_type(uti, remaining)?;
             let text = String::from_utf8(bytes).map_err(|_| error(format!("{uti} is not UTF-8")))?;
             let text = lf_endings(&text);
-            remaining = remaining
-                .checked_sub(text.len())
-                .ok_or_else(|| error("clipboard exceeds max_bytes"))?;
+            remaining =
+                remaining
+                    .checked_sub(text.len())
+                    .ok_or(openergy_platform::PlatformError::ClipboardTooLarge {
+                        bytes: max_bytes.saturating_sub(remaining).saturating_add(text.len()),
+                        limit: max_bytes,
+                    })?;
             *destination = Some(text);
         }
     }
@@ -144,7 +148,10 @@ fn lf_endings(text: &str) -> String {
 fn add_bounded(a: usize, b: usize, maximum: usize) -> Result<usize> {
     a.checked_add(b)
         .filter(|sum| *sum <= maximum)
-        .ok_or_else(|| error(format!("payload exceeds max_bytes {maximum}")))
+        .ok_or(openergy_platform::PlatformError::ClipboardTooLarge {
+            bytes: a.saturating_add(b),
+            limit: maximum,
+        })
 }
 fn bounded_image_len(width: usize, height: usize, overhead: usize, maximum: usize) -> Result<usize> {
     if width == 0 || height == 0 || width > i32::MAX as usize || height > i32::MAX as usize {

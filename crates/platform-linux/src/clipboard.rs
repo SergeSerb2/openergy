@@ -499,12 +499,13 @@ impl Worker {
         if reply.type_ != self.atoms.incr {
             return Ok(Some(reply));
         }
-        if reply
+        if let Some(bytes) = reply
             .value32()
-            .and_then(|mut v| v.next())
-            .is_some_and(|n| n as usize > max)
+            .and_then(|mut values| values.next())
+            .map(|n| n as usize)
+            .filter(|n| *n > max)
         {
-            return Err(error("X11 INCR selection exceeds caller limit"));
+            return Err(PlatformError::ClipboardTooLarge { bytes, limit: max });
         }
         let mut bytes = Vec::new();
         loop {
@@ -550,7 +551,10 @@ impl Worker {
         if reply.value.len() > max || reply.bytes_after != 0 {
             let _ = self.c.delete_property(self.window, self.atoms.property);
             let _ = self.c.flush();
-            return Err(error("X11 selection exceeds caller limit"));
+            return Err(PlatformError::ClipboardTooLarge {
+                bytes: reply.value.len().saturating_add(reply.bytes_after as usize),
+                limit: max,
+            });
         }
         self.c.flush().map_err(error)?;
         Ok(reply)
@@ -598,7 +602,10 @@ impl Worker {
                         (kind, reply.value)
                     };
                     if bytes.len() > max.saturating_sub(data.total_bytes()) {
-                        return Err(error("Converted clipboard exceeds caller limit"));
+                        return Err(PlatformError::ClipboardTooLarge {
+                            bytes: data.total_bytes().saturating_add(bytes.len()),
+                            limit: max,
+                        });
                     }
                     data.formats.push(ClipboardFormat { kind, bytes });
                 }

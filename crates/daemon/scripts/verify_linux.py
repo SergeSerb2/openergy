@@ -38,6 +38,12 @@ def main():
         wait(lambda:client.call('virtual.clipboard',{'get':True})['data']['formats']==[{'kind':'text_utf8','bytes_base64':base64.b64encode(b'x11-to-virtual').decode()}],message='native clipboard to virtual')
         client.call('virtual.clipboard',{'text':'virtual-to-x11'})
         wait(lambda:subprocess.run(['xclip','-selection','clipboard','-out'],capture_output=True,timeout=2).stdout==b'virtual-to-x11',message='virtual clipboard to X11')
+        server.patch({'clipboard':{'max_bytes':1024}})
+        oversized=subprocess.Popen(['xclip','-selection','clipboard','-in'],stdin=subprocess.PIPE,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+        oversized.stdin.write(b'x'*8192);oversized.stdin.close()
+        wait(lambda:server.status()['clipboard']['last_blocked'] and server.status()['clipboard']['last_blocked']['limit']==1024,message='native clipboard cap event')
+        if oversized.poll() is None:oversized.terminate();oversized.wait(timeout=3)
+        print('PASS Linux native clipboard cap: visible clipboard.blocked status',flush=True)
         print('PASS Linux daemon: X11 backend, DSOP, native edge capture, key/click forwarding, clipboard both directions',flush=True)
     finally:
         print('final status',server.status(),flush=True)

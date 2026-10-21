@@ -175,7 +175,10 @@ fn get(format: u32, max: usize) -> Result<Option<Vec<u8>>, PlatformError> {
         }
         let size = GlobalSize(handle);
         if size > max || size > LIMIT {
-            return Err(error("Native clipboard exceeds caller limit"));
+            return Err(PlatformError::ClipboardTooLarge {
+                bytes: size,
+                limit: max.min(LIMIT),
+            });
         }
         if size == 0 {
             return Ok(Some(Vec::new()));
@@ -230,7 +233,10 @@ fn read(hwnd: HWND, html: u32, max: usize) -> Result<ClipboardData, PlatformErro
         });
     }
     if data.total_bytes() > max {
-        return Err(error("Clipboard exceeds caller limit"));
+        return Err(PlatformError::ClipboardTooLarge {
+            bytes: data.total_bytes(),
+            limit: max,
+        });
     }
     Ok(data)
 }

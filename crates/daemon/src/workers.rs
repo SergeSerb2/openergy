@@ -159,7 +159,10 @@ pub fn clipboard(mut backend: Box<dyn ClipboardBackend>, waker: Arc<mio::Waker>)
                     let ev = match backend.read(max) {
                         Ok(data) => ClipboardEvent::Payload { id, data },
                         Err(openergy_platform::PlatformError::ClipboardTooLarge { bytes, limit }) => {
-                            ClipboardEvent::Blocked { bytes, limit }
+                            ClipboardEvent::Blocked {
+                                bytes: bytes.saturating_add(max.saturating_sub(limit)),
+                                limit: max,
+                            }
                         }
                         Err(e) => ClipboardEvent::Failure(e.to_string()),
                     };
