@@ -30,3 +30,4 @@ openergy-platform-linux = { path = "../platform-linux" }
 
 [target.'cfg(target_os = "windows")'.dependencies]
 openergy-platform-windows = { path = "../platform-windows" }
+windows-sys = { version = "0.61.2", features = ["Win32_NetworkManagement_IpHelper", "Win32_NetworkManagement_Ndis", "Win32_Networking_WinSock"] }

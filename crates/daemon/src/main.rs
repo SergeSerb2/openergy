@@ -13,6 +13,7 @@ use openergy_ipc::{methods, read_frame, write_frame, Request, Response};
 mod adapter;
 mod clipboard_json;
 mod events;
+mod interfaces;
 mod ipc_server;
 mod lifetime;
 mod logger;

@@ -145,8 +145,12 @@ struct Runtime {
     last_status: Value,
     last_status_ms: u64,
     last_health: u64,
+    last_network_sample: u64,
+    network_set: Option<crate::interfaces::Addresses>,
     permissions: Permissions,
     local_secure: Option<String>,
+    display_changed: Arc<AtomicBool>,
+    preventing_sleep: bool,
     displays: Vec<ScreenRect>,
     rng: u64,
     stop: Arc<AtomicBool>,
@@ -250,7 +254,7 @@ impl Runtime {
         s.permissions.accessibility = p["accessibility"].as_str().unwrap_or("unknown").into();
         s.permissions.input_monitoring = p["input_monitoring"].as_str().unwrap_or("unknown").into();
         s.permissions.post_events = p["post_events"].as_str().unwrap_or("unknown").into();
-        s.secure_input.local_app = self.screens.secure_input_app();
+        s.secure_input.local_app = self.local_secure.clone();
         s.clipboard.enabled = self.cfg.clipboard.enabled;
         s.clipboard.last_transfer = self.last_transfer.clone();
         s.clipboard.last_blocked = self.last_blocked.clone();
@@ -359,6 +363,14 @@ impl Runtime {
                 }
             }
         }
+        self.update_sleep_assertion();
+    }
+    fn update_sleep_assertion(&mut self) {
+        let on = self.enabled && self.cfg.input.prevent_sleep && self.machine.snapshot().remote_active;
+        if on != self.preventing_sleep {
+            self.preventing_sleep = on;
+            self.screens.prevent_sleep(on);
+        }
     }
     fn input(&mut self, event: InputEvent) {
         self.events_in += 1;
@@ -380,7 +392,12 @@ impl Runtime {
         let delay = base * (80 + self.rng % 41) / 100;
         self.retry = Some(self.now() + delay);
         self.state = "reconnecting".into();
-        log::warn!("reconnect attempt={} delay_ms={delay}", self.attempt);
+        let reason = if self.last_error.as_ref().is_some_and(|e| e.code == "busy") {
+            "EBSY"
+        } else {
+            "connection loss"
+        };
+        log::warn!("{reason}: reconnect attempt={} delay_ms={delay}", self.attempt);
     }
     fn start_connection(&mut self) {
         self.retry = None;
@@ -573,6 +590,12 @@ impl Runtime {
                     _ => {}
                 }
             }
+            if !denied {
+                let _ = self
+                    .capture
+                    .commands
+                    .try_send(CaptureCommand::Enable(self.enabled && self.cfg.role == Role::Server));
+            }
             self.publish(
                 "permissions.changed",
                 serde_json::to_value(&self.permissions).unwrap_or(Value::Null),
@@ -641,7 +664,7 @@ impl Runtime {
             .clipboard
             .commands
             .try_send(ClipboardCommand::Enabled(self.enabled && self.cfg.clipboard.enabled));
-        self.screens.prevent_sleep(self.enabled && self.cfg.input.prevent_sleep);
+        self.update_sleep_assertion();
         self.publish(
             "config.changed",
             json!({"config":self.cfg.to_json(),"derived_links":openergy_config::derive_links(&self.cfg.screens)}),
@@ -967,10 +990,17 @@ pub fn run_daemon(
         let bus = Arc::new(EventBus::default());
         let logger = Logger::new(&dir, bus.clone());
         logger.install();
-        let (backend, control) = adapter::platform(&platform, &config).map_err(|e| e.to_string())?;
+        let (mut backend, control) = adapter::platform(&platform, &config).map_err(|e| e.to_string())?;
         let (driver, _net_handle) =
             NetDriver::new(adapter::net_config(&config, &dir, platform == "virtual")).map_err(|e| e.to_string())?;
         let waker = driver.waker();
+        let display_changed = Arc::new(AtomicBool::new(false));
+        let flag = display_changed.clone();
+        let display_waker = waker.clone();
+        backend.screens.on_display_changed(Box::new(move || {
+            flag.store(true, Ordering::Release);
+            let _ = display_waker.wake();
+        }));
         let capture = workers::capture(backend.source, waker.clone());
         let clipboard = workers::clipboard(backend.clipboard, waker.clone());
         let stop = Arc::new(AtomicBool::new(false));
@@ -1011,8 +1041,12 @@ pub fn run_daemon(
             last_status: Value::Null,
             last_status_ms: 0,
             last_health: 0,
+            last_network_sample: 0,
+            network_set: None,
             permissions,
             local_secure: None,
+            display_changed,
+            preventing_sleep: false,
             displays,
             rng: unix_ms() ^ u64::from(std::process::id()),
             stop: stop.clone(),
@@ -1035,6 +1069,7 @@ pub fn run_daemon(
             .clipboard
             .commands
             .try_send(ClipboardCommand::Enabled(enabled && rt.cfg.clipboard.enabled));
+        rt.update_sleep_assertion();
         rt.start_connection();
         log::info!("openergy {VERSION} daemon listening on {}", socket_path.display());
         while !stop.load(Ordering::Relaxed) && !lifetime::SIGNALLED.load(Ordering::Relaxed) && !parent.exited() {
@@ -1068,10 +1103,26 @@ pub fn run_daemon(
             rt.machine.tick(now, &mut rt.actions);
             rt.apply_actions();
             rt.process_net();
-            if now.saturating_sub(rt.last_health) >= 250 {
+            if rt.display_changed.swap(false, Ordering::AcqRel) || now.saturating_sub(rt.last_health) >= 250 {
                 rt.last_health = now;
                 rt.refresh_health();
                 rt.apply_actions();
+            }
+            if rt.cfg.role == Role::Client
+                && rt.state == "reconnecting"
+                && rt.retry.is_some()
+                && now.saturating_sub(rt.last_network_sample) >= 2000
+            {
+                rt.last_network_sample = now;
+                if let Some(addresses) = crate::interfaces::snapshot() {
+                    let changed = rt.network_set.as_ref().is_some_and(|previous| *previous != addresses);
+                    rt.network_set = Some(addresses);
+                    if changed {
+                        log::info!("network interfaces changed; retry configured server");
+                        rt.attempt = 0;
+                        rt.retry = Some(now);
+                    }
+                }
             }
             if rt.retry.is_some_and(|t| now >= t) {
                 rt.start_connection();
@@ -1110,6 +1161,7 @@ pub fn run_daemon(
             let _ = rt.driver.poll(Some(Duration::from_millis(10)), &mut rt.net_events);
             rt.net_events.clear();
         }
+        rt.screens.prevent_sleep(false);
         rt.sink.release_all();
         rt.sink.set_cursor_visible(true);
         rt.execute(NetCommand::Shutdown);

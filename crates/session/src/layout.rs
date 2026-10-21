@@ -194,8 +194,14 @@ impl Layout {
         };
         let Some(edge) = edge else {
             self.candidate = None;
-            if x >= r.x + 3 && x <= right - 3 && y >= r.y + 3 && y <= bottom - 3 {
-                if let Some(tap) = self.tap.as_mut() {
+            if let Some(tap) = self.tap.as_mut() {
+                let retreated = match tap.1 {
+                    Edge::Left => x >= r.x + 3,
+                    Edge::Right => x <= right - 3,
+                    Edge::Top => y >= r.y + 3,
+                    Edge::Bottom => y <= bottom - 3,
+                };
+                if tap.0 == current && retreated {
                     tap.3 = true;
                 }
             }

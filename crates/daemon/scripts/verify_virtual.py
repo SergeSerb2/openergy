@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Exercise real openergy processes through ctl and raw loopback sockets only."""
 import argparse
+import atexit
 import json
 import os
 from pathlib import Path
@@ -16,6 +17,15 @@ ROOT = Path(__file__).resolve().parents[3]
 BIN = ROOT / 'target/release/openergy'
 NODES = []
 RESULTS = []
+
+
+def cleanup():
+    for node in reversed(NODES):
+        try: node.stop()
+        except Exception: pass
+
+
+atexit.register(cleanup)
 
 
 def wait(fn, timeout=12, message='condition'):
@@ -40,8 +50,8 @@ class Node:
         self.config = self.dir / 'config.toml'
         self.log = open(self.dir / 'stderr.log', 'ab')
         self.proc = None
-        self.start()
         NODES.append(self)
+        self.start()
 
     def start(self):
         env = dict(os.environ, OPENERGY_ALLOW_PORT_24800='0')
