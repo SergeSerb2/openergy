@@ -214,7 +214,12 @@ impl Runtime {
             _ => None,
         };
         if let Err(error) = self.driver.execute_checked(cmd, &mut self.net_events) {
-            self.error("network_queue_full", format!("Can't send data: {error}."));
+            let code = if error == openergy_net::NetError::QueueFull {
+                "network_queue_full"
+            } else {
+                "network_failed"
+            };
+            self.error(code, format!("Can't send data: {error}."));
             if let Some((conn, lost_up, clipboard, input)) = send {
                 if let Some(id) = clipboard {
                     match &mut self.machine {
@@ -370,6 +375,14 @@ impl Runtime {
             count += actions.len();
             for action in actions.drain(..) {
                 match action {
+                    Action::SendControl { conn, msg } => {
+                        self.events_out += 1;
+                        self.execute(NetCommand::Send {
+                            conn,
+                            msg,
+                            priority: Priority::Control,
+                        });
+                    }
                     Action::Send { conn, msg } => {
                         let priority = if matches!(
                             msg,

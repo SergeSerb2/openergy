@@ -58,10 +58,16 @@ impl Ledger {
     }
     pub fn release_remote(&mut self, conn: ConnId, out: &mut Vec<Action>) {
         for (button, (key, modifiers)) in std::mem::take(&mut self.keys) {
-            send(conn, Message::KeyUp { key, modifiers, button }, out);
+            out.push(Action::SendControl {
+                conn,
+                msg: Message::KeyUp { key, modifiers, button },
+            });
         }
         for button in std::mem::take(&mut self.buttons) {
-            send(conn, Message::MouseUp { button }, out);
+            out.push(Action::SendControl {
+                conn,
+                msg: Message::MouseUp { button },
+            });
         }
         self.modifiers = 0;
     }

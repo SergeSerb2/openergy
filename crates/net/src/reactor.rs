@@ -1023,15 +1023,16 @@ impl NetDriver {
                     });
                     return;
                 }
-                if c.close_at.is_some() || c.slow.is_some() {
+                if packet.priority != Priority::Control && (c.close_at.is_some() || c.slow.is_some()) {
                     out.push(NetEvent::Error {
                         conn: Some(id),
                         message: "connection is closing or unhealthy".into(),
                     });
                     return;
                 }
+                let control = packet.priority == Priority::Control;
                 c.queues.push(packet);
-                if c.queues.high_bytes > HIGH_WATER {
+                if !control && c.queues.high_bytes > HIGH_WATER {
                     log::warn!(
                         "connection {} exceeded 4 MiB input/control queue; closing SlowPeer after heartbeat",
                         id.0

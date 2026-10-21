@@ -117,7 +117,10 @@ impl Server {
                     p.ledger.release_remote(conn, out);
                     p.secure_input = None;
                 }
-                send(conn, Message::Leave, out);
+                out.push(Action::SendControl {
+                    conn,
+                    msg: Message::Leave,
+                });
             }
         }
         self.active = self.primary;

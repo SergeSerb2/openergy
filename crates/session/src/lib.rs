@@ -70,6 +70,11 @@ pub enum ClientEvent {
 
 #[derive(Debug)]
 pub enum Action {
+    /// Cleanup must bypass input backpressure and precede close.
+    SendControl {
+        conn: ConnId,
+        msg: Message,
+    },
     Send {
         conn: ConnId,
         msg: Message,
