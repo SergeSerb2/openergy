@@ -474,7 +474,7 @@ An explicit `macbook.links.right = ""` removes only the first link. An explicit
 Moving PC x to 1513 stays within the inclusive one-point tolerance:
 
 ```sh
-/Users/serge/.t3/worktrees/openergy/t3-f6288390/target/release/openergy ctl config.patch --socket /tmp/oe-wp2/oe-wp2.sock --raw --json '{"patch":{"screen":[{"aliases":[],"name":"macbook","rect":{"h":982.0,"w":1512.0,"x":0.0,"y":300.0}},{"aliases":[],"name":"studio-pc","rect":{"h":1440.0,"w":2560.0,"x":1513,"y":0.0}}]}}'
+<repo>/target/release/openergy ctl config.patch --socket /tmp/oe-wp2/oe-wp2.sock --raw --json '{"patch":{"screen":[{"aliases":[],"name":"macbook","rect":{"h":982.0,"w":1512.0,"x":0.0,"y":300.0}},{"aliases":[],"name":"studio-pc","rect":{"h":1440.0,"w":2560.0,"x":1513,"y":0.0}}]}}'
 ```
 
 ```json

@@ -24,20 +24,20 @@ warnings denied. Formatting and diff checks printed no output. No unit tests,
 Final workspace build output:
 
 ```text
-Compiling openergy-platform v0.1.0 (/Users/serge/.t3/worktrees/openergy/t3-ecbe159e/crates/platform)
-   Compiling openergy-session v0.1.0 (/Users/serge/.t3/worktrees/openergy/t3-ecbe159e/crates/session)
-   Compiling openergy-platform-macos v0.1.0 (/Users/serge/.t3/worktrees/openergy/t3-ecbe159e/crates/platform-macos)
-   Compiling openergy-platform-windows v0.1.0 (/Users/serge/.t3/worktrees/openergy/t3-ecbe159e/crates/platform-windows)
-   Compiling openergy-platform-linux v0.1.0 (/Users/serge/.t3/worktrees/openergy/t3-ecbe159e/crates/platform-linux)
-   Compiling openergy-net v0.1.0 (/Users/serge/.t3/worktrees/openergy/t3-ecbe159e/crates/net)
-   Compiling openergy-daemon v0.1.0 (/Users/serge/.t3/worktrees/openergy/t3-ecbe159e/crates/daemon)
+Compiling openergy-platform v0.1.0 (<repo>/crates/platform)
+   Compiling openergy-session v0.1.0 (<repo>/crates/session)
+   Compiling openergy-platform-macos v0.1.0 (<repo>/crates/platform-macos)
+   Compiling openergy-platform-windows v0.1.0 (<repo>/crates/platform-windows)
+   Compiling openergy-platform-linux v0.1.0 (<repo>/crates/platform-linux)
+   Compiling openergy-net v0.1.0 (<repo>/crates/net)
+   Compiling openergy-daemon v0.1.0 (<repo>/crates/daemon)
     Finished `release` profile [optimized] target(s) in 5.03s
 ```
 
 Final Clippy output:
 
 ```text
-Checking openergy-platform v0.1.0 (/Users/serge/.t3/worktrees/openergy/t3-ecbe159e/crates/platform)
+Checking openergy-platform v0.1.0 (<repo>/crates/platform)
     Finished `release` profile [optimized] target(s) in 0.19s
 ```
 
