@@ -1,34 +1,50 @@
 //! Focus Lab command adapter. LIVE serve requires an explicit pointer acknowledgement.
 //! One private Unix socket service owns one real InputSink for the whole lab run.
+#[cfg(target_os = "macos")]
 use std::io::{BufRead, BufReader, Read, Write};
+#[cfg(target_os = "macos")]
 use std::os::unix::fs::{MetadataExt, PermissionsExt};
+#[cfg(target_os = "macos")]
 use std::os::unix::net::{UnixListener, UnixStream};
+#[cfg(target_os = "macos")]
 use std::path::{Path, PathBuf};
+#[cfg(target_os = "macos")]
 use std::sync::atomic::{AtomicBool, Ordering};
+#[cfg(target_os = "macos")]
 use std::time::Duration;
+#[cfg(target_os = "macos")]
 static STOPPING: AtomicBool = AtomicBool::new(false);
+#[cfg(target_os = "macos")]
 extern "C" fn stop_signal(_: i32) {
     STOPPING.store(true, Ordering::Relaxed);
 }
+#[cfg(target_os = "macos")]
 struct ActiveSink(Box<dyn InputSink>);
+#[cfg(target_os = "macos")]
 impl Drop for ActiveSink {
     fn drop(&mut self) {
         self.0.release_all();
     }
 }
+#[cfg(target_os = "macos")]
 use openergy_platform::{InputEvent, InputSink};
+#[cfg(target_os = "macos")]
 use openergy_platform_macos::{self as mac, ClickNumbering, MacOptions};
 
+#[cfg(target_os = "macos")]
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+#[cfg(target_os = "macos")]
 fn main() {
     if let Err(err) = run() {
         eprintln!("error: {err}");
         std::process::exit(1);
     }
 }
+#[cfg(target_os = "macos")]
 fn help() {
     println!("focuslab_inject serve --socket /private/path/input.sock --click-numbering native|legacy --i-understand-this-moves-the-pointer\nfocuslab_inject --socket /private/path/input.sock --click-numbering native|legacy move|down|up|drag left|right|middle x y\nfocuslab_inject --socket /private/path/input.sock stop");
 }
+#[cfg(target_os = "macos")]
 fn run() -> Result<()> {
     let mut args = std::env::args().skip(1);
     let mut socket = None;
@@ -79,18 +95,21 @@ fn run() -> Result<()> {
         ),
     )
 }
+#[cfg(target_os = "macos")]
 fn mode_name(mode: ClickNumbering) -> &'static str {
     match mode {
         ClickNumbering::Native => "native",
         ClickNumbering::Legacy => "legacy",
     }
 }
+#[cfg(target_os = "macos")]
 struct Action {
     kind: String,
     button: u8,
     x: i32,
     y: i32,
 }
+#[cfg(target_os = "macos")]
 impl Action {
     fn parse(args: &[String]) -> Result<Self> {
         if args.len() != 4 || !matches!(args[0].as_str(), "move" | "down" | "up" | "drag") {
@@ -119,6 +138,7 @@ impl Action {
         })
     }
 }
+#[cfg(target_os = "macos")]
 fn request(path: &Path, message: &str) -> Result<()> {
     let mut stream = UnixStream::connect(path)?;
     stream.set_read_timeout(Some(Duration::from_secs(2)))?;
@@ -131,12 +151,15 @@ fn request(path: &Path, message: &str) -> Result<()> {
     }
     Ok(())
 }
+#[cfg(target_os = "macos")]
 struct SocketGuard(PathBuf);
+#[cfg(target_os = "macos")]
 impl Drop for SocketGuard {
     fn drop(&mut self) {
         let _ = std::fs::remove_file(&self.0);
     }
 }
+#[cfg(target_os = "macos")]
 fn serve(path: &Path, mode: ClickNumbering) -> Result<()> {
     let parent = path.parent().ok_or("socket requires parent")?;
     let metadata = parent.metadata()?;
@@ -264,6 +287,7 @@ fn serve(path: &Path, mode: ClickNumbering) -> Result<()> {
         Err("injector listener stopped".into())
     }
 }
+#[cfg(target_os = "macos")]
 fn peer_uid(stream: &UnixStream) -> Result<u32> {
     use std::os::fd::AsRawFd;
     unsafe extern "C" {
@@ -277,6 +301,7 @@ fn peer_uid(stream: &UnixStream) -> Result<u32> {
     Ok(uid)
 }
 
+#[cfg(target_os = "macos")]
 fn wait_for_client(listener: &UnixListener) -> Result<()> {
     use std::os::fd::AsRawFd;
     #[repr(C)]
@@ -301,4 +326,10 @@ fn wait_for_client(listener: &UnixListener) -> Result<()> {
         }
     }
     Ok(())
+}
+
+#[cfg(not(target_os = "macos"))]
+fn main() {
+    eprintln!("This probe is available only on macOS.");
+    std::process::exit(1);
 }

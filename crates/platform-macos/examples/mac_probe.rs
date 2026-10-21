@@ -1,19 +1,29 @@
 //! Deliberately safe: no tap start, event post, cursor mutation, clipboard
 //! payload fetch/write, permission request, input-source selection, or assertion.
+#[cfg(target_os = "macos")]
 use inject::{ClickNumbering, Injector, NativePoster, INJECTION_TAG};
+#[cfg(target_os = "macos")]
 use mac::types::SUPER;
+#[cfg(target_os = "macos")]
 use openergy_platform::{InputEvent, InputSink, Modifiers};
+#[cfg(target_os = "macos")]
 use openergy_platform_macos::{self as mac, displays, inject, keymap, pasteboard, permissions, MacOptions};
+#[cfg(target_os = "macos")]
 use openergy_protocol::keys;
+#[cfg(target_os = "macos")]
 use std::collections::HashMap;
+#[cfg(target_os = "macos")]
 use std::path::Path;
+#[cfg(target_os = "macos")]
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+#[cfg(target_os = "macos")]
 fn main() {
     if let Err(err) = run() {
         eprintln!("error: {err}");
         std::process::exit(1);
     }
 }
+#[cfg(target_os = "macos")]
 fn run() -> Result<()> {
     let args: Vec<String> = std::env::args().skip(1).collect();
     match args.first().map(String::as_str) {
@@ -74,10 +84,12 @@ fn run() -> Result<()> {
     }
     Ok(())
 }
+#[cfg(target_os = "macos")]
 fn help() {
     println!("mac_probe keymap|events-dry|perms|displays|pasteboard-info|dib [output-dir]|create");
 }
 
+#[cfg(target_os = "macos")]
 fn keymap_dump() -> openergy_platform_macos::Result<()> {
     let mut keymap = keymap::Keymap::new()?;
     println!("layout={}", keymap.layout_id());
@@ -143,6 +155,7 @@ fn keymap_dump() -> openergy_platform_macos::Result<()> {
     Ok(())
 }
 
+#[cfg(target_os = "macos")]
 fn events_dry(mode: ClickNumbering) -> Result<()> {
     let poster = NativePoster::inspection(mode)?;
     let interval = inject::system_double_click_interval();
@@ -270,6 +283,7 @@ fn events_dry(mode: ClickNumbering) -> Result<()> {
     Ok(())
 }
 
+#[cfg(target_os = "macos")]
 fn dib(dir: &Path) -> Result<()> {
     const CAP: usize = 64 * 1024 * 1024;
     std::fs::create_dir_all(dir)?;
@@ -322,4 +336,10 @@ fn dib(dir: &Path) -> Result<()> {
     }
     println!("PASS: malformed image, empty DIB, and small cap rejected");
     Ok(())
+}
+
+#[cfg(not(target_os = "macos"))]
+fn main() {
+    eprintln!("This probe is available only on macOS.");
+    std::process::exit(1);
 }

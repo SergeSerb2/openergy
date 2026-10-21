@@ -34,7 +34,7 @@ text = "${fp.stdout}"
 [[step]]
 do = "cli"
 node = "client"
-args = ["trust", "import-synergy", "${fixtures}/synergy", "--config", "${client.config}"]
+args = ["trust", "import-synergy", "${fixtures}/synergy/tls", "--config", "${client.config}"]
 
 [[step]]
 do = "assert_file"

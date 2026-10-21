@@ -67,6 +67,7 @@ impl Context {
                         .ledger(&id, since, Duration::from_millis(250))?
                         .into_iter()
                         .filter(|r| since == 0 || r["sequence"].as_u64().is_some_and(|n| n > since))
+                        .filter(|r| !step.flag("input_only") || r.get("event").is_some_and(Value::is_object))
                         .collect::<Vec<_>>();
                     let actual_matches = ordered(&actual, expected, tail, step.flag("exact"));
                     Ok((actual_matches, json!(actual)))
@@ -93,7 +94,7 @@ impl Context {
                     &id,
                     "virtual.clipboard",
                     json!({"get":true}),
-                    Duration::from_millis(500),
+                    timeout.min(Duration::from_secs(5)),
                 )?;
                 Ok((clipboard_matches(&data, step)?, clipboard_summary(&data)))
             }),
@@ -466,7 +467,7 @@ impl Context {
                     .ok_or_else(|| Failure::runner("trust import needs a confined directory"))?,
             )?;
         }
-        if args[0] != "version" && !args.iter().any(|s| s == "--config") {
+        if !matches!(args[0].as_str(), "version" | "import-synergy") && !args.iter().any(|s| s == "--config") {
             args.extend(["--config".into(), state.config.to_string_lossy().into_owned()]);
         }
         for pair in args.windows(2) {

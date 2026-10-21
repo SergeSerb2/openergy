@@ -13,13 +13,16 @@ pub fn net_config(config: &Config, dir: &Path, virtual_platform: bool) -> NetCon
         require_client_trust: config.tls.require_client_trust,
         held_timeout: Duration::from_secs(30),
         max_frame_len: openergy_protocol::MAX_FRAME_LEN,
-        mdns: (!virtual_platform).then(|| MdnsConfig {
-            advertise: (config.role == Role::Server).then(|| (config.name.clone(), config.server.port)),
-            browse: true,
-            loopback_only: false,
+        mdns: (!virtual_platform && std::env::var("OPENERGY_DISABLE_DISCOVERY").as_deref() != Ok("1")).then(|| {
+            MdnsConfig {
+                advertise: (config.role == Role::Server).then(|| (config.name.clone(), config.server.port)),
+                browse: true,
+                loopback_only: false,
+            }
         }),
     }
 }
+#[cfg_attr(not(target_os = "macos"), allow(dead_code))]
 pub enum Notice {
     Permission,
     CaptureError,

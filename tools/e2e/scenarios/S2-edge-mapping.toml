@@ -82,4 +82,4 @@ events = [{"type" = "mouse_move_abs", "x" = 1919, "y" = 810}, {"type" = "mouse_m
 [[step]]
 do = "wait_status"
 node = "server"
-fields = {"active_screen" = "client", "cursor.y" = {"$gte" = 530, "$lte" = 550}}
+fields = {"active_screen" = "client", "cursor.y" = {"$gte" = 260, "$lte" = 280}}

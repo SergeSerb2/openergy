@@ -8,7 +8,7 @@ def main():
     base = Path(tempfile.mkdtemp(prefix='oe-wp6-interop-'))
     labroot = base/'lab'
     shutil.copytree(ROOT/'tools/interop-lab',labroot,ignore=shutil.ignore_patterns('.state','__pycache__'))
-    env=dict(os.environ,LAB_NAME='oe-lab-wp6',LAB_PORT_RANGE='24950-24959')
+    env=dict(os.environ,LAB_NAME='oe-lab-wp6',LAB_PORT_RANGE='24959-24959')
     existing=subprocess.run(['docker','container','inspect','oe-lab-wp6'],capture_output=True,text=True)
     if existing.returncode==0:
         info=json.loads(existing.stdout)[0]
@@ -38,8 +38,8 @@ def main():
             for tls in (False,True):
                 def as_client(peer=peer,tls=tls):
                     client.call('connection.disconnect')
-                    lab('server',peer,'--port','24950','--screens','lab,client','--tls','on' if tls else 'off')
-                    client.patch({'name':'client','role':'client','tls':{'enabled':tls},'client':{'remote':'127.0.0.1:24950'}})
+                    lab('server',peer,'--port','24959','--screens','lab,client','--tls','on' if tls else 'off')
+                    client.patch({'name':'client','role':'client','tls':{'enabled':tls},'client':{'remote':'127.0.0.1:24959'}})
                     client.call('connection.connect')
                     approve(client)
                     before=client.ledger()['stats']['last_sequence']
@@ -48,10 +48,11 @@ def main():
                     wait(lambda:client.status()['active_screen']=='client',message='lab edge CINN')
                     lab('drive','type','--clearmodifiers','oe')
                     lab('drive','click','1')
+                    lab('drive','click','4')
                     wait(lambda:any(r.get('event') and r['event']['type']=='mouse_up' for r in client.call('virtual.recorded',{'since':before})['events']))
                     rows=client.call('virtual.recorded',{'since':before})['events']
                     kinds=[r['event']['type'] for r in rows if r.get('event')]
-                    require('key_down' in kinds and 'mouse_down' in kinds, f'missing injected input: {kinds}')
+                    require('key_down' in kinds and 'mouse_down' in kinds and 'mouse_wheel' in kinds, f'missing injected input: {kinds}')
                     client.call('connection.disconnect')
                     lab('stop',peer)
                     return {'events':kinds,'tls':tls}

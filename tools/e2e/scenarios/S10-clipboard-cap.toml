@@ -85,7 +85,7 @@ patch = {"clipboard" = {"max_bytes" = 67108864}}
 [[step]]
 do = "config_patch"
 node = "client"
-patch = {"clipboard" = {"max_bytes" = 512}}
+patch = {"clipboard" = {"max_bytes" = 1024}}
 
 [[step]]
 do = "clipboard_set"
@@ -96,7 +96,7 @@ text = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 do = "wait_event"
 node = "server"
 event = "clipboard.blocked"
-expect = {"limit" = 512}
+expect = {"limit" = 1024}
 
 [[step]]
 do = "assert_clipboard"

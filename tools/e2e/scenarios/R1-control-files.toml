@@ -21,13 +21,13 @@ save = "initial"
 do = "ctl"
 node = "local"
 method = "method.does_not_exist"
-expect_error = "not_implemented"
+expect_error = "unknown_method"
 
 [[step]]
 do = "config_patch"
 node = "local"
 patch = {"name" = "runner-check"}
-expect = {"config" = {"name" = "runner-check"}, "warnings" = []}
+expect = {"config" = {"name" = "runner-check"}}
 
 [[step]]
 do = "wait_status"

@@ -28,7 +28,17 @@ node = "client"
 [[step]]
 do = "lab_drive"
 node = "lab"
-args = ["mousemove", "1919", "540", "sleep", ".2", "mousemove_relative", "--", "20", "0", "click", "1", "key", "a", "click", "4"]
+args = ["mousemove", "1000", "540", "mousemove", "1919", "540", "sleep", ".2", "mousemove_relative", "--", "20", "0"]
+
+[[step]]
+do = "wait_status"
+node = "client"
+fields = {"active_screen" = "client"}
+
+[[step]]
+do = "lab_drive"
+node = "lab"
+args = ["click", "1", "key", "a", "click", "4"]
 
 [[step]]
 do = "assert_recorded"

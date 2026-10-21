@@ -1,6 +1,6 @@
-# Requirement: Text clipboard interoperates; oversize DIB clamps to peer cap with clipboard.blocked and no partial clipboard.
+# Requirement: Text clipboard interoperates; oversize DIB clamps to the configured 4 MiB cap with clipboard.blocked and no partial clipboard.
 name = "I3-barrier-plain"
-requirement = "Text clipboard interoperates; oversize DIB clamps to peer cap with clipboard.blocked and no partial clipboard."
+requirement = "Text clipboard interoperates; oversize DIB clamps to the configured 4 MiB cap with clipboard.blocked and no partial clipboard."
 blocked_by = ["WP3", "WP4", "WP6"]
 timeout_ms = 5000
 
@@ -19,6 +19,7 @@ kind = "openergy"
 role = "client"
 platform = "virtual"
 remote = "lab"
+config = {clipboard = {max_bytes = 4194304}}
 tls = false
 
 [[step]]

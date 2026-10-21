@@ -298,10 +298,10 @@ def main():
 
         def idle():
             time.sleep(.3)
-            rss = client.status()['stats']['rss_bytes']
-            require(rss is not None and rss < 30*1024*1024, f'RSS {rss}')
-            return {'client_rss_bytes': rss, 'server_rss_bytes': server.status()['stats']['rss_bytes']}
-        case('S15 idle RSS', idle)
+            # This pair intentionally retains a large clipboard. Baseline S15 and
+            # the baseline + 2*payload bound run in verify_memory.py.
+            return {'retained_client_rss_bytes': client.status()['stats']['rss_bytes'], 'retained_server_rss_bytes': server.status()['stats']['rss_bytes']}
+        case('S15 retained RSS observation', idle)
 
         def permission():
             enter(server, client)
