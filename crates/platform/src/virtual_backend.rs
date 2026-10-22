@@ -705,7 +705,7 @@ impl VirtualControl {
     pub fn set_clipboard_read_available(&self, available: bool) {
         lock(&self.shared.state).clipboard_read_available = available;
     }
-    /// Script a backend read failure separately from an empty/unavailable read.
+    /// Script a backend failure separately from an unavailable or empty read.
     /// Clipboard contents, ownership, and the change stamp remain unchanged.
     pub fn set_clipboard_read_error(&self, error: bool) {
         lock(&self.shared.state).clipboard_read_error = error;
@@ -1001,7 +1001,7 @@ impl ClipboardBackend for VirtualClipboard {
             return Err(failed("virtual clipboard read failed (scripted)"));
         }
         if !state.clipboard_read_available {
-            return Ok(ClipboardData::default());
+            return Err(PlatformError::ClipboardUnavailable);
         }
         if state.clipboard.total_bytes() > max_bytes {
             return Err(PlatformError::ClipboardTooLarge {

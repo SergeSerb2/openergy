@@ -99,8 +99,10 @@ callbacks and capture audit records exist. A batch keeps its event order;
 concurrent callers are ordered by queue admission. A permission change or stop
 can interrupt an accepted batch after partial delivery and return an error.
 
-`set_clipboard_read_available(false)` makes backend reads return an empty
-clipboard. `set_clipboard_read_error(true)` makes backend reads return
+`set_clipboard_read_available(false)` makes backend reads return
+`PlatformError::ClipboardUnavailable`. A readable, truly cleared clipboard
+returns `Ok(ClipboardData { formats: [] })` instead.
+`set_clipboard_read_error(true)` makes backend reads return
 `PlatformError::Failed` instead. The explicit error takes precedence over
 availability. Both controls preserve clipboard bytes, ownership, and stamps.
 Clear the error to restore the selected availability behavior. These controls
@@ -455,7 +457,7 @@ A clipboard read over the caller's limit returns
 visible block event without reading the oversized data.
 
 `virtual.clipboard` also accepts `read_available: bool`. False makes the worker's
-backend read return an empty, unavailable payload without changing its stored
+backend read return `PlatformError::ClipboardUnavailable` without changing its stored
 clipboard, stamp, or owner. `get` still inspects stored bytes. This scripts the
 same unavailable read that native own-write suppression can produce.
 
