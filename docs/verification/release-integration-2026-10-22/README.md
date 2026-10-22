@@ -24,6 +24,16 @@ The later [sustained workload and memory control](sustained-memory.md) records
 history polling as a source of resident allocator pages. Its finite-run limits
 remain explicit.
 
+The later [trusted release boundary](trusted-release-boundary.md) separates
+default-branch validation and draft creation from candidate builds. Its real CLI
+checks passed; hosted execution and remote draft creation were not attempted.
+The [Windows migration follow-up](../../../tools/windows/MIGRATION-PRIVILEGE-BOUNDARY.md)
+separates per-user commands from a protected privileged helper. Real rejection,
+ACL and occupied-pipe checks passed. A successful limited-user handshake and
+service/UI recovery remain unverified because the restricted PowerShell process
+could not start in the SSH session. These source fixes do not close the native
+acceptance gates below.
+
 ## Integrated checks
 
 The sanitized [machine record](checks.json) contains scenario names, outcomes,
