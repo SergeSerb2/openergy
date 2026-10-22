@@ -5,11 +5,6 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
-    inputs:
-      self_hosted:
-        description: 'Explicitly queue local workers (requires configured openergy runners)'
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -20,29 +15,23 @@ concurrency:
 
 jobs:
   native:
-    # Standard hosted runners are free for public repositories. Private push/PR
-    # jobs are skipped, not queued on absent local workers or billed to hosted CI.
-    # Fork code is only executed on disposable public hosted workers, never local ones.
-    if: >-
-      github.event.repository.private == false ||
-      (github.event_name == 'workflow_dispatch' && inputs.self_hosted)
+    # No entrypoint can run selected-ref code on persistent local workers.
+    # Private runs skip; public code runs on standard disposable hosted VMs.
+    if: github.event.repository.private == false
     strategy:
       fail-fast: false
       matrix:
         include:
           - os: linux
             hosted: ubuntu-24.04
-            local: '["self-hosted","Linux","X64","openergy"]'
             python: python3
           - os: macos
             hosted: macos-15
-            local: '["self-hosted","macOS","ARM64","openergy"]'
             python: python3
           - os: windows
-            hosted: windows-2022
-            local: '["self-hosted","Windows","X64","openergy"]'
+            hosted: windows-2025
             python: python
-    runs-on: ${{ github.event_name == 'workflow_dispatch' && inputs.self_hosted && fromJSON(matrix.local) || matrix.hosted }}
+    runs-on: ${{ matrix.hosted }}
     timeout-minutes: 30
     defaults:
       run:

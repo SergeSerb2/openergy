@@ -163,45 +163,117 @@ permissions and no retained checkout credentials. The workflow does not use
 `pull_request_target`, share caches with release jobs, or pass signing secrets.
 Do not attach local workers to untrusted automatic PR execution.
 
-A manual verification run can explicitly opt into `self_hosted`. This queues
-workers with the `openergy` label and the platform/architecture labels in the
-workflow. No runners were configured at the time this workflow was added.
-Without them, use the local command above. These files do not register runners,
-change repository visibility, change branch protection, or start deployments.
-Keep any future local workers dedicated/disposable, with no live Openergy
-state or signing credentials. The assigned port ranges must be exclusive to
-each worker; use one job per host or provision separate isolated hosts.
+Both automatic and manual verification jobs use disposable standard hosted
+workers only, and every job skips while the repository is private. There is
+no self-hosted override. A dispatch can select a different workflow definition;
+a check inside that definition cannot protect a persistent runner against a
+modified definition. Removing persistent workers from both entrypoints closes
+that boundary. Use the same local verification and packaging CLI while private.
+No runner registration, visibility change, branch protection change, or hosted
+run is performed by these files.
+
+The labels are the standard public `ubuntu-24.04`, `macos-15` (ARM64),
+`macos-15-intel` (Intel), and `windows-2025` workers. These workers are fresh VMs;
+no larger/paid label or cross-job build cache is used. See GitHub's
+[runner reference](https://docs.github.com/en/actions/reference/runners/github-hosted-runners).
 
 ## Manual draft release workflow
 
-No workflow publishes releases. No workflow runs a release build because a
-tag was pushed. A maintainer must first review the source, run the full suite
-and platform acceptance gates, and create/push the intended version tag
-separately. Tag creation and publication are outside these scripts.
+No workflow publishes releases or starts a release because a tag was pushed.
+A maintainer must review the source, run the full suite and platform acceptance
+checks, then create/push the version tag separately. The workflow treats the
+reviewed default-branch history as its trust anchor. It depends on the normal
+repository review controls for that branch; ancestry alone does not prove a
+human reviewed a commit.
 
-`Manual draft release artifacts` is `workflow_dispatch` only. It requires
-four native self-hosted workers labelled `openergy-release`, with the
-OS/architecture labels shown in `.github/workflows/draft-release.yml`, plus
-GitHub CLI on the Linux worker. This is a future opt-in path until those
-workers are provisioned. Do not dispatch it expecting an absent runner to
-be created. It never falls back to paid hosted jobs.
+`Manual draft release artifacts` is public-only and `workflow_dispatch` only.
+Run its reviewed default-branch definition, with a literal version tag such as
+`v0.1.0`. Dispatches from other branches/tags are skipped. All jobs skip while
+private, including manual runs, so they neither spend private hosted minutes
+nor queue absent local workers. The local CLI below remains available.
 
-Pass an existing tag such as `v0.1.0`. The workflow:
+The workflow has three separate jobs, each on a fresh hosted VM:
 
-1. Checks out that exact tag on each native worker, without stored credentials.
-2. Requires the tag to match the workspace version and HEAD, a clean
-   checkout, consistent toolchain/app metadata, and complete legal notices.
-3. Runs the native verification script and creates the local archive, manifest,
-   and checksums. macOS remains ad-hoc/unnotarized; other platforms remain unsigned.
-4. Transfers build outputs with a one-day Actions artifact retention period.
-5. Requires all four platforms, matching commit/tag/version/signing metadata,
-   valid checksums, and matching embedded manifests. Only this final job gets
-   `contents: write`.
-6. Calls `gh release create --draft --verify-tag` and uploads the checked files.
-   It refuses an existing release and never overwrites or publishes one.
+1. **Trusted validation, read token.** Check out `github.workflow_sha`, the
+   immutable commit of the default-branch workflow. The trusted
+   `trusted_release.py validate` command reads the selected source's Git blobs
+   as data. It never imports/runs its Python, Cargo, Swift, or shell files.
+   It requires a literal tag, matching local/remote tag object and peeled
+   commit, candidate ancestry at or before the frozen workflow commit, and
+   the workflow commit still on remote default-branch history. It checks
+   workspace/crate/toolchain/app versions, all legal files, and the notice
+   inventory's exact Cargo.lock hash. The resolved source SHA, tag-object
+   SHA, tag and version become frozen validation-job outputs.
+2. **Candidate builds, read token only.** Check out only that resolved SHA on
+   the four disposable native workers. Assert OS/CPU architecture, then run
+   the existing exact-tag/clean-checkout/version, notice freshness, native
+   verification, and archive checks. Assert each archive's expected target
+   and source before uploading it. Artifacts expire after one day. Candidate
+   code has no repository write or signing token and no publisher workspace.
+3. **Trusted publisher, write token.** Check out only the original trusted
+   workflow SHA. This job never checks out or executes the candidate source,
+   imports candidate modules, invokes Cargo, extracts archives, or runs any
+   downloaded program or script. It reads artifact data only. The same
+   validator rechecks frozen tag/source/version and reviewed ancestry, then
+   requires all four targets, legal-notice provenance, valid checksums, and
+   complete equality between each sidecar and its bounded, unique root
+   `BUILD.json`. Case aliases, duplicate/nested manifests and special files
+   remain errors. The publisher rejects unexpected files and symlinks in
+   its download directory. It rechecks the remote tag object and peeled SHA
+   after archive validation, immediately before `gh release create --draft
+   --verify-tag --target <frozen-source>`. An existing release is refused.
 
-Draft notes state the signing limits and the acceptance still required.
-Actions storage quotas still apply to a manual run; short retention limits
-temporary storage. Review and later publication are separate maintainer
-actions. This change does not create a tag, draft, release, hosted job, local
-runner, signing identity, or production deployment by itself.
+Input values enter shell steps through environment variables and quoted
+arguments. Job outputs contain validated version literals and full Git SHAs.
+Actions are pinned by commit. The context fields are documented in GitHub's
+[context reference](https://docs.github.com/en/actions/reference/workflows-and-actions/contexts).
+The publisher does not get a candidate-ref checkout even if the candidate
+has an older or changed release helper.
+
+Remote Git reads and release creation are separate server operations. They do
+not lock the tag atomically. Keep release tags immutable under repository
+controls, and stop/restart the run if a tag changes. Moving either the tag
+object or its peeled commit before the final check fails the run. The release
+notes identify the frozen source; later tag movement is outside this workflow.
+No tag-protection rule or repository setting is changed by these scripts.
+
+## Private/local draft path
+
+The existing local command still requires the candidate checkout itself to be
+clean, its exact tag to point to HEAD, all four platform archives, matching
+versions/source/notices/signing metadata, checksums and embedded manifests:
+
+```sh
+python3 tools/release/release.py draft --tag v0.1.0 --artifacts /path/to/artifacts
+```
+
+This command is an explicit maintainer operation. Run it only from a reviewed
+local source checkout; it is not the workflow publisher. It creates a draft
+only and refuses an existing release. No successful remote mutation is needed
+for local verification of its rejection gates.
+
+For data-only verification from a separate clean trusted checkout, keep its
+`origin` pointed at the intended repository and use:
+
+```sh
+python3 -I tools/release/trusted_release.py validate \
+  --tag v0.1.0 --trusted-commit <trusted-workflow-sha> \
+  --default-branch main --output /tmp/release-source.json
+python3 -I tools/release/trusted_release.py publish \
+  --tag v0.1.0 --trusted-commit <trusted-workflow-sha> --default-branch main \
+  --source-commit <resolved-source-sha> --tag-object <resolved-tag-object-sha> \
+  --version 0.1.0 --artifacts /path/to/artifacts --check-only
+```
+
+The second command performs every provenance/artifact gate and rereads the
+remote tag, then exits without a GitHub mutation. Omitting `--check-only` is
+an explicit draft creation operation for the workflow or a maintainer. It
+uses trusted helper code while reading a non-HEAD candidate as Git data.
+It never builds or executes the candidate. Neither command authenticates
+compiled bytes or replaces native platform acceptance.
+
+Draft notes keep the ad-hoc/unsigned/unnotarized limits and outstanding
+acceptance checks. Actions storage quotas still apply to a manual public run;
+short retention limits temporary storage. Publication is a separate maintainer
+action. These changes do not create a tag, draft, release, hosted run, runner,
+signing identity, or production deployment by themselves.

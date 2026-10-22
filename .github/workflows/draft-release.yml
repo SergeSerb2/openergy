@@ -1,12 +1,12 @@
 name: Manual draft release artifacts
 
-# Never runs on push, tags, PRs, or release publication. Local workers must be
-# provisioned separately; this workflow does not install or register runners.
+# Only the reviewed default-branch workflow can start this pipeline. Every job
+# uses a fresh standard public hosted VM. Private repositories use the local CLI.
 on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Existing reviewed tag, matching workspace version (for example v0.1.0)'
+        description: 'Existing version tag on reviewed default-branch history (for example v0.1.0)'
         required: true
         type: string
 
@@ -14,43 +14,96 @@ permissions:
   contents: read
 
 concurrency:
-  group: draft-release-${{ inputs.tag }}
+  group: draft-release-${{ github.workflow }}
   cancel-in-progress: false
 
 jobs:
+  validate:
+    if: >-
+      github.event.repository.private == false &&
+      github.ref == format('refs/heads/{0}', github.event.repository.default_branch) &&
+      github.workflow_ref == format('{0}/.github/workflows/draft-release.yml@refs/heads/{1}', github.repository, github.event.repository.default_branch) &&
+      github.sha == github.workflow_sha
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      tag: ${{ steps.source.outputs.tag }}
+      source_commit: ${{ steps.source.outputs.source_commit }}
+      tag_object: ${{ steps.source.outputs.tag_object }}
+      version: ${{ steps.source.outputs.version }}
+      trusted_commit: ${{ steps.source.outputs.trusted_commit }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+          path: trusted
+      - name: Resolve literal tag and reviewed source using trusted code only
+        id: source
+        env:
+          OE_TAG: ${{ inputs.tag }}
+          OE_TRUSTED_COMMIT: ${{ github.workflow_sha }}
+          OE_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: >-
+          python3 -I trusted/tools/release/trusted_release.py validate
+          --tag "$OE_TAG" --trusted-commit "$OE_TRUSTED_COMMIT"
+          --default-branch "$OE_DEFAULT_BRANCH" --github-output "$GITHUB_OUTPUT"
+
   build:
+    needs: validate
+    if: github.event.repository.private == false
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
         include:
           - target: aarch64-apple-darwin
-            runner: '["self-hosted","macOS","ARM64","openergy-release"]'
+            runner: macos-15
+            system: Darwin
+            machine: arm64
             python: python3
           - target: x86_64-apple-darwin
-            runner: '["self-hosted","macOS","X64","openergy-release"]'
+            runner: macos-15-intel
+            system: Darwin
+            machine: x86_64
             python: python3
           - target: x86_64-unknown-linux-gnu
-            runner: '["self-hosted","Linux","X64","openergy-release"]'
+            runner: ubuntu-24.04
+            system: Linux
+            machine: x86_64
             python: python3
           - target: x86_64-pc-windows-msvc
-            runner: '["self-hosted","Windows","X64","openergy-release"]'
+            runner: windows-2025
+            system: Windows
+            machine: x86_64
             python: python
-    runs-on: ${{ fromJSON(matrix.runner) }}
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 40
     defaults:
       run:
         shell: bash
+        working-directory: candidate
     env:
-      OPENERGY_TAG: ${{ inputs.tag }}
+      OE_TAG: ${{ needs.validate.outputs.tag }}
+      OE_SOURCE_COMMIT: ${{ needs.validate.outputs.source_commit }}
+      OE_TARGET: ${{ matrix.target }}
+      OE_SYSTEM: ${{ matrix.system }}
+      OE_MACHINE: ${{ matrix.machine }}
       CARGO_BUILD_JOBS: '2'
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          ref: ${{ inputs.tag }}
+          ref: ${{ needs.validate.outputs.source_commit }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Check the exact reviewed tag and release metadata
-        run: ${{ matrix.python }} tools/release/release.py check --tag "$OPENERGY_TAG"
+          path: candidate
+      - name: Assert the native worker architecture
+        run: |
+          ${{ matrix.python }} -I -c 'import os,platform; machine={"AMD64":"x86_64","aarch64":"arm64"}.get(platform.machine(),platform.machine()); assert platform.system()==os.environ["OE_SYSTEM"] and machine==os.environ["OE_MACHINE"], "unexpected native worker architecture"'
+      - name: Check exact tag, clean checkout, version, and notice policy
+        run: ${{ matrix.python }} tools/release/release.py check --tag "$OE_TAG"
       - name: Verify native build and isolated virtual runtime
         run: >-
           ${{ matrix.python }} tools/release/release.py verify
@@ -58,41 +111,53 @@ jobs:
           --report dist/verification.json
       - name: Build and smoke-check the native archive
         run: >-
-          ${{ matrix.python }} tools/release/release.py package --tag "$OPENERGY_TAG"
+          ${{ matrix.python }} tools/release/release.py package --tag "$OE_TAG"
           --port-range 25440-25459 --output dist/artifacts
+      - name: Assert the archive target and frozen source
+        run: |
+          ${{ matrix.python }} -I -c 'import json,os,pathlib; files=list(pathlib.Path("dist/artifacts").glob("openergy-*.json")); assert len(files)==1, "expected one native sidecar"; value=json.loads(files[0].read_text()); assert value["target"]==os.environ["OE_TARGET"] and value["commit"]==os.environ["OE_SOURCE_COMMIT"], "archive target/source mismatch"'
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: native-${{ matrix.target }}
-          path: dist/artifacts/*
+          path: candidate/dist/artifacts/*
           if-no-files-found: error
           retention-days: 1
 
   draft:
-    needs: build
-    runs-on: [self-hosted, Linux, X64, openergy-release]
+    needs: [validate, build]
+    if: github.event.repository.private == false
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
       contents: write
-    defaults:
-      run:
-        shell: bash
     env:
-      OPENERGY_TAG: ${{ inputs.tag }}
+      OE_TAG: ${{ needs.validate.outputs.tag }}
+      OE_SOURCE_COMMIT: ${{ needs.validate.outputs.source_commit }}
+      OE_TAG_OBJECT: ${{ needs.validate.outputs.tag_object }}
+      OE_VERSION: ${{ needs.validate.outputs.version }}
+      OE_TRUSTED_COMMIT: ${{ needs.validate.outputs.trusted_commit }}
+      OE_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
     steps:
+      # No candidate checkout, candidate imports, Cargo, extraction, or execution
+      # occurs in this job. The publisher and validator are the same frozen code.
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          ref: ${{ inputs.tag }}
+          ref: ${{ needs.validate.outputs.trusted_commit }}
           fetch-depth: 0
           persist-credentials: false
+          path: trusted
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           pattern: native-*
           merge-multiple: true
-          path: dist/draft
-      - name: Validate all four archives and create a draft only
+          path: artifacts
+      - name: Revalidate frozen source and artifact data, then create a draft only
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: >-
-          python3 tools/release/release.py draft --tag "$OPENERGY_TAG"
-          --artifacts dist/draft
+          python3 -I trusted/tools/release/trusted_release.py publish
+          --tag "$OE_TAG" --source-commit "$OE_SOURCE_COMMIT"
+          --tag-object "$OE_TAG_OBJECT" --version "$OE_VERSION"
+          --trusted-commit "$OE_TRUSTED_COMMIT" --default-branch "$OE_DEFAULT_BRANCH"
+          --artifacts artifacts

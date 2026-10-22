@@ -37,14 +37,14 @@ os.environ["CARGO_BUILD_JOBS"] = "2"
 os.environ["PATH"] = str(Path.home() / ".cargo/bin") + os.pathsep + os.environ.get("PATH", "")
 
 
-def run(args, *, capture=False, env=None, check=True, timeout=1800):
+def run(args, *, capture=False, env=None, check=True, timeout=1800, binary=False):
     args = [str(a) for a in args]
     if not capture:
         print("+ " + " ".join(args), flush=True)
     # Inherit this priority for every compiler and owned daemon on Unix.
     if os.name != "nt":
         args = ["nice", "-n", "15", *args]
-    return subprocess.run(args, cwd=ROOT, env=env, text=True, check=check,
+    return subprocess.run(args, cwd=ROOT, env=env, text=not binary, check=check,
                           capture_output=capture, timeout=timeout)
 
 
@@ -52,31 +52,37 @@ def git(*args):
     return run(["git", *args], capture=True).stdout.strip()
 
 
-def check(tag=None):
-    workspace = tomllib.loads((ROOT / "Cargo.toml").read_text())["workspace"]
+def configuration(read):
+    """Validate native metadata supplied as bytes; never execute source files."""
+    workspace = tomllib.loads(read("Cargo.toml").decode("utf-8"))["workspace"]
     package = workspace["package"]
     version = package["version"]
     if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", version):
         raise ValueError("Native releases require a three-part numeric workspace version")
-    toolchain = tomllib.loads((ROOT / "rust-toolchain.toml").read_text())["toolchain"]["channel"]
+    toolchain = tomllib.loads(read("rust-toolchain.toml").decode("utf-8"))["toolchain"]["channel"]
     if package["rust-version"] != toolchain:
         raise ValueError("workspace rust-version must match the pinned Rust toolchain")
     for member in workspace["members"]:
-        manifest = tomllib.loads((ROOT / member / "Cargo.toml").read_text())["package"]
+        manifest = tomllib.loads(read(f"{member}/Cargo.toml").decode("utf-8"))["package"]
         for key in ("version", "rust-version"):
             if manifest.get(key) != {"workspace": True}:
                 raise ValueError(f"{member}: {key} must inherit workspace.package")
     for variable in ("OPENERGY_VERSION",):
         if os.environ.get(variable, version) != version:
             raise ValueError(f"{variable} must match workspace version {version}")
-    template = plistlib.loads((ROOT / "apps/macos/Support/Info.plist").read_bytes())
+    template = plistlib.loads(read("apps/macos/Support/Info.plist"))
     if (template["CFBundleShortVersionString"] != "__VERSION__"
             or template["CFBundleVersion"] != "__BUILD__"):
         raise ValueError("Info.plist must use build-time version placeholders")
-    swift = (ROOT / "apps/macos/Package.swift").read_text()
+    swift = read("apps/macos/Package.swift").decode("utf-8")
     minimum = template["LSMinimumSystemVersion"].split(".")[0]
     if f".macOS(.v{minimum})" not in swift:
         raise ValueError("Swift package and Info.plist minimum macOS versions differ")
+    return version, toolchain
+
+
+def check(tag=None):
+    version, toolchain = configuration(lambda name: (ROOT / name).read_bytes())
     if tag:
         if tag != f"v{version}":
             raise ValueError(f"tag must be v{version}")
@@ -408,22 +414,21 @@ def archive_manifest(archive):
     return json.loads(data)
 
 
-def draft(args):
-    version, _ = check(args.tag)
-    commit = git("rev-parse", "HEAD")
-    args.artifacts = args.artifacts.resolve()
+def validate_artifacts(artifacts, version, commit, tag):
+    """Read artifact data only. This does not extract archives or run a binary."""
+    artifacts = artifacts.resolve()
     assets = []
     seen = set()
-    for sidecar in sorted(args.artifacts.glob("openergy-*.json")):
+    for sidecar in sorted(artifacts.glob("openergy-*.json")):
         manifest = json.loads(sidecar.read_text())
         target = manifest["target"]
         if (manifest["version"] != version or manifest["commit"] != commit
-                or manifest["tag"] != args.tag or manifest["dirty"]
+                or manifest["tag"] != tag or manifest["dirty"]
                 or not manifest["third_party_notices"] or target not in TARGETS or target in seen
                 or manifest["signing"] != ("adhoc" if "apple" in target else "unsigned")
                 or manifest["notarized"] is not False):
             raise ValueError("artifact provenance does not match this draft release")
-        candidates = [*args.artifacts.glob(sidecar.stem + ".zip"), *args.artifacts.glob(sidecar.stem + ".tar.gz")]
+        candidates = [*artifacts.glob(sidecar.stem + ".zip"), *artifacts.glob(sidecar.stem + ".tar.gz")]
         if len(candidates) != 1:
             raise ValueError("each platform needs exactly one archive")
         archive = candidates[0]
@@ -437,6 +442,10 @@ def draft(args):
         assets.extend([archive, checksum, sidecar])
     if seen != set(TARGETS):
         raise ValueError("draft needs all four native platform archives; no partial release")
+    return assets
+
+
+def create_draft(tag, version, commit, assets):
     notes = (f"Openergy {version} — DRAFT FOR REVIEW\n\n"
              "macOS archives are ad-hoc signed and unnotarized. Windows and Linux archives are unsigned. "
              "These artifacts are not trusted distribution builds. Do not publish without manual review.\n\n"
@@ -446,8 +455,15 @@ def draft(args):
         notes_file = Path(temporary_dir) / "notes.txt"
         notes_file.write_text(notes)
         # gh refuses an existing release; do not overwrite assets or publish an existing draft.
-        run(["gh", "release", "create", args.tag, "--draft", "--verify-tag", "--target", commit,
+        run(["gh", "release", "create", tag, "--draft", "--verify-tag", "--target", commit,
              "--title", f"Openergy {version} (review draft)", "--notes-file", notes_file, *assets])
+
+
+def draft(args):
+    version, _ = check(args.tag)
+    commit = git("rev-parse", "HEAD")
+    assets = validate_artifacts(args.artifacts, version, commit, args.tag)
+    create_draft(args.tag, version, commit, assets)
 
 
 def main():
