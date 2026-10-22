@@ -26,9 +26,15 @@ Release preparation on 2026-10-21–22:
   intentional clears. Reject malformed format containers.
 - Harden TLS identity/trust storage, native resource cleanup, and platform
   clipboard handling.
+- Bound config and trust-file reads and writes, reject special-file inputs,
+  and preflight complete trust imports before saving either list.
+- Charge packet metadata to transport queue limits and bound X11 image
+  expansion before allocating output or replacing clipboard contents.
+- Preserve clipboard transfers across unrelated settings changes, resolve live
+  screen aliases, and fix stationary double-tap timing and dead-corner overflow.
 - Add isolated real-process regression scenarios, version-pinned build checks,
   dependency notices, and repeatable archive packaging with extracted-binary
-  smoke checks.
+  smoke checks and matching embedded provenance records.
 - Document alpha support limits, fresh setup, contribution rules, privacy,
   security reporting, and remaining native/distribution acceptance.
 

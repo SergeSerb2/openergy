@@ -1,6 +1,6 @@
 # Alpha readiness and evidence
 
-Status date: **2026-10-21**. Openergy is source-stage alpha software, version
+Status date: **2026-10-22**. Openergy is source-stage alpha software, version
 `0.1.0`. No release artifacts have been published as of this date. Preparing
 source for public review does not establish production readiness, authorize a
 visibility change, or imply a supported binary release.

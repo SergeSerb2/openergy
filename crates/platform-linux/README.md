@@ -51,6 +51,11 @@ RGB and RGBA images, 1/2/4/8/16-bit samples where valid, all PNG filters, and
 stored/fixed/dynamic DEFLATE. Exported PNG uses valid stored DEFLATE. Unsupported
 interlaced PNG, compressed/RLE DIB and invalid data return errors. Clipboard data
 has a 256 MiB backend safety cap in addition to each caller's `max_bytes`.
+Image writes also require decoded RGBA and each exported PNG/BMP representation
+to fit 64 MiB. The backend checks DIB expansion before allocating image output.
+A rejected conversion preserves the previous selection and its change stamp.
+Near-limit valid conversions still use several temporary buffers. See the
+[resource regression evidence](../net/examples/r5-evidence/README.md).
 
 RandR provides monitors and display notifications, with root geometry as fallback.
 X11 coordinates use pixels and scale 1.0. Screensaver inhibition uses the X server
