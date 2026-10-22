@@ -75,8 +75,16 @@ fn read(path: &Path, private: bool) -> Result<Vec<Fingerprint>, TrustError> {
     }
     Ok(result)
 }
-fn serialize(values: &[Fingerprint]) -> Result<String, TrustError> {
-    let text: String = values.iter().map(|fp| format!("{}\n", fp.to_synergy_line())).collect();
+fn serialize(values: &[Fingerprint], revoking: bool) -> Result<String, TrustError> {
+    let mut text: String = values.iter().map(|fp| format!("{}\n", fp.to_synergy_line())).collect();
+    if revoking && text.len() as u64 > MAX_TRUST_FILE_LEN {
+        // Bare SHA-256 lines are already accepted on read. A revoke must not
+        // fail merely because canonical prefixes expand a valid compact list.
+        text = values
+            .iter()
+            .map(|fp| format!("{}\n", fp.to_synergy_line().trim_start_matches("v2:sha256:")))
+            .collect();
+    }
     if text.len() as u64 > MAX_TRUST_FILE_LEN {
         return Err(too_large());
     }
@@ -153,10 +161,10 @@ impl TrustStore {
         // Preflight both complete lists before writing either. An oversized
         // import must not save a prefix of the requested approvals.
         let servers = (next.servers != servers)
-            .then(|| serialize(&next.servers))
+            .then(|| serialize(&next.servers, remove.is_some()))
             .transpose()?;
         let clients = (next.clients != clients)
-            .then(|| serialize(&next.clients))
+            .then(|| serialize(&next.clients, remove.is_some()))
             .transpose()?;
         if let Some(text) = servers {
             atomic_write(&self.dir.join("trusted-servers"), text.as_bytes(), false).map_err(fail)?;

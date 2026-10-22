@@ -98,10 +98,16 @@ are accepted. Read-only symlinks to regular trust-import files are accepted;
 pipes, devices, and directories are refused.
 
 Oversized files cause an error; the daemon and CLI do not silently truncate
-them. Trust updates check the complete output for both lists before writing.
+them. Live config changes check the serialized TOML limit before saving; a
+size refusal preserves the prior config file and live configuration. Trust
+updates check the complete output for both lists before writing.
 If a size limit would be exceeded, existing trust files stay unchanged. Reduce
-the file size while preserving the pins you need, then retry. These file limits
-do not impose a deadline on filesystem operations or advisory-lock waits.
+the file size while preserving the pins you need, then retry. Revocation can
+save bare SHA-256 lines when canonical prefixes would exceed the limit, so a
+pin can still be removed from an accepted compact list. Addition and import
+keep the canonical output size policy. These checks do not make the two trust
+files one crash-atomic transaction, and do not impose a deadline on filesystem
+operations or advisory-lock waits.
 
 ## Verify and approve identities
 

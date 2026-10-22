@@ -1346,6 +1346,10 @@ fn host_name() -> String {
 
 fn write_config(path: &Path, cfg: &Config) -> Result<Option<String>, String> {
     use std::io::Write;
+    let text = cfg.to_toml();
+    if text.len() as u64 > crate::MAX_CONFIG_FILE_LEN {
+        return Err("config exceeds 16 MiB (16777216 bytes)".into());
+    }
     let parent = path
         .parent()
         .filter(|p| !p.as_os_str().is_empty())
@@ -1365,7 +1369,7 @@ fn write_config(path: &Path, cfg: &Config) -> Result<Option<String>, String> {
     let result = (|| {
         let mut file = options.open(&tmp).map_err(|e| e.to_string())?;
         created = true;
-        file.write_all(cfg.to_toml().as_bytes()).map_err(|e| e.to_string())?;
+        file.write_all(text.as_bytes()).map_err(|e| e.to_string())?;
         file.sync_all().map_err(|e| e.to_string())?;
         std::fs::rename(&tmp, path).map_err(|e| e.to_string())?;
         #[cfg(unix)]
