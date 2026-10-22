@@ -3,7 +3,7 @@ name = "openergy-net"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-rust-version = "1.99"
+rust-version.workspace = true
 
 [dependencies]
 openergy-protocol = { path = "../protocol" }

@@ -1,0 +1,98 @@
+name: Manual draft release artifacts
+
+# Never runs on push, tags, PRs, or release publication. Local workers must be
+# provisioned separately; this workflow does not install or register runners.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing reviewed tag, matching workspace version (for example v0.1.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: draft-release-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: aarch64-apple-darwin
+            runner: '["self-hosted","macOS","ARM64","openergy-release"]'
+            python: python3
+          - target: x86_64-apple-darwin
+            runner: '["self-hosted","macOS","X64","openergy-release"]'
+            python: python3
+          - target: x86_64-unknown-linux-gnu
+            runner: '["self-hosted","Linux","X64","openergy-release"]'
+            python: python3
+          - target: x86_64-pc-windows-msvc
+            runner: '["self-hosted","Windows","X64","openergy-release"]'
+            python: python
+    runs-on: ${{ fromJSON(matrix.runner) }}
+    timeout-minutes: 40
+    defaults:
+      run:
+        shell: bash
+    env:
+      OPENERGY_TAG: ${{ inputs.tag }}
+      CARGO_BUILD_JOBS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.tag }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Check the exact reviewed tag and release metadata
+        run: ${{ matrix.python }} tools/release/release.py check --tag "$OPENERGY_TAG"
+      - name: Verify native build and isolated virtual runtime
+        run: >-
+          ${{ matrix.python }} tools/release/release.py verify
+          --port-range 25440-25459 --lab-port-range 25460-25479
+          --report dist/verification.json
+      - name: Build and smoke-check the native archive
+        run: >-
+          ${{ matrix.python }} tools/release/release.py package --tag "$OPENERGY_TAG"
+          --port-range 25440-25459 --output dist/artifacts
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: native-${{ matrix.target }}
+          path: dist/artifacts/*
+          if-no-files-found: error
+          retention-days: 1
+
+  draft:
+    needs: build
+    runs-on: [self-hosted, Linux, X64, openergy-release]
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    defaults:
+      run:
+        shell: bash
+    env:
+      OPENERGY_TAG: ${{ inputs.tag }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.tag }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          pattern: native-*
+          merge-multiple: true
+          path: dist/draft
+      - name: Validate all four archives and create a draft only
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: >-
+          python3 tools/release/release.py draft --tag "$OPENERGY_TAG"
+          --artifacts dist/draft

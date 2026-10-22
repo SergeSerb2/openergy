@@ -1,0 +1,60 @@
+name: Native verification
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      self_hosted:
+        description: 'Explicitly queue local workers (requires configured openergy runners)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native:
+    # Standard hosted runners are free for public repositories. Private push/PR
+    # jobs are skipped, not queued on absent local workers or billed to hosted CI.
+    # Fork code is only executed on disposable public hosted workers, never local ones.
+    if: >-
+      github.event.repository.private == false ||
+      (github.event_name == 'workflow_dispatch' && inputs.self_hosted)
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: linux
+            hosted: ubuntu-24.04
+            local: '["self-hosted","Linux","X64","openergy"]'
+            python: python3
+          - os: macos
+            hosted: macos-15
+            local: '["self-hosted","macOS","ARM64","openergy"]'
+            python: python3
+          - os: windows
+            hosted: windows-2022
+            local: '["self-hosted","Windows","X64","openergy"]'
+            python: python
+    runs-on: ${{ github.event_name == 'workflow_dispatch' && inputs.self_hosted && fromJSON(matrix.local) || matrix.hosted }}
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    env:
+      CARGO_BUILD_JOBS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Verify native build and isolated virtual runtime
+        run: >-
+          ${{ matrix.python }} tools/release/release.py verify
+          --port-range 25440-25459 --lab-port-range 25460-25479
+          --report dist/verification.json
