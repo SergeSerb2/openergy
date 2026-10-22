@@ -77,6 +77,8 @@ pub fn stats(&self) -> VirtualStats;
 pub fn click_assignment(&self, button: u8) -> Option<ClickAssignment>;
 pub fn clipboard_get(&self) -> ClipboardSnapshot;
 pub fn clipboard_set(&self, data: ClipboardData) -> Result<u64, PlatformError>;
+pub fn set_clipboard_read_available(&self, available: bool);
+pub fn set_clipboard_read_error(&self, error: bool);
 pub fn set_screens(&self, screens: Vec<ScreenRect>) -> Result<(), PlatformError>;
 pub fn set_permissions(&self, permissions: Permissions);
 pub fn configure_permissions(&self, request: PermissionsRequest);
@@ -96,6 +98,13 @@ empty running batch succeeds with zero counts. The capture queue holds at most
 callbacks and capture audit records exist. A batch keeps its event order;
 concurrent callers are ordered by queue admission. A permission change or stop
 can interrupt an accepted batch after partial delivery and return an error.
+
+`set_clipboard_read_available(false)` makes backend reads return an empty
+clipboard. `set_clipboard_read_error(true)` makes backend reads return
+`PlatformError::Failed` instead. The explicit error takes precedence over
+availability. Both controls preserve clipboard bytes, ownership, and stamps.
+Clear the error to restore the selected availability behavior. These controls
+let real daemon flows distinguish an empty clipboard from a failed read.
 
 The callback runs outside backend locks. It may query control state or inject
 into the independent sink. It must not block. Calling `control.inject` inside
