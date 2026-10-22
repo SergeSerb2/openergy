@@ -17,6 +17,21 @@ Initial source implementation, recorded on 2026-10-21:
 - External real-process E2E runner and isolated interoperability labs.
 - Public setup, security, contribution, and readiness documentation.
 
+Release preparation on 2026-10-21–22:
+
+- Fix restart recovery, IPC shutdown, config rollback, pin revocation, and CLI
+  argument handling.
+- Preserve held-key and screen-transition order under queued network traffic.
+- Enforce clipboard sharing settings and distinguish unavailable reads from
+  intentional clears. Reject malformed format containers.
+- Harden TLS identity/trust storage, native resource cleanup, and platform
+  clipboard handling.
+- Add isolated real-process regression scenarios, version-pinned build checks,
+  dependency notices, and repeatable archive packaging with extracted-binary
+  smoke checks.
+- Document alpha support limits, fresh setup, contribution rules, privacy,
+  security reporting, and remaining native/distribution acceptance.
+
 No release artifacts have been published as of this date. This entry does not
 claim that native desktop acceptance or distribution gates have passed. See
 [readiness](docs/plan/readiness.md) for evidence and open limits, and
