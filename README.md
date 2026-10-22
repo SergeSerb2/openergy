@@ -77,11 +77,15 @@ options) and leaves the Synergy files unchanged:
 - Or: `openergy import-synergy --from ~/Library/Preferences/Synergy`
 
 To connect to a Synergy **server**, choose Join and enter its address. Compare the
-fingerprint the app shows with the one in Synergy, then trust it.
+fingerprint the app shows with the one in Synergy, then trust it. Synergy servers do
+not check client certificates by default. If yours does (`checkPeerFingerprints`), add
+this Mac's line (below) to the server's `trusted-clients` file; on Windows that is
+`C:\ProgramData\Synergy\tls\trusted-clients`.
 
 When an Openergy **server** accepts a Synergy **client**, the Synergy client must trust
 Openergy's certificate. Print the line it expects and add it to the client's
-`tls/trusted-servers` file:
+`trusted-servers` file: `tls/trusted-servers` beside Synergy's settings on macOS,
+`C:\ProgramData\Synergy\tls\trusted-servers` on Windows.
 
 ```sh
 openergy fingerprint --synergy      # prints v2:sha256:<64 hex characters>
@@ -127,7 +131,8 @@ sync, half-duplex lock keys, and modifier remapping of key IDs are not implement
   controls it over a private Unix socket with JSON messages.
 - **Compatibility:** the wire protocol was documented from the shipping Synergy 3.7
   binaries ([docs/re](docs/re)) and checked against real Deskflow 1.27 and Barrier 2.4
-  peers in an isolated Docker lab ([tools/interop-lab](tools/interop-lab)).
+  peers in an isolated Docker lab ([tools/interop-lab](tools/interop-lab)), and against
+  the Synergy 1.21.1 core on Windows ([tools/windows-lab](tools/windows-lab)).
 
 More: [architecture](docs/plan/architecture-r2.md), [UI contract](docs/plan/ui-contract.md).
 
@@ -139,6 +144,8 @@ There are no unit tests by design. Every check runs real binaries over real sock
   Deskflow and Barrier peers in Docker).
 - `Openergy --e2e <dir>` — drives the real macOS app logic against a real daemon.
 - `tools/focus-lab` — reproduces the macOS 27 focus bug and checks the fix on a test Mac.
+- `tools/windows-lab` — runs a private copy of the Synergy core installed on a Windows PC
+  against Openergy, without disturbing the Synergy in use there.
 
 ## Measurements
 
@@ -155,6 +162,7 @@ Measured on an Apple M5 Pro with macOS 27.2. Full evidence and commands:
 | Input latency, capture to injection, 1,000 moves | 0.18 ms p99 |
 | Scenario suite (`openergy-e2e`) | 73 of 73 pass |
 | Interop with Deskflow 1.27 and Barrier 2.4 (TLS on and off, both roles) | 8 of 8 pass |
+| Interop with Synergy core 1.21.1 on Windows (TLS and pinning both ways, both roles, clipboard) | pass, [details](docs/verification/windows-synergy-1.21.1/README.md) |
 | App end-to-end (`Openergy --e2e`) | 14 of 14 pass |
 
 The focus fix was checked with `tools/focus-lab` on a macOS 27.0.1 test Mac: numbered clicks
