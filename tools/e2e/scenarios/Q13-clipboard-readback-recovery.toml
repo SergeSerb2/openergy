@@ -44,7 +44,7 @@ ms = 700
 do = "ctl"
 node = "server"
 method = "virtual.clipboard"
-params = { read_available = false }
+params = { read_error = true }
 
 [[step]]
 do = "start"
@@ -68,7 +68,7 @@ empty = true
 do = "ctl"
 node = "server"
 method = "virtual.clipboard"
-params = { read_available = true }
+params = { read_error = false }
 
 [[step]]
 do = "inject"

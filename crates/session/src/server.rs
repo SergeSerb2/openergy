@@ -1,6 +1,7 @@
 use crate::{
     clipboard::{self},
     common::*,
+    hotkey::Hotkey,
     layout::{Layout, Rect},
     notify, Action, CloseReason, ConnId, ServerEvent,
 };
@@ -31,6 +32,8 @@ pub struct Server {
     now: u64,
     sequence: u32,
     local: Ledger,
+    hotkey: Option<Hotkey>,
+    hotkey_held: Ledger,
     opts: Options,
     slots: [Slot; 2],
 }
@@ -44,6 +47,7 @@ impl Server {
         let cursor = layout.rect(primary).center();
         let mut opts = Options::default();
         opts.apply(&config_options(&config, true));
+        let hotkey = config.hotkeys.lock_to_screen.as_deref().and_then(Hotkey::parse);
         Self {
             config,
             peers: BTreeMap::new(),
@@ -56,6 +60,8 @@ impl Server {
             now: 0,
             sequence: 0,
             local: Ledger::default(),
+            hotkey,
+            hotkey_held: Ledger::default(),
             opts,
             slots: [Slot::default(), Slot::default()],
         }
@@ -126,6 +132,7 @@ impl Server {
         }
         self.active = self.primary;
         self.local.clear();
+        self.hotkey_held.clear();
         self.layout.reset();
         self.cursor = self.layout.rect(self.primary).center();
         out.push(Action::ReleaseAllLocal);
@@ -267,6 +274,7 @@ impl Server {
                 self.layout = Layout::from_config(&self.config).unwrap_or_else(|_| Layout::empty());
                 self.opts = Options::default();
                 self.opts.apply(&config_options(&self.config, true));
+                self.hotkey = self.config.hotkeys.lock_to_screen.as_deref().and_then(Hotkey::parse);
                 let invalid = self
                     .peers
                     .iter()
@@ -520,37 +528,31 @@ impl Server {
         }
     }
     fn input(&mut self, ev: InputEvent, out: &mut Vec<Action>) {
-        let hotkey = if let InputEvent::KeyDown { key, modifiers, .. } = &ev {
-            self.config.hotkeys.lock_to_screen.as_deref().is_some_and(|chord| {
-                let mut mask = 0;
-                let mut code = None;
-                for part in chord.split('+').map(str::trim) {
-                    match part.to_ascii_lowercase().as_str() {
-                        "ctrl" | "control" => mask |= 2,
-                        "alt" => mask |= 4,
-                        "shift" => mask |= 1,
-                        "super" | "command" | "cmd" => mask |= 16,
-                        k => {
-                            let mut chars = k.chars();
-                            if let (Some(c), None) = (chars.next(), chars.next()) {
-                                code = Some(c as u16);
-                            }
-                        }
-                    }
-                }
-                code == Some(*key) && modifiers.0 & 0x3f == mask
-            })
-        } else {
-            false
+        // Capture state still observes consumed triggers, so mouse-button and
+        // modifier switch gates reflect the physical input until its release.
+        self.local.observe(&ev);
+        let held = match ev {
+            InputEvent::KeyDown { key, button, .. }
+            | InputEvent::KeyUp { key, button, .. }
+            | InputEvent::KeyRepeat { key, button, .. } => self.hotkey_held.has_key(key, button),
+            InputEvent::MouseDown { button } | InputEvent::MouseUp { button } => {
+                self.hotkey_held.buttons.contains(&button)
+            }
+            _ => false,
         };
+        if held {
+            self.hotkey_held.observe(&ev);
+            return;
+        }
+        let hotkey = !self.opts.disable_lock && self.hotkey.is_some_and(|key| key.matches(&ev, self.local.modifiers));
         if (matches!(ev, InputEvent::KeyDown { key: 0xef14, .. }) || hotkey) && !self.opts.disable_lock {
             self.opts.locked = !self.opts.locked;
             self.layout.reset();
         }
         if hotkey {
+            self.hotkey_held.observe(&ev);
             return;
         }
-        self.local.observe(&ev);
         match ev {
             InputEvent::MouseMoveAbs { x, y } => {
                 let dx = x.saturating_sub(self.cursor.0);

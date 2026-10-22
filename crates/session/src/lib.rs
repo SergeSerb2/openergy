@@ -133,6 +133,7 @@ impl std::error::Error for SessionError {}
 mod client;
 pub mod clipboard;
 mod common;
+mod hotkey;
 pub mod layout;
 mod server;
 pub use client::Client;
