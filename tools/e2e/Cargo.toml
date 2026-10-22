@@ -1,0 +1,17 @@
+[package]
+name = "openergy-e2e"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version = "1.99"
+
+[[bin]]
+name = "openergy-e2e"
+path = "src/main.rs"
+
+[dependencies]
+openergy-ipc = { path = "../../crates/ipc" }
+serde_json = { workspace = true }
+serde = { workspace = true }
+toml = "0.9"
+sha2 = "0.11"

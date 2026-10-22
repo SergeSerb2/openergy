@@ -1,0 +1,46 @@
+# Requirement: Lab edge switch and typed/click/wheel input reach only the Openergy virtual ledger.
+name = "I2-deskflow-plain"
+requirement = "Lab edge switch and typed/click/wheel input reach only the Openergy virtual ledger."
+blocked_by = ["WP3", "WP6"]
+timeout_ms = 5000
+
+[[node]]
+id = "lab"
+kind = "lab"
+peer = "deskflow"
+role = "server"
+name = "lab"
+screens = "lab,client"
+tls = false
+
+[[node]]
+id = "client"
+kind = "openergy"
+role = "client"
+platform = "virtual"
+remote = "lab"
+tls = false
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "lab_drive"
+node = "lab"
+args = ["mousemove", "1000", "540", "mousemove", "1919", "540", "sleep", ".2", "mousemove_relative", "--", "20", "0"]
+
+[[step]]
+do = "wait_status"
+node = "client"
+fields = {"active_screen" = "client"}
+
+[[step]]
+do = "lab_drive"
+node = "lab"
+args = ["click", "1", "key", "a", "click", "4"]
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+expect = [{"event" = {"type" = "mouse_down", "button" = 1}}, {"event" = {"type" = "mouse_up", "button" = 1}}, {"event" = {"type" = "key_down"}}, {"event" = {"type" = "key_up"}}, {"event" = {"type" = "mouse_wheel"}}]

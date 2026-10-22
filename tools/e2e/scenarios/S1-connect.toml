@@ -1,0 +1,43 @@
+# Requirement: Two real plain virtual daemons exchange hello/QINF/DINF, report names/screens, and stop cleanly.
+name = "S1-connect"
+requirement = "Two real plain virtual daemons exchange hello/QINF/DINF, report names/screens, and stop cleanly."
+blocked_by = ["WP6"]
+timeout_ms = 1800
+
+[[node]]
+id = "server"
+kind = "openergy"
+role = "server"
+platform = "virtual"
+tls = false
+
+[[node]]
+id = "client"
+kind = "openergy"
+role = "client"
+platform = "virtual"
+remote = "server"
+tls = false
+
+[[step]]
+do = "wait_connected"
+node = "client"
+peer = "server"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+peer = "client"
+
+[[step]]
+do = "wait_status"
+node = "client"
+fields = {"peers" = {"$contains" = {"name" = "server", "connected" = true, "protocol" = {"major" = 1, "minor" = 8}}}}
+
+[[step]]
+do = "stop"
+node = "client"
+
+[[step]]
+do = "stop"
+node = "server"

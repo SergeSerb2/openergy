@@ -1,0 +1,15 @@
+[package]
+name = "openergy-session"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+openergy-protocol = { path = "../protocol" }
+openergy-platform = { path = "../platform" }
+openergy-config = { path = "../config" }
+openergy-ipc = { path = "../ipc" }
+log.workspace = true
+serde_json = "1.0"
+

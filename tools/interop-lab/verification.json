@@ -1,0 +1,108 @@
+{
+  "verified_at": "2026-10-21T21:40:02.525538+00:00",
+  "peers": {
+    "deskflow": {
+      "plain_server": {
+        "hello": "0000000b53796e6572677900010008"
+      },
+      "server_edge": {
+        "right_edge_enter": true,
+        "wire_messages": [
+          "QINF",
+          "LSYN",
+          "CIAK",
+          "CROP",
+          "DSOP",
+          "CINN"
+        ]
+      },
+      "tls_server": {
+        "hello": "0000000b53796e6572677900010008",
+        "tls": "TLSv1.2",
+        "sha256": "9b5f52a65a9aebbbaa146c133e0abcb22b036b08ccd28a04fcc39cbc2525fdd1"
+      },
+      "fingerprint": [
+        "v2:sha256:9b5f52a65a9aebbbaa146c133e0abcb22b036b08ccd28a04fcc39cbc2525fdd1",
+        "9B:5F:52:A6:5A:9A:EB:BB:AA:14:6C:13:3E:0A:BC:B2:2B:03:6B:08:CC:D2:8A:04:FC:C3:9C:BC:25:25:FD:D1"
+      ],
+      "openssl_attempts": 1,
+      "openssl_handshake_exit": 0,
+      "openssl_tls": "TLSv1.2",
+      "plain_client": {
+        "source": "127.0.0.1",
+        "hello_back": "0000001253796e6572677900010008000000036c6162",
+        "screen_info": "0000001244494e4600000000078004380000007800dc",
+        "pointer": "X=321\nY=234\nSCREEN=0\nWINDOW=543"
+      },
+      "tls_client": {
+        "source": "127.0.0.1",
+        "tls": "TLSv1.2",
+        "hello_back": "0000001253796e6572677900010008000000036c6162",
+        "screen_info": "0000001244494e460000000007800438000003c0021c",
+        "pointer": "X=321\nY=234\nSCREEN=0\nWINDOW=543"
+      },
+      "wrong_pin": {
+        "source": "127.0.0.1",
+        "tls": "TLSv1.2",
+        "pin_rejected": true
+      }
+    },
+    "barrier": {
+      "plain_server": {
+        "hello": "0000000b4261727269657200010006"
+      },
+      "server_edge": {
+        "right_edge_enter": true,
+        "wire_messages": [
+          "QINF",
+          "CIAK",
+          "CROP",
+          "DSOP",
+          "CINN"
+        ]
+      },
+      "tls_server": {
+        "hello": "0000000b4261727269657200010006",
+        "tls": "TLSv1.2",
+        "sha256": "77cf91e534bca5f603815ac8f21256b8894304856b8c17277f8a7e6aa117d3e0"
+      },
+      "fingerprint": [
+        "v2:sha256:77cf91e534bca5f603815ac8f21256b8894304856b8c17277f8a7e6aa117d3e0",
+        "77:CF:91:E5:34:BC:A5:F6:03:81:5A:C8:F2:12:56:B8:89:43:04:85:6B:8C:17:27:7F:8A:7E:6A:A1:17:D3:E0"
+      ],
+      "openssl_attempts": 1,
+      "openssl_handshake_exit": 0,
+      "openssl_tls": "TLSv1.2",
+      "plain_client": {
+        "source": "127.0.0.1",
+        "hello_back": "000000124261727269657200010006000000036c6162",
+        "screen_info": "0000001244494e460000000007800438000003c0021c",
+        "pointer": "X=321\nY=234\nSCREEN=0\nWINDOW=543"
+      },
+      "tls_client": {
+        "source": "127.0.0.1",
+        "tls": "TLSv1.2",
+        "hello_back": "000000124261727269657200010006000000036c6162",
+        "screen_info": "0000001244494e460000000007800438000003c0021c",
+        "pointer": "X=321\nY=234\nSCREEN=0\nWINDOW=543"
+      },
+      "wrong_pin": {
+        "source": "127.0.0.1",
+        "tls": "TLSv1.2",
+        "pin_rejected": true
+      }
+    }
+  },
+  "architecture": "aarch64",
+  "image": "sha256:4690a8add6f56e83da569d28abf713089c6b47ca93f12adfa391ed4a230ca818",
+  "events": {
+    "motion": 49,
+    "button_press": 15,
+    "key_press": 36,
+    "wire_pointer": "321,234"
+  },
+  "clipboard": "UTF-8 set/get passed",
+  "safety_rejections": "port 24800 and non-host server address rejected before launch",
+  "passed": true,
+  "container_running_at_end": "false"
+}

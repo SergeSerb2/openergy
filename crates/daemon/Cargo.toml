@@ -1,0 +1,33 @@
+[package]
+name = "openergy-daemon"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "openergy"
+path = "src/main.rs"
+
+[dependencies]
+openergy-protocol = { path = "../protocol" }
+openergy-platform = { path = "../platform" }
+openergy-config = { path = "../config" }
+openergy-ipc = { path = "../ipc" }
+openergy-session = { path = "../session" }
+openergy-net = { path = "../net" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+log = { version = "0.4", features = ["std"] }
+libc = { workspace = true }
+mio = { version = "1.2", features = ["os-poll", "net", "os-ext"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+openergy-platform-macos = { path = "../platform-macos" }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+openergy-platform-linux = { path = "../platform-linux" }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+openergy-platform-windows = { path = "../platform-windows" }
+windows-sys = { version = "0.61.2", features = ["Win32_NetworkManagement_IpHelper", "Win32_NetworkManagement_Ndis", "Win32_Networking_WinSock", "Win32_Security_Authorization", "Win32_Storage_FileSystem", "Win32_System_Console", "Win32_System_IO", "Win32_System_Pipes", "Win32_System_Threading"] }

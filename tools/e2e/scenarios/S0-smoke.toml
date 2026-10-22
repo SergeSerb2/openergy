@@ -1,0 +1,25 @@
+# Requirement: Isolated virtual IPC status has all frozen fields; daemon.stop exits zero.
+name = "S0-smoke"
+requirement = "Isolated virtual IPC status has all frozen fields; daemon.stop exits zero."
+blocked_by = []
+timeout_ms = 1800
+
+[[node]]
+id = "local"
+kind = "openergy"
+role = "off"
+platform = "virtual"
+
+[[step]]
+do = "wait_status"
+node = "local"
+fields = {"role" = "off", "state" = "idle", "daemon.platform" = "virtual", "daemon" = {"$exists" = true}, "name" = {"$exists" = true}, "active_screen" = {"$exists" = true}, "cursor" = {"$exists" = true}, "local_screen" = {"$exists" = true}, "server" = {"$exists" = true}, "client" = {"$exists" = true}, "peers" = {"$exists" = true}, "tls" = {"$exists" = true}, "permissions" = {"$exists" = true}, "secure_input" = {"$exists" = true}, "clipboard" = {"$exists" = true}, "pending_trust" = {"$exists" = true}, "last_error" = {"$exists" = true}, "stats" = {"$exists" = true}}
+
+[[step]]
+do = "assert_file"
+path = "${local.socket}"
+mode = "0600"
+
+[[step]]
+do = "stop"
+node = "local"

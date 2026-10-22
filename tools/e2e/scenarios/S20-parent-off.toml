@@ -1,0 +1,22 @@
+# Requirement: A real daemon watches a gated parent, then exits zero; observer records its actual exit code.
+name = "S20-parent-off"
+requirement = "A real daemon watches a gated parent, then exits zero; observer records its actual exit code."
+blocked_by = []
+timeout_ms = 1800
+
+[[node]]
+id = "local"
+kind = "openergy"
+role = "off"
+platform = "virtual"
+parent = true
+
+[[step]]
+do = "parent_exit"
+node = "local"
+
+[[step]]
+do = "wait_exit"
+node = "local"
+code = 0
+timeout_ms = 5000

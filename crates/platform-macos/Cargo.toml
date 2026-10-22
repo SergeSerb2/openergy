@@ -1,0 +1,12 @@
+[package]
+name = "openergy-platform-macos"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+openergy-platform = { path = "../platform" }
+openergy-protocol = { path = "../protocol" }
+log.workspace = true
+

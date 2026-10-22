@@ -1,0 +1,26 @@
+# Requirement: Pinned barrier server emits documented hello bytes on assigned loopback port.
+name = "L1-barrier-hello"
+requirement = "Pinned barrier server emits documented hello bytes on assigned loopback port."
+blocked_by = []
+timeout_ms = 5000
+
+[[node]]
+id = "lab"
+kind = "lab"
+peer = "barrier"
+role = "server"
+name = "lab"
+screens = "lab,probe"
+
+[[node]]
+id = "probe"
+kind = "raw"
+role = "client"
+remote = "lab"
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "hello"
+product = "Barrier"
+minor = 6

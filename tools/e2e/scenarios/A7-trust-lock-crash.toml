@@ -1,0 +1,11 @@
+name = "A7-trust-lock-crash"
+requirement = "SIGKILL of an approval holding the real trust-file lock releases it; a second CLI approval saves the pin."
+timeout_ms = 10000
+
+[[node]]
+id = "local"
+role = "off"
+
+[[step]]
+do = "trust_crash_recovery"
+node = "local"

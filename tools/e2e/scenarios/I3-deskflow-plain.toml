@@ -1,0 +1,91 @@
+# Requirement: Text clipboard interoperates; oversize DIB clamps to the configured 4 MiB cap with clipboard.blocked and no partial clipboard.
+name = "I3-deskflow-plain"
+requirement = "Text clipboard interoperates; oversize DIB clamps to the configured 4 MiB cap with clipboard.blocked and no partial clipboard."
+blocked_by = ["WP3", "WP4", "WP6"]
+timeout_ms = 5000
+
+[[node]]
+id = "lab"
+kind = "lab"
+peer = "deskflow"
+role = "server"
+name = "lab"
+screens = "lab,client"
+tls = false
+
+[[node]]
+id = "client"
+kind = "openergy"
+role = "client"
+platform = "virtual"
+remote = "lab"
+config = {clipboard = {max_bytes = 4194304}}
+tls = false
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "lab_clipboard"
+node = "lab"
+action = "set"
+text = "lab-to-openergy"
+
+[[step]]
+do = "lab_drive"
+node = "lab"
+args = ["mousemove", "1919", "540", "sleep", ".2", "mousemove_relative", "--", "20", "0"]
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+text = "lab-to-openergy"
+
+[[step]]
+do = "clipboard_set"
+node = "client"
+text = "openergy-to-lab"
+
+[[step]]
+do = "lab_drive"
+node = "lab"
+args = ["mousemove_relative", "--", "-50", "0"]
+
+[[step]]
+do = "lab_clipboard"
+node = "lab"
+action = "get"
+expect_text = "openergy-to-lab"
+
+[[step]]
+do = "lab_drive"
+node = "lab"
+args = ["mousemove", "1919", "540", "sleep", ".2", "mousemove_relative", "--", "20", "0"]
+
+[[step]]
+do = "subscribe"
+node = "client"
+
+[[step]]
+do = "fixture_dib"
+path = "${dir}/dib8.bin"
+save = "dib"
+
+[[step]]
+do = "clipboard_set"
+node = "client"
+fixture = "${dib.path}"
+kind = "dib"
+encoding = "base64"
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "clipboard.blocked"
+
+[[step]]
+do = "lab_clipboard"
+node = "lab"
+action = "get"
+expect_text = "openergy-to-lab"

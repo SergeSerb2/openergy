@@ -1,0 +1,14 @@
+[package]
+name = "openergy-platform-windows"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+openergy-platform = { path = "../platform" }
+log.workspace = true
+
+[target.'cfg(target_os = "windows")'.dependencies]
+openergy-protocol = { path = "../protocol" }
+windows-sys = { version = "=0.61.2", features = ["Win32_Foundation", "Win32_Graphics_Gdi", "Win32_System_DataExchange", "Win32_System_Memory", "Win32_System_LibraryLoader", "Win32_System_Threading", "Win32_UI_Input_KeyboardAndMouse", "Win32_UI_Input", "Win32_UI_WindowsAndMessaging", "Win32_UI_HiDpi", "Win32_System_Power"] }

@@ -1,0 +1,71 @@
+# Requirement: Openergy virtual server sends ordered typing/clicks to the real Docker barrier client; server death permits clean later input.
+name = "I4-barrier-plain"
+requirement = "Openergy virtual server sends ordered typing/clicks to the real Docker barrier client; server death permits clean later input."
+blocked_by = ["WP6"]
+timeout_ms = 5000
+
+[[node]]
+id = "server"
+kind = "openergy"
+role = "server"
+platform = "virtual"
+config = {options = {barrier = true}}
+tls = false
+
+[[node]]
+id = "lab"
+kind = "lab"
+peer = "barrier"
+role = "client"
+name = "lab"
+remote = "server"
+tls = false
+autostart = false
+
+[[step]]
+do = "start"
+node = "lab"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+peer = "lab"
+
+[[step]]
+do = "lab_ctl"
+node = "lab"
+args = ["events", "start"]
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 1919, "y" = 540}, {"type" = "mouse_move_rel", "dx" = 20, "dy" = 0}, {"type" = "mouse_down", "button" = 1}, {"type" = "mouse_up", "button" = 1}, {"type" = "key_down", "key" = 97, "modifiers" = 1, "button" = 1}, {"type" = "key_up", "key" = 97, "modifiers" = 1, "button" = 1}]
+
+[[step]]
+do = "lab_events_dump"
+node = "lab"
+regex = "ButtonPress"
+
+[[step]]
+do = "lab_events_dump"
+node = "lab"
+regex = "KeyPress"
+
+[[step]]
+do = "kill"
+node = "server"
+signal = "KILL"
+
+[[step]]
+do = "stop"
+node = "server"
+force = true
+
+[[step]]
+do = "start"
+node = "server"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+peer = "lab"

@@ -1,0 +1,30 @@
+name = "A10-unsupported-hello-close"
+requirement = "Client closes an unsupported major without sending EICV and exposes a plain protocol error."
+timeout_ms = 3000
+
+[[node]]
+id = "server"
+kind = "raw"
+role = "server"
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+tls = false
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "hello"
+major = 2
+
+[[step]]
+do = "raw_expect_closed"
+node = "server"
+reject_bytes = true
+
+[[step]]
+do = "assert_status"
+node = "client"
+fields = {"last_error.code" = "protocol_error", "last_error.message" = "The server uses an unsupported protocol version."}

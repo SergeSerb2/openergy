@@ -1,0 +1,45 @@
+# Requirement: Container-only Xvfb clipboard, pointer and recorder commands work without Openergy networking.
+name = "L2-barrier-clipboard"
+requirement = "Container-only Xvfb clipboard, pointer and recorder commands work without Openergy networking."
+blocked_by = []
+timeout_ms = 5000
+
+[[node]]
+id = "lab"
+kind = "lab"
+peer = "barrier"
+role = "server"
+name = "lab"
+screens = "lab,client"
+
+[[step]]
+do = "lab_ctl"
+node = "lab"
+args = ["events", "start"]
+
+[[step]]
+do = "lab_drive"
+node = "lab"
+args = ["mousemove", "321", "234", "click", "1"]
+
+[[step]]
+do = "lab_pointer"
+node = "lab"
+fields = {"x" = 321, "y" = 234}
+
+[[step]]
+do = "lab_clipboard"
+node = "lab"
+action = "set"
+text = "Synthetic Ω clipboard"
+
+[[step]]
+do = "lab_clipboard"
+node = "lab"
+action = "get"
+expect_text = "Synthetic Ω clipboard"
+
+[[step]]
+do = "lab_events_dump"
+node = "lab"
+nonempty = true

@@ -1,0 +1,62 @@
+name = "A12-restart-connected-roles"
+requirement = "Restart while already connected opens a real replacement connection for either role, with one adopted peer."
+timeout_ms = 3000
+
+[[node]]
+id = "server"
+role = "server"
+tls = false
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+tls = false
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "status.get"
+save = "before"
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "connection.restart"
+
+[[step]]
+do = "wait_status"
+node = "client"
+fields = {"state" = "connected", "peers" = {"$len" = 1}, "peers.0.connected" = true, "peers.0.since_unix_ms" = {"$ne" = "${before.peers.0.since_unix_ms}"}}
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "status.get"
+save = "server_before"
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "connection.restart"
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"state" = "connected", "peers" = {"$len" = 1}, "peers.0.connected" = true, "peers.0.since_unix_ms" = {"$ne" = "${server_before.peers.0.since_unix_ms}"}}
+
+[[step]]
+do = "wait_connected"
+node = "client"

@@ -1,0 +1,72 @@
+name = "A1-modifier-and-receiver-wheel"
+requirement = "Held Shift crosses once, releases once without recovery; receiver alone transforms wheel."
+timeout_ms = 3000
+
+[[node]]
+id = "server"
+role = "server"
+tls = false
+config = {"input" = {"invert_scroll_y" = true, "scroll_sensitivity" = 3.0}}
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+tls = false
+config = {"input" = {"invert_scroll_y" = true, "scroll_sensitivity" = 2.0}}
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "key_down", "key" = 61409, "modifiers" = 1, "button" = 7}, {"type" = "mouse_move_abs", "x" = 1919, "y" = 540}, {"type" = "mouse_move_rel", "dx" = 20, "dy" = 0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "client"}
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+expect = [{"event" = {"type" = "key_down", "key" = 61409}}]
+
+[[step]]
+do = "ledger_mark"
+node = "client"
+save = "entered"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "key_up", "key" = 61409, "modifiers" = 0, "button" = 7}, {"type" = "mouse_wheel", "dx" = 120, "dy" = 120}]
+
+[[step]]
+do = "sleep"
+ms = 100
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+since = "${entered.sequence}"
+exact = true
+expect = [{"event" = {"type" = "key_up", "key" = 61409}}, {"event" = {"type" = "mouse_wheel", "dx" = 240, "dy" = -240}}]
+
+[[step]]
+do = "assert_status"
+node = "client"
+fields = {"last_error" = {"$null" = true}}
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "virtual.recorded"
+params = {}
+fields = {"stats.pressed_keys" = 0}

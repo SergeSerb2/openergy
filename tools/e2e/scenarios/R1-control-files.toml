@@ -1,0 +1,121 @@
+# Requirement: Real daemon control, typed errors, TOML/file hashes/modes, restart and CLI paths exercise the runner.
+name = "R1-control-files"
+requirement = "Real daemon control, typed errors, TOML/file hashes/modes, restart and CLI paths exercise the runner."
+blocked_by = []
+timeout_ms = 1800
+
+[[node]]
+id = "local"
+kind = "openergy"
+role = "off"
+platform = "virtual"
+
+[[step]]
+do = "ctl"
+node = "local"
+method = "config.get"
+fields = {"config.role" = "off"}
+save = "initial"
+
+[[step]]
+do = "ctl"
+node = "local"
+method = "method.does_not_exist"
+expect_error = "unknown_method"
+
+[[step]]
+do = "config_patch"
+node = "local"
+patch = {"name" = "runner-check"}
+expect = {"config" = {"name" = "runner-check"}}
+
+[[step]]
+do = "wait_status"
+node = "local"
+fields = {"name" = "runner-check", "role" = "off"}
+
+[[step]]
+do = "assert_file"
+path = "${local.config}"
+toml_expect = {"name" = "runner-check"}
+regex = "name = \"runner-check\""
+save = "before"
+
+[[step]]
+do = "config_patch"
+node = "local"
+patch = {"clipboard" = {"max_bytes" = -1}}
+expect_error = "invalid_config"
+
+[[step]]
+do = "assert_file"
+path = "${local.config}"
+sha256 = "${before.sha256}"
+
+[[step]]
+do = "ledger_mark"
+node = "local"
+save = "mark"
+
+[[step]]
+do = "assert_recorded"
+node = "local"
+expect = []
+exact = true
+
+[[step]]
+do = "assert_json"
+actual = "${mark}"
+expect = {"sequence" = 0, "count" = 0}
+
+[[step]]
+do = "fixture_dib"
+path = "${dir}/dib8.bin"
+save = "dib"
+
+[[step]]
+do = "assert_file"
+path = "${dib.path}"
+sha256 = "${dib.sha256}"
+mode = "0600"
+
+[[step]]
+do = "assert_json"
+actual = "${dib.bytes}"
+expect = 8388648
+
+[[step]]
+do = "cli"
+node = "local"
+args = ["version"]
+regex = "^openergy 0\\.1\\.0$"
+
+[[step]]
+do = "measure"
+node = "local"
+window_ms = 250
+rss_bytes = 30000000
+cpu_percent = 100.0
+
+[[step]]
+do = "restart"
+node = "local"
+
+[[step]]
+do = "wait_status"
+node = "local"
+fields = {"name" = "runner-check", "role" = "off"}
+
+[[step]]
+do = "subscribe"
+node = "local"
+
+[[step]]
+do = "wait_event"
+node = "local"
+event = "status.changed"
+expect = {"name" = "runner-check"}
+
+[[step]]
+do = "stop"
+node = "local"

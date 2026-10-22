@@ -1,0 +1,16 @@
+section: screens
+    server:
+    client:
+end
+section: links
+    server:
+        right(50,100) = client(0,100)
+    client:
+        left(0,100) = server(50,100)
+end
+section: options
+    heartbeat = 500
+    clipboardSharing = true
+    clipboardSharingSize = 65536
+    switchDelay = 25
+end

@@ -1,0 +1,50 @@
+# Requirement: fingerprint --synergy emits exact v2 lowercase SHA-256; imported Synergy trusted-servers pin survives and connects.
+name = "S21-fingerprint-import"
+requirement = "fingerprint --synergy emits exact v2 lowercase SHA-256; imported Synergy trusted-servers pin survives and connects."
+blocked_by = ["WP4", "WP6"]
+timeout_ms = 1800
+
+[[node]]
+id = "server"
+kind = "openergy"
+role = "server"
+platform = "virtual"
+tls = true
+
+[[node]]
+id = "client"
+kind = "openergy"
+role = "client"
+platform = "virtual"
+remote = "server"
+tls = true
+
+[[step]]
+do = "cli"
+node = "server"
+args = ["fingerprint", "--synergy", "--config", "${server.config}"]
+regex = "^v2:sha256:[0-9a-f]{64}$"
+save = "fp"
+
+[[step]]
+do = "write_file"
+path = "${fixtures}/synergy/tls/trusted-servers"
+text = "${fp.stdout}"
+
+[[step]]
+do = "cli"
+node = "client"
+args = ["trust", "import-synergy", "${fixtures}/synergy/tls", "--config", "${client.config}"]
+
+[[step]]
+do = "assert_file"
+path = "${client.dir}/tls/trusted-servers"
+regex = "^v2:sha256:[0-9a-f]{64}$"
+
+[[step]]
+do = "restart"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "client"
