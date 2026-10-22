@@ -44,7 +44,7 @@ Port 24800 was never bound or connected.
   uses limited logon rights, and checks actual daemon control readiness.
   The supervisor has a kernel lifetime lock, exact process-start identity,
   explicit config/socket paths and parent PID, clean-stop handling, bounded rapid crash
-  retries, and a stop sentinel. It does not enable port 24800 or kill by name.
+  retries, and a stop sentinel. It does not set the port override or kill by name; the daemon owns port policy.
 - **Migration safety:** exactly one action is required. Missing saved state
   prevents Commit/Rollback from changing services. Commit requires a ready
   daemon. Start failure attempts rollback. Synergy process matching uses exact
@@ -115,6 +115,39 @@ Final Windows executable SHA-256:
 `3b319e69455254ab2441afae6c59b1b23274f3ceaa22dfdee686043beee1c6fc`.
 The final run ended with `FINAL_WINDOWS_PASS`; no owned test daemon remained.
 The isolated Windows source/build directory is retained for follow-up.
+
+## Clipboard contract follow-up — 2026-10-21
+
+Depends on shared platform commit `ffdd07a` (`ClipboardUnavailable` versus a
+successful empty payload). Windows reads now distinguish these cases while the
+same OpenClipboard guard remains held:
+
+- No supported format and a positive native format count: `ClipboardUnavailable`.
+- No formats, no native API error, and a stable sequence: successful true clear.
+- Busy clipboard, native read/format-query errors, invalid data, or a sequence
+  change during delayed rendering: failed read, never a clear.
+
+Availability and count queries reset/check LastError so an API failure is not
+silently turned into an unsupported format or successful clear. Sequence checks
+also cover delayed rendering, which can change data while the clipboard is open.
+The supervisor comment and README now describe environment pass-through rather
+than promising that the daemon always requires port 24800 opt-in. Runtime
+supervisor behavior is unchanged, including preservation of explicit `0`.
+
+Validation used a temporary source copy of `ea2638c`, overlaid with the exact
+`crates/platform` contents from `ffdd07a` and this Windows clipboard source.
+Other owners' files in this worktree were not changed. Exact compile command:
+
+```sh
+CARGO_BUILD_JOBS=2 CARGO_TARGET_DIR="$PWD/target" nice -n 15 cargo clippy --locked \
+  --manifest-path "$ValidationRoot/Cargo.toml" -p openergy-platform-windows \
+  --target x86_64-pc-windows-msvc --all-targets -- -D warnings
+```
+
+Passed, exit 0, zero warnings. Native clipboard operations and native E2E cases
+were explicitly forbidden, so this follow-up has source/compile proof only.
+No unit tests or mocks were added. Microsoft documents the zero/error ambiguity
+in [CountClipboardFormats](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-countclipboardformats).
 
 ## Remaining gates and integration requests
 

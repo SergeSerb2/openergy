@@ -143,7 +143,12 @@ impl Drop for Open {
 fn get(format: u32, max: usize) -> Result<Option<Vec<u8>>, PlatformError> {
     // Safety: caller holds OpenClipboard; GlobalLock gives size bytes until GlobalUnlock.
     unsafe {
+        SetLastError(ERROR_SUCCESS);
         if IsClipboardFormatAvailable(format) == 0 {
+            let code = GetLastError();
+            if code != ERROR_SUCCESS {
+                return Err(error(std::io::Error::from_raw_os_error(code as i32)));
+            }
             return Ok(None);
         }
         let handle = GetClipboardData(format);
@@ -171,6 +176,10 @@ fn get(format: u32, max: usize) -> Result<Option<Vec<u8>>, PlatformError> {
 }
 fn read(hwnd: HWND, html: u32, max: usize) -> Result<ClipboardData, PlatformError> {
     let _open = Open::acquire(hwnd)?;
+    // OpenClipboard excludes other normal writers. Also check the sequence:
+    // delayed rendering can change clipboard data during GetClipboardData.
+    // Safety: this query does not open or mutate the clipboard.
+    let sequence = unsafe { GetClipboardSequenceNumber() };
     let mut data = ClipboardData::default();
     if let Some(bytes) = get(CF_UNICODETEXT, max.saturating_mul(2).saturating_add(2))? {
         if bytes.len() % 2 != 0 {
@@ -217,6 +226,33 @@ fn read(hwnd: HWND, html: u32, max: usize) -> Result<ClipboardData, PlatformErro
             bytes: data.total_bytes(),
             limit: max,
         });
+    }
+    let empty = if data.formats.is_empty() {
+        // Unsupported-only contents must not become a remote clear. Zero can
+        // also indicate an API failure, so do not mistake a stale/error code
+        // for a successful empty snapshot.
+        // Safety: the Open guard still holds the clipboard on this thread.
+        unsafe {
+            SetLastError(ERROR_SUCCESS);
+            let count = CountClipboardFormats();
+            if count == 0 {
+                let code = GetLastError();
+                if code != ERROR_SUCCESS {
+                    return Err(error(std::io::Error::from_raw_os_error(code as i32)));
+                }
+            }
+            count == 0
+        }
+    } else {
+        false
+    };
+    // Safety: the guard is still live; reject a changed generation as a failed
+    // read even when the final count is zero, rather than forwarding a clear.
+    if unsafe { GetClipboardSequenceNumber() } != sequence {
+        return Err(error("Clipboard changed during read"));
+    }
+    if data.formats.is_empty() && !empty {
+        return Err(PlatformError::ClipboardUnavailable);
     }
     Ok(data)
 }

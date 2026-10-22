@@ -28,6 +28,9 @@ input capture/injection, screen enumeration and a real clipboard worker. On othe
   offsets around the UTF-8 fragment. CF_DIB/CF_DIBV5 carry headerless wire DIBs.
   Reads and writes check dimensions, pixel bounds, palettes, masks, and V5 profile bounds before use.
   Unsupported PNG input returns an error; protocol bitmap data must use DIB.
+  Unsupported-only native contents return `ClipboardUnavailable`. A successful
+  empty snapshot is a true clear only when the open clipboard has zero formats
+  and its sequence remains stable; busy/read failures remain errors.
 - EnumDisplayMonitors supplies physical rectangles and monitor scale, with virtual
   desktop metrics as fallback. The calling thread uses PerMonitorV2 coordinates.
   The final executable should declare PerMonitorV2 in its manifest. Display

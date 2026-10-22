@@ -42,8 +42,9 @@ before connecting:
 & "$Install\openergy.exe" trust approve 'v2:sha256:REPLACE_WITH_VERIFIED_FINGERPRINT' --config "$Data\config.toml"
 ```
 
-Port 24800 stays opt-in in the daemon. The new supervisor does not set
-`OPENERGY_ALLOW_PORT_24800`. Choose a different port for a new installation.
+The supervisor does not set `OPENERGY_ALLOW_PORT_24800`. It passes the caller's
+value through unchanged, including an explicit `0` denial. The daemon controls
+the standard port 24800 policy; new-install configs use 24801.
 Use the same `InstallDir` and `DataDir` arguments on every lifecycle command if
 using custom paths. Paths with spaces are supported. A marker checks the user
 and selected paths before stop or uninstall.

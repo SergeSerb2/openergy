@@ -22,7 +22,7 @@ try {
     $env:OPENERGY_CONFIG_DIR = $DataDir
     $env:OPENERGY_TLS_DIR = Join-Path $DataDir 'tls'
     $env:OPENERGY_SOCKET = $Socket
-    # Port 24800 stays opt-in; the supervisor never enables the live-port override.
+    # The daemon owns port policy. Preserve the caller's explicit override, including 0.
     $self = Get-Process -Id $PID
     $record = @{pid=$PID;started=$self.StartTime.ToUniversalTime().Ticks.ToString()}
     $record | ConvertTo-Json | Set-Content -LiteralPath "$RunFile.new" -Encoding UTF8
