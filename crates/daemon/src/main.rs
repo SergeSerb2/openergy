@@ -26,8 +26,8 @@ mod windows_pipe;
 mod workers;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
-// Keep file-based daemon configuration within the local control frame budget.
-const MAX_CONFIG_FILE_LEN: u64 = openergy_ipc::MAX_FRAME_LEN as u64;
+// Use the same daemon TOML policy for startup, live saves, and offline import.
+const MAX_CONFIG_FILE_LEN: u64 = openergy_config::MAX_CONFIG_FILE_LEN as u64;
 
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();

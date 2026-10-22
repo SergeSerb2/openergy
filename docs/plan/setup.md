@@ -255,6 +255,12 @@ prove that every imported option is implemented. Review
 the result to a running daemon. The app's import and `config.import_synergy`
 IPC change live configuration; use those only for an intended migration.
 
+Daemon TOML is limited to 16 MiB (16,777,216 bytes). Offline import checks its
+serialized TOML before writing `--out` or printing TOML, and refuses larger
+output without changing an existing destination or creating a new one. Startup
+and live config saves use the same limit. JSON-only import inspection and
+Synergy-format exports keep their separate format limits.
+
 Openergy's `fingerprint --synergy` output can be exchanged with a compatible
 peer's `trusted-servers` or `trusted-clients` store. Use that peer's own current
 instructions for paths and pin requirements; the existing
