@@ -102,6 +102,8 @@ It requires exactly one `BUILD.json`, at the archive root, as a regular file
 of at most 1 MiB. Its parsed JSON must equal the complete provenance sidecar;
 JSON spacing and key order can differ. Duplicate, nested, and alternate manifest
 paths fail this check. ZIP entries without Unix type bits remain supported.
+Manifest aliases that differ only in letter case also fail, because extraction
+on a case-insensitive filesystem can overwrite `BUILD.json` with that entry.
 Verify the checksum with `shasum -a 256 -c <archive>.sha256` on macOS,
 `sha256sum -c <archive>.sha256` on Linux, or `Get-FileHash -Algorithm SHA256`
 on Windows. A checksum detects a changed download; it does not authenticate

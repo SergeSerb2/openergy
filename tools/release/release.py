@@ -372,7 +372,7 @@ def archive_manifest(archive):
     def select(entries):
         # Include alternate/nested paths in the count to reject ambiguous manifests.
         matches = [(name, entry) for name, entry in entries
-                   if PurePosixPath(name.replace("\\", "/")).name == "BUILD.json"]
+                   if PurePosixPath(name.replace("\\", "/")).name.casefold() == "build.json"]
         if len(matches) != 1 or matches[0][0] != "BUILD.json":
             raise ValueError("archive needs exactly one BUILD.json at its root")
         return matches[0][1]

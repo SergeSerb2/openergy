@@ -92,3 +92,22 @@ local under the disposable directory above.
 This verifies archive provenance checks only. It does not rebuild the candidate,
 authenticate a publisher, prove that its binaries came from the declared source,
 or exercise the four-target upload path or native desktop acceptance.
+
+## Independent review: case aliases
+
+The next independent review reproduced a second ambiguity: a valid root
+`BUILD.json` plus a later `build.json` passed the exact-case filter. Real ZIP
+and tar extraction on the case-insensitive temporary filesystem replaced the
+validated manifest with the unchecked case alias. Two controls and two malformed
+archives reached the old missing-four-target guard. The review record remains
+local at `/tmp/oe-r5-review-rti16i6x/evidence.json`.
+
+The filter now counts manifest basenames without case sensitivity and still
+requires exactly one precisely named root `BUILD.json`. Four more real CLI
+checks passed: both aliases were refused, and both controls reached only the
+missing-four-target guard. The fixed verification snapshot was
+`ae8c2ebae07fc2ecbf006fd00dbad22fd3c84ef9` in a clean clone without remotes;
+script SHA-256 was
+`d4ba934d74c408c98c5b754619144ca91c2db6dc21f24f63e415aca17ea2828d`.
+The exact results remain at `/tmp/oe-r5-alias-fix-y8km1lnz/report.json`.
+Each case again held one target only. No command reached GitHub release creation.
