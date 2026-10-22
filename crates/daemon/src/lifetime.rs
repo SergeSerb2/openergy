@@ -50,6 +50,8 @@ pub struct ParentWatch {
     pid: Option<i64>,
     #[cfg(windows)]
     process: Option<std::os::windows::io::OwnedHandle>,
+    #[cfg(target_os = "linux")]
+    process: Option<std::os::fd::OwnedFd>,
     #[cfg(target_os = "macos")]
     kq: libc::c_int,
 }
@@ -73,6 +75,23 @@ impl ParentWatch {
                 } else {
                     // Safety: successful OpenProcess transfers this handle to ParentWatch.
                     Some(unsafe { OwnedHandle::from_raw_handle(handle) })
+                }
+            });
+            Self { pid, process }
+        }
+        #[cfg(target_os = "linux")]
+        {
+            use std::os::fd::{FromRawFd, OwnedFd};
+            let process = pid.and_then(|pid| {
+                let pid = libc::pid_t::try_from(pid).ok()?;
+                // Safety: pidfd_open queries the validated process ID. Flags
+                // zero request a close-on-exec descriptor for the whole process.
+                let fd = unsafe { libc::syscall(libc::SYS_pidfd_open, pid, 0u32) };
+                if fd < 0 {
+                    None
+                } else {
+                    // Safety: the successful syscall transfers this descriptor.
+                    Some(unsafe { OwnedFd::from_raw_fd(fd as _) })
                 }
             });
             Self { pid, process }
@@ -102,11 +121,44 @@ impl ParentWatch {
             }
             Self { pid, kq }
         }
-        #[cfg(not(any(target_os = "macos", windows)))]
+        #[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
         Self { pid }
     }
     pub fn exited(&self) -> bool {
         let Some(pid) = self.pid else { return false };
+        #[cfg(target_os = "linux")]
+        {
+            use std::{io::Read, os::fd::AsRawFd};
+            if let Some(process) = &self.process {
+                let mut fd = libc::pollfd {
+                    fd: process.as_raw_fd(),
+                    events: libc::POLLIN,
+                    revents: 0,
+                };
+                // Safety: the descriptor is owned, and the zero timeout cannot
+                // block. Exit is readable even before the parent is reaped.
+                let ready = unsafe { libc::poll(&mut fd, 1, 0) };
+                return ready > 0
+                    || (ready < 0 && std::io::Error::last_os_error().kind() != std::io::ErrorKind::Interrupted);
+            }
+            // Older kernels or a restricted syscall policy may lack pidfd_open.
+            // kill(pid, 0) alone still reports an unreaped zombie as present.
+            let mut stat = Vec::with_capacity(512);
+            if std::fs::File::open(format!("/proc/{pid}/stat"))
+                .and_then(|file| file.take(4096).read_to_end(&mut stat))
+                .is_ok()
+            {
+                // comm may contain spaces, parentheses, or non-UTF-8 bytes.
+                let state = stat
+                    .iter()
+                    .rposition(|&b| b == b')')
+                    .and_then(|end| stat.get(end + 1..))
+                    .and_then(|tail| tail.iter().copied().find(|b| !b.is_ascii_whitespace()));
+                if state.is_some_and(|state| matches!(state, b'Z' | b'X' | b'x')) {
+                    return true;
+                }
+            }
+        }
         #[cfg(target_os = "macos")]
         if self.kq >= 0 {
             let timeout = libc::timespec { tv_sec: 0, tv_nsec: 0 };
