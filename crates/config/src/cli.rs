@@ -50,6 +50,13 @@ fn home() -> Result<PathBuf, String> {
         .ok_or_else(|| "home directory is unavailable; supply an explicit path".into())
 }
 fn default_config() -> Result<PathBuf, String> {
+    // Use the daemon's explicit environment selector before platform defaults.
+    if let Some(path) = std::env::var_os("OPENERGY_CONFIG") {
+        if path.is_empty() {
+            return Err("OPENERGY_CONFIG is empty; use --config".into());
+        }
+        return Ok(PathBuf::from(path));
+    }
     #[cfg(target_os = "macos")]
     {
         Ok(home()?.join("Library/Application Support/Openergy/config.toml"))
@@ -72,7 +79,8 @@ fn default_config() -> Result<PathBuf, String> {
 }
 
 /// Persist one complete document through a same-directory, exclusive 0600 temp file.
-/// On failure the old destination remains intact and our temp file is removed.
+/// Failures before rename preserve the old destination and remove our temp file.
+/// A directory-sync error after rename reports uncertain durability of the new file.
 pub fn write_atomic(path: &Path, text: &str) -> Result<(), ConfigError> {
     static NEXT: AtomicU64 = AtomicU64::new(0);
     let parent = path
@@ -107,7 +115,11 @@ pub fn write_atomic(path: &Path, text: &str) -> Result<(), ConfigError> {
             file.write_all(text.as_bytes())?;
             file.sync_all()?;
             drop(file);
-            fs::rename(&tmp, path)
+            fs::rename(&tmp, path)?;
+            // Sync the directory entry as well as the data before reporting success.
+            #[cfg(unix)]
+            fs::File::open(parent)?.sync_all()?;
+            Ok(())
         })();
         if result.is_err() {
             let _ = fs::remove_file(&tmp);

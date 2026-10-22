@@ -3,7 +3,12 @@ use crate::{
     *,
 };
 use serde_json::Value;
-use std::{collections::BTreeMap, fs, io::Read, path::Path};
+use std::{
+    collections::{BTreeMap, BTreeSet},
+    fs,
+    io::Read,
+    path::Path,
+};
 
 // Preserve the service's JavaScript object insertion order for its last-corner-size rule.
 // serde_json::Value maps sort keys, so this small second view captures order without new deps.
@@ -97,18 +102,45 @@ fn set_port(cfg: &mut Config, port: u64) -> Result<(), ConfigError> {
     Ok(())
 }
 
+fn complete_client_address(cfg: &mut Config) -> Result<(), ConfigError> {
+    let remote = &cfg.client.remote;
+    if remote.is_empty() {
+        return Ok(());
+    }
+    // Synergy stores the connection port in core/port (or developers.corePort),
+    // separately from remoteHost. Openergy stores it in the client endpoint.
+    if crate::model::address_port(remote)
+        .map_err(|e| bad("client.remote", &e))?
+        .is_none()
+    {
+        cfg.client.remote = if remote.parse::<std::net::Ipv6Addr>().is_ok() {
+            format!("[{remote}]:{}", cfg.server.port)
+        } else {
+            format!("{remote}:{}", cfg.server.port)
+        };
+    }
+    Ok(())
+}
+
 fn active_computers(db: &Value) -> Result<Vec<&Value>, ConfigError> {
     let computers = field(db, "data.computers")
         .and_then(Value::as_array)
         .ok_or_else(|| bad("data.computers", "expected array"))?;
-    computers
-        .iter()
-        .filter_map(|c| match bool_at(c, "isRemoved") {
-            Ok(Some(true)) => None,
-            Ok(_) => Some(Ok(c)),
-            Err(e) => Some(Err(e)),
-        })
-        .collect()
+    let mut active = Vec::new();
+    let mut ids = BTreeSet::new();
+    for computer in computers {
+        if bool_at(computer, "isRemoved")? == Some(true) {
+            continue;
+        }
+        let id = str_at(computer, "id")?
+            .filter(|id| !id.is_empty())
+            .ok_or_else(|| bad("computer.id", "missing or empty identity"))?;
+        if !ids.insert(id) {
+            return Err(bad("computer.id", "duplicate active identity"));
+        }
+        active.push(computer);
+    }
+    Ok(active)
 }
 fn generated_name(computer: &Value) -> Result<String, ConfigError> {
     let display = str_at(computer, "name")?
@@ -393,6 +425,7 @@ fn import_db(
             "db.json alone has no local identity; role remains off until local.json or core INI is supplied".into(),
         );
     }
+    complete_client_address(&mut cfg)?;
     cfg.validate()?;
     if active_computers(db)?
         .iter()
@@ -582,6 +615,15 @@ fn dom_key(key: &str) -> String {
 }
 
 pub(crate) fn read_text(path: &Path) -> Result<String, ConfigError> {
+    // Check before open: opening a FIFO can wait forever before the byte limit
+    // below applies. Migration inputs must be ordinary documents.
+    let metadata = fs::metadata(path).map_err(|e| ConfigError::Io(format!("read {}: {e}", path.display())))?;
+    if !metadata.is_file() {
+        return Err(ConfigError::Io(format!(
+            "read {}: expected a regular file",
+            path.display()
+        )));
+    }
     let file = fs::File::open(path).map_err(|e| ConfigError::Io(format!("read {}: {e}", path.display())))?;
     let mut bytes = Vec::new();
     file.take(16 * 1024 * 1024 + 1)
@@ -668,6 +710,7 @@ pub fn import_synergy_dir(path: &Path) -> Result<(Config, ImportReport), ConfigE
             report.warnings.push("Trust candidates returned in ImportReport.trusted_servers; approve them through the trust store before connecting".into());
         }
     }
+    complete_client_address(&mut cfg)?;
     cfg.validate()?;
     report.warnings.extend(cfg.warnings());
     report.warnings.sort();
@@ -675,6 +718,9 @@ pub fn import_synergy_dir(path: &Path) -> Result<(Config, ImportReport), ConfigE
     Ok((cfg, report))
 }
 fn apply_local(cfg: &mut Config, db: &Value, local: &Value, report: &mut ImportReport) -> Result<(), ConfigError> {
+    if !local.is_object() {
+        return Err(bad("local.json", "expected object"));
+    }
     if uint_at(local, "version")? != Some(7) {
         report
             .warnings
