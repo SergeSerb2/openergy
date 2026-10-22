@@ -59,6 +59,26 @@ On first launch, Openergy asks for two macOS permissions:
 
 The permission page updates by itself when you switch each one on.
 
+## Install (Windows)
+
+Windows has no app yet. The `openergy` daemon runs hidden at logon and is controlled with
+the same command line. Build it on the PC (Rust with the MSVC toolchain), then, in an
+elevated PowerShell:
+
+```powershell
+cargo build --release --locked --bin openergy
+New-Item -ItemType Directory -Force "C:\Program Files\Openergy"
+Copy-Item target\release\openergy.exe, tools\windows\switch-from-synergy.ps1 "C:\Program Files\Openergy"
+& "C:\Program Files\Openergy\openergy.exe" import-synergy --from C:\ProgramData\Synergy\config --out "$env:APPDATA\Openergy\config.toml"
+& "C:\Program Files\Openergy\switch-from-synergy.ps1" -Install   # logon task, still off
+& "C:\Program Files\Openergy\switch-from-synergy.ps1" -Start     # stops Synergy, starts Openergy
+& "C:\Program Files\Openergy\switch-from-synergy.ps1" -Commit    # keeps Synergy off after restart
+```
+
+Before `-Start`, exchange fingerprints: add the Mac's `openergy fingerprint --synergy` line
+to `%APPDATA%\Openergy\tls\trusted-clients`, and approve the PC's line on the Mac.
+`-Rollback` stops Openergy and starts Synergy again.
+
 ## Use
 
 The menu-bar icon shows the state: both halves bright means connected.
