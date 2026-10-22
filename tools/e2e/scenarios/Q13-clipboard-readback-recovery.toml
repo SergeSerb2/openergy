@@ -1,0 +1,86 @@
+# Requirement: A failed clipboard readback releases its pending latch for a later retry.
+name = "Q13-clipboard-readback-recovery"
+requirement = "A late peer receives the retained local clipboard after an unavailable backend recovers and the host enters another peer."
+timeout_ms = 2000
+
+[[node]]
+id = "server"
+role = "server"
+
+[[node]]
+id = "first"
+role = "client"
+remote = "server"
+
+[[node]]
+id = "late"
+role = "client"
+remote = "server"
+autostart = false
+
+[[step]]
+do = "wait_connected"
+node = "first"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "clipboard_set"
+node = "server"
+text = "local readback recovery"
+
+[[step]]
+do = "assert_clipboard"
+node = "first"
+text = "local readback recovery"
+
+[[step]]
+do = "sleep"
+ms = 700
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "virtual.clipboard"
+params = { read_available = false }
+
+[[step]]
+do = "start"
+node = "late"
+
+[[step]]
+do = "wait_connected"
+node = "late"
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "last_error.code" = "clipboard_failed" }
+
+[[step]]
+do = "assert_clipboard"
+node = "late"
+empty = true
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "virtual.clipboard"
+params = { read_available = true }
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "mouse_move_abs", x = 1919, y = 540 }, { type = "mouse_move_rel", dx = 20, dy = 0 }]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { active_screen = "first" }
+
+[[step]]
+do = "assert_clipboard"
+node = "late"
+text = "local readback recovery"

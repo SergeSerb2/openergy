@@ -1,0 +1,47 @@
+# Requirement: Releasing a second physical modifier must not swallow its key-up.
+name = "Q4-two-held-shift-keys"
+requirement = "A modifier synthesized on entry and a second physical modifier each release without leaving a held key."
+timeout_ms = 1200
+
+[[node]]
+id = "server"
+role = "server"
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "key_down", key = 61409, modifiers = 1, button = 7 }, { type = "mouse_move_abs", x = 1919, y = 540 }, { type = "mouse_move_rel", dx = 20, dy = 0 }]
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+expect = [{ event = { type = "key_down", key = 61409 } }]
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "key_down", key = 61410, modifiers = 1, button = 8 }, { type = "key_up", key = 61410, modifiers = 1, button = 8 }, { type = "key_up", key = 61409, modifiers = 0, button = 7 }]
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+expect = [{ event = { type = "key_down", key = 61410, button = 8 } }, { event = { type = "key_up", key = 61410, button = 8 } }, { event = { type = "key_up", key = 61409 } }]
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "virtual.recorded"
+fields = { "stats.pressed_keys" = 0, "stats.pressed_buttons" = 0 }

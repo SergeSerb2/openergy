@@ -1,0 +1,119 @@
+# Requirement: A peer cannot take clipboard ownership before screen adoption.
+name = "Q3-server-setup-clipboard"
+requirement = "Pre-DINF clipboard grabs and chunks cannot mutate the server clipboard; adopted peers can transfer normally."
+timeout_ms = 1200
+
+[[node]]
+id = "server"
+role = "server"
+config = { screen = [{ name = "server", rect = { x = 0, y = 0, w = 1920, h = 1080 } }, { name = "client", rect = { x = 1920, y = 0, w = 1920, h = 1080 } }] }
+
+[[node]]
+id = "probe"
+kind = "raw"
+role = "client"
+remote = "server"
+name = "client"
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "hello_back"
+name = "client"
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "QINF"
+payload_only = true
+framed = true
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "code"
+code = "CCLP"
+payload_hex = "0000000000"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "code"
+code = "DCLP"
+payload_hex = "000000000001000000023137"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "code"
+code = "DCLP"
+payload_hex = "000000000002000000110000000100000000000000056672657368"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "code"
+code = "DCLP"
+payload_hex = "00000000000300000000"
+
+[[step]]
+do = "sleep"
+ms = 100
+
+[[step]]
+do = "assert_clipboard"
+node = "server"
+empty = true
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "screen_info"
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "DSOP"
+payload_only = true
+framed = true
+scan = true
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "code"
+code = "CCLP"
+payload_hex = "0000000000"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "code"
+code = "DCLP"
+payload_hex = "000000000001000000023137"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "code"
+code = "DCLP"
+payload_hex = "000000000002000000110000000100000000000000056672657368"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "code"
+code = "DCLP"
+payload_hex = "00000000000300000000"
+
+[[step]]
+do = "assert_clipboard"
+node = "server"
+text = "fresh"

@@ -1,0 +1,89 @@
+# Requirement: A network client cannot register as the primary screen.
+name = "Q1-primary-screen-name"
+requirement = "The host name and its aliases remain local; a remote claimant receives EUNK."
+timeout_ms = 1000
+
+[[node]]
+id = "server"
+role = "server"
+config = { screen = [{ name = "server", aliases = ["primary-alias"], rect = { x = 0, y = 0, w = 1920, h = 1080 } }] }
+
+[[node]]
+id = "probe"
+kind = "raw"
+role = "client"
+remote = "server"
+
+[[node]]
+id = "alias-probe"
+kind = "raw"
+role = "client"
+remote = "server"
+autostart = false
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "hello_back"
+name = "server"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "screen_info"
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "EUNK"
+payload_only = true
+framed = true
+scan = true
+
+[[step]]
+do = "raw_expect_closed"
+node = "probe"
+
+[[step]]
+do = "assert_status"
+node = "server"
+fields = { active_screen = "server", peers = { "$len" = 0 } }
+
+[[step]]
+do = "start"
+node = "alias-probe"
+
+[[step]]
+do = "raw_expect"
+node = "alias-probe"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "alias-probe"
+builder = "hello_back"
+name = "primary-alias"
+
+[[step]]
+do = "raw_send"
+node = "alias-probe"
+builder = "screen_info"
+
+[[step]]
+do = "raw_expect"
+node = "alias-probe"
+builder = "code"
+code = "EUNK"
+payload_only = true
+framed = true
+scan = true
+
+[[step]]
+do = "raw_expect_closed"
+node = "alias-probe"

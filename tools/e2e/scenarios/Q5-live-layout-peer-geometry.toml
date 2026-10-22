@@ -1,0 +1,51 @@
+# Requirement: A live configuration update retains negotiated peer geometry.
+name = "Q5-live-layout-peer-geometry"
+requirement = "An unrelated live config change preserves a resized peer's edge mapping."
+timeout_ms = 1200
+
+[[node]]
+id = "server"
+role = "server"
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "set_screens"
+node = "client"
+rects = [{ x = 0, y = 0, w = 2560, h = 1440, scale = 1.0 }]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { peers = { "$contains" = { name = "client", screen = { w = 2560, h = 1440 } } } }
+
+[[step]]
+do = "config_patch"
+node = "server"
+patch = { input = { scroll_sensitivity = 1.25 } }
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "mouse_move_abs", x = 1919, y = 540 }, { type = "mouse_move_rel", dx = 20, dy = 0 }]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { active_screen = "client", "cursor.y" = { "$gte" = 715, "$lte" = 725 } }
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+expect = [{ event = { type = "mouse_move_abs", y = 720 } }]

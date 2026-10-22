@@ -1,0 +1,65 @@
+# Requirement: A rejected incoming clipboard cannot invalidate the host payload.
+name = "Q7-receive-disabled-ownership"
+requirement = "Receive-disabled hosts retain their clipboard for a later peer after another peer attempts an update."
+timeout_ms = 1200
+
+[[node]]
+id = "server"
+role = "server"
+config = { clipboard = { receive = false } }
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+
+[[node]]
+id = "later"
+role = "client"
+remote = "server"
+autostart = false
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "clipboard_set"
+node = "server"
+text = "host payload"
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+text = "host payload"
+
+[[step]]
+do = "clipboard_set"
+node = "client"
+text = "rejected remote payload"
+
+[[step]]
+do = "sleep"
+ms = 700
+
+[[step]]
+do = "assert_clipboard"
+node = "server"
+text = "host payload"
+
+[[step]]
+do = "start"
+node = "later"
+
+[[step]]
+do = "wait_connected"
+node = "later"
+
+[[step]]
+do = "assert_clipboard"
+node = "later"
+text = "host payload"

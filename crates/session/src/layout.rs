@@ -233,7 +233,7 @@ impl Layout {
             _ => (x - r.x, r.w),
         };
         let fraction = f64::from(coordinate.clamp(0, extent - 1)) / f64::from(extent);
-        let link = self
+        let Some(link) = self
             .links
             .iter()
             .find(|l| {
@@ -241,8 +241,12 @@ impl Layout {
                     && l.edge == edge
                     && fraction * 100.0 >= f64::from(l.from_range.0)
                     && fraction * 100.0 < f64::from(l.from_range.1)
-            })?
-            .clone();
+            })
+            .cloned()
+        else {
+            self.candidate = None;
+            return None;
+        };
         let since = match self.candidate {
             Some((s, e, t, since)) if s == current && e == edge && t == link.to => since,
             _ => {

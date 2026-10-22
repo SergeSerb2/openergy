@@ -219,6 +219,11 @@ impl Server {
                 }
             }
             ServerEvent::ClipboardPayload { id, data } => self.payload(None, id, data, out),
+            ServerEvent::ClipboardReadFailed { id } => {
+                if let Some(slot) = self.slots.get_mut(id.0 as usize) {
+                    slot.readback = false;
+                }
+            }
             ServerEvent::TimerTick { now_ms } => {
                 self.now = now_ms;
                 let dead = self
@@ -250,6 +255,7 @@ impl Server {
             }
             ServerEvent::ConfigChanged(cfg) => {
                 self.leave(out);
+                let clipboard_changed = self.config.clipboard != cfg.clipboard;
                 self.config = cfg;
                 self.primary = self
                     .config
@@ -264,13 +270,32 @@ impl Server {
                 let invalid = self
                     .peers
                     .iter()
-                    .filter_map(|(&c, p)| self.screen(&p.name).is_none().then_some(c))
+                    .filter_map(|(&c, p)| {
+                        (p.phase == Phase::Ready && self.screen(&p.name).is_none_or(|s| s == self.primary)).then_some(c)
+                    })
                     .collect::<Vec<_>>();
                 for c in invalid {
                     self.remove(c, out);
                     close(c, CloseReason::Normal, out);
                 }
+                // Config rectangles describe layout placement. DINF supplies
+                // the actual screen-local dimensions and origin for each peer.
+                for p in self.peers.values() {
+                    if p.phase == Phase::Ready {
+                        if let Some(screen) = self.screen(&p.name) {
+                            self.layout.set_rect(screen, p.screen);
+                        }
+                    }
+                }
+                if clipboard_changed {
+                    for slot in &mut self.slots {
+                        slot.readback = false;
+                    }
+                }
                 for (&c, p) in &mut self.peers {
+                    if clipboard_changed {
+                        p.transfers = Default::default();
+                    }
                     if p.phase == Phase::Ready {
                         send(c, Message::ResetOptions, out);
                         send(
@@ -382,6 +407,10 @@ impl Server {
                     self.fail(conn, Message::ErrorUnknown, out);
                     return;
                 };
+                if screen == self.primary {
+                    self.fail(conn, Message::ErrorUnknown, out);
+                    return;
+                }
                 let canonical = self.name(screen).to_string();
                 let existing = self
                     .peers
@@ -424,18 +453,20 @@ impl Server {
             return;
         }
         let Some(p) = self.peers.get_mut(&conn) else { return };
+        // A hello alone does not adopt a screen or grant clipboard ownership.
+        if p.phase != Phase::Ready {
+            return;
+        }
         match msg {
             Message::KeepAlive => {
                 p.alive(self.now);
             }
-            Message::SetOptions { options } => {
-                p.options.apply(&options);
-            }
-            Message::ResetOptions => {
-                p.options = Options::default();
-                p.last_alive = self.now;
-            }
-            Message::ClipboardGrab { id, sequence } if id.0 == 0 && self.config.clipboard.enabled => {
+            // CROP and DSOP only travel from server to client. Accepting them
+            // here lets a peer disable the host's heartbeat and timeout.
+            Message::SetOptions { .. } | Message::ResetOptions => {}
+            Message::ClipboardGrab { id, sequence }
+                if id.0 == 0 && self.config.clipboard.enabled && self.config.clipboard.receive =>
+            {
                 if let Some(slot) = self.slots.get_mut(id.0 as usize) {
                     if sequence >= slot.sequence {
                         slot.sequence = sequence;
@@ -615,7 +646,12 @@ impl Server {
     }
     fn push_slots(&mut self, conn: ConnId, out: &mut Vec<Action>) {
         let Some(p) = self.peers.get_mut(&conn) else { return };
-        if p.version.minor < 6 || !p.options.clipboard || !self.config.clipboard.send {
+        if p.phase != Phase::Ready
+            || p.version.minor < 6
+            || !p.options.clipboard
+            || !self.config.clipboard.enabled
+            || !self.config.clipboard.send
+        {
             return;
         }
         for (i, s) in self.slots.iter_mut().enumerate() {
@@ -657,6 +693,12 @@ impl Server {
         }
     }
     fn payload(&mut self, owner: Option<ConnId>, id: ClipboardId, data: ClipboardData, out: &mut Vec<Action>) {
+        if !self.config.clipboard.enabled
+            || (owner.is_none() && !self.config.clipboard.send)
+            || (owner.is_some() && !self.config.clipboard.receive)
+        {
+            return;
+        }
         let Some(slot) = self.slots.get_mut(id.0 as usize) else {
             return;
         };

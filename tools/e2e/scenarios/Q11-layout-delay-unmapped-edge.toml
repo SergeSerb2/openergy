@@ -1,0 +1,60 @@
+# Requirement: Moving to an unmapped edge segment cancels a pending switch delay.
+name = "Q11-layout-delay-unmapped-edge"
+requirement = "A new hit on a mapped edge waits the full delay after the pointer visited an unmapped segment."
+timeout_ms = 1200
+
+[[node]]
+id = "server"
+role = "server"
+config = { switch = { delay_ms = 400 }, screen = [{ name = "server", rect = { x = 0, y = 0, w = 1920, h = 1080 } }, { name = "client", rect = { x = 1920, y = 540, w = 1920, h = 1080 } }] }
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "mouse_move_abs", x = 1920, y = 810 }]
+
+[[step]]
+do = "sleep"
+ms = 250
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "mouse_move_abs", x = 1920, y = 100 }]
+
+[[step]]
+do = "sleep"
+ms = 250
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "mouse_move_abs", x = 1920, y = 810 }]
+
+[[step]]
+do = "sleep"
+ms = 80
+
+[[step]]
+do = "assert_status"
+node = "server"
+fields = { active_screen = "server" }
+timeout_ms = 100
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { active_screen = "client" }

@@ -1,0 +1,111 @@
+# Requirement: Clipboard delivery starts only after session setup completes.
+name = "Q2-client-setup-clipboard"
+requirement = "Pre-DSOP clipboard chunks cannot change the client clipboard; a ready session can transfer normally."
+timeout_ms = 1200
+
+[[node]]
+id = "server"
+kind = "raw"
+role = "server"
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "hello"
+
+[[step]]
+do = "raw_expect"
+node = "server"
+builder = "hello_back"
+name = "client"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "QINF"
+
+[[step]]
+do = "raw_expect"
+node = "server"
+builder = "code"
+code = "DINF"
+payload_only = true
+framed = true
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "CIAK"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "000000000001000000023137"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "000000000002000000110000000100000000000000056672657368"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "00000000000300000000"
+
+[[step]]
+do = "sleep"
+ms = 100
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+empty = true
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "options"
+values = []
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "000000000001000000023137"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "000000000002000000110000000100000000000000056672657368"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "00000000000300000000"
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+text = "fresh"

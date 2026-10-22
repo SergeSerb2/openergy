@@ -1,0 +1,79 @@
+# Requirement: Disabling clipboard sharing prevents retained payload replay.
+name = "Q6-disabled-clipboard-enter"
+requirement = "A disabled sender cannot overwrite the remote clipboard on screen entry; enabling sharing resumes delivery."
+timeout_ms = 1200
+
+[[node]]
+id = "server"
+role = "server"
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "clipboard_set"
+node = "server"
+text = "retained host clipboard"
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+text = "retained host clipboard"
+
+[[step]]
+do = "config_patch"
+node = "server"
+patch = { clipboard = { enabled = false } }
+
+[[step]]
+do = "sleep"
+ms = 100
+
+[[step]]
+do = "clipboard_set"
+node = "client"
+text = "local clipboard after disable"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "mouse_move_abs", x = 1919, y = 540 }, { type = "mouse_move_rel", dx = 20, dy = 0 }]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { active_screen = "client" }
+
+[[step]]
+do = "sleep"
+ms = 100
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+text = "local clipboard after disable"
+
+[[step]]
+do = "config_patch"
+node = "server"
+patch = { clipboard = { enabled = true } }
+
+[[step]]
+do = "clipboard_set"
+node = "server"
+text = "sharing resumed"
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+text = "sharing resumed"
