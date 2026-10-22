@@ -10,7 +10,7 @@ name = "openergy-e2e"
 path = "src/main.rs"
 
 [dependencies]
-openergy-ipc = { path = "../../crates/ipc" }
+openergy-ipc = { version = "0.1.0", path = "../../crates/ipc" }
 serde_json = { workspace = true }
 serde = { workspace = true }
 toml = "0.9"

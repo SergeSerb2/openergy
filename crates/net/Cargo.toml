@@ -6,9 +6,9 @@ license.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-openergy-protocol = { path = "../protocol" }
-openergy-session = { path = "../session" }
-openergy-ipc = { path = "../ipc" }
+openergy-protocol = { version = "0.1.0", path = "../protocol" }
+openergy-session = { version = "0.1.0", path = "../session" }
+openergy-ipc = { version = "0.1.0", path = "../ipc" }
 sha2.workspace = true
 log.workspace = true
 mio = { version = "1.2", features = ["os-poll", "net", "os-ext"] }

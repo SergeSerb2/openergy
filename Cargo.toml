@@ -16,7 +16,6 @@ rust-version = "1.99.1"
 [workspace.dependencies]
 mio = { version = "1.2", features = ["os-poll", "net", "os-ext"] }
 rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
-rustls-pemfile = "2.2"
 rcgen = "0.14"
 sha2 = "0.11"
 serde = { version = "1.0", features = ["derive"] }

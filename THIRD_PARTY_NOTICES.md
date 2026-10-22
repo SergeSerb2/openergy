@@ -92,7 +92,6 @@ python3 docs/verification/public-release-audit-2026-10-21/generate-notices.py
 | [rusticata-macros 4.1.0](https://crates.io/crates/rusticata-macros/4.1.0) | MIT/Apache-2.0 | [a5c61b93b6ee](#text-a5c61b93b6ee) |
 | [rustix 1.1.5](https://crates.io/crates/rustix/1.1.5) | Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT | [23f18e03dc49](#text-23f18e03dc49) |
 | [rustls 0.23.46](https://crates.io/crates/rustls/0.23.46) | Apache-2.0 OR ISC OR MIT | [709e3175b421](#text-709e3175b421) |
-| [rustls-pemfile 2.2.0](https://crates.io/crates/rustls-pemfile/2.2.0) | Apache-2.0 OR ISC OR MIT | [709e3175b421](#text-709e3175b421) |
 | [rustls-pki-types 1.15.1](https://crates.io/crates/rustls-pki-types/1.15.1) | MIT OR Apache-2.0 | [9117d922e667](#text-9117d922e667) |
 | [rustls-webpki 0.103.16](https://crates.io/crates/rustls-webpki/0.103.16) | ISC | [5b698ca13897](#text-5b698ca13897) |
 | [scopeguard 1.2.0](https://crates.io/crates/scopeguard/1.2.0) | MIT OR Apache-2.0 | [fb77f0a9c53e](#text-fb77f0a9c53e) |
