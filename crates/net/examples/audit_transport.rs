@@ -30,7 +30,83 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     driver.set_transport_mode(TransportMode::Frames)?;
     driver.set_heartbeat_interval(Duration::from_millis(if case == "close-deadline" { 1500 } else { 120 }))?;
     let mut out = Vec::new();
-    if case == "pinned-plain" || case == "pinned-reconfigure" {
+    if case == "guard-denied" || case == "guard-allowed" {
+        // Run only against a validation copy whose protected port was redirected
+        // to this assigned loopback port. The example never uses port 24800.
+        let listener = TcpListener::bind(("127.0.0.1", port))?;
+        listener.set_nonblocking(true)?;
+        if case == "guard-denied" {
+            for host in ["127.0.0.1", "localhost"] {
+                out.clear();
+                driver.execute(
+                    NetCommand::Connect {
+                        host: host.into(),
+                        port,
+                    },
+                    &mut out,
+                );
+                let deadline = Instant::now() + Duration::from_secs(2);
+                while out.is_empty() && Instant::now() < deadline {
+                    driver.poll(Some(Duration::from_millis(10)), &mut out)?;
+                }
+                if out.len() != 1
+                    || !matches!(&out[0], NetEvent::ConnectFailed { error, .. }
+                    if error == &openergy_net::NetError::ProductionPortDenied.to_string())
+                    || listener.accept().is_ok()
+                {
+                    return Err("outbound guard did not deny the redirected numeric/DNS endpoint before TCP".into());
+                }
+            }
+        } else {
+            driver.execute(
+                NetCommand::Connect {
+                    host: "localhost".into(),
+                    port,
+                },
+                &mut out,
+            );
+            let deadline = Instant::now() + Duration::from_secs(2);
+            let conn = loop {
+                driver.poll(Some(Duration::from_millis(10)), &mut out)?;
+                if let Some(conn) = out.iter().find_map(|event| match event {
+                    NetEvent::Connected { conn, .. } => Some(*conn),
+                    _ => None,
+                }) {
+                    break conn;
+                }
+                if Instant::now() >= deadline {
+                    return Err("explicit guard opt-in did not connect to the redirected endpoint".into());
+                }
+            };
+            let (mut peer, _) = loop {
+                match listener.accept() {
+                    Ok(peer) => break peer,
+                    Err(error) if error.kind() == std::io::ErrorKind::WouldBlock && Instant::now() < deadline => {
+                        driver.poll(Some(Duration::from_millis(10)), &mut out)?;
+                    }
+                    Err(error) => return Err(error.into()),
+                }
+            };
+            driver.execute_checked(
+                NetCommand::SendFrame {
+                    conn,
+                    payload: b"PASS".to_vec(),
+                    priority: Priority::Control,
+                },
+                &mut out,
+            )?;
+            while driver.conn_info(conn).is_some_and(|info| info.queued_bytes != 0) && Instant::now() < deadline {
+                driver.poll(Some(Duration::from_millis(10)), &mut out)?;
+            }
+            peer.set_nonblocking(false)?;
+            peer.set_read_timeout(Some(Duration::from_secs(1)))?;
+            let mut bytes = [0; 8];
+            peer.read_exact(&mut bytes)?;
+            if &bytes != b"\x00\x00\x00\x04PASS" {
+                return Err("opt-in frame did not cross the real redirected socket".into());
+            }
+        }
+    } else if case == "pinned-plain" || case == "pinned-reconfigure" {
         let listener = TcpListener::bind(("127.0.0.1", port))?;
         listener.set_nonblocking(true)?;
         driver.execute(

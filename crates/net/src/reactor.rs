@@ -133,6 +133,8 @@ struct Packet {
     priority: Priority,
     absolute: bool,
     handshake_end: bool,
+    input_barrier: bool,
+    order: u64,
     raw: bool,
     _reservation: Reservation,
 }
@@ -151,13 +153,18 @@ impl Mailbox {
         if self.closed.load(Ordering::Acquire) {
             return Err(NetError::Shutdown);
         }
-        let (conn, bytes, priority, absolute, handshake_end, raw) = match cmd {
+        let (conn, bytes, priority, absolute, handshake_end, input_barrier, raw) = match cmd {
             NetCommand::Send { conn, msg, priority } => {
                 let mut bytes = Vec::new();
                 openergy_protocol::encode(&msg, &mut bytes).map_err(failed)?;
                 let absolute = priority == Priority::Input && matches!(msg, Message::MouseMoveAbs { .. });
                 let end = matches!(msg, Message::SetOptions { .. });
-                (conn, bytes, priority, absolute, end, false)
+                let input_barrier = priority == Priority::Control
+                    && matches!(
+                        msg,
+                        Message::KeyUp { .. } | Message::MouseUp { .. } | Message::Enter { .. } | Message::Leave
+                    );
+                (conn, bytes, priority, absolute, end, input_barrier, false)
             }
             NetCommand::SendFrame {
                 conn,
@@ -170,7 +177,7 @@ impl Mailbox {
                 let mut bytes = Vec::with_capacity(payload.len() + 4);
                 bytes.extend_from_slice(&(payload.len() as u32).to_be_bytes());
                 bytes.extend_from_slice(&payload);
-                (conn, bytes, priority, false, false, true)
+                (conn, bytes, priority, false, false, false, true)
             }
             other => {
                 return Ok(Command::Public(
@@ -199,6 +206,8 @@ impl Mailbox {
                 priority,
                 absolute,
                 handshake_end,
+                input_barrier,
+                order: 0,
                 raw,
                 _reservation: reservation,
             },
@@ -221,9 +230,16 @@ struct Queues {
     bulk: VecDeque<Packet>,
     active: Option<Packet>,
     high_bytes: usize,
+    next_order: u64,
+    control_barriers: VecDeque<u64>,
 }
 impl Queues {
-    fn push(&mut self, packet: Packet) {
+    fn push(&mut self, mut packet: Packet) {
+        packet.order = self.next_order;
+        self.next_order = self.next_order.wrapping_add(1);
+        if packet.input_barrier {
+            self.control_barriers.push_back(packet.order);
+        }
         let queue = match packet.priority {
             Priority::Input => &mut self.input,
             Priority::Control => &mut self.control,
@@ -243,14 +259,29 @@ impl Queues {
         if self.active.is_some() {
             return;
         }
-        self.active = if slow || !handshake_done {
-            self.control.pop_front()
+        // Safety releases and screen transitions must follow older Input and
+        // precede newer Input. Unrelated Control traffic may still be overtaken.
+        // The byte budget bounds live packets well below half the u64 sequence space.
+        let barrier_first = self.input.front().is_some_and(|input| {
+            self.control_barriers
+                .front()
+                .is_some_and(|order| input.order.wrapping_sub(*order) < (1u64 << 63))
+        });
+        self.active = if slow || !handshake_done || barrier_first {
+            self.pop_control()
         } else {
             self.input
                 .pop_front()
-                .or_else(|| self.control.pop_front())
+                .or_else(|| self.pop_control())
                 .or_else(|| self.bulk.pop_front())
         };
+    }
+    fn pop_control(&mut self) -> Option<Packet> {
+        let packet = self.control.pop_front()?;
+        if packet.input_barrier {
+            self.control_barriers.pop_front();
+        }
+        Some(packet)
     }
     fn len(&self) -> usize {
         self.input
@@ -318,8 +349,9 @@ impl Connection {
     fn token(&self) -> Token {
         Token(self.id.0 as usize)
     }
-    fn retry_address(&mut self, registry: &mio::Registry) -> bool {
+    fn retry_address(&mut self, registry: &mio::Registry) -> Result<bool, NetError> {
         while let Some(addr) = self.alternate_addresses.pop_front() {
+            NetDriver::check_port(addr.port())?;
             let result = (|| {
                 let mut stream = TcpStream::connect(addr)?;
                 registry.register(&mut stream, self.token(), Interest::READABLE.add(Interest::WRITABLE))?;
@@ -335,10 +367,10 @@ impl Connection {
                 Ok::<_, io::Error>(())
             })();
             if result.is_ok() {
-                return true;
+                return Ok(true);
             }
         }
-        false
+        Ok(false)
     }
     fn interest(&self) -> Interest {
         if self.connecting
@@ -1150,6 +1182,7 @@ impl NetDriver {
     }
     fn connect(&mut self, host: String, port: u16, expected: Option<Fingerprint>, out: &mut Vec<NetEvent>) {
         let result = (|| {
+            Self::check_port(port)?;
             if expected.is_some() && self.factory.is_none() {
                 return Err(failed("tls_pin_mismatch: a certificate pin requires TLS to be enabled"));
             }
@@ -1236,6 +1269,8 @@ impl NetDriver {
         expected: Option<Fingerprint>,
         deadline: Instant,
     ) -> Result<(), NetError> {
+        // Check again after DNS: explicit lab denial can change while resolving.
+        Self::check_port(addr.port())?;
         // Resolution may finish after reconfigure disabled TLS. Preserve the pin
         // requirement across that asynchronous boundary before opening a socket.
         if expected.is_some() && self.factory.is_none() {
@@ -1694,12 +1729,13 @@ impl NetDriver {
                             }
                         }
                         result => {
-                            if c.retry_address(self.poll.registry()) {
-                                continue;
-                            }
-                            c.failure = Some(match result {
-                                Ok(Some(e)) | Err(e) => crate::connect_error::io_failure(e).to_string(),
-                                _ => "TCP connect failed".into(),
+                            c.failure = Some(match c.retry_address(self.poll.registry()) {
+                                Ok(true) => continue,
+                                Err(error) => error.to_string(),
+                                Ok(false) => match result {
+                                    Ok(Some(e)) | Err(e) => crate::connect_error::io_failure(e).to_string(),
+                                    _ => "TCP connect failed".into(),
+                                },
                             });
                             self.remove(ConnId(token.0 as u64), DisconnectReason::Other, out);
                             continue;
