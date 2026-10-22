@@ -48,7 +48,8 @@ Source SHA-256:
 - `crates/config/src/lib.rs`: `214d8694a6d1b93bffd10b3ccb150da95191b6ce64b83a7a9e347ea9290979a4`
 - `crates/daemon/src/main.rs`: `ba5a5d6ae3817bed2a9fd6955b9fee751983bc6b1f53c0df9f9e12f76519bb61`
 
-Private evidence: `/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-r6-config-ny_7npq0/verification.json`.
+Private evidence: `oe-r6-config-ny_7npq0/verification.json` under the local
+temporary directory (machine-specific parent path omitted).
 That directory also contains the baseline result, daemon logs, generated
 fixtures, and a SHA-256 manifest of tracked Rust/Cargo build inputs. Build and
 Clippy logs are `/tmp/oe-r6-config-build.log` and
