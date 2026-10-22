@@ -160,7 +160,7 @@ function Read-Broker {
         if($remaining -le 0){throw 'Protected migration response deadline'}
         $task=$pipe.ReadAsync($bytes,0,1)
         if(!$task.Wait($remaining) -or $task.Result -eq 0){throw 'Protected migration helper closed or timed out; inspect protected recovery state'}
-        if($bytes[0] -eq 10){$reply=$text.ToString();if($reply -eq 'ERROR|NO_STATE'){throw 'No saved migration state; refusing to change Synergy or Openergy'};if($reply.StartsWith('ERROR|')){throw 'Protected migration helper failed; recovery state remains available'};return $reply}
+        if($bytes[0] -eq 10){$reply=$text.ToString();if($reply -eq 'ERROR|NO_STATE'){throw 'No saved migration state; refusing to change Synergy or Openergy'};if($reply -eq 'ERROR|DISABLED_RUNNING'){throw 'Synergy is running with startup type Disabled. Stop it or set its startup type to Demand/Manual or Automatic before retrying migration.'};if($reply.StartsWith('ERROR|')){throw 'Protected migration helper failed; recovery state remains available'};return $reply}
         if($bytes[0] -lt 32 -or $bytes[0] -gt 126){throw 'Invalid protected migration response'}
         $null=$text.Append([char]$bytes[0])
     }

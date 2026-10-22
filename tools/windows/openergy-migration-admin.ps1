@@ -281,7 +281,14 @@ try {
             foreach($process in [Diagnostics.Process]::GetProcessesByName('synergy-service')){
                 try{$peer=Get-MigrationProcess $process.Id;if($peer.image -eq [IO.Path]::Combine($synergy,'synergy-service.exe') -and $peer.sid -eq $UserSid -and !$peer.admin -and $peer.integrity -le 8192){$ui=$true}}catch{}finally{$process.Dispose()}
             }
+            $service.Refresh()
             $saved=@{start=$start;running=($service.Status -eq 'Running');ui=$ui;delayed=$delayed;approved=$approved}
+            # Disabled can coexist with Running, but cannot be restarted on rollback.
+            # Refuse that snapshot before saving state or changing any live process.
+            if($saved.start -eq 4 -and $saved.running){
+                Reply 'ERROR|DISABLED_RUNNING'
+                throw 'Synergy is running with startup type Disabled. Stop it or set its startup type to Demand/Manual or Automatic before retrying migration.'
+            }
             Save-State $saved
             $cutover=$true
             if($saved.running){$service.Stop();$service.WaitForStatus('Stopped',[TimeSpan]::FromSeconds(20))}

@@ -142,3 +142,9 @@ missing acknowledgement restores the service independently and retains state.
 Even acknowledged Start keeps the saved state for later Commit or Rollback.
 Commit also retains it for later rollback. An ambiguous start is not a completed commit;
 use `-Rollback` to finish recovery before retrying.
+
+Migration refuses a service snapshot that is both Running and configured
+Disabled, before saving recovery state, stopping the service, or killing any
+Synergy process. Stop it first, or change its startup type to Demand/Manual or
+Automatic, then retry migration. A Disabled service that is already stopped
+remains supported. The helper does not temporarily enable a disabled service.

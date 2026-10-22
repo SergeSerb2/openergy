@@ -153,3 +153,75 @@ OWNED_PROTECTED_FIXTURE_HASH_CHECKED_CLEANUP_PASS
 POST_VERIFICATION_TEN_FILE_INVENTORY_PASS
 OWNED_PROTECTED_FIXTURES_REMOVED
 ```
+
+## Round 10: running service configured Disabled
+
+Implementation base: `6432b7e95499986d3c4cfaee6eca44de94907f4a`.
+The owned Windows files matched parent
+`2f49206d24945f55da70df6f0e081760a6415211` before this follow-up.
+Fresh independent review confirmed the four round 9 corrections and found one
+P2: Windows permits a running service to be configured Disabled. Saving
+`start=4, running=true`, then stopping it, makes rollback fail when it tries to
+start a disabled service. Microsoft documents the disabled-start error in
+[ChangeServiceConfigW](https://learn.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-changeserviceconfigw)
+and [StartServiceW](https://learn.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-startservicew).
+
+The helper now refreshes service status and rejects that exact saved snapshot
+before `Save-State`, `cutover=true`, `service.Stop`, or process kills. It sends
+`ERROR|DISABLED_RUNNING`; the limited controller reports: "Synergy is running
+with startup type Disabled. Stop it or set its startup type to Demand/Manual or
+Automatic before retrying migration." No temporary enable/start/disable sequence
+was added. Disabled-plus-stopped support is unchanged. The explicit pipe rights
+and Identification SQOS, byte-array handling, STARTED_ACK, stopped-service
+restoration, and UI acknowledgement fixes remain intact.
+
+A new disposable source copy contained exactly ten top-level script/command
+files. The pre-run and post-run Windows inventory matched the local hashes,
+and the local files remained unchanged. Prior copies and reports were retained.
+Archive SHA-256: `386655adcdbeaf0676a2ce1d92ebbf82825c36dcb40c3d7f2b1ce76acc13ee31`.
+
+| File under tools/windows | Round 10 SHA-256 |
+| --- | --- |
+| `openergy-migration-admin.ps1` | `737deda8b910f40f6473a7cc5d33b17b6a067912bbd72b89e0d991a4b3966002` |
+| `openergy-run.cmd` | `74772411a85032212c7f4ba1be1948233804dcb21166c5caef0a6611ea2c3210` |
+| `openergy-run.ps1` | `607ae78154329b10e4c2a6557760e80155ef8988669c2a0c7b0742586fede8c5` |
+| `openergy.ps1` | `aa1dac2eb83426a2f981353ce8adba3f7bbe7c97f4b5363b5aeb1883ac218214` |
+| `switch-from-synergy.ps1` | `9dd3bd9ac427ebc0cad0adb5e94b6ad68c9d0911c4ad08e4fdd9d615cd0f7a66` |
+| `verify-control.ps1` | `264d6a71e54de650498f6dcf46b806acaf5cc20f2022222082372cf614ab8aeb` |
+| `verify-lifecycle-ownership.ps1` | `7510ff5a7a79ac95292cfa87cc2648b4c9748d4ca1754086a221e49af064c4c1` |
+| `verify-lifecycle.ps1` | `6e6478b500921c354d5f579c5756cfe816ea399eef6640523ab633ed25789835` |
+| `verify-migration-boundary.ps1` | `5ff92857b4fa8e129b6c1a9b85b1d3a89fc9c3b9921e9dab25172fb4815acfef` |
+| `verify-pipe-identity.ps1` | `a9a81cc2624ec179a275a66a30090d1ad3e57e4d2bb6dd7bd78e637e944458fb` |
+
+The same public `verify-migration-boundary.ps1` command shown above ran with
+private state, BelowNormal priority, Windows PowerShell 5.1.26100.9750 and
+PowerShell 7.6.4, and assigned port 26530. Result: exit `0`. Full-file parsing,
+elevated entry/replacement-manager rejection, protected read-only Check,
+owner/write/DELETE_CHILD/junction checks, user-module isolation in Check,
+Network-SID pipe denial, and occupied nonce-pipe refusal passed again. The
+owned protected fixture was removed after owner/hash/inventory checks. The
+supplied prior round5 binary hash remained unchanged. No tests were added.
+
+**The actual Disabled-plus-running service corner remains runtime UNVERIFIED.**
+Disabled-plus-stopped acceptance and the new specific protocol error are also
+source-reviewed, not positive runtime results. Both limited PowerShell children
+still exit `0xc0000142` before script code in SSH session 0. No guard, pipe ACL,
+desktop ACL, or token policy was weakened to reach those branches. Existing
+positive IPC/service/UI acceptance gates remain open. No helper provisioning,
+actual service/task/startup/registry change, installed/live config or TLS change,
+account or credential operation, desktop/native input/clipboard action, or port
+24800 occurred. The limited lifecycle branch did not start a virtual daemon.
+
+Sanitized final markers:
+
+```text
+PASS ps51 full script parsing
+LIMIT ps51 restricted medium process exits 0xc0000142 before user code in SSH session 0; no desktop ACL changed
+PASS ps7 full script parsing
+LIMIT ps7 restricted medium process exits 0xc0000142 before user code in SSH session 0; no desktop ACL changed
+WINDOWS_MIGRATION_BOUNDARY_NEGATIVE_PASS
+MEDIUM_INTERACTIVE_ACCEPTANCE_REMAINS_REQUIRED
+OWNED_PROTECTED_FIXTURE_HASH_CHECKED_CLEANUP_PASS
+R10_POST_VERIFICATION_TEN_FILE_INVENTORY_PASS
+R10_OWNED_PROTECTED_FIXTURES_REMOVED
+```
