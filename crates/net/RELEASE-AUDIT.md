@@ -241,7 +241,7 @@ priority. In one real `virtual.inject` batch, a held key can leave and reenter
 the same peer, then press the same key again. `SendControl` carries the old
 safety KeyUp, while Leave, Enter and the new KeyDown use Input. The latter
 messages could overtake the old KeyUp. The new
-`scenarios/N2-queued-release-reentry.toml` fails its strict DKUP expectation
+`../../tools/e2e/scenarios/N2-queued-release-reentry.toml` fails its strict DKUP expectation
 against commit `a57954c`; report: `/tmp/oe-net-causal-a579-final.json`.
 
 Typed Control KeyUp, MouseUp, Enter and Leave now record their queue order.
@@ -279,8 +279,7 @@ Clippy with `--all-targets --no-deps -- -D warnings` pass.
 The parent reports that `a57954c`, the root rustls-pemfile removal, and the
 lockfile refresh are integrated. This follow-up changes no dependency or
 MSRV. Keep the daemon owner's explicit-pin revoke/retry and native opt-in
-policies. Include `crates/net/scenarios/N2-queued-release-reentry.toml` in
-integration verification; it lives within the net ownership scope rather
-than the shared scenario catalogue. Run native Windows ACL checks and the
+policies. The parent moved N2 into `tools/e2e/scenarios/N2-queued-release-reentry.toml`
+so standard integration and CI runs include it. Run native Windows ACL checks and the
 parent's full suite after integration. No release-readiness claim is made
 for those outstanding checks.
