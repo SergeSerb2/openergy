@@ -66,7 +66,8 @@ binary hashes, exit status, and source.
 - New `R5-incoming-clipboard-cancellation`: a declared 64 MiB Start stays below
   a 32 MiB RSS gate; a newer grab discards a complete payload awaiting End;
   a fresh Start/Data/End then succeeds. No change was justified in
-  `crates/session/src/clipboard.rs`.
+  `crates/session/src/clipboard.rs`. The scenario now lives in the standard
+  `tools/e2e/scenarios` catalogue so normal virtual verification runs it.
 - X11 `clipboard`: real small-image, text, HTML, and DIB/BMP transfers;
   **10,498,508-byte PNG INCR** in both directions; independent Python pixel
   comparison.
@@ -93,7 +94,7 @@ nice -n 15 python3 crates/net/examples/r5_queue_memory.py \
   --source 22edbad37881a6b05c0bb91f1cff2b0670331c79 \
   --report /tmp/oe-r5-queue.json
 nice -n 15 /tmp/oe-r5-net-target/release/openergy-e2e run --no-docker \
-  --scenario-dir crates/net/examples/r5-scenarios \
+  --scenario 'R5-incoming-clipboard-cancellation' \
   --port-range 26202-26219 --lab-port-range 26220-26239 \
   --openergy /tmp/oe-r5-net-target/release/openergy \
   --report /tmp/oe-r5-cancellation.json
