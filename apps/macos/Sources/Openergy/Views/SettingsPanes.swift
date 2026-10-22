@@ -480,12 +480,12 @@ struct AdvancedPane: View {
                     set: { model.patch("macos.click_numbering", .string($0)) }
                 )) {
                     Text("Numbered clicks (recommended)").tag("native")
-                    Text("Legacy, like Synergy").tag("legacy")
+                    Text("Legacy clicks").tag("legacy")
                 }
             } header: {
                 Text("Window Focus")
             } footer: {
-                FooterText("macOS 27 brings a window to the front only when each click carries its own number. Numbered clicks fix the Synergy bug where a click in a window did not activate it.")
+                FooterText("Numbered clicks are the default for window activation. Use Legacy only for compatibility troubleshooting.")
             }
 
             Section("General") {
