@@ -82,8 +82,12 @@ This builds for the native Rust host only. Supported archive targets are:
 | x86-64 Linux GNU | `openergy` daemon/CLI | Unsigned |
 | x86-64 Windows MSVC | `openergy.exe` daemon/CLI | Unsigned |
 
-The archive also contains README, these release instructions, project licenses,
-available third-party notices, and `BUILD.json`. macOS bundles carry licenses
+The archive also contains an archive-specific README, `docs/releasing.md`,
+`examples/server.toml`, `examples/client.toml`, project licenses, third-party
+notices, and `BUILD.json`. The README links to installation instructions at the
+exact source commit, so source-only relative links do not appear usable in a
+binary download. Windows `.ps1`/`.cmd` installation and wrapper scripts are
+copied together beside `openergy.exe`. macOS bundles carry licenses
 and notices in `Contents/Resources` before signing. Every binary package requires
 `LICENSE-MIT`, `LICENSE-APACHE`, and `THIRD_PARTY_NOTICES.md` to exist.
 It runs the same notice freshness check as verification. The manifest records

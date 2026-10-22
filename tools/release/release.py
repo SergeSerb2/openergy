@@ -293,9 +293,36 @@ def package(args):
             shutil.copy2(binary, stage / binary.name)
             binary = stage / binary.name
         smoke(binary, args.port_range)
-        for source in [ROOT / "README.md", ROOT / "docs/releasing.md", *(ROOT / name for name in LEGAL)]:
-            if source.is_file():
+        for name in LEGAL:
+            shutil.copy2(ROOT / name, stage / name)
+        (stage / "docs").mkdir()
+        shutil.copy2(ROOT / "docs/releasing.md", stage / "docs/releasing.md")
+        (stage / "examples").mkdir()
+        for name in ("server.toml", "client.toml"):
+            shutil.copy2(ROOT / "examples" / name, stage / "examples" / name)
+        if os.name == "nt":
+            scripts = sorted(path for path in (ROOT / "tools/windows").iterdir()
+                             if path.is_file() and path.suffix.lower() in (".ps1", ".cmd"))
+            if not scripts:
+                raise ValueError("Windows archive is missing its installer/wrapper scripts")
+            for source in scripts:
                 shutil.copy2(source, stage / source.name)
+        source_url = f"https://github.com/SergeSerb2/openergy/blob/{source_commit}"
+        readme = (f"# Openergy {version}\n\nNative target: `{target}`.\n\n"
+                  f"Signing: **{signing}; unnotarized**. This is not a trusted distribution build.\n\n"
+                  "The macOS payload is Openergy.app. Linux and Windows payloads are the daemon/CLI; "
+                  "Windows installation and wrapper scripts sit beside openergy.exe. "
+                  "This archive does not install software or register a login task by itself.\n\n"
+                  f"Read the [source installation instructions]({source_url}/README.md) for this exact commit. "
+                  "See [release limits](docs/releasing.md), [server config](examples/server.toml), "
+                  "and [client config](examples/client.toml). Release build commands require a source checkout; "
+                  "the archive does not contain the build tools.\n\n"
+                  "Keep LICENSE-MIT, LICENSE-APACHE, and THIRD_PARTY_NOTICES.md with these binaries. "
+                  "BUILD.json records the source and compiler inputs. The SHA-256 sidecar detects changed "
+                  "downloads; it does not authenticate a publisher.\n\n"
+                  "Packaged daemon CLI/virtual IPC checks passed. Native desktop input, clipboard, "
+                  "TCC, login-item, and real-device acceptance were not exercised by packaging.\n")
+        (stage / "README.md").write_text(readme, newline="\n")
         manifest = {"version": version, "tag": args.tag, "commit": source_commit,
                     "dirty": bool(git("status", "--porcelain")),
                     "target": target, "rust": toolchain, "signing": signing, "notarized": False,
