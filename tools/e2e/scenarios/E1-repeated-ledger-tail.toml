@@ -1,0 +1,68 @@
+# Requirement: Repeated input subsequences match the final ledger record without hiding earlier events.
+name = "E1-repeated-ledger-tail"
+requirement = "Real virtual input retains order and repeated tail assertions select the final matching record."
+timeout_ms = 3000
+
+[[node]]
+id = "server"
+role = "server"
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+peer = "client"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{type = "mouse_move_abs", x = 1919, y = 540}, {type = "mouse_move_rel", dx = 20, dy = 0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {active_screen = "client"}
+
+[[step]]
+do = "ledger_mark"
+node = "client"
+save = "before"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{type = "key_down", key = 97, modifiers = 0, button = 1}, {type = "key_up", key = 97, modifiers = 0, button = 1}, {type = "key_down", key = 97, modifiers = 0, button = 1}, {type = "key_up", key = 97, modifiers = 0, button = 1}]
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+since = "${before.sequence}"
+input_only = true
+exact = true
+expect = [{event = {type = "key_down", key = 97}}, {event = {type = "key_up", key = 97}}, {event = {type = "key_down", key = 97}}, {event = {type = "key_up", key = 97}}]
+
+[[step]]
+do = "assert_recorded_tail"
+node = "client"
+expect = [{event = {type = "key_down", key = 97}}, {event = {type = "key_up", key = 97}}]
+
+[[step]]
+do = "assert_recorded_tail"
+node = "client"
+expect = [{event = {type = "key_up", key = 97}}]
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "virtual.inject"
+params = {events = [{type = "mouse_down", button = 0}]}
+expect_error = "virtual_failed"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+peer = "server"

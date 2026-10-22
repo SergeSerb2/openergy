@@ -538,22 +538,14 @@ impl Context {
                     return Err(Failure::product("daemon.stop did not exit successfully"));
                 }
             }
-            self.state_mut(id)?.process.take();
+            if let Some(mut process) = self.state_mut(id)?.process.take() {
+                process.terminate()?;
+            }
         } else if kind == "lab" && self.state(id)?.lab.is_some() {
             self.lab(id, &["down".into()])?;
             util::sanitize_lab_logs(&self.state(id)?.dir)?;
+            self.lab(id, &["remove".into()])?;
             if let Some(name) = self.state_mut(id)?.lab.take() {
-                let mut command = Command::new("docker");
-                command.args(["rm", &name]);
-                let (code, _) = command_output(
-                    &mut command,
-                    &self.state(id)?.dir,
-                    "lab-remove",
-                    Duration::from_secs(10),
-                )?;
-                if code != 0 {
-                    return Err(Failure::environment("cannot remove the owned lab container"));
-                }
                 crate::guardian::lab(&name, &self.state(id)?.dir, self.state(id)?.port, false)?;
             }
         } else {
@@ -569,7 +561,24 @@ impl Context {
             .ok_or_else(|| Failure::runner("raw node is not started"))
     }
     pub fn ledger(&self, id: &str, since: u64, timeout: Duration) -> Result<Vec<Value>> {
+        self.ledger_checked(id, since, timeout, false)
+    }
+    pub fn ledger_checked(&self, id: &str, since: u64, timeout: Duration, complete: bool) -> Result<Vec<Value>> {
         let value = self.ipc(id, "virtual.recorded", json!({"since":since}), timeout)?;
+        if complete
+            && value
+                .pointer("/stats/dropped")
+                .and_then(Value::as_u64)
+                .is_some_and(|n| n > 0)
+            && value
+                .pointer("/stats/oldest_sequence")
+                .and_then(Value::as_u64)
+                .is_none_or(|oldest| since < oldest.saturating_sub(1))
+        {
+            return Err(Failure::product(
+                "ledger overflow prevents a complete empty/exact assertion",
+            ));
+        }
         value
             .as_array()
             .or_else(|| value.get("events").and_then(Value::as_array))
@@ -691,6 +700,7 @@ fn copy_tree(source: &Path, dest: &Path) -> Result<()> {
 }
 pub fn isolated_env(command: &mut Command, dir: &Path, socket: &Path) {
     command
+        .env("OPENERGY_CONFIG", dir.join("config.toml"))
         .env("OPENERGY_CONFIG_DIR", dir)
         .env("OPENERGY_TLS_DIR", dir.join("tls"))
         .env("OPENERGY_SOCKET", socket)
@@ -741,6 +751,7 @@ pub fn run_scenario(options: &Options, scenario: Scenario, dir: PathBuf) -> Scen
         failed_step: None,
         elapsed_ms: 0,
         failure: None,
+        cleanup_failures: Vec::new(),
         artifact_dir: None,
         stderr_tails: BTreeMap::new(),
         measurements: Vec::new(),
@@ -760,6 +771,7 @@ pub fn run_scenario(options: &Options, scenario: Scenario, dir: PathBuf) -> Scen
                         op: original.op,
                         fields: serde_json::from_value(expanded)?,
                     };
+                    step.validate()?;
                     let value = context.execute(&step)?;
                     if let Some(name) = step.fields.get("save").and_then(Value::as_str) {
                         context.vars.insert(name.into(), value);
@@ -780,6 +792,7 @@ pub fn run_scenario(options: &Options, scenario: Scenario, dir: PathBuf) -> Scen
                 }
             }
             let cleanup_errors = context.cleanup();
+            report.cleanup_failures = cleanup_errors.clone();
             let result = result.and_then(|()| cleanup_errors.into_iter().next().map_or(Ok(()), Err));
             if let Err(error) = result {
                 report.failure = Some(error);

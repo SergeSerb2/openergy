@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
-ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+umask 077
+ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
 IMAGE=openergy-interop:latest
 CONTAINER=${LAB_NAME:-openergy-interop}
 OWNER=org.openergy.interop-lab
@@ -8,7 +9,7 @@ RANGE=${LAB_PORT_RANGE:-24900-24910}
 fail() { printf 'lab: %s\n' "$*" >&2; exit 1; }
 usage() {
   cat <<'EOF'
-Usage: lab.sh build|up|down|status
+Usage: lab.sh build|up|down|remove|status
        lab.sh server deskflow|barrier [--port 24900] [--screens 'lab,openergy-mac']
                      [--position right|left|top|bottom] [--tls on|off]
                      [--protocol synergy|barrier] [--trust-fingerprint SHA256]
@@ -26,6 +27,8 @@ exists() { docker container inspect "$CONTAINER" >/dev/null 2>&1; }
 owned() {
   [[ $(docker inspect -f '{{index .Config.Labels "org.openergy.interop-lab"}}' "$CONTAINER") == 1 ]] \
     || fail "container $CONTAINER is not owned by this lab"
+  [[ $(docker inspect -f '{{index .Config.Labels "org.openergy.interop-lab.root"}}' "$CONTAINER") == "$ROOT" ]] \
+    || fail "container $CONTAINER belongs to a different lab directory (or predates directory ownership labels)"
 }
 running() { [[ $(docker inspect -f '{{.State.Running}}' "$CONTAINER" 2>/dev/null) == true ]]; }
 validate_range() {
@@ -58,6 +61,7 @@ case "$cmd" in
     if ! exists; then
       docker create --name "$CONTAINER" --hostname lab --init=false \
         --label "$OWNER=1" --label "$OWNER.ports=$RANGE" \
+        --label "$OWNER.root=$ROOT" \
         --publish "127.0.0.1:$RANGE:$RANGE/tcp" \
         --mount "type=bind,src=$ROOT/.state,dst=/lab" \
         --health-cmd 'xdpyinfo -display :99 >/dev/null 2>&1' \
@@ -78,6 +82,14 @@ case "$cmd" in
   down)
     (($# == 0)) || fail 'down takes no arguments'
     if exists; then owned; if running; then docker stop --timeout 5 "$CONTAINER"; fi; fi
+    ;;
+  remove)
+    (($# == 0)) || fail 'remove takes no arguments'
+    if exists; then
+      owned
+      running && fail 'stop the lab before removing it'
+      docker rm "$CONTAINER" >/dev/null
+    fi
     ;;
   status)
     if ! exists; then printf 'Container absent\n'; exit 0; fi

@@ -65,9 +65,12 @@ pub fn lookup<'a>(value: &'a Value, path: &str) -> Option<&'a Value> {
 /// Object expectations are subsets. Arrays preserve order and length.
 pub fn matches(actual: &Value, expected: &Value) -> bool {
     match expected {
-        Value::Object(map) => map
-            .iter()
-            .all(|(key, value)| actual.get(key).is_some_and(|a| matches(a, value))),
+        Value::Object(map) => {
+            actual.is_object()
+                && map
+                    .iter()
+                    .all(|(key, value)| actual.get(key).is_some_and(|a| matches(a, value)))
+        }
         Value::Array(items) => actual
             .as_array()
             .is_some_and(|a| a.len() == items.len() && a.iter().zip(items).all(|(a, e)| matches(a, e))),
