@@ -37,6 +37,26 @@ pub struct SocketLock {
     _file: File,
 }
 #[cfg(unix)]
+pub struct Listener {
+    socket: UnixListener,
+    shutdown_read: UnixStream,
+    shutdown_write: UnixStream,
+}
+#[cfg(unix)]
+pub struct ServerThread {
+    thread: std::thread::JoinHandle<()>,
+    shutdown: UnixStream,
+}
+#[cfg(unix)]
+impl ServerThread {
+    pub fn join(self) -> std::thread::Result<()> {
+        // Closing the private peer wakes poll without a timer or a pathname
+        // lookup. No connection can be sent to a replaced control socket.
+        drop(self.shutdown);
+        self.thread.join()
+    }
+}
+#[cfg(unix)]
 impl Drop for SocketLock {
     fn drop(&mut self) {
         if std::fs::symlink_metadata(&self.path)
@@ -47,7 +67,7 @@ impl Drop for SocketLock {
     }
 }
 #[cfg(unix)]
-pub fn bind(path: &Path) -> Result<(UnixListener, SocketLock), String> {
+pub fn bind(path: &Path) -> Result<(Listener, SocketLock), String> {
     if let Some(parent) = path.parent().filter(|p| !p.as_os_str().is_empty()) {
         if !parent.exists() {
             std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
@@ -104,7 +124,16 @@ pub fn bind(path: &Path) -> Result<(UnixListener, SocketLock), String> {
     };
     mode(path, 0o600)?;
     listener.set_nonblocking(true).map_err(|e| e.to_string())?;
-    Ok((listener, lock))
+    // Allocate the shutdown channel during bind, before platform workers start.
+    let (shutdown_read, shutdown_write) = UnixStream::pair().map_err(|e| e.to_string())?;
+    Ok((
+        Listener {
+            socket: listener,
+            shutdown_read,
+            shutdown_write,
+        },
+        lock,
+    ))
 }
 #[cfg(unix)]
 fn mode(path: &Path, n: u32) -> Result<(), String> {
@@ -113,33 +142,48 @@ fn mode(path: &Path, n: u32) -> Result<(), String> {
 }
 #[cfg(unix)]
 pub fn serve(
-    listener: UnixListener,
+    listener: Listener,
     _path: PathBuf,
     tx: SyncSender<IoCommand>,
     waker: Arc<mio::Waker>,
     bus: Arc<EventBus>,
     stop: Arc<AtomicBool>,
-) -> std::thread::JoinHandle<()> {
-    std::thread::spawn(move || {
+) -> ServerThread {
+    let Listener {
+        socket: listener,
+        shutdown_read,
+        shutdown_write,
+    } = listener;
+    let thread = std::thread::spawn(move || {
         let mut clients = Vec::new();
         loop {
             if stop.load(Ordering::Relaxed) {
                 break;
             }
-            let mut fd = libc::pollfd {
-                fd: listener.as_raw_fd(),
-                events: libc::POLLIN,
-                revents: 0,
-            };
-            // Safety: poll borrows one valid listener descriptor for at most 50 ms.
-            let ready = unsafe { libc::poll(&mut fd, 1, 50) };
-            if ready == 0 {
-                continue;
-            }
+            let mut fds = [
+                libc::pollfd {
+                    fd: listener.as_raw_fd(),
+                    events: libc::POLLIN,
+                    revents: 0,
+                },
+                libc::pollfd {
+                    fd: shutdown_read.as_raw_fd(),
+                    events: libc::POLLIN,
+                    revents: 0,
+                },
+            ];
+            // Safety: both descriptors remain owned by this thread. Input or
+            // closure of the private shutdown peer wakes the blocking poll.
+            let ready = unsafe { libc::poll(fds.as_mut_ptr(), fds.len() as _, -1) };
             if ready < 0 && std::io::Error::last_os_error().kind() == std::io::ErrorKind::Interrupted {
                 continue;
             }
-            if ready < 0 || fd.revents & (libc::POLLERR | libc::POLLHUP | libc::POLLNVAL) != 0 {
+            if fds[1].revents != 0 {
+                stop.store(true, Ordering::Relaxed);
+                let _ = waker.wake();
+                break;
+            }
+            if ready < 0 || fds[0].revents & (libc::POLLERR | libc::POLLHUP | libc::POLLNVAL) != 0 {
                 log::error!("IPC listener failed");
                 stop.store(true, Ordering::Relaxed);
                 let _ = waker.wake();
@@ -179,7 +223,11 @@ pub fn serve(
         for h in clients {
             let _ = h.join();
         }
-    })
+    });
+    ServerThread {
+        thread,
+        shutdown: shutdown_write,
+    }
 }
 #[cfg(windows)]
 pub fn serve(
