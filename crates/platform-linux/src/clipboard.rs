@@ -586,6 +586,9 @@ impl Worker {
         };
         let expected_format = if target == self.atoms.targets { 32 } else { 8 };
         if reply.type_ != self.atoms.incr {
+            if reply.type_ == NONE {
+                return Err(PlatformError::ClipboardUnavailable);
+            }
             if reply.type_ != expected_type || reply.format != expected_format {
                 return Err(error("X11 selection returned an invalid property type or format"));
             }
@@ -705,17 +708,41 @@ impl Worker {
         self.c.flush().map_err(error)?;
         Ok(reply)
     }
-    fn read(&mut self, selection: Selection, max: usize) -> Result<ClipboardData, PlatformError> {
-        let selection = self.atoms.selections[selection.index()];
-        if self
+    fn owner(&self, selection: u32) -> Result<u32, PlatformError> {
+        Ok(self
             .c
             .get_selection_owner(selection)
             .map_err(error)?
             .reply()
             .map_err(error)?
-            .owner
-            == NONE
-        {
+            .owner)
+    }
+    fn pending_events(&mut self) -> Result<(), PlatformError> {
+        while let Some(event) = self.c.poll_for_event().map_err(error)? {
+            self.event(event)?;
+        }
+        Ok(())
+    }
+    fn check_snapshot(&mut self, index: usize, owner: u32, stamp: u64) -> Result<(), PlatformError> {
+        let current = self.owner(self.atoms.selections[index])?;
+        // The owner query is a server round trip. Process notifications queued
+        // before its reply, including a same-owner reacquisition of new data.
+        self.pending_events()?;
+        if current != owner || self.stamps[index].load(Ordering::Acquire) != stamp {
+            return Err(PlatformError::ClipboardUnavailable);
+        }
+        Ok(())
+    }
+    fn read(&mut self, selection: Selection, max: usize) -> Result<ClipboardData, PlatformError> {
+        let index = selection.index();
+        let selection = self.atoms.selections[index];
+        let owner = self.owner(selection)?;
+        self.pending_events()?;
+        let stamp = self.stamps[index].load(Ordering::Acquire);
+        if owner == NONE || (owner == self.window && self.data[index].is_empty()) {
+            // No owner is a clear. We also know that our own empty target map
+            // came from an explicit write(empty), rather than unsupported data.
+            self.check_snapshot(index, owner, stamp)?;
             return Ok(ClipboardData::default());
         }
         let targets = self
@@ -732,30 +759,35 @@ impl Worker {
             (FormatKind::Png, vec![self.atoms.png, self.atoms.bmp]),
         ] {
             if let Some(target) = choices.into_iter().find(|t| targets.contains(t)) {
-                if let Some(reply) = self.convert(selection, target, max.saturating_sub(data.total_bytes()))? {
-                    if reply.format != 8 {
-                        return Err(error("X11 selection has invalid format"));
-                    }
-                    let (kind, bytes) = if target == self.atoms.bmp {
-                        (FormatKind::Dib, image::bmp_to_dib(&reply.value)?)
-                    } else if kind == FormatKind::Png {
-                        (
-                            FormatKind::Dib,
-                            image::png_to_dib(&reply.value, max.saturating_sub(data.total_bytes()))?,
-                        )
-                    } else {
-                        std::str::from_utf8(&reply.value).map_err(error)?;
-                        (kind, reply.value)
-                    };
-                    if bytes.len() > max.saturating_sub(data.total_bytes()) {
-                        return Err(PlatformError::ClipboardTooLarge {
-                            bytes: data.total_bytes().saturating_add(bytes.len()),
-                            limit: max,
-                        });
-                    }
-                    data.formats.push(ClipboardFormat { kind, bytes });
+                let reply = self
+                    .convert(selection, target, max.saturating_sub(data.total_bytes()))?
+                    .ok_or(PlatformError::ClipboardUnavailable)?;
+                if reply.format != 8 {
+                    return Err(error("X11 selection has invalid format"));
                 }
+                let (kind, bytes) = if target == self.atoms.bmp {
+                    (FormatKind::Dib, image::bmp_to_dib(&reply.value)?)
+                } else if kind == FormatKind::Png {
+                    (
+                        FormatKind::Dib,
+                        image::png_to_dib(&reply.value, max.saturating_sub(data.total_bytes()))?,
+                    )
+                } else {
+                    std::str::from_utf8(&reply.value).map_err(error)?;
+                    (kind, reply.value)
+                };
+                if bytes.len() > max.saturating_sub(data.total_bytes()) {
+                    return Err(PlatformError::ClipboardTooLarge {
+                        bytes: data.total_bytes().saturating_add(bytes.len()),
+                        limit: max,
+                    });
+                }
+                data.formats.push(ClipboardFormat { kind, bytes });
             }
+        }
+        self.check_snapshot(index, owner, stamp)?;
+        if data.formats.is_empty() {
+            return Err(PlatformError::ClipboardUnavailable);
         }
         Ok(data)
     }

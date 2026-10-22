@@ -39,6 +39,12 @@ their transfer slots immediately; completed/expired transfers remove event
 subscriptions. Outgoing transfers have a combined 256 MiB byte budget and at
 most 16 slots. Own-write XFixes notifications do not advance the stamp a second
 time after `write` returns.
+Reads follow the shared unavailable/clear contract (`ffdd07a`). A stable
+ownerless selection, or this backend's explicit empty write, returns successful
+empty data. An owner with no supported targets, a refused/missing conversion,
+or a selection that changes during the read returns `ClipboardUnavailable`.
+Zero-byte text and HTML remain supported payloads. Owner identity and XFixes
+stamps guard the complete snapshot, including same-owner content changes.
 Text and HTML use UTF-8; image/png is converted to wire DIB and image/bmp adds or
 removes its 14-byte file header. PNG supports non-interlaced grayscale, indexed,
 RGB and RGBA images, 1/2/4/8/16-bit samples where valid, all PNG filters, and

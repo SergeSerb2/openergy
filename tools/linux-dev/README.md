@@ -20,6 +20,7 @@ report establishes builds with 1.99.1 only.
 tools/linux-dev/linux-dev.sh build               # build image and Linux platform crate
 tools/linux-dev/linux-dev.sh run inject
 tools/linux-dev/linux-dev.sh run clipboard
+tools/linux-dev/linux-dev.sh run clipboard-contract # unavailable versus clear acceptance
 tools/linux-dev/linux-dev.sh run capture
 tools/linux-dev/linux-dev.sh run recovery        # grab, ownership, keymap and INCR recovery
 tools/linux-dev/linux-dev.sh run resources       # repeated create/drop, keymap and worker cleanup

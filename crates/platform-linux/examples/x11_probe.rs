@@ -59,6 +59,7 @@ mod probe {
         match mode.as_str() {
             "inject" => inject()?,
             "clipboard" => clipboard()?,
+            "clipboard-contract" => clipboard_contract()?,
             "capture" => capture()?,
             "recovery" => recovery()?,
             "inject-recovery" => inject_recovery()?,
@@ -484,6 +485,146 @@ mod probe {
             return Err("Invalid PNG accepted".into());
         }
         println!("clipboard PRIMARY, XFixes change stamp, empty selection, invalid PNG: passed");
+        clipboard_contract()?;
+        Ok(())
+    }
+    fn clipboard_contract() -> Result<()> {
+        use x11rb::{protocol::xproto::ConnectionExt, CURRENT_TIME, NONE};
+        let mut b = X11Clipboard::connect(None, Selection::Clipboard)?;
+        let (c, _) = x11rb::connect(None)?;
+        let selection = c.intern_atom(false, b"CLIPBOARD")?.reply()?.atom;
+        c.set_selection_owner(NONE, selection, CURRENT_TIME)?.check()?;
+        if !b.read(1024)?.formats.is_empty() {
+            return Err("Stable ownerless selection did not return a real clear".into());
+        }
+        println!("clipboard contract: stable ownerless selection is a real clear");
+        {
+            let _owner = clip_in(&b, "clipboard", "UTF8_STRING", b"readable text")?;
+            equal_format(&b.read(1024)?, FormatKind::TextUtf8, b"readable text")?;
+        }
+        for (kind, target) in [
+            (FormatKind::TextUtf8, "UTF8_STRING"),
+            (FormatKind::HtmlUtf8, "text/html"),
+        ] {
+            let _owner = clip_in(&b, "clipboard", target, b"")?;
+            equal_format(&b.read(0)?, kind, b"")?;
+        }
+        println!("clipboard contract: external text and zero-byte UTF-8/HTML remain readable");
+        {
+            let _owner = clip_in(&b, "clipboard", "application/x-openergy-unsupported", b"opaque")?;
+            if !matches!(
+                b.read(1024),
+                Err(openergy_platform::PlatformError::ClipboardUnavailable)
+            ) {
+                return Err("Unsupported-only selection was not ClipboardUnavailable".into());
+            }
+        }
+        println!("clipboard contract: unsupported-only owner is unavailable");
+        for mode in ["refuse", "missing", "replace", "reacquire"] {
+            selection_contract_peer(&b, mode)?;
+        }
+        b.write(&ClipboardData::default())?;
+        if !b.read(0)?.formats.is_empty() {
+            return Err("Explicit backend clear did not remain an empty successful payload".into());
+        }
+        println!("clipboard contract: explicit backend clear remains successful empty data");
+        Ok(())
+    }
+    fn selection_contract_peer(b: &X11Clipboard, mode: &str) -> Result<()> {
+        use x11rb::{
+            connection::Connection,
+            protocol::{xproto, Event},
+            wrapper::ConnectionExt as _,
+            CURRENT_TIME, NONE,
+        };
+        let (c, screen) = x11rb::connect(None)?;
+        let root = c.setup().roots[screen].root;
+        let owner = c.generate_id()?;
+        let replacement = c.generate_id()?;
+        for window in [owner, replacement] {
+            c.create_window(
+                x11rb::COPY_DEPTH_FROM_PARENT,
+                window,
+                root,
+                0,
+                0,
+                1,
+                1,
+                0,
+                xproto::WindowClass::INPUT_OUTPUT,
+                0,
+                &xproto::CreateWindowAux::new(),
+            )?
+            .check()?;
+        }
+        let selection = c.intern_atom(false, b"CLIPBOARD")?.reply()?.atom;
+        let targets = c.intern_atom(false, b"TARGETS")?.reply()?.atom;
+        let utf8 = c.intern_atom(false, b"UTF8_STRING")?.reply()?.atom;
+        c.set_selection_owner(owner, selection, CURRENT_TIME)?.check()?;
+        let reader = b.clone();
+        let read = std::thread::spawn(move || reader.read_selection(Selection::Clipboard, 1024));
+        loop {
+            if let Event::SelectionRequest(e) = c.wait_for_event()? {
+                let property = if e.property == NONE { e.target } else { e.property };
+                let refused = e.target == utf8 && mode == "refuse";
+                if e.target == targets {
+                    c.change_property32(
+                        xproto::PropMode::REPLACE,
+                        e.requestor,
+                        property,
+                        xproto::AtomEnum::ATOM,
+                        &[utf8],
+                    )?
+                    .check()?;
+                } else if e.target == utf8 {
+                    // The owner changes after TARGETS, while the payload read is
+                    // in flight. Exercise both a new owner and a same-owner update.
+                    if !refused && mode != "missing" {
+                        c.set_selection_owner(
+                            if mode == "replace" { replacement } else { owner },
+                            selection,
+                            CURRENT_TIME,
+                        )?
+                        .check()?;
+                        c.change_property8(
+                            xproto::PropMode::REPLACE,
+                            e.requestor,
+                            property,
+                            utf8,
+                            b"changing payload",
+                        )?
+                        .check()?;
+                    }
+                } else {
+                    return Err("Contract peer received an unexpected target".into());
+                }
+                c.send_event(
+                    false,
+                    e.requestor,
+                    xproto::EventMask::NO_EVENT,
+                    xproto::SelectionNotifyEvent {
+                        response_type: xproto::SELECTION_NOTIFY_EVENT,
+                        sequence: 0,
+                        time: e.time,
+                        requestor: e.requestor,
+                        selection: e.selection,
+                        target: e.target,
+                        property: if refused { NONE } else { property },
+                    },
+                )?
+                .check()?;
+                if e.target == utf8 {
+                    break;
+                }
+            }
+        }
+        let result = read.join().map_err(|_| "Clipboard reader panicked")?;
+        if !matches!(result, Err(openergy_platform::PlatformError::ClipboardUnavailable)) {
+            return Err(format!("Clipboard contract {mode} was not ClipboardUnavailable").into());
+        }
+        c.destroy_window(owner)?.check()?;
+        c.destroy_window(replacement)?.check()?;
+        println!("clipboard contract: {mode} conversion/snapshot is unavailable");
         Ok(())
     }
     fn capture() -> Result<()> {
