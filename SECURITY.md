@@ -82,9 +82,9 @@ are under that config's parent directory. `--socket` is a separate selector.
 
 State includes configuration, `tls/cert.pem`, `tls/key.pem`, trusted server/client
 fingerprints, and logs. The private key is stored unencrypted. Unix identity
-files are restricted to mode `0600`. Windows identity-file access relies on
-the containing directory's ACLs; the pipe's access restrictions are not a
-guarantee about file ACLs. Use a private user directory and protected backups.
+files are restricted to mode `0600`. Windows identity and trust storage applies
+protected access lists for the current user. The control pipe also checks the
+server's user identity. Use a private user directory and protected backups.
 Do not share private keys or copy one computer's identity to another.
 
 Clipboard sharing is enabled by default, in both directions. Its default local

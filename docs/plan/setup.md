@@ -71,22 +71,19 @@ host. Review and edit the copies before starting:
 - Keep `[tls] enabled = true` and `require_client_trust = true`. Review clipboard
   sharing before enabling a connection.
 
-The examples use the traditional port 24800. Listening on that port requires
-`OPENERGY_ALLOW_PORT_24800=1`; the normal macOS app sets this for its daemon.
-This listener guard does not prevent outbound client connections to 24800.
-Prefer a custom port while another service is installed. Tests must never opt
-into 24800.
+The examples use the traditional port 24800. Native daemon startup enables
+that port when `OPENERGY_ALLOW_PORT_24800` is unset. Set it to `0` to keep the
+guard active. Virtual backends require explicit opt-in and tests must never
+opt into 24800. Prefer a custom port while another service is installed.
 
 | System | Default config | Default control endpoint |
 | --- | --- | --- |
 | macOS | `~/Library/Application Support/Openergy/config.toml` | `openergy.sock` in that directory |
-| Linux | Daemon fallback: `~/.config/openergy/config.toml` | `$XDG_RUNTIME_DIR/openergy.sock`, or `~/.local/share/openergy/openergy.sock` when unset |
+| Linux | `$XDG_CONFIG_HOME/openergy/config.toml`, or `~/.config/openergy/config.toml` when unset | `$XDG_RUNTIME_DIR/openergy.sock`, or `~/.local/share/openergy/openergy.sock` when unset |
 | Windows | `%APPDATA%\Openergy\config.toml` | Private per-user named pipe selected from the socket path |
 
-**Linux path caveat:** the current daemon fallback does not follow a custom
-`XDG_CONFIG_HOME`, while offline config/identity commands do. Always pass
-`--config` to the daemon and `--dir` to identity/trust commands when using a
-custom location. Do not assume `--config` changes the control endpoint.
+Pass `--config` to the daemon and `--dir` to identity/trust commands when using
+an explicit location. `--config` does not change the control endpoint.
 
 With explicit paths, the daemon puts `tls/` and `openergy.log` beside its config.
 `--socket` must be supplied separately and reused by every control command.
@@ -161,10 +158,9 @@ In another terminal with the same `oe_bin` and `oe_state` variables:
 "$oe_bin" ctl daemon.stop --socket "$oe_state/ctl.sock"
 ```
 
-`connect` uses the configured remote. To change it through IPC, use
-`ctl connection.connect --json '{"host":"HOST","port":25400}'` with the same
-socket. This persists the new remote and client role. There is no supported
-`openergy connect HOST` positional shortcut in the current CLI.
+`connect` uses the configured remote. `connect HOST:25400` selects a new remote.
+You can also use `ctl connection.connect --json '{"host":"HOST","port":25400}'`
+with the same socket. Both forms persist the new remote and client role.
 
 On Windows, use explicit paths in PowerShell (after copying/editing the config
 and exchanging fingerprints):
