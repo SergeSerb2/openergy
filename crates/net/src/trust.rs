@@ -15,7 +15,19 @@ fn read(path: &Path, private: bool) -> Result<Vec<Fingerprint>, TrustError> {
     let mut file = match if private {
         private_file(path)
     } else {
-        fs::File::open(path)
+        // Imports are read-only, but opening a FIFO can wait forever before
+        // there is a writer. Follow ordinary file links without accepting pipes
+        // or devices as trust lists.
+        fs::metadata(path).and_then(|metadata| {
+            if !metadata.is_file() {
+                return Err(io::Error::other("imported trust list must be a regular file"));
+            }
+            let file = fs::File::open(path)?;
+            if !file.metadata()?.is_file() {
+                return Err(io::Error::other("imported trust list must be a regular file"));
+            }
+            Ok(file)
+        })
     } {
         Ok(file) => file,
         Err(e) if e.kind() == io::ErrorKind::NotFound => return Ok(Vec::new()),

@@ -1,6 +1,7 @@
 //! The Openergy daemon and hand-rolled command-line interface.
 
 use std::collections::BTreeMap;
+use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -232,27 +233,35 @@ fn cmd_daemon(cmd: &str, args: &[String]) -> Result<i32, String> {
 }
 
 fn load_config(path: Option<&Path>) -> Result<Config, String> {
-    if path.is_some_and(|p| p.as_os_str().is_empty())
-        || (path.is_none() && default_config_path().as_os_str().is_empty())
-    {
+    let path = path.map(Path::to_owned).unwrap_or_else(default_config_path);
+    if path.as_os_str().is_empty() {
         return Err("config path must not be empty".into());
     }
-    match path {
-        Some(p) if p.exists() => {
-            let text = std::fs::read_to_string(p).map_err(|e| format!("read {}: {e}", p.display()))?;
-            Config::load_toml(&text).map_err(|e| format!("config {}: {e}", p.display()))
-        }
-        Some(_) => Ok(Config::default()),
-        None => {
-            let p = default_config_path();
-            if p.exists() {
-                let text = std::fs::read_to_string(&p).map_err(|e| format!("read {}: {e}", p.display()))?;
-                Config::load_toml(&text).map_err(|e| format!("config {}: {e}", p.display()))
-            } else {
-                Ok(Config::default())
-            }
-        }
+    match std::fs::metadata(&path) {
+        Ok(metadata) if metadata.is_file() => {}
+        Ok(_) => return Err(format!("config {} must be a regular file", path.display())),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(Config::default()),
+        Err(error) => return Err(format!("read {}: {error}", path.display())),
     }
+    let read = || -> std::io::Result<String> {
+        let mut options = std::fs::OpenOptions::new();
+        options.read(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            // A path changed to a FIFO after metadata must not block startup.
+            options.custom_flags(libc::O_NONBLOCK);
+        }
+        let mut file = options.open(&path)?;
+        if !file.metadata()?.is_file() {
+            return Err(std::io::Error::other("config must be a regular file"));
+        }
+        let mut text = String::new();
+        file.read_to_string(&mut text)?;
+        Ok(text)
+    };
+    let text = read().map_err(|e| format!("read {}: {e}", path.display()))?;
+    Config::load_toml(&text).map_err(|e| format!("config {}: {e}", path.display()))
 }
 
 fn cmd_ctl(args: &[String]) -> Result<i32, String> {
