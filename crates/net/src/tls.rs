@@ -1,15 +1,56 @@
 //! PKIX is deliberately bypassed for wire compatibility; CertificateVerify and
-//! TLS 1.2 key-exchange signatures are always checked by ring/webpki. Application
+//! TLS 1.2 key-exchange signatures are always checked by ring. Application
 //! bytes remain gated by the reactor's pin trust state after handshake completion.
 use crate::{identity::failed, Fingerprint, Identity, NetError};
 use rustls::{
     client::danger::{HandshakeSignatureValid, ServerCertVerified, ServerCertVerifier},
-    crypto::{verify_tls12_signature, verify_tls13_signature, CryptoProvider},
-    pki_types::{CertificateDer, ServerName, UnixTime},
+    crypto::{verify_tls13_signature_with_raw_key, CryptoProvider},
+    pki_types::{CertificateDer, ServerName, SubjectPublicKeyInfoDer, UnixTime},
     server::danger::{ClientCertVerified, ClientCertVerifier},
-    ClientConfig, Connection, DigitallySignedStruct, DistinguishedName, Error, ServerConfig, SignatureScheme,
+    CertificateError, ClientConfig, Connection, DigitallySignedStruct, DistinguishedName, Error, PeerMisbehaved,
+    ServerConfig, SignatureScheme,
 };
 use std::sync::Arc;
+
+/// Splits one DER element into (tag, contents, rest).
+fn der(input: &[u8]) -> Option<(u8, &[u8], &[u8])> {
+    let (&tag, input) = input.split_first()?;
+    let (&first, input) = input.split_first()?;
+    let (len, input) = match first {
+        0..=0x7f => (first as usize, input),
+        0x81..=0x84 => {
+            let n = (first & 0x7f) as usize;
+            let (bytes, rest) = (input.get(..n)?, input.get(n..)?);
+            (bytes.iter().fold(0usize, |acc, b| acc << 8 | *b as usize), rest)
+        }
+        _ => return None,
+    };
+    Some((tag, input.get(..len)?, input.get(len..)?))
+}
+
+/// The whole DER SubjectPublicKeyInfo element of an X.509 certificate of any version.
+fn spki(cert: &[u8]) -> Option<&[u8]> {
+    let (0x30, cert, _) = der(cert)? else { return None };
+    let (0x30, tbs, _) = der(cert)? else { return None };
+    let mut rest = tbs;
+    if rest.first() == Some(&0xa0) {
+        rest = der(rest)?.2; // explicit version, absent in v1
+    }
+    for _ in 0..5 {
+        rest = der(rest)?.2; // serialNumber, signature, issuer, validity, subject
+    }
+    let (0x30, _, after) = der(rest)? else { return None };
+    Some(&rest[..rest.len() - after.len()])
+}
+
+/// (AlgorithmIdentifier contents, subjectPublicKey bits) of a SubjectPublicKeyInfo.
+fn spki_parts(spki: &[u8]) -> Option<(&[u8], &[u8])> {
+    let (0x30, spki, _) = der(spki)? else { return None };
+    let (0x30, alg_id, rest) = der(spki)? else { return None };
+    let (0x03, bits, _) = der(rest)? else { return None };
+    let (&0, key) = bits.split_first()? else { return None };
+    Some((alg_id, key))
+}
 
 #[derive(Debug)]
 struct PinVerifier {
@@ -27,13 +68,32 @@ impl PinVerifier {
         }
         Ok(())
     }
+    // Signatures are checked against the certificate's SubjectPublicKeyInfo rather than a
+    // webpki end-entity parse, which rejects X.509 v1. Peers whose certificate came from
+    // LibreSSL's `openssl req -x509` (Barrier, older Synergy on macOS) send v1 certificates.
     fn sig12(
         &self,
         msg: &[u8],
         cert: &CertificateDer<'_>,
         dss: &DigitallySignedStruct,
     ) -> Result<HandshakeSignatureValid, Error> {
-        verify_tls12_signature(msg, cert, dss, &self.provider.signature_verification_algorithms)
+        let (alg_id, key) = spki(cert.as_ref())
+            .and_then(spki_parts)
+            .ok_or(Error::InvalidCertificate(CertificateError::BadEncoding))?;
+        let algorithms = &self.provider.signature_verification_algorithms;
+        let candidates = algorithms
+            .mapping
+            .iter()
+            .find(|(scheme, _)| *scheme == dss.scheme)
+            .map(|(_, algs)| *algs)
+            .ok_or(PeerMisbehaved::SignedHandshakeWithUnadvertisedSigScheme)?;
+        let alg = candidates
+            .iter()
+            .find(|alg| alg.public_key_alg_id().as_ref() == alg_id)
+            .ok_or(Error::InvalidCertificate(CertificateError::BadSignature))?;
+        alg.verify_signature(key, msg, dss.signature())
+            .map(|_| HandshakeSignatureValid::assertion())
+            .map_err(|_| Error::InvalidCertificate(CertificateError::BadSignature))
     }
     fn sig13(
         &self,
@@ -41,7 +101,13 @@ impl PinVerifier {
         cert: &CertificateDer<'_>,
         dss: &DigitallySignedStruct,
     ) -> Result<HandshakeSignatureValid, Error> {
-        verify_tls13_signature(msg, cert, dss, &self.provider.signature_verification_algorithms)
+        let spki = spki(cert.as_ref()).ok_or(Error::InvalidCertificate(CertificateError::BadEncoding))?;
+        verify_tls13_signature_with_raw_key(
+            msg,
+            &SubjectPublicKeyInfoDer::from(spki),
+            dss,
+            &self.provider.signature_verification_algorithms,
+        )
     }
     fn schemes(&self) -> Vec<SignatureScheme> {
         self.provider.signature_verification_algorithms.supported_schemes()
