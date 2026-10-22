@@ -264,10 +264,14 @@ impl Layout {
                 Some((s, e, t, false))
                     if s == current && e == edge && now_ms.saturating_sub(t) <= self.double_tap_ms =>
                 {
-                    return None
+                    self.candidate = None;
+                    return None;
                 }
                 _ => {
                     self.tap = Some((current, edge, now_ms, false));
+                    // The next hit requires physical retreat and return. A
+                    // timer replay must not renew this hit while stationary.
+                    self.candidate = None;
                     return None;
                 }
             }

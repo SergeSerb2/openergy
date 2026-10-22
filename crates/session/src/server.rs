@@ -8,7 +8,10 @@ use crate::{
 use openergy_config::{Config, Role};
 use openergy_platform::{ClipboardData, InputEvent};
 use openergy_protocol::{ClipboardId, Message, ProtocolVersion};
-use std::{collections::BTreeMap, sync::Arc};
+use std::{
+    collections::{BTreeMap, BTreeSet},
+    sync::Arc,
+};
 
 #[derive(Default, Clone)]
 struct Slot {
@@ -275,16 +278,28 @@ impl Server {
                 self.opts = Options::default();
                 self.opts.apply(&config_options(&self.config, true));
                 self.hotkey = self.config.hotkeys.lock_to_screen.as_deref().and_then(Hotkey::parse);
-                let invalid = self
-                    .peers
-                    .iter()
-                    .filter_map(|(&c, p)| {
-                        (p.phase == Phase::Ready && self.screen(&p.name).is_none_or(|s| s == self.primary)).then_some(c)
-                    })
-                    .collect::<Vec<_>>();
+                // Resolve aliases against the new layout before routing by its
+                // canonical names. A merge must retain only one screen owner.
+                let mut owners = BTreeSet::new();
+                let mut adopted = Vec::new();
+                let mut invalid = Vec::new();
+                for (&c, p) in &self.peers {
+                    if p.phase == Phase::Ready {
+                        if let Some(screen) = self.screen(&p.name).filter(|s| *s != self.primary && owners.insert(*s)) {
+                            adopted.push((c, self.name(screen).to_string()));
+                        } else {
+                            invalid.push(c);
+                        }
+                    }
+                }
                 for c in invalid {
                     self.remove(c, out);
                     close(c, CloseReason::Normal, out);
+                }
+                for (c, name) in adopted {
+                    if let Some(p) = self.peers.get_mut(&c) {
+                        p.name = name;
+                    }
                 }
                 // Config rectangles describe layout placement. DINF supplies
                 // the actual screen-local dimensions and origin for each peer.

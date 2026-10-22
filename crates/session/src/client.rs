@@ -142,13 +142,16 @@ impl Client {
                 }
             }
             ClientEvent::ConfigChanged(cfg) => {
+                let clipboard_changed = self.config.clipboard != cfg.clipboard;
                 let was_active = self.active;
                 self.leave(out);
                 self.active = was_active;
                 self.config = cfg;
                 self.screen_name = self.config.name.clone();
-                if let Some((_, p)) = &mut self.peer {
-                    p.transfers = Default::default();
+                if clipboard_changed {
+                    if let Some((_, p)) = &mut self.peer {
+                        p.transfers = Default::default();
+                    }
                 }
             }
             ClientEvent::LocalClipboardChanged { id } => {
