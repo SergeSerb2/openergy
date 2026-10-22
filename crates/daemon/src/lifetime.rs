@@ -31,6 +31,8 @@ unsafe extern "system" fn console_signal(event: u32) -> windows_sys::core::BOOL 
 pub fn install_signals() {
     #[cfg(windows)]
     {
+        // Safety: clearing the inherited Ctrl+C-ignore flag changes only this process.
+        unsafe { windows_sys::Win32::System::Console::SetConsoleCtrlHandler(None, 0) };
         // Safety: the static handler only sets atomics and performs bounded waits on console close.
         if unsafe { windows_sys::Win32::System::Console::SetConsoleCtrlHandler(Some(console_signal), 1) } == 0 {
             log::warn!("console handler unavailable: {}", std::io::Error::last_os_error());
