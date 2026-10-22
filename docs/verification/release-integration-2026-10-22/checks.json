@@ -1626,7 +1626,10 @@
   "headless_app": {
     "steps_passed": 25,
     "safety_refusals_passed": 7,
-    "cleanup_passed": true
+    "cleanup_passed": true,
+    "app_source_commit": "de7c21f",
+    "daemon_source_commit": "29fa8ba",
+    "native_only_port_policy_preserved": true
   },
   "offline_identity_trust_checks": "passed",
   "dependency_policy": {
@@ -1659,5 +1662,46 @@
     "focused_scenarios_passed": 9,
     "xvfb_clipboard_recovery": "pass",
     "x86_64_distribution_verified": false
+  },
+  "windows_integrated_verification": {
+    "source_commit": "b36e840",
+    "overlays": [
+      "c69b81d session clipboard format guards",
+      "99d43b1 Windows UTF-16 iterator"
+    ],
+    "architecture": "x86_64 MSVC",
+    "rust": "1.99.1",
+    "locked_release_build": "pass",
+    "strict_all_targets_clippy_eight_packages": "pass",
+    "real_pipe_control": "pass",
+    "real_identity_trust_acl": "pass",
+    "virtual_tls_input_clipboard_clear": "pass",
+    "lifecycle_ownership_regressions": "pass on PowerShell 7 and 5.1",
+    "native_desktop_or_service_restoration_verified": false
+  },
+  "final_independent_review": {
+    "round": 4,
+    "source_commit": "08ddc52",
+    "late_changes": [
+      "c69b81d",
+      "74c57db",
+      "de7c21f"
+    ],
+    "findings": 0,
+    "scope": "source only; no native runtime acceptance"
+  },
+  "macos_archive": {
+    "filename": "openergy-0.1.0-aarch64-apple-darwin-adhoc.zip",
+    "sha256": "7fbb0d5d2d23506623c01f64b1ec9aca6e3bf9c172401ed4d20f01af739a9751",
+    "source_commit": "7a1e077a193637b0b5d37f00c1a63f6e4737242f",
+    "dirty": false,
+    "zip_bytes": 3609660,
+    "app_regular_bytes": 6324408,
+    "signing": "adhoc",
+    "notarized": false,
+    "staged_daemon_cli_smoke": "pass",
+    "extracted_daemon_cli_smoke": "pass",
+    "extracted_codesign_verification": "pass",
+    "published": false
   }
 }

@@ -25,6 +25,8 @@ addresses, local paths and process logs.
 | Offline identity/trust commands | `b36e840`: private permissions, stable identity under 24 concurrent creators, concurrent trust updates, incomplete/corrupt identity refusal, non-destructive import and temporary-file collision handling passed. |
 | Headless Mac app | Current app code through `05204a7`, repeated with daemon `29fa8ba`: **25/25 model-to-real-daemon steps**, **7/7 startup safety refusals**, owned process/socket cleanup and private-directory checks. Rendering, native UI and TCC were not exercised. |
 | Integrated Linux | `b36e840`: ARM64 Rust 1.99.1 locked workspace build and strict Clippy, real CLI smoke, **9/9 focused daemon scenarios**, Xvfb clipboard and recovery probes. [Full Linux record](../../../crates/platform-linux/INTEGRATED-VERIFICATION-2026-10-22.md). |
+| Integrated Windows | Native x86_64 MSVC Rust 1.99.1 release build, strict all-targets Clippy across eight packages, real pipe/CLI control and identity/trust kernel ACL checks passed. Virtual TLS/input/clipboard/clear and lifecycle ownership checks passed. The original lint failure and its exact two-file follow-up are preserved in the [Windows records](../../../tools/windows/PINNED-CLIPPY-FOLLOWUP.md). |
+| macOS archive | Clean source `7a1e077`: local ARM64 archive, **3,609,660 compressed bytes**, **6,324,408 app-content bytes**. Staged and freshly extracted daemon CLI/virtual IPC smoke and extracted code-signature verification passed. Ad-hoc signed, unnotarized, unpublished. SHA-256 is recorded in checks.json. |
 | Dependency policy | cargo-deny 0.20.2: advisories, bans, licenses and sources passed. Remaining warnings concern duplicate transitive versions and unused allowed license names. The unmaintained PEM parser was removed; no advisory exception was added. |
 | Privacy and source checks | Gitleaks 8.30.1 scanned 122 content-bearing history commits with zero leaks. Changed-file personal-path scan and local Markdown link check found none. Python AST checks covered 24 scripts; shell syntax covered nine scripts; actionlint passed with declared optional local-worker labels. No TypeScript files exist. |
 
@@ -47,6 +49,19 @@ rollback problems. The session follow-up also covered unsupported-only local
 PNG data. See the [format-loss regression record](../../../crates/session/FORMAT-LOSS-AUDIT.md).
 The network ordering follow-up separately reproduced old safety key releases
 being overtaken by new input and added N2 to the standard scenario catalogue.
+
+The Windows lifecycle fix authenticates the supervised child's executable,
+PID and start time, then verifies the kernel server PID on the connected pipe
+before sending control requests. Migration validates the complete installation
+before service changes and attempts restoration even if Openergy stop fails.
+Actual service restoration remains untested; the owned virtual failure cases
+passed on both PowerShell 7 and Windows PowerShell 5.1.
+
+A fourth independent source review checked these late fixes and found no
+remaining concrete P1/P2 defects in scope. The Mac supervisor now preserves
+the daemon's native-only default-port policy; its rebuilt headless app repeated
+all 25 steps and seven safety refusals successfully. The pinned Windows lint
+warning was fixed without suppression and rechecked with the real compiler.
 
 ## Evidence limits and launch gates
 
