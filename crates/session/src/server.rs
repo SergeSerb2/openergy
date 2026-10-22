@@ -707,12 +707,11 @@ impl Server {
         let readback = owner.is_none() && slot.readback;
         let owner = if readback { slot.owner } else { owner };
         slot.readback = false;
-        if data.formats.is_empty() {
-            return;
-        }
         if slot.owner != owner {
             return;
         }
+        // A readable empty clipboard is a clear. Unavailable and own-write
+        // reads must arrive as ClipboardReadFailed, never an empty payload.
         match clipboard::marshal(&data, self.config.clipboard.max_bytes) {
             Ok(bytes) => {
                 slot.data = Some(Arc::new(bytes));

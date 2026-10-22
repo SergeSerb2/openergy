@@ -1,0 +1,71 @@
+# Requirement: An unavailable local clipboard read never becomes a remote clear.
+name = "Q19-unavailable-is-not-clear"
+requirement = "Unavailable readback on screen entry preserves the remote clipboard and emits no backend error."
+timeout_ms = 1600
+
+[[node]]
+id = "server"
+role = "server"
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "clipboard_set"
+node = "server"
+text = "preserve on unavailable read"
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+text = "preserve on unavailable read"
+
+[[step]]
+do = "sleep"
+ms = 700
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "virtual.clipboard"
+params = { read_available = false }
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "mouse_move_abs", x = 1919, y = 540 }, { type = "mouse_move_rel", dx = 20, dy = 0 }]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { active_screen = "client" }
+
+[[step]]
+do = "sleep"
+ms = 250
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+text = "preserve on unavailable read"
+
+[[step]]
+do = "assert_status"
+node = "server"
+fields = { last_error = { "$null" = true } }
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "virtual.clipboard"
+params = { read_available = true }

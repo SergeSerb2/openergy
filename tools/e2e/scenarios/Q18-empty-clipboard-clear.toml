@@ -1,0 +1,61 @@
+# Requirement: A genuine empty clipboard clears the other computer in both directions.
+name = "Q18-empty-clipboard-clear"
+requirement = "Host and client text followed by an empty format list clears stale remote clipboard data."
+timeout_ms = 1600
+
+[[node]]
+id = "server"
+role = "server"
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "clipboard_set"
+node = "server"
+text = "host text before clear"
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+text = "host text before clear"
+
+[[step]]
+do = "clipboard_set"
+node = "server"
+formats = []
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+empty = true
+
+[[step]]
+do = "clipboard_set"
+node = "client"
+text = "client text before clear"
+
+[[step]]
+do = "assert_clipboard"
+node = "server"
+text = "client text before clear"
+
+[[step]]
+do = "clipboard_set"
+node = "client"
+formats = []
+
+[[step]]
+do = "assert_clipboard"
+node = "server"
+empty = true

@@ -431,18 +431,25 @@ impl Client {
                             // A second physical modifier may have been pressed
                             // after entry. Its up must release that physical key,
                             // not consume the modifier synthesized by CINN.
-                            if self.synthetic_modifiers & mask != 0
-                                && (*button == synthetic_key || !self.ledger.has_key(*key, *button))
-                            {
-                                self.synthetic_modifiers &= !mask;
-                                let release = InputEvent::KeyUp {
-                                    key: synthetic_key,
-                                    modifiers: *modifiers,
-                                    button: synthetic_key,
-                                };
-                                self.ledger.observe(&release);
-                                out.push(Action::Inject(release));
-                                return;
+                            if self.synthetic_modifiers & mask != 0 {
+                                let physical = *button != synthetic_key && self.ledger.has_key(*key, *button);
+                                // CINN has a modifier mask, not the identities
+                                // of keys held before entry. Either side may
+                                // release first; keep the synthetic key until
+                                // the aggregate modifier bit clears.
+                                if modifiers.0 & mask == 0 {
+                                    self.synthetic_modifiers &= !mask;
+                                    let release = InputEvent::KeyUp {
+                                        key: synthetic_key,
+                                        modifiers: *modifiers,
+                                        button: synthetic_key,
+                                    };
+                                    self.ledger.observe(&release);
+                                    out.push(Action::Inject(release));
+                                }
+                                if !physical {
+                                    return;
+                                }
                             }
                         }
                         self.ledger.observe(&ev);
