@@ -19,6 +19,11 @@ run, exact-source package and platform checks, independent review responses,
 and measured resource changes. The earlier checks below retain their original
 source scope; they are not silently relabeled as final-build results.
 
+The later [sustained workload and memory control](sustained-memory.md) records
+180 transfers, 90 cancellations and nine reconnects, then isolates diagnostic
+history polling as a source of resident allocator pages. Its finite-run limits
+remain explicit.
+
 ## Integrated checks
 
 The sanitized [machine record](checks.json) contains scenario names, outcomes,
