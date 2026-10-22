@@ -20,6 +20,8 @@ mod ipc_server;
 mod lifetime;
 mod logger;
 mod runtime;
+#[cfg(windows)]
+mod windows_pipe;
 mod workers;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -43,7 +45,7 @@ fn main() {
 }
 
 fn usage() -> &'static str {
-    "usage: openergy daemon|server|client [--config <path>] [--platform macos|virtual|auto] [--socket <path>] [--parent-pid <pid>] [--foreground] [--remote host:port]\n       openergy ctl <method> [--socket <path>] [--json '{...}'] [--raw]\n       openergy status|connect|disconnect|restart [--socket <path>]\n       openergy trust list|approve <fp>|reject <fp>|revoke <fp>\n       openergy fingerprint [--synergy]\n       openergy import-synergy --from <dir> [--out <path>] [--apply]\n       openergy export-synergy-conf [--out <path>]\n       openergy version"
+    "usage: openergy daemon|server|client [--config <path>] [--platform macos|x11|windows|virtual|auto] [--socket <path>] [--parent-pid <pid>] [--foreground] [--remote host:port]\n       openergy ctl <method> [--socket <path>] [--json '{...}'] [--raw]\n       openergy status|connect|disconnect|restart [--socket <path>]\n       openergy trust list|approve <fp>|reject <fp>|revoke <fp>\n       openergy fingerprint [--synergy]\n       openergy import-synergy --from <dir> [--out <path>] [--apply]\n       openergy export-synergy-conf [--out <path>]\n       openergy version"
 }
 
 fn run(args: &[String]) -> Result<i32, String> {
@@ -113,12 +115,17 @@ fn default_socket() -> PathBuf {
     if let Ok(x) = std::env::var("OPENERGY_SOCKET") {
         return PathBuf::from(x);
     }
+    #[cfg(not(windows))]
     let home = std::env::var("HOME").unwrap_or_else(|_| "/tmp".into());
+    #[cfg(windows)]
+    {
+        default_config_path().with_file_name("openergy.sock")
+    }
     #[cfg(target_os = "macos")]
     {
         PathBuf::from(home).join("Library/Application Support/Openergy/openergy.sock")
     }
-    #[cfg(not(target_os = "macos"))]
+    #[cfg(not(any(target_os = "macos", windows)))]
     {
         if let Ok(rt) = std::env::var("XDG_RUNTIME_DIR") {
             PathBuf::from(rt).join("openergy.sock")
@@ -132,12 +139,21 @@ fn default_config_path() -> PathBuf {
     if let Ok(path) = std::env::var("OPENERGY_CONFIG") {
         return path.into();
     }
+    #[cfg(not(windows))]
     let home = std::env::var("HOME").unwrap_or_else(|_| "/tmp".into());
+    #[cfg(windows)]
+    {
+        openergy_net::default_config_dir()
+            .unwrap_or_else(|_| {
+                PathBuf::from(std::env::var_os("USERPROFILE").unwrap_or_default()).join("AppData/Roaming/Openergy")
+            })
+            .join("config.toml")
+    }
     #[cfg(target_os = "macos")]
     {
         PathBuf::from(home).join("Library/Application Support/Openergy/config.toml")
     }
-    #[cfg(not(target_os = "macos"))]
+    #[cfg(not(any(target_os = "macos", windows)))]
     {
         PathBuf::from(home).join(".config/openergy/config.toml")
     }
@@ -256,10 +272,14 @@ fn print_response(resp: &Response, raw: bool) {
     }
 }
 
-#[cfg(unix)]
 fn ipc_request(socket: &Path, method: &str, params: serde_json::Value) -> Result<Response, String> {
+    #[cfg(unix)]
     let mut stream = UnixStream::connect(socket)
         .map_err(|e| format!("connect {}: {e} (is the daemon running?)", socket.display()))?;
+    #[cfg(windows)]
+    let mut stream = windows_pipe::Stream::connect(socket)
+        .map_err(|e| format!("connect {}: {e} (is the daemon running?)", socket.display()))?;
+    #[cfg(unix)]
     stream
         .set_read_timeout(Some(std::time::Duration::from_secs(10)))
         .map_err(|e| e.to_string())?;
@@ -276,8 +296,4 @@ fn ipc_request(socket: &Path, method: &str, params: serde_json::Value) -> Result
     write_frame(&mut stream, &v).map_err(|e| e.to_string())?;
     let resp_v = read_frame(&mut stream).map_err(|e| e.to_string())?;
     serde_json::from_value(resp_v).map_err(|e| format!("bad IPC response: {e}"))
-}
-#[cfg(not(unix))]
-fn ipc_request(_socket: &Path, _method: &str, _params: serde_json::Value) -> Result<Response, String> {
-    Err("IPC client requires Unix sockets in Step 0".into())
 }

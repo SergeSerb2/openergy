@@ -1265,6 +1265,7 @@ fn normalize(cfg: &mut Config) {
     }
 }
 fn host_name() -> String {
+    #[allow(unused_mut)]
     let mut name = std::env::var("HOSTNAME")
         .or_else(|_| std::env::var("COMPUTERNAME"))
         .unwrap_or_default();
@@ -1328,251 +1329,245 @@ pub fn run_daemon(
     platform: String,
     parent_pid: Option<i64>,
 ) -> Result<i32, String> {
-    #[cfg(not(unix))]
-    {
-        let _ = (socket_path, config, config_path, platform, parent_pid);
-        Err("named-pipe IPC is unavailable in this build".into())
-    }
-    #[cfg(unix)]
-    {
-        normalize(&mut config);
-        let path = config_path.unwrap_or_else(crate::default_config_path);
-        let dir = path.parent().unwrap_or(Path::new(".")).to_path_buf();
-        std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
-        let (listener, _lock) = ipc_server::bind(&socket_path)?;
-        let bus = Arc::new(EventBus::default());
-        let logger = Logger::new(&dir, bus.clone());
-        logger.install();
-        let parts = adapter::platform(&platform, &config).map_err(|e| e.to_string())?;
-        let (mut backend, control, notices) = (parts.backend, parts.control, parts.notices);
-        let (driver, _net_handle) =
-            NetDriver::new(adapter::net_config(&config, &dir, platform == "virtual")).map_err(|e| e.to_string())?;
-        let waker = driver.waker();
-        let display_changed = Arc::new(AtomicBool::new(false));
-        let flag = display_changed.clone();
-        let display_waker = waker.clone();
-        backend.screens.on_display_changed(Box::new(move || {
-            flag.store(true, Ordering::Release);
-            let _ = display_waker.wake();
-        }));
-        let capture = workers::capture(backend.source, waker.clone());
-        let clipboard = workers::clipboard(backend.clipboard, waker.clone());
-        let stop = Arc::new(AtomicBool::new(false));
-        let (tx, rx) = mpsc::sync_channel(128);
-        let accept = ipc_server::serve(listener, socket_path.clone(), tx, waker, bus.clone(), stop.clone());
-        let displays = backend.screens.screens();
-        let permissions = backend.screens.permissions();
-        let machine = Machine::new(Arc::new(config.clone()));
-        let enabled = config.role != Role::Off && (config.role != Role::Client || config.client.autoconnect);
-        let mut rt = Runtime {
-            cfg: config,
-            path,
-            dir,
-            platform,
-            started: Instant::now(),
-            driver,
-            machine,
-            sink: backend.sink,
-            screens: backend.screens,
-            control,
-            notices,
-            suspended: false,
-            resume_enabled: false,
-            close_at: None,
-            capture,
-            clipboard,
-            bus,
-            logger,
-            state: "idle".into(),
-            connections: BTreeMap::new(),
-            pending: BTreeMap::new(),
-            expected_pin: None,
-            discovery: json!([]),
-            last_error: None,
-            last_transfer: None,
-            last_blocked: None,
-            events_in: 0,
-            events_out: 0,
-            attempt: 0,
-            retry: None,
-            healthy_since: None,
-            enabled,
-            status_dirty: true,
-            last_status: Value::Null,
-            last_status_ms: 0,
-            last_health: 0,
-            last_network_sample: 0,
-            network_set: None,
-            permissions,
-            local_secure: None,
-            display_changed,
-            preventing_sleep: false,
-            displays,
-            rng: unix_ms() ^ u64::from(std::process::id()),
-            stop: stop.clone(),
-            actions: Vec::new(),
-            net_events: Vec::new(),
-        };
-        lifetime::install_signals();
-        let parent = lifetime::ParentWatch::new(parent_pid);
-        rt.machine.geometry(
-            display_rect(&rt.displays),
-            rt.screens.cursor_pos(),
-            false,
-            &mut rt.actions,
-        );
-        let _ = rt
-            .capture
-            .commands
-            .try_send(CaptureCommand::Enable(enabled && rt.cfg.role == Role::Server));
-        let _ = rt
-            .clipboard
-            .commands
-            .try_send(ClipboardCommand::Enabled(enabled && rt.cfg.clipboard.enabled));
-        rt.update_sleep_assertion();
-        rt.start_connection();
-        log::info!("openergy {VERSION} daemon listening on {}", socket_path.display());
-        while !stop.load(Ordering::Relaxed) && !lifetime::SIGNALLED.load(Ordering::Relaxed) && !parent.exited() {
-            for notice in (rt.notices)() {
-                rt.notice(notice);
-            }
-            if rt.close_at.is_some_and(|deadline| rt.now() >= deadline) {
-                rt.close_at = None;
-                rt.execute(NetCommand::Shutdown);
-                rt.process_net();
-            }
-            while let Ok(packet) = rt.capture.events.try_recv() {
-                rt.status_dirty = true;
-                if let Some(movement) = packet.movement {
-                    rt.input(movement);
-                }
-                rt.input(packet.event);
-            }
-            let movement = rt.capture.movement.try_lock().ok().and_then(|mut s| s.take());
-            if let Some(movement) = movement {
+    normalize(&mut config);
+    let path = config_path.unwrap_or_else(crate::default_config_path);
+    let dir = path.parent().unwrap_or(Path::new(".")).to_path_buf();
+    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    let (listener, _lock) = ipc_server::bind(&socket_path)?;
+    let bus = Arc::new(EventBus::default());
+    let logger = Logger::new(&dir, bus.clone());
+    logger.install();
+    let parts = adapter::platform(&platform, &config).map_err(|e| e.to_string())?;
+    let (mut backend, control, notices) = (parts.backend, parts.control, parts.notices);
+    let (driver, _net_handle) =
+        NetDriver::new(adapter::net_config(&config, &dir, platform == "virtual")).map_err(|e| e.to_string())?;
+    let waker = driver.waker();
+    let display_changed = Arc::new(AtomicBool::new(false));
+    let flag = display_changed.clone();
+    let display_waker = waker.clone();
+    backend.screens.on_display_changed(Box::new(move || {
+        flag.store(true, Ordering::Release);
+        let _ = display_waker.wake();
+    }));
+    let capture = workers::capture(backend.source, waker.clone());
+    let clipboard = workers::clipboard(backend.clipboard, waker.clone());
+    let stop = Arc::new(AtomicBool::new(false));
+    let (tx, rx) = mpsc::sync_channel(128);
+    let accept = ipc_server::serve(listener, socket_path.clone(), tx, waker, bus.clone(), stop.clone());
+    let displays = backend.screens.screens();
+    let permissions = backend.screens.permissions();
+    let machine = Machine::new(Arc::new(config.clone()));
+    let enabled = config.role != Role::Off && (config.role != Role::Client || config.client.autoconnect);
+    let mut rt = Runtime {
+        cfg: config,
+        path,
+        dir,
+        platform,
+        started: Instant::now(),
+        driver,
+        machine,
+        sink: backend.sink,
+        screens: backend.screens,
+        control,
+        notices,
+        suspended: false,
+        resume_enabled: false,
+        close_at: None,
+        capture,
+        clipboard,
+        bus,
+        logger,
+        state: "idle".into(),
+        connections: BTreeMap::new(),
+        pending: BTreeMap::new(),
+        expected_pin: None,
+        discovery: json!([]),
+        last_error: None,
+        last_transfer: None,
+        last_blocked: None,
+        events_in: 0,
+        events_out: 0,
+        attempt: 0,
+        retry: None,
+        healthy_since: None,
+        enabled,
+        status_dirty: true,
+        last_status: Value::Null,
+        last_status_ms: 0,
+        last_health: 0,
+        last_network_sample: 0,
+        network_set: None,
+        permissions,
+        local_secure: None,
+        display_changed,
+        preventing_sleep: false,
+        displays,
+        rng: unix_ms() ^ u64::from(std::process::id()),
+        stop: stop.clone(),
+        actions: Vec::new(),
+        net_events: Vec::new(),
+    };
+    lifetime::install_signals();
+    let parent = lifetime::ParentWatch::new(parent_pid);
+    rt.machine.geometry(
+        display_rect(&rt.displays),
+        rt.screens.cursor_pos(),
+        false,
+        &mut rt.actions,
+    );
+    let _ = rt
+        .capture
+        .commands
+        .try_send(CaptureCommand::Enable(enabled && rt.cfg.role == Role::Server));
+    let _ = rt
+        .clipboard
+        .commands
+        .try_send(ClipboardCommand::Enabled(enabled && rt.cfg.clipboard.enabled));
+    rt.update_sleep_assertion();
+    rt.start_connection();
+    log::info!("openergy {VERSION} daemon listening on {}", socket_path.display());
+    while !stop.load(Ordering::Relaxed) && !lifetime::SIGNALLED.load(Ordering::Relaxed) && !parent.exited() {
+        for notice in (rt.notices)() {
+            rt.notice(notice);
+        }
+        if rt.close_at.is_some_and(|deadline| rt.now() >= deadline) {
+            rt.close_at = None;
+            rt.execute(NetCommand::Shutdown);
+            rt.process_net();
+        }
+        while let Ok(packet) = rt.capture.events.try_recv() {
+            rt.status_dirty = true;
+            if let Some(movement) = packet.movement {
                 rt.input(movement);
             }
-            // Input gets the first turn. A busy IPC observer must not keep a
-            // captured move behind an unbounded request drain.
-            for _ in 0..8 {
-                let Ok(IoCommand::Ipc { req, reply, events }) = rx.try_recv() else {
-                    break;
-                };
-                let response = match rt.dispatch(&req, &events) {
-                    Ok(value) => Response::ok(req.id, value),
-                    Err(error) => Response::err(req.id, error),
-                };
-                rt.apply_actions();
-                rt.process_net();
-                let _ = reply.send(response);
-            }
-            while let Ok(event) = rt.clipboard.events.try_recv() {
-                match event {
-                    ClipboardEvent::Changed => rt.machine.clipboard_changed(&mut rt.actions),
-                    ClipboardEvent::Payload { id, data } => rt.machine.payload(id, data, &mut rt.actions),
-                    ClipboardEvent::Failure(error) => rt.error("clipboard_failed", error),
-                    ClipboardEvent::Blocked { bytes, limit } => {
-                        let blocked = ipc::ClipboardBlocked {
-                            bytes: Some(bytes),
-                            limit: Some(limit),
-                            peer: Some("local".into()),
-                            unix_ms: Some(unix_ms()),
-                        };
-                        rt.publish(
-                            "clipboard.blocked",
-                            serde_json::to_value(&blocked).unwrap_or(Value::Null),
-                        );
-                        rt.last_blocked = Some(blocked);
-                    }
-                }
-            }
-            let now = rt.now();
-            rt.machine.tick(now, &mut rt.actions);
+            rt.input(packet.event);
+        }
+        let movement = rt.capture.movement.try_lock().ok().and_then(|mut s| s.take());
+        if let Some(movement) = movement {
+            rt.input(movement);
+        }
+        // Input gets the first turn. A busy IPC observer must not keep a
+        // captured move behind an unbounded request drain.
+        for _ in 0..8 {
+            let Ok(IoCommand::Ipc { req, reply, events }) = rx.try_recv() else {
+                break;
+            };
+            let response = match rt.dispatch(&req, &events) {
+                Ok(value) => Response::ok(req.id, value),
+                Err(error) => Response::err(req.id, error),
+            };
             rt.apply_actions();
             rt.process_net();
-            let health_interval = if matches!(rt.permissions.accessibility, Grant::Denied | Grant::Unknown)
-                || matches!(rt.permissions.input_monitoring, Grant::Denied | Grant::Unknown)
-                || matches!(rt.permissions.post_events, Grant::Denied | Grant::Unknown)
-            {
-                250
-            } else {
-                2000
-            };
-            if rt.display_changed.swap(false, Ordering::AcqRel) || now.saturating_sub(rt.last_health) >= health_interval
-            {
-                rt.last_health = now;
-                rt.refresh_health();
-                rt.apply_actions();
-            }
-            if rt.cfg.role == Role::Client
-                && rt.state == "reconnecting"
-                && rt.retry.is_some()
-                && now.saturating_sub(rt.last_network_sample) >= 2000
-            {
-                rt.last_network_sample = now;
-                if let Some(addresses) = crate::interfaces::snapshot() {
-                    let changed = rt.network_set.as_ref().is_some_and(|previous| *previous != addresses);
-                    rt.network_set = Some(addresses);
-                    if changed {
-                        log::info!("network interfaces changed; retry configured server");
-                        rt.attempt = 0;
-                        rt.retry = Some(now);
-                    }
-                }
-            }
-            if rt.retry.is_some_and(|t| now >= t) {
-                rt.start_connection();
-            }
-            if rt.status_dirty && now.saturating_sub(rt.last_status_ms) >= 100 {
-                let status = rt.status().to_json();
-                if status != rt.last_status {
-                    rt.last_status = status.clone();
-                    rt.publish("status.changed", status);
-                }
-                rt.last_status_ms = now;
-                rt.status_dirty = false;
-            }
-            let now = rt.now();
-            let session_deadline = match &rt.machine {
-                Machine::Server(s) => s.next_deadline_ms(),
-                Machine::Client(c) => c.next_deadline_ms(),
-                _ => now + 1000,
-            };
-            let mut deadline = session_deadline.min(rt.last_health + health_interval);
-            if rt.status_dirty {
-                deadline = deadline.min(rt.last_status_ms + 100);
-            }
-            if let Some(retry) = rt.retry {
-                deadline = deadline.min(retry);
-            }
-            let timeout = Duration::from_millis(deadline.saturating_sub(now).clamp(1, 2000));
-            if let Err(e) = rt.driver.poll(Some(timeout), &mut rt.net_events) {
-                rt.error("network_failed", e.to_string());
-                break;
-            }
-            rt.process_net();
+            let _ = reply.send(response);
         }
-        log::info!("shutdown: leave and goodbye");
-        rt.enabled = false;
-        rt.machine.shutdown(&mut rt.actions);
+        while let Ok(event) = rt.clipboard.events.try_recv() {
+            match event {
+                ClipboardEvent::Changed => rt.machine.clipboard_changed(&mut rt.actions),
+                ClipboardEvent::Payload { id, data } => rt.machine.payload(id, data, &mut rt.actions),
+                ClipboardEvent::Failure(error) => rt.error("clipboard_failed", error),
+                ClipboardEvent::Blocked { bytes, limit } => {
+                    let blocked = ipc::ClipboardBlocked {
+                        bytes: Some(bytes),
+                        limit: Some(limit),
+                        peer: Some("local".into()),
+                        unix_ms: Some(unix_ms()),
+                    };
+                    rt.publish(
+                        "clipboard.blocked",
+                        serde_json::to_value(&blocked).unwrap_or(Value::Null),
+                    );
+                    rt.last_blocked = Some(blocked);
+                }
+            }
+        }
+        let now = rt.now();
+        rt.machine.tick(now, &mut rt.actions);
         rt.apply_actions();
-        let flush = Instant::now();
-        while flush.elapsed() < Duration::from_millis(250) {
-            let _ = rt.driver.poll(Some(Duration::from_millis(10)), &mut rt.net_events);
-            rt.net_events.clear();
+        rt.process_net();
+        let health_interval = if matches!(rt.permissions.accessibility, Grant::Denied | Grant::Unknown)
+            || matches!(rt.permissions.input_monitoring, Grant::Denied | Grant::Unknown)
+            || matches!(rt.permissions.post_events, Grant::Denied | Grant::Unknown)
+        {
+            250
+        } else {
+            2000
+        };
+        if rt.display_changed.swap(false, Ordering::AcqRel) || now.saturating_sub(rt.last_health) >= health_interval {
+            rt.last_health = now;
+            rt.refresh_health();
+            rt.apply_actions();
         }
-        rt.screens.prevent_sleep(false);
-        rt.sink.release_all();
-        rt.sink.set_cursor_visible(true);
-        rt.execute(NetCommand::Shutdown);
-        stop.store(true, Ordering::Relaxed);
-        let _ = std::os::unix::net::UnixStream::connect(&socket_path);
-        let _ = rt.capture.commands.send(CaptureCommand::Stop);
-        let _ = rt.clipboard.commands.send(ClipboardCommand::Stop);
-        let _ = accept.join();
-        let _ = rt.capture.thread.join();
-        let _ = rt.clipboard.thread.join();
-        log::info!("daemon stopped");
-        Ok(0)
+        if rt.cfg.role == Role::Client
+            && rt.state == "reconnecting"
+            && rt.retry.is_some()
+            && now.saturating_sub(rt.last_network_sample) >= 2000
+        {
+            rt.last_network_sample = now;
+            if let Some(addresses) = crate::interfaces::snapshot() {
+                let changed = rt.network_set.as_ref().is_some_and(|previous| *previous != addresses);
+                rt.network_set = Some(addresses);
+                if changed {
+                    log::info!("network interfaces changed; retry configured server");
+                    rt.attempt = 0;
+                    rt.retry = Some(now);
+                }
+            }
+        }
+        if rt.retry.is_some_and(|t| now >= t) {
+            rt.start_connection();
+        }
+        if rt.status_dirty && now.saturating_sub(rt.last_status_ms) >= 100 {
+            let status = rt.status().to_json();
+            if status != rt.last_status {
+                rt.last_status = status.clone();
+                rt.publish("status.changed", status);
+            }
+            rt.last_status_ms = now;
+            rt.status_dirty = false;
+        }
+        let now = rt.now();
+        let session_deadline = match &rt.machine {
+            Machine::Server(s) => s.next_deadline_ms(),
+            Machine::Client(c) => c.next_deadline_ms(),
+            _ => now + 1000,
+        };
+        let mut deadline = session_deadline.min(rt.last_health + health_interval);
+        if rt.status_dirty {
+            deadline = deadline.min(rt.last_status_ms + 100);
+        }
+        if let Some(retry) = rt.retry {
+            deadline = deadline.min(retry);
+        }
+        let timeout = Duration::from_millis(deadline.saturating_sub(now).clamp(1, 2000));
+        if let Err(e) = rt.driver.poll(Some(timeout), &mut rt.net_events) {
+            rt.error("network_failed", e.to_string());
+            break;
+        }
+        rt.process_net();
     }
+    log::info!("shutdown: leave and goodbye");
+    rt.enabled = false;
+    rt.machine.shutdown(&mut rt.actions);
+    rt.apply_actions();
+    let flush = Instant::now();
+    while flush.elapsed() < Duration::from_millis(250) {
+        let _ = rt.driver.poll(Some(Duration::from_millis(10)), &mut rt.net_events);
+        rt.net_events.clear();
+    }
+    rt.screens.prevent_sleep(false);
+    rt.sink.release_all();
+    rt.sink.set_cursor_visible(true);
+    rt.execute(NetCommand::Shutdown);
+    stop.store(true, Ordering::Relaxed);
+    #[cfg(unix)]
+    let _ = std::os::unix::net::UnixStream::connect(&socket_path);
+    let _ = rt.capture.commands.send(CaptureCommand::Stop);
+    let _ = rt.clipboard.commands.send(ClipboardCommand::Stop);
+    let _ = accept.join();
+    let _ = rt.capture.thread.join();
+    let _ = rt.clipboard.thread.join();
+    log::info!("daemon stopped");
+    #[cfg(windows)]
+    lifetime::SHUTDOWN_COMPLETE.store(true, Ordering::Release);
+    Ok(0)
 }

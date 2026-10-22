@@ -1,9 +1,41 @@
 use std::sync::atomic::{AtomicBool, Ordering};
 pub static SIGNALLED: AtomicBool = AtomicBool::new(false);
+#[cfg(unix)]
 extern "C" fn signal(_sig: libc::c_int) {
     SIGNALLED.store(true, Ordering::Relaxed);
 }
+#[cfg(windows)]
+pub static SHUTDOWN_COMPLETE: AtomicBool = AtomicBool::new(false);
+#[cfg(windows)]
+unsafe extern "system" fn console_signal(event: u32) -> windows_sys::core::BOOL {
+    use windows_sys::Win32::System::{Console::*, Threading::Sleep};
+    if !matches!(
+        event,
+        CTRL_C_EVENT | CTRL_BREAK_EVENT | CTRL_CLOSE_EVENT | CTRL_LOGOFF_EVENT | CTRL_SHUTDOWN_EVENT
+    ) {
+        return 0;
+    }
+    SIGNALLED.store(true, Ordering::Relaxed);
+    if matches!(event, CTRL_CLOSE_EVENT | CTRL_LOGOFF_EVENT | CTRL_SHUTDOWN_EVENT) {
+        // Console-close terminates the process after this handler returns. Allow bounded cleanup first.
+        for _ in 0..80 {
+            if SHUTDOWN_COMPLETE.load(Ordering::Acquire) {
+                break;
+            }
+            // Safety: Sleep only yields this handler thread for 50 ms.
+            unsafe { Sleep(50) };
+        }
+    }
+    1
+}
 pub fn install_signals() {
+    #[cfg(windows)]
+    {
+        // Safety: the static handler only sets atomics and performs bounded waits on console close.
+        if unsafe { windows_sys::Win32::System::Console::SetConsoleCtrlHandler(Some(console_signal), 1) } == 0 {
+            log::warn!("console handler unavailable: {}", std::io::Error::last_os_error());
+        }
+    }
     #[cfg(unix)]
     // Safety: handlers only store a lock-free atomic; no allocation or non-signal-safe calls occur.
     unsafe {
@@ -13,12 +45,36 @@ pub fn install_signals() {
     }
 }
 pub struct ParentWatch {
-    pid: Option<libc::pid_t>,
+    pid: Option<i64>,
+    #[cfg(windows)]
+    process: Option<std::os::windows::io::OwnedHandle>,
     #[cfg(target_os = "macos")]
     kq: libc::c_int,
 }
 impl ParentWatch {
     pub fn new(pid: Option<i64>) -> Self {
+        #[cfg(windows)]
+        {
+            use std::os::windows::io::{FromRawHandle, OwnedHandle};
+            let process = pid.and_then(|pid| {
+                // Safety: OpenProcess only opens a synchronization handle and does not change the parent.
+                let handle = unsafe {
+                    windows_sys::Win32::System::Threading::OpenProcess(
+                        windows_sys::Win32::System::Threading::PROCESS_SYNCHRONIZE,
+                        0,
+                        pid as u32,
+                    )
+                };
+                if handle.is_null() {
+                    log::warn!("parent watch unavailable: {}", std::io::Error::last_os_error());
+                    None
+                } else {
+                    // Safety: successful OpenProcess transfers this handle to ParentWatch.
+                    Some(unsafe { OwnedHandle::from_raw_handle(handle) })
+                }
+            });
+            Self { pid, process }
+        }
         #[cfg(target_os = "macos")]
         {
             let mut kq = -1;
@@ -42,15 +98,10 @@ impl ParentWatch {
                     }
                 }
             }
-            Self {
-                pid: pid.map(|p| p as libc::pid_t),
-                kq,
-            }
+            Self { pid, kq }
         }
-        #[cfg(not(target_os = "macos"))]
-        Self {
-            pid: pid.map(|p| p as libc::pid_t),
-        }
+        #[cfg(not(any(target_os = "macos", windows)))]
+        Self { pid }
     }
     pub fn exited(&self) -> bool {
         let Some(pid) = self.pid else { return false };
@@ -69,12 +120,20 @@ impl ParentWatch {
         #[cfg(unix)]
         // Safety: kill(pid, 0) checks liveness without sending a signal.
         {
-            (unsafe { libc::kill(pid, 0) }) < 0 && std::io::Error::last_os_error().raw_os_error() == Some(libc::ESRCH)
+            (unsafe { libc::kill(pid as libc::pid_t, 0) }) < 0
+                && std::io::Error::last_os_error().raw_os_error() == Some(libc::ESRCH)
         }
-        #[cfg(not(unix))]
+        #[cfg(windows)]
         {
             let _ = pid;
-            false
+            use std::os::windows::io::AsRawHandle;
+            self.process.as_ref().is_none_or(|process| {
+                // Safety: the owned process handle has SYNCHRONIZE access; this is a zero-time poll.
+                unsafe {
+                    windows_sys::Win32::System::Threading::WaitForSingleObject(process.as_raw_handle(), 0)
+                        != windows_sys::Win32::Foundation::WAIT_TIMEOUT
+                }
+            })
         }
     }
 }

@@ -1,6 +1,12 @@
 //! Local blocking IPC clients submit all mutations to the single session owner.
+#[cfg(windows)]
+pub use crate::windows_pipe::bind;
+#[cfg(windows)]
+use crate::windows_pipe::Stream as UnixStream;
 use crate::{events::EventBus, runtime::IoCommand};
 use openergy_ipc::{write_frame, Request, Response};
+#[cfg(unix)]
+use std::path::Path;
 #[cfg(unix)]
 use std::{
     fs::{File, OpenOptions},
@@ -14,7 +20,7 @@ use std::{
 };
 use std::{
     io::Read,
-    path::{Path, PathBuf},
+    path::PathBuf,
     sync::{
         atomic::{AtomicBool, Ordering},
         mpsc::{self, SyncSender},
@@ -115,7 +121,39 @@ pub fn serve(
         }
     })
 }
-#[cfg(unix)]
+#[cfg(windows)]
+pub fn serve(
+    mut listener: crate::windows_pipe::Listener,
+    _path: PathBuf,
+    tx: SyncSender<IoCommand>,
+    waker: Arc<mio::Waker>,
+    bus: Arc<EventBus>,
+    stop: Arc<AtomicBool>,
+) -> std::thread::JoinHandle<()> {
+    std::thread::spawn(move || {
+        let mut clients = Vec::new();
+        while !stop.load(Ordering::Relaxed) {
+            let stream = match listener.accept(&stop) {
+                Ok(stream) => stream,
+                Err(_) if stop.load(Ordering::Relaxed) => break,
+                Err(e) => {
+                    log::error!("IPC accept: {e}");
+                    stop.store(true, Ordering::Relaxed);
+                    break;
+                }
+            };
+            clients.retain(|h: &std::thread::JoinHandle<()>| !h.is_finished());
+            if clients.len() >= 64 {
+                continue;
+            }
+            let (tx, waker, bus, stop) = (tx.clone(), waker.clone(), bus.clone(), stop.clone());
+            clients.push(std::thread::spawn(move || client(stream, tx, waker, bus, stop)));
+        }
+        for h in clients {
+            let _ = h.join();
+        }
+    })
+}
 fn client(
     mut stream: UnixStream,
     tx: SyncSender<IoCommand>,
@@ -123,11 +161,14 @@ fn client(
     bus: Arc<EventBus>,
     stop: Arc<AtomicBool>,
 ) {
-    if stream.set_nonblocking(false).is_err() {
-        return;
+    #[cfg(unix)]
+    {
+        if stream.set_nonblocking(false).is_err() {
+            return;
+        }
+        let _ = stream.set_read_timeout(Some(Duration::from_millis(50)));
+        let _ = stream.set_write_timeout(Some(Duration::from_secs(1)));
     }
-    let _ = stream.set_read_timeout(Some(Duration::from_millis(50)));
-    let _ = stream.set_write_timeout(Some(Duration::from_secs(1)));
     let queue = bus.client();
     let mut buf = Vec::new();
     let mut scratch = [0u8; 8192];
