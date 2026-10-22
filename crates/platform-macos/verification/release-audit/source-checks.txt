@@ -1,0 +1,5 @@
+nice -n 15 env CARGO_BUILD_JOBS=2 cargo fmt -p openergy-platform-macos -- --check
+exit=0
+
+git diff --check
+exit=0

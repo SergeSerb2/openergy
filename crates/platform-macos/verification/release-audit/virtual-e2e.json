@@ -1,0 +1,387 @@
+{
+  "binary": "<WORKTREE>/target/release/openergy",
+  "failed": 0,
+  "format_version": 1,
+  "lab_port_range": [
+    25220,
+    25239
+  ],
+  "passed": 11,
+  "port_range": [
+    25200,
+    25219
+  ],
+  "scenarios": [
+    {
+      "artifact_dir": "<RUN_DIR>/s0",
+      "blocked_by": [],
+      "elapsed_ms": 897,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Held Shift crosses once, releases once without recovery; receiver alone transforms wheel.",
+      "scenario": "A1-modifier-and-receiver-wheel",
+      "stderr_tails": {
+        "client": [
+          "1792651071436 INFO openergy::runtime: openergy 0.1.0 daemon listening on <RUN_DIR>/s0/client/ctl.sock",
+          "1792651071436 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792651071436 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792651071436 WARN openergy::runtime: plaintext connection: 127.0.0.1:25200"
+        ],
+        "server": [
+          "1792651071406 INFO openergy::runtime: openergy 0.1.0 daemon listening on <RUN_DIR>/s0/server/ctl.sock",
+          "1792651071406 INFO openergy::runtime: listening on 127.0.0.1:25200",
+          "1792651071444 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792651071444 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792651071444 WARN openergy::runtime: plaintext connection: 127.0.0.1:54748"
+        ]
+      }
+    },
+    {
+      "artifact_dir": "<RUN_DIR>/s1",
+      "blocked_by": [],
+      "elapsed_ms": 1953,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "A remote payload stays available to a late peer even when the server cannot read its pasteboard back.",
+      "scenario": "A5-unavailable-clipboard-readback",
+      "stderr_tails": {
+        "late": [
+          "1792651073514 INFO openergy::runtime: openergy 0.1.0 daemon listening on <RUN_DIR>/s1/late/ctl.sock",
+          "1792651073514 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792651073514 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792651073514 WARN openergy::runtime: plaintext connection: 127.0.0.1:25200"
+        ],
+        "server": [
+          "1792651072179 INFO openergy::runtime: openergy 0.1.0 daemon listening on <RUN_DIR>/s1/server/ctl.sock",
+          "1792651072179 INFO openergy::runtime: listening on 127.0.0.1:25200",
+          "1792651072221 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792651072221 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792651072221 WARN openergy::runtime: plaintext connection: 127.0.0.1:54763",
+          "1792651073218 INFO openergy_session::server: peer goodbye",
+          "1792651073514 WARN openergy_net::reactor: PLAINTEXT connection 3: TLS explicitly disabled",
+          "1792651073514 WARN openergy_net::reactor: connection 3 established: TLS=None, cipher=None",
+          "1792651073514 WARN openergy::runtime: plaintext connection: 127.0.0.1:54772"
+        ]
+      }
+    },
+    {
+      "artifact_dir": "<RUN_DIR>/s2",
+      "blocked_by": [
+        "WP3",
+        "WP6"
+      ],
+      "elapsed_ms": 2059,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Local and receiver clipboard caps emit clipboard.blocked, deliver no partial, and recover for a small clip.",
+      "scenario": "S10-clipboard-cap",
+      "stderr_tails": {
+        "client": [
+          "1792651074144 INFO openergy::runtime: openergy 0.1.0 daemon listening on <RUN_DIR>/s2/client/ctl.sock",
+          "1792651074145 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792651074145 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792651074145 WARN openergy::runtime: plaintext connection: 127.0.0.1:25200",
+          "[input or clipboard log line redacted]"
+        ],
+        "server": [
+          "1792651074119 INFO openergy::runtime: openergy 0.1.0 daemon listening on <RUN_DIR>/s2/server/ctl.sock",
+          "1792651074119 INFO openergy::runtime: listening on 127.0.0.1:25200",
+          "1792651074145 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792651074145 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792651074145 WARN openergy::runtime: plaintext connection: 127.0.0.1:54776"
+        ]
+      }
+    },
+    {
+      "artifact_dir": "<RUN_DIR>/s3",
+      "blocked_by": [
+        "WP6"
+      ],
+      "elapsed_ms": 643,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Changing virtual displays updates peer screen dimensions and remaps an edge without disconnect.",
+      "scenario": "S12-display-change",
+      "stderr_tails": {
+        "client": [
+          "1792651076206 INFO openergy::runtime: openergy 0.1.0 daemon listening on <RUN_DIR>/s3/client/ctl.sock",
+          "1792651076206 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792651076206 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792651076206 WARN openergy::runtime: plaintext connection: 127.0.0.1:25200"
+        ],
+        "server": [
+          "1792651076179 INFO openergy::runtime: openergy 0.1.0 daemon listening on <RUN_DIR>/s3/server/ctl.sock",
+          "1792651076179 INFO openergy::runtime: listening on 127.0.0.1:25200",
+          "1792651076206 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792651076206 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792651076206 WARN openergy::runtime: plaintext connection: 127.0.0.1:54806"
+        ]
+      }
+    },
+    {
+      "artifact_dir": "<RUN_DIR>/s4",
+      "blocked_by": [
+        "WP3",
+        "WP6"
+      ],
+      "elapsed_ms": 626,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Virtual permission revoke leaves and releases; granting again resumes capture without a daemon restart.",
+      "scenario": "S16-permissions",
+      "stderr_tails": {
+        "client": [
+          "1792651076855 INFO openergy::runtime: openergy 0.1.0 daemon listening on <RUN_DIR>/s4/client/ctl.sock",
+          "1792651076855 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792651076855 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792651076855 WARN openergy::runtime: plaintext connection: 127.0.0.1:25200"
+        ],
+        "server": [
+          "1792651076820 INFO openergy::runtime: openergy 0.1.0 daemon listening on <RUN_DIR>/s4/server/ctl.sock",
+          "1792651076820 INFO openergy::runtime: listening on 127.0.0.1:25200",
+          "1792651076855 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792651076855 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792651076855 WARN openergy::runtime: plaintext connection: 127.0.0.1:54815"
+        ]
+      }
+    },
+    {
+      "artifact_dir": "<RUN_DIR>/s5",
+      "blocked_by": [
+        "WP3",
+        "WP6"
+      ],
+      "elapsed_ms": 618,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Down numbers exceed seed and strictly rise; drag/up reuse numbers and states; 1-2-3 clicks reset by distance and time.",
+      "scenario": "S18-click-numbering",
+      "stderr_tails": {
+        "client": [
+          "1792651077474 INFO openergy::runtime: openergy 0.1.0 daemon listening on <RUN_DIR>/s5/client/ctl.sock",
+          "1792651077474 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792651077474 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792651077474 WARN openergy::runtime: plaintext connection: 127.0.0.1:25200"
+        ],
+        "server": [
+          "1792651077451 INFO openergy::runtime: openergy 0.1.0 daemon listening on <RUN_DIR>/s5/server/ctl.sock",
+          "1792651077451 INFO openergy::runtime: listening on 127.0.0.1:25200",
+          "1792651077474 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792651077474 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792651077474 WARN openergy::runtime: plaintext connection: 127.0.0.1:54822"
+        ]
+      }
+    },
+    {
+      "artifact_dir": "<RUN_DIR>/s6",
+      "blocked_by": [
+        "WP6"
+      ],
+      "elapsed_ms": 593,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Modifier keys, repeats, buttons and horizontal-first Deskflow wheel units arrive in order.",
+      "scenario": "S3-input-order",
+      "stderr_tails": {
+        "client": [
+          "1792651078086 INFO openergy::runtime: openergy 0.1.0 daemon listening on <RUN_DIR>/s6/client/ctl.sock",
+          "1792651078086 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792651078086 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792651078087 WARN openergy::runtime: plaintext connection: 127.0.0.1:25200"
+        ],
+        "server": [
+          "1792651078067 INFO openergy::runtime: openergy 0.1.0 daemon listening on <RUN_DIR>/s6/server/ctl.sock",
+          "1792651078067 INFO openergy::runtime: listening on 127.0.0.1:25200",
+          "1792651078087 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792651078087 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792651078087 WARN openergy::runtime: plaintext connection: 127.0.0.1:54829"
+        ]
+      }
+    },
+    {
+      "artifact_dir": "<RUN_DIR>/s7",
+      "blocked_by": [
+        "WP6"
+      ],
+      "elapsed_ms": 921,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Abrupt server death releases held key and reconnect permits fresh input.",
+      "scenario": "S4-disconnect-release",
+      "stderr_tails": {
+        "client": [
+          "1792651078682 INFO openergy::runtime: openergy 0.1.0 daemon listening on <RUN_DIR>/s7/client/ctl.sock",
+          "1792651078682 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792651078682 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792651078682 WARN openergy::runtime: plaintext connection: 127.0.0.1:25200",
+          "1792651078707 WARN openergy::runtime: connection loss: reconnect attempt=1 delay_ms=217",
+          "1792651078947 WARN openergy_net::reactor: PLAINTEXT connection 3: TLS explicitly disabled",
+          "1792651078950 WARN openergy_net::reactor: connection 3 established: TLS=None, cipher=None",
+          "1792651078950 WARN openergy::runtime: plaintext connection: 127.0.0.1:25200"
+        ],
+        "server": [
+          "1792651078743 INFO openergy::runtime: openergy 0.1.0 daemon listening on <RUN_DIR>/s7/server/ctl.sock",
+          "1792651078743 INFO openergy::runtime: listening on 127.0.0.1:25200",
+          "1792651078947 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792651078947 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792651078947 WARN openergy::runtime: plaintext connection: 127.0.0.1:54836"
+        ]
+      }
+    },
+    {
+      "artifact_dir": "<RUN_DIR>/s8",
+      "blocked_by": [
+        "WP6"
+      ],
+      "elapsed_ms": 876,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Abrupt server death releases held drag button and reconnect permits fresh input.",
+      "scenario": "S5-disconnect-release",
+      "stderr_tails": {
+        "client": [
+          "1792651079637 INFO openergy::runtime: openergy 0.1.0 daemon listening on <RUN_DIR>/s8/client/ctl.sock",
+          "1792651079637 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792651079637 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792651079637 WARN openergy::runtime: plaintext connection: 127.0.0.1:25200",
+          "1792651079659 WARN openergy::runtime: connection loss: reconnect attempt=1 delay_ms=220",
+          "1792651079879 WARN openergy_net::reactor: PLAINTEXT connection 3: TLS explicitly disabled",
+          "1792651079879 WARN openergy_net::reactor: connection 3 established: TLS=None, cipher=None",
+          "1792651079879 WARN openergy::runtime: plaintext connection: 127.0.0.1:25200"
+        ],
+        "server": [
+          "1792651079693 INFO openergy::runtime: openergy 0.1.0 daemon listening on <RUN_DIR>/s8/server/ctl.sock",
+          "1792651079693 INFO openergy::runtime: listening on 127.0.0.1:25200",
+          "1792651079879 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792651079879 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792651079879 WARN openergy::runtime: plaintext connection: 127.0.0.1:54850"
+        ]
+      }
+    },
+    {
+      "artifact_dir": "<RUN_DIR>/s9",
+      "blocked_by": [
+        "WP6"
+      ],
+      "elapsed_ms": 1208,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "UTF-8 clipboard travels in both directions with CRLF normalization and no bounce-back.",
+      "scenario": "S8-text-clipboard",
+      "stderr_tails": {
+        "client": [
+          "1792651080489 INFO openergy::runtime: openergy 0.1.0 daemon listening on <RUN_DIR>/s9/client/ctl.sock",
+          "1792651080489 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792651080489 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792651080489 WARN openergy::runtime: plaintext connection: 127.0.0.1:25200"
+        ],
+        "server": [
+          "1792651080458 INFO openergy::runtime: openergy 0.1.0 daemon listening on <RUN_DIR>/s9/server/ctl.sock",
+          "1792651080458 INFO openergy::runtime: listening on 127.0.0.1:25200",
+          "1792651080489 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792651080489 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792651080489 WARN openergy::runtime: plaintext connection: 127.0.0.1:54856"
+        ]
+      }
+    },
+    {
+      "artifact_dir": "<RUN_DIR>/s10",
+      "blocked_by": [
+        "WP3",
+        "WP6"
+      ],
+      "elapsed_ms": 2464,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "8 MiB DIB pixels plus 40-byte header retain SHA-256; typing arrives before transfer completion.",
+      "scenario": "S9-large-dib",
+      "stderr_tails": {
+        "client": [
+          "1792651081687 INFO openergy::runtime: openergy 0.1.0 daemon listening on <RUN_DIR>/s10/client/ctl.sock",
+          "1792651081687 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792651081687 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792651081687 WARN openergy::runtime: plaintext connection: 127.0.0.1:25200"
+        ],
+        "server": [
+          "1792651081665 INFO openergy::runtime: openergy 0.1.0 daemon listening on <RUN_DIR>/s10/server/ctl.sock",
+          "1792651081665 INFO openergy::runtime: listening on 127.0.0.1:25200",
+          "1792651081687 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792651081687 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792651081687 WARN openergy::runtime: plaintext connection: 127.0.0.1:54867"
+        ]
+      }
+    }
+  ],
+  "redactions": [
+    "worktree path replaced with <WORKTREE>",
+    "artifact root replaced with <RUN_DIR>"
+  ],
+  "scenario_sources": [
+    {
+      "file": "A1-modifier-and-receiver-wheel.toml",
+      "sha256": "3c92d062f4176a85c960a96680071d1114c415ad2fc11df43f50045b3108e440"
+    },
+    {
+      "file": "A5-unavailable-clipboard-readback.toml",
+      "sha256": "de481936ec475fbb9b4b276cfece7dd64c48b2c37b8fb3dbf91e33c968ba94f9"
+    },
+    {
+      "file": "S10-clipboard-cap.toml",
+      "sha256": "3a13a2f7514bbdf701fb25bb49028a60073eba3fcca3b2d90758c7b03c1f53c2"
+    },
+    {
+      "file": "S12-display-change.toml",
+      "sha256": "b8041f5aeaf5e79976c795973f60ccdf985d7c0baa51df925db25a0962b98e8e"
+    },
+    {
+      "file": "S16-permissions.toml",
+      "sha256": "6ae482ca7e559cf381d94770b4188bace2397ba1ebda2bd55589d8fa301bc0d9"
+    },
+    {
+      "file": "S18-click-numbering.toml",
+      "sha256": "ad819beb85d1cd2a05b29d55433394cdfdaf7991c28449887e5cc72773bafba2"
+    },
+    {
+      "file": "S3-input-order.toml",
+      "sha256": "546e22b72516d088d7d87a8bc5f078edb91962edfeb4e7e83ab5a0915b044bae"
+    },
+    {
+      "file": "S4-disconnect-release.toml",
+      "sha256": "b985efe6a8f52b9480e7dff0957fc370813e1dfbaa0a912bf48ffb2679ea2f75"
+    },
+    {
+      "file": "S5-disconnect-release.toml",
+      "sha256": "e0893a7e29754f974f420ce14f75ea1779b97c82a40a9e1c6ef2856adf8f68ce"
+    },
+    {
+      "file": "S8-text-clipboard.toml",
+      "sha256": "185620b842aefe3e7a99624635c46c3a8caf3a621dea57619d835efef7bfbe15"
+    },
+    {
+      "file": "S9-large-dib.toml",
+      "sha256": "32c4169462bbd39c3dd761072b1556f4f9af819b66f5ff122615d1dc001ee407"
+    }
+  ]
+}

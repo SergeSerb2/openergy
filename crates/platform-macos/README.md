@@ -48,7 +48,9 @@ Move `source` to the capture owner, `sink` and `screens` to the io owner, and
   io-owned backend parts from it. Treat Sleeping, ScreenLocked, capture failures,
   observer failure and CaptureStopped as leave/release-all triggers. Woke and
   ScreenUnlocked require permission/geometry/secure-input refresh before resume.
-  The consumer must drain promptly; queue overflow logs a metadata-only error.
+  The consumer must drain promptly. Queue overflow logs a metadata-only error
+  and retains a notification failure for delivery when capacity returns.
+  Permission polling also retries this failure when native events are quiet.
   This macOS API stays public and additive; the binding `create` entry point
   remains available for callers that do not need a notice receiver.
 - `source.warp_cursor` is the CINN path: warp, then associate. A shared metadata
@@ -132,15 +134,19 @@ that partial replacement too.
 Read caps cover encoded input, decoded raster, output DIB and total wire formats.
 ImageIO metadata is checked before pixel decode. AppKit/codec scratch allocations
 and the initial NSPasteboard NSData fetch are not a hard RSS bound. Writes use
-64 MiB, matching the default shared configuration. The port accepts positive,
-bottom-up 32-bpp BI_RGB/BI_BITFIELDS DIB with 40/52/56/108/124-byte headers and
-validated contiguous masks. Other bit depths, top-down images, palettes,
-compression and embedded V5 profiles return typed errors. Additional real Windows
-DIB variants remain a compatibility gate.
+64 MiB, matching the default shared configuration. The port accepts
+32-bpp BI_RGB/BI_BITFIELDS DIB with 40/52/56/108/124-byte headers and
+validated contiguous masks. The parser also accepts top-down images and 24-bpp
+BI_RGB with padded rows. It reads validated DIB pixels directly, without a second
+BMP copy or native BMP decode. Other bit depths, palettes, compression and embedded
+V5 profiles return errors. Additional real Windows DIB variants remain a
+compatibility gate.
 
 ## Safe verification
 
 See [VERIFICATION.md](VERIFICATION.md) for exact commands and retained output.
+The current constrained audit is in [RELEASE-AUDIT.md](RELEASE-AUDIT.md); it ran
+builds, source checks, and virtual daemon scenarios only.
 `mac_probe` has only safe commands. `events-dry` builds the same real CGEvents as
 live injection, reads them back, and never calls CGEventPost. Inspection mode also
 refuses warps and cursor visibility changes. It is not a replacement event mock.

@@ -310,7 +310,10 @@ pub fn data_bytes(object: Id, maximum: usize) -> Result<Vec<u8>> {
     unsafe {
         let length: usize = msg0(object, c"length");
         if length > maximum {
-            return Err(error(format!("data length {length} exceeds max_bytes {maximum}")));
+            return Err(openergy_platform::PlatformError::ClipboardTooLarge {
+                bytes: length,
+                limit: maximum,
+            });
         }
         if length == 0 {
             return Ok(Vec::new());
@@ -443,8 +446,20 @@ pub struct RunLoopWake {
     pub loop_ref: usize,
     pub source: usize,
 }
+/// Owned by the run-loop thread, including during setup failure. Releasing a
+/// scheduled CF source alone does not remove the run loop's retained reference.
+pub struct RunLoopControlSource {
+    source: OwnedCf,
+}
+impl Drop for RunLoopControlSource {
+    fn drop(&mut self) {
+        // Safety: this owner holds a live source; invalidation removes it from
+        // every mode before the final owner-thread reference is released.
+        unsafe { CFRunLoopSourceInvalidate(self.source.0) }
+    }
+}
 impl RunLoopWake {
-    pub fn new() -> Result<(Self, OwnedCf)> {
+    pub fn new() -> Result<(Self, RunLoopControlSource)> {
         let mut context = RunLoopSourceContext {
             version: 0,
             info: ptr::null_mut(),
@@ -470,7 +485,7 @@ impl RunLoopWake {
                     loop_ref,
                     source: CFRetain(source.0) as usize,
                 },
-                source,
+                RunLoopControlSource { source },
             ))
         }
     }

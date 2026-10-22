@@ -15,6 +15,7 @@ pub mod types;
 
 use openergy_platform::{ClipboardBackend, ClipboardData, ClipboardFormat, FormatKind, PlatformError};
 use std::sync::{
+    atomic::{AtomicBool, Ordering},
     mpsc::{self, Receiver, SyncSender},
     Arc, Mutex,
 };
@@ -58,13 +59,28 @@ pub enum MacNotice {
 }
 
 #[derive(Clone)]
-pub(crate) struct Notices(SyncSender<MacNotice>);
+pub(crate) struct Notices {
+    sender: SyncSender<MacNotice>,
+    overflow: Arc<AtomicBool>,
+}
 impl Notices {
     pub(crate) fn send(&self, notice: MacNotice) {
-        // Bounded, nonblocking delivery. A full queue fails safe: daemon must
-        // treat any lifecycle notice as a reason to resample state and leave.
-        if let Err(mpsc::TrySendError::Full(_)) = self.0.try_send(notice) {
-            log::error!("macOS lifecycle notice queue full; resample platform state");
+        self.report_overflow();
+        // Capture callbacks must never wait for the consumer. Remember lost
+        // delivery even if no later native notification arrives to retry it.
+        if let Err(mpsc::TrySendError::Full(_)) = self.sender.try_send(notice) {
+            self.overflow.store(true, Ordering::Release);
+            log::error!("macOS lifecycle notice queue full; safe leave required");
+        }
+    }
+    pub(crate) fn report_overflow(&self) {
+        if self.overflow.swap(false, Ordering::AcqRel) {
+            // A dropped sleep/lock cannot be repaired by resampling display
+            // geometry alone. The existing notification-failure contract makes
+            // the daemon leave and release held input in either role.
+            if let Err(mpsc::TrySendError::Full(_)) = self.sender.try_send(MacNotice::NotificationSetupFailed) {
+                self.overflow.store(true, Ordering::Release);
+            }
         }
     }
 }
@@ -83,7 +99,10 @@ pub fn create_with_notices(options: MacOptions) -> Result<(Backend, Receiver<Mac
         return Err(error("lines_per_notch must be in (0, 1000]"));
     }
     let (sender, receiver) = mpsc::sync_channel(64);
-    let notices = Notices(sender);
+    let notices = Notices {
+        sender,
+        overflow: Arc::new(AtomicBool::new(false)),
+    };
     let enter_position = EnterPosition::default();
     let layout_dirty = Arc::new(std::sync::atomic::AtomicBool::new(false));
     let mut sink = inject::Injector::new(options.click_numbering)?;
@@ -121,14 +140,19 @@ impl MacClipboard {
         self.stamp.lock().ok().and_then(|s| s.own_write)
     }
     pub fn is_own_write(&self) -> bool {
-        self.own_write_stamp() == Some(pasteboard::change_count() as u64)
+        self.stamp
+            .lock()
+            .map(|stamp| stamp.own_write == Some(pasteboard::change_count() as u64))
+            .unwrap_or(false)
     }
 }
 impl ClipboardBackend for MacClipboard {
     fn change_stamp(&self) -> u64 {
-        let current = pasteboard::change_count() as u64;
         match self.stamp.lock() {
             Ok(mut stamp) => {
+                // Sample after locking: a replacement on the other backend
+                // handle must finish before its generation is classified.
+                let current = pasteboard::change_count() as u64;
                 // A successful remote write does not look like a new local
                 // clipboard generation, so the worker does not announce it back.
                 if stamp.own_write != Some(current) {
@@ -136,14 +160,18 @@ impl ClipboardBackend for MacClipboard {
                 }
                 stamp.visible
             }
-            Err(_) => current,
+            Err(_) => pasteboard::change_count() as u64,
         }
     }
     fn read(&mut self, max_bytes: usize) -> Result<ClipboardData> {
-        if self.is_own_write() {
+        // Keep own-write metadata and the payload snapshot together, including
+        // when the legacy screens handle writes on another thread.
+        let stamp = self.stamp.lock().map_err(|_| error("clipboard stamp poisoned"))?;
+        if stamp.own_write == Some(pasteboard::change_count() as u64) {
             return Ok(ClipboardData::default());
         }
         let clipboard = pasteboard::read(max_bytes)?;
+        drop(stamp);
         let mut formats = Vec::with_capacity(3);
         if let Some(text) = clipboard.text {
             formats.push(ClipboardFormat {
@@ -169,11 +197,29 @@ impl ClipboardBackend for MacClipboard {
         const CAP: usize = 64 * 1024 * 1024;
         let mut clipboard = pasteboard::Clipboard::default();
         let mut total = 0usize;
+        let mut text_total = 0usize;
+        let mut seen = [false; 3];
+        // Reject the entire request before cloning or decoding any payload.
         for format in &data.formats {
-            total = total
-                .checked_add(format.bytes.len())
-                .filter(|n| *n <= CAP)
-                .ok_or_else(|| error("clipboard write exceeds 64 MiB"))?;
+            total = total.checked_add(format.bytes.len()).filter(|n| *n <= CAP).ok_or(
+                PlatformError::ClipboardTooLarge {
+                    bytes: total.saturating_add(format.bytes.len()),
+                    limit: CAP,
+                },
+            )?;
+            let slot = match format.kind {
+                FormatKind::TextUtf8 | FormatKind::HtmlUtf8 => {
+                    std::str::from_utf8(&format.bytes).map_err(|_| error("clipboard text must be UTF-8"))?;
+                    text_total += format.bytes.len(); // Bounded above by total.
+                    usize::from(format.kind == FormatKind::HtmlUtf8)
+                }
+                FormatKind::Dib | FormatKind::Png => 2,
+            };
+            if std::mem::replace(&mut seen[slot], true) {
+                return Err(error("duplicate clipboard format"));
+            }
+        }
+        for format in &data.formats {
             match format.kind {
                 FormatKind::TextUtf8 | FormatKind::HtmlUtf8 => {
                     let text =
@@ -195,7 +241,7 @@ impl ClipboardBackend for MacClipboard {
                 FormatKind::Png => {
                     if clipboard
                         .dib
-                        .replace(pasteboard::image_to_dib(&format.bytes, CAP)?)
+                        .replace(pasteboard::image_to_dib(&format.bytes, CAP - text_total)?)
                         .is_some()
                     {
                         return Err(error("duplicate clipboard image format"));
