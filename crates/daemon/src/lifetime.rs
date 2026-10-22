@@ -149,13 +149,22 @@ impl ParentWatch {
                 .is_ok()
             {
                 // comm may contain spaces, parentheses, or non-UTF-8 bytes.
-                let state = stat
+                let tail = stat
                     .iter()
                     .rposition(|&b| b == b')')
-                    .and_then(|end| stat.get(end + 1..))
-                    .and_then(|tail| tail.iter().copied().find(|b| !b.is_ascii_whitespace()));
-                if state.is_some_and(|state| matches!(state, b'Z' | b'X' | b'x')) {
-                    return true;
+                    .and_then(|end| stat.get(end + 1..));
+                if let Some(tail) = tail {
+                    let mut fields = tail
+                        .split(|b| b.is_ascii_whitespace())
+                        .filter(|field| !field.is_empty());
+                    // Field 3 is the leader's state; it can be a zombie while
+                    // another thread still runs. Field 20 counts the whole
+                    // thread group, including that unreaped leader. Only a
+                    // zombie with one remaining thread proves process exit.
+                    let zombie = fields.next() == Some(b"Z".as_slice());
+                    if zombie && fields.nth(16) == Some(b"1".as_slice()) {
+                        return true;
+                    }
                 }
             }
         }
