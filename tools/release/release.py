@@ -8,17 +8,19 @@ import gzip
 import hashlib
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import plistlib
 import re
 import shutil
 import signal
+import stat
 import subprocess
 import sys
 import tarfile
 import tempfile
 import time
 import zipfile
+import zlib
 
 try:
     import tomllib
@@ -364,6 +366,48 @@ def package(args):
     print(f"Created {archive.name}; {signing}, unnotarized. Not a trusted distribution build.")
 
 
+def archive_manifest(archive):
+    limit = 1024 * 1024
+
+    def select(entries):
+        # Include alternate/nested paths in the count to reject ambiguous manifests.
+        matches = [(name, entry) for name, entry in entries
+                   if PurePosixPath(name.replace("\\", "/")).name == "BUILD.json"]
+        if len(matches) != 1 or matches[0][0] != "BUILD.json":
+            raise ValueError("archive needs exactly one BUILD.json at its root")
+        return matches[0][1]
+
+    def check_entry(size, regular):
+        if not regular:
+            raise ValueError("archive BUILD.json must be a regular file")
+        if not 0 <= size <= limit:
+            raise ValueError("archive BUILD.json exceeds 1 MiB")
+
+    try:
+        if archive.suffix == ".zip":
+            with zipfile.ZipFile(archive) as contents:
+                entry = select((item.filename, item) for item in contents.infolist())
+                # DOS ZIPs may omit Unix type bits; explicit non-file types fail.
+                kind = stat.S_IFMT(entry.external_attr >> 16)
+                check_entry(entry.file_size, not entry.is_dir() and not entry.external_attr & 0x10
+                            and kind in (0, stat.S_IFREG))
+                with contents.open(entry) as source:
+                    data = source.read(limit + 1)
+        elif archive.name.endswith(".tar.gz"):
+            with tarfile.open(archive, "r:gz") as contents:
+                entry = select((item.name, item) for item in contents)
+                check_entry(entry.size, entry.isfile())
+                with contents.extractfile(entry) as source:
+                    data = source.read(limit + 1)
+        else:
+            raise ValueError("release archives must use .zip or .tar.gz")
+    except (zipfile.BadZipFile, tarfile.TarError, zlib.error, EOFError, RuntimeError) as error:
+        raise ValueError(f"invalid release archive: {error}") from error
+    if len(data) > limit:
+        raise ValueError("archive BUILD.json exceeds 1 MiB")
+    return json.loads(data)
+
+
 def draft(args):
     version, _ = check(args.tag)
     commit = git("rev-parse", "HEAD")
@@ -387,6 +431,8 @@ def draft(args):
         expected = f"{hashlib.sha256(archive.read_bytes()).hexdigest()}  {archive.name}\n"
         if checksum.read_text() != expected:
             raise ValueError("artifact checksum mismatch")
+        if archive_manifest(archive) != manifest:
+            raise ValueError("archive BUILD.json does not match its provenance sidecar")
         seen.add(target)
         assets.extend([archive, checksum, sidecar])
     if seen != set(TARGETS):

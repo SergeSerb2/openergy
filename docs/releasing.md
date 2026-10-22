@@ -97,6 +97,11 @@ directories. Untagged or dirty artifacts cannot pass the draft-release gate.
 Packaging checks both the staged daemon and a fresh copy extracted from the
 archive through real virtual IPC. It also verifies the extracted macOS code
 signature. Each archive gets a JSON provenance sidecar and a SHA-256 sidecar.
+The draft gate reads ZIP and gzip-compressed tar archives without extraction.
+It requires exactly one `BUILD.json`, at the archive root, as a regular file
+of at most 1 MiB. Its parsed JSON must equal the complete provenance sidecar;
+JSON spacing and key order can differ. Duplicate, nested, and alternate manifest
+paths fail this check. ZIP entries without Unix type bits remain supported.
 Verify the checksum with `shasum -a 256 -c <archive>.sha256` on macOS,
 `sha256sum -c <archive>.sha256` on Linux, or `Get-FileHash -Algorithm SHA256`
 on Windows. A checksum detects a changed download; it does not authenticate
@@ -188,7 +193,8 @@ Pass an existing tag such as `v0.1.0`. The workflow:
    and checksums. macOS remains ad-hoc/unnotarized; other platforms remain unsigned.
 4. Transfers build outputs with a one-day Actions artifact retention period.
 5. Requires all four platforms, matching commit/tag/version/signing metadata,
-   and valid checksums. Only this final job gets `contents: write`.
+   valid checksums, and matching embedded manifests. Only this final job gets
+   `contents: write`.
 6. Calls `gh release create --draft --verify-tag` and uploads the checked files.
    It refuses an existing release and never overwrites or publishes one.
 
