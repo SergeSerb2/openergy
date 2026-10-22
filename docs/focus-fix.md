@@ -1,10 +1,24 @@
 # Native synthetic-click activation fix
 
+Status: **2026-10-21, implemented with incomplete affected-build acceptance**.
+Openergy's macOS injector uses numbered mouse events. The existing
+[27.0.1 test-Mac record](verification/focus-lab-macos-27.0.1/README.md) shows
+regression checks, but the legacy activation failure did not reproduce there.
+There is no repeatable automated legacy/native result on the reported affected
+27.2 build in this record. A historical live user report is not that acceptance
+evidence. See [readiness](plan/readiness.md) before making a release claim.
+
 On affected macOS 27 clients, a synthetic click can reach a control in an inactive app without activating the app or raising its window. A title-bar click can still activate it. [Deskflow issue #9852](https://github.com/deskflow/deskflow/issues/9852) records this difference between content clicks and title-bar clicks.
 
 The event-number field is the cause identified by the upstream fix. Mouse events created with `CGEventCreateMouseEvent` have a default `kCGMouseEventNumber` of zero. The macOS 27 behavior requires a rising number for each down, starting above the HID system's mouse-down count. A matching drag and up must retain that down's number. [PR #9978](https://github.com/deskflow/deskflow/pull/9978), merged July 20, 2026, addresses background activation and the stricter first-click behavior. [PR #9991](https://github.com/deskflow/deskflow/pull/9991), merged July 27, retains that number on drags so title-bar window movement works.
 
-This lab implements the supplied behavior independently in Swift. It does not copy upstream GPL implementation code. The code here is a verification implementation; it does not yet modify Openergy's production injector.
+The Swift lab implements the behavior for verification. The current Rust
+injector also uses event numbering by default (`macos.click_numbering = "native"`);
+`legacy` exists for controlled comparisons. See
+[the injector](../crates/platform-macos/src/inject.rs),
+[shared numbering](../crates/platform/src/click.rs), and
+[research provenance](re). This description is not a claim that a separated
+clean-room process or legal clearance has been established.
 
 ## Algorithm
 
@@ -36,7 +50,7 @@ The lab's legacy mode uses the same click-count logic but leaves event numbers u
 
 The helper watches a down, finds a candidate window using `CGWindowListCopyWindowInfo`, activates its owning app, and performs an Accessibility raise. Its window guess can refer to a normal window behind a menu or popover. Clicking a CodexBar status-menu item can therefore activate Finder or another app beneath that menu. A list of ordinary windows does not encode the full native menu tracking and activation rules.
 
-With a correctly numbered event sequence, WindowServer can perform activation as part of native event processing. No separate hit-test, `NSRunningApplication.activate`, or AX raise should run for that click. Menu and popover tracking can consume the click normally without a helper activating an unrelated window. The production fix should remove or disable the competing workaround after the native path is verified. This lab never changes the user's workaround or Synergy processes.
+With a correctly numbered event sequence, WindowServer can perform activation as part of native event processing. No separate hit-test, `NSRunningApplication.activate`, or AX raise should run for that click. Menu and popover tracking can consume the click normally without a helper activating an unrelated window. Any competing workaround should be reviewed on the separate test machine after the native path is verified. This lab does not authorize changes to the user's workaround or Synergy processes.
 
 ## Verification plan
 

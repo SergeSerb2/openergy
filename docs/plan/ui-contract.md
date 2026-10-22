@@ -1,5 +1,10 @@
 # Openergy — UI ↔ daemon contract (orchestrator requirements)
 
+Implementation requirements recorded on 2026-10-21. Example status objects and
+process assumptions below describe the contract, not a completed first-run or
+native desktop acceptance report. See [setup](setup.md),
+[readiness](readiness.md), and [releasing](../releasing.md).
+
 The macOS app is a thin client over the daemon IPC (architecture §2.10).
 This file lists what the app needs. Round 2 freezes it into the `ipc` crate.
 
@@ -23,9 +28,10 @@ This file lists what the app needs. Round 2 freezes it into the `ipc` crate.
   in v1.
 - Socket: `~/Library/Application Support/Openergy/openergy.sock`. The directory
   has mode 0700, and the socket has mode 0600.
-- Signing: `scripts/bundle.sh` signs with `$OPENERGY_SIGN_IDENTITY`, else the
-  first "Apple Development"/"Developer ID Application" identity, else ad-hoc.
-  Both binaries get the same identity.
+- Signing: `apps/macos/scripts/bundle.sh` signs the app and daemon with the
+  selected identity. Set `OPENERGY_SIGN_IDENTITY=-` for an explicit local ad-hoc
+  build. This is not Developer ID distribution or notarization; see
+  [releasing](../releasing.md) for the maintained build procedure.
 
 ## Framing
 
@@ -48,11 +54,11 @@ coalesced to at most 10 per second. The app renders only from the latest status.
   "cursor": { "screen": "macbook", "x": 100, "y": 200 },
   "local_screen": { "w": 3024, "h": 1964, "displays": [ { "x": 0, "y": 0, "w": 1512, "h": 982, "scale": 2.0 } ] },
   "server":  { "listen": "0.0.0.0:24800" },
-  "client":  { "remote": "192.168.1.20:24800", "next_retry_ms": 2000, "attempt": 3 },
+  "client":  { "remote": "192.0.2.10:25400", "next_retry_ms": 2000, "attempt": 3 },
   "peers": [
     {
       "name": "studio-pc",
-      "address": "192.168.1.20:24800",
+      "address": "192.0.2.10:25400",
       "role": "server | client",
       "connected": true,
       "since_unix_ms": 1792600000000,
@@ -76,7 +82,7 @@ coalesced to at most 10 per second. The app renders only from the latest status.
     "last_blocked": { "bytes": 6500000, "limit": 4096000, "peer": "studio-pc", "unix_ms": 0 }
   },
   "pending_trust": [ { "fingerprint": "…", "address": "…", "name": null, "expires_unix_ms": 0 } ],
-  "last_error": { "code": "connect_refused", "message": "Connection refused by 192.168.1.20:24800", "unix_ms": 0 },
+  "last_error": { "code": "connect_refused", "message": "Connection refused by 192.0.2.10:25400", "unix_ms": 0 },
   "stats": { "rss_bytes": 9000000, "events_in": 0, "events_out": 0 }
 }
 ```

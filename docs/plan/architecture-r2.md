@@ -1,8 +1,15 @@
 # Openergy — Architecture, Round 2 (frozen for implementation)
 
-Openergy is an open-source, lightweight, fast replacement for Synergy 3
-keyboard, mouse, and clipboard sharing. This document is a complete,
-self-contained revision of `architecture-r1.md`. It resolves every
+**Implementation design record, dated 2026-10-21.** “Frozen” refers to the
+original implementation contracts, not a stable public API or a release gate
+that has passed. Performance and reliability statements below are design
+requirements unless linked to scoped verification. The work breakdown records
+the original plan; Windows and X11 now have native implementations, with
+acceptance limits described in [readiness.md](readiness.md). Use
+[setup.md](setup.md) for current operational instructions and explicit paths.
+
+Openergy shares a keyboard, mouse, and clipboard across computers.
+This document is a complete, self-contained revision of `architecture-r1.md`. It resolves every
 R2-VERIFY item with byte-level evidence and freezes the contracts that
 Step 0 implements. Wire facts cite `docs/re/03-core-protocol.md` (03),
 `docs/re/02-service.md` (02), `docs/re/01-electron-ui.md` (01),
@@ -13,14 +20,17 @@ document wins. Section numbers mirror r1 so diffs stay reviewable.
 ## Goal and success criteria (unchanged, restated)
 
 Openergy runs as one small Rust daemon per machine plus a thin native UI.
-It interoperates with unmodified Synergy 1.21.1 core (wire 1.8) in both
-roles, and Openergy-to-Openergy uses the same dialect. The v1 exit gate:
+It targets unmodified Synergy 1.21.1-beta core (wire 1.8) in both
+roles, and Openergy-to-Openergy uses the same dialect. Compatibility evidence
+is limited to the builds and environments in [readiness.md](readiness.md).
+The proposed v1 exit gate:
 replace the user's live topology (Mac client of a Windows Synergy server,
 and the reverse) with no stuck keys, no silent clipboard loss, correct
 window activation on macOS 27, idle RSS under 30 MB per daemon, and under
-1 ms added input latency in-process. Synergy's measured baseline is about
-144 MiB RSS and 523 MiB disk across its process set (04); Openergy ships
-one binary, no Electron, no Node service, no login-helper zoo.
+1 ms added input latency in-process. The old 144 MiB RSS and 523 MiB disk
+Synergy baseline is a measurement of the inspected process set (04), not a
+current comparative benchmark. The daemon is one binary; macOS also has a
+separate native app. These goals do not establish native desktop acceptance.
 
 Design principles (from r1, retained): synchronous threads over async;
 `session` does no I/O; framing and limits are enforced before session;
@@ -121,9 +131,9 @@ crates/
   ipc/                      # daemon<->app/CLI/e2e JSON protocol types
   session/                  # Server/Client state machines, layout, clipboard mgr
   net/                      # mio + rustls transport, trust, discovery
-  platform-macos/           # CGEventTap/CGEventPost/NSPasteboard (v1 ships)
-  platform-windows/         # trait-complete stubs in v1
-  platform-linux/           # trait-complete stubs in v1 (X11; Wayland out)
+  platform-macos/           # CGEventTap/CGEventPost/NSPasteboard
+  platform-windows/         # Win32 backend; desktop acceptance pending
+  platform-linux/           # X11 backend; Xvfb evidence, Wayland unsupported
   daemon/                   # the `openergy` binary (all subcommands)
 tools/
   e2e/                      # `openergy-e2e` scenario runner (real binaries only)
@@ -133,7 +143,8 @@ apps/macos/                 # SwiftUI app (orchestrator-owned; do not touch)
 docs/plan/                  # this document and ui-contract.md
 ```
 
-One binary ships: `openergy`. Modes are subcommands (§2.11).
+The daemon binary is `openergy`. Modes are subcommands (§2.11).
+The macOS app bundles this daemon with its own SwiftUI executable.
 
 ### 2.2 Dependency direction
 
@@ -398,8 +409,11 @@ this at info level).
 ### 2.8 `config` — model, derivation, importers
 
 One TOML file (macOS `~/Library/Application Support/Openergy/
-config.toml`; Linux `$XDG_CONFIG_HOME/openergy/config.toml`; Windows
-`%APPDATA%\Openergy\config.toml`). Frozen model (Step 0 types; serde
+config.toml`; Windows `%APPDATA%\Openergy\config.toml`). Linux's intended
+XDG config path is not consistently applied by current command defaults:
+the daemon falls back to `~/.config/openergy/config.toml`, while offline
+commands honor `XDG_CONFIG_HOME`. Use explicit paths as in [setup.md](setup.md).
+Frozen model (Step 0 types; serde
 field names are the JSON contract):
 
 ```rust
@@ -489,7 +503,9 @@ Transport: Unix socket, default
 `~/Library/Application Support/Openergy/openergy.sock` on macOS
 (directory 0700, socket 0600; decision 2 — this settles r1's open
 question in favor of Application Support), `$XDG_RUNTIME_DIR/
-openergy.sock` on Linux, named pipe `\\.\pipe\openergy` on Windows.
+openergy.sock` on Linux, with `~/.local/share/openergy/openergy.sock` as
+fallback. Windows uses a per-user named pipe derived from the socket path;
+see the Windows daemon amendment below.
 `--socket <path>` overrides (E2E always overrides). Framing `u32` BE
 length + UTF-8 JSON. Types `Request{id,method,params}`,
 `Response{id,result,error}`, `Event{event,data}` as in r1, plus frozen
@@ -804,8 +820,8 @@ on the user's desktop), and port **24800 is never bound** by any test
 only for handshake/TLS/DSOP/keepalive scenarios in which our server
 never sends CINN, input, or clipboard (it would move the real cursor).
 Full input interop runs only in the isolated Linux Docker lab at
-`tools/interop-lab/` (Deskflow/Input Leap on Xvfb, driven by xdotool;
-owned by another agent). The runner enforces: refuse port 24800,
+`tools/interop-lab/` (recorded Deskflow 1.27/Barrier 2.4 peers on Xvfb, driven
+by xdotool; owned by another agent). The runner enforces: refuse port 24800,
 refuse a `synergy-core server` node kind on macOS, refuse
 `--allow-desktop` (the flag no longer exists).
 

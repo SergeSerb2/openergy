@@ -2,202 +2,143 @@
 
 <h1 align="center">Openergy</h1>
 
-<p align="center">One keyboard and mouse for all your computers.<br>
-A small, fast, open-source replacement for Synergy — and it talks to Synergy.</p>
+<p align="center">Share a keyboard, mouse, and clipboard across computers on your local network.</p>
 
----
+Openergy has a Rust daemon and a native SwiftUI macOS app. One computer hosts the
+keyboard and mouse; other computers join it. A screen layout defines where the
+pointer crosses between computers. Clipboard sharing supports text, HTML, and
+bitmap data, subject to each backend and peer's limits.
 
-Openergy shares one keyboard, mouse and clipboard between computers on your network.
-Move the pointer off the edge of one screen and it appears on the next computer.
-Copy on one computer and paste on another.
+**Alpha software.** The source version is `0.1.0`; this does not identify a
+published or supported stable release. As of 2026-10-21, no release artifacts
+have been published. APIs, configuration, and packaging can change. Keep local
+input available while evaluating it. Read the [readiness and verification
+limits](docs/plan/readiness.md) before replacing a working input connection.
 
-It speaks the classic Synergy wire protocol (Synergy 1.8, as used by Synergy 3,
-Deskflow, Barrier and Input Leap), so you can replace Synergy one computer at a time.
+## Platform status
 
-## Why
+| Platform | Current scope and evidence |
+| --- | --- |
+| macOS 15+ | Main development platform: native app and daemon. Automated virtual-backend checks cover app/daemon logic. Native input, permissions, and focus need separate desktop acceptance on the exact OS build. |
+| Linux X11 | Headless daemon with capture, injection, and clipboard backend. Existing acceptance uses isolated Xvfb, not a general desktop/distribution matrix. |
+| Windows | Headless daemon and CLI. Real named-pipe control and virtual TLS peers were checked on Windows. Native desktop input, mixed DPI, elevated apps, and clipboard acceptance remain pending. |
+| Linux Wayland | Unsupported. An X11/Xwayland connection does not establish Wayland desktop capture or control. |
 
-Synergy 3 works, but it is heavy and it has rough edges. Openergy keeps what is good
-and fixes the rest.
+There is no Windows or Linux graphical app or automatic updater. No support
+response time or security backport window is promised. Report reproducible
+problems through [GitHub issues](https://github.com/SergeSerb2/openergy/issues).
+Use [SECURITY.md](SECURITY.md) for sensitive reports.
 
-| | Synergy 3.7 | Openergy |
-|---|---|---|
-| Installed size | 523 MB (Electron, Qt, Node) | 5.8 MB (native, signed) |
-| Memory with the window closed | about 144 MB (service, tray, core) | about 69 MB (app ~59 MB, daemon ~9.3 MB) |
-| Idle CPU | — | 0.03% (daemon, 60 s) |
-| Added input latency | — | 0.18 ms p99, capture to injection |
-| macOS 27: click an inactive window | the window does not come to the front | numbered synthetic clicks, like a real mouse |
-| Large clipboard items | dropped without notice over 4 MB | up to 64 MB by default, sent in the background; you see a notice when the other computer refuses |
-| Reconnect after a network blip | can loop on "already connected" | replaces the stale connection |
-| TLS trust | fingerprint check off by default, key file world-readable | fingerprints always pinned, key file `0600` |
-| Account, licence, telemetry | required, Sentry | none |
+## Build and set up macOS
 
-## The macOS 27 focus fix
-
-On macOS 27, Synergy's synthetic clicks reach the button under the pointer but do not
-bring an inactive window to the front. Only a click on the title bar works. The cause:
-macOS now expects every synthetic click to carry its own increasing mouse event number
-(`kCGMouseEventNumber`), shared by the matching drag and mouse-up events. Openergy's
-injector sets these numbers, so the window server activates windows exactly as it does
-for a real mouse. No helper app, no guessing which window is under the pointer, and
-menu-bar menus behave normally. Details: [docs/focus-fix.md](docs/focus-fix.md).
-
-## Install (macOS)
-
-Openergy needs macOS 15 or later. Building needs Xcode (Swift 6) and Rust (`rustup`).
+Prerequisites: macOS 15 or later, Git, Rust with Cargo, and Xcode or Apple command
+line tools with Swift 6 and the macOS SDK. Packaging also needs Python 3.11 or
+later. Use the repository's pinned Rust toolchain when present. Building needs
+network access for dependencies.
 
 ```sh
-git clone https://github.com/SergeSerb2/openergy && cd openergy
-apps/macos/scripts/bundle.sh          # builds dist/Openergy.app
-open dist/Openergy.app
+git clone https://github.com/SergeSerb2/openergy.git
+cd openergy
+export PATH="$HOME/.cargo/bin:$PATH"
+PYTHON=python3 OPENERGY_SIGN_IDENTITY=- CARGO_BUILD_JOBS=2 nice -n 15 apps/macos/scripts/bundle.sh
 ```
 
-On first launch, Openergy asks for two macOS permissions:
+This builds `dist/Openergy.app` for the current architecture. The explicit `-`
+signing identity produces a local ad-hoc signature. It is **not** a Developer ID
+signature or notarization, and does not establish distribution readiness. For
+other architectures and maintainer packaging, see [releasing](docs/releasing.md).
 
-- **Accessibility** — to move the pointer and type on this Mac.
-- **Input Monitoring** — to send this Mac's keyboard and mouse to other computers
-  (needed only when this Mac hosts).
+On a Mac where you intend to enable sharing, open `dist/Openergy.app`. The app
+can start a daemon and use your account's Openergy state. Do not launch it as a
+test in an account whose keyboard and mouse already depend on another service.
 
-The permission page updates by itself when you switch each one on.
+1. Open **Permissions**. Join needs Accessibility to control this Mac. Host also
+   needs Input Monitoring to capture its keyboard and mouse. Review these grants
+   in System Settings → Privacy & Security. Rebuilds or signing changes can need
+   a new grant.
+2. On the computer with the physical keyboard and mouse, choose **Host**. In
+   **Layout**, add each client's screen name and put its rectangle next to the
+   host. Names must match exactly; edges must touch to permit crossing.
+3. On each controlled Mac, choose **Join** and enter the host's reachable address
+   and configured port. **Nearby** is only discovery information, not proof of
+   identity or permission to connect.
+4. Compare each pending certificate fingerprint with the fingerprint shown on
+   the other computer, using a channel you already trust. Approve on both sides
+   when requested. Do not approve an unexpected or changed fingerprint.
+5. Check that the app reports a connected peer with TLS enabled and trusted.
+   Try a harmless text transfer, a screen crossing, and a disconnect while local
+   input is still available. Only then consider **Settings → Open at login**.
 
-To start Openergy at login, switch on **Settings → Open at login**, or run
-`/Applications/Openergy.app/Contents/MacOS/Openergy --open-at-login on` (also `off`, `status`).
+For fresh CLI setup, Linux, Windows, trust commands, recovery, and migration,
+use the [setup guide](docs/plan/setup.md). It links complete
+[server](examples/server.toml) and [client](examples/client.toml) configuration
+examples. Importing Synergy settings is optional.
 
-## Install (Windows)
+## Trust, permissions, and privacy
 
-Windows has no app yet. The `openergy` daemon runs hidden at logon and is controlled with
-the same command line. Build it on the PC (Rust with the MSVC toolchain), then, in an
-elevated PowerShell:
+TLS is enabled by default. Clients pin the server certificate; servers require
+trusted client certificates by default (`tls.require_client_trust = true`).
+These are local SHA-256 certificate pins, not public certificate-authority or
+hostname validation. You must verify the first fingerprint yourself. Disabling
+TLS exposes input and clipboard traffic. Disabling client trust lets a server
+accept clients without a stored client pin.
 
-```powershell
-cargo build --release --locked --bin openergy
-New-Item -ItemType Directory -Force "C:\Program Files\Openergy"
-Copy-Item target\release\openergy.exe, tools\windows\switch-from-synergy.ps1, tools\windows\openergy-run.cmd "C:\Program Files\Openergy"
-& "C:\Program Files\Openergy\openergy.exe" import-synergy --from C:\ProgramData\Synergy\config --out "$env:APPDATA\Openergy\config.toml"
-& "C:\Program Files\Openergy\switch-from-synergy.ps1" -Install   # logon task, still off
-& "C:\Program Files\Openergy\switch-from-synergy.ps1" -Start     # stops Synergy, starts Openergy
-& "C:\Program Files\Openergy\switch-from-synergy.ps1" -Commit    # keeps Synergy off after restart
-```
+A trusted host can send input to a joined computer. Clipboard sharing can copy
+sensitive content between peers; it is enabled by default with a 64 MiB local
+limit, and the effective limit can be lower. Disable sharing, or its send/receive
+directions, when that access is not appropriate. File transfer and drag-and-drop
+are not supported. More option limits: [V1-LIMITS.md](crates/config/V1-LIMITS.md).
 
-Before `-Start`, exchange fingerprints: add the Mac's `openergy fingerprint --synergy` line
-to `%APPDATA%\Openergy\tls\trusted-clients`, and approve the PC's line on the Mac.
-`-Rollback` stops Openergy and starts Synergy again, while Synergy is still installed.
-The logon task runs `openergy-run.cmd`, which restarts the daemon if it crashes.
+The app and daemon have no account service, telemetry uploader, or cloud relay.
+They do use local network connections and mDNS discovery. State, identities,
+trust records, and diagnostic logs stay on the computer unless you share them.
+Logs can contain peer names, addresses, fingerprints, paths, and errors. Protect
+and redact them. [SECURITY.md](SECURITY.md) describes the local control boundary,
+data storage, threat model, and reporting process.
 
-## Use
+## Compatibility and evidence
 
-The menu-bar icon shows the state: both halves bright means connected.
+Openergy implements a classic Synergy-family wire protocol. Protocol similarity
+does not establish compatibility with every product or version. Existing reports
+from **2026-10-21** cover these specific peers and environments:
 
-- **Host** — this Mac's keyboard and mouse control the other computers.
-  Arrange the screens in the Layout window: drag them so their edges touch.
-- **Join** — this Mac is controlled by another computer's keyboard and mouse.
-  Enter the server address (for example `192.168.1.20`) or pick a computer under Nearby.
+- Deskflow 1.27 and Barrier 2.4 in an isolated Linux/Xvfb Docker lab, including
+  TLS/plaintext and both roles: [interop lab](tools/interop-lab/README.md).
+- Synergy core **1.21.1-beta**, protocol 1.8, in a private Windows session-0 lab:
+  [verification](docs/verification/windows-synergy-1.21.1/README.md). TLS, handshake,
+  and clipboard observations do not prove interactive Windows input behavior.
+- Openergy's Windows control and virtual network paths:
+  [verification](docs/verification/windows-daemon-2026-10-21/README.md).
 
-### Moving from Synergy
+Input Leap and other versions have no compatibility guarantee. Research under
+[docs/re](docs/re) describes the inspected binaries; it is not a current support
+matrix or a third-party security assessment.
 
-Openergy can read your Synergy 3 settings (layout, server address, clipboard and TLS
-options) and leaves the Synergy files unchanged:
+The macOS injector numbers synthetic mouse events to address the reported macOS
+27 activation behavior. The separate test-Mac run on 27.0.1 did **not** reproduce
+the legacy activation failure. It is regression evidence on that build, not
+proof of a fix on 27.2. See [focus behavior and open acceptance](docs/focus-fix.md).
 
-- In the app: **Connection → Import Settings from Synergy…**
-- Or: `openergy import-synergy --from ~/Library/Preferences/Synergy`
+Historical performance records are in [daemon verification](crates/daemon/VERIFICATION.md).
+The 2026-10-21 Apple M5 Pro/macOS 27.2 report records about 9.3 MB idle daemon RSS
+and 0.18 ms p99 between virtual capture and sink timestamps across two local
+daemons. These are past measurements, not hardware-to-screen LAN latency, current
+binary sizes, or promised performance. See the [readiness guide](docs/plan/readiness.md)
+for the distinction between virtual, lab, and native desktop evidence.
 
-To connect to a Synergy **server**, choose Join and enter its address. Compare the
-fingerprint the app shows with the one in Synergy, then trust it. Synergy servers do
-not check client certificates by default. If yours does (`checkPeerFingerprints`), add
-this Mac's line (below) to the server's `trusted-clients` file; on Windows that is
-`C:\ProgramData\Synergy\tls\trusted-clients`.
+## Development and maintenance
 
-When an Openergy **server** accepts a Synergy **client**, the Synergy client must trust
-Openergy's certificate. Print the line it expects and add it to the client's
-`trusted-servers` file: `tls/trusted-servers` beside Synergy's settings on macOS,
-`C:\ProgramData\Synergy\tls\trusted-servers` on Windows.
+- [Contributing and safe verification](CONTRIBUTING.md)
+- [External E2E runner](tools/e2e/README.md)
+- [Architecture and document index](docs/plan/README.md)
+- [Maintainer release procedure](docs/releasing.md)
+- [Changelog](CHANGELOG.md), [security policy](SECURITY.md), and
+  [code of conduct](CODE_OF_CONDUCT.md)
 
-```sh
-openergy fingerprint --synergy      # prints v2:sha256:<64 hex characters>
-```
+## License
 
-## Command line
-
-The same `openergy` binary runs headless, which is how Linux and servers use it.
-
-```text
-openergy daemon [--config <file>] [--platform macos|x11|windows|virtual]
-openergy server | client [--remote host:port]
-openergy status | connect | disconnect | restart
-openergy ctl <method> [--json '{…}']        # raw control API
-openergy trust list | approve <fp> | revoke <fp> | import-synergy <dir>
-openergy fingerprint [--synergy]
-openergy import-synergy [--from <dir>] [--out config.toml]
-openergy export-synergy-conf [--out synergy.conf]
-```
-
-Configuration lives in `~/Library/Application Support/Openergy/config.toml` on macOS,
-`$XDG_CONFIG_HOME/openergy/config.toml` on Linux, and `%APPDATA%\Openergy\config.toml` on Windows.
-Windows control commands use a private per-user named pipe. `--socket` selects
-a separate pipe for a lab or a second configuration; use the same value on the daemon and CLI.
-
-## Platforms
-
-| Platform | Status |
-|---|---|
-| macOS 15+ | Main platform. Native app plus daemon. |
-| Linux (X11) | Daemon with a native X11 backend, tested on Xvfb (capture, injection, clipboard). |
-| Windows | Headless daemon and CLI with private named-pipe control. Native backend starts in session 0; desktop input acceptance is pending. [Verification](docs/verification/windows-daemon-2026-10-21/README.md). |
-| Linux (Wayland) | Not yet. |
-
-Known v1 limits are listed in [crates/config/V1-LIMITS.md](crates/config/V1-LIMITS.md): keyboard-language
-sync, half-duplex lock keys, and modifier remapping of key IDs are not implemented yet.
-
-## How it is built
-
-- **Engine:** one Rust daemon, no async runtime: a few dedicated threads and one
-  `mio` event loop. TLS with `rustls`. Mouse moves are coalesced and keyboard and mouse
-  frames always go before clipboard data, so typing never waits behind a large paste.
-- **Safety:** one release path for every way a screen can be left (leave, disconnect,
-  timeout, sleep, crash of the peer), so keys and buttons are never left pressed.
-- **macOS app:** SwiftUI menu-bar app. It starts the daemon as a child process and
-  controls it over a private Unix socket with JSON messages.
-- **Compatibility:** the wire protocol was documented from the shipping Synergy 3.7
-  binaries ([docs/re](docs/re)) and checked against real Deskflow 1.27 and Barrier 2.4
-  peers in an isolated Docker lab ([tools/interop-lab](tools/interop-lab)), and against
-  the Synergy 1.21.1 core on Windows ([tools/windows-lab](tools/windows-lab)).
-
-More: [architecture](docs/plan/architecture-r2.md), [UI contract](docs/plan/ui-contract.md).
-
-## Testing
-
-There are no unit tests by design. Every check runs real binaries over real sockets:
-
-- `openergy-e2e run` — the scenario suite (two daemons with the virtual platform, plus
-  Deskflow and Barrier peers in Docker).
-- `Openergy --e2e <dir>` — drives the real macOS app logic against a real daemon.
-- `tools/focus-lab` — reproduces the macOS 27 focus bug and checks the fix on a test Mac.
-- `tools/windows-lab` — runs a private copy of the Synergy core installed on a Windows PC
-  against Openergy, without disturbing the Synergy in use there.
-
-## Measurements
-
-Measured on an Apple M5 Pro with macOS 27.2. Full evidence and commands:
-[crates/daemon/VERIFICATION.md](crates/daemon/VERIFICATION.md).
-
-| Measure | Result |
-|---|---|
-| App bundle | 5.8 MB (app 1.2 MB, daemon 3.5 MB, icon 1.1 MB) |
-| Daemon memory, idle | 9.3 MB resident |
-| Daemon memory after an 8 MiB clipboard transfer | about 19 MB (one retained copy) |
-| App memory, window closed | about 59 MB resident (AppKit and SwiftUI) |
-| Daemon CPU, idle over 60 s | 0.03% |
-| Input latency, capture to injection, 1,000 moves | 0.18 ms p99 |
-| Scenario suite (`openergy-e2e`) | 73 of 73 pass |
-| Interop with Deskflow 1.27 and Barrier 2.4 (TLS on and off, both roles) | 8 of 8 pass |
-| Interop with Synergy core 1.21.1 on Windows (TLS and pinning both ways, both roles, clipboard) | pass, [details](docs/verification/windows-synergy-1.21.1/README.md) |
-| App end-to-end (`Openergy --e2e`) | 14 of 14 pass |
-
-The focus fix was checked with `tools/focus-lab` on a macOS 27.0.1 test Mac: numbered clicks
-pass all seven scenarios (activation, first click, title-bar drag, menu-bar menus, double-click).
-On 27.0.1 the original bug does not reproduce, so the final check belongs on macOS 27.2:
-[docs/verification/focus-lab-macos-27.0.1](docs/verification/focus-lab-macos-27.0.1/README.md).
-
-## Licence
-
-MIT or Apache-2.0, at your option. Openergy is an independent implementation. It
-contains no Synergy or Deskflow code. "Synergy" is a trademark of Symless Ltd.
+Dual licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE), at your
+option. Dependencies retain their own terms; see
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and the [research record](docs/re).
+Openergy is an independent project based on documented interoperability
+research. It is not endorsed by the projects or vendors named here.

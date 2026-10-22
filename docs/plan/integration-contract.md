@@ -1,5 +1,11 @@
 # Integration contract additions (orchestrator, binding)
 
+Design record from 2026-10-21. These contracts guided implementation; they are
+not a security guarantee or evidence that all native acceptance passed. Check
+current source, [setup](setup.md), and [readiness](readiness.md) before using a
+path or claiming support. Windows IPC is described by the later amendment in
+[architecture-r2.md](architecture-r2.md).
+
 Step 0 froze the message, event and trait types, but not how the daemon constructs and
 drives the transport and the platform backends. These additive APIs close that gap.
 Owners implement them in their own crates; WP6 (daemon) consumes them exactly as written.

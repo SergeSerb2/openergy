@@ -1,9 +1,11 @@
 # Openergy — Architecture, Round 1
 
-Status: draft for orchestrator review. This document is not code. It freezes the
-interfaces that parallel agents build against. Round 2 must revise this document
-after the orchestrator returns reverse-engineering findings. Items marked
-**R2-VERIFY** need binary evidence before an agent treats them as fact.
+**Historical draft, superseded by [architecture-r2.md](architecture-r2.md).**
+Retained for design history as of 2026-10-21. Requirements, performance targets,
+legal assumptions, paths, and proposed platform stubs below are not claims
+about current behavior or release readiness. Items marked **R2-VERIFY** are
+unresolved in this draft. Use [setup](setup.md), [readiness](readiness.md), and
+[the research record](../re) for current guidance and evidence scope.
 
 ## Goal
 
@@ -1588,7 +1590,7 @@ scenario IDs will produce unverifiable code.
 | R-G | Clipboard format conversion edge cases (RTF-only sources, promised/lazy pasteboard data, huge BMP) | Missing formats, worker stalls | Worker thread isolation; format-skip-with-log rule; PNG-first policy; cap enforcement before read where the OS allows size query | Medium on Windows later; low for macOS text/PNG v1 |
 | R-H | Parallel agents drift the frozen contracts | Integration week from hell | Step-0 stubs, escalate-don't-fork rule, WP6 integrates in small increments behind green scenarios | Low if the orchestrator enforces the gate |
 | R-I | Binary size creep (TLS + mDNS + serde) past 15 MB | Misses a headline goal | Allowlist + size reporting per package; no webpki-roots; `ring` over aws-lc; check `mdns-sd` cost early, drop discovery before dropping anything on the input path | Low-medium; measure at first integration, not at the end |
-| R-J | Legal/licensing: Deskflow is GPL; Synergy is commercial | Wrong code reuse contaminates the project | Clean-room against protocol *behaviour* and the published reference; do not copy Deskflow C++ source into Rust. Reading it to understand wire semantics and reimplementing is the intended posture; the orchestrator picks Openergy's own license (recommend MIT/Apache-2.0 dual, standard for Rust). Get the R2 capture methodology from black-box observation (sockets, logs, configs) wherever possible | Low with discipline; flag for the orchestrator explicitly |
+| R-J | Legal/licensing: third-party source, binaries, and research artifacts have their own terms | Incompatible code reuse or redistribution | Record provenance and licenses; do not copy incompatible implementation code. This plan does not establish a separated clean-room process or legal clearance. See the research record and third-party notices. | Requires maintainer review before distribution |
 
 ### 8.2 Deferred from v1 (explicit non-goals)
 

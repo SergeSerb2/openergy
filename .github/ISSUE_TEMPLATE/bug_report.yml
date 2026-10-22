@@ -1,0 +1,52 @@
+name: Bug report
+description: Report a reproducible problem in this alpha project.
+title: "bug: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please read README.md and docs/plan/readiness.md first. Native desktop acceptance is limited.
+        For possible vulnerabilities, follow SECURITY.md. Do not post exploit details, private keys,
+        credentials, personal clipboard data, or unredacted input/log recordings here.
+  - type: input
+    id: revision
+    attributes:
+      label: Source commit or version
+      description: Include the commit and how you built or obtained the binary.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment and topology
+      description: Exact OS builds, architectures, backends, host/client names replaced with aliases, peer products/versions, TLS and client-trust settings, and app or CLI.
+      placeholder: "Host: OS/build, backend, commit. Client: OS/build, backend, peer version. TLS: on/off; require_client_trust: true/false."
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Give minimal steps or commands with isolated paths and synthetic data. Say whether this needs a native desktop or reproduces with the virtual backend.
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+      description: Include the visible error, connection state, and recovery behavior. Distinguish missing support from a regression when known.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Redacted evidence
+      description: Relevant logs, status fields, or scenario report. Remove personal paths, network addresses, hostnames, fingerprints that identify your devices, and all secret data.
+      render: text
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Before submitting
+      options:
+        - label: I removed secrets and personal input/clipboard data. This report does not contain sensitive vulnerability details.
+          required: true
