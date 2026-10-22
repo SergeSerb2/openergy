@@ -34,6 +34,9 @@ pub fn info() -> Result<PasteboardInfo> {
     // Safety: native objects remain retained within the pool; static selectors use SDK-matched ABIs.
     unsafe {
         let pasteboard = general();
+        if pasteboard.is_null() {
+            return Err(openergy_platform::PlatformError::ClipboardUnavailable);
+        }
         let change_count = ffi::msg0(pasteboard, c"changeCount");
         let array: ffi::Id = ffi::msg0(pasteboard, c"types");
         let count: usize = ffi::msg0(array, c"count");
@@ -54,6 +57,8 @@ fn general() -> ffi::Id {
 /// Explicit content read. max_bytes caps each input blob, the decoded raster,
 /// the output DIB, and the sum of returned wire formats. NSPasteboard has no
 /// public length-only data query, so its fetch may allocate before length check.
+/// A stable empty type list is a real clear. Unsupported-only, missing promised
+/// data, and changing snapshots return ClipboardUnavailable instead.
 pub fn read(max_bytes: usize) -> Result<Clipboard> {
     let _pool = ffi::Pool::new();
     let before = info()?;
@@ -86,7 +91,12 @@ pub fn read(max_bytes: usize) -> Result<Clipboard> {
         output.dib = Some(image_to_dib(&bytes, remaining)?);
     }
     if change_count() != before.change_count {
-        return Err(error("pasteboard changed while reading; retry"));
+        return Err(openergy_platform::PlatformError::ClipboardUnavailable);
+    }
+    if !before.types.is_empty() && output.text.is_none() && output.html.is_none() && output.dib.is_none() {
+        // A clipboard with only unsupported types is not a request to erase
+        // the peer's clipboard. A genuinely empty pasteboard is a real clear.
+        return Err(openergy_platform::PlatformError::ClipboardUnavailable);
     }
     Ok(output)
 }
@@ -94,7 +104,10 @@ pub fn read(max_bytes: usize) -> Result<Clipboard> {
 fn read_type(uti: &str, maximum: usize) -> Result<Vec<u8>> {
     let name = ffi::ns_string(uti)?;
     // Safety: explicit content-read call uses a live pasteboard and retained NSString type name.
-    let data = unsafe { ffi::msg1(general(), c"dataForType:", name.0) };
+    let data: ffi::Id = unsafe { ffi::msg1(general(), c"dataForType:", name.0) };
+    if data.is_null() {
+        return Err(openergy_platform::PlatformError::ClipboardUnavailable);
+    }
     ffi::data_bytes(data, maximum)
 }
 

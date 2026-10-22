@@ -131,6 +131,12 @@ worker does not announce them back. NSPasteboard has no atomic replace/rollback;
 a final failed write can leave a cleared pasteboard. The own-write count covers
 that partial replacement too.
 
+An own-write read returns `PlatformError::ClipboardUnavailable`, as do a missing
+pasteboard, missing promised data, a changing read snapshot, or a pasteboard with
+only unsupported types. A stable empty pasteboard remains a successful empty
+`ClipboardData`, so the session can forward a real clear without treating an
+unavailable read as a clear.
+
 Read caps cover encoded input, decoded raster, output DIB and total wire formats.
 ImageIO metadata is checked before pixel decode. AppKit/codec scratch allocations
 and the initial NSPasteboard NSData fetch are not a hard RSS bound. Writes use

@@ -121,3 +121,40 @@ Cross-scope source findings for the daemon owner:
   granted permission snapshot does not schedule another enable in
   `refresh_health`; transient native capture failures need an explicit retry
   policy. This audit preserves typed notices and does not alter daemon policy.
+
+## Clipboard clear follow-up — 2026-10-21
+
+The session owner requested an explicit distinction between a real clipboard
+clear and an unavailable snapshot. This follow-up requires platform commit
+`ffdd07a` (`PlatformError::ClipboardUnavailable`). The macOS reader now returns
+that variant for own-write suppression, a missing pasteboard, missing data for
+an advertised type, a snapshot that changes during its read, and a nonempty
+pasteboard containing only unsupported types. A stable empty type list still
+produces successful empty `ClipboardData`. Invalid data and size-limit failures
+retain their existing errors.
+
+The isolated branch's platform crate does not yet contain this shared variant.
+Validation used a private source copy of commit `670cd0f`, overlaid with this
+follow-up's macOS files and the exact `crates/platform` source from `ffdd07a`.
+The real workspace's platform files, root manifest, and lockfile were unchanged.
+
+```sh
+nice -n 15 env CARGO_BUILD_JOBS=2 cargo build --release --locked \
+  -p openergy-platform-macos --lib --examples
+nice -n 15 env CARGO_BUILD_JOBS=2 CLIPPY_CONF_DIR="$AUDIT_DIR/clippy-config" \
+  cargo clippy --release --locked -p openergy-platform-macos --all-targets \
+  -- -D warnings
+cargo fmt -p openergy-platform-macos -- --check
+git diff --check
+```
+
+Build and Clippy exited 0 against that real shared dependency. Clippy's temporary
+MSRV is 1.99.1, as above. Redacted output is retained in
+`verification/release-audit/clipboard-clear-build.txt` and
+`verification/release-audit/clipboard-clear-clippy.txt`.
+
+No native clipboard or permission API ran. No unit tests, mocks, or new test
+commands were added. This follow-up has build/source evidence only; the session
+and daemon owners verify actual clear forwarding through the real virtual
+daemon interfaces after integration. The earlier 11/11 result is unchanged and
+does not claim native coverage or verification of the new session behavior.

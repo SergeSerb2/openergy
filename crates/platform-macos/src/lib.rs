@@ -168,7 +168,7 @@ impl ClipboardBackend for MacClipboard {
         // when the legacy screens handle writes on another thread.
         let stamp = self.stamp.lock().map_err(|_| error("clipboard stamp poisoned"))?;
         if stamp.own_write == Some(pasteboard::change_count() as u64) {
-            return Ok(ClipboardData::default());
+            return Err(PlatformError::ClipboardUnavailable);
         }
         let clipboard = pasteboard::read(max_bytes)?;
         drop(stamp);
