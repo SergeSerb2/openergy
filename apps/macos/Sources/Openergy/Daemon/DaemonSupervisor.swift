@@ -69,13 +69,9 @@ final class DaemonSupervisor {
             .split(separator: " ").map(String.init) ?? []
         process.arguments = ["daemon", "--parent-pid", String(getpid()), "--socket", Self.socketPath,
                              "--config", Self.configURL.path] + extra
-        // The daemon refuses the standard Synergy port unless the real app asks for it,
-        // so development and E2E runs can never collide with a live Synergy install.
-        var environment = ProcessInfo.processInfo.environment
-        if environment["OPENERGY_ALLOW_PORT_24800"] == nil {
-            environment["OPENERGY_ALLOW_PORT_24800"] = "1"
-        }
-        process.environment = environment
+        // Native daemon startup owns the default-port policy. Preserve explicit
+        // overrides and leave the guard active for virtual development runs.
+        process.environment = ProcessInfo.processInfo.environment
         process.standardInput = FileHandle.nullDevice
         process.standardOutput = FileHandle.nullDevice
         // Keep the daemon's stderr (startup failures, aborts) next to its own log files.
