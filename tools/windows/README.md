@@ -8,7 +8,9 @@ or session-0 build does not establish interactive desktop readiness.
 
 Build with the Rust MSVC toolchain. Keep the scripts in this directory together.
 No Synergy installation or administrator account is required for a per-user install.
-The command uses a process-only execution-policy option; it does not change the
+Run these commands in a **non-administrator** PowerShell. Per-user entry points
+refuse administrator, SYSTEM, and high-integrity tokens. The command uses a
+process-only execution-policy option; it does not change the
 user or machine policy.
 
 ```powershell
@@ -69,24 +71,51 @@ script. Do not overwrite an active live installation to migrate task formats.
 
 ## Optional Synergy migration
 
-`switch-from-synergy.ps1` wraps this standalone lifecycle path. It requires
-explicitly imported/configured settings and the same user identity for install,
-start, and rollback. Only the migration operations that change the Windows
-service and machine startup approval need elevation. Use exactly one action:
-`-Install`, `-Start`, `-Commit`, or `-Rollback`.
+`switch-from-synergy.ps1` runs in a **non-administrator** PowerShell, including
+`-Install`, `-Start`, `-Commit`, and `-Rollback`. Never elevate this wrapper or
+an installed `openergy.ps1`. The manager and supervisor keep the limited user
+token. Existing lifecycle PID, start-time, and pipe ownership checks still apply.
 
-Start saves service/startup state before stopping Synergy. It checks Openergy
-readiness and attempts rollback if startup fails. Commit requires a successful
-pending migration and a ready daemon. Rollback requires saved state and restores
-the service start mode, delayed-start flag, startup approval, prior running state,
-and UI launcher when it was running. It uses exact Synergy executable paths and
-unique one-shot task names. Migration service/task branches were reviewed and
-parsed; they were not executed during the isolated audit.
+Automatic service migration requires a separate, reviewed helper provisioned at
+`%ProgramFiles%\OpenergyMigration\openergy-migration-admin.ps1`. See the
+[protected helper setup](MIGRATION-SECURITY.md) before using migration. Ordinary
+per-user installation does not require this helper. All required payloads are
+top-level `.ps1` files in this directory and the Windows release archive.
+
+```powershell
+# Run from a normal PowerShell after protected helper provisioning.
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\switch-from-synergy.ps1 -CheckBroker
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\switch-from-synergy.ps1 -Start
+# After checking the Openergy connection:
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\switch-from-synergy.ps1 -Commit
+# Or restore the saved Synergy state:
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\switch-from-synergy.ps1 -Rollback
+```
+
+Use the same explicit `InstallDir` and `DataDir` arguments for custom installs.
+Start validates the full per-user installation before requesting elevation. Only
+the protected helper receives the elevated token. It owns the fixed Synergy
+service and machine startup changes. No task is created or run by migration.
+Commit requires a pending migration and a ready daemon. Rollback restores the
+saved service mode, delayed-start value, startup approval, and running state.
+The limited controller restores the prior UI and confirms its limited process.
+
+Recovery state stays protected until UI restoration is acknowledged. UI startup
+failure, a failed Openergy stop, or an interrupted exchange leaves retryable
+state. Caller loss after cutover triggers service restoration independently;
+the helper cannot restart a limited UI without its caller. Run `-Rollback` again
+from a normal PowerShell. Keep the protected state until recovery completes.
+Legacy writable `DataDir\synergy-state.json` needs administrator review and
+manual recovery; it is never accepted as privileged state.
+
+The service, startup, and interactive UI transitions remain unverified in this
+audit. Read the [security evidence and limits](MIGRATION-PRIVILEGE-BOUNDARY.md).
 
 ## Safe verification
 
 The identity/control drivers require PowerShell 7 and an already-built Windows
-binary. The lifecycle driver also runs under Windows PowerShell 5.1.
+binary. Run the lifecycle drivers from a non-administrator terminal. The lifecycle
+driver also runs under Windows PowerShell 5.1.
 They use real binaries and kernel pipes. They create only private temporary
 state and virtual daemons. They do not register tasks or alter Synergy.
 
@@ -103,3 +132,13 @@ labs are removed. Failures retain control/lifecycle artifacts for inspection.
 See [verification](VERIFICATION.md) for results and remaining release gates, and
 [lifecycle ownership](LIFECYCLE-OWNERSHIP.md) for the occupied-endpoint and migration
 preflight follow-up.
+
+`verify-migration-boundary.ps1` is a separate administrator PowerShell 7 driver.
+It uses only disposable ACL fixtures, read-only helper commands, rejected
+privileged entry points, and private virtual lifecycle commands when a real
+limited child can start. It never mutates a service or task. Its private port
+range is 26520–26539. It reports missing interactive checks explicitly.
+
+```powershell
+pwsh -NoProfile -File tools/windows/verify-migration-boundary.ps1 -BinaryPath target/release/openergy.exe -Port 26530
+```

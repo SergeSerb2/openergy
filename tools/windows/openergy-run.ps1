@@ -6,6 +6,34 @@ param(
     [ValidateSet('windows','virtual')][string]$Platform = 'windows'
 )
 $ErrorActionPreference = 'Stop'
+# Used only by unelevated per-user entry points. Never load user code as admin.
+$oeIdentity = [Security.Principal.WindowsIdentity]::GetCurrent()
+if ($oeIdentity.IsSystem -or ([Security.Principal.WindowsPrincipal]$oeIdentity).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    throw 'Run this per-user Openergy command from a non-administrator PowerShell. Only the protected migration helper may be elevated.'
+}
+if (-not ('OpenergyUserIntegrity' -as [type])) {
+    Add-Type -TypeDefinition @'
+using System;
+using System.Runtime.InteropServices;
+using System.Security.Principal;
+public static class OpenergyUserIntegrity {
+    [DllImport("advapi32.dll", SetLastError=true)] static extern bool GetTokenInformation(IntPtr token,int kind,IntPtr data,int length,out int needed);
+    public static int Level() {
+        using(var identity=WindowsIdentity.GetCurrent()) {
+            int needed; GetTokenInformation(identity.Token,25,IntPtr.Zero,0,out needed);
+            IntPtr data=Marshal.AllocHGlobal(needed);
+            try {
+                if(!GetTokenInformation(identity.Token,25,data,needed,out needed)) throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+                var sid=new SecurityIdentifier(Marshal.ReadIntPtr(data));
+                string[] parts=sid.Value.Split('-'); return int.Parse(parts[parts.Length-1]);
+            } finally { Marshal.FreeHGlobal(data); }
+        }
+    }
+}
+'@
+}
+if ([OpenergyUserIntegrity]::Level() -gt 8192) { throw 'Per-user Openergy commands require a medium or lower integrity token.' }
+
 $InstallDir = [IO.Path]::GetFullPath($InstallDir).TrimEnd('\')
 $DataDir = [IO.Path]::GetFullPath($DataDir).TrimEnd('\')
 $Exe = Join-Path $InstallDir 'openergy.exe'

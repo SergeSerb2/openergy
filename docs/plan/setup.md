@@ -268,9 +268,11 @@ instructions for paths and pin requirements; the existing
 to 1.21.1-beta. Do not infer support for all Synergy-family versions.
 
 The existing [Windows switch script](../../tools/windows/switch-from-synergy.ps1)
-is an optional migration tool with fixed installation/service assumptions. It
-can stop Synergy, register a task, and change service/startup settings; it is
-not a fresh-install prerequisite. Review it and retain recovery state before
-using it. Fresh evaluation should use the foreground commands above.
+is an optional migration tool with fixed installation/service assumptions. Run
+it without elevation. Automatic service/startup changes require a separately
+provisioned, admin-owned [protected helper](../../tools/windows/MIGRATION-SECURITY.md).
+The helper never executes the per-user manager. Migration does not create tasks.
+Retain protected recovery state until rollback completes. This helper is not a
+fresh-install prerequisite. Fresh evaluation should use the foreground commands above.
 
 For maintainer builds and distribution limits, see [releasing](../releasing.md).

@@ -11,6 +11,34 @@ param(
     [switch]$NoStartup
 )
 $ErrorActionPreference = 'Stop'
+# Used only by unelevated per-user entry points. Never load user code as admin.
+$oeIdentity = [Security.Principal.WindowsIdentity]::GetCurrent()
+if ($oeIdentity.IsSystem -or ([Security.Principal.WindowsPrincipal]$oeIdentity).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    throw 'Run this per-user Openergy command from a non-administrator PowerShell. Only the protected migration helper may be elevated.'
+}
+if (-not ('OpenergyUserIntegrity' -as [type])) {
+    Add-Type -TypeDefinition @'
+using System;
+using System.Runtime.InteropServices;
+using System.Security.Principal;
+public static class OpenergyUserIntegrity {
+    [DllImport("advapi32.dll", SetLastError=true)] static extern bool GetTokenInformation(IntPtr token,int kind,IntPtr data,int length,out int needed);
+    public static int Level() {
+        using(var identity=WindowsIdentity.GetCurrent()) {
+            int needed; GetTokenInformation(identity.Token,25,IntPtr.Zero,0,out needed);
+            IntPtr data=Marshal.AllocHGlobal(needed);
+            try {
+                if(!GetTokenInformation(identity.Token,25,data,needed,out needed)) throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+                var sid=new SecurityIdentifier(Marshal.ReadIntPtr(data));
+                string[] parts=sid.Value.Split('-'); return int.Parse(parts[parts.Length-1]);
+            } finally { Marshal.FreeHGlobal(data); }
+        }
+    }
+}
+'@
+}
+if ([OpenergyUserIntegrity]::Level() -gt 8192) { throw 'Per-user Openergy commands require a medium or lower integrity token.' }
+
 Set-StrictMode -Version 2
 function Full-Path([string]$Path) {
     if (!$Path -or $Path.IndexOfAny([char[]]"`"`r`n`0") -ge 0) { throw 'Invalid path' }
@@ -130,8 +158,9 @@ function Ctl([string]$Method, [Diagnostics.Process]$Child) {
 function Task-Owned($Saved) {
     $task = Get-ScheduledTask -TaskName $Saved.task -ErrorAction SilentlyContinue
     if ($task) {
-        if ($task.Description -ne "Openergy managed install: $InstallDir | $DataDir" -or $task.Principal.UserId -notin @($Sid, [Security.Principal.WindowsIdentity]::GetCurrent().Name)) {
-            throw 'Scheduled task belongs to another installation'
+        $expectedArguments = '-NoLogo -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -File "' + (Join-Path $InstallDir 'openergy-run.ps1') + '" -InstallDir "' + $InstallDir + '" -DataDir "' + $DataDir + '" -Platform windows'
+        if (@($task).Count -ne 1 -or $task.TaskPath -ne '\' -or $task.Description -ne "Openergy managed install: $InstallDir | $DataDir" -or $task.Principal.UserId -notin @($Sid, [Security.Principal.WindowsIdentity]::GetCurrent().Name) -or $task.Principal.RunLevel.ToString() -ne 'Limited' -or @($task.Actions).Count -ne 1 -or $task.Actions[0].Execute -ne $PowerShell -or $task.Actions[0].Arguments -ne $expectedArguments -or $task.Actions[0].WorkingDirectory -ne $InstallDir) {
+            throw 'Scheduled task owner, limited token, or action does not match this installation'
         }
     }
     $task

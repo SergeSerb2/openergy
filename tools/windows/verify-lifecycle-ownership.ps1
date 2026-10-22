@@ -89,8 +89,8 @@ try {
     }
     [IO.File]::WriteAllText($marker,$original)
     $rejected=$false
-    try{& (Join-Path $ScriptsDir 'switch-from-synergy.ps1') -Rollback -InstallDir $install -DataDir $data | Out-Null}catch{$rejected=$_.Exception.Message.Contains('No saved migration state')}
-    Check $rejected 'rollback without saved migration state refused'
+    try{& (Join-Path $ScriptsDir 'switch-from-synergy.ps1') -Rollback -InstallDir $install -DataDir $data -BrokerPath (Join-Path $root 'missing\openergy-migration-admin.ps1') | Out-Null}catch{$rejected=$_.Exception.Message.Contains('provision the reviewed helper first')}
+    Check $rejected 'rollback without protected helper refused before any control change'
     $null=Manage Uninstall
     $passed=$true
     'WINDOWS_LIFECYCLE_OWNERSHIP_PASS'
