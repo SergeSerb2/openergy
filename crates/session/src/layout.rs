@@ -220,10 +220,18 @@ impl Layout {
             .and_then(Option::as_ref)
             .unwrap_or(&self.corners);
         if corners.iter().any(|c| match c {
-            Corner::TopLeft => x < r.x + n && y < r.y + n,
-            Corner::TopRight => x > right - n && y < r.y + n,
-            Corner::BottomLeft => x < r.x + n && y > bottom - n,
-            Corner::BottomRight => x > right - n && y > bottom - n,
+            Corner::TopLeft => {
+                i64::from(x) < i64::from(r.x) + i64::from(n) && i64::from(y) < i64::from(r.y) + i64::from(n)
+            }
+            Corner::TopRight => {
+                i64::from(x) > i64::from(right) - i64::from(n) && i64::from(y) < i64::from(r.y) + i64::from(n)
+            }
+            Corner::BottomLeft => {
+                i64::from(x) < i64::from(r.x) + i64::from(n) && i64::from(y) > i64::from(bottom) - i64::from(n)
+            }
+            Corner::BottomRight => {
+                i64::from(x) > i64::from(right) - i64::from(n) && i64::from(y) > i64::from(bottom) - i64::from(n)
+            }
         }) {
             self.candidate = None;
             return None;

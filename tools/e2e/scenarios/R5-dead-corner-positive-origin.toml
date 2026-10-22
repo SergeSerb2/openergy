@@ -1,0 +1,54 @@
+# Requirement: Large dead-corner bounds do not overflow at nonzero display origins.
+name = "R5-dead-corner-positive-origin"
+requirement = "An accepted large dead corner blocks crossing; disabling it restores crossing."
+timeout_ms = 1200
+[[node]]
+id = "server"
+role = "server"
+config = { switch = { dead_corners = ["top_left"], corner_size_px = 2147483647 } }
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+[[step]]
+do = "wait_connected"
+node = "server"
+[[step]]
+do = "wait_connected"
+node = "client"
+[[step]]
+do = "set_screens"
+node = "server"
+rects = [{ x = 100, y = 100, w = 1920, h = 1080, scale = 1.0 }]
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "mouse_move_abs", x = 2019, y = 640 }]
+[[step]]
+do = "sleep"
+ms = 100
+[[step]]
+do = "assert_status"
+node = "server"
+fields = { active_screen = "server" }
+timeout_ms = 150
+[[step]]
+do = "config_patch"
+node = "server"
+patch = { switch = { corner_size_px = 0 } }
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "mouse_move_abs", x = 1900, y = 640 }]
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "cursor.x" = 1900 }
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "mouse_move_abs", x = 2019, y = 640 }]
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { active_screen = "client" }
