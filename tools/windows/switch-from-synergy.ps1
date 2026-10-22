@@ -35,7 +35,9 @@ function Start-Interactive($exe, $arguments) {
 }
 
 if ($Install) {
-    $arguments = '--headless cmd.exe /d /c set "OPENERGY_ALLOW_PORT_24800=1"&& "' + $Exe + '" daemon --platform windows'
+    # openergy-run.cmd (next to this script) restarts the daemon if it crashes.
+    Copy-Item (Join-Path $PSScriptRoot 'openergy-run.cmd') "$Dir\openergy-run.cmd" -ErrorAction SilentlyContinue
+    $arguments = '--headless cmd.exe /d /c "' + "$Dir\openergy-run.cmd" + '"'
     $action = New-ScheduledTaskAction -Execute "$env:SystemRoot\System32\conhost.exe" -Argument $arguments
     $trigger = New-ScheduledTaskTrigger -AtLogOn -User $User
     $principal = New-ScheduledTaskPrincipal -UserId $User -LogonType Interactive -RunLevel Highest
@@ -86,6 +88,10 @@ if ($Rollback) {
     Disable-ScheduledTask -TaskName 'Openergy' -ErrorAction SilentlyContinue | Out-Null
     Stop-ScheduledTask -TaskName 'Openergy' -ErrorAction SilentlyContinue
     Start-Sleep 1
+    # Stop the restart wrapper first, or it starts the daemon again.
+    Get-CimInstance Win32_Process -Filter "Name='cmd.exe'" |
+        Where-Object CommandLine -like '*openergy-run.cmd*' |
+        ForEach-Object { Stop-Process -Id $_.ProcessId -Force }
     Stop-ByPath 'openergy' $Dir
     if (Test-Path $State) {
         $saved = Get-Content $State -Raw | ConvertFrom-Json

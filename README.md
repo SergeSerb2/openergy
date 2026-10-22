@@ -59,6 +59,9 @@ On first launch, Openergy asks for two macOS permissions:
 
 The permission page updates by itself when you switch each one on.
 
+To start Openergy at login, switch on **Settings → Open at login**, or run
+`/Applications/Openergy.app/Contents/MacOS/Openergy --open-at-login on` (also `off`, `status`).
+
 ## Install (Windows)
 
 Windows has no app yet. The `openergy` daemon runs hidden at logon and is controlled with
@@ -68,7 +71,7 @@ elevated PowerShell:
 ```powershell
 cargo build --release --locked --bin openergy
 New-Item -ItemType Directory -Force "C:\Program Files\Openergy"
-Copy-Item target\release\openergy.exe, tools\windows\switch-from-synergy.ps1 "C:\Program Files\Openergy"
+Copy-Item target\release\openergy.exe, tools\windows\switch-from-synergy.ps1, tools\windows\openergy-run.cmd "C:\Program Files\Openergy"
 & "C:\Program Files\Openergy\openergy.exe" import-synergy --from C:\ProgramData\Synergy\config --out "$env:APPDATA\Openergy\config.toml"
 & "C:\Program Files\Openergy\switch-from-synergy.ps1" -Install   # logon task, still off
 & "C:\Program Files\Openergy\switch-from-synergy.ps1" -Start     # stops Synergy, starts Openergy
@@ -77,7 +80,8 @@ Copy-Item target\release\openergy.exe, tools\windows\switch-from-synergy.ps1 "C:
 
 Before `-Start`, exchange fingerprints: add the Mac's `openergy fingerprint --synergy` line
 to `%APPDATA%\Openergy\tls\trusted-clients`, and approve the PC's line on the Mac.
-`-Rollback` stops Openergy and starts Synergy again.
+`-Rollback` stops Openergy and starts Synergy again, while Synergy is still installed.
+The logon task runs `openergy-run.cmd`, which restarts the daemon if it crashes.
 
 ## Use
 

@@ -1,4 +1,5 @@
 import AppKit
+import ServiceManagement
 import SwiftUI
 
 @main
@@ -17,7 +18,38 @@ enum Main {
             }
             return
         }
+        if let index = arguments.firstIndex(of: "--open-at-login") {
+            exit(LoginItemCommand.run(arguments.indices.contains(index + 1) ? arguments[index + 1] : "status"))
+        }
         OpenergyApp.main()
+    }
+}
+
+/// `Openergy --open-at-login on|off|status` sets the same login item as Settings → Open at
+/// login, without opening a window, so scripted installs can enable it.
+enum LoginItemCommand {
+    static func run(_ value: String) -> Int32 {
+        let service = SMAppService.mainApp
+        do {
+            switch value {
+            case "on": if service.status != .enabled { try service.register() }
+            case "off": if service.status != .notRegistered { try service.unregister() }
+            case "status": break
+            default:
+                print("usage: Openergy --open-at-login on|off|status")
+                return 64
+            }
+        } catch {
+            FileHandle.standardError.write(Data("Could not change the login item: \(error.localizedDescription)\n".utf8))
+            return 1
+        }
+        switch service.status {
+        case .enabled: print("Open at login: on")
+        case .requiresApproval: print("Open at login: allow Openergy in System Settings → General → Login Items")
+        case .notRegistered: print("Open at login: off")
+        default: print("Open at login: unavailable")
+        }
+        return service.status == .requiresApproval ? 2 : 0
     }
 }
 
