@@ -66,6 +66,9 @@ node = "client"
 kind = "resources"
 window_ms = 1000
 rss_bytes = 33554432
+# This short gate checks allocation. S15 checks idle CPU over 60 seconds;
+# one centisecond of CPU accounting in this window is already about 1%.
+cpu_percent = 100.0
 
 [[step]]
 do = "raw_send"
