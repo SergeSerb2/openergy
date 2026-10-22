@@ -12,6 +12,11 @@ or mocks were added. Native backend probes ran only inside isolated Linux Xvfb.
 
 ## Final hardening follow-up
 
+The [Linux x86-64 and Python 3.11 follow-up](linux-amd64-python311.md) records a
+real packaging compatibility failure and fix, the extracted local Linux
+artifact, and 30 focused scenarios plus 15 direct CLI checks under AMD64
+emulation. It does not establish physical desktop acceptance.
+
 The [idle IPC and Linux parent follow-up](idle-wake-and-parent.md) records the
 later idle CPU improvement, Mac ARM64 and Intel/Rosetta regression checks,
 Linux zombie-parent and live-worker fixes, three further source reviews, and
