@@ -122,6 +122,8 @@ The macOS injector numbers synthetic mouse events to address the reported macOS
 the legacy activation failure. It is regression evidence on that build, not
 proof of a fix on 27.2. See [focus behavior and open acceptance](docs/focus-fix.md).
 
+Current measured resource changes and the bundle-size comparison are in the
+[hardening record](docs/verification/release-integration-2026-10-22/round5.md).
 Historical performance records are in [daemon verification](crates/daemon/VERIFICATION.md).
 The 2026-10-21 Apple M5 Pro/macOS 27.2 report records about 9.3 MB idle daemon RSS
 and 0.18 ms p99 between virtual capture and sink timestamps across two local

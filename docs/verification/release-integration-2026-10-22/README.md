@@ -10,6 +10,15 @@ display. No installed Openergy/Synergy process, live input connection, native
 clipboard, TCC setting, login item, or production port was used. No unit tests
 or mocks were added. Native backend probes ran only inside isolated Linux Xvfb.
 
+## Final hardening follow-up
+
+The [final hardening record](round5.md) covers bounded config/trust I/O, safe
+save/import limits, queue and image allocation bounds, live alias and clipboard
+recovery, and embedded archive provenance. It records the later 117-case full
+run, exact-source package and platform checks, independent review responses,
+and measured resource changes. The earlier checks below retain their original
+source scope; they are not silently relabeled as final-build results.
+
 ## Integrated checks
 
 The sanitized [machine record](checks.json) contains scenario names, outcomes,
