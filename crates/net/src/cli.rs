@@ -82,8 +82,7 @@ pub fn trust(args: &[String]) -> Result<i32, String> {
             if command == "approve" {
                 // Without a live connection, no role is available. Explicit offline approval
                 // trusts this identity in both roles. IPC approval knows and writes one role.
-                store.trust_server(fp).map_err(|e| e.to_string())?;
-                store.trust_client(fp).map_err(|e| e.to_string())?;
+                store.trust_both(fp).map_err(|e| e.to_string())?;
             } else {
                 store.revoke(&fp).map_err(|e| e.to_string())?;
             }

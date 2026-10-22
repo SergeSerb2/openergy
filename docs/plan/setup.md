@@ -90,6 +90,19 @@ With explicit paths, the daemon puts `tls/` and `openergy.log` beside its config
 On Windows it selects a pipe; it is not a Unix socket file and its pathname
 does not itself grant access.
 
+Daemon TOML files must be regular files of at most **16 MiB (16,777,216 bytes)**,
+matching the local control frame limit. Each private or imported `trusted-servers`
+or `trusted-clients` file has a **1 MiB (1,048,576 bytes)** limit. This holds about
+14,000 normal SHA-256 fingerprint lines. Empty files and duplicate fingerprints
+are accepted. Read-only symlinks to regular trust-import files are accepted;
+pipes, devices, and directories are refused.
+
+Oversized files cause an error; the daemon and CLI do not silently truncate
+them. Trust updates check the complete output for both lists before writing.
+If a size limit would be exceeded, existing trust files stay unchanged. Reduce
+the file size while preserving the pins you need, then retry. These file limits
+do not impose a deadline on filesystem operations or advisory-lock waits.
+
 ## Verify and approve identities
 
 Use each computer's own state directory. Prepare a new host evaluation

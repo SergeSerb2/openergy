@@ -8,11 +8,17 @@ use std::{
     path::Path,
 };
 
+// Approximately 14,000 canonical SHA-256 pins per private or imported list.
+const MAX_TRUST_FILE_LEN: u64 = 1024 * 1024;
+
 fn fail(e: impl std::fmt::Display) -> TrustError {
     TrustError::Failed(e.to_string())
 }
+fn too_large() -> TrustError {
+    fail("trust list exceeds 1 MiB (1048576 bytes)")
+}
 fn read(path: &Path, private: bool) -> Result<Vec<Fingerprint>, TrustError> {
-    let mut file = match if private {
+    let file = match if private {
         private_file(path)
     } else {
         // Imports are read-only, but opening a FIFO can wait forever before
@@ -22,7 +28,15 @@ fn read(path: &Path, private: bool) -> Result<Vec<Fingerprint>, TrustError> {
             if !metadata.is_file() {
                 return Err(io::Error::other("imported trust list must be a regular file"));
             }
-            let file = fs::File::open(path)?;
+            let mut options = fs::OpenOptions::new();
+            options.read(true);
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::OpenOptionsExt;
+                // A link can change to a FIFO between metadata and open.
+                options.custom_flags(libc::O_NONBLOCK);
+            }
+            let file = options.open(path)?;
             if !file.metadata()?.is_file() {
                 return Err(io::Error::other("imported trust list must be a regular file"));
             }
@@ -33,8 +47,17 @@ fn read(path: &Path, private: bool) -> Result<Vec<Fingerprint>, TrustError> {
         Err(e) if e.kind() == io::ErrorKind::NotFound => return Ok(Vec::new()),
         Err(e) => return Err(fail(e)),
     };
+    if file.metadata().map_err(fail)?.len() > MAX_TRUST_FILE_LEN {
+        return Err(too_large());
+    }
     let mut text = String::new();
-    file.read_to_string(&mut text).map_err(fail)?;
+    file.take(MAX_TRUST_FILE_LEN + 1)
+        .read_to_string(&mut text)
+        .map_err(fail)?;
+    // Also reject growth after metadata instead of accepting a partial list.
+    if text.len() as u64 > MAX_TRUST_FILE_LEN {
+        return Err(too_large());
+    }
     let mut result = Vec::new();
     let mut ignored = 0;
     for line in text.lines().map(str::trim).filter(|line| !line.is_empty()) {
@@ -52,9 +75,12 @@ fn read(path: &Path, private: bool) -> Result<Vec<Fingerprint>, TrustError> {
     }
     Ok(result)
 }
-fn write(path: &Path, values: &[Fingerprint]) -> Result<(), TrustError> {
+fn serialize(values: &[Fingerprint]) -> Result<String, TrustError> {
     let text: String = values.iter().map(|fp| format!("{}\n", fp.to_synergy_line())).collect();
-    atomic_write(path, text.as_bytes(), false).map_err(fail)
+    if text.len() as u64 > MAX_TRUST_FILE_LEN {
+        return Err(too_large());
+    }
+    Ok(text)
 }
 impl TrustStore {
     /// `dir` is the TLS directory containing the two trust files.
@@ -82,13 +108,17 @@ impl TrustStore {
         self.clients.contains(fp)
     }
     pub fn trust_server(&mut self, fp: Fingerprint) -> Result<(), TrustError> {
-        self.modify(Some((true, fp)), None)
+        self.modify(&[fp], &[], None).map(|_| ())
     }
     pub fn trust_client(&mut self, fp: Fingerprint) -> Result<(), TrustError> {
-        self.modify(Some((false, fp)), None)
+        self.modify(&[], &[fp], None).map(|_| ())
+    }
+    /// Preflight an offline approval for both roles before saving either list.
+    pub fn trust_both(&mut self, fp: Fingerprint) -> Result<(), TrustError> {
+        self.modify(&[fp], &[fp], None).map(|_| ())
     }
     pub fn revoke(&mut self, fp: &Fingerprint) -> Result<(), TrustError> {
-        self.modify(None, Some(*fp))
+        self.modify(&[], &[], Some(*fp)).map(|_| ())
     }
     pub fn servers(&self) -> &[Fingerprint] {
         &self.servers
@@ -96,7 +126,12 @@ impl TrustStore {
     pub fn clients(&self) -> &[Fingerprint] {
         &self.clients
     }
-    fn modify(&mut self, add: Option<(bool, Fingerprint)>, remove: Option<Fingerprint>) -> Result<(), TrustError> {
+    fn modify(
+        &mut self,
+        add_servers: &[Fingerprint],
+        add_clients: &[Fingerprint],
+        remove: Option<Fingerprint>,
+    ) -> Result<usize, TrustError> {
         private_dir(&self.dir).map_err(fail)?;
         let _lock = DirectoryLock::acquire(&self.dir.join(".trust-lock")).map_err(fail)?;
         let mut next = Self::load(&self.dir)?;
@@ -106,21 +141,32 @@ impl TrustStore {
             next.servers.retain(|v| *v != fp);
             next.clients.retain(|v| *v != fp);
         }
-        if let Some((server, fp)) = add {
-            let list = if server { &mut next.servers } else { &mut next.clients };
-            if !list.contains(&fp) {
-                list.push(fp);
+        let mut added = 0;
+        for (list, additions) in [(&mut next.servers, add_servers), (&mut next.clients, add_clients)] {
+            for fp in additions {
+                if !list.contains(fp) {
+                    list.push(*fp);
+                    added += 1;
+                }
             }
         }
-        if next.servers != servers {
-            write(&self.dir.join("trusted-servers"), &next.servers)?;
+        // Preflight both complete lists before writing either. An oversized
+        // import must not save a prefix of the requested approvals.
+        let servers = (next.servers != servers)
+            .then(|| serialize(&next.servers))
+            .transpose()?;
+        let clients = (next.clients != clients)
+            .then(|| serialize(&next.clients))
+            .transpose()?;
+        if let Some(text) = servers {
+            atomic_write(&self.dir.join("trusted-servers"), text.as_bytes(), false).map_err(fail)?;
         }
-        if next.clients != clients {
-            write(&self.dir.join("trusted-clients"), &next.clients)?;
+        if let Some(text) = clients {
+            atomic_write(&self.dir.join("trusted-clients"), text.as_bytes(), false).map_err(fail)?;
         }
         // An unsuccessful save must not report an unpersisted pin as approved.
         *self = next;
-        Ok(())
+        Ok(added)
     }
     /// Import the TLS directory supplied by the caller. Certificate/key files are untouched.
     pub fn import_synergy(&mut self, dir: &Path) -> Result<usize, TrustError> {
@@ -130,19 +176,6 @@ impl TrustStore {
             servers: read(&dir.join("trusted-servers"), false)?,
             clients: read(&dir.join("trusted-clients"), false)?,
         };
-        let mut added = 0;
-        for fp in other.servers {
-            if !self.is_trusted_server(&fp) {
-                self.trust_server(fp)?;
-                added += 1;
-            }
-        }
-        for fp in other.clients {
-            if !self.is_trusted_client(&fp) {
-                self.trust_client(fp)?;
-                added += 1;
-            }
-        }
-        Ok(added)
+        self.modify(&other.servers, &other.clients, None)
     }
 }

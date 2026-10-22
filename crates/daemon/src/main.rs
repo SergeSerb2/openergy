@@ -26,6 +26,8 @@ mod windows_pipe;
 mod workers;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
+// Keep file-based daemon configuration within the local control frame budget.
+const MAX_CONFIG_FILE_LEN: u64 = openergy_ipc::MAX_FRAME_LEN as u64;
 
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -252,12 +254,21 @@ fn load_config(path: Option<&Path>) -> Result<Config, String> {
             // A path changed to a FIFO after metadata must not block startup.
             options.custom_flags(libc::O_NONBLOCK);
         }
-        let mut file = options.open(&path)?;
-        if !file.metadata()?.is_file() {
+        let file = options.open(&path)?;
+        let metadata = file.metadata()?;
+        if !metadata.is_file() {
             return Err(std::io::Error::other("config must be a regular file"));
         }
+        let too_large = || std::io::Error::other("config exceeds 16 MiB (16777216 bytes)");
+        if metadata.len() > MAX_CONFIG_FILE_LEN {
+            return Err(too_large());
+        }
         let mut text = String::new();
-        file.read_to_string(&mut text)?;
+        file.take(MAX_CONFIG_FILE_LEN + 1).read_to_string(&mut text)?;
+        // The file can grow after metadata; never parse a truncated config.
+        if text.len() as u64 > MAX_CONFIG_FILE_LEN {
+            return Err(too_large());
+        }
         Ok(text)
     };
     let text = read().map_err(|e| format!("read {}: {e}", path.display()))?;
