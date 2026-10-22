@@ -1700,6 +1700,16 @@
     "local_markdown_links": "PASS",
     "changed_personal_path_matches": 0,
     "notices_freshness": "PASS",
-    "no_external_package_version_changes": true
+    "no_external_package_version_changes": true,
+    "gitleaks": {
+      "version": "8.30.1",
+      "source_commit": "37178e5",
+      "log_scope": "all reachable refs",
+      "commits_scanned": 251,
+      "bytes_scanned": 28482050,
+      "leaks": 0,
+      "later_change": "Only this scan metadata is added afterward."
+    },
+    "markdown_files_checked": 71
   }
 }
