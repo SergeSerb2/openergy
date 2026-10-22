@@ -1,113 +1,100 @@
-# Replaces a Synergy 3 server on Windows with Openergy, or puts Synergy back.
-# Run elevated, with openergy.exe in C:\Program Files\Openergy and the config in
-# %APPDATA%\Openergy (openergy import-synergy --from C:\ProgramData\Synergy\config).
-#
-#   switch-from-synergy.ps1 -Install    register the Openergy logon task (disabled)
-#   switch-from-synergy.ps1 -Start      stop Synergy, start Openergy (reversible)
-#   switch-from-synergy.ps1 -Commit     keep Synergy off at the next logon too
-#   switch-from-synergy.ps1 -Rollback   stop Openergy, bring Synergy back
-param([switch]$Install, [switch]$Start, [switch]$Commit, [switch]$Rollback)
+# Optional migration wrapper. Use openergy.ps1 for installs without Synergy.
+# Run elevated as the SAME Windows user who will run Openergy.
+[CmdletBinding()]
+param(
+    [switch]$Install, [switch]$Start, [switch]$Commit, [switch]$Rollback,
+    [string]$InstallDir = "$env:LOCALAPPDATA\Programs\Openergy",
+    [string]$DataDir = "$env:APPDATA\Openergy",
+    [string]$BinaryPath = "$PSScriptRoot\openergy.exe"
+)
 $ErrorActionPreference = 'Stop'
-$Dir = 'C:\Program Files\Openergy'
-$Exe = "$Dir\openergy.exe"
-$State = "$Dir\synergy-state.json"
-$Synergy = 'C:\Program Files\Synergy'
+if (@($Install,$Start,$Commit,$Rollback).Where({$_}).Count -ne 1) { throw 'Choose exactly one of -Install, -Start, -Commit, or -Rollback' }
+$State = Join-Path $DataDir 'synergy-state.json'
 $Svc = 'Synergy Core Daemon'
+$Synergy = 'C:\Program Files\Synergy'
 $Approved = 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run'
 $RunName = 'Synergy 3 Service'
-$User = [Security.Principal.WindowsIdentity]::GetCurrent().Name
-function Log($m) { Write-Output ('{0:HH:mm:ss} {1}' -f (Get-Date), $m) }
-function Stop-ByPath($name, $dir) {
-    Get-Process -Name $name -ErrorAction SilentlyContinue |
-        Where-Object { $_.Path -and $_.Path.StartsWith($dir, [StringComparison]::OrdinalIgnoreCase) } |
-        ForEach-Object { Log "stopping $name $($_.Id)"; Stop-Process -Id $_.Id -Force }
+$Manager = if ($Install) { Join-Path $PSScriptRoot 'openergy.ps1' } else { Join-Path $InstallDir 'openergy.ps1' }
+function Manage([string]$Action) {
+    & $Manager -Action $Action -InstallDir $InstallDir -DataDir $DataDir
 }
-function Start-Interactive($exe, $arguments) {
-    # SSH runs in session 0; a one-shot task starts the program on the user's desktop.
-    $name = 'OpenergyOneShot'
-    Unregister-ScheduledTask -TaskName $name -Confirm:$false -ErrorAction SilentlyContinue
-    $action = New-ScheduledTaskAction -Execute $exe -Argument $arguments
-    $principal = New-ScheduledTaskPrincipal -UserId $User -LogonType Interactive -RunLevel Limited
-    Register-ScheduledTask -TaskName $name -Action $action -Principal $principal | Out-Null
-    Start-ScheduledTask -TaskName $name
-    Start-Sleep 3
-    Unregister-ScheduledTask -TaskName $name -Confirm:$false
+function Restore-Synergy($Saved) {
+    Set-Service -Name $Svc -StartupType $Saved.service_start
+    if ($null -ne $Saved.delayed) {
+        Set-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Services\Synergy Core Daemon' -Name DelayedAutostart -Value $Saved.delayed -Type DWord
+    } else {
+        Remove-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Services\Synergy Core Daemon' -Name DelayedAutostart -ErrorAction SilentlyContinue
+    }
+    if ($Saved.approved) {
+        if (!(Test-Path $Approved)) { New-Item $Approved -Force | Out-Null }
+        Set-ItemProperty $Approved -Name $RunName -Type Binary -Value ([Convert]::FromBase64String($Saved.approved))
+    } else { Remove-ItemProperty $Approved -Name $RunName -ErrorAction SilentlyContinue }
+    if ($Saved.was_running) { Start-Service -Name $Svc }
+    $ui = @(Get-Process -Name synergy-service -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq (Join-Path $Synergy 'synergy-service.exe') })
+    if ($Saved.was_ui_running -and $ui.Count -eq 0) {
+        # A unique task cannot replace another install's or user's one-shot task.
+        $name = 'OpenergyRollback-'+[guid]::NewGuid().ToString('N')
+        try {
+            $action = New-ScheduledTaskAction -Execute (Join-Path $Synergy 'synergy-service.exe') -Argument '-d'
+            $principal = New-ScheduledTaskPrincipal -UserId $Saved.sid -LogonType Interactive -RunLevel Limited
+            Register-ScheduledTask -TaskName $name -Action $action -Principal $principal | Out-Null
+            Start-ScheduledTask -TaskName $name
+            Start-Sleep -Seconds 3
+        } finally { Unregister-ScheduledTask -TaskName $name -Confirm:$false -ErrorAction SilentlyContinue }
+    }
 }
-
 if ($Install) {
-    # openergy-run.cmd (next to this script) restarts the daemon if it crashes.
-    Copy-Item (Join-Path $PSScriptRoot 'openergy-run.cmd') "$Dir\openergy-run.cmd" -ErrorAction SilentlyContinue
-    $arguments = '--headless cmd.exe /d /c "' + "$Dir\openergy-run.cmd" + '"'
-    $action = New-ScheduledTaskAction -Execute "$env:SystemRoot\System32\conhost.exe" -Argument $arguments
-    $trigger = New-ScheduledTaskTrigger -AtLogOn -User $User
-    $principal = New-ScheduledTaskPrincipal -UserId $User -LogonType Interactive -RunLevel Highest
-    $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries `
-        -ExecutionTimeLimit ([TimeSpan]::Zero) -MultipleInstances IgnoreNew
-    Register-ScheduledTask -TaskName 'Openergy' -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Force | Out-Null
-    Disable-ScheduledTask -TaskName 'Openergy' | Out-Null
-    Log 'Openergy logon task registered (disabled)'
+    & $Manager -Action Install -InstallDir $InstallDir -DataDir $DataDir -BinaryPath $BinaryPath
+    return
 }
-
 if ($Start) {
-    if (-not (Test-Path $State)) {
-        $value = (Get-ItemProperty $Approved -Name $RunName -ErrorAction SilentlyContinue).$RunName
-        @{
-            service_start = (Get-Service $Svc).StartType.ToString()
-            approved = if ($value) { [Convert]::ToBase64String($value) } else { $null }
-        } | ConvertTo-Json | Set-Content -Encoding utf8 $State
+    # Validate the managed install before stopping any existing input service.
+    if (!(Test-Path -LiteralPath (Join-Path $InstallDir 'install.json'))) { throw 'Run -Install first' }
+    if (!(Test-Path -LiteralPath (Join-Path $DataDir 'config.toml'))) { throw 'Import or configure Openergy first' }
+    if (Test-Path -LiteralPath $State) { throw 'A migration is already pending; use -Rollback before retrying' }
+    $service = Get-Service -Name $Svc
+    $property = Get-ItemProperty $Approved -Name $RunName -ErrorAction SilentlyContinue
+    $value = if ($property) { $property.$RunName } else { $null }
+    $saved = @{
+        version = 1
+        sid = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+        service_start = $service.StartType.ToString()
+        was_running = $service.Status -eq 'Running'
+        was_ui_running = @(Get-Process -Name synergy-service -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq (Join-Path $Synergy 'synergy-service.exe') }).Count -gt 0
+        delayed = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Services\Synergy Core Daemon' -Name DelayedAutostart -ErrorAction SilentlyContinue).DelayedAutostart
+        approved = if ($value) { [Convert]::ToBase64String($value) } else { $null }
     }
-    Log 'stopping the Synergy server'
-    Stop-Service $Svc
-    for ($i = 0; $i -lt 50 -and (Get-Process synergy-core -ErrorAction SilentlyContinue); $i++) { Start-Sleep -Milliseconds 200 }
-    Stop-ByPath 'synergy-core' $Synergy
-    Stop-ByPath 'synergy-tray' $Synergy
-    Stop-ByPath 'synergy-service' $Synergy
-    Log 'starting Openergy'
-    Enable-ScheduledTask -TaskName 'Openergy' | Out-Null
-    Start-ScheduledTask -TaskName 'Openergy'
-    for ($i = 0; $i -lt 30; $i++) {
-        Start-Sleep -Milliseconds 500
-        $status = & $Exe ctl status.get --raw 2>$null | ConvertFrom-Json -ErrorAction SilentlyContinue
-        if ($status -and $status.state -in 'listening', 'connected') { break }
-    }
-    if (-not $status -or $status.state -notin 'listening', 'connected') { throw "Openergy did not start listening: $($status.state) $($status.last_error)" }
-    $proc = Get-Process openergy -ErrorAction SilentlyContinue | Where-Object Path -eq $Exe
-    Log "Openergy $($status.state) on $($status.server.listen) (pid $($proc.Id), session $($proc.SessionId))"
-}
-
-if ($Commit) {
-    Set-Service $Svc -StartupType Manual
-    if (-not (Test-Path $Approved)) { New-Item $Approved -Force | Out-Null }
-    # The value Task Manager writes when a startup app is disabled.
-    Set-ItemProperty $Approved -Name $RunName -Type Binary -Value ([byte[]](3,0,0,0,0,0,0,0,0,0,0,0))
-    Log 'Synergy stays off at the next logon; Openergy starts at logon'
-}
-
-if ($Rollback) {
-    Log 'stopping Openergy'
-    Disable-ScheduledTask -TaskName 'Openergy' -ErrorAction SilentlyContinue | Out-Null
-    Stop-ScheduledTask -TaskName 'Openergy' -ErrorAction SilentlyContinue
-    Start-Sleep 1
-    # Stop the restart wrapper first, or it starts the daemon again.
-    Get-CimInstance Win32_Process -Filter "Name='cmd.exe'" |
-        Where-Object CommandLine -like '*openergy-run.cmd*' |
-        ForEach-Object { Stop-Process -Id $_.ProcessId -Force }
-    Stop-ByPath 'openergy' $Dir
-    if (Test-Path $State) {
-        $saved = Get-Content $State -Raw | ConvertFrom-Json
-        Set-Service $Svc -StartupType $saved.service_start
-        if ($saved.approved) {
-            Set-ItemProperty $Approved -Name $RunName -Type Binary -Value ([Convert]::FromBase64String($saved.approved))
-        } else {
-            Remove-ItemProperty $Approved -Name $RunName -ErrorAction SilentlyContinue
+    $saved | ConvertTo-Json | Set-Content -LiteralPath $State -Encoding UTF8
+    try {
+        if ($saved.was_running) { Stop-Service -Name $Svc }
+        # Exact executable paths only. Never use a prefix that matches sibling folders.
+        foreach ($name in @('synergy-core','synergy-tray','synergy-service')) {
+            $path = Join-Path $Synergy "$name.exe"
+            Get-Process -Name $name -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $path } | Stop-Process -Force
         }
-        Remove-Item $State
+        $status = Manage 'Start'
+        if ($status.state -notin @('listening','connected')) { throw 'Openergy is not ready for migration' }
+        $status
+    } catch {
+        $failure = $_
+        try { $null = Manage 'Stop'; Restore-Synergy $saved; Remove-Item -LiteralPath $State } catch { Write-Warning "Automatic rollback failed; saved migration state remains. Run -Rollback. $($_.Exception.Message)" }
+        throw $failure
     }
-    Log 'starting the Synergy server'
-    Start-Service $Svc
-    if (-not (Get-Process synergy-service -ErrorAction SilentlyContinue)) {
-        Start-Interactive "$Synergy\synergy-service.exe" '-d'
-    }
-    Start-Sleep 3
-    Get-Process synergy-core, synergy-service, synergy-tray -ErrorAction SilentlyContinue | ForEach-Object { Log "$($_.Name) $($_.Id) session $($_.SessionId)" }
+    return
 }
+if (!(Test-Path -LiteralPath $State)) { throw 'No saved migration state; refusing to change Synergy or Openergy' }
+$saved = Get-Content -LiteralPath $State -Raw | ConvertFrom-Json
+if ($saved.version -ne 1 -or $saved.sid -ne [Security.Principal.WindowsIdentity]::GetCurrent().User.Value) { throw 'Migration state belongs to another Windows user or script version' }
+if ($Commit) {
+    $status = Manage 'Status'
+    if ($status.state -notin @('listening','connected')) { throw 'Openergy must be ready before committing migration' }
+    Set-Service -Name $Svc -StartupType Manual
+    if (!(Test-Path $Approved)) { New-Item $Approved -Force | Out-Null }
+    Set-ItemProperty $Approved -Name $RunName -Type Binary -Value ([byte[]](3,0,0,0,0,0,0,0,0,0,0,0))
+    Write-Output 'Synergy automatic startup is disabled. Saved state remains available for -Rollback.'
+    return
+}
+$null = Manage 'Stop'
+Restore-Synergy $saved
+Remove-Item -LiteralPath $State
+Write-Output 'Saved Synergy service and startup state restored.'

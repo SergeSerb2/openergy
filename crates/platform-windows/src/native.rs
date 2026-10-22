@@ -23,6 +23,20 @@ pub fn dpi_awareness() {
         SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
     }
 }
+pub fn keyboard_layout() -> windows_sys::Win32::UI::Input::KeyboardAndMouse::HKL {
+    // Keyboard layouts belong to the focused application's thread, not to
+    // our capture/injection worker (which has no focused window).
+    // Safety: the foreground HWND is borrowed and only queried for its thread id.
+    unsafe {
+        let hwnd = GetForegroundWindow();
+        let thread = if hwnd.is_null() {
+            0
+        } else {
+            GetWindowThreadProcessId(hwnd, null_mut())
+        };
+        windows_sys::Win32::UI::Input::KeyboardAndMouse::GetKeyboardLayout(thread)
+    }
+}
 pub fn window(class: &str, proc: WNDPROC, message_only: bool) -> Result<HWND, PlatformError> {
     let class = wide(class);
     // Safety: class is NUL-terminated; Win32 copies its name and stores a static callback.

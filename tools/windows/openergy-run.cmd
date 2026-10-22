@@ -1,9 +1,9 @@
 @echo off
-rem Runs the Openergy daemon for the logon task and restarts it if it crashes.
-rem A clean stop (exit code 0: Ctrl+C, sign-out, "openergy ctl daemon.stop") ends the loop.
-set OPENERGY_ALLOW_PORT_24800=1
-:run
-"%~dp0openergy.exe" daemon --platform windows
-if %errorlevel%==0 exit /b 0
-ping -n 3 127.0.0.1 >nul
-goto run
+rem Compatibility launcher. All paths are explicit; no cmd restart loop or port override.
+rem Usage: openergy-run.cmd "C:\path\to\data" [windows^|virtual]
+if "%~1"=="" exit /b 2
+setlocal
+set "OE_PLATFORM=%~2"
+if "%OE_PLATFORM%"=="" set "OE_PLATFORM=windows"
+"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "%~dp0openergy-run.ps1" -InstallDir "%~dp0." -DataDir "%~1" -Platform "%OE_PLATFORM%"
+exit /b %errorlevel%
