@@ -5,6 +5,7 @@ import SwiftUI
 ///
 /// Requires explicit OPENERGY_CONFIG, OPENERGY_CONFIG_DIR, OPENERGY_TLS_DIR,
 /// OPENERGY_SOCKET and OPENERGY_DAEMON_ARGS="--platform virtual", all under output-dir.
+/// The config directory must not exist: E2E creates its own safe off-role config.
 /// Use OPENERGY_E2E_NO_RENDER=1 to exercise the model without starting AppKit.
 ///
 /// It connects through the real `AppModel` and IPC client, drives the same intents the
@@ -28,7 +29,7 @@ enum AppEndToEnd {
         guard let joinAddress = value("--join"), let hostPort = value("--host-port").flatMap(Int.init),
               validPort(hostPort), let remotePort = joinAddress.split(separator: ":").last.flatMap({ Int($0) }),
               joinAddress == "127.0.0.1:\(remotePort)", validPort(remotePort),
-              isolatedPaths(under: outputDirectory) else {
+              isolatedPaths(under: outputDirectory), initializeConfig(hostPort: hostPort) else {
             FileHandle.standardError.write(Data("E2E requires a private temporary output directory, explicit isolated config/socket/TLS paths, --platform virtual, and explicit loopback --join and --host-port (never 24800).\n".utf8))
             exit(64)
         }
@@ -53,6 +54,12 @@ enum AppEndToEnd {
             let connected = await waitUntil(seconds: 15) { model.link == .connected && model.status.daemon?.platform == "virtual" }
             record("connect", connected, "link=\(model.link) daemon=\(model.status.daemon?.version ?? "none") pid=\(model.status.daemon?.pid.map(String.init) ?? "-")")
             guard connected else { finish(steps, outputDirectory, model: model) ; return }
+
+            let safeStart = model.status.role == .off && model.config.role == .off
+                && model.config.client?.remote == "" && model.config.client?.autoconnect == false
+                && model.config.server?.listen == "127.0.0.1:\(hostPort)"
+            record("starts from safe off config", safeStart, "role=\(model.role.rawValue) remote=\(model.config.client?.remote ?? "nil")")
+            guard safeStart else { finish(steps, outputDirectory, model: model) ; return }
 
             render(model, .layout, "01-layout-initial", outputDirectory)
             render(model, .advanced, "02-advanced", outputDirectory)
@@ -254,6 +261,7 @@ enum AppEndToEnd {
             .map { $0.standardizedFileURL.resolvingSymlinksInPath().path }
         guard temporaryRoots.contains(where: { root.path.hasPrefix($0 + "/") }) else { return reject("output must be inside a temporary directory") }
         guard let attributes = try? FileManager.default.attributesOfItem(atPath: root.path),
+              attributes[.type] as? FileAttributeType == .typeDirectory,
               let permissions = attributes[.posixPermissions] as? NSNumber,
               let owner = attributes[.ownerAccountID] as? NSNumber,
               permissions.intValue & 0o077 == 0, owner.uint32Value == getuid() else {
@@ -264,23 +272,75 @@ enum AppEndToEnd {
         for key in ["OPENERGY_CONFIG", "OPENERGY_CONFIG_DIR", "OPENERGY_TLS_DIR", "OPENERGY_SOCKET"] {
             guard let path = environment[key], path.hasPrefix("/"), !path.utf8.contains(0) else { return reject("\(key) must be an absolute path") }
             let original = URL(fileURLWithPath: path).standardizedFileURL
-            // Foundation does not consistently resolve /tmp aliases for a socket that
-            // does not exist yet. Resolve the existing parent, then append its basename.
+            // Foundation can drop missing components when resolving symlinks. Resolve
+            // the nearest existing ancestor, then append the whole missing suffix.
             guard (try? FileManager.default.destinationOfSymbolicLink(atPath: original.path)) == nil else {
                 return reject("\(key) must not be a symbolic link")
             }
-            let url = original.deletingLastPathComponent().resolvingSymlinksInPath()
-                .appendingPathComponent(original.lastPathComponent)
+            var ancestor = original.deletingLastPathComponent()
+            var suffix = [original.lastPathComponent]
+            while (try? FileManager.default.attributesOfItem(atPath: ancestor.path)) == nil, ancestor.path != "/" {
+                suffix.append(ancestor.lastPathComponent)
+                ancestor.deleteLastPathComponent()
+            }
+            let url = suffix.reversed().reduce(ancestor.resolvingSymlinksInPath()) { $0.appendingPathComponent($1) }
             guard url.path.hasPrefix(root.path + "/") else { return reject("\(key) escapes the output directory") }
             urls[key] = url
         }
         guard let config = urls["OPENERGY_CONFIG"], let directory = urls["OPENERGY_CONFIG_DIR"],
               config.deletingLastPathComponent().path == directory.path else { return reject("config parent must match OPENERGY_CONFIG_DIR") }
         guard urls["OPENERGY_TLS_DIR"]?.path == directory.appendingPathComponent("tls").path else { return reject("TLS directory must be config-dir/tls") }
+        guard urls["OPENERGY_SOCKET"]?.deletingLastPathComponent().path == directory.path else { return reject("socket must be inside the fresh config directory") }
         guard environment["OPENERGY_DAEMON_ARGS"]?.split(separator: " ").map(String.init) == ["--platform", "virtual"] else { return reject("daemon arguments must be --platform virtual") }
         guard let socket = environment["OPENERGY_SOCKET"], socket.utf8.count < 104 else { return reject("socket path is too long") }
-        guard FileManager.default.fileExists(atPath: config.path) else { return reject("explicit config file must exist") }
+        // Never load caller-supplied TOML: even a private file can enable a client
+        // connection before the first model action. A fresh directory also excludes
+        // old sockets, trust stores and logs, so the model cannot attach to a daemon.
+        guard (try? FileManager.default.attributesOfItem(atPath: directory.path)) == nil else { return reject("config directory must not already exist") }
+        let parent = directory.deletingLastPathComponent()
+        guard parent.path == root.path || parent.path.hasPrefix(root.path + "/"),
+              let attributes = try? FileManager.default.attributesOfItem(atPath: parent.path),
+              attributes[.type] as? FileAttributeType == .typeDirectory,
+              let permissions = attributes[.posixPermissions] as? NSNumber,
+              let owner = attributes[.ownerAccountID] as? NSNumber,
+              permissions.intValue & 0o077 == 0, owner.uint32Value == getuid() else {
+            return reject("config directory needs an existing private parent owned by this user")
+        }
+        let reservedNames = [config.lastPathComponent, "tls", URL(fileURLWithPath: socket).lastPathComponent,
+                             "daemon-stderr.log", "openergy.log", "synergy-fixture", "empty-import"]
+        guard Set(reservedNames).count == reservedNames.count else { return reject("config, socket and E2E artifact names must be distinct") }
         return true
+    }
+
+    /// No TOML safety parser is needed: only this known config reaches the daemon.
+    /// mkdir is exclusive, so a directory created since preflight is refused too.
+    private static func initializeConfig(hostPort: Int) -> Bool {
+        let directory = DaemonSupervisor.supportDirectory
+        guard mkdir(directory.path, 0o700) == 0 else {
+            FileHandle.standardError.write(Data("Unsafe E2E settings: could not create fresh config directory.\n".utf8))
+            return false
+        }
+        let config = """
+        version = 1
+        role = "off"
+        name = "app"
+        [server]
+        listen = "127.0.0.1:\(hostPort)"
+        port = \(hostPort)
+        [client]
+        remote = ""
+        autoconnect = false
+        [tls]
+        enabled = false
+        """
+        do {
+            try Data(config.utf8).write(to: DaemonSupervisor.configURL, options: .withoutOverwriting)
+            try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: DaemonSupervisor.configURL.path)
+            return true
+        } catch {
+            FileHandle.standardError.write(Data("Could not initialize safe E2E config: \(error.localizedDescription)\n".utf8))
+            return false
+        }
     }
 
     private static func waitUntil(seconds: Double, _ condition: @MainActor () -> Bool) async -> Bool {
