@@ -60,12 +60,25 @@ mod probe {
             "inject" => inject()?,
             "clipboard" => clipboard()?,
             "capture" => capture()?,
+            "recovery" => recovery()?,
+            "inject-recovery" => inject_recovery()?,
+            "clipboard-recovery" => clipboard_recovery()?,
+            "keymap-recovery" => keymap_recovery(&mut create(X11Options::default())?)?,
+            "lock-recovery" => lock_recovery()?,
+            "clipboard-stamp" => clipboard_stamp()?,
+            "clipboard-cancel" => clipboard_cancel()?,
+            "resources" => resources()?,
             "all" => {
                 inject()?;
                 clipboard()?;
                 capture()?;
+                recovery()?;
             }
-            _ => return Err("Mode must be inject, clipboard, capture, or all".into()),
+            _ => {
+                return Err(
+                    "Mode must be inject, clipboard, capture, recovery, resources, all, or a recovery sub-probe".into(),
+                )
+            }
         }
         println!("PASS {mode}");
         Ok(())
@@ -530,6 +543,331 @@ mod probe {
             return Err("Raw relative motion was not captured".into());
         }
         println!("capture: XI2 observation, active keyboard/pointer grabs, CaptureDecision transitions passed");
+        Ok(())
+    }
+    fn recovery() -> Result<()> {
+        capture_recovery()?;
+        inject_recovery()?;
+        clipboard_recovery()?;
+        resources()
+    }
+    fn resources() -> Result<()> {
+        use x11rb::connection::Connection;
+        let (c, _) = x11rb::connect(None)?;
+        let setup = c.setup();
+        let mapping = || -> Result<Vec<u32>> {
+            Ok(
+                c.get_keyboard_mapping(setup.min_keycode, setup.max_keycode - setup.min_keycode + 1)?
+                    .reply()?
+                    .keysyms,
+            )
+        };
+        let original = mapping()?;
+        let fds = fs::read_dir("/proc/self/fd")?.count();
+        let threads = fs::read_dir("/proc/self/task")?.count();
+        for _ in 0..32 {
+            let mut b = create(X11Options::default())?;
+            b.screens.on_display_changed(Box::new(|| {}));
+            b.source.start(Box::new(|_| CaptureDecision::Swallow))?;
+            b.source.set_cursor_captured(true)?;
+            b.sink.inject(&InputEvent::KeyDown {
+                key: 0x2603,
+                modifiers: Modifiers::NONE,
+                button: 234,
+            })?;
+            b.sink.inject(&InputEvent::MouseDown { button: 1 })?;
+            // Drop must stop workers, release grabs and input, and restore mappings.
+        }
+        // Linux can briefly retain a joined task's /proc entry during final
+        // kernel teardown. Require the baseline within a bounded interval.
+        let deadline = Instant::now() + Duration::from_secs(1);
+        while fs::read_dir("/proc/self/task")?.count() != threads && Instant::now() < deadline {
+            std::thread::sleep(Duration::from_millis(10));
+        }
+        let final_fds = fs::read_dir("/proc/self/fd")?.count();
+        let final_threads = fs::read_dir("/proc/self/task")?.count();
+        if final_fds != fds || final_threads != threads {
+            return Err(format!(
+                "Repeated Backend drop left descriptors {fds}->{final_fds}, threads {threads}->{final_threads}"
+            )
+            .into());
+        }
+        if c.query_keymap()?.reply()?.keys.iter().any(|byte| *byte != 0) || mapping()? != original {
+            return Err("Backend drop left a key or Unicode mapping installed".into());
+        }
+        let state = String::from_utf8(command("xinput", &["query-state", "Virtual core XTEST pointer"])?)?;
+        if state.contains("=down") {
+            return Err("Backend drop left an injected mouse button down".into());
+        }
+        println!("recovery: 32 Backend drops restore keys/buttons/keymap; descriptors and threads return to baseline");
+        Ok(())
+    }
+    fn capture_recovery() -> Result<()> {
+        use x11rb::{connection::Connection, protocol::xproto, CURRENT_TIME, NONE};
+        let (c, screen) = x11rb::connect(None)?;
+        let root = c.setup().roots[screen].root;
+        let mut b = create(X11Options::default())?;
+        // Another real X client holds the pointer. Capture must fail without
+        // retaining the keyboard grab it acquired first.
+        let pointer = c
+            .grab_pointer(
+                false,
+                root,
+                xproto::EventMask::NO_EVENT,
+                xproto::GrabMode::ASYNC,
+                xproto::GrabMode::ASYNC,
+                NONE,
+                NONE,
+                CURRENT_TIME,
+            )?
+            .reply()?;
+        if pointer.status != xproto::GrabStatus::SUCCESS {
+            return Err("Could not establish competing pointer grab".into());
+        }
+        b.source.start(Box::new(|_| CaptureDecision::Swallow))?;
+        if b.source.set_cursor_captured(true).is_ok() {
+            return Err("Competing pointer grab should refuse capture".into());
+        }
+        let keyboard = c
+            .grab_keyboard(
+                false,
+                root,
+                CURRENT_TIME,
+                xproto::GrabMode::ASYNC,
+                xproto::GrabMode::ASYNC,
+            )?
+            .reply()?;
+        if keyboard.status != xproto::GrabStatus::SUCCESS {
+            return Err("Refused pointer grab leaked the capture keyboard grab".into());
+        }
+        c.ungrab_keyboard(CURRENT_TIME)?.check()?;
+        c.ungrab_pointer(CURRENT_TIME)?.check()?;
+        b.source.set_cursor_captured(true)?;
+        b.source.stop();
+        let keyboard = c
+            .grab_keyboard(
+                false,
+                root,
+                CURRENT_TIME,
+                xproto::GrabMode::ASYNC,
+                xproto::GrabMode::ASYNC,
+            )?
+            .reply()?;
+        if keyboard.status != xproto::GrabStatus::SUCCESS {
+            return Err("Capture stop retained a keyboard grab".into());
+        }
+        c.ungrab_keyboard(CURRENT_TIME)?.check()?;
+        println!("recovery: competing grab refusal and captured stop release keyboard");
+        Ok(())
+    }
+    fn inject_recovery() -> Result<()> {
+        let (c, _) = x11rb::connect(None)?;
+        let mut b = create(X11Options::default())?;
+        // These are local XTEST events from xdotool, outside the sink's ledger.
+        command("xdotool", &["keydown", "Shift_L"])?;
+        b.sink.inject(&InputEvent::KeyDown {
+            key: keys::SHIFT_L,
+            modifiers: Modifiers::NONE,
+            button: 231,
+        })?;
+        b.sink.release_all();
+        let shift = c.get_modifier_mapping()?.reply()?.keycodes[0];
+        let down = c.query_keymap()?.reply()?.keys;
+        command("xdotool", &["keyup", "Shift_L"])?;
+        if down[usize::from(shift) / 8] & (1 << (shift % 8)) == 0 {
+            return Err("Sink released a Shift held by another X client".into());
+        }
+        println!("recovery: release_all preserves an already held local modifier");
+        for (wire, native) in [(1, "1"), (4, "8")] {
+            command("xdotool", &["mousedown", native])?;
+            b.sink.inject(&InputEvent::MouseDown { button: wire })?;
+            b.sink.inject(&InputEvent::MouseUp { button: wire })?;
+            b.sink.release_all();
+            let state = String::from_utf8(command("xinput", &["query-state", "Virtual core XTEST pointer"])?)?;
+            command("xdotool", &["mouseup", native])?;
+            if !state.contains(&format!("button[{native}]=down")) {
+                return Err("Sink released a mouse button held by another X client".into());
+            }
+        }
+        println!("recovery: mouse up/release_all preserve already held local buttons");
+        keymap_recovery(&mut b)?;
+        lock_recovery()?;
+        Ok(())
+    }
+    fn lock_recovery() -> Result<()> {
+        use x11rb::connection::Connection;
+        let (c, screen) = x11rb::connect(None)?;
+        let mut b = create(X11Options::default())?;
+        let setup = c.setup();
+        let map = c
+            .get_keyboard_mapping(setup.min_keycode, setup.max_keycode - setup.min_keycode + 1)?
+            .reply()?;
+        let index = map
+            .keysyms
+            .chunks(usize::from(map.keysyms_per_keycode))
+            .position(|row| row.contains(&0xffe5))
+            .ok_or("X server has no Caps Lock")?;
+        let code = setup.min_keycode + index as u8;
+        command("xdotool", &["keydown", "Caps_Lock"])?;
+        let result = b.sink.inject(&InputEvent::KeyDown {
+            key: u16::from(b'a'),
+            modifiers: Modifiers::NONE,
+            button: 233,
+        });
+        b.sink.release_all();
+        let down = c.query_keymap()?.reply()?.keys;
+        command("xdotool", &["keyup", "Caps_Lock"])?;
+        if u16::from(c.query_pointer(setup.roots[screen].root)?.reply()?.mask) & 2 != 0 {
+            command("xdotool", &["key", "Caps_Lock"])?;
+        }
+        if result.is_ok() || down[usize::from(code) / 8] & (1 << (code % 8)) == 0 {
+            return Err("Lock-state sync released a local lock key instead of refusing injection".into());
+        }
+        println!("recovery: lock sync refuses an already held local lock key without releasing it");
+        Ok(())
+    }
+    fn keymap_recovery(b: &mut openergy_platform::Backend) -> Result<()> {
+        use x11rb::connection::Connection;
+        let (c, _) = x11rb::connect(None)?;
+        let setup = c.setup();
+        let count = setup.max_keycode - setup.min_keycode + 1;
+        let original = c.get_keyboard_mapping(setup.min_keycode, count)?.reply()?;
+        b.sink.inject(&InputEvent::KeyDown {
+            key: 0x2603,
+            modifiers: Modifiers::NONE,
+            button: 232,
+        })?;
+        let mapped = c.get_keyboard_mapping(setup.min_keycode, count)?.reply()?;
+        let width = usize::from(mapped.keysyms_per_keycode);
+        let index = mapped
+            .keysyms
+            .chunks(width)
+            .position(|row| row.contains(&0x01002603))
+            .ok_or("Unicode fallback did not install its keymap")?;
+        let code = setup.min_keycode + index as u8;
+        let mut replacement = vec![0; width];
+        replacement[0] = u32::from(b'z');
+        c.change_keyboard_mapping(1, code, width as u8, &replacement)?.check()?;
+        let expected = c.get_keyboard_mapping(code, 1)?.reply()?.keysyms;
+        b.sink.release_all();
+        let actual = c.get_keyboard_mapping(code, 1)?.reply()?.keysyms;
+        // Restore the lab keymap even if the assertion fails.
+        let old_width = usize::from(original.keysyms_per_keycode);
+        c.change_keyboard_mapping(
+            1,
+            code,
+            old_width as u8,
+            &original.keysyms[index * old_width..(index + 1) * old_width],
+        )?
+        .check()?;
+        if actual != expected {
+            return Err("Unicode release overwrote a newer X client keymap".into());
+        }
+        println!("recovery: Unicode release preserves a newer external keymap");
+        Ok(())
+    }
+    fn clipboard_recovery() -> Result<()> {
+        clipboard_stamp()?;
+        clipboard_cancel()?;
+        let mut clipboard = X11Clipboard::connect(None, Selection::Clipboard)?;
+        let large = fs::read("/tmp/oe-large.png")?;
+        let _owner = clip_in(&clipboard, "clipboard", "image/png", &large)?;
+        if !matches!(
+            clipboard.read(1024),
+            Err(openergy_platform::PlatformError::ClipboardTooLarge { .. })
+        ) {
+            return Err("INCR read did not return the byte-limit error".into());
+        }
+        let data = clipboard.read(32 * 1024 * 1024)?;
+        if !data
+            .formats
+            .iter()
+            .any(|f| f.kind == FormatKind::Dib && f.bytes.len() == 108 + 1600 * 1640 * 4)
+        {
+            return Err("Clipboard did not recover after an aborted INCR read".into());
+        }
+        println!("recovery: same xclip owner can be read after an oversized INCR abort");
+        Ok(())
+    }
+    fn clipboard_stamp() -> Result<()> {
+        let mut b = X11Clipboard::connect(None, Selection::Clipboard)?;
+        for _ in 0..1000 {
+            b.write(&ClipboardData {
+                formats: vec![ClipboardFormat {
+                    kind: FormatKind::TextUtf8,
+                    bytes: b"owned stamp".to_vec(),
+                }],
+            })?;
+            let stamp = b.change_stamp();
+            std::thread::sleep(Duration::from_millis(1));
+            if b.change_stamp() != stamp {
+                return Err("Own selection notification changed the stamp after write returned".into());
+            }
+        }
+        println!("recovery: own-write change stamp stays stable (1000 writes)");
+        Ok(())
+    }
+    fn clipboard_cancel() -> Result<()> {
+        use x11rb::{
+            connection::Connection,
+            protocol::{xproto, Event},
+            CURRENT_TIME, NONE,
+        };
+        let mut b = X11Clipboard::connect(None, Selection::Clipboard)?;
+        let text = vec![b'x'; 600_000];
+        b.write(&ClipboardData {
+            formats: vec![ClipboardFormat {
+                kind: FormatKind::TextUtf8,
+                bytes: text.clone(),
+            }],
+        })?;
+        let (c, screen) = x11rb::connect(None)?;
+        let root = c.setup().roots[screen].root;
+        let selection = c.intern_atom(false, b"CLIPBOARD")?.reply()?.atom;
+        let target = c.intern_atom(false, b"UTF8_STRING")?.reply()?.atom;
+        let property = c.intern_atom(false, b"_OPENERGY_PROBE_CANCEL")?.reply()?.atom;
+        let incr = c.intern_atom(false, b"INCR")?.reply()?.atom;
+        for _ in 0..32 {
+            let window = c.generate_id()?;
+            c.create_window(
+                x11rb::COPY_DEPTH_FROM_PARENT,
+                window,
+                root,
+                0,
+                0,
+                1,
+                1,
+                0,
+                xproto::WindowClass::INPUT_OUTPUT,
+                0,
+                &xproto::CreateWindowAux::new(),
+            )?
+            .check()?;
+            c.convert_selection(window, selection, target, property, CURRENT_TIME)?
+                .check()?;
+            loop {
+                if let Event::SelectionNotify(e) = c.wait_for_event()? {
+                    if e.requestor == window {
+                        if e.property == NONE {
+                            return Err("Destroyed INCR requestors exhausted the owner's transfer slots".into());
+                        }
+                        break;
+                    }
+                }
+            }
+            if c.get_property(false, window, property, xproto::AtomEnum::ANY, 0, 1)?
+                .reply()?
+                .type_
+                != incr
+            {
+                return Err("Cancellation probe did not start a real INCR transfer".into());
+            }
+            c.destroy_window(window)?.check()?;
+        }
+        if clip_out("clipboard", "UTF8_STRING")? != text {
+            return Err("Selection owner did not recover after requestor destruction".into());
+        }
+        println!("recovery: 32 destroyed INCR requestors release slots; next xclip read succeeds");
         Ok(())
     }
 }

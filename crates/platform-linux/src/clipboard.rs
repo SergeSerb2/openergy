@@ -68,6 +68,7 @@ impl X11Clipboard {
         let worker = Worker::new(display)?;
         let (tx, rx) = mpsc::sync_channel(16);
         let (w, mut r) = UnixStream::pair().map_err(error)?;
+        w.set_nonblocking(true).map_err(error)?;
         r.set_nonblocking(true).map_err(error)?;
         let stamps = worker.stamps.clone();
         let thread = std::thread::Builder::new()
@@ -91,7 +92,7 @@ impl X11Clipboard {
                         while let Some(ev) = worker.c.poll_for_event().map_err(error)? {
                             worker.event(ev)?;
                         }
-                        worker.outgoing.retain(|_, t| t.deadline > Instant::now());
+                        worker.expire_transfers();
                         worker.c.flush().map_err(error)?;
                         wait(&worker.c, &r, if worker.outgoing.is_empty() { -1 } else { 1000 })?;
                         drain(&mut r);
@@ -309,7 +310,7 @@ impl Worker {
         };
         let index = self.atoms.selections.iter().position(|s| *s == request.selection);
         let mut accepted = false;
-        if let Some(index) = index {
+        if let Some(index) = index.filter(|_| !self.outgoing.contains_key(&(request.requestor, property))) {
             if request.target == self.atoms.targets {
                 let mut atoms: Vec<u32> = self.data[index].keys().copied().collect();
                 atoms.push(self.atoms.targets);
@@ -327,11 +328,15 @@ impl Worker {
                         .check()
                         .map_err(error)?;
                     accepted = true;
-                } else if self.outgoing.len() < 16 {
+                } else if self.outgoing.len() < 16
+                    && bytes.len() <= LIMIT
+                    && self.outgoing.values().map(|t| t.bytes.len()).sum::<usize>() <= LIMIT.saturating_sub(bytes.len())
+                {
                     self.c
                         .change_window_attributes(
                             request.requestor,
-                            &xproto::ChangeWindowAttributesAux::new().event_mask(EventMask::PROPERTY_CHANGE),
+                            &xproto::ChangeWindowAttributesAux::new()
+                                .event_mask(EventMask::PROPERTY_CHANGE | EventMask::STRUCTURE_NOTIFY),
                         )
                         .map_err(error)?
                         .check()
@@ -389,6 +394,12 @@ impl Worker {
                 }
             }
             Event::XfixesSelectionNotify(e) => {
+                // write() advances the stamp before acknowledging its caller.
+                // Counting the queued notification again races own-write loop
+                // prevention and makes our own selection appear externally new.
+                if e.owner == self.window {
+                    return Ok(());
+                }
                 if let Some(index) = self
                     .atoms
                     .selections
@@ -432,23 +443,50 @@ impl Worker {
                     transfer.offset = end;
                     transfer.deadline = Instant::now() + Duration::from_secs(10);
                     if done {
-                        self.outgoing.remove(&key);
+                        self.finish_transfer(key);
                     }
                     self.c.flush().map_err(error)?;
                 }
+            }
+            Event::DestroyNotify(e) => {
+                self.outgoing.retain(|(window, _), _| *window != e.window);
             }
             _ => {}
         }
         Ok(())
     }
+    fn finish_transfer(&mut self, key: (u32, u32)) {
+        self.outgoing.remove(&key);
+        if !self.outgoing.keys().any(|(window, _)| *window == key.0) {
+            // Event selection is per client. Stop observing a foreign window
+            // once its last transfer ends, without changing its owner's mask.
+            if let Ok(cookie) = self.c.change_window_attributes(
+                key.0,
+                &xproto::ChangeWindowAttributesAux::new().event_mask(EventMask::NO_EVENT),
+            ) {
+                let _ = cookie.check();
+            }
+        }
+    }
+    fn expire_transfers(&mut self) {
+        let expired: Vec<_> = self
+            .outgoing
+            .iter()
+            .filter(|(_, t)| t.deadline <= Instant::now())
+            .map(|(key, _)| *key)
+            .collect();
+        for key in expired {
+            self.finish_transfer(key);
+        }
+    }
     fn next(&mut self, deadline: Instant) -> Result<Event, PlatformError> {
         loop {
-            if let Some(e) = self.c.poll_for_event().map_err(error)? {
-                return Ok(e);
-            }
             let left = deadline.saturating_duration_since(Instant::now());
             if left.is_zero() {
                 return Err(error("X11 selection transfer timed out"));
+            }
+            if let Some(e) = self.c.poll_for_event().map_err(error)? {
+                return Ok(e);
             }
             // The event worker is the only reader. Use the X socket directly while a request is active.
             use std::os::fd::AsRawFd;
@@ -470,13 +508,55 @@ impl Worker {
         target: u32,
         max: usize,
     ) -> Result<Option<xproto::GetPropertyReply>, PlatformError> {
+        // A separate requestor window confines late SelectionNotify/INCR chunks
+        // to this conversion. Destroying it also cancels a refused/failed read.
+        // Reusing the owner's property lets an aborted INCR corrupt later reads.
+        let window = self.c.generate_id().map_err(error)?;
         self.c
-            .delete_property(self.window, self.atoms.property)
+            .create_window(
+                COPY_DEPTH_FROM_PARENT,
+                window,
+                self.window,
+                0,
+                0,
+                1,
+                1,
+                0,
+                WindowClass::INPUT_OUTPUT,
+                0,
+                &CreateWindowAux::new().event_mask(EventMask::PROPERTY_CHANGE),
+            )
+            .map_err(error)?
+            .check()
+            .map_err(error)?;
+        let result = self.convert_on(window, selection, target, max);
+        let cleanup = self
+            .c
+            .destroy_window(window)
+            .map_err(error)
+            .and_then(|c| c.check().map_err(error));
+        match result {
+            Err(e) => Err(e),
+            Ok(reply) => {
+                cleanup?;
+                Ok(reply)
+            }
+        }
+    }
+    fn convert_on(
+        &mut self,
+        window: u32,
+        selection: u32,
+        target: u32,
+        max: usize,
+    ) -> Result<Option<xproto::GetPropertyReply>, PlatformError> {
+        self.c
+            .delete_property(window, self.atoms.property)
             .map_err(error)?
             .check()
             .map_err(error)?;
         self.c
-            .convert_selection(self.window, selection, target, self.atoms.property, CURRENT_TIME)
+            .convert_selection(window, selection, target, self.atoms.property, CURRENT_TIME)
             .map_err(error)?
             .check()
             .map_err(error)?;
@@ -485,61 +565,127 @@ impl Worker {
         loop {
             match self.next(deadline)? {
                 Event::SelectionNotify(e)
-                    if e.requestor == self.window && e.selection == selection && e.target == target =>
+                    if e.requestor == window && e.selection == selection && e.target == target =>
                 {
                     if e.property == NONE {
                         return Ok(None);
+                    }
+                    if e.property != self.atoms.property {
+                        return Err(error("X11 selection returned an unexpected property"));
                     }
                     break;
                 }
                 e => self.event(e)?,
             }
         }
-        let mut reply = self.property(max.max(4))?;
+        let mut reply = self.property(window, max.max(4))?;
+        let expected_type = if target == self.atoms.targets {
+            u32::from(AtomEnum::ATOM)
+        } else {
+            target
+        };
+        let expected_format = if target == self.atoms.targets { 32 } else { 8 };
         if reply.type_ != self.atoms.incr {
+            if reply.type_ != expected_type || reply.format != expected_format {
+                return Err(error("X11 selection returned an invalid property type or format"));
+            }
+            if reply.value.len() > max {
+                return Err(PlatformError::ClipboardTooLarge {
+                    bytes: reply.value.len(),
+                    limit: max,
+                });
+            }
             return Ok(Some(reply));
         }
-        if let Some(bytes) = reply
-            .value32()
-            .and_then(|mut values| values.next())
-            .map(|n| n as usize)
-            .filter(|n| *n > max)
-        {
-            return Err(PlatformError::ClipboardTooLarge { bytes, limit: max });
+        // xclip 0.13 omits the advisory byte count. Treat that as unknown,
+        // while rejecting malformed widths and multiple counts.
+        if reply.format != 32 || reply.value_len > 1 {
+            return Err(error("X11 INCR header has an invalid byte count"));
         }
+        let advertised = reply.value32().and_then(|mut values| values.next()).unwrap_or(0) as usize;
+        if advertised > LIMIT {
+            return Err(PlatformError::ClipboardTooLarge {
+                bytes: advertised,
+                limit: max,
+            });
+        }
+        let mut rejected = (advertised > max).then_some(advertised);
+        let mut received = 0usize;
         let mut bytes = Vec::new();
         loop {
             match self.next(deadline)? {
                 Event::PropertyNotify(e)
-                    if e.window == self.window && e.atom == self.atoms.property && e.state == Property::NEW_VALUE =>
+                    if e.window == window && e.atom == self.atoms.property && e.state == Property::NEW_VALUE =>
                 {
-                    let chunk = self.property(max.saturating_sub(bytes.len()))?;
-                    if chunk.type_ == NONE || chunk.type_ == self.atoms.incr {
+                    // Some owners (including xclip) cannot serve another read
+                    // until INCR completes. Drain an oversized transfer without
+                    // retaining its contents, under the same deadline and cap.
+                    let chunk = match self.property(
+                        window,
+                        if rejected.is_some() {
+                            CHUNK
+                        } else {
+                            max.saturating_sub(bytes.len())
+                        },
+                    ) {
+                        Ok(chunk) => chunk,
+                        Err(PlatformError::ClipboardTooLarge { bytes: size, .. }) => {
+                            received = received.saturating_add(size);
+                            if received > LIMIT {
+                                return Err(PlatformError::ClipboardTooLarge {
+                                    bytes: received,
+                                    limit: max,
+                                });
+                            }
+                            rejected = Some(advertised.max(received));
+                            bytes.clear();
+                            continue;
+                        }
+                        Err(e) => return Err(e),
+                    };
+                    // The initial INCR property's NEW_VALUE event may still be
+                    // queued after SelectionNotify and after we deleted it.
+                    if chunk.type_ == NONE {
                         continue;
                     }
-                    if chunk.format != 8 {
-                        return Err(error("Unsupported INCR property format"));
+                    if chunk.type_ != expected_type || chunk.format != expected_format {
+                        return Err(error("X11 INCR chunk changed property type or format"));
                     }
                     if chunk.value.is_empty() {
+                        if let Some(size) = rejected {
+                            return Err(PlatformError::ClipboardTooLarge {
+                                bytes: size.max(received),
+                                limit: max,
+                            });
+                        }
                         reply.type_ = chunk.type_;
-                        reply.format = 8;
+                        reply.format = expected_format;
                         reply.value = bytes;
                         reply.bytes_after = 0;
-                        reply.value_len = reply.value.len() as u32;
+                        reply.value_len = (reply.value.len() / (usize::from(expected_format) / 8)) as u32;
                         return Ok(Some(reply));
                     }
-                    bytes.extend_from_slice(&chunk.value);
+                    received = received.saturating_add(chunk.value.len());
+                    if received > LIMIT {
+                        return Err(PlatformError::ClipboardTooLarge {
+                            bytes: received,
+                            limit: max,
+                        });
+                    }
+                    if rejected.is_none() {
+                        bytes.extend_from_slice(&chunk.value);
+                    }
                 }
                 e => self.event(e)?,
             }
         }
     }
-    fn property(&self, max: usize) -> Result<xproto::GetPropertyReply, PlatformError> {
+    fn property(&self, window: u32, max: usize) -> Result<xproto::GetPropertyReply, PlatformError> {
         let reply = self
             .c
             .get_property(
                 true,
-                self.window,
+                window,
                 self.atoms.property,
                 AtomEnum::ANY,
                 0,
@@ -549,7 +695,7 @@ impl Worker {
             .reply()
             .map_err(error)?;
         if reply.value.len() > max || reply.bytes_after != 0 {
-            let _ = self.c.delete_property(self.window, self.atoms.property);
+            let _ = self.c.delete_property(window, self.atoms.property);
             let _ = self.c.flush();
             return Err(PlatformError::ClipboardTooLarge {
                 bytes: reply.value.len().saturating_add(reply.bytes_after as usize),

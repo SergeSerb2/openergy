@@ -99,6 +99,7 @@ impl InputSource for Source {
         let map = Keymap::load(&c)?;
         let (tx, rx) = mpsc::sync_channel(32);
         let (w, mut r) = UnixStream::pair().map_err(error)?;
+        w.set_nonblocking(true).map_err(error)?;
         r.set_nonblocking(true).map_err(error)?;
         let initial = self.captured;
         let (ready, ready_rx) = mpsc::sync_channel(1);
@@ -111,6 +112,7 @@ impl InputSource for Source {
                     map,
                     callback,
                     captured: false,
+                    hidden: false,
                     pressed: BTreeMap::new(),
                     state,
                     relative: [0.0; 2],
@@ -196,6 +198,7 @@ struct Capture {
     map: Keymap,
     callback: Callback,
     captured: bool,
+    hidden: bool,
     pressed: BTreeMap<u8, u16>,
     state: u16,
     relative: [f64; 2],
@@ -225,48 +228,72 @@ impl Capture {
             if keyboard.status != xproto::GrabStatus::SUCCESS {
                 return Err(error(format!("XGrabKeyboard refused: {:?}", keyboard.status)));
             }
+            // From this point every failure must release the keyboard, even if
+            // the pointer grab or cursor request fails before capture is ready.
+            self.captured = true;
+            let result = (|| {
+                let pointer = self
+                    .c
+                    .grab_pointer(
+                        false,
+                        self.root,
+                        xproto::EventMask::BUTTON_PRESS
+                            | xproto::EventMask::BUTTON_RELEASE
+                            | xproto::EventMask::POINTER_MOTION,
+                        xproto::GrabMode::ASYNC,
+                        xproto::GrabMode::ASYNC,
+                        NONE,
+                        NONE,
+                        CURRENT_TIME,
+                    )
+                    .map_err(error)?
+                    .reply()
+                    .map_err(error)?;
+                if pointer.status != xproto::GrabStatus::SUCCESS {
+                    return Err(error(format!("XGrabPointer refused: {:?}", pointer.status)));
+                }
+                self.c
+                    .xfixes_hide_cursor(self.root)
+                    .map_err(error)?
+                    .check()
+                    .map_err(error)?;
+                self.hidden = true;
+                Ok(())
+            })();
+            if let Err(e) = result {
+                let _ = self.grab(false);
+                return Err(e);
+            }
+            self.relative = [0.0; 2];
+            self.last_raw_time = None;
+        } else {
+            // Check each release independently. A failed request must not skip
+            // the other grab or leave the cursor hidden. Checks also flush the
+            // requests before acknowledging the transition to another client.
+            let keyboard = self
+                .c
+                .ungrab_keyboard(CURRENT_TIME)
+                .map_err(error)
+                .and_then(|c| c.check().map_err(error));
             let pointer = self
                 .c
-                .grab_pointer(
-                    false,
-                    self.root,
-                    xproto::EventMask::BUTTON_PRESS
-                        | xproto::EventMask::BUTTON_RELEASE
-                        | xproto::EventMask::POINTER_MOTION,
-                    xproto::GrabMode::ASYNC,
-                    xproto::GrabMode::ASYNC,
-                    NONE,
-                    NONE,
-                    CURRENT_TIME,
-                )
-                .map_err(error)?
-                .reply()
-                .map_err(error)?;
-            if pointer.status != xproto::GrabStatus::SUCCESS {
-                let _ = self.c.ungrab_keyboard(CURRENT_TIME);
-                return Err(error(format!("XGrabPointer refused: {:?}", pointer.status)));
-            }
-            self.c
-                .xfixes_hide_cursor(self.root)
-                .map_err(error)?
-                .check()
-                .map_err(error)?;
-        } else {
-            self.c
-                .ungrab_keyboard(CURRENT_TIME)
-                .map_err(error)?
-                .check()
-                .map_err(error)?;
-            self.c
                 .ungrab_pointer(CURRENT_TIME)
-                .map_err(error)?
-                .check()
-                .map_err(error)?;
-            self.c
-                .xfixes_show_cursor(self.root)
-                .map_err(error)?
-                .check()
-                .map_err(error)?;
+                .map_err(error)
+                .and_then(|c| c.check().map_err(error));
+            let cursor = if self.hidden {
+                self.c
+                    .xfixes_show_cursor(self.root)
+                    .map_err(error)
+                    .and_then(|c| c.check().map_err(error))
+            } else {
+                Ok(())
+            };
+            if cursor.is_ok() {
+                self.hidden = false;
+            }
+            keyboard?;
+            pointer?;
+            cursor?;
         }
         self.captured = on;
         self.c.flush().map_err(error)
