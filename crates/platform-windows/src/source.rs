@@ -72,11 +72,11 @@ impl Capture {
                     }
                 }
             } else {
-                if let Some(clip) = self.saved_clip {
-                    if ClipCursor(&clip) == 0 {
-                        return Err(error("Restore cursor clip"));
+                // Release always completes: a failed restore must not leave local input captured.
+                if let Some(clip) = self.saved_clip.take() {
+                    if ClipCursor(&clip) == 0 && ClipCursor(null()) == 0 {
+                        log::warn!("Release cursor clip: {}", std::io::Error::last_os_error());
                     }
-                    self.saved_clip = None;
                 }
                 while self.hidden > 0 {
                     ShowCursor(1);
