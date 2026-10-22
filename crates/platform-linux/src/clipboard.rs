@@ -30,6 +30,9 @@ use x11rb::{
     COPY_DEPTH_FROM_PARENT, CURRENT_TIME, NONE,
 };
 const LIMIT: usize = 256 * 1024 * 1024;
+// Image conversions must fit the daemon's 64 MiB clipboard envelope. Apply
+// this to decoded RGBA and each PNG/BMP representation, before taking ownership.
+const IMAGE_LIMIT: usize = 64 * 1024 * 1024;
 const CHUNK: usize = 64 * 1024;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Selection {
@@ -130,6 +133,9 @@ impl X11Clipboard {
         wake(&self.inner.wake);
         rx.recv().map_err(error)?
     }
+    /// Input has a 256 MiB backend cap. Image writes additionally require
+    /// decoded RGBA and each PNG/BMP representation to fit 64 MiB. Conversion
+    /// failure leaves the previous selection and its change stamp intact.
     pub fn write_selection(&self, selection: Selection, data: &ClipboardData) -> Result<(), PlatformError> {
         if data.total_bytes() > LIMIT {
             return Err(error("X11 clipboard exceeds 256 MiB safety cap"));
@@ -270,13 +276,19 @@ impl Worker {
                     targets.insert(self.atoms.html, Arc::new(format.bytes));
                 }
                 FormatKind::Dib => {
+                    if format.bytes.len().saturating_add(14) > IMAGE_LIMIT {
+                        return Err(error("BMP exceeds 64 MiB image conversion limit"));
+                    }
+                    let png = image::dib_to_png(&format.bytes, IMAGE_LIMIT)?;
                     let bmp = image::dib_to_bmp(&format.bytes)?;
-                    let png = image::dib_to_png(&format.bytes)?;
                     targets.insert(self.atoms.bmp, Arc::new(bmp));
                     targets.entry(self.atoms.png).or_insert_with(|| Arc::new(png));
                 }
                 FormatKind::Png => {
-                    let dib = image::png_to_dib(&format.bytes, LIMIT)?;
+                    if format.bytes.len() > IMAGE_LIMIT {
+                        return Err(error("PNG exceeds 64 MiB image conversion limit"));
+                    }
+                    let dib = image::png_to_dib(&format.bytes, IMAGE_LIMIT - 14)?;
                     targets.insert(self.atoms.bmp, Arc::new(image::dib_to_bmp(&dib)?));
                     targets.insert(self.atoms.png, Arc::new(format.bytes));
                 }

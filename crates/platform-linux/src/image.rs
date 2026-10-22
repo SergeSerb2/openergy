@@ -114,7 +114,7 @@ fn rgba_dib(width: usize, height: usize, rgba: &[u8]) -> Result<Vec<u8>> {
     }
     Ok(dib)
 }
-pub fn dib_to_png(d: &[u8]) -> Result<Vec<u8>> {
+pub fn dib_to_png(d: &[u8], max: usize) -> Result<Vec<u8>> {
     let offset = dib_offset(d)?;
     let header = le32(d, 0)? as usize;
     let width = le32(d, 4)? as i32;
@@ -131,8 +131,24 @@ pub fn dib_to_png(d: &[u8]) -> Result<Vec<u8>> {
     let length = w
         .checked_mul(h)
         .and_then(|n| n.checked_mul(4))
-        .filter(|n| *n <= 256 * 1024 * 1024)
-        .ok_or_else(|| error("DIB dimensions exceed limit"))?;
+        .filter(|n| *n <= max.min(256 * 1024 * 1024))
+        .ok_or_else(|| error("Decoded DIB exceeds image conversion limit"))?;
+    // The encoder uses stored DEFLATE blocks: one filter byte per row,
+    // five bytes per block, six zlib bytes and 57 PNG framing bytes.
+    // Check the exact output length before allocating the expanded RGBA data.
+    let raw_len = length.checked_add(h).ok_or_else(|| error("PNG size overflow"))?;
+    let png_len = raw_len
+        .checked_add(
+            raw_len
+                .div_ceil(65535)
+                .checked_mul(5)
+                .ok_or_else(|| error("PNG size overflow"))?,
+        )
+        .and_then(|n| n.checked_add(63))
+        .ok_or_else(|| error("PNG size overflow"))?;
+    if png_len > max {
+        return Err(error("Encoded PNG exceeds image conversion limit"));
+    }
     let stride = w
         .checked_mul(bpp)
         .and_then(|n| n.checked_add(31))

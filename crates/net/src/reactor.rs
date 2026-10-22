@@ -86,10 +86,10 @@ struct Budget {
 struct Reservation {
     budget: Arc<Budget>,
     bytes: usize,
-    bulk_conn: Option<ConnId>,
+    bulk: Option<(ConnId, usize)>,
 }
 impl Reservation {
-    fn new(budget: &Arc<Budget>, bytes: usize, bulk_conn: Option<ConnId>, control: bool) -> Result<Self, NetError> {
+    fn new(budget: &Arc<Budget>, bytes: usize, bulk: Option<(ConnId, usize)>, control: bool) -> Result<Self, NetError> {
         budget
             .bytes
             .try_update(Ordering::AcqRel, Ordering::Acquire, |n| {
@@ -97,29 +97,29 @@ impl Reservation {
                     .filter(|v| *v <= MAILBOX_BYTES + if control { 1024 * 1024 } else { 0 })
             })
             .map_err(|_| NetError::QueueFull)?;
-        if let Some(conn) = bulk_conn {
+        if let Some((conn, wire_bytes)) = bulk {
             let mut bulk = budget.bulk.lock().unwrap_or_else(|e| e.into_inner());
             let current = bulk.entry(conn).or_default();
-            if *current + bytes > BULK_WINDOW {
+            if *current + wire_bytes > BULK_WINDOW {
                 budget.bytes.fetch_sub(bytes, Ordering::AcqRel);
                 return Err(NetError::QueueFull);
             }
-            *current += bytes;
+            *current += wire_bytes;
         }
         Ok(Self {
             budget: budget.clone(),
             bytes,
-            bulk_conn,
+            bulk,
         })
     }
 }
 impl Drop for Reservation {
     fn drop(&mut self) {
         self.budget.bytes.fetch_sub(self.bytes, Ordering::AcqRel);
-        if let Some(conn) = self.bulk_conn {
+        if let Some((conn, wire_bytes)) = self.bulk {
             let mut bulk = self.budget.bulk.lock().unwrap_or_else(|e| e.into_inner());
             if let Some(bytes) = bulk.get_mut(&conn) {
-                *bytes -= self.bytes;
+                *bytes -= wire_bytes;
                 if *bytes == 0 {
                     bulk.remove(&conn);
                 }
@@ -137,6 +137,15 @@ struct Packet {
     order: u64,
     raw: bool,
     _reservation: Reservation,
+}
+// Tiny frames still retain a Packet and a VecDeque slot. Allow room for
+// geometric queue growth as well, so byte limits cannot admit a million
+// eight-byte keepalive packets while omitting their much larger metadata.
+const PACKET_OVERHEAD: usize = 2 * std::mem::size_of::<Packet>();
+impl Packet {
+    fn queued_cost(&self) -> usize {
+        self.bytes.len() - self.offset + PACKET_OVERHEAD
+    }
 }
 enum Command {
     Public(NetCommand, Reservation),
@@ -194,8 +203,8 @@ impl Mailbox {
         }
         let reservation = Reservation::new(
             &self.budget,
-            bytes.len(),
-            (priority == Priority::Bulk).then_some(conn),
+            bytes.capacity() + PACKET_OVERHEAD,
+            (priority == Priority::Bulk).then_some((conn, bytes.len())),
             priority == Priority::Control,
         )?;
         Ok(Command::Packet(
@@ -247,11 +256,11 @@ impl Queues {
         };
         if packet.priority == Priority::Input && packet.absolute && queue.back().is_some_and(|p| p.absolute) {
             if let Some(old) = queue.pop_back() {
-                self.high_bytes -= old.bytes.len();
+                self.high_bytes -= old.queued_cost();
             }
         }
         if packet.priority != Priority::Bulk {
-            self.high_bytes += packet.bytes.len();
+            self.high_bytes += packet.queued_cost();
         }
         queue.push_back(packet);
     }
@@ -301,7 +310,7 @@ impl Queues {
         self.active.is_some() || !self.input.is_empty() || !self.control.is_empty() || !self.bulk.is_empty()
     }
     fn discard_low(&mut self) {
-        self.high_bytes -= self.input.iter().map(|p| p.bytes.len()).sum::<usize>();
+        self.high_bytes -= self.input.iter().map(Packet::queued_cost).sum::<usize>();
         self.input.clear();
         self.bulk.clear();
     }
@@ -689,6 +698,9 @@ impl Connection {
                     }
                     let done = packet.offset == packet.bytes.len();
                     if done {
+                        if packet.priority != Priority::Bulk {
+                            self.queues.high_bytes -= PACKET_OVERHEAD;
+                        }
                         bulk_done |= packet.priority == Priority::Bulk;
                         self.handshake_done |= packet.handshake_end;
                         self.queues.active = None;
@@ -1029,7 +1041,7 @@ impl NetDriver {
                 && self
                     .conns
                     .get(conn)
-                    .is_some_and(|c| c.queues.high_bytes.saturating_add(packet.bytes.len()) > HIGH_WATER)
+                    .is_some_and(|c| c.queues.high_bytes.saturating_add(packet.queued_cost()) > HIGH_WATER)
             {
                 return Err(NetError::QueueFull);
             }
@@ -1077,7 +1089,7 @@ impl NetDriver {
                 c.queues.push(packet);
                 if c.queues.high_bytes > HIGH_WATER && c.slow.is_none() {
                     log::warn!(
-                        "connection {} exceeded 4 MiB input/control queue; closing SlowPeer after heartbeat",
+                        "connection {} exceeded 4 MiB input/control queue budget; closing SlowPeer after heartbeat",
                         id.0
                     );
                     c.slow = Some(Instant::now() + self.heartbeat);

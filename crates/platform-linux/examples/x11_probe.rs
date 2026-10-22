@@ -60,6 +60,7 @@ mod probe {
             "inject" => inject()?,
             "clipboard" => clipboard()?,
             "clipboard-contract" => clipboard_contract()?,
+            "r5-clipboard-expansion" => clipboard_expansion()?,
             "capture" => capture()?,
             "recovery" => recovery()?,
             "inject-recovery" => inject_recovery()?,
@@ -334,6 +335,59 @@ mod probe {
     fn equal_format(data: &ClipboardData, kind: FormatKind, bytes: &[u8]) -> Result<()> {
         if !data.formats.iter().any(|f| f.kind == kind && f.bytes == bytes) {
             return Err(format!("Clipboard format mismatch: {kind:?}").into());
+        }
+        Ok(())
+    }
+    fn clipboard_expansion() -> Result<()> {
+        let mut b = X11Clipboard::connect(None, Selection::Clipboard)?;
+        let text = b"r5 selection survives rejected image";
+        b.write(&ClipboardData {
+            formats: vec![ClipboardFormat {
+                kind: FormatKind::TextUtf8,
+                bytes: text.to_vec(),
+            }],
+        })?;
+        if clip_out("clipboard", "UTF8_STRING")? != text {
+            return Err("R5 text seed is not readable by xclip".into());
+        }
+        for side in [4096usize, 8192] {
+            // A valid BI_RGB indexed bitmap. The two-color palette and packed
+            // pixels are small even when the decoded RGBA image is large.
+            let stride = side.div_ceil(32) * 4;
+            let mut dib = vec![0; 48 + stride * side];
+            dib[0..4].copy_from_slice(&40u32.to_le_bytes());
+            dib[4..8].copy_from_slice(&(side as i32).to_le_bytes());
+            dib[8..12].copy_from_slice(&(side as i32).to_le_bytes());
+            dib[12..14].copy_from_slice(&1u16.to_le_bytes());
+            dib[14..16].copy_from_slice(&1u16.to_le_bytes());
+            dib[20..24].copy_from_slice(&((stride * side) as u32).to_le_bytes());
+            dib[44..47].fill(255);
+            dib[48..].fill(0x55);
+            let input_bytes = dib.len();
+            let stamp = b.change_stamp();
+            let result = b.write(&ClipboardData {
+                formats: vec![ClipboardFormat {
+                    kind: FormatKind::Dib,
+                    bytes: dib,
+                }],
+            });
+            if result.is_ok() {
+                let png = clip_out("clipboard", "image/png")?;
+                println!(
+                    "R5 unexpected success side={side} input_bytes={input_bytes} png_bytes={}",
+                    png.len()
+                );
+                return Err(
+                    "R5 expanding DIB replaced the selection with an image above the 64 MiB conversion cap".into(),
+                );
+            }
+            if !result.unwrap_err().to_string().contains("image conversion limit") {
+                return Err("R5 write failed for a reason other than its image conversion limit".into());
+            }
+            if clip_out("clipboard", "UTF8_STRING")? != text || b.change_stamp() != stamp {
+                return Err("R5 rejected image lost the prior selection".into());
+            }
+            println!("R5 side={side} input_bytes={input_bytes} rejected=true prior_text_readable=true");
         }
         Ok(())
     }
