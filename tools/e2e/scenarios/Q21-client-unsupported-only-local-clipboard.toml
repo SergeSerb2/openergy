@@ -1,0 +1,71 @@
+# Requirement: Nonempty local data with no wire-compatible format must not clear the peer.
+name = "Q21-client-unsupported-only-local-clipboard"
+requirement = "PNG-only virtual clipboard data preserves peer text; text plus PNG transfers text, and a genuine empty clipboard clears."
+timeout_ms = 1800
+
+[[node]]
+id = "server"
+role = "server"
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "clipboard_set"
+node = "client"
+text = "keep-me!"
+
+[[step]]
+do = "assert_clipboard"
+node = "server"
+text = "keep-me!"
+
+[[step]]
+do = "clipboard_set"
+node = "client"
+formats = [{ kind = "png", bytes = [137, 80, 78, 71, 13, 10, 26, 10] }]
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+kind = "png"
+bytes = 8
+
+[[step]]
+do = "sleep"
+ms = 450
+
+[[step]]
+do = "assert_clipboard"
+node = "server"
+text = "keep-me!"
+
+[[step]]
+do = "clipboard_set"
+node = "client"
+formats = [{ kind = "text_utf8", bytes = [109, 105, 120, 101, 100] }, { kind = "png", bytes = [137, 80, 78, 71, 13, 10, 26, 10] }]
+
+[[step]]
+do = "assert_clipboard"
+node = "server"
+text = "mixed"
+
+[[step]]
+do = "clipboard_set"
+node = "client"
+formats = []
+
+[[step]]
+do = "assert_clipboard"
+node = "server"
+empty = true

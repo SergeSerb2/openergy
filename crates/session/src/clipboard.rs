@@ -40,6 +40,10 @@ pub fn marshal(data: &ClipboardData, cap: usize) -> Result<Vec<u8>, ClipboardErr
             })
         })
         .collect::<Vec<_>>();
+    // Losing every unsupported format is not an explicit clipboard clear.
+    if !data.formats.is_empty() && formats.is_empty() {
+        return Err(ClipboardError::Malformed);
+    }
     formats.sort_by_key(|(id, _)| *id);
     if formats.windows(2).any(|pair| pair[0].0 == pair[1].0) {
         return Err(ClipboardError::Malformed);
@@ -103,6 +107,11 @@ pub fn unmarshal(bytes: &[u8]) -> Result<ClipboardData, ClipboardError> {
         }
     }
     if p != bytes.len() {
+        return Err(ClipboardError::Malformed);
+    }
+    // Only a genuine count-zero container may clear the clipboard. Unknown
+    // formats remain forward-compatible when a supported format is present.
+    if count != 0 && data.formats.is_empty() {
         return Err(ClipboardError::Malformed);
     }
     Ok(data)
