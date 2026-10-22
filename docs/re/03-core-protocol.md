@@ -1,6 +1,8 @@
 # Openergy: Synergy 3 core wire protocol and macOS platform report
 
 Date: 2026-10-21. Research and documentation only. No implementation is included.
+See [research provenance](README.md) for the method and its limits; binary
+inspection does not by itself establish a separated clean-room process.
 
 ## 1. Scope, evidence, and confidence
 

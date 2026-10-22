@@ -4,8 +4,9 @@ Run after the catalogue releases 24820/24822. Uses only the fixed disposable lab
 import base64,json,os,pathlib,subprocess,time
 ROOT=pathlib.Path('/tmp/oe-win-port-net')
 BIN=str(ROOT/'openergy')
-WIN=r'$env:USERPROFILE\openergy-build'
-REMOTE_ROOT=r'C:\Users\serge\openergy-build'
+REMOTE_ROOT=os.environ.get('OPENERGY_WINDOWS_LAB_ROOT')
+if not REMOTE_ROOT:
+ raise SystemExit('Set OPENERGY_WINDOWS_LAB_ROOT to the absolute disposable Windows build directory.')
 EXE=REMOTE_ROOT+r'\target\release\openergy.exe'
 lab=REMOTE_ROOT+r'\lab\network'
 owned=[]

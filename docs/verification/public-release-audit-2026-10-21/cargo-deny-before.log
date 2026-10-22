@@ -1,0 +1,211 @@
+error[wildcard]: found 9 wildcard dependencies for crate 'openergy-daemon'
+   ┌─ <repo>/crates/daemon/Cargo.toml:13:21
+   │
+13 │ openergy-protocol = { path = "../protocol" }
+   │                     ━━━━━━━━━━━━━━━━━━━━━━━━ wildcard dependency
+14 │ openergy-platform = { path = "../platform" }
+   │                     ━━━━━━━━━━━━━━━━━━━━━━━━ wildcard dependency
+15 │ openergy-config = { path = "../config" }
+   │                   ━━━━━━━━━━━━━━━━━━━━━━ wildcard dependency
+16 │ openergy-ipc = { path = "../ipc" }
+   │                ━━━━━━━━━━━━━━━━━━━ wildcard dependency
+17 │ openergy-session = { path = "../session" }
+   │                    ━━━━━━━━━━━━━━━━━━━━━━━ wildcard dependency
+18 │ openergy-net = { path = "../net" }
+   │                ━━━━━━━━━━━━━━━━━━━ wildcard dependency
+   ·
+26 │ openergy-platform-macos = { path = "../platform-macos" }
+   │                           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ wildcard dependency
+   ·
+29 │ openergy-platform-linux = { path = "../platform-linux" }
+   │                           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ wildcard dependency
+   ·
+32 │ openergy-platform-windows = { path = "../platform-windows" }
+   │                             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ wildcard dependency
+   │
+   ├ openergy-daemon v0.1.0
+
+error[wildcard]: found 1 wildcard dependency for crate 'openergy-e2e'
+   ┌─ <repo>/tools/e2e/Cargo.toml:13:16
+   │
+13 │ openergy-ipc = { path = "../../crates/ipc" }
+   │                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ wildcard dependency
+   │
+   ├ openergy-e2e v0.1.0
+
+error[wildcard]: found 3 wildcard dependencies for crate 'openergy-net'
+   ┌─ <repo>/crates/net/Cargo.toml:9:21
+   │
+ 9 │ openergy-protocol = { path = "../protocol" }
+   │                     ━━━━━━━━━━━━━━━━━━━━━━━━ wildcard dependency
+10 │ openergy-session = { path = "../session" }
+   │                    ━━━━━━━━━━━━━━━━━━━━━━━ wildcard dependency
+11 │ openergy-ipc = { path = "../ipc" }
+   │                ━━━━━━━━━━━━━━━━━━━ wildcard dependency
+   │
+   ├ openergy-net v0.1.0
+     └── openergy-daemon v0.1.0
+
+warning[license-not-encountered]: license was not encountered
+  ┌─ <repo>/deny.toml:5:66
+  │
+5 │ allow = ["MIT", "Apache-2.0", "Apache-2.0 WITH LLVM-exception", "BSD-2-Clause", "BSD-3-Clause", "ISC", "Unicode-3.0", "Zlib", "CC0-1.0"]
+  │                                                                  ━━━━━━━━━━━━ unmatched license allowance
+
+warning[license-not-encountered]: license was not encountered
+  ┌─ <repo>/deny.toml:5:128
+  │
+5 │ allow = ["MIT", "Apache-2.0", "Apache-2.0 WITH LLVM-exception", "BSD-2-Clause", "BSD-3-Clause", "ISC", "Unicode-3.0", "Zlib", "CC0-1.0"]
+  │                                                                                                                                ━━━━━━━ unmatched license allowance
+
+warning[license-not-encountered]: license was not encountered
+  ┌─ <repo>/deny.toml:5:120
+  │
+5 │ allow = ["MIT", "Apache-2.0", "Apache-2.0 WITH LLVM-exception", "BSD-2-Clause", "BSD-3-Clause", "ISC", "Unicode-3.0", "Zlib", "CC0-1.0"]
+  │                                                                                                                        ━━━━ unmatched license allowance
+
+error[wildcard]: found 2 wildcard dependencies for crate 'openergy-platform-linux'
+   ┌─ <repo>/crates/platform-linux/Cargo.toml:9:21
+   │
+ 9 │ openergy-platform = { path = "../platform" }
+   │                     ━━━━━━━━━━━━━━━━━━━━━━━━ wildcard dependency
+   ·
+13 │ openergy-protocol = { path = "../protocol" }
+   │                     ━━━━━━━━━━━━━━━━━━━━━━━━ wildcard dependency
+   │
+   ├ openergy-platform-linux v0.1.0
+     └── openergy-daemon v0.1.0
+
+error[wildcard]: found 2 wildcard dependencies for crate 'openergy-platform-macos'
+   ┌─ <repo>/crates/platform-macos/Cargo.toml:9:21
+   │
+ 9 │ openergy-platform = { path = "../platform" }
+   │                     ━━━━━━━━━━━━━━━━━━━━━━━━ wildcard dependency
+10 │ openergy-protocol = { path = "../protocol" }
+   │                     ━━━━━━━━━━━━━━━━━━━━━━━━ wildcard dependency
+   │
+   ├ openergy-platform-macos v0.1.0
+     └── openergy-daemon v0.1.0
+
+error[wildcard]: found 2 wildcard dependencies for crate 'openergy-platform-windows'
+   ┌─ <repo>/crates/platform-windows/Cargo.toml:9:21
+   │
+ 9 │ openergy-platform = { path = "../platform" }
+   │                     ━━━━━━━━━━━━━━━━━━━━━━━━ wildcard dependency
+   ·
+13 │ openergy-protocol = { path = "../protocol" }
+   │                     ━━━━━━━━━━━━━━━━━━━━━━━━ wildcard dependency
+   │
+   ├ openergy-platform-windows v0.1.0
+     └── openergy-daemon v0.1.0
+
+error[wildcard]: found 4 wildcard dependencies for crate 'openergy-session'
+   ┌─ <repo>/crates/session/Cargo.toml:9:21
+   │
+ 9 │ openergy-protocol = { path = "../protocol" }
+   │                     ━━━━━━━━━━━━━━━━━━━━━━━━ wildcard dependency
+10 │ openergy-platform = { path = "../platform" }
+   │                     ━━━━━━━━━━━━━━━━━━━━━━━━ wildcard dependency
+11 │ openergy-config = { path = "../config" }
+   │                   ━━━━━━━━━━━━━━━━━━━━━━ wildcard dependency
+12 │ openergy-ipc = { path = "../ipc" }
+   │                ━━━━━━━━━━━━━━━━━━━ wildcard dependency
+   │
+   ├ openergy-session v0.1.0
+     ├── openergy-daemon v0.1.0
+     └── openergy-net v0.1.0
+         └── openergy-daemon v0.1.0 (*)
+
+warning[duplicate]: found 2 duplicate entries for crate 'windows-sys'
+   ┌─ <repo>/Cargo.lock:77:1
+   │
+77 │ ╭ windows-sys 0.52.0 registry+https://github.com/rust-lang/crates.io-index
+78 │ │ windows-sys 0.61.2 registry+https://github.com/rust-lang/crates.io-index
+   │ ╰────────────────────────────────────────────────────────────────────────┘ lock entries
+   │
+   ├ windows-sys v0.52.0
+     └── ring v0.17.14
+         ├── rcgen v0.14.10
+         │   └── openergy-net v0.1.0
+         │       └── openergy-daemon v0.1.0
+         ├── rustls v0.23.46
+         │   └── openergy-net v0.1.0 (*)
+         └── rustls-webpki v0.103.16
+             └── rustls v0.23.46 (*)
+   ├ windows-sys v0.61.2
+     ├── errno v0.3.14
+     │   └── rustix v1.1.5
+     │       ├── gethostname v1.1.0
+     │       │   └── x11rb v0.13.2
+     │       │       └── openergy-platform-linux v0.1.0
+     │       │           └── openergy-daemon v0.1.0
+     │       └── x11rb v0.13.2 (*)
+     ├── if-addrs v0.15.0
+     │   └── mdns-sd v0.21.6
+     │       └── openergy-net v0.1.0
+     │           └── openergy-daemon v0.1.0 (*)
+     ├── mio v1.2.4
+     │   ├── mdns-sd v0.21.6 (*)
+     │   ├── openergy-daemon v0.1.0 (*)
+     │   └── openergy-net v0.1.0 (*)
+     ├── openergy-daemon v0.1.0 (*)
+     ├── openergy-platform-windows v0.1.0
+     │   └── openergy-daemon v0.1.0 (*)
+     ├── rustix v1.1.5 (*)
+     ├── socket-pktinfo v0.4.1
+     │   └── mdns-sd v0.21.6 (*)
+     └── socket2 v0.6.5
+         ├── mdns-sd v0.21.6 (*)
+         └── socket-pktinfo v0.4.1 (*)
+
+warning[duplicate]: found 2 duplicate entries for crate 'winnow'
+   ┌─ <repo>/Cargo.lock:88:1
+   │
+88 │ ╭ winnow 0.7.15 registry+https://github.com/rust-lang/crates.io-index
+89 │ │ winnow 1.0.4 registry+https://github.com/rust-lang/crates.io-index
+   │ ╰──────────────────────────────────────────────────────────────────┘ lock entries
+   │
+   ├ winnow v0.7.15
+     └── toml v0.9.12+spec-1.1.0
+         ├── openergy-config v0.1.0
+         │   ├── openergy-daemon v0.1.0
+         │   └── openergy-session v0.1.0
+         │       ├── openergy-daemon v0.1.0 (*)
+         │       └── openergy-net v0.1.0
+         │           └── openergy-daemon v0.1.0 (*)
+         └── openergy-e2e v0.1.0
+   ├ winnow v1.0.4
+     └── toml_parser v1.1.5+spec-1.1.0
+         └── toml v0.9.12+spec-1.1.0
+             ├── openergy-config v0.1.0
+             │   ├── openergy-daemon v0.1.0
+             │   └── openergy-session v0.1.0
+             │       ├── openergy-daemon v0.1.0 (*)
+             │       └── openergy-net v0.1.0
+             │           └── openergy-daemon v0.1.0 (*)
+             └── openergy-e2e v0.1.0
+
+error[unmaintained]: rustls-pemfile is unmaintained
+   ┌─ <repo>/Cargo.lock:50:1
+   │
+50 │ rustls-pemfile 2.2.0 registry+https://github.com/rust-lang/crates.io-index
+   │ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ unmaintained advisory detected
+   │
+   ├ ID: RUSTSEC-2025-0134
+   ├ Advisory: https://rustsec.org/advisories/RUSTSEC-2025-0134
+   ├ The rustls-pemfile crate is no longer maintained. The repository has been archived since August
+     2025, and users are encouraged to depend directly on the underlying PEM parsing code included
+     in rustls-pki-types since 1.9.0. The latest version of rustls-pemfile is in fact a thin wrapper
+     around the same code used in rustls-pki-types, so migrating should be straightforward.
+
+     The new API is represented by the [`PemObject`][PemObject] trait, which provides methods for
+     reading a single or multiple PEM objects from a file or byte slice.
+
+     [PemObject]: https://docs.rs/rustls-pki-types/latest/rustls_pki_types/pem/trait.PemObject.html
+   ├ Announcement: https://github.com/rustls/pemfile/issues/61
+   ├ Solution: No safe upgrade is available!
+   ├ rustls-pemfile v2.2.0
+     └── openergy-net v0.1.0
+         └── openergy-daemon v0.1.0
+
+advisories FAILED, bans FAILED, licenses ok, sources ok

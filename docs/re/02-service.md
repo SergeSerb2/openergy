@@ -1,6 +1,6 @@
 # Openergy reverse engineering: Synergy 3 service
 
-Research date: 2026-10-21. Target: `/Applications/Synergy.app/Contents/MacOS/synergy-service`, Synergy **3.7.0-beta**, macOS arm64, Node **24.16.0**, core **1.21.1-beta**. This is a clean-room behavioral specification. No replacement code was written.
+Research date: 2026-10-21. Target: `/Applications/Synergy.app/Contents/MacOS/synergy-service`, Synergy **3.7.0-beta**, macOS arm64, Node **24.16.0**, core **1.21.1-beta**. This is a source-informed behavioral specification. The method includes inspecting the embedded JavaScript bundle. No replacement code was written during this research. It does not establish a separated clean-room development process. See [research provenance](README.md).
 
 **Method and limits.** The installed app and user configuration were read only. Binary and analysis copies are in `/tmp/openergy-re/service/`. No Synergy executable was launched, attached to, signalled, stopped, or restarted. No service endpoint was contacted. Runtime evidence consists of `ps`, `lsof`, `launchctl print`, file metadata, and existing logs. The only package commands run were research tools. Sensitive user values are omitted or written as `<redacted>`. Synthetic names in examples are not live computer identifiers.
 

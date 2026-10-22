@@ -2,7 +2,7 @@
 
 Target: `/Applications/Synergy.app`, **3.7.0-beta**, arm64. Observed on **2026-10-21**, macOS **27.2**, America/Vancouver (UTC−07:00).
 
-This is a clean-room behavior report. **Verified static** means the claim follows from installed bytes, metadata, or source supplied by the user. **Verified passive** means the claim follows from an existing process, file, or log. **Inference** and **hypothesis** identify conclusions that still need a controlled experiment. No Synergy executable was launched, attached to, signalled, restarted, or driven through its UI. No input was injected. No connections to peer computers or external services were made.
+This is a static and passive behavior report. It does not establish a separated clean-room development process. See [research provenance](README.md). **Verified static** means the claim follows from installed bytes, metadata, or source supplied by the user. **Verified passive** means the claim follows from an existing process, file, or log. **Inference** and **hypothesis** identify conclusions that still need a controlled experiment. No Synergy executable was launched, attached to, signalled, restarted, or driven through its UI. No input was injected. No connections to peer computers or external services were made.
 
 ## Evidence and method
 

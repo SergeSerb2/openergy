@@ -5,6 +5,12 @@ during the runs), driven remotely. The Openergy injector came from commit `137d3
 (`crates/platform-macos/examples/focuslab_inject`), the lab from `tools/focus-lab`.
 Each run used a fresh injector service, with S7 (the very first synthetic click) first.
 
+Public-release sanitation: the three compressed JSON reports replace five
+personal home-path values with `<test-home>`. All other decoded JSON values,
+including results, timestamps, event sequences, and request IDs, are preserved.
+The gzip wrappers were regenerated with a zero timestamp and no original filename.
+These reports remain historical evidence; this sanitation did not rerun the lab.
+
 | Run | Injector | S7 first click | S1 content click | S2 title bar | S3 title drag | S4 menu item | S5 click outside menu | S6 double-click |
 |---|---|---|---|---|---|---|---|---|
 | `native.json.gz` | Openergy, numbered clicks | PASS | PASS | PASS | PASS | PASS | PASS | PASS |

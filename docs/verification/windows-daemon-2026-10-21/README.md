@@ -9,6 +9,13 @@ processes, services, and files were not changed. No test used TCP 24800.
 All host test TCP endpoints used 127.0.0.1 ports 24820–24829 and SSH forwarding.
 Only the virtual backend ran on the Mac. All Windows processes used SSH session 0.
 
+The retained `network.py` replay driver requires `OPENERGY_WINDOWS_LAB_ROOT`
+to name the absolute disposable Windows build directory, for example
+`C:\OpenergyLab\build`. This replaces the original personal profile path.
+Its fixed ports and `windows` SSH alias describe the historical run; review
+the authorized host and port allocation before any replay. The release audit
+did not run this driver or connect to Windows.
+
 ## Implementation commits
 
 - `8de7dcb` — secure Windows pipes, common daemon loop, config paths and lifecycle.
