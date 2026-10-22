@@ -246,9 +246,9 @@ impl Queues {
         self.active = if slow || !handshake_done {
             self.control.pop_front()
         } else {
-            self.control
+            self.input
                 .pop_front()
-                .or_else(|| self.input.pop_front())
+                .or_else(|| self.control.pop_front())
                 .or_else(|| self.bulk.pop_front())
         };
     }
@@ -1042,9 +1042,8 @@ impl NetDriver {
                     });
                     return;
                 }
-                let control = packet.priority == Priority::Control;
                 c.queues.push(packet);
-                if !control && c.queues.high_bytes > HIGH_WATER {
+                if c.queues.high_bytes > HIGH_WATER && c.slow.is_none() {
                     log::warn!(
                         "connection {} exceeded 4 MiB input/control queue; closing SlowPeer after heartbeat",
                         id.0
@@ -1151,6 +1150,9 @@ impl NetDriver {
     }
     fn connect(&mut self, host: String, port: u16, expected: Option<Fingerprint>, out: &mut Vec<NetEvent>) {
         let result = (|| {
+            if expected.is_some() && self.factory.is_none() {
+                return Err(failed("tls_pin_mismatch: a certificate pin requires TLS to be enabled"));
+            }
             if self.conns.len() + self.pending.len() >= MAX_CONNECTIONS {
                 return Err(failed("16-connection limit"));
             }
@@ -1234,6 +1236,11 @@ impl NetDriver {
         expected: Option<Fingerprint>,
         deadline: Instant,
     ) -> Result<(), NetError> {
+        // Resolution may finish after reconfigure disabled TLS. Preserve the pin
+        // requirement across that asynchronous boundary before opening a socket.
+        if expected.is_some() && self.factory.is_none() {
+            return Err(failed("tls_pin_mismatch: a certificate pin requires TLS to be enabled"));
+        }
         let stream = TcpStream::connect(addr).map_err(crate::connect_error::io_failure)?;
         let tls = self.factory.as_ref().map(|f| f.client(&host, expected)).transpose()?;
         self.add_connection(
@@ -1377,7 +1384,7 @@ impl NetDriver {
             return;
         }
         c.queues.discard_low();
-        c.close_at = Some(Instant::now() + CLOSE_TIMEOUT);
+        c.close_at.get_or_insert_with(|| Instant::now() + CLOSE_TIMEOUT);
     }
     fn remove(&mut self, id: ConnId, reason: DisconnectReason, out: &mut Vec<NetEvent>) {
         if let Some(mut c) = self.conns.remove(&id) {

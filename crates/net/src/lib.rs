@@ -10,6 +10,8 @@ mod identity;
 mod reactor;
 mod tls;
 mod trust;
+#[cfg(windows)]
+mod windows_permissions;
 pub use identity::{default_config_dir, Identity};
 use openergy_protocol::Message;
 use openergy_session::{ConnId, DisconnectReason};

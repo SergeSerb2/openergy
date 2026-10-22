@@ -15,15 +15,29 @@ fn main() {
 }
 fn run() -> Result<(), Box<dyn std::error::Error>> {
     let mut args = std::env::args().skip(1);
-    let mode = args.next().ok_or("discovery advertise|browse DIR")?;
+    let mode = args
+        .next()
+        .ok_or("discovery advertise|browse DIR [MDNS_PORT SERVICE_PORT]")?;
     let dir = PathBuf::from(args.next().ok_or("missing DIR")?);
+    let (mdns_port, service_port) = match (args.next(), args.next()) {
+        (None, None) => (24979, 24970),
+        (Some(mdns), Some(service)) => {
+            let mdns: u16 = mdns.parse()?;
+            let service: u16 = service.parse()?;
+            if !(25080..=25099).contains(&mdns) || !(25080..=25099).contains(&service) {
+                return Err("requires assigned loopback ports 25080..=25099".into());
+            }
+            (mdns, service)
+        }
+        _ => return Err("both MDNS_PORT and SERVICE_PORT are required".into()),
+    };
     if args.next().is_some() || !["advertise", "browse"].contains(&mode.as_str()) {
         return Err("invalid arguments".into());
     }
-    let mut discovery = Discovery::new(DiscoveryScope::Loopback, 24979)?;
+    let mut discovery = Discovery::new(DiscoveryScope::Loopback, mdns_port)?;
     if mode == "advertise" {
         let identity = Identity::load_or_create(&dir, "wp4-mdns")?;
-        discovery.advertise("wp4-loopback", 24970, identity.fingerprint)?;
+        discovery.advertise("wp4-loopback", service_port, identity.fingerprint)?;
         println!(
             "ADVERTISE _openergy._tcp.local. name=wp4-loopback ver=1.8 fp={}",
             &identity.fingerprint.to_synergy_line()[10..26]
@@ -39,7 +53,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                     peer.name, peer.host, peer.port, peer.fingerprint_hint
                 );
                 if peer.name == "wp4-loopback"
-                    && peer.port == 24970
+                    && peer.port == service_port
                     && peer.fingerprint_hint.as_ref().is_some_and(|fp| fp.len() == 16)
                 {
                     found = true;

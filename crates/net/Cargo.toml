@@ -13,6 +13,8 @@ sha2.workspace = true
 log.workspace = true
 mio = { version = "1.2", features = ["os-poll", "net", "os-ext"] }
 rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
-rustls-pemfile = "2.2"
 rcgen = { version = "0.14", default-features = false, features = ["crypto", "ring", "pem"] }
 mdns-sd = "0.21"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61.2", features = ["Win32_Security_Authorization", "Win32_Storage_FileSystem", "Win32_System_SystemServices", "Win32_System_Threading"] }

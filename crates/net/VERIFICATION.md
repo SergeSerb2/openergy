@@ -132,7 +132,7 @@ trust import/dedup/SHA1 ignored/invalid CLI=PASS
 
 Captured traffic is encrypted TLS, not a plaintext fallback. Artifacts include
 both process logs and `wrong-pin.tls` in the printed temporary directory. One
-run is `/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-wp4-564io07f`.
+run is `<temporary-directory>/oe-wp4-<run-id>`.
 No private keys or application input/clipboard content appear in these logs.
 The real CLI also returns status 2 for unknown fingerprint/trust flags and a
 missing `--dir` argument, with no identity-file creation on those paths.

@@ -21,7 +21,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     }
     let dir = PathBuf::from(args.next().ok_or("missing DIR")?);
     let port: u16 = args.next().ok_or("missing PORT")?.parse()?;
-    if !(24970..=24979).contains(&port) || args.next().is_some() {
+    if (!(24970..=24979).contains(&port) && !(25080..=25099).contains(&port)) || args.next().is_some() {
         return Err("requires WP4 loopback port".into());
     }
     let (mut driver, handle) = NetDriver::new(NetConfig {

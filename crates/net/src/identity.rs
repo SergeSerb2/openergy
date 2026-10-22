@@ -1,8 +1,10 @@
 use crate::{Fingerprint, NetError};
-use rustls::pki_types::{CertificateDer, PrivateKeyDer};
+use rustls::pki_types::{pem::PemObject, CertificateDer, PrivateKeyDer};
+#[cfg(not(windows))]
+use std::fs::OpenOptions;
 use std::{
-    fs::{self, File, OpenOptions},
-    io::{BufReader, Write},
+    fs::{self, File},
+    io::Write,
     path::{Path, PathBuf},
     sync::atomic::{AtomicU64, Ordering},
     time::{Duration, SystemTime},
@@ -41,37 +43,32 @@ impl Identity {
     /// Uses exactly `tls_dir`, as required by NetConfig.
     pub fn load_or_create_in(tls_dir: &Path, name: &str) -> Result<Self, NetError> {
         let dir = tls_dir.to_owned();
-        fs::create_dir_all(&dir).map_err(failed)?;
+        private_dir(&dir).map_err(failed)?;
         let cert_path = dir.join("cert.pem");
         let key_path = dir.join("key.pem");
-        if !cert_path.try_exists().map_err(failed)? && !key_path.try_exists().map_err(failed)? {
-            let _lock = DirectoryLock::acquire(&dir.join(".identity-lock")).map_err(failed)?;
-            // Another creator might have finished between the existence check and lock.
-            if !cert_path.try_exists().map_err(failed)? && !key_path.try_exists().map_err(failed)? {
-                let key = rcgen::KeyPair::generate_for(&rcgen::PKCS_ECDSA_P256_SHA256).map_err(failed)?;
-                let mut params = rcgen::CertificateParams::default();
-                params.distinguished_name = rcgen::DistinguishedName::new();
-                params
-                    .distinguished_name
-                    .push(rcgen::DnType::CommonName, format!("Openergy {name}"));
-                let now = SystemTime::now();
-                params.not_before = (now - Duration::from_secs(300)).into();
-                params.not_after = (now + Duration::from_secs(3650 * 86400)).into();
-                let cert = params.self_signed(&key).map_err(failed)?;
-                atomic_write(&key_path, key.serialize_pem().as_bytes(), true).map_err(failed)?;
-                atomic_write(&cert_path, cert.pem().as_bytes(), true).map_err(failed)?;
-            }
+        // Readers must share the creator lock: key.pem is renamed before cert.pem.
+        // Observing that in-progress pair must not report a corrupt identity.
+        let _lock = DirectoryLock::acquire(&dir.join(".identity-lock")).map_err(failed)?;
+        if !entry_exists(&cert_path).map_err(failed)? && !entry_exists(&key_path).map_err(failed)? {
+            let key = rcgen::KeyPair::generate_for(&rcgen::PKCS_ECDSA_P256_SHA256).map_err(failed)?;
+            let mut params = rcgen::CertificateParams::default();
+            params.distinguished_name = rcgen::DistinguishedName::new();
+            params
+                .distinguished_name
+                .push(rcgen::DnType::CommonName, format!("Openergy {name}"));
+            let now = SystemTime::now();
+            params.not_before = (now - Duration::from_secs(300)).into();
+            params.not_after = (now + Duration::from_secs(3650 * 86400)).into();
+            let cert = params.self_signed(&key).map_err(failed)?;
+            atomic_write(&key_path, key.serialize_pem().as_bytes(), true).map_err(failed)?;
+            atomic_write(&cert_path, cert.pem().as_bytes(), true).map_err(failed)?;
         }
-        let chain: Vec<_> = rustls_pemfile::certs(&mut BufReader::new(File::open(&cert_path).map_err(failed)?))
+        let chain: Vec<_> = CertificateDer::pem_reader_iter(private_file(&cert_path).map_err(failed)?)
             .collect::<Result<_, _>>()
             .map_err(failed)?;
-        restrict_key(&cert_path).map_err(failed)?;
         let cert = chain.first().ok_or_else(|| failed("identity certificate is empty"))?;
         let fingerprint = Fingerprint::from_der(cert.as_ref());
-        restrict_key(&key_path).map_err(failed)?;
-        let key = rustls_pemfile::private_key(&mut BufReader::new(File::open(&key_path).map_err(failed)?))
-            .map_err(failed)?
-            .ok_or_else(|| failed("identity private key is missing"))?;
+        let key = PrivateKeyDer::from_pem_reader(private_file(&key_path).map_err(failed)?).map_err(failed)?;
         let certified = rustls::sign::CertifiedKey::from_der(
             chain.clone(),
             key.clone_key(),
@@ -89,14 +86,48 @@ impl Identity {
     }
 }
 
-#[cfg(unix)]
-fn restrict_key(path: &Path) -> std::io::Result<()> {
-    use std::os::unix::fs::PermissionsExt;
-    fs::set_permissions(path, fs::Permissions::from_mode(0o600))
+fn entry_exists(path: &Path) -> std::io::Result<bool> {
+    match fs::symlink_metadata(path) {
+        Ok(_) => Ok(true),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(false),
+        Err(error) => Err(error),
+    }
 }
-#[cfg(not(unix))]
-fn restrict_key(_path: &Path) -> std::io::Result<()> {
+
+/// Restrict the identity/trust directory before creating any file in it.
+pub(crate) fn private_dir(path: &Path) -> std::io::Result<()> {
+    fs::create_dir_all(path)?;
+    if !fs::symlink_metadata(path)?.file_type().is_dir() {
+        return Err(std::io::Error::other("TLS directory must be a real directory"));
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        fs::set_permissions(path, fs::Permissions::from_mode(0o700))?;
+    }
+    #[cfg(windows)]
+    crate::windows_permissions::restrict(path, true)?;
+    #[cfg(not(any(unix, windows)))]
+    return Err(std::io::Error::other(
+        "private TLS storage is unsupported on this platform",
+    ));
+    #[cfg(any(unix, windows))]
     Ok(())
+}
+
+pub(crate) fn private_file(path: &Path) -> std::io::Result<File> {
+    if !fs::symlink_metadata(path)?.file_type().is_file() {
+        return Err(std::io::Error::other("TLS identity must be a regular file, not a link"));
+    }
+    #[cfg(windows)]
+    crate::windows_permissions::restrict(path, false)?;
+    let file = File::open(path)?;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        file.set_permissions(fs::Permissions::from_mode(0o600))?;
+    }
+    Ok(file)
 }
 
 /// The kernel releases this advisory lock even when the process is killed.
@@ -106,17 +137,27 @@ pub(crate) struct DirectoryLock {
 impl DirectoryLock {
     pub(crate) fn acquire(path: &Path) -> std::io::Result<Self> {
         // Migrate the old empty directory sentinel without deleting user data.
-        if path.is_dir() {
-            fs::remove_dir(path)?;
+        if entry_exists(path)? {
+            let kind = fs::symlink_metadata(path)?.file_type();
+            if kind.is_dir() {
+                fs::remove_dir(path)?;
+            } else if !kind.is_file() {
+                return Err(std::io::Error::other("TLS lock must be a regular file"));
+            }
         }
-        let mut options = OpenOptions::new();
-        options.read(true).write(true).create(true).truncate(false);
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::OpenOptionsExt;
-            options.mode(0o600);
-        }
-        let file = options.open(path)?;
+        #[cfg(windows)]
+        let file = crate::windows_permissions::open(path, false)?;
+        #[cfg(not(windows))]
+        let file = {
+            let mut options = OpenOptions::new();
+            options.read(true).write(true).create(true).truncate(false);
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::OpenOptionsExt;
+                options.mode(0o600);
+            }
+            options.open(path)?
+        };
         file.lock()?;
         Ok(Self { _file: file })
     }
@@ -132,17 +173,24 @@ pub(crate) fn atomic_write(path: &Path, bytes: &[u8], private: bool) -> std::io:
         std::process::id(),
         NEXT.fetch_add(1, Ordering::Relaxed)
     ));
+    let mut created = false;
     let result = (|| {
-        let mut options = OpenOptions::new();
-        options.write(true).create_new(true);
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::OpenOptionsExt;
-            options.mode(if private { 0o600 } else { 0o644 });
-        }
         #[cfg(not(unix))]
         let _ = private;
-        let mut file = options.open(&tmp)?;
+        #[cfg(windows)]
+        let mut file = crate::windows_permissions::open(&tmp, true)?;
+        #[cfg(not(windows))]
+        let mut file = {
+            let mut options = OpenOptions::new();
+            options.write(true).create_new(true);
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::OpenOptionsExt;
+                options.mode(if private { 0o600 } else { 0o644 });
+            }
+            options.open(&tmp)?
+        };
+        created = true;
         file.write_all(bytes)?;
         file.sync_all()?;
         fs::rename(&tmp, path)?;
@@ -150,7 +198,7 @@ pub(crate) fn atomic_write(path: &Path, bytes: &[u8], private: bool) -> std::io:
         File::open(parent)?.sync_all()?;
         Ok(())
     })();
-    if result.is_err() {
+    if result.is_err() && created {
         let _ = fs::remove_file(tmp);
     }
     result

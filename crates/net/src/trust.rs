@@ -1,18 +1,28 @@
 use crate::{
-    identity::{atomic_write, DirectoryLock},
+    identity::{atomic_write, private_dir, private_file, DirectoryLock},
     Fingerprint, TrustError, TrustStore,
 };
-use std::{fs, io, path::Path};
+use std::{
+    fs,
+    io::{self, Read},
+    path::Path,
+};
 
 fn fail(e: impl std::fmt::Display) -> TrustError {
     TrustError::Failed(e.to_string())
 }
-fn read(path: &Path) -> Result<Vec<Fingerprint>, TrustError> {
-    let text = match fs::read_to_string(path) {
-        Ok(s) => s,
+fn read(path: &Path, private: bool) -> Result<Vec<Fingerprint>, TrustError> {
+    let mut file = match if private {
+        private_file(path)
+    } else {
+        fs::File::open(path)
+    } {
+        Ok(file) => file,
         Err(e) if e.kind() == io::ErrorKind::NotFound => return Ok(Vec::new()),
         Err(e) => return Err(fail(e)),
     };
+    let mut text = String::new();
+    file.read_to_string(&mut text).map_err(fail)?;
     let mut result = Vec::new();
     let mut ignored = 0;
     for line in text.lines().map(str::trim).filter(|line| !line.is_empty()) {
@@ -37,10 +47,13 @@ fn write(path: &Path, values: &[Fingerprint]) -> Result<(), TrustError> {
 impl TrustStore {
     /// `dir` is the TLS directory containing the two trust files.
     pub fn load(dir: &Path) -> Result<Self, TrustError> {
+        if dir.try_exists().map_err(fail)? {
+            private_dir(dir).map_err(fail)?;
+        }
         Ok(Self {
             dir: dir.to_owned(),
-            servers: read(&dir.join("trusted-servers"))?,
-            clients: read(&dir.join("trusted-clients"))?,
+            servers: read(&dir.join("trusted-servers"), true)?,
+            clients: read(&dir.join("trusted-clients"), true)?,
         })
     }
     pub fn dir(&self) -> &Path {
@@ -72,26 +85,39 @@ impl TrustStore {
         &self.clients
     }
     fn modify(&mut self, add: Option<(bool, Fingerprint)>, remove: Option<Fingerprint>) -> Result<(), TrustError> {
-        fs::create_dir_all(&self.dir).map_err(fail)?;
+        private_dir(&self.dir).map_err(fail)?;
         let _lock = DirectoryLock::acquire(&self.dir.join(".trust-lock")).map_err(fail)?;
-        self.reload()?;
+        let mut next = Self::load(&self.dir)?;
+        let servers = next.servers.clone();
+        let clients = next.clients.clone();
         if let Some(fp) = remove {
-            self.servers.retain(|v| *v != fp);
-            self.clients.retain(|v| *v != fp);
+            next.servers.retain(|v| *v != fp);
+            next.clients.retain(|v| *v != fp);
         }
         if let Some((server, fp)) = add {
-            let list = if server { &mut self.servers } else { &mut self.clients };
+            let list = if server { &mut next.servers } else { &mut next.clients };
             if !list.contains(&fp) {
                 list.push(fp);
             }
         }
-        write(&self.dir.join("trusted-servers"), &self.servers)?;
-        write(&self.dir.join("trusted-clients"), &self.clients)?;
+        if next.servers != servers {
+            write(&self.dir.join("trusted-servers"), &next.servers)?;
+        }
+        if next.clients != clients {
+            write(&self.dir.join("trusted-clients"), &next.clients)?;
+        }
+        // An unsuccessful save must not report an unpersisted pin as approved.
+        *self = next;
         Ok(())
     }
     /// Import the TLS directory supplied by the caller. Certificate/key files are untouched.
     pub fn import_synergy(&mut self, dir: &Path) -> Result<usize, TrustError> {
-        let other = Self::load(dir)?;
+        // Imported files are read-only inputs; harden only our destination store.
+        let other = Self {
+            dir: dir.to_owned(),
+            servers: read(&dir.join("trusted-servers"), false)?,
+            clients: read(&dir.join("trusted-clients"), false)?,
+        };
         let mut added = 0;
         for fp in other.servers {
             if !self.is_trusted_server(&fp) {

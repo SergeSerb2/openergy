@@ -65,6 +65,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         || !(24970..=24979).contains(&addr.port())
             && !(24920..=24929).contains(&addr.port())
             && !(24980..=24989).contains(&addr.port())
+            && !(25080..=25099).contains(&addr.port())
     {
         return Err("example requires loopback and assigned integration port ranges".into());
     }
