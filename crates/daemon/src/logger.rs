@@ -27,9 +27,33 @@ pub struct Logger {
     bus: Arc<crate::events::EventBus>,
 }
 impl Logger {
+    fn open(path: &Path, truncate: bool) -> std::io::Result<File> {
+        let mut options = OpenOptions::new();
+        options.create(true).write(true).append(!truncate);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(0o600).custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK);
+        }
+        let file = options.open(path)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::{MetadataExt, PermissionsExt};
+            let metadata = file.metadata()?;
+            // Safety: geteuid only queries this process's effective user ID.
+            if !metadata.is_file() || metadata.uid() != unsafe { libc::geteuid() } || metadata.nlink() != 1 {
+                return Err(std::io::Error::other("log must be an owned regular file with one link"));
+            }
+            file.set_permissions(std::fs::Permissions::from_mode(0o600))?;
+        }
+        if truncate {
+            file.set_len(0)?;
+        }
+        Ok(file)
+    }
     pub fn new(dir: &Path, bus: Arc<crate::events::EventBus>) -> Arc<Self> {
         let path = dir.join("openergy.log");
-        let file = OpenOptions::new().create(true).append(true).open(&path).ok();
+        let file = Self::open(&path, false).ok();
         let bytes = file
             .as_ref()
             .and_then(|f| f.metadata().ok())
@@ -73,12 +97,7 @@ impl Logger {
             i.file = None;
             let _ = std::fs::rename(self.path.with_extension("log.1"), self.path.with_extension("log.2"));
             let _ = std::fs::rename(&self.path, self.path.with_extension("log.1"));
-            i.file = OpenOptions::new()
-                .create(true)
-                .truncate(true)
-                .write(true)
-                .open(&self.path)
-                .ok();
+            i.file = Self::open(&self.path, true).ok();
             i.bytes = 0;
         }
         if let Some(f) = &mut i.file {

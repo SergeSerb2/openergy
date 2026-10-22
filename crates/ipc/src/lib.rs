@@ -295,8 +295,15 @@ impl Status {
 }
 
 use std::io::{Read, Write};
+pub const MAX_FRAME_LEN: usize = 16 * 1024 * 1024;
 pub fn write_frame<W: Write>(w: &mut W, value: &serde_json::Value) -> std::io::Result<()> {
     let bytes = serde_json::to_vec(value).map_err(std::io::Error::other)?;
+    if bytes.len() > MAX_FRAME_LEN {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidData,
+            "ipc frame too large",
+        ));
+    }
     let len = u32::try_from(bytes.len())
         .map_err(|_| std::io::Error::new(std::io::ErrorKind::InvalidData, "frame too large"))?;
     w.write_all(&len.to_be_bytes())?;
@@ -307,7 +314,7 @@ pub fn read_frame<R: Read>(r: &mut R) -> std::io::Result<serde_json::Value> {
     let mut hdr = [0u8; 4];
     r.read_exact(&mut hdr)?;
     let len = u32::from_be_bytes(hdr) as usize;
-    if len > 16 * 1024 * 1024 {
+    if len > MAX_FRAME_LEN {
         return Err(std::io::Error::new(
             std::io::ErrorKind::InvalidData,
             "ipc frame too large",
