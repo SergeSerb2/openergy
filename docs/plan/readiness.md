@@ -21,6 +21,9 @@ counts in those reports are historical, not the current branch's status.
 The parent integration run must collect fresh evidence after changes merge.
 An unavailable environment is a missing check, not a passed check.
 
+The [2026-10-22 integration record](../verification/release-integration-2026-10-22/README.md)
+records the release-preparation branch's fresh checks and later focused fixes.
+
 ## Measurements are scoped
 
 The [2026-10-21 daemon report](../../crates/daemon/VERIFICATION.md) records an

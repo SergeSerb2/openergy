@@ -74,6 +74,9 @@ use the [setup guide](docs/plan/setup.md). It links complete
 [server](examples/server.toml) and [client](examples/client.toml) configuration
 examples. Importing Synergy settings is optional.
 
+The [release preparation record](docs/verification/release-integration-2026-10-22/README.md)
+lists integrated checks, review fixes, and the remaining release acceptance.
+
 ## Trust, permissions, and privacy
 
 TLS is enabled by default. Clients pin the server certificate; servers require
