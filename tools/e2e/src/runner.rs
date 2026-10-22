@@ -1,6 +1,8 @@
 use crate::model::{Failure, Node, Options, Result, Scenario, ScenarioReport, Step};
 use crate::process::{command_output, Process};
-use crate::util::{self, lookup, matches, merge, private_dir, summary, write_private};
+#[cfg(unix)]
+use crate::util::matches;
+use crate::util::{self, lookup, merge, private_dir, summary, write_private};
 use crate::wire::Raw;
 use serde_json::{json, Value};
 use std::collections::BTreeMap;

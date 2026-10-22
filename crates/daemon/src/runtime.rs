@@ -1265,10 +1265,11 @@ fn normalize(cfg: &mut Config) {
     }
 }
 fn host_name() -> String {
-    #[allow(unused_mut)]
-    let mut name = std::env::var("HOSTNAME")
+    let name = std::env::var("HOSTNAME")
         .or_else(|_| std::env::var("COMPUTERNAME"))
         .unwrap_or_default();
+    #[cfg(unix)]
+    let mut name = name;
     #[cfg(unix)]
     if name.is_empty() {
         let mut bytes = [0u8; 256];

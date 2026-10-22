@@ -236,13 +236,18 @@ fn cmd_ctl(args: &[String]) -> Result<i32, String> {
         .first()
         .ok_or("ctl requires a method, e.g. openergy ctl status.get")?
         .clone();
+    let method = if method == "status" {
+        methods::STATUS_GET
+    } else {
+        &method
+    };
     let params: serde_json::Value = match opts.map.get("json") {
         Some(s) => serde_json::from_str(s).map_err(|e| format!("--json: {e}"))?,
         None => serde_json::json!({}),
     };
     let raw = opts.flags.iter().any(|f| f == "raw");
     let socket = opts.map.get("socket").map(PathBuf::from).unwrap_or_else(default_socket);
-    let resp = ipc_request(&socket, &method, params)?;
+    let resp = ipc_request(&socket, method, params)?;
     print_response(&resp, raw);
     Ok(if resp.error.is_some() { 1 } else { 0 })
 }

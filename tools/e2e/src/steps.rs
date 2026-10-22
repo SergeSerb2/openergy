@@ -141,10 +141,14 @@ impl Context {
             ),
             "subscribe" => {
                 #[cfg(unix)]
-                self.subscribe(&id, timeout)?;
+                {
+                    self.subscribe(&id, timeout)?;
+                    Ok(json!({"subscribed":true}))
+                }
                 #[cfg(not(unix))]
-                return Err(Failure::environment("event subscriptions require Unix"));
-                Ok(json!({"subscribed":true}))
+                {
+                    Err(Failure::environment("event subscriptions require Unix"))
+                }
             }
             "wait_event" => {
                 #[cfg(unix)]

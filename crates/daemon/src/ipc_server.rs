@@ -209,7 +209,22 @@ fn client(
                 return;
             }
             let _ = waker.wake();
-            let Ok(response) = answer.recv_timeout(Duration::from_secs(10)) else {
+            #[cfg(unix)]
+            let response = answer.recv_timeout(Duration::from_secs(10));
+            #[cfg(windows)]
+            let response = {
+                let started = std::time::Instant::now();
+                loop {
+                    let result = answer.recv_timeout(Duration::from_millis(50));
+                    if !matches!(result, Err(mpsc::RecvTimeoutError::Timeout))
+                        || stop.load(Ordering::Relaxed)
+                        || started.elapsed() >= Duration::from_secs(10)
+                    {
+                        break result;
+                    }
+                }
+            };
+            let Ok(response) = response else {
                 return;
             };
             let Ok(value) = serde_json::to_value(response) else {
