@@ -111,14 +111,20 @@ which authenticates their SID, limited run level, and exact single action.
 Both pipe peers check the actual kernel peer PID, creation time, image, SID,
 and token against the expected launched process. The pipe uses a first-instance
 handle, refuses remote clients, and denies the Network SID. The client requests
-Identification, and the helper does not impersonate it. A GUID and SID alone
-are not process authentication.
+Identification, and the helper does not impersonate it. The client opens an
+asynchronous handle with explicit `ReadWrite | Synchronize` rights, without
+`GENERIC_WRITE` or `FILE_CREATE_PIPE_INSTANCE`, then wraps that handle in a
+`NamedPipeClientStream`. The connection deadline and kernel peer checks apply
+to that handle. A GUID and SID alone are not process authentication.
 
 Saved service/startup state is stored at
 `%ProgramFiles%\OpenergyMigration\State\<SID>\synergy-state.v2`, under admin-only
 ACLs, before cutover. It uses a bounded data format and an exclusive lock.
 The helper never trusts legacy `DataDir\synergy-state.json`; a pending legacy
-migration requires a human to review the original state and recover it first.
+migration requires a human to review the original state and recover it first. Binary
+startup approval values retain their byte-array type, including empty arrays;
+an absent value remains distinct from an empty binary value. Rollback restores
+both saved running and saved stopped service states.
 
 Rollback restores service/startup independently of an Openergy stop failure.
 The helper sends the UI requirement, waits for the limited controller's
@@ -129,3 +135,10 @@ limited, same-user UI process before acknowledging. Repeated rollback remains
 available. On caller loss after cutover, the helper can restore the service but
 cannot launch a limited UI alone; it keeps state for a later `-Rollback`.
 Do not treat a service-only restoration as complete UI recovery.
+
+During Start, the helper keeps automatic recovery armed while sending `STARTED`
+and waiting for the controller's `STARTED_ACK`. A failed reply, lost caller, or
+missing acknowledgement restores the service independently and retains state.
+Even acknowledged Start keeps the saved state for later Commit or Rollback.
+Commit also retains it for later rollback. An ambiguous start is not a completed commit;
+use `-Rollback` to finish recovery before retrying.

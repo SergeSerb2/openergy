@@ -159,8 +159,9 @@ function Read-State {
     $lines=[IO.File]::ReadAllLines($stateFile)
     if ($lines.Length -ne 8 -or $lines[0] -ne '2' -or $lines[1] -ne $UserSid -or $lines[2] -notin @('2','3','4') -or $lines[3] -notin @('0','1') -or $lines[4] -notin @('0','1')) { throw 'Invalid protected migration state' }
     $delayed=if($lines[5] -eq '-'){$null}else{[uint32]::Parse($lines[5])}
-    $approved=if($lines[6] -eq '-'){$null}else{[Convert]::FromBase64String($lines[6])}
-    if ($lines[7] -ne 'END' -or ($approved -and $approved.Length -gt 4096)) { throw 'Invalid protected migration state' }
+    $approved=$null
+    if($lines[6] -ne '-'){$approved=[Convert]::FromBase64String($lines[6])}
+    if ($lines[7] -ne 'END' -or ($null -ne $approved -and $approved.Length -gt 4096)) { throw 'Invalid protected migration state' }
     @{start=[int]$lines[2];running=($lines[3] -eq '1');ui=($lines[4] -eq '1');delayed=$delayed;approved=$approved}
 }
 function Save-State($Value) {
@@ -201,7 +202,13 @@ function Restore-Service($Value) {
         try { if($null -eq $Value.delayed){$key.DeleteValue('DelayedAutostart',$false)}else{$key.SetValue('DelayedAutostart',[BitConverter]::ToInt32([BitConverter]::GetBytes([uint32]$Value.delayed),0),[Microsoft.Win32.RegistryValueKind]::DWord)} } finally {$key.Dispose()}
         $key=[Microsoft.Win32.Registry]::LocalMachine.CreateSubKey($approvalKey)
         try { if($null -eq $Value.approved){$key.DeleteValue($runName,$false)}else{$key.SetValue($runName,[byte[]]$Value.approved,[Microsoft.Win32.RegistryValueKind]::Binary)} } finally {$key.Dispose()}
-        if($Value.running -and $service.Status -ne [System.ServiceProcess.ServiceControllerStatus]::Running){$service.Start();$service.WaitForStatus('Running',[TimeSpan]::FromSeconds(20))}
+        $service.Refresh()
+        if($Value.running){
+            if($service.Status -ne [System.ServiceProcess.ServiceControllerStatus]::Running){$service.Start();$service.WaitForStatus('Running',[TimeSpan]::FromSeconds(20))}
+        }elseif($service.Status -ne [System.ServiceProcess.ServiceControllerStatus]::Stopped){
+            if($service.Status -ne [System.ServiceProcess.ServiceControllerStatus]::StopPending){$service.Stop()}
+            $service.WaitForStatus('Stopped',[TimeSpan]::FromSeconds(20))
+        }
     } finally {$service.Dispose()}
 }
 function Complete-Restoration($Value,[bool]$KeepState) {
@@ -267,7 +274,8 @@ try {
             try{$start=[int]$key.GetValue('Start');$delayed=$key.GetValue('DelayedAutostart',$null)}finally{$key.Dispose()}
             if($start -notin @(2,3,4)){throw 'Unsupported service start mode'}
             $key=[Microsoft.Win32.Registry]::LocalMachine.OpenSubKey($approvalKey)
-            try{$approved=if($key){$key.GetValue($runName,$null)}else{$null}}finally{if($key){$key.Dispose()}}
+            $approved=$null
+            try{if($key){$approved=$key.GetValue($runName,$null)}}finally{if($key){$key.Dispose()}}
             if($null -ne $approved -and ($approved -isnot [byte[]] -or $approved.Length -gt 4096)){throw 'Invalid startup approval value'}
             $ui=$false
             foreach($process in [Diagnostics.Process]::GetProcessesByName('synergy-service')){
@@ -285,7 +293,14 @@ try {
         } finally {$service.Dispose()}
         Reply 'STOPPED'
         $command=Read-Command
-        if($command -eq 'READY'){$cutover=$false;Reply 'STARTED';return}
+        if($command -eq 'READY'){
+            Reply 'STARTED'
+            # A completed pipe write alone does not prove the controller received
+            # the reply. Keep recovery armed until it explicitly acknowledges.
+            if((Read-Command) -ne 'STARTED_ACK'){throw 'Migration start was not acknowledged; protected recovery state retained'}
+            $cutover=$false
+            return
+        }
         if($command -notin @('FAILED','FAILED_STOP')){throw 'Invalid migration completion request'}
         Restore-Service $saved;$cutover=$false
         Complete-Restoration $saved ($command -eq 'FAILED_STOP')

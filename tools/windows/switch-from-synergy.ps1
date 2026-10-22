@@ -103,10 +103,16 @@ function Initialize-MigrationNative {
         @('kernel32.dll','QueryFullProcessImageNameW',[bool],@([IntPtr],[uint32],[Text.StringBuilder],[uint32].MakeByRefType())),
         @('advapi32.dll','OpenProcessToken',[bool],@([IntPtr],[uint32],[IntPtr].MakeByRefType())),
         @('advapi32.dll','GetTokenInformation',[bool],@([IntPtr],[int],[IntPtr],[int],[int].MakeByRefType())),
-        @('kernel32.dll','CreateNamedPipeW',[IntPtr],@([string],[uint32],[uint32],[uint32],[uint32],[uint32],[uint32],[IntPtr]))
+        @('kernel32.dll','CreateNamedPipeW',[IntPtr],@([string],[uint32],[uint32],[uint32],[uint32],[uint32],[uint32],[IntPtr])),
+        @('kernel32.dll','CreateFileW',[IntPtr],@([string],[uint32],[uint32],[IntPtr],[uint32],[uint32],[IntPtr])),
+        @('kernel32.dll','WaitNamedPipeW',[bool],@([string],[uint32]))
     )
     foreach($definition in $definitions){
         $method=$type.DefinePInvokeMethod($definition[1],$definition[0],$definition[1],[Reflection.MethodAttributes]'Public,Static,PinvokeImpl',[Reflection.CallingConventions]::Standard,$definition[2],[Type[]]$definition[3],[Runtime.InteropServices.CallingConvention]::Winapi,[Runtime.InteropServices.CharSet]::Unicode)
+        if($definition[1] -in @('CreateFileW','WaitNamedPipeW')){
+            $attribute=[Reflection.Emit.CustomAttributeBuilder]::new([Runtime.InteropServices.DllImportAttribute].GetConstructor(@([string])),[object[]]@($definition[0]),[Reflection.FieldInfo[]]@([Runtime.InteropServices.DllImportAttribute].GetField('SetLastError'),[Runtime.InteropServices.DllImportAttribute].GetField('CharSet'),[Runtime.InteropServices.DllImportAttribute].GetField('ExactSpelling')),[object[]]@($true,[Runtime.InteropServices.CharSet]::Unicode,$true))
+            $method.SetCustomAttribute($attribute)
+        }
         $method.SetImplementationFlags([Reflection.MethodImplAttributes]::PreserveSig)
     }
     $null=$type.CreateType()
@@ -184,8 +190,27 @@ function Connect-Broker([string]$Action){
     }finally{[Environment]::SetEnvironmentVariable('PATH',$null,'Process');[Environment]::SetEnvironmentVariable('SystemRoot',$null,'Process');foreach($entry in $environment.GetEnumerator()){[Environment]::SetEnvironmentVariable($entry.Key,$entry.Value,'Process')}}
     $launched=Get-MigrationProcess $broker.Id
     if($launched.image -ne $hostPath -or $launched.sid -ne $sid -or ($Action -eq 'Probe' -and ($launched.admin -or $launched.integrity -gt 8192)) -or ($Action -ne 'Probe' -and (!$launched.admin -or $launched.integrity -lt 12288))){throw 'Launched migration host token or image does not match'}
-    $script:pipe=[IO.Pipes.NamedPipeClientStream]::new('.',$name,'InOut','Asynchronous',[Security.Principal.TokenImpersonationLevel]::Identification)
-    $pipe.Connect(90000)
+    # Generic write includes FILE_CREATE_PIPE_INSTANCE. Request only the matching
+    # ReadWrite|Synchronize rights; never grant instance creation to the caller.
+    # The handle constructor is available in both Windows PowerShell 5.1 and 7.
+    $endpoint='\\.\pipe\'+$name
+    $deadline=[DateTime]::UtcNow.AddSeconds(90)
+    while($true){
+        # OVERLAPPED | SECURITY_SQOS_PRESENT | SECURITY_IDENTIFICATION; no inherit.
+        $handle=[OpenergyMigrationNative]::CreateFileW($endpoint,0x0012019b,0,[IntPtr]::Zero,3,0x40110000,[IntPtr]::Zero)
+        if($handle -ne [IntPtr]::new(-1)){
+            $safe=[Microsoft.Win32.SafeHandles.SafePipeHandle]::new($handle,$true)
+            try{$script:pipe=[IO.Pipes.NamedPipeClientStream]::new('InOut',$true,$true,$safe)}catch{$safe.Dispose();throw}
+            break
+        }
+        $errorCode=[Runtime.InteropServices.Marshal]::GetLastWin32Error()
+        if($errorCode -notin @(2,231)){throw [ComponentModel.Win32Exception]::new($errorCode)}
+        $remaining=[int]($deadline-[DateTime]::UtcNow).TotalMilliseconds
+        if($remaining -le 0){throw 'Protected migration connect deadline'}
+        $null=[OpenergyMigrationNative]::WaitNamedPipeW($endpoint,[uint32][Math]::Min($remaining,200))
+        # A missing endpoint makes WaitNamedPipe return immediately.
+        [Threading.Thread]::Sleep([Math]::Min($remaining,20))
+    }
     $serverId=[uint32]0
     if(![OpenergyMigrationNative]::GetNamedPipeServerProcessId($pipe.SafePipeHandle.DangerousGetHandle(),[ref]$serverId) -or $serverId -ne $broker.Id){throw 'Migration pipe server is not the launched protected host'}
     $connected=Get-MigrationProcess $serverId
@@ -229,6 +254,9 @@ try{
             if($status.state -notin @('listening','connected')){throw 'Openergy is not ready for migration'}
             Send-Broker 'READY'
             if((Read-Broker) -ne 'STARTED'){throw 'Protected helper did not confirm migration'}
+            # Until this acknowledgement arrives, reply failure/caller loss must
+            # restore the service and retain state. Start never deletes state.
+            Send-Broker 'STARTED_ACK'
             $status
         }catch{
             $failure=$_;$stopFailed=$false

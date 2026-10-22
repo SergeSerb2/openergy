@@ -109,7 +109,8 @@ Legacy writable `DataDir\synergy-state.json` needs administrator review and
 manual recovery; it is never accepted as privileged state.
 
 The service, startup, and interactive UI transitions remain unverified in this
-audit. Read the [security evidence and limits](MIGRATION-PRIVILEGE-BOUNDARY.md).
+audit. Read the [security evidence and limits](MIGRATION-PRIVILEGE-BOUNDARY.md)
+and the [correctness follow-up](MIGRATION-CORRECTNESS-FOLLOWUP.md).
 
 ## Safe verification
 
