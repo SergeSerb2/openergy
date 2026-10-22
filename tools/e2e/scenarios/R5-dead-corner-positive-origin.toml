@@ -23,6 +23,14 @@ rects = [{ x = 100, y = 100, w = 1920, h = 1080, scale = 1.0 }]
 [[step]]
 do = "inject"
 node = "server"
+events = [{ type = "mouse_move_abs", x = 1900, y = 640 }]
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "cursor.x" = 1900 }
+[[step]]
+do = "inject"
+node = "server"
 events = [{ type = "mouse_move_abs", x = 2019, y = 640 }]
 [[step]]
 do = "sleep"

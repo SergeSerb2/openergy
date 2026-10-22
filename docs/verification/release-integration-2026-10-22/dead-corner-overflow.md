@@ -13,9 +13,14 @@ daemon based on `dce55c5` plus this arithmetic change. Cleanup failures: zero.
 
 An initial control sent two absolute moves in one injection batch. Capture
 coalesced them, leaving no retreat before the control's edge hit. The final
-scenarios wait for the retreat position before sending the next hit. The same
-final scenarios were rerun against both versions. This fixture correction did
-not change the baseline overflow reproduction.
+scenarios wait for the retreat position before sending the next hit. They also
+do this before the first hit: changing a display origin can clamp the initial
+cursor onto the edge, making an absolute move to that position have zero delta.
+Without this prerequisite, one repeat passed on the old binary without testing
+a physical edge hit. The final identical scenarios fail **0/2** on the old
+binary and pass **2/2** on the fixed binary. Reports are
+`/tmp/openergy-round5-corner-before-physical.json` and
+`/tmp/openergy-round5-corner-after-physical.json`.
 
 ```sh
 nice -n 15 target/release/openergy-e2e run \
