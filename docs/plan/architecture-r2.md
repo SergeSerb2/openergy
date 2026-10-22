@@ -966,3 +966,29 @@ Deskflow issue #9852, PRs #9978/#9991 (click numbering);
 `04-tray-security-packaging.md` (baseline, log pain points);
 `docs/focus-fix.md`; `docs/plan/ui-contract.md`;
 `docs/plan/architecture-r1.md` (superseded where noted).
+
+## Windows daemon amendment — 2026-10-21
+
+The daemon may also use the existing `windows-sys` dependency for local IPC,
+console signals, and parent process handles. This extends the original
+platform-only FFI allowance; no protocol or JSON shape changes.
+
+Windows configuration uses `%APPDATA%\Openergy`. A socket path selects a stable
+local byte pipe named `\\.\pipe\openergy-<hash>`, derived from the current user
+SID and the absolute path (ASCII case folded, slash normalized). The hash is
+a name selector, not an authentication mechanism. Explicit local pipe names
+are also accepted. The kernel enforces a protected DACL with exactly the current
+user SID. Remote clients are rejected. The first instance uses
+`FILE_FLAG_FIRST_PIPE_INSTANCE`; a replacement listener instance is created
+before handing the connected one to a client, so the lock has no gap.
+
+The shared per-client dispatcher retains the 64-client cap, JSON framing, and
+event bus. Overlapped operations provide blocking threads with cancellation:
+50 ms server reads, 1 s writes, and 10 s CLI I/O. Busy CLI opens wait up to
+1 s in 250 ms slices. The accept wait checks stop at most every 50 ms.
+Cancellation is reaped before buffers and OVERLAPPED storage leave scope.
+
+Windows parent watches retain an `OpenProcess(PROCESS_SYNCHRONIZE)` handle and
+poll `WaitForSingleObject(0)`. Console handlers clear inherited Ctrl+C-ignore,
+set the shared stop flag, and wait at most 4 s for cleanup on console close.
+Unix socket, signal, and parent-watch behavior is unchanged.

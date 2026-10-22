@@ -1,8 +1,9 @@
-# Win32 backend — untested on real Windows
+# Win32 backend — desktop acceptance pending
 
 This is a native implementation, compile-checked for `x86_64-pc-windows-msvc`.
-It has **not been run on a real Windows computer**. No input, clipboard or display
-operation from this crate was executed on the live macOS workstation.
+It also starts as a real daemon server in Windows SSH session 0 and stops cleanly.
+Hardware input, cursor capture, and clipboard transfer on the interactive desktop
+remain unverified. No native input or clipboard operation ran on the live Mac.
 
 `create(WindowsOptions {})` returns the shared `openergy_platform::Backend` with
 input capture/injection, screen enumeration and a real clipboard worker. On other targets it returns a typed platform error.
@@ -47,7 +48,7 @@ cargo clippy -p openergy-platform-windows --target x86_64-pc-windows-msvc --all-
 
 All commands passed without warnings on 2026-10-21 with Rust 1.99.1.
 See the Linux crate's VERIFICATION.md for the package release gates after integration.
-The shared default permission request returns `NotRequired`; native Windows execution
+The shared default permission request returns `NotRequired`; interactive Windows execution
 remains untested.
 
 ## Integration
@@ -56,6 +57,7 @@ The construction shim was removed after merging `t3/synergy-open-source-reimplem
 `create` returns `openergy_platform::Backend` directly. V1 shares only clipboard id 0.
 No shared signature or daemon implementation change is required for this follow-up.
 
-The Windows daemon IPC named-pipe server is not implemented in v1. It returns a
-typed unsupported-platform error. The backend compile check does not establish
-that the Windows daemon or app works end to end.
+The daemon now has per-user named-pipe IPC. Windows virtual peers pass real
+control and TLS network checks in both roles. Session-0 startup establishes
+backend initialization only; it does not establish desktop input correctness.
+See [Windows daemon verification](../../docs/verification/windows-daemon-2026-10-21/README.md).

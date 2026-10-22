@@ -106,7 +106,10 @@ openergy import-synergy [--from <dir>] [--out config.toml]
 openergy export-synergy-conf [--out synergy.conf]
 ```
 
-Configuration lives in `~/Library/Application Support/Openergy/config.toml` on macOS.
+Configuration lives in `~/Library/Application Support/Openergy/config.toml` on macOS,
+`$XDG_CONFIG_HOME/openergy/config.toml` on Linux, and `%APPDATA%\Openergy\config.toml` on Windows.
+Windows control commands use a private per-user named pipe. `--socket` selects
+a separate pipe for a lab or a second configuration; use the same value on the daemon and CLI.
 
 ## Platforms
 
@@ -114,7 +117,7 @@ Configuration lives in `~/Library/Application Support/Openergy/config.toml` on m
 |---|---|
 | macOS 15+ | Main platform. Native app plus daemon. |
 | Linux (X11) | Daemon with a native X11 backend, tested on Xvfb (capture, injection, clipboard). |
-| Windows | Input and clipboard backend written and compile-checked. The daemon's control channel (named pipe) is not written yet, so the daemon does not run on Windows yet. |
+| Windows | Headless daemon and CLI with private named-pipe control. Native backend starts in session 0; desktop input acceptance is pending. [Verification](docs/verification/windows-daemon-2026-10-21/README.md). |
 | Linux (Wayland) | Not yet. |
 
 Known v1 limits are listed in [crates/config/V1-LIMITS.md](crates/config/V1-LIMITS.md): keyboard-language

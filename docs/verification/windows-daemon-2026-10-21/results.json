@@ -1,0 +1,548 @@
+{
+  "source_commit": "77306b2",
+  "mac_build": "PASS",
+  "mac_clippy_all_targets": "PASS",
+  "windows_msvc_build_locked": "PASS",
+  "windows_clippy_workspace": "PASS",
+  "catalogue": {
+    "passed": 73,
+    "failed": 0,
+    "scenarios": [
+      {
+        "name": "A1-modifier-and-receiver-wheel",
+        "outcome": "PASS",
+        "elapsed_ms": 829,
+        "measurements": []
+      },
+      {
+        "name": "A10-unsupported-hello-close",
+        "outcome": "PASS",
+        "elapsed_ms": 375,
+        "measurements": []
+      },
+      {
+        "name": "A11-input-backpressure-release",
+        "outcome": "PASS",
+        "elapsed_ms": 2414,
+        "measurements": []
+      },
+      {
+        "name": "A12-restart-connected-roles",
+        "outcome": "PASS",
+        "elapsed_ms": 906,
+        "measurements": []
+      },
+      {
+        "name": "A2-client-direction-version-heartbeat-sequence",
+        "outcome": "PASS",
+        "elapsed_ms": 3713,
+        "measurements": []
+      },
+      {
+        "name": "A3-heartbeat-close-flush",
+        "outcome": "PASS",
+        "elapsed_ms": 1795,
+        "measurements": []
+      },
+      {
+        "name": "A4-config-live-rollback",
+        "outcome": "PASS",
+        "elapsed_ms": 580,
+        "measurements": []
+      },
+      {
+        "name": "A5-unavailable-clipboard-readback",
+        "outcome": "PASS",
+        "elapsed_ms": 1846,
+        "measurements": []
+      },
+      {
+        "name": "A6-clipboard-backpressure",
+        "outcome": "PASS",
+        "elapsed_ms": 524,
+        "measurements": []
+      },
+      {
+        "name": "A7-trust-lock-crash",
+        "outcome": "PASS",
+        "elapsed_ms": 448,
+        "measurements": []
+      },
+      {
+        "name": "A8-config-save-rollback",
+        "outcome": "PASS",
+        "elapsed_ms": 612,
+        "measurements": []
+      },
+      {
+        "name": "A9-tls-trusted-status",
+        "outcome": "PASS",
+        "elapsed_ms": 1122,
+        "measurements": []
+      },
+      {
+        "name": "I1-barrier-plain",
+        "outcome": "PASS",
+        "elapsed_ms": 31855,
+        "measurements": []
+      },
+      {
+        "name": "I1-barrier-tls",
+        "outcome": "PASS",
+        "elapsed_ms": 32272,
+        "measurements": []
+      },
+      {
+        "name": "I1-deskflow-plain",
+        "outcome": "PASS",
+        "elapsed_ms": 31536,
+        "measurements": []
+      },
+      {
+        "name": "I1-deskflow-tls",
+        "outcome": "PASS",
+        "elapsed_ms": 32078,
+        "measurements": []
+      },
+      {
+        "name": "I2-barrier-plain",
+        "outcome": "PASS",
+        "elapsed_ms": 2052,
+        "measurements": []
+      },
+      {
+        "name": "I2-barrier-tls",
+        "outcome": "PASS",
+        "elapsed_ms": 2661,
+        "measurements": []
+      },
+      {
+        "name": "I2-barrier-wrong-pin",
+        "outcome": "PASS",
+        "elapsed_ms": 1430,
+        "measurements": []
+      },
+      {
+        "name": "I2-deskflow-plain",
+        "outcome": "PASS",
+        "elapsed_ms": 2014,
+        "measurements": []
+      },
+      {
+        "name": "I2-deskflow-tls",
+        "outcome": "PASS",
+        "elapsed_ms": 2733,
+        "measurements": []
+      },
+      {
+        "name": "I2-deskflow-wrong-pin",
+        "outcome": "PASS",
+        "elapsed_ms": 1426,
+        "measurements": []
+      },
+      {
+        "name": "I3-barrier-plain",
+        "outcome": "PASS",
+        "elapsed_ms": 3223,
+        "measurements": []
+      },
+      {
+        "name": "I3-barrier-tls",
+        "outcome": "PASS",
+        "elapsed_ms": 3840,
+        "measurements": []
+      },
+      {
+        "name": "I3-deskflow-plain",
+        "outcome": "PASS",
+        "elapsed_ms": 3180,
+        "measurements": []
+      },
+      {
+        "name": "I3-deskflow-tls",
+        "outcome": "PASS",
+        "elapsed_ms": 3846,
+        "measurements": []
+      },
+      {
+        "name": "I4-barrier-plain",
+        "outcome": "PASS",
+        "elapsed_ms": 3043,
+        "measurements": []
+      },
+      {
+        "name": "I4-barrier-tls",
+        "outcome": "PASS",
+        "elapsed_ms": 3053,
+        "measurements": []
+      },
+      {
+        "name": "I4-deskflow-plain",
+        "outcome": "PASS",
+        "elapsed_ms": 3283,
+        "measurements": []
+      },
+      {
+        "name": "I4-deskflow-tls",
+        "outcome": "PASS",
+        "elapsed_ms": 3098,
+        "measurements": []
+      },
+      {
+        "name": "I5-barrier-export",
+        "outcome": "PASS",
+        "elapsed_ms": 1449,
+        "measurements": []
+      },
+      {
+        "name": "I5-deskflow-export",
+        "outcome": "PASS",
+        "elapsed_ms": 1530,
+        "measurements": []
+      },
+      {
+        "name": "L1-barrier-hello",
+        "outcome": "PASS",
+        "elapsed_ms": 985,
+        "measurements": []
+      },
+      {
+        "name": "L1-deskflow-hello",
+        "outcome": "PASS",
+        "elapsed_ms": 986,
+        "measurements": []
+      },
+      {
+        "name": "L2-barrier-clipboard",
+        "outcome": "PASS",
+        "elapsed_ms": 2117,
+        "measurements": []
+      },
+      {
+        "name": "L2-deskflow-clipboard",
+        "outcome": "PASS",
+        "elapsed_ms": 2089,
+        "measurements": []
+      },
+      {
+        "name": "L3-barrier-pair",
+        "outcome": "PASS",
+        "elapsed_ms": 3178,
+        "measurements": []
+      },
+      {
+        "name": "L3-deskflow-pair",
+        "outcome": "PASS",
+        "elapsed_ms": 3106,
+        "measurements": []
+      },
+      {
+        "name": "L4-barrier-raw-client",
+        "outcome": "PASS",
+        "elapsed_ms": 982,
+        "measurements": []
+      },
+      {
+        "name": "L4-deskflow-raw-client",
+        "outcome": "PASS",
+        "elapsed_ms": 988,
+        "measurements": []
+      },
+      {
+        "name": "R1-control-files",
+        "outcome": "PASS",
+        "elapsed_ms": 2050,
+        "measurements": [
+          {
+            "cpu_percent": 0.0,
+            "kind": "resources",
+            "rss_peak_bytes": 9076736,
+            "window_ms": 274
+          }
+        ]
+      },
+      {
+        "name": "R2-lifecycle",
+        "outcome": "PASS",
+        "elapsed_ms": 1067,
+        "measurements": []
+      },
+      {
+        "name": "S0-smoke",
+        "outcome": "PASS",
+        "elapsed_ms": 367,
+        "measurements": []
+      },
+      {
+        "name": "S1-connect",
+        "outcome": "PASS",
+        "elapsed_ms": 1668,
+        "measurements": []
+      },
+      {
+        "name": "S10-clipboard-cap",
+        "outcome": "PASS",
+        "elapsed_ms": 1631,
+        "measurements": []
+      },
+      {
+        "name": "S11-heartbeat",
+        "outcome": "PASS",
+        "elapsed_ms": 2312,
+        "measurements": []
+      },
+      {
+        "name": "S12-display-change",
+        "outcome": "PASS",
+        "elapsed_ms": 600,
+        "measurements": []
+      },
+      {
+        "name": "S13-flood",
+        "outcome": "PASS",
+        "elapsed_ms": 8383,
+        "measurements": []
+      },
+      {
+        "name": "S13-garbage",
+        "outcome": "PASS",
+        "elapsed_ms": 582,
+        "measurements": []
+      },
+      {
+        "name": "S13-oversized",
+        "outcome": "PASS",
+        "elapsed_ms": 583,
+        "measurements": []
+      },
+      {
+        "name": "S13-truncated-hello",
+        "outcome": "PASS",
+        "elapsed_ms": 307,
+        "measurements": []
+      },
+      {
+        "name": "S13-truncated",
+        "outcome": "PASS",
+        "elapsed_ms": 592,
+        "measurements": []
+      },
+      {
+        "name": "S13-unknown",
+        "outcome": "PASS",
+        "elapsed_ms": 1078,
+        "measurements": []
+      },
+      {
+        "name": "S14-import-roundtrip",
+        "outcome": "PASS",
+        "elapsed_ms": 694,
+        "measurements": []
+      },
+      {
+        "name": "S15-resources-latency",
+        "outcome": "PASS",
+        "elapsed_ms": 121521,
+        "measurements": [
+          {
+            "cpu_percent": 0.033304717064500285,
+            "kind": "resources",
+            "rss_peak_bytes": 9355264,
+            "window_ms": 60051
+          },
+          {
+            "cpu_percent": 0.016651735887682973,
+            "kind": "resources",
+            "rss_peak_bytes": 9338880,
+            "window_ms": 60053
+          },
+          {
+            "kind": "capture_to_recorded_upper_bound",
+            "max_ms": 1.277208,
+            "p50_ms": 0.667791,
+            "p95_ms": 0.811708,
+            "p99_ms": 1.043625,
+            "samples": 1000
+          }
+        ]
+      },
+      {
+        "name": "S16-permissions",
+        "outcome": "PASS",
+        "elapsed_ms": 637,
+        "measurements": []
+      },
+      {
+        "name": "S17-healthy",
+        "outcome": "PASS",
+        "elapsed_ms": 917,
+        "measurements": []
+      },
+      {
+        "name": "S17-same-fingerprint",
+        "outcome": "PASS",
+        "elapsed_ms": 1116,
+        "measurements": []
+      },
+      {
+        "name": "S17-stale",
+        "outcome": "PASS",
+        "elapsed_ms": 1584,
+        "measurements": []
+      },
+      {
+        "name": "S18-click-numbering",
+        "outcome": "PASS",
+        "elapsed_ms": 595,
+        "measurements": []
+      },
+      {
+        "name": "S19-config-patch",
+        "outcome": "PASS",
+        "elapsed_ms": 670,
+        "measurements": []
+      },
+      {
+        "name": "S2-edge-mapping",
+        "outcome": "PASS",
+        "elapsed_ms": 612,
+        "measurements": []
+      },
+      {
+        "name": "S2-wire-order",
+        "outcome": "PASS",
+        "elapsed_ms": 291,
+        "measurements": []
+      },
+      {
+        "name": "S20-parent-exit",
+        "outcome": "PASS",
+        "elapsed_ms": 873,
+        "measurements": []
+      },
+      {
+        "name": "S20-parent-off",
+        "outcome": "PASS",
+        "elapsed_ms": 383,
+        "measurements": []
+      },
+      {
+        "name": "S21-fingerprint-import",
+        "outcome": "PASS",
+        "elapsed_ms": 1074,
+        "measurements": []
+      },
+      {
+        "name": "S3-input-order",
+        "outcome": "PASS",
+        "elapsed_ms": 598,
+        "measurements": []
+      },
+      {
+        "name": "S4-disconnect-release",
+        "outcome": "PASS",
+        "elapsed_ms": 862,
+        "measurements": []
+      },
+      {
+        "name": "S5-disconnect-release",
+        "outcome": "PASS",
+        "elapsed_ms": 835,
+        "measurements": []
+      },
+      {
+        "name": "S6-trust-approval",
+        "outcome": "PASS",
+        "elapsed_ms": 1540,
+        "measurements": []
+      },
+      {
+        "name": "S7-wrong-pin",
+        "outcome": "PASS",
+        "elapsed_ms": 721,
+        "measurements": []
+      },
+      {
+        "name": "S8-text-clipboard",
+        "outcome": "PASS",
+        "elapsed_ms": 1171,
+        "measurements": []
+      },
+      {
+        "name": "S9-large-dib",
+        "outcome": "PASS",
+        "elapsed_ms": 2007,
+        "measurements": []
+      }
+    ]
+  },
+  "windows_control": [
+    "PASS ctl status alias",
+    "PASS status command",
+    "PASS disconnect command",
+    "PASS connect command",
+    "PASS config patch saves and applies",
+    "PASS second daemon rejected",
+    "PASS kernel DACL: protected, one allow ACE, current user SID only",
+    "PASS events subscribe response",
+    "PASS event bus subscription delivery",
+    "PASS logs subscribe response",
+    "PASS logs subscription delivery",
+    "PASS fragmented frame survives read timeouts",
+    "PASS unknown method returns typed error",
+    "PASS 65th client rejected",
+    "PASS client slot recovers",
+    "PASS ipc-stop exit deadline",
+    "PASS ipc-stop exit=0",
+    "PASS absent daemon error",
+    "PASS watched daemon stays alive with parent",
+    "PASS parent exit deadline",
+    "PASS parent exit=0",
+    "PASS parent-watched exit deadline",
+    "PASS parent-watched exit=0",
+    "PASS daemon shares private session-0 console",
+    "PASS Ctrl+C sent to private session-0 console",
+    "PASS ctrl-c exit deadline",
+    "PASS ctrl-c exit=0",
+    "PASS CLI read timeout about 10 seconds",
+    "WINDOWS_CONTROL_PASS"
+  ],
+  "windows_pipe_errors": [
+    "PASS 100 clients connect and close before a request",
+    "PASS oversized frame closes only that client",
+    "ERROR_CHECK_EXIT=0",
+    "PASS busy pipe fails after about 1 second"
+  ],
+  "windows_trust": [
+    "PASS trust list: 2 role records",
+    "PASS trust revoke persists both roles",
+    "PASS trust approve persists both roles",
+    "PASS trust import-synergy from synthetic lab fixture"
+  ],
+  "network": [
+    "PASS win-server connected with TLS and pinned trust",
+    "PASS mac-client connected with TLS and pinned trust",
+    "PASS win-server input received in mac-client",
+    "PASS win-server clipboard received in mac-client",
+    "PASS mac-client clipboard received in win-server",
+    "PASS held key and mouse button reach mac-client",
+    "PASS mac-client release ledger empty on disconnect",
+    "STOP mac-client",
+    "STOP win-server",
+    "PASS mac-server connected with TLS and pinned trust",
+    "PASS win-client connected with TLS and pinned trust",
+    "PASS mac-server input received in win-client",
+    "PASS mac-server clipboard received in win-client",
+    "PASS win-client clipboard received in mac-server",
+    "PASS held key and mouse button reach win-client",
+    "PASS win-client release ledger empty on disconnect",
+    "STOP win-client",
+    "STOP mac-server",
+    "NETWORK_PASS"
+  ],
+  "native_session_zero": "PASS: windows backend listening; clean exit 0; no initialization error",
+  "windows_binary": {
+    "sha256": "250a497ba225a5d136314d08aab49cd36b0ed29637c18118cea3588e300a1ed4",
+    "bytes": 4041728
+  }
+}

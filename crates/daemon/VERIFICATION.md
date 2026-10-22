@@ -299,9 +299,9 @@ read/write the pasteboard, post input, or request permissions.
 
 ## Limits and safety
 
-Windows named-pipe IPC is not implemented in v1. The daemon returns a typed
-unsupported-platform error; Windows daemon E2E is not claimed. This is also
-stated in `crates/platform-windows/README.md`.
+The Windows limitation from this original engine audit is superseded by the
+[Windows daemon verification](../../docs/verification/windows-daemon-2026-10-21/README.md).
+Desktop input acceptance remains separate from session-0 and virtual checks.
 
 Native macOS input capture/injection, live permission prompts, and hardware
 layout-change behavior remain untested on this live Synergy workstation. The
