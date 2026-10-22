@@ -12,6 +12,12 @@ or mocks were added. Native backend probes ran only inside isolated Linux Xvfb.
 
 ## Final hardening follow-up
 
+The [idle IPC and Linux parent follow-up](idle-wake-and-parent.md) records the
+later idle CPU improvement, Mac ARM64 and Intel/Rosetta regression checks,
+Linux zombie-parent and live-worker fixes, three further source reviews, and
+the clean `6b83420` local archive. Original failures and finite-run limits remain
+in its [machine record](idle-wake-and-parent.json).
+
 The [final hardening record](round5.md) covers bounded config/trust I/O, safe
 save/import limits, queue and image allocation bounds, live alias and clipboard
 recovery, and embedded archive provenance. It records the later 117-case full
