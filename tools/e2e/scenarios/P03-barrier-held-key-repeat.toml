@@ -1,0 +1,48 @@
+# Requirement: A held key from a real Barrier 2.4 server must repeat and release without disconnecting.
+name = "P03-barrier-held-key-repeat"
+requirement = "Decode Barrier 1.6 DKRP packets through a real Xvfb Barrier server and preserve the following key release."
+timeout_ms = 5000
+
+[[node]]
+id = "lab"
+kind = "lab"
+peer = "barrier"
+role = "server"
+name = "lab"
+screens = "lab,client"
+tls = false
+
+[[node]]
+id = "client"
+role = "client"
+platform = "virtual"
+remote = "lab"
+tls = false
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "lab_drive"
+node = "lab"
+args = ["mousemove", "1000", "540", "mousemove", "1919", "540", "sleep", ".2", "mousemove_relative", "--", "20", "0"]
+
+[[step]]
+do = "wait_status"
+node = "client"
+fields = { active_screen = "client" }
+
+[[step]]
+do = "lab_drive"
+node = "lab"
+args = ["keydown", "a", "sleep", "1.5", "keyup", "a"]
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+expect = [{event = {type = "key_down", key = 97}}, {event = {type = "key_repeat", key = 97}}, {event = {type = "key_up", key = 97}}]
+
+[[step]]
+do = "wait_connected"
+node = "client"

@@ -1,5 +1,9 @@
 # WP1 wire codec verification
 
+For the later framing and legacy-repeat fixes, see
+[the release audit](RELEASE-AUDIT.md). The results below are the original WP1
+snapshot, before those fixes.
+
 Verified on 2026-10-21, macOS arm64, Rust 1.99.1, Docker 29.8.2.
 Only `crates/protocol/` source files changed. No dependencies were added.
 No unit tests, mocks, native input APIs, host pasteboard APIs, TCC requests,

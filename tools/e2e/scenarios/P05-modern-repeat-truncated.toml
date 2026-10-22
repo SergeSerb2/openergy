@@ -1,0 +1,72 @@
+# Requirement: Protocol 1.8 must reject repeats with no language length and release held input.
+name = "P05-modern-repeat-truncated"
+requirement = "Protocol 1.8 must reject repeats with no language length and release held input."
+timeout_ms = 3000
+
+[[node]]
+id = "server"
+kind = "raw"
+role = "server"
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+platform = "virtual"
+tls = false
+
+[[step]]
+do = "raw_send"
+node = "server"
+hex = "0000"
+
+[[step]]
+do = "raw_send"
+node = "server"
+hex = "000b624172526945"
+
+[[step]]
+do = "raw_send"
+node = "server"
+hex = "7200010008"
+
+[[step]]
+do = "raw_expect"
+node = "server"
+builder = "hello_back"
+product = "bArRiEr"
+minor = 8
+name = "client"
+
+[[step]]
+do = "raw_send"
+node = "server"
+hex = "0000000451494e46000000044349414b0000000844534f50000000000000000e43494e4e0014001e000000010000"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "raw_send"
+node = "server"
+hex = "0000000a444b444e006100000001"
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+expect = [{event = {type = "key_down", key = 97}}]
+
+[[step]]
+do = "raw_send"
+node = "server"
+hex = "0000000c444b52500061000000020001"
+
+[[step]]
+do = "raw_expect_closed"
+node = "server"
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+expect = [{event = {type = "key_down", key = 97}}, {release_all = true}]

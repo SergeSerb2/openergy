@@ -15,6 +15,7 @@ pub struct Decoder {
     ready: VecDeque<Result<Message, DecodeError>>,
     failed: Option<DecodeError>,
     first_frame: bool,
+    legacy_key_repeat: bool,
 }
 
 impl Decoder {
@@ -29,6 +30,7 @@ impl Decoder {
             ready: VecDeque::new(),
             failed: None,
             first_frame: true,
+            legacy_key_repeat: false,
         }
     }
 
@@ -66,10 +68,15 @@ impl Decoder {
                 if len > self.max_frame_len {
                     return Err(DecodeError::OversizedFrame(len));
                 }
-                // The first frame can only be Hello (11 B) or HelloBack
-                // (at most 1024 B). Reject its size before copying any body.
-                if self.first_frame && len as usize > MAX_HELLO_BACK_LEN {
-                    return Err(DecodeError::BadHello);
+                // Reject impossible lengths from the prefix alone, without
+                // waiting for an attacker to provide a body that cannot be valid.
+                if self.first_frame {
+                    // Hello is 11 B; HelloBack adds at least a 4 B name length.
+                    if len != 11 && !(15..=MAX_HELLO_BACK_LEN as u32).contains(&len) {
+                        return Err(DecodeError::BadHello);
+                    }
+                } else if len < 4 {
+                    return Err(DecodeError::BadValue("short frame"));
                 }
                 self.frame_len = Some(len as usize);
                 self.prefix_len = 0;
@@ -86,7 +93,11 @@ impl Decoder {
                 self.ready
                     .try_reserve(1)
                     .map_err(|_| DecodeError::BadValue("allocation failed"))?;
-                self.ready.push_back(decode_frame(&self.frame, self.first_frame));
+                let message = decode_frame(&self.frame, self.first_frame, self.legacy_key_repeat);
+                if let Ok(Message::Hello { version, .. } | Message::HelloBack { version, .. }) = &message {
+                    self.legacy_key_repeat = version.major == 1 && (1..8).contains(&version.minor);
+                }
+                self.ready.push_back(message);
                 self.first_frame = false;
                 self.frame.clear();
                 self.frame_len = None;
@@ -189,7 +200,7 @@ fn product_ok(bytes: &[u8]) -> bool {
     bytes.eq_ignore_ascii_case(PRODUCT_SYNERGY.as_bytes()) || bytes.eq_ignore_ascii_case(PRODUCT_BARRIER.as_bytes())
 }
 
-fn decode_frame(frame: &[u8], first_frame: bool) -> Result<Message, DecodeError> {
+fn decode_frame(frame: &[u8], first_frame: bool, legacy_key_repeat: bool) -> Result<Message, DecodeError> {
     let mut r = Reader::new(frame);
     if frame.get(..7).is_some_and(product_ok) {
         if !first_frame {
@@ -250,7 +261,15 @@ fn decode_frame(frame: &[u8], first_frame: bool) -> Result<Message, DecodeError>
             modifiers: r.u16()?,
             count: r.u16()?,
             button: r.u16()?,
-            lang: r.text(MAX_LANGUAGE_LEN, true)?,
+            // Barrier 1.6 sends no language suffix. Some modern Synergy
+            // builds retain the suffix even in their older proxy writers.
+            // Only a pre-1.8 hello permits the completely absent field;
+            // partial lengths and modern 1.8 packets remain strict.
+            lang: if legacy_key_repeat && r.remaining() == 0 {
+                String::new()
+            } else {
+                r.text(MAX_LANGUAGE_LEN, true)?
+            },
         },
         b"DKUP" => Message::KeyUp {
             key: r.u16()?,
