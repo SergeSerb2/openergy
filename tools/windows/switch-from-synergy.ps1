@@ -48,9 +48,8 @@ if ($Install) {
     return
 }
 if ($Start) {
-    # Validate the managed install before stopping any existing input service.
-    if (!(Test-Path -LiteralPath (Join-Path $InstallDir 'install.json'))) { throw 'Run -Install first' }
-    if (!(Test-Path -LiteralPath (Join-Path $DataDir 'config.toml'))) { throw 'Import or configure Openergy first' }
+    # Full owner/path/files/task/endpoint validation must precede service changes.
+    $null = Manage 'Validate'
     if (Test-Path -LiteralPath $State) { throw 'A migration is already pending; use -Rollback before retrying' }
     $service = Get-Service -Name $Svc
     $property = Get-ItemProperty $Approved -Name $RunName -ErrorAction SilentlyContinue
@@ -77,7 +76,12 @@ if ($Start) {
         $status
     } catch {
         $failure = $_
-        try { $null = Manage 'Stop'; Restore-Synergy $saved; Remove-Item -LiteralPath $State } catch { Write-Warning "Automatic rollback failed; saved migration state remains. Run -Rollback. $($_.Exception.Message)" }
+        $stopFailed = $false
+        try { $null = Manage 'Stop' } catch { $stopFailed = $true; Write-Warning "Openergy stop failed; Synergy restoration will still run. $($_.Exception.Message)" }
+        try {
+            Restore-Synergy $saved
+            if (!$stopFailed) { Remove-Item -LiteralPath $State }
+        } catch { Write-Warning "Automatic restoration failed; saved migration state remains. Run -Rollback. $($_.Exception.Message)" }
         throw $failure
     }
     return
@@ -94,7 +98,10 @@ if ($Commit) {
     Write-Output 'Synergy automatic startup is disabled. Saved state remains available for -Rollback.'
     return
 }
-$null = Manage 'Stop'
+$stopFailure = $null
+try { $null = Manage 'Stop' } catch { $stopFailure = $_ }
+# Restore even when the installation marker or owned-stop check has failed.
 Restore-Synergy $saved
+if ($stopFailure) { Write-Warning 'Synergy was restored; Openergy stop failed and saved state remains.'; throw $stopFailure }
 Remove-Item -LiteralPath $State
 Write-Output 'Saved Synergy service and startup state restored.'

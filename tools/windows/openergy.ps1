@@ -2,7 +2,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory=$true, Position=0)]
-    [ValidateSet('Install','Start','Stop','Status','Uninstall')][string]$Action,
+    [ValidateSet('Install','Start','Stop','Status','Uninstall','Validate')][string]$Action,
     [string]$InstallDir = "$env:LOCALAPPDATA\Programs\Openergy",
     [string]$DataDir = "$env:APPDATA\Openergy",
     [string]$BinaryPath = "$PSScriptRoot\openergy.exe",
@@ -48,23 +48,84 @@ function Runner {
     if ($process -and $process.Path -eq $PowerShell -and $process.StartTime.ToUniversalTime().Ticks.ToString() -eq $record.started) { return $process }
     return $null
 }
-function Ctl([string]$Method) {
-    $info = New-Object Diagnostics.ProcessStartInfo
-    $info.FileName = $Exe
-    $info.Arguments = 'ctl ' + $Method + ' --socket "' + $Socket + '" --raw'
-    $info.UseShellExecute = $false
-    $info.CreateNoWindow = $true
-    $info.RedirectStandardOutput = $true
-    $info.RedirectStandardError = $true
-    $process = [Diagnostics.Process]::Start($info)
-    try {
-        $output = $process.StandardOutput.ReadToEndAsync()
-        $errors = $process.StandardError.ReadToEndAsync()
-        if (!$process.WaitForExit(12000)) { $process.Kill(); $process.WaitForExit(); return $null }
-        [IO.File]::WriteAllText((Join-Path $DataDir 'control.stderr.log'), $errors.Result)
-        if ($process.ExitCode -ne 0) { return $null }
-        $output.Result | ConvertFrom-Json
-    } finally { $process.Dispose() }
+# Authenticate the actual connected pipe before sending any request. A separate
+# status CLI followed by a stop CLI would leave a server-replacement race.
+if (-not ('OpenergyManagedPipe' -as [type])) {
+    Add-Type -TypeDefinition @'
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.IO.Pipes;
+using System.Runtime.InteropServices;
+using System.Security.Principal;
+using System.Text;
+public static class OpenergyManagedPipe {
+    [DllImport("kernel32.dll", SetLastError=true, CharSet=CharSet.Unicode)]
+    static extern bool WaitNamedPipeW(string name, uint timeout);
+    [DllImport("kernel32.dll", SetLastError=true)]
+    static extern bool GetNamedPipeServerProcessId(IntPtr pipe, out uint pid);
+    static string Name(string socket) {
+        string path=Path.GetFullPath(socket).Replace('/', '\\');
+        char[] chars=path.ToCharArray();
+        for(int i=0;i<chars.Length;i++) if(chars[i]>='A' && chars[i]<='Z') chars[i]=(char)(chars[i]+32);
+        string value=WindowsIdentity.GetCurrent().User.Value+"\0"+new string(chars);
+        ulong hash=0xcbf29ce484222325UL;
+        unchecked { foreach(byte b in new UTF8Encoding(false,true).GetBytes(value)) hash=(hash^b)*0x100000001b3UL; }
+        return "openergy-"+hash.ToString("x16");
+    }
+    public static bool Occupied(string socket) {
+        if(WaitNamedPipeW(@"\\.\pipe\"+Name(socket),1)) return true;
+        // A busy, denied, or otherwise inaccessible endpoint is never free.
+        return Marshal.GetLastWin32Error()!=2;
+    }
+    static byte[] Read(PipeStream pipe,int length) {
+        byte[] bytes=new byte[length]; int offset=0;
+        while(offset<length) {
+            var task=pipe.ReadAsync(bytes,offset,length-offset);
+            if(!task.Wait(5000)) throw new TimeoutException("Managed control read deadline");
+            int n=task.Result; if(n==0) throw new IOException("Managed control pipe closed"); offset+=n;
+        }
+        return bytes;
+    }
+    public static string Call(string socket,int childPid,long started,string exe,string request) {
+        using(var child=Process.GetProcessById(childPid))
+        using(var pipe=new NamedPipeClientStream(".",Name(socket),PipeDirection.InOut,PipeOptions.Asynchronous,TokenImpersonationLevel.Identification)) {
+            pipe.Connect(1000);
+            uint server;
+            if(!GetNamedPipeServerProcessId(pipe.SafePipeHandle.DangerousGetHandle(),out server))
+                throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+            if(server!=(uint)childPid || child.HasExited || child.StartTime.ToUniversalTime().Ticks!=started ||
+                !String.Equals(child.MainModule.FileName,exe,StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException("Control endpoint is not the supervised daemon");
+            byte[] body=Encoding.UTF8.GetBytes(request);
+            byte[] frame=new byte[body.Length+4]; int n=body.Length;
+            frame[0]=(byte)(n>>24);frame[1]=(byte)(n>>16);frame[2]=(byte)(n>>8);frame[3]=(byte)n;
+            Buffer.BlockCopy(body,0,frame,4,n);
+            if(!pipe.WriteAsync(frame,0,frame.Length).Wait(5000)) throw new TimeoutException("Managed control write deadline");
+            byte[] header=Read(pipe,4);
+            uint size=((uint)header[0]<<24)|((uint)header[1]<<16)|((uint)header[2]<<8)|header[3];
+            if(size>16777216) throw new IOException("Oversized managed control response");
+            return Encoding.UTF8.GetString(Read(pipe,(int)size));
+        }
+    }
+}
+'@
+}
+function Owned-Child {
+    if (!(Runner)) { return $null }
+    $record = Get-Content -LiteralPath $RunFile -Raw | ConvertFrom-Json
+    if (!$record.PSObject.Properties['child_pid'] -or !$record.PSObject.Properties['child_started']) { return $null }
+    $child = Get-Process -Id $record.child_pid -ErrorAction SilentlyContinue
+    if ($child -and $child.Path -eq $Exe -and $child.StartTime.ToUniversalTime().Ticks.ToString() -eq $record.child_started) { return $child }
+    return $null
+}
+function Ctl([string]$Method, [Diagnostics.Process]$Child) {
+    if (!$Child) { throw 'Managed daemon identity is unavailable' }
+    $request = @{id=1;method=$Method;params=@{}} | ConvertTo-Json -Compress
+    $response = [OpenergyManagedPipe]::Call($Socket,$Child.Id,$Child.StartTime.ToUniversalTime().Ticks,$Exe,$request) | ConvertFrom-Json
+    if ($response.PSObject.Properties['error'] -and $response.error) { throw "Managed control failed: $($response.error.message)" }
+    if ($Method -eq 'status.get' -and $response.result.daemon.pid -ne $Child.Id) { throw 'Control endpoint is not the supervised daemon' }
+    $response.result
 }
 function Task-Owned($Saved) {
     $task = Get-ScheduledTask -TaskName $Saved.task -ErrorAction SilentlyContinue
@@ -81,7 +142,10 @@ function Stop-Owned($Saved) {
     [IO.File]::WriteAllText($StopFile, 'stop')
     $runner = Runner
     if ($runner) {
-        $null = Ctl 'daemon.stop'
+        $child = Owned-Child
+        if ($child) {
+            try { $null = Ctl 'daemon.stop' $child } catch { Write-Warning "Owned daemon stop request failed: $($_.Exception.Message)" }
+        }
         if (!$runner.WaitForExit(15000)) { throw 'Runner did not stop; installation preserved for inspection' }
     }
     # Never kill by process name, PID file alone, or a command-line substring.
@@ -124,37 +188,56 @@ if ($Action -eq 'Install') {
     return
 }
 $saved = Read-Install
+function Validate-Install {
+    foreach ($path in @($Exe,$Config,(Join-Path $InstallDir 'openergy-run.ps1'))) {
+        if (!(Test-Path -LiteralPath $path -PathType Leaf)) { throw 'Managed installation is incomplete' }
+    }
+    if (!$saved.no_startup -and !(Task-Owned $saved)) { throw 'Startup task is missing; installation preserved' }
+    if (Runner) {
+        $child = Owned-Child
+        if (!$child) { throw 'Managed daemon identity is unavailable' }
+        $null = Ctl 'status.get' $child
+    } elseif ([OpenergyManagedPipe]::Occupied($Socket)) {
+        throw 'Control endpoint is already occupied by another daemon'
+    }
+}
+if ($Action -eq 'Validate') { Validate-Install; $saved; return }
 if ($Action -eq 'Start') {
-    if (Runner) { $status=Ctl 'status.get'; if (!$status) { throw 'Runner exists but control is not ready' }; $status; return }
+    Validate-Install
+    if (Runner) { Ctl 'status.get' (Owned-Child); return }
     Remove-Item -LiteralPath $StopFile -ErrorAction SilentlyContinue
     if ($saved.no_startup) {
         $arguments = '-NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' + (Join-Path $InstallDir 'openergy-run.ps1') + '" -InstallDir "' + $InstallDir + '" -DataDir "' + $DataDir + '" -Platform ' + $saved.platform
         Start-Process -FilePath $PowerShell -ArgumentList $arguments -WorkingDirectory $InstallDir -WindowStyle Hidden | Out-Null
     } else {
         $task = Task-Owned $saved
-        if (!$task) { throw 'Startup task is missing; installation preserved' }
         Enable-ScheduledTask -InputObject $task | Out-Null
         Start-ScheduledTask -InputObject $task
     }
-    $deadline = (Get-Date).AddSeconds(30)
-    while ((Get-Date) -lt $deadline) {
-        Start-Sleep -Milliseconds 100
-        if (Runner) {
-            $status = Ctl 'status.get'
-            if ($status) {
-                if ($status.last_error) { Stop-Owned $saved; throw "Daemon startup failed: $($status.last_error)" }
-                $status; return
+    try {
+        $deadline = (Get-Date).AddSeconds(30)
+        while ((Get-Date) -lt $deadline) {
+            Start-Sleep -Milliseconds 100
+            $child = Owned-Child
+            if (!$child) { continue }
+            if (![OpenergyManagedPipe]::Occupied($Socket)) { continue }
+            try { $status = Ctl 'status.get' $child } catch {
+                if ($_.Exception.ToString().Contains('not the supervised daemon')) { throw }
+                continue
             }
+            if ($status.last_error) { throw "Daemon startup failed: $($status.last_error)" }
+            $status; return
         }
+        throw 'Daemon did not become ready; see daemon.stderr.log and runner.stderr.log in DataDir'
+    } catch {
+        $failure = $_
+        try { Stop-Owned $saved } catch { Write-Warning "Startup cleanup failed: $($_.Exception.Message)" }
+        throw $failure
     }
-    Stop-Owned $saved
-    throw 'Daemon did not become ready; see daemon.stderr.log and runner.stderr.log in DataDir'
 }
 if ($Action -eq 'Status') {
     if (!(Runner)) { throw 'Managed runner is stopped' }
-    $status = Ctl 'status.get'
-    if (!$status) { throw 'Daemon control is not ready' }
-    $status; return
+    Ctl 'status.get' (Owned-Child); return
 }
 Stop-Owned $saved
 if ($Action -eq 'Uninstall') {

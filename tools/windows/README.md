@@ -47,7 +47,10 @@ value through unchanged, including an explicit `0` denial. The daemon controls
 the standard port 24800 policy; new-install configs use 24801.
 Use the same `InstallDir` and `DataDir` arguments on every lifecycle command if
 using custom paths. Paths with spaces are supported. A marker checks the user
-and selected paths before stop or uninstall.
+and selected paths before stop or uninstall. Readiness and control requests also
+check the actual kernel pipe server against the supervised child PID and process
+start time. Start refuses an occupied endpoint. `Validate` checks an installation
+without starting or stopping it.
 
 `-NoStartup` installs without a task. Start then launches the same supervisor as
 an owned background process. This also supports confined tests with
@@ -97,4 +100,6 @@ Run the control driver through session-0 SSH. Port arguments are restricted to
 25240–25259. No driver uses port 24800 or a native platform. Successful driver
 labs are removed. Failures retain control/lifecycle artifacts for inspection.
 
-See [verification](VERIFICATION.md) for results and remaining release gates.
+See [verification](VERIFICATION.md) for results and remaining release gates, and
+[lifecycle ownership](LIFECYCLE-OWNERSHIP.md) for the occupied-endpoint and migration
+preflight follow-up.

@@ -27,13 +27,25 @@ try {
     $record = @{pid=$PID;started=$self.StartTime.ToUniversalTime().Ticks.ToString()}
     $record | ConvertTo-Json | Set-Content -LiteralPath "$RunFile.new" -Encoding UTF8
     Move-Item -LiteralPath "$RunFile.new" -Destination $RunFile -Force
+    function Publish-Identity {
+        $record | ConvertTo-Json | Set-Content -LiteralPath "$RunFile.new" -Encoding UTF8
+        Move-Item -LiteralPath "$RunFile.new" -Destination $RunFile -Force
+    }
     $crashes = 0
     while (!(Test-Path -LiteralPath $StopFile)) {
         $started = Get-Date
         # Start-Process keeps native stderr out of PowerShell's error pipeline.
         $daemon = Start-Process -FilePath $Exe -ArgumentList @('daemon','--platform',$Platform,'--config',('"'+$Config+'"'),'--socket',('"'+$Socket+'"'),'--parent-pid',"$PID") -PassThru -NoNewWindow -RedirectStandardOutput (Join-Path $DataDir 'daemon.stdout.log') -RedirectStandardError (Join-Path $DataDir 'daemon.stderr.log')
+        if (!$daemon.HasExited) {
+            $record.child_pid = $daemon.Id
+            $record.child_started = $daemon.StartTime.ToUniversalTime().Ticks.ToString()
+            Publish-Identity
+        }
         $daemon.WaitForExit()
         $daemon.Refresh()
+        $record.Remove('child_pid')
+        $record.Remove('child_started')
+        Publish-Identity
         if ($daemon.ExitCode -eq 0 -or (Test-Path -LiteralPath $StopFile)) { break }
         if (((Get-Date) - $started).TotalSeconds -gt 60) { $crashes = 0 }
         $crashes++
