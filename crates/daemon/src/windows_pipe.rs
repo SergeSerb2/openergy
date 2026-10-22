@@ -9,8 +9,9 @@ use std::{
 };
 use windows_sys::Win32::{
     Foundation::{
-        LocalFree, ERROR_ACCESS_DENIED, ERROR_IO_PENDING, ERROR_PIPE_BUSY, ERROR_PIPE_CONNECTED, GENERIC_READ,
-        GENERIC_WRITE, HANDLE, INVALID_HANDLE_VALUE, WAIT_OBJECT_0, WAIT_TIMEOUT,
+        LocalFree, ERROR_ACCESS_DENIED, ERROR_BROKEN_PIPE, ERROR_IO_PENDING, ERROR_NO_DATA, ERROR_PIPE_BUSY,
+        ERROR_PIPE_CONNECTED, ERROR_PIPE_NOT_CONNECTED, GENERIC_READ, GENERIC_WRITE, HANDLE, INVALID_HANDLE_VALUE,
+        WAIT_OBJECT_0, WAIT_TIMEOUT,
     },
     Security::{
         Authorization::{
@@ -172,28 +173,46 @@ fn create(name: &[u16], sid: &str, first: bool) -> io::Result<OwnedHandle> {
 }
 impl Listener {
     pub fn accept(&mut self, stop: &AtomicBool) -> io::Result<Stream> {
-        let event = event()?;
-        let mut operation = OVERLAPPED {
-            hEvent: event.as_raw_handle(),
-            ..Default::default()
-        };
-        // Safety: the handle is overlapped; operation and event live until completion/cancellation.
-        let ok = unsafe { ConnectNamedPipe(self.handle.as_raw_handle(), &mut operation) };
-        let error = io::Error::last_os_error();
-        if ok == 0 && error.raw_os_error() != Some(ERROR_PIPE_CONNECTED as i32) {
-            if error.raw_os_error() != Some(ERROR_IO_PENDING as i32) {
+        loop {
+            if stop.load(Ordering::Relaxed) {
+                return Err(io::Error::new(io::ErrorKind::Interrupted, "IPC stopped"));
+            }
+            let event = event()?;
+            let mut operation = OVERLAPPED {
+                hEvent: event.as_raw_handle(),
+                ..Default::default()
+            };
+            // Safety: the handle is overlapped; operation and event live until completion/cancellation.
+            let ok = unsafe { ConnectNamedPipe(self.handle.as_raw_handle(), &mut operation) };
+            let error = io::Error::last_os_error();
+            let connected = if ok != 0 || error.raw_os_error() == Some(ERROR_PIPE_CONNECTED as i32) {
+                Ok(())
+            } else if error.raw_os_error() == Some(ERROR_IO_PENDING as i32) {
+                finish(self.handle.as_raw_handle(), &mut operation, None, Some(stop)).map(|_| ())
+            } else {
+                Err(error)
+            };
+            if let Err(error) = connected {
+                if matches!(
+                    error.raw_os_error().map(|e| e as u32),
+                    Some(ERROR_NO_DATA | ERROR_BROKEN_PIPE | ERROR_PIPE_NOT_CONNECTED)
+                ) {
+                    // A client can close between CreateNamedPipe and ConnectNamedPipe.
+                    let next = create(&self.name, &self.sid, false)?;
+                    self.handle = next;
+                    continue;
+                }
                 return Err(error);
             }
-            finish(self.handle.as_raw_handle(), &mut operation, None, Some(stop))?;
+            // Keep an instance alive continuously so FIRST_PIPE_INSTANCE remains an exclusive lock.
+            let next = create(&self.name, &self.sid, false)?;
+            let handle = std::mem::replace(&mut self.handle, next);
+            return Ok(Stream {
+                handle,
+                read_timeout: Duration::from_millis(50),
+                write_timeout: Duration::from_secs(1),
+            });
         }
-        // Keep an instance alive continuously so FIRST_PIPE_INSTANCE remains an exclusive lock.
-        let next = create(&self.name, &self.sid, false)?;
-        let handle = std::mem::replace(&mut self.handle, next);
-        Ok(Stream {
-            handle,
-            read_timeout: Duration::from_millis(50),
-            write_timeout: Duration::from_secs(1),
-        })
     }
 }
 fn event() -> io::Result<OwnedHandle> {
