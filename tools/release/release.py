@@ -354,8 +354,31 @@ def package(args):
                 for entry in zipped.infolist():
                     (extracted / entry.filename).chmod((entry.external_attr >> 16) & 0o777)
         else:
+            # This is our freshly generated payload, not an arbitrary archive.
+            # Match its regular files to staging instead of relying on tarfile
+            # extraction filters, which older supported Python 3.11 lacks.
+            expected = {path.relative_to(stage).as_posix(): path
+                        for path in stage.rglob("*") if path.is_file()}
             with tarfile.open(pending) as tarred:
-                tarred.extractall(extracted, filter="data")
+                for entry in tarred:
+                    original = expected.pop(entry.name, None)
+                    if (original is None or entry.type not in (tarfile.REGTYPE, tarfile.AREGTYPE)
+                            or entry.sparse or entry.size != original.stat().st_size):
+                        raise ValueError("generated archive differs from staged regular files")
+                    destination = extracted / original.relative_to(stage)
+                    destination.parent.mkdir(parents=True, exist_ok=True)
+                    payload = tarred.extractfile(entry)
+                    if payload is None:
+                        raise ValueError("generated archive is missing file data")
+                    with payload, destination.open("xb") as output_file:
+                        shutil.copyfileobj(payload, output_file)
+                    with original.open("rb") as staged_file, destination.open("rb") as extracted_file:
+                        if (hashlib.file_digest(staged_file, "sha256").digest()
+                                != hashlib.file_digest(extracted_file, "sha256").digest()):
+                            raise ValueError("generated archive file differs from staging")
+                    destination.chmod(0o755 if original.stat().st_mode & 0o111 else 0o644)
+            if expected:
+                raise ValueError("generated archive omits staged files")
         extracted_binary = extracted / binary.relative_to(stage)
         smoke(extracted_binary, args.port_range)
         if sys.platform == "darwin":
