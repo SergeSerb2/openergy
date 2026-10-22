@@ -186,7 +186,9 @@ fn read(hwnd: HWND, html: u32, max: usize) -> Result<ClipboardData, PlatformErro
             return Err(error("CF_UNICODETEXT has odd byte length"));
         }
         let units: Vec<u16> = bytes
-            .chunks_exact(2)
+            .as_chunks::<2>()
+            .0
+            .iter()
             .map(|v| u16::from_le_bytes([v[0], v[1]]))
             .collect();
         let end = units
