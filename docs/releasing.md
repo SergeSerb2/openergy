@@ -151,6 +151,23 @@ requires separate Authenticode signing and verification. Neither state is
 claimed by these draft artifacts. Do not disable system protections to make a
 release check pass.
 
+## Public launch acceptance
+
+The maintainer selected GitHub private vulnerability reporting on 2026-10-22.
+After a separately authorized change to a public repository, enable the feature
+in repository **Settings → Advanced Security → Private vulnerability reporting**.
+Verify that a reporter can open **Security → Advisories → Report a vulnerability**
+and that maintainer security notifications are configured. Record the date and
+result before announcing public launch. See
+[GitHub's configuration instructions](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/configure-vulnerability-reporting/configure-for-a-repository)
+and the [security policy](../SECURITY.md). The route is selected; availability
+is not yet verified. This checklist does not authorize a visibility change.
+
+The maintainer also chose to keep native input and clipboard acceptance as a
+release gate. Use a separate test account or machine with recovery input
+available. Preserve the current Mac and Windows sharing connection. Record
+missing native results as open gates; virtual checks cannot replace them.
+
 ## CI without automatic private-repository costs
 
 `.github/workflows/verify.yml` skips every automatic push/PR job while the
