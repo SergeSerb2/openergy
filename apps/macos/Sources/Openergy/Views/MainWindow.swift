@@ -42,7 +42,6 @@ struct MainWindow: View {
         // Start on the requested pane so no other pane (and its side effects) renders first.
         _pane = State(initialValue: initialPane ?? .layout)
     }
-    @SceneStorage("pane") private var storedPane = Pane.layout.rawValue
 
     var body: some View {
         NavigationSplitView {
@@ -93,10 +92,14 @@ struct MainWindow: View {
             } else if !model.missingPermissions.isEmpty {
                 pane = .permissions
             } else {
-                pane = Pane(rawValue: storedPane) ?? .layout
+                pane = model.allowsSystemIntegration
+                    ? Pane(rawValue: UserDefaults.standard.string(forKey: "pane") ?? "") ?? .layout
+                    : .layout
             }
         }
-        .onChange(of: pane) { _, next in storedPane = (next ?? .layout).rawValue }
+        .onChange(of: pane) { _, next in
+            if model.allowsSystemIntegration { UserDefaults.standard.set((next ?? .layout).rawValue, forKey: "pane") }
+        }
     }
 
     private func sidebarRow(_ item: Pane) -> some View {

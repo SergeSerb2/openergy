@@ -55,7 +55,16 @@ struct ConnectionPane: View {
         }
         .formStyle(.grouped)
         .onAppear(perform: load)
-        .onChange(of: model.config) { load() }
+        // A clipboard toggle or a layout update must not erase text the user is editing.
+        .onChange(of: model.config.name) { old, next in
+            if name == (old ?? "") { name = next ?? "" }
+        }
+        .onChange(of: model.config.client?.remote) { old, next in
+            if address == (old ?? "") { address = next ?? "" }
+        }
+        .onChange(of: model.config.server?.port) { old, next in
+            if port == String(old ?? 24800) { port = String(next ?? 24800) }
+        }
     }
 
     private func load() {
@@ -85,7 +94,7 @@ struct ConnectionPane: View {
             HStack {
                 Button("Reconnect") { model.reconnect() }
                 Button("Disconnect") { model.disconnect() }
-                    .disabled(model.connectedPeers.isEmpty)
+                    .disabled(![.connecting, .reconnecting, .connected, .starting].contains(model.state))
             }
             if !model.discovered.isEmpty {
                 ForEach(model.discovered) { peer in
@@ -298,7 +307,7 @@ struct ClipboardPane: View {
                 ValuePicker(title: "Largest item",
                             value: model.number("clipboard.max_bytes", { $0.clipboard?.maxBytes }, default: 64 * 1024 * 1024),
                             options: [("4 MB", 4 * 1024 * 1024), ("16 MB", 16 * 1024 * 1024),
-                                      ("64 MB", 64 * 1024 * 1024), ("256 MB", 256 * 1024 * 1024)],
+                                      ("64 MB", 64 * 1024 * 1024)],
                             custom: { ByteText.string($0) })
                     .disabled(model.config.clipboard?.enabled == false)
             } footer: {

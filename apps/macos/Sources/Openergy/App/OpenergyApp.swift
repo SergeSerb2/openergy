@@ -6,13 +6,26 @@ import SwiftUI
 enum Main {
     static func main() {
         let arguments = ProcessInfo.processInfo.arguments
-        if let index = arguments.firstIndex(of: "--snapshot"), arguments.indices.contains(index + 1) {
+        let modes = ["--snapshot", "--e2e", "--open-at-login"].filter(arguments.contains)
+        guard modes.count <= 1 else {
+            FileHandle.standardError.write(Data("Choose only one of --snapshot, --e2e, or --open-at-login.\n".utf8))
+            exit(64)
+        }
+        if let index = arguments.firstIndex(of: "--snapshot") {
+            guard arguments.indices.contains(index + 1), !arguments[index + 1].hasPrefix("--") else {
+                FileHandle.standardError.write(Data("usage: Openergy --snapshot <directory>\n".utf8))
+                exit(64)
+            }
             MainActor.assumeIsolated {
                 SnapshotRenderer.run(outputDirectory: URL(fileURLWithPath: arguments[index + 1]))
             }
             return
         }
-        if let index = arguments.firstIndex(of: "--e2e"), arguments.indices.contains(index + 1) {
+        if let index = arguments.firstIndex(of: "--e2e") {
+            guard arguments.indices.contains(index + 1), !arguments[index + 1].hasPrefix("--") else {
+                FileHandle.standardError.write(Data("usage: Openergy --e2e <directory> --join 127.0.0.1:<port> --host-port <port>\n".utf8))
+                exit(64)
+            }
             MainActor.assumeIsolated {
                 AppEndToEnd.run(outputDirectory: URL(fileURLWithPath: arguments[index + 1]))
             }

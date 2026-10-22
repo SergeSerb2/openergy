@@ -175,7 +175,7 @@ struct JoinOverview: View {
                     .textFieldStyle(.roundedBorder)
                     .onSubmit { model.join(address) }
                 Button(model.state == .connecting || model.state == .reconnecting ? "Retry Now" : "Join") {
-                    if address == model.config.client?.remote { model.reconnect() } else { model.join(address) }
+                    model.join(address)
                 }
                 .keyboardShortcut(.defaultAction)
                 .disabled(address.trimmingCharacters(in: .whitespaces).isEmpty)

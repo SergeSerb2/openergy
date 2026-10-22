@@ -16,8 +16,20 @@ final class DaemonSupervisor {
     var onSpawn: () -> Void = {}
 
     static var supportDirectory: URL {
+        if let config = ProcessInfo.processInfo.environment["OPENERGY_CONFIG"] {
+            return URL(fileURLWithPath: config).deletingLastPathComponent()
+        }
+        if let directory = ProcessInfo.processInfo.environment["OPENERGY_CONFIG_DIR"] {
+            return URL(fileURLWithPath: directory, isDirectory: true)
+        }
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         return base.appendingPathComponent("Openergy", isDirectory: true)
+    }
+
+    static var configURL: URL {
+        supportDirectory.appendingPathComponent(
+            ProcessInfo.processInfo.environment["OPENERGY_CONFIG"].map { URL(fileURLWithPath: $0).lastPathComponent }
+                ?? "config.toml")
     }
 
     static var socketPath: String {
@@ -37,11 +49,12 @@ final class DaemonSupervisor {
     }
 
     var isRunning: Bool { process?.isRunning ?? false }
+    var processIdentifier: Int32? { isRunning ? process?.processIdentifier : nil }
     /// After the first start, only the supervisor restarts the daemon (with its own backoff).
     private(set) var hasStarted = false
 
     func start() {
-        guard process == nil else { return }
+        guard process == nil, restartTask == nil else { return }
         guard let executable = Self.executableURL else {
             log.error("No openergy daemon binary found next to the app")
             return
@@ -54,7 +67,8 @@ final class DaemonSupervisor {
         // OPENERGY_DAEMON_ARGS adds flags for development and E2E, e.g. "--platform virtual".
         let extra = ProcessInfo.processInfo.environment["OPENERGY_DAEMON_ARGS"]?
             .split(separator: " ").map(String.init) ?? []
-        process.arguments = ["daemon", "--parent-pid", String(getpid()), "--socket", Self.socketPath] + extra
+        process.arguments = ["daemon", "--parent-pid", String(getpid()), "--socket", Self.socketPath,
+                             "--config", Self.configURL.path] + extra
         // The daemon refuses the standard Synergy port unless the real app asks for it,
         // so development and E2E runs can never collide with a live Synergy install.
         var environment = ProcessInfo.processInfo.environment
@@ -65,11 +79,10 @@ final class DaemonSupervisor {
         process.standardInput = FileHandle.nullDevice
         process.standardOutput = FileHandle.nullDevice
         // Keep the daemon's stderr (startup failures, aborts) next to its own log files.
-        process.standardError = Self.stderrLog() ?? FileHandle.nullDevice
         process.terminationHandler = { [weak self] finished in
             let status = finished.terminationStatus
             let reason = finished.terminationReason
-            Task { @MainActor in self?.handleExit(status: status, reason: reason) }
+            Task { @MainActor in self?.handleExit(process: finished, status: status, reason: reason) }
         }
 
         do {
@@ -78,6 +91,9 @@ final class DaemonSupervisor {
                 withIntermediateDirectories: true,
                 attributes: [.posixPermissions: 0o700]
             )
+            let stderr = Self.stderrLog()
+            defer { try? stderr?.close() }
+            process.standardError = stderr ?? FileHandle.nullDevice
             try process.run()
             self.process = process
             log.info("Started daemon pid \(process.processIdentifier)")
@@ -92,13 +108,18 @@ final class DaemonSupervisor {
     func stop() {
         stopping = true
         restartTask?.cancel()
-        guard let process, process.isRunning else { return }
+        restartTask = nil
+        hasStarted = false
+        guard let process else { return }
+        guard process.isRunning else { self.process = nil; return }
         process.terminate()
         let deadline = Date().addingTimeInterval(1.5)
         while process.isRunning, Date() < deadline {
             RunLoop.current.run(until: Date().addingTimeInterval(0.05))
         }
         if process.isRunning { kill(process.processIdentifier, SIGKILL) }
+        // The identity check in handleExit prevents a queued callback from clearing a new child.
+        self.process = nil
     }
 
     private static func stderrLog() -> FileHandle? {
@@ -115,7 +136,8 @@ final class DaemonSupervisor {
         return handle
     }
 
-    private func handleExit(status: Int32, reason: Process.TerminationReason) {
+    private func handleExit(process finished: Process, status: Int32, reason: Process.TerminationReason) {
+        guard process === finished else { return }
         process = nil
         guard !stopping else { return }
         log.error("Daemon exited (status \(status), reason \(reason.rawValue)); restarting")
@@ -129,6 +151,7 @@ final class DaemonSupervisor {
         restartTask = Task { @MainActor [weak self] in
             try? await Task.sleep(for: delay)
             guard let self, !Task.isCancelled, !self.stopping else { return }
+            self.restartTask = nil
             self.start()
         }
     }
