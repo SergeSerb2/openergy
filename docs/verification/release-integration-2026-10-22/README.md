@@ -34,6 +34,12 @@ service/UI recovery remain unverified because the restricted PowerShell process
 could not start in the SSH session. These source fixes do not close the native
 acceptance gates below.
 
+The [late review and archive record](late-review.md) records the Windows
+privilege split, five later correctness findings and their code responses, and
+the clean `e10e4a4` macOS archive. It also records the unavailable independent
+release-review verdict. Passing refusal checks does not close positive Windows
+migration or native acceptance.
+
 ## Integrated checks
 
 The sanitized [machine record](checks.json) contains scenario names, outcomes,
