@@ -1,0 +1,366 @@
+{
+  "schema_version": 1,
+  "scope": "Defensive source-history secret-detection evidence only. Scan patches reachable from the exact source commit; no --all refs, other child checkouts or unfinished sibling work.",
+  "source_commit": "ca618418dc8c4d93b8fd04eeda3fefa01003b8e7",
+  "observation_date_local": "2026-10-23",
+  "timezone": "America/Vancouver",
+  "started_at_utc": "2026-10-23T16:52:09.436576+00:00",
+  "ended_at_utc": "2026-10-23T16:52:09.913588+00:00",
+  "runtime_selection": {
+    "provider_instance_id": "codex",
+    "model": "gpt-6.1-sol",
+    "reasoningEffort": "xhigh",
+    "serviceTier": "default",
+    "service_tier_label": "STANDARD",
+    "verified_by": "T3 orchestrator_capabilities inherited runtime options in this task; no child tasks launched."
+  },
+  "tool": {
+    "version": "8.30.1",
+    "archive_url": "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_darwin_arm64.tar.gz",
+    "checksums_url": "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_checksums.txt",
+    "archive_sha256": "b40ab0ae55c505963e365f271a8d3846efbc170aa17f2607f13df610a9aeb6a5",
+    "binary_sha256": "ba52fb1bfabbcde42f032afad3d6e0b19dff8ed105229a16e7caa338bbc0e84f"
+  },
+  "tool_verification": {
+    "existing_archive_rehashed": true,
+    "actual_executable_rehashed_before_use": true,
+    "version_command": [
+      "<verified-gitleaks-8.30.1>",
+      "version"
+    ],
+    "version_stdout": "8.30.1",
+    "prior_workflow_inspected": [
+      "docs/verification/release-integration-2026-10-22/source-history-refresh.md",
+      "docs/verification/release-integration-2026-10-22/source-history-refresh.json",
+      "<previous-private>/history-result.json",
+      "Gitleaks git --help"
+    ],
+    "new_download_or_install": false,
+    "global_tool_or_default_changes": false
+  },
+  "command_path_redaction": "Only executable, absolute checkout and private temporary paths are replaced by the named placeholders. The raw argument vector remains private.",
+  "command": [
+    "<verified-gitleaks-8.30.1>",
+    "git",
+    "<repo>",
+    "--log-opts=ca618418dc8c4d93b8fd04eeda3fefa01003b8e7",
+    "--redact=100",
+    "--ignore-gitleaks-allow",
+    "--gitleaks-ignore-path",
+    "<private>/empty.gitleaksignore",
+    "--max-archive-depth",
+    "2",
+    "--max-decode-depth",
+    "5",
+    "--timeout",
+    "120",
+    "--no-banner",
+    "--no-color",
+    "--report-format",
+    "json",
+    "--report-path",
+    "<private>/findings.json"
+  ],
+  "cwd": "<repo>",
+  "policy": {
+    "detector": "Gitleaks 8.30.1 built-in default rules and built-in allowlists",
+    "rule_filter": null,
+    "reported_rule_counts": {
+      "generic-api-key": 84
+    },
+    "custom_config": null,
+    "target_root_gitleaks_toml_found": false,
+    "config_environment_names_removed": [],
+    "ignore_gitleaks_allow": true,
+    "ignore_file": "Dedicated empty private file",
+    "empty_ignore_file_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "max_archive_depth": 2,
+    "max_decode_depth": 5,
+    "timeout_seconds": 120,
+    "redaction_percent": 100,
+    "baseline": false,
+    "added_allowlists_or_suppressions": false,
+    "history_rewrite": false
+  },
+  "raw_scan": {
+    "exit_code": 1,
+    "raw_status": "Findings present; nonzero scanner result preserved. Not a passing or zero-finding raw scan.",
+    "elapsed_seconds": 0.477,
+    "reachable_commit_count": 231,
+    "scanner_reported_commits_scanned": 220,
+    "reachable_non_merge_commits": 220,
+    "reachable_merge_commits": 11,
+    "new_reachable_commits_since_previous_scan": 15,
+    "findings_count": 84,
+    "reported_rule_counts": {
+      "generic-api-key": 84
+    },
+    "private_artifact_sha256": {
+      "history.stderr": "24713d39f2ab3c1e358976ec440d34c0afcb47f886a5c61defddb47eb4ea77ea",
+      "history.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "empty.gitleaksignore": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "findings.json": "f32505a06c28f8ea409ec4ee064dc3ad86e961baaf67471cc3833903834f36c7",
+      "reachable-commits.txt": "6ee68366ee5c18a3a9782feb209de3456f92a1eeaa13ebb186ded107af479e40"
+    },
+    "worktree_status_before": "",
+    "worktree_status_after": ""
+  },
+  "patch_scope_limit": "The traced underlying history command is git log -p -U0 <source_commit>. It does not request separate merge diffs. The scanner counter is 220, while Git reachability is 231 including 11 merge commits. This is patch-based detector evidence, not a per-snapshot scan of every reachable commit or proof of merge-only resolution coverage.",
+  "scope_confirmation": {
+    "purpose": "Confirm exact underlying Git history scope and clarify the difference between reachable and scanner commit counters. This diagnostic replay preserves the same policy and does not replace the primary raw result.",
+    "exit_code": null,
+    "exit_code_note": "The diagnostic scanner return code was not saved before a local trace-parser assertion. The primary raw scanner exit code 1 remains authoritative. This diagnostic is used only for command scope and equal finding locations.",
+    "findings_count": 84,
+    "same_finding_locations_as_primary": true,
+    "git_trace_environment": "GIT_TRACE=<private>/git-command.trace",
+    "underlying_history_command": [
+      "git",
+      "log",
+      "-p",
+      "-U0",
+      "ca618418dc8c4d93b8fd04eeda3fefa01003b8e7"
+    ],
+    "other_git_commands": [
+      {
+        "command": [
+          "git",
+          "ls-remote",
+          "--quiet",
+          "--get-url"
+        ],
+        "classification": "Local remote URL resolution with --get-url; no network contact."
+      },
+      {
+        "command": [
+          "git",
+          "cat-file",
+          "blob",
+          "2e248fd6790f4661bccc4a36408ed757aadcea76:docs/verification/focus-lab-macos-27.0.1/builtin-legacy.json.gz"
+        ],
+        "classification": "Read a blob at a commit reachable from the scanned HEAD."
+      },
+      {
+        "command": [
+          "git",
+          "cat-file",
+          "blob",
+          "2e248fd6790f4661bccc4a36408ed757aadcea76:docs/verification/focus-lab-macos-27.0.1/legacy.json.gz"
+        ],
+        "classification": "Read a blob at a commit reachable from the scanned HEAD."
+      },
+      {
+        "command": [
+          "git",
+          "cat-file",
+          "blob",
+          "2e248fd6790f4661bccc4a36408ed757aadcea76:docs/verification/focus-lab-macos-27.0.1/native.json.gz"
+        ],
+        "classification": "Read a blob at a commit reachable from the scanned HEAD."
+      },
+      {
+        "command": [
+          "git",
+          "cat-file",
+          "blob",
+          "0aa7b815eab1510bbab6c6b7fb03d7acc9bb9dfa:docs/verification/focus-lab-macos-27.0.1/builtin-legacy.json.gz"
+        ],
+        "classification": "Read a blob at a commit reachable from the scanned HEAD."
+      },
+      {
+        "command": [
+          "git",
+          "cat-file",
+          "blob",
+          "0aa7b815eab1510bbab6c6b7fb03d7acc9bb9dfa:docs/verification/focus-lab-macos-27.0.1/native.json.gz"
+        ],
+        "classification": "Read a blob at a commit reachable from the scanned HEAD."
+      },
+      {
+        "command": [
+          "git",
+          "cat-file",
+          "blob",
+          "0aa7b815eab1510bbab6c6b7fb03d7acc9bb9dfa:docs/verification/focus-lab-macos-27.0.1/legacy.json.gz"
+        ],
+        "classification": "Read a blob at a commit reachable from the scanned HEAD."
+      }
+    ],
+    "hashes": {
+      "scope-confirmation-findings.json": "1c48cc003602db82c7fabb7f7d158469b54d6a8a7eb1626292d1b830eb3ca362",
+      "scope-confirmation.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "scope-confirmation.stderr": "9fc817b635b640fffbe435c630f152bffe33d433eacc517741f1436370bfa4b3",
+      "git-command.trace": "335da2086ed57ab09124ea6e478703465ab07211b4267d410d274b3d120823a3"
+    },
+    "scanner_commit_counter": [
+      220
+    ]
+  },
+  "scope_confirmation_command": [
+    "<verified-gitleaks-8.30.1>",
+    "git",
+    "<repo>",
+    "--log-opts=ca618418dc8c4d93b8fd04eeda3fefa01003b8e7",
+    "--redact=100",
+    "--ignore-gitleaks-allow",
+    "--gitleaks-ignore-path",
+    "<private>/empty.gitleaksignore",
+    "--max-archive-depth",
+    "2",
+    "--max-decode-depth",
+    "5",
+    "--timeout",
+    "120",
+    "--no-banner",
+    "--no-color",
+    "--report-format",
+    "json",
+    "--report-path",
+    "<private>/scope-confirmation-findings.json"
+  ],
+  "previous_scan": {
+    "source_commit": "54aa50b9eafc51f6eef2589c100c509eaac7e415",
+    "reachable_commit_count": 216,
+    "scanner_reported_commits_scanned": 205,
+    "reachable_merge_commits": 11,
+    "raw_exit_code": 1,
+    "findings_count": 64,
+    "reported_rule_counts": {
+      "generic-api-key": 64
+    },
+    "raw_report_sha256": "01f8e7d34d82cd11e98381f652fdba3caadee99bed64786434ef40a8aa65cdfb",
+    "retained_private_report_rehash_matches_published": true,
+    "comparison": {
+      "previous_findings": 64,
+      "retained_previous_findings": 64,
+      "new_findings": 20,
+      "missing_previous_findings": 0
+    },
+    "comparison_limit": "The earlier source cannot cover the 15 newly reachable commits. This refresh rechecks all candidates, including the 64 retained locations, against the explicitly recorded source revisions."
+  },
+  "triage": {
+    "method": "Read each candidate only from its exact historical Git evidence blob and reported line. Reconstruct the redacted scanner match and require it to occur on that exact line. Require a unique JSON leaf holding a 64-character lowercase SHA-256 and prove it equals the Git blob at the source commit explicitly named by that evidence. All source commits read must be reachable from the scanned HEAD. The vendor original-file record also requires the matching cached crate archive member and recorded archive/revision identifiers. A same-evidence-commit hash is only a secondary check. No code from history is run.",
+    "verified_source_hash_findings": 84,
+    "verified_tracked_source_hash_records": 83,
+    "verified_upstream_archive_hash_records": 1,
+    "credentials_identified_among_reported_findings": 0,
+    "unverified_findings": [],
+    "classification_counts": {
+      "verified tracked-source SHA-256, not a credential": 83,
+      "verified upstream archive source-file SHA-256, not a credential": 1
+    },
+    "source_path_counts": {
+      "crates/platform-linux/src/keymap.rs": 14,
+      "crates/platform-linux/src/unicode_keysyms.rs": 14,
+      "crates/platform-macos/src/keymap.rs": 14,
+      "crates/platform-windows/src/keymap.rs": 14,
+      "crates/protocol/src/keys.rs": 14,
+      "spikes/macos-input/src/keymap.rs": 12,
+      "vendor/mdns-sd/src/fuzz_api.rs": 2
+    },
+    "evidence_file": "source-history-findings.json",
+    "evidence_sha256": "9d4ba649ac2a55d2d710f99803930eb7756aa9ceea319fefa56bf2498ba1842c",
+    "private_triage_script_sha256": "b5bd2ada94cbb46370478bde7a8b6ab484322d5709009b00247696843641a1d1",
+    "private_triage_command": [
+      "python3",
+      "<private>/triage.py"
+    ],
+    "source_hash_command_template": [
+      "git",
+      "show",
+      "<explicitly-recorded-source-commit>:<source-path>"
+    ],
+    "source_hash_method": "SHA-256 of the exact bytes returned by git show; no historical code execution. Every source commit read was checked for membership in git rev-list of the pinned source commit."
+  },
+  "selected_input_rechecks": [
+    {
+      "source_commit": "ca618418dc8c4d93b8fd04eeda3fefa01003b8e7",
+      "path": "crates/platform-linux/src/keymap.rs",
+      "git_blob_oid": "f34214f0c3b32e74d4e2d75f9ae81ab3e7cddde0",
+      "sha256": "e30286da66b02322186f9c3cdc808a6a347691e0e7c458184517a1507604f42e",
+      "matches_all_classified_records_for_path": true
+    },
+    {
+      "source_commit": "ca618418dc8c4d93b8fd04eeda3fefa01003b8e7",
+      "path": "crates/platform-linux/src/unicode_keysyms.rs",
+      "git_blob_oid": "a9c62990dcfe4f98605746b5934b658386f11307",
+      "sha256": "b632ddb45d402b9045b0d6003a71e1ea5a9448ddfea7780dfc3cb3028571d58f",
+      "matches_all_classified_records_for_path": true
+    },
+    {
+      "source_commit": "ca618418dc8c4d93b8fd04eeda3fefa01003b8e7",
+      "path": "crates/platform-macos/src/keymap.rs",
+      "git_blob_oid": "e68baeb6c11e3f8fed82cada283b088040916ca2",
+      "sha256": "0dc9a9583802b154f87b4dd68a41c87a4b6902024218b2accee47d8d917fe314",
+      "matches_all_classified_records_for_path": true
+    },
+    {
+      "source_commit": "ca618418dc8c4d93b8fd04eeda3fefa01003b8e7",
+      "path": "crates/platform-windows/src/keymap.rs",
+      "git_blob_oid": "f512025374c89556606ea747b0e81a62e239ebdf",
+      "sha256": "a9d531bbe6ed9916a389de4b384aa2321f7f04848c73e378fc61da7aca400aeb",
+      "matches_all_classified_records_for_path": true
+    },
+    {
+      "source_commit": "ca618418dc8c4d93b8fd04eeda3fefa01003b8e7",
+      "path": "crates/protocol/src/keys.rs",
+      "git_blob_oid": "393d649e9442f61b599c95eb39245edf4cb7f644",
+      "sha256": "bdcde8427a2534a8e2e96987da21ca792bdf38d60415d5d32b52f949293fbaff",
+      "matches_all_classified_records_for_path": true
+    },
+    {
+      "source_commit": "ca618418dc8c4d93b8fd04eeda3fefa01003b8e7",
+      "path": "spikes/macos-input/src/keymap.rs",
+      "git_blob_oid": "ca4014369098ce29ba03d25bcc8f9ab72cd2a9b1",
+      "sha256": "92e7f3b1d0bbedeea88f5e6ac4fea656a7f81553d09188aafd9af50e861412b7",
+      "matches_all_classified_records_for_path": true
+    },
+    {
+      "source_commit": "ca618418dc8c4d93b8fd04eeda3fefa01003b8e7",
+      "path": "vendor/mdns-sd/src/fuzz_api.rs",
+      "git_blob_oid": "ec138511eca4277f4ff30ae984d23888456c7794",
+      "sha256": "6d16f18f4e5b59b9194da86f0562b1ddb5cdc1151f43d80fe06bcde65e4b19a4",
+      "matches_all_classified_records_for_path": true
+    },
+    {
+      "source_commit": "ca618418dc8c4d93b8fd04eeda3fefa01003b8e7",
+      "path": "vendor/mdns-sd/UPSTREAM.json",
+      "sha256": "c28cea9cfa076cd5c3cc297a85150575101c7441fff6bb1cdb3cae6b2f204c91",
+      "crate": "mdns-sd",
+      "version": "0.21.6",
+      "matches_vendor_cargo_manifest": true,
+      "same_blob_as_reported_vendor_metadata_commit": false
+    }
+  ],
+  "validation": {
+    "product_edits": false,
+    "docs_only": true,
+    "source_build_typecheck_or_unit_tests_run": false,
+    "reason": "The authorized change adds only verification documents. Source/build validation is not required for this task.",
+    "product_runtime_or_network_traffic": false,
+    "source_history_code_executed": false,
+    "other_refs_scanned": false,
+    "new_evidence_commit_in_scan": false,
+    "documentation_checks": {
+      "json_documents_parsed": true,
+      "all_84_raw_location_identities_match_sanitized_evidence": true,
+      "sanitized_evidence_sha256_matches_metadata": true,
+      "private_directory_0700_and_new_artifacts_0600_verified": true,
+      "git_diff_cached_check": "passed",
+      "changed_paths_limited_to_three_new_source_history_documents": true
+    }
+  },
+  "limits": [
+    "Raw exit code 1 and 84 findings remain visible; classifications do not change scanner status.",
+    "No finding remains unresolved within the stated exact-blob/source/archive checks. No credential was identified among the 84 reported values.",
+    "Built-in detector and built-in allowlists apply. This does not prove the project secret-free or vulnerability-free.",
+    "Uncommitted files, unreachable objects, refs outside the pinned commit ancestry, external systems, installed state, subsequent commits and this evidence commit are outside the scan.",
+    "No runtime, platform, latency, native input/clipboard, positive Windows migration, security-review, release-provenance or trusted-distribution acceptance claim.",
+    "Native input/clipboard, positive Windows migration, original security/provenance acceptance and trusted distribution remain open. Private GitHub reporting stays deferred.",
+    "Stopped sibling IPC, older expiry/NSEC/orphan-record experiment and original release-provenance review tasks were not resumed or replaced."
+  ],
+  "private_retention": {
+    "directory_mode": "0700",
+    "new_artifact_modes": "0600",
+    "location": "Outside the repository, referenced by a local private state file; no raw reports or potential credential values are committed."
+  }
+}
