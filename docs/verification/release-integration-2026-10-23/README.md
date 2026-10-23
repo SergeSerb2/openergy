@@ -75,6 +75,12 @@ The [bounded virtual idle observation](virtual-idle-resources.md) records two
 30-second phases and the actual stop delay on the checkpoint binary. It does
 not supply native performance or long-term memory acceptance.
 
+The [Windows DNS contract review](windows-dns-contract-review-r5.md) found two
+P2 verification defects: a short OS control blocks the actual API cases, and
+the refusal verdict does not enforce the caller deadline independently of the
+observation window. No product P1/P2 was established. A verifier repair must keep
+the original failures and add real deadline coverage before native acceptance.
+
 The later [combined-binary idle observation](combined-idle-resources.md) measures
 the exact new release artifact. Its role-off idle RSS is 8.265625 MiB and reaches
 8.609375 MiB during 30 status CLI calls. Displayed CPU-counter deltas are 0.00 s
