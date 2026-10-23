@@ -106,33 +106,44 @@ def main():
         encode = lambda values: ("\n".join(values) + "\n").encode() if compact else canonical(values)
         data = encode(destination)
         write_lists(node.dir / "tls", (data, data))
-        write_lists(source, (encode(incoming), encode(incoming)))
+        source_data = encode(incoming + incoming[:64])
+        write_lists(source, (source_data, source_data))
         try:
-            if kind == "compact_revoke":
-                value, elapsed, rss = cli(node, "revoke", pins[8000])
-            else:
-                value, elapsed, rss = cli(node, "import-synergy", str(source))
-            refused = kind == "bulk_canonical_expansion_refused"
-            outcome.update(elapsed_ms=elapsed, max_rss_bytes=rss, exit=value.returncode)
-            if refused:
-                require(value.returncode != 0 and b"exceeds 1 MiB" in value.stderr, "oversized save was accepted")
-                require(all((node.dir / "tls" / n).read_bytes() == data for n in FILES), "refused import changed files")
-                require(not list((node.dir / "tls").glob(".oe-*.tmp")), "refused import left temporary output")
-                outcome["files_preserved"] = True
-            else:
-                added = 2 * (len(expected) - len(destination))
-                require(value.returncode == 0, "valid update failed")
-                if kind != "compact_revoke":
-                    require(value.stdout == f"imported {added} trust records\n".encode(), "import count changed")
-                after = [(node.dir / "tls" / n).read_bytes() for n in FILES]
-                require(all(len(body) <= CAP for body in after), "saved list exceeds policy")
-                if kind == "bulk_same_lists":
-                    require(after == [data, data], "no-op import rewrote files")
-                check, _, _ = cli(node, "list")
-                require(check.returncode == 0 and check.stdout == expected_list(expected, expected),
-                        "update changed first-seen order, roles or pins")
-                outcome.update(exact_order_and_roles=True, pins_per_role=len(expected))
-            require(elapsed < BUDGET_MS, "bulk command exceeded lab budget")
+            times, resident = [], []
+            for _ in range(3):
+                # Restore the initial state so all samples do the same update.
+                write_lists(node.dir / "tls", (data, data))
+                if kind == "compact_revoke":
+                    value, elapsed, rss = cli(node, "revoke", pins[8000])
+                else:
+                    value, elapsed, rss = cli(node, "import-synergy", str(source))
+                times.append(elapsed)
+                if rss is not None:
+                    resident.append(rss)
+                refused = kind == "bulk_canonical_expansion_refused"
+                outcome.update(elapsed_ms=times, median_ms=statistics.median(times),
+                               max_rss_bytes=max(resident, default=None), exit=value.returncode)
+                if refused:
+                    require(value.returncode != 0 and b"exceeds 1 MiB" in value.stderr, "oversized save was accepted")
+                    require(all((node.dir / "tls" / n).read_bytes() == data for n in FILES), "refused import changed files")
+                    require(not list((node.dir / "tls").glob(".oe-*.tmp")), "refused import left temporary output")
+                    outcome["files_preserved"] = True
+                else:
+                    added = 2 * (len(expected) - len(destination))
+                    require(value.returncode == 0, "valid update failed")
+                    if kind != "compact_revoke":
+                        require(value.stdout == f"imported {added} trust records\n".encode(), "import count changed")
+                    after = [(node.dir / "tls" / n).read_bytes() for n in FILES]
+                    require(all(len(body) <= CAP for body in after), "saved list exceeds policy")
+                    if kind == "bulk_same_lists":
+                        require(after == [data, data], "no-op import rewrote files")
+                    check, _, _ = cli(node, "list")
+                    require(check.returncode == 0 and check.stdout == expected_list(expected, expected),
+                            "update changed first-seen order, roles or pins")
+                    outcome.update(exact_order_and_roles=True, pins_per_role=len(expected))
+                require(all((source / n).read_bytes() == source_data for n in FILES),
+                        "import changed its source files")
+            require(outcome["median_ms"] < BUDGET_MS, "bulk command exceeded lab budget")
             outcome["passed"] = True
         except Exception as exc:
             outcome["error_detail"] = f"{type(exc).__name__}: {exc}"

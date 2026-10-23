@@ -12,10 +12,15 @@ use std::{
 const MAX_TRUST_FILE_LEN: u64 = 1024 * 1024;
 const LINEAR_TRUST_PINS: usize = 32;
 
-/// Keep first-seen order while avoiding one scan of all prior pins per record.
-fn dedup_in_order(values: &mut Vec<Fingerprint>) {
+fn sorted_pin_indices(values: &[Fingerprint]) -> Vec<usize> {
     let mut order: Vec<_> = (0..values.len()).collect();
     order.sort_unstable_by_key(|&i| (values[i].0, i));
+    order
+}
+
+/// Keep first-seen order while avoiding one scan of all prior pins per record.
+fn dedup_in_order(values: &mut Vec<Fingerprint>) {
+    let order = sorted_pin_indices(values);
     let mut duplicate = vec![false; values.len()];
     for pair in order.windows(2) {
         if values[pair[0]] == values[pair[1]] {
@@ -193,10 +198,15 @@ impl TrustStore {
         let mut added = 0;
         for (list, additions) in [(&mut next.servers, add_servers), (&mut next.clients, add_clients)] {
             if additions.len() > LINEAR_TRUST_PINS {
-                let before = list.len();
-                list.extend_from_slice(additions);
-                dedup_in_order(list);
-                added += list.len() - before;
+                // Bulk callers use the already deduplicated lists from read().
+                // Index existing pins instead of appending duplicate candidates.
+                let existing = sorted_pin_indices(list);
+                for fp in additions {
+                    if existing.binary_search_by_key(&fp.0, |&i| list[i].0).is_err() {
+                        list.push(*fp);
+                        added += 1;
+                    }
+                }
                 continue;
             }
             for fp in additions {
