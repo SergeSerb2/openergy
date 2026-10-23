@@ -433,22 +433,33 @@ impl Connection {
                 }),
         }
     }
-    fn is_trusted(&self) -> Result<bool, NetError> {
+    fn trust_without_store(&self) -> Option<bool> {
         if !self.require_trust {
-            return Ok(true);
+            return Some(true);
         }
         let Some(fp) = self.fingerprint else {
-            return Ok(false);
+            return Some(false);
         };
         if self.expected == Some(fp) {
-            return Ok(true);
+            return Some(true);
+        }
+        None
+    }
+    fn trusted_by(&self, store: &TrustStore) -> bool {
+        self.fingerprint.is_some_and(|fp| {
+            if self.outbound {
+                store.is_trusted_server(&fp)
+            } else {
+                store.is_trusted_client(&fp)
+            }
+        })
+    }
+    fn is_trusted(&self) -> Result<bool, NetError> {
+        if let Some(trusted) = self.trust_without_store() {
+            return Ok(trusted);
         }
         let store = TrustStore::load(&self.trust_dir).map_err(failed)?;
-        Ok(if self.outbound {
-            store.is_trusted_server(&fp)
-        } else {
-            store.is_trusted_client(&fp)
-        })
+        Ok(self.trusted_by(&store))
     }
     fn announce(&mut self, out: &mut Vec<NetEvent>) {
         self.held = None;
@@ -1493,16 +1504,53 @@ impl NetDriver {
         }
     }
     fn refresh_trust(&mut self, out: &mut Vec<NetEvent>) {
-        if let Err(e) = self.trust.reload() {
+        let read_error = self.trust.reload().err().map(|error| error.to_string());
+        if let Some(message) = &read_error {
             out.push(NetEvent::Error {
                 conn: None,
-                message: e.to_string(),
+                message: message.clone(),
             });
         }
+        let active = |c: &Connection| {
+            c.held.is_some_and(|deadline| deadline > Instant::now()) || (c.established && c.require_trust)
+        };
+        let mut decisions = Vec::new();
+        let mut other_dirs = Vec::new();
+        for (&id, c) in &self.conns {
+            if !active(c) {
+                continue;
+            }
+            if let Some(trusted) = c.trust_without_store() {
+                decisions.push((id, Ok(trusted)));
+            } else if c.trust_dir.as_path() == self.trust.dir() {
+                // A failed reload must not fall back to the last good store.
+                decisions.push((
+                    id,
+                    match &read_error {
+                        Some(error) => Err(failed(error)),
+                        None => Ok(c.trusted_by(&self.trust)),
+                    },
+                ));
+            } else if !other_dirs.contains(&c.trust_dir) {
+                other_dirs.push(c.trust_dir.clone());
+            }
+        }
+        // Old connections can retain another directory after reconfiguration.
+        // Read each directory once per pass and drop it before reading the next;
+        // do not retain whole stores for every distinct connection directory.
+        for dir in other_dirs {
+            let store = TrustStore::load(&dir).map_err(|error| error.to_string());
+            for (&id, c) in &self.conns {
+                if active(c) && c.trust_dir == dir && c.trust_without_store().is_none() {
+                    decisions.push((id, store.as_ref().map(|store| c.trusted_by(store)).map_err(failed)));
+                }
+            }
+        }
         let mut failures = Vec::new();
-        for (id, c) in &mut self.conns {
+        for (id, trusted) in decisions {
+            let Some(c) = self.conns.get_mut(&id) else { continue };
             if c.held.is_some() && c.held.is_some_and(|d| d > Instant::now()) {
-                match c.is_trusted() {
+                match trusted {
                     Ok(true) => {
                         c.announce(out);
                         c.read_ready = true;
@@ -1510,22 +1558,22 @@ impl NetDriver {
                     Ok(false) => {}
                     Err(e) => {
                         out.push(NetEvent::Error {
-                            conn: Some(*id),
+                            conn: Some(id),
                             message: e.to_string(),
                         });
-                        failures.push(*id);
+                        failures.push(id);
                     }
                 }
             } else if c.established && c.require_trust {
-                match c.is_trusted() {
+                match trusted {
                     Ok(true) => {}
-                    Ok(false) => failures.push(*id),
+                    Ok(false) => failures.push(id),
                     Err(error) => {
                         out.push(NetEvent::Error {
-                            conn: Some(*id),
+                            conn: Some(id),
                             message: error.to_string(),
                         });
-                        failures.push(*id);
+                        failures.push(id);
                     }
                 }
             }
