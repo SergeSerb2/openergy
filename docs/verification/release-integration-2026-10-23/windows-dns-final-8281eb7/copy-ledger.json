@@ -1,0 +1,401 @@
+[
+  {
+    "private_original": "source-inputs.json",
+    "public_copy": "source-inputs.json",
+    "original_sha256": "5cfa5bc9423a18b74824f458ebb693e6c3696cf4ccbd7ebf55df377926d10fbb",
+    "public_sha256": "5cfa5bc9423a18b74824f458ebb693e6c3696cf4ccbd7ebf55df377926d10fbb",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "source-manifest-metadata-clarification.json",
+    "public_copy": "source-manifest-metadata-clarification.json",
+    "original_sha256": "c50a015252ca302bcd191c033a3598b30cb2dcf8ea22696e8ed6f725274cb504",
+    "public_sha256": "c50a015252ca302bcd191c033a3598b30cb2dcf8ea22696e8ed6f725274cb504",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "derived-runtime.json",
+    "public_copy": "derived-runtime.json",
+    "original_sha256": "ca941225ab090d4dbe93c50987989af8599564d39ac780f6b2b15530d0ab562b",
+    "public_sha256": "ca941225ab090d4dbe93c50987989af8599564d39ac780f6b2b15530d0ab562b",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/logs/normal-full.stdout",
+    "public_copy": "outputs/normal-full.stdout",
+    "original_sha256": "38d868a23421b740925099c28a0f9cf0bcd7f27f31281950cff41e4f4315a3ef",
+    "public_sha256": "38d868a23421b740925099c28a0f9cf0bcd7f27f31281950cff41e4f4315a3ef",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/logs/normal-full.stderr",
+    "public_copy": "outputs/normal-full.stderr",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/normal-full-result.json",
+    "public_copy": "execution/normal-full.json",
+    "original_sha256": "e21cef33bc0aa2ad4fe17093f9066c3974adb2ddfea54bb22045b8d2b50db496",
+    "public_sha256": "6f525dd2ac6a5874a1a8fbabe1204445851dfa337d19a11ed40aa1ddc346a6c9",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/normal-full-private-identities-removed.json",
+    "public_copy": "execution/normal-full-identities-removed.json",
+    "original_sha256": "751af026743c0bd4caa6194d81432fca814291229f5fda9ba035a74bfa1231d8",
+    "public_sha256": "9a1605259ebda81c8d1df843c5776fb9e3c42f5341657893e38373d817cb11dd",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/logs/owned-conflict-full.stdout",
+    "public_copy": "outputs/owned-conflict-full.stdout",
+    "original_sha256": "b2f1395db851a9cdcf3a0f7f242360f759fa6ecdfe73f9c417867623a2537233",
+    "public_sha256": "b2f1395db851a9cdcf3a0f7f242360f759fa6ecdfe73f9c417867623a2537233",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/logs/owned-conflict-full.stderr",
+    "public_copy": "outputs/owned-conflict-full.stderr",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/owned-conflict-full-result.json",
+    "public_copy": "execution/owned-conflict-full.json",
+    "original_sha256": "f5c60a3b78cbaedbddb4bdd63541d7f7aa692713b6d064855e3d7e3e5fdaafc4",
+    "public_sha256": "46d117090752fd13f243711dc4eab6a146eb75667d37d57dd471af6e2cabbcfe",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/owned-conflict-full-private-identities-removed.json",
+    "public_copy": "execution/owned-conflict-full-identities-removed.json",
+    "original_sha256": "77092fd1590624935cf87feb263ccfcab31850a21acd8fccef43a8868878db5e",
+    "public_sha256": "d7b24760f1f9716a4dc051c77e5d905eeacad303b1cfc17077b802b8f20478eb",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/logs/clippy.stdout",
+    "public_copy": "outputs/clippy.stdout",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/logs/clippy.stderr",
+    "public_copy": "outputs/clippy.stderr",
+    "original_sha256": "32eabda2241e17f45176e788f59c85bbd41b5dcd6aee6f15e47313ce4616f7c3",
+    "public_sha256": "8e0f0d5c1ed233c9f6f1f4401d95e1fa8f116ef2a679caac80391b76a2fbf566",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/clippy-child-observation.json",
+    "public_copy": "execution/clippy-children.json",
+    "original_sha256": "13b25038f9e1870f4bf591703e1dace31f9609b73f2853367a759cd0f98eeb90",
+    "public_sha256": "72780ca8679f2870a8d8807002f7ca3a3a0ab438866a54b2543704f67b2173b3",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/logs/release.stdout",
+    "public_copy": "outputs/release.stdout",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/logs/release.stderr",
+    "public_copy": "outputs/release.stderr",
+    "original_sha256": "7d37098889c7319d3324ef1bd52c8fea16ec91ba0dc2523842fb1d4dee521d65",
+    "public_sha256": "2a10ee08a21474602a0cb317d5a8e5597a3546c10bbe7064ddb27328e1a1c902",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/release-child-observation.json",
+    "public_copy": "execution/release-children.json",
+    "original_sha256": "49c4dfcc97c544878d87c5ea3e714817b38a3bc8377e15262f56dbf5f9206046",
+    "public_sha256": "0ce325cfd609cf7b01c81ebf201fb152e67c8edc25ab473c7e2af5deec59ec70",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/owned-conflict.json",
+    "public_copy": "execution/owned-conflict.json",
+    "original_sha256": "91763f094299f9aa067a8a77658c7de5d385abb9524d71bcd557f02afbbd2520",
+    "public_sha256": "620abeff201608589f040bd9eb254edc4bddea28da9b05152b80118a938084a0",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/owned-conflict-disposed.json",
+    "public_copy": "execution/owned-conflict-disposed.json",
+    "original_sha256": "3e833311eedf66e350e5f9d10c0469cd995316bbaed5a502ab1d1659eece1059",
+    "public_sha256": "ff15e1e717af1f19bf4bcf77a8c8c36dbb3338b678fac15be9fc75ddf41af6e9",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/native-tools-before.json",
+    "public_copy": "native-tools-before.json",
+    "original_sha256": "7beb8d029c01470f872fb338f9574a600513caf86f9f92728c04a39a0a63b5b6",
+    "public_sha256": "8a1ecee480ae8619c3eae5789e427014dd56fc58ddc5815c1fc7877a931d66d2",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/native-tools-after.json",
+    "public_copy": "native-tools-after.json",
+    "original_sha256": "464e4e0bd43c565a4dcc646bef17cea158cf60e22bdae97174fd9b52520cf405",
+    "public_sha256": "c461314601557681b63b51df945d7a102f152d106fecd6a60894c5365ba9a4c4",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/common.ps1",
+    "public_copy": "workflow/common.ps1",
+    "original_sha256": "a1adb2dc45dbb2f722b35667de6a82e96874a6356861f7ddccbbeb33dbffc1a8",
+    "public_sha256": "a1adb2dc45dbb2f722b35667de6a82e96874a6356861f7ddccbbeb33dbffc1a8",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/audit.ps1",
+    "public_copy": "workflow/audit.ps1",
+    "original_sha256": "f9353139c67ef56fc7c97b2fca13e0786f8d9cdcd12e6bbed890c418bb32f70a",
+    "public_sha256": "f9353139c67ef56fc7c97b2fca13e0786f8d9cdcd12e6bbed890c418bb32f70a",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/build.ps1",
+    "public_copy": "workflow/build.ps1",
+    "original_sha256": "e9d67088f37fc77e113ff17735a1309928e8c9aeed0853d06d3bf243b7b15013",
+    "public_sha256": "e9d67088f37fc77e113ff17735a1309928e8c9aeed0853d06d3bf243b7b15013",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/runtime-common.ps1",
+    "public_copy": "workflow/runtime-common.ps1",
+    "original_sha256": "d94334499b37627c92d6c42650ba0fb7aec8efb2a9268f76519954094cb555bb",
+    "public_sha256": "d94334499b37627c92d6c42650ba0fb7aec8efb2a9268f76519954094cb555bb",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/run.ps1",
+    "public_copy": "workflow/run.ps1",
+    "original_sha256": "db44a98de213aa0101d2be3e99076a83039eb1022c380070f8c1c65ad0bf670f",
+    "public_sha256": "db44a98de213aa0101d2be3e99076a83039eb1022c380070f8c1c65ad0bf670f",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/postflight.ps1",
+    "public_copy": "workflow/postflight.ps1",
+    "original_sha256": "24b36c33b6cf6e2c8ae766685877931501e43e91cc9bc7e02b39b18fce76e4fe",
+    "public_sha256": "24b36c33b6cf6e2c8ae766685877931501e43e91cc9bc7e02b39b18fce76e4fe",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/final-audit.ps1",
+    "public_copy": "workflow/final-audit.ps1",
+    "original_sha256": "f419938485cedb22d18e5824673ef9b9bbd150bf6a7a53c223fd666d7308dc76",
+    "public_sha256": "f419938485cedb22d18e5824673ef9b9bbd150bf6a7a53c223fd666d7308dc76",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/final-input-hashes.json",
+    "public_copy": "workflow/final-input-hashes.json",
+    "original_sha256": "f6d8f4febf555f5622fb0e1aeac200b01b7013de1547fd258895a4e3520cad34",
+    "public_sha256": "f6d8f4febf555f5622fb0e1aeac200b01b7013de1547fd258895a4e3520cad34",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "raw/final-audit-input-hashes.json",
+    "public_copy": "workflow/final-audit-input-hashes.json",
+    "original_sha256": "9b8b052bad2d4ea1189419c3b194a11bfc971d710160ed39fd1fda6898d8fe7e",
+    "public_sha256": "9b8b052bad2d4ea1189419c3b194a11bfc971d710160ed39fd1fda6898d8fe7e",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "authenticated-readonly-preflight.transport.json",
+    "public_copy": "transports/authenticated-readonly-preflight.transport.json",
+    "original_sha256": "cd3a7ea5ccd3fa75582d9d4888295d43962769fa957f89dfe983bd85f42afd11",
+    "public_sha256": "cd3a7ea5ccd3fa75582d9d4888295d43962769fa957f89dfe983bd85f42afd11",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "authenticated-readonly-preflight.stdout",
+    "public_copy": "transports/authenticated-readonly-preflight.stdout",
+    "original_sha256": "f7fb166e0d4a79f07bba1fb65ae165aabb92b31b236b8f516cb4321c0963581d",
+    "public_sha256": "5e12211943d1500a309aa26af36c183f7b42fdeba757586ab8700422b7ce4b6b",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "authenticated-readonly-preflight.stderr",
+    "public_copy": "transports/authenticated-readonly-preflight.stderr",
+    "original_sha256": "2ce70d6c8c9ad6726c794690c8b14a2b83673648cac88edf4ff1acc50ec46348",
+    "public_sha256": "38d474ef88189e96c3956d6bcc2770a6904cefa0bf0e12a1d81ba7ed1fe24b06",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "setup.transport.json",
+    "public_copy": "transports/setup.transport.json",
+    "original_sha256": "a3bfbe3476c7b9cec151ebc86ebbcd2edf7eb7c90650b248db112b09f35313b0",
+    "public_sha256": "a3bfbe3476c7b9cec151ebc86ebbcd2edf7eb7c90650b248db112b09f35313b0",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "setup.stdout",
+    "public_copy": "transports/setup.stdout",
+    "original_sha256": "132eb6b75ccc2afb522aef361888da38b53ea534e9566caef5774feb27f9fa6b",
+    "public_sha256": "abb02f261046a37488af61953dc84160cdaf4d88009c4a28400c6a4ce75cf1a1",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "setup.stderr",
+    "public_copy": "transports/setup.stderr",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "cache-discovery.transport.json",
+    "public_copy": "transports/cache-discovery.transport.json",
+    "original_sha256": "427fd884d09a8b51fdc4483bc35323e8e17f4060b8d9b43dcd05156b60a29370",
+    "public_sha256": "427fd884d09a8b51fdc4483bc35323e8e17f4060b8d9b43dcd05156b60a29370",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "cache-discovery.stdout",
+    "public_copy": "transports/cache-discovery.stdout",
+    "original_sha256": "ca7442cb1fc196ba14cd3bf7914b81d6970ed170f439c6988eadbe16cd5167e4",
+    "public_sha256": "56353270d4ffb3272e1a57e223dd987e1da69de5b0f2c3aec96a0738e49f2552",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "cache-discovery.stderr",
+    "public_copy": "transports/cache-discovery.stderr",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "build-attached.transport.json",
+    "public_copy": "transports/build-attached.transport.json",
+    "original_sha256": "a42954890be7e4a45680aa9452f4773802df1436ab92fdfaf0820b9b6d412452",
+    "public_sha256": "a42954890be7e4a45680aa9452f4773802df1436ab92fdfaf0820b9b6d412452",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "build-attached.stdout",
+    "public_copy": "transports/build-attached.stdout",
+    "original_sha256": "de3287b65b848e3809c8be6276c4bf2d4d7b5310cd352b162fe1f927003b7a7e",
+    "public_sha256": "2d9085eb62647d6218ab63f887f4d5f9341f6c1fa2a339bfa3938c6fb470f2c0",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "build-attached.stderr",
+    "public_copy": "transports/build-attached.stderr",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "fixed-two-runs-attached.transport.json",
+    "public_copy": "transports/fixed-two-runs-attached.transport.json",
+    "original_sha256": "a429f4bda6d84b99da139df6aedce06b32a536cff3d07b6c877b3bde839e7691",
+    "public_sha256": "a429f4bda6d84b99da139df6aedce06b32a536cff3d07b6c877b3bde839e7691",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "fixed-two-runs-attached.stdout",
+    "public_copy": "transports/fixed-two-runs-attached.stdout",
+    "original_sha256": "e37690e6b8cb341b4fb6625acc1a4ffa2c4dad46f92b738536bbff68560f4792",
+    "public_sha256": "49b7d897d861957301d5eb9b2c99eb17fabf419c4df1219fa1e39052a7f5d058",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "fixed-two-runs-attached.stderr",
+    "public_copy": "transports/fixed-two-runs-attached.stderr",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "final-postflight-attached.transport.json",
+    "public_copy": "transports/final-postflight-attached.transport.json",
+    "original_sha256": "3247121fd152699d411fc14ccd44d74a16abe225ac48123ec4424a5f3d1fa1c8",
+    "public_sha256": "3247121fd152699d411fc14ccd44d74a16abe225ac48123ec4424a5f3d1fa1c8",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "final-postflight-attached.stdout",
+    "public_copy": "transports/final-postflight-attached.stdout",
+    "original_sha256": "58cacac035a8d5db59d566d0207fe31bcd31979b24589803be8e30b8a55dc311",
+    "public_sha256": "6abfd726212bcecacfb9189b988a9c1caca7fa0f10dc17efa75dfdde96ade876",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "final-postflight-attached.stderr",
+    "public_copy": "transports/final-postflight-attached.stderr",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "package.py",
+    "public_copy": "workflow/package.py",
+    "original_sha256": "b08dc6c5b9a334fca3cc8d16fa86e3279eb21229eb985a0d23edc2517c55b988",
+    "public_sha256": "b08dc6c5b9a334fca3cc8d16fa86e3279eb21229eb985a0d23edc2517c55b988",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "transport.py",
+    "public_copy": "workflow/transport.py",
+    "original_sha256": "3da346c06c64819a8c8ce395b5733f7138865368ff09250dfcbe06e07c9be858",
+    "public_sha256": "de9fec34c62cced2412f4a797e4a34e44cc1dd5d43d0ce4be708e3cd56369652",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "local-workflow/oe-analyze-8281.py",
+    "public_copy": "workflow/oe-analyze-8281.py",
+    "original_sha256": "3d9efd5d2a2c2874971e8661e2ba633d8677b72dbfe92e81a65c9799034d3bba",
+    "public_sha256": "3d9efd5d2a2c2874971e8661e2ba633d8677b72dbfe92e81a65c9799034d3bba",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "local-workflow/oe-finish-8281.py",
+    "public_copy": "workflow/oe-finish-8281.py",
+    "original_sha256": "002042552e1ddc28e2e7e1b541d7c118e0714f78df7fdef3ef07f41baa43e73a",
+    "public_sha256": "90833b4e0b1763ac63eaef8fc8ebdd1844160eedb2c7edc7957fa0bdc2825da5",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "local-workflow/oe-launch-8281-build.py",
+    "public_copy": "workflow/oe-launch-8281-build.py",
+    "original_sha256": "84b2a60139ebe4563cec50f9f95f5ecede4d21bd5185ea2841380761d5ffd469",
+    "public_sha256": "6208034a27ca269cc49c5d86e0a83259bdc3bc6cd49991872742011bc46ad908",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "local-workflow/oe-launch-8281-runs.py",
+    "public_copy": "workflow/oe-launch-8281-runs.py",
+    "original_sha256": "28de447f132c7c0fe4bd55bb9a204c6ef1623eaf78f28db5cb6d17f6e8d77571",
+    "public_sha256": "ed1c85707da0094b888500043f501269f42780e23e92b835a4a528b989e2ab20",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "local-workflow/oe-make-8281-evidence.py",
+    "public_copy": "workflow/oe-make-8281-evidence.py",
+    "original_sha256": "16acd0198d09f1416d3c77fea05b526b939ff62c03fdc5c7b9aa3e6b1209fe34",
+    "public_sha256": "e5593506eaf67a23f5996ba433e7b7a5c0190110c2e6b244c10a18130f77c3b2",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "local-workflow/oe-make-8281-postflight.py",
+    "public_copy": "workflow/oe-make-8281-postflight.py",
+    "original_sha256": "0b575b413e8d36fa6c752a05dd487072303b84b2a67b982478f3481fd08de54a",
+    "public_sha256": "0b575b413e8d36fa6c752a05dd487072303b84b2a67b982478f3481fd08de54a",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  },
+  {
+    "private_original": "local-workflow/oe-prepare-8281-workflow.py",
+    "public_copy": "workflow/oe-prepare-8281-workflow.py",
+    "original_sha256": "9d91911672a01b4745992879e546de2b9e2e9f2c12b1e3d2aa77c9f96d742208",
+    "public_sha256": "9d91911672a01b4745992879e546de2b9e2e9f2c12b1e3d2aa77c9f96d742208",
+    "transforms": "UTF-8 BOM removal if present; CRLF to LF; known private path/user-profile/SSH-alias prefixes only"
+  }
+]

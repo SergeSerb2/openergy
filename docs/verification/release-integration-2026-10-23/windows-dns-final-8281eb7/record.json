@@ -1,0 +1,287 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-23T16:40:20.164798-07:00",
+  "status": "UNACCEPTED_FULL_ACCEPTANCE_UNVERIFIED",
+  "source_commit": "8281eb79f54725ddc8fe8bae83dbd0f44fa5d885",
+  "reviewed_source_commit": "9a4ac2eed77a8ed8bddd61e060be14a506df570a",
+  "exact_reviewed_hashes": {
+    "crates/net/src/reactor.rs": "2fdfd8783e0d249c2441b1994ad7b67d8926662f6fee8244bbfd9558451e851d",
+    "crates/net/examples/dns_queue_cancel_c4806a3d.rs": "530c880eb74f6c95d24a0612c4fa8773fa21d256765fc3f9f6260801fa303a30"
+  },
+  "source": {
+    "archive_sha256": "31bb3818ee7389b5174b5bed1c18dd96da6b94f416609783bc17a93a524d7547",
+    "full_manifest_sha256": "800ad504063c3ab9eafe4895762b95a4e195e34e6bdcef35aaac5f76e93b5f3a",
+    "regular_files": 1202,
+    "git_exact_byte_matches": 1201,
+    "checkout_conversions": [
+      {
+        "path": "tools/windows/openergy-run.cmd",
+        "rule": "*.cmd text eol=crlf",
+        "git_bytes": 502,
+        "archive_bytes": 511,
+        "git_sha256": "74772411a85032212c7f4ba1be1948233804dcb21166c5caef0a6611ea2c3210",
+        "archive_sha256": "f784708ca8aa30160c34a96c406ee3b666d3d82d3cad6756f7aa8d6b6b21d11e",
+        "git_clean_blob": "9cd6f37ce26dde4edcad6f808492171f8daf3462",
+        "matches": true
+      }
+    ],
+    "before": {
+      "files": 1202,
+      "all_hashes_match": true,
+      "all_readonly": true,
+      "archive_sha256": "31bb3818ee7389b5174b5bed1c18dd96da6b94f416609783bc17a93a524d7547",
+      "manifest_sha256": "800ad504063c3ab9eafe4895762b95a4e195e34e6bdcef35aaac5f76e93b5f3a"
+    },
+    "after_build": {
+      "files": 1202,
+      "all_hashes_match": true,
+      "all_readonly": true,
+      "archive_sha256": "31bb3818ee7389b5174b5bed1c18dd96da6b94f416609783bc17a93a524d7547",
+      "manifest_sha256": "800ad504063c3ab9eafe4895762b95a4e195e34e6bdcef35aaac5f76e93b5f3a"
+    },
+    "after_commands": {
+      "files": 1202,
+      "all_hashes_match": true,
+      "all_readonly": true,
+      "archive_sha256": "31bb3818ee7389b5174b5bed1c18dd96da6b94f416609783bc17a93a524d7547",
+      "manifest_sha256": "800ad504063c3ab9eafe4895762b95a4e195e34e6bdcef35aaac5f76e93b5f3a"
+    },
+    "metadata_note": "The frozen source manifest included_parent field denotes the reviewed two-file reference only. See source-manifest-metadata-clarification.json; it is not an ancestry assertion."
+  },
+  "build": {
+    "target": "x86_64-pc-windows-msvc",
+    "rustc": [
+      "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "binary: rustc",
+      "commit-hash: 58cf8f9c35b355199727627d07ae34a4e2846d67",
+      "commit-date: 2026-10-13",
+      "host: x86_64-pc-windows-msvc",
+      "release: 1.99.1",
+      "LLVM version: 23.1.1"
+    ],
+    "cargo": [
+      "cargo 1.99.1 (5f94df478 2026-08-27)"
+    ],
+    "wrapper_session": 0,
+    "wrapper_priority": "BelowNormal",
+    "jobs": 2,
+    "steps": [
+      {
+        "name": "clippy",
+        "arguments": [
+          "clippy",
+          "--locked",
+          "--offline",
+          "--release",
+          "--target",
+          "x86_64-pc-windows-msvc",
+          "--jobs",
+          "2",
+          "-p",
+          "openergy-net",
+          "--lib",
+          "--example",
+          "dns_queue_cancel_c4806a3d",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "started_utc": "2026-10-23T23:33:44.5891981Z",
+        "ended_utc": "2026-10-23T23:34:02.3601192Z",
+        "elapsed_ms": 17761,
+        "exit": 0,
+        "log_sha256": "32eabda2241e17f45176e788f59c85bbd41b5dcd6aee6f15e47313ce4616f7c3"
+      },
+      {
+        "name": "release",
+        "arguments": [
+          "build",
+          "--locked",
+          "--offline",
+          "--release",
+          "--target",
+          "x86_64-pc-windows-msvc",
+          "--jobs",
+          "2",
+          "-p",
+          "openergy-net",
+          "--lib",
+          "--example",
+          "dns_queue_cancel_c4806a3d"
+        ],
+        "started_utc": "2026-10-23T23:34:02.3616006Z",
+        "ended_utc": "2026-10-23T23:34:56.9051230Z",
+        "elapsed_ms": 54533,
+        "exit": 0,
+        "log_sha256": "7d37098889c7319d3324ef1bd52c8fea16ec91ba0dc2523842fb1d4dee521d65"
+      }
+    ],
+    "passed": true,
+    "actual_child_observations": [
+      {
+        "step": "clippy",
+        "timed_out": false,
+        "samples": 39,
+        "observed_name_session_priority": [
+          {
+            "name": "cargo-clippy.exe",
+            "session": 0,
+            "priority": "BelowNormal"
+          },
+          {
+            "name": "cargo.exe",
+            "session": 0,
+            "priority": "BelowNormal"
+          },
+          {
+            "name": "clippy-driver.exe",
+            "session": 0,
+            "priority": "BelowNormal"
+          },
+          {
+            "name": "rustc.exe",
+            "session": 0,
+            "priority": "BelowNormal"
+          }
+        ]
+      },
+      {
+        "step": "release",
+        "timed_out": false,
+        "samples": 36,
+        "observed_name_session_priority": [
+          {
+            "name": "cargo.exe",
+            "session": 0,
+            "priority": "BelowNormal"
+          },
+          {
+            "name": "rustc.exe",
+            "session": 0,
+            "priority": "BelowNormal"
+          }
+        ]
+      }
+    ],
+    "private_offline_registry_files": 6300
+  },
+  "runtime": [
+    {
+      "name": "normal-full",
+      "started_utc": "2026-10-23T23:35:26.2520651Z",
+      "ended_utc": "2026-10-23T23:37:00.5587672Z",
+      "exit": 2,
+      "elapsed_ms": 94304,
+      "timed_out": false,
+      "forced_cleanup": false,
+      "session": 0,
+      "priority": "BelowNormal",
+      "binary_sha256": "b172d1c054f3171addde3eceba627d18d9a17ebd04904836acab5e1e77d0ec9b",
+      "source_commit": "8281eb79f54725ddc8fe8bae83dbd0f44fa5d885",
+      "stdout_sha256": "38d868a23421b740925099c28a0f9cf0bcd7f27f31281950cff41e4f4315a3ef",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "literal_result": [
+        "RESULT queue_coverage=PASS lifecycle_coverage=PASS refusal_matrix=PASS requested_deadlines=UNVERIFIED full_acceptance=UNVERIFIED slow_dns_head_of_line_regression=NOT_MEASURED cache_expiry_runtime=UNVERIFIED"
+      ],
+      "queue_pass_batches": 8,
+      "queue_skipped_batches": 0,
+      "obsolete_failure_events_in_queue_transcript": 128,
+      "base_frame_exchanges": 14,
+      "same_caller_recovery_exchanges": 3,
+      "base_event_counts": {
+        "queue": 164,
+        "lifecycle": 20
+      },
+      "refusal_matrix_verdict_counts": {
+        "PASS": 10,
+        "FAIL": 0,
+        "UNVERIFIED": 0
+      },
+      "os_control_groups": {
+        "strict_short_observation": {
+          "attempts": 4,
+          "actual_in_budget_refusals": 0
+        },
+        "bounded_fixture_reference": {
+          "attempts": 4,
+          "actual_in_budget_refusals": 4
+        }
+      },
+      "timing_observations": 13,
+      "full_six_second_observations": 13
+    },
+    {
+      "name": "owned-conflict-full",
+      "started_utc": "2026-10-23T23:37:01.4901146Z",
+      "ended_utc": "2026-10-23T23:38:35.0237034Z",
+      "exit": 2,
+      "elapsed_ms": 93533,
+      "timed_out": false,
+      "forced_cleanup": false,
+      "session": 0,
+      "priority": "BelowNormal",
+      "binary_sha256": "b172d1c054f3171addde3eceba627d18d9a17ebd04904836acab5e1e77d0ec9b",
+      "source_commit": "8281eb79f54725ddc8fe8bae83dbd0f44fa5d885",
+      "stdout_sha256": "b2f1395db851a9cdcf3a0f7f242360f759fa6ecdfe73f9c417867623a2537233",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "literal_result": [
+        "RESULT queue_coverage=UNVERIFIED lifecycle_coverage=UNVERIFIED refusal_matrix=PASS requested_deadlines=UNVERIFIED full_acceptance=UNVERIFIED slow_dns_head_of_line_regression=NOT_MEASURED cache_expiry_runtime=UNVERIFIED"
+      ],
+      "queue_pass_batches": 0,
+      "queue_skipped_batches": 8,
+      "obsolete_failure_events_in_queue_transcript": 0,
+      "base_frame_exchanges": 5,
+      "same_caller_recovery_exchanges": 3,
+      "base_event_counts": {
+        "queue": 3,
+        "lifecycle": 14
+      },
+      "refusal_matrix_verdict_counts": {
+        "PASS": 10,
+        "FAIL": 0,
+        "UNVERIFIED": 0
+      },
+      "os_control_groups": {
+        "strict_short_observation": {
+          "attempts": 4,
+          "actual_in_budget_refusals": 0
+        },
+        "bounded_fixture_reference": {
+          "attempts": 4,
+          "actual_in_budget_refusals": 4
+        }
+      },
+      "timing_observations": 13,
+      "full_six_second_observations": 13
+    }
+  ],
+  "artifact_binary": {
+    "path": "bin/dns_queue_cancel_c4806a3d.exe",
+    "bytes": 2475520,
+    "sha256": "b172d1c054f3171addde3eceba627d18d9a17ebd04904836acab5e1e77d0ec9b",
+    "readonly": true
+  },
+  "artifact_manifest_sha256": "9cd1fd8aaf288631dfb4e3cbd7be56272cade82dfe543e16b542e50146108a8b",
+  "private_raw_bundle": {
+    "sha256": "fe07d45d776dbd2d40f1464527aeefbcf3341f919bb7edd88ad5a2788a05debd",
+    "bytes": 25643008
+  },
+  "cleanup_passed": true,
+  "matching_strict_615c16e1_negative_control": "UNVERIFIED; no attempt in this task",
+  "source_or_predicate_changes": false,
+  "runtime_command_invocations": 2,
+  "runtime_retries": 0,
+  "unit_tests_or_mocks": false,
+  "computer_use": false,
+  "delegation": false,
+  "publication_push_or_GitHub_writes": false,
+  "remaining_gates": [
+    "Strict short TCP expiry timing",
+    "Strict pending TLS expiry timing",
+    "Deadline spanning qualified fallback through expiry",
+    "Matching strict historical 615c16e1 negative control",
+    "Slow DNS head-of-line regression",
+    "Cache/expiry/timer/query/record bytes",
+    "Original security/provenance, IPC/Synergy3, mDNS expiry, broader release/native/positive migration gates remain outside this task"
+  ]
+}

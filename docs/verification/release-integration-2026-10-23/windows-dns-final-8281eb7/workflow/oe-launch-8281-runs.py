@@ -1,0 +1,8 @@
+import pathlib,json,sys,subprocess
+p=pathlib.Path(json.loads(pathlib.Path('/private/tmp/oe-win-dns-8281eb7-private-pointer.json').read_text())['local']);sys.path.insert(0,str(p));from transport import *
+s=json.loads((p/'state.json').read_text());dest=s['root'].replace('\\','/')
+files=['final-audit.ps1','source-manifest-metadata-clarification.json','source-inputs.json']
+(p/'final-audit-input-hashes.json').write_text(json.dumps([{'path':f,'sha256':sha(p/f)} for f in files],indent=2)+'\n');files+=['final-audit-input-hashes.json']
+c=subprocess.run(['scp','-O','-q','-o','BatchMode=yes','-o','ConnectTimeout=8']+[str(p/f) for f in files]+['<SSH_ALIAS>:'+dest+'/'],stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=55);(p/'transfer-run-audit.stdout').write_bytes(c.stdout);(p/'transfer-run-audit.stderr').write_bytes(c.stderr);assert c.returncode==0
+script="$root='"+s['root']+r"';$ErrorActionPreference='Stop';foreach($e in @(Get-Content -Raw (Join-Path $root 'final-audit-input-hashes.json')|ConvertFrom-Json)){if((Get-FileHash (Join-Path $root $e.path) -Algorithm SHA256).Hash -ne $e.sha256){throw 'audit input transfer hash mismatch'};(Get-Item (Join-Path $root $e.path)).IsReadOnly=$true};(Get-Item (Join-Path $root 'final-audit-input-hashes.json')).IsReadOnly=$true;$tokens=$null;$errors=$null;$null=[System.Management.Automation.Language.Parser]::ParseFile((Join-Path $root 'final-audit.ps1'),[ref]$tokens,[ref]$errors);if($errors.Count -gt 0){throw ($errors|Out-String)};& (Join-Path $root 'run.ps1')"
+r,out=remote('fixed-two-runs-attached',script,timeout=700,exe='pwsh.exe');print(json.dumps(r));print(out.replace(s['root'],'<DNS_FIXTURE>')[:2500]);print('runtime transport retained; nonzero verdicts will not be retried')

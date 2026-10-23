@@ -1,0 +1,121 @@
+{
+  "passed": true,
+  "recorded_utc": "2026-10-23T23:39:58.5400445Z",
+  "tls_identity_files_remaining": 0,
+  "immutable_input_comparisons": [
+    {
+      "label": "e4f48ba-original",
+      "files": 2579,
+      "items": 2986,
+      "bytes_hashes_readonly_acls_unchanged": true
+    },
+    {
+      "label": "startup-diagnosis",
+      "files": 73,
+      "items": 82,
+      "bytes_hashes_readonly_acls_unchanged": true
+    },
+    {
+      "label": "owned-cleanup-dfa405c",
+      "files": 41,
+      "items": 48,
+      "bytes_hashes_readonly_acls_unchanged": true
+    },
+    {
+      "label": "observed-startup-e6a9125",
+      "files": 8312,
+      "items": 10435,
+      "bytes_hashes_readonly_acls_unchanged": true
+    },
+    {
+      "label": "historical-dns-remote",
+      "files": 2354,
+      "items": 2746,
+      "bytes_hashes_readonly_acls_unchanged": true
+    },
+    {
+      "label": "historical-dns-diag_remote",
+      "files": 42,
+      "items": 51,
+      "bytes_hashes_readonly_acls_unchanged": true
+    },
+    {
+      "label": "stopped-dns-8333a48",
+      "files": 8429,
+      "items": 10561,
+      "bytes_hashes_readonly_acls_unchanged": true
+    },
+    {
+      "label": "original-offline-registry",
+      "files": 6300,
+      "items": 8109,
+      "bytes_hashes_readonly_acls_unchanged": true
+    },
+    {
+      "label": "pinned-rust-1.99.1-toolchain",
+      "files": 166,
+      "items": 189,
+      "bytes_hashes_readonly_acls_unchanged": true
+    }
+  ],
+  "original_global_files_unchanged": 8,
+  "private_registry_source_files_unchanged": 4094,
+  "candidate_source": {
+    "files": 1202,
+    "all_hashes_match": true,
+    "all_readonly": true,
+    "archive_sha256": "31bb3818ee7389b5174b5bed1c18dd96da6b94f416609783bc17a93a524d7547",
+    "manifest_sha256": "800ad504063c3ab9eafe4895762b95a4e195e34e6bdcef35aaac5f76e93b5f3a"
+  },
+  "frozen_artifact_files_unchanged": 1018,
+  "workflow_inputs_unchanged": 10,
+  "tool_defaults_unchanged": true,
+  "live_sharing_process_identity_unchanged": true,
+  "acl": {
+    "root_protected": true,
+    "current_user_only_items": 10745,
+    "reparse_points": 0
+  },
+  "temp_entries": [],
+  "case_count": 2,
+  "case_exits": [
+    {
+      "name": "normal-full",
+      "exit": 2,
+      "timed_out": false,
+      "forced_cleanup": false
+    },
+    {
+      "name": "owned-conflict-full",
+      "exit": 2,
+      "timed_out": false,
+      "forced_cleanup": false
+    }
+  ],
+  "extra_invariance": {
+    "recorded_utc": "2026-10-23T23:38:54.5448781Z",
+    "fresh_native_tools_unchanged": 14,
+    "tools_defaults_unchanged_since_before_build": true,
+    "extra_identity_files_removed": 0,
+    "final_audit_inputs_unchanged": 3
+  },
+  "inventory_summary": {
+    "recorded_utc": "2026-10-23T23:39:42.2449960Z",
+    "endpoint_query": [
+      "netstat.exe",
+      "-ano"
+    ],
+    "endpoint_exit": 0,
+    "tcp_rows": 379,
+    "udp_rows": 117,
+    "process_inventory_count": 453
+  },
+  "fixture_processes_remaining": 0,
+  "prior_fixture_processes_remaining": 0,
+  "assigned_tcp_non_timewait_remaining": [],
+  "assigned_tcp_timewait_remaining": [
+    "  TCP    127.0.0.1:25118        127.0.0.1:61257        TIME_WAIT       0",
+    "  TCP    127.0.0.1:25118        127.0.0.1:61258        TIME_WAIT       0"
+  ],
+  "assigned_udp_endpoints_remaining": []
+}

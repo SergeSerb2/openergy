@@ -1,0 +1,33 @@
+{
+  "source_commit": "8281eb79f54725ddc8fe8bae83dbd0f44fa5d885",
+  "binary": {
+    "path": "bin/dns_queue_cancel_c4806a3d.exe",
+    "bytes": 2475520,
+    "sha256": "b172d1c054f3171addde3eceba627d18d9a17ebd04904836acab5e1e77d0ec9b",
+    "readonly": true
+  },
+  "libraries": [
+    {
+      "path": "bin/libraries/libmdns_sd-d2bc7df45f7006c8.rlib",
+      "bytes": 3941298,
+      "sha256": "21cadb8b8291809b9f444a6e561289820868343929da9fe245634b30f698d817",
+      "readonly": true
+    },
+    {
+      "path": "bin/libraries/libopenergy_net.rlib",
+      "bytes": 2047838,
+      "sha256": "1b49d74dcafd6494c2b3416379c32a668a32064ddad22682a289435afc6a98f9",
+      "readonly": true
+    }
+  ],
+  "artifact_files": 1018,
+  "artifact_manifest_sha256": "9cd1fd8aaf288631dfb4e3cbd7be56272cade82dfe543e16b542e50146108a8b",
+  "full_private_manifest": "raw/artifact-manifest.json",
+  "source_freeze": {
+    "files": 1202,
+    "all_hashes_match": true,
+    "all_readonly": true,
+    "archive_sha256": "31bb3818ee7389b5174b5bed1c18dd96da6b94f416609783bc17a93a524d7547",
+    "manifest_sha256": "800ad504063c3ab9eafe4895762b95a4e195e34e6bdcef35aaac5f76e93b5f3a"
+  }
+}
