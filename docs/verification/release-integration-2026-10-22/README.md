@@ -12,6 +12,10 @@ or mocks were added. Native backend probes ran only inside isolated Linux Xvfb.
 
 ## Final hardening follow-up
 
+The [identity-file contention follow-up](identity-lock-contention.md) records a
+second reproduced lock stall, prompt startup/live TLS refusal, preserved active
+input and connections, and refusal of an incomplete identity without key replacement.
+
 The [trust-file contention follow-up](trust-lock-contention.md) records a
 reproduced session-thread stall, nonblocking live updates and preserved offline
 serialization. It covers five live routes and concurrent CLI/identity writers.

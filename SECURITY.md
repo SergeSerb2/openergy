@@ -55,6 +55,11 @@ computers and users that should have that access.
   returns `trust_failed` with a retry message. Existing pins and connections
   stay unchanged. Retry after the other update finishes. Offline CLI updates
   still wait for that lock so concurrent writers preserve each other's changes.
+- If another local process holds the identity-file lock, daemon startup refuses
+  with a busy error. A live TLS change returns `config_apply_failed` or
+  `connect_failed` and preserves the configuration and existing connections.
+  Retry after the creator finishes. Identity reads still share the creator lock;
+  an incomplete key/certificate pair is never accepted or silently replaced.
 - Offline `trust approve` stores a pin in **both** server and client lists.
   Live IPC approval knows the pending connection's role. Use the app or
   `ctl trust.approve` when you need approval for that role only.
