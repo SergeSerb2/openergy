@@ -1,0 +1,2 @@
+SCOPE resolver=real_std_to_socket_addrs host=localhost ports=25100..25118 discovery=OFF tls=OFF native=NONE slow_lookup_control=UNAVAILABLE
+dns_queue_cancel_c4806a3d: healthy accept failed: Resource temporarily unavailable (os error 35); events=[Connected { conn: ConnId(2), peer: 127.0.0.1:25116, fingerprint: None, tls: false, tls_version: None }]; conn_info=Some(ConnInfo { peer: 127.0.0.1:25116, outbound: true, tls_version: None, fingerprint: None, queued_bytes: 0, certificate_verified: false })

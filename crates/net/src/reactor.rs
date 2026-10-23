@@ -762,6 +762,8 @@ struct ResolveJob {
     id: u64,
     host: String,
     port: u16,
+    deadline: Instant,
+    cancelled: Arc<AtomicBool>,
 }
 struct ResolveResult {
     id: u64,
@@ -772,6 +774,7 @@ struct Pending {
     port: u16,
     expected: Option<Fingerprint>,
     deadline: Instant,
+    cancelled: Arc<AtomicBool>,
 }
 
 pub struct NetDriver {
@@ -1164,6 +1167,7 @@ impl NetDriver {
                         }
                     }
                     for (_, p) in std::mem::take(&mut self.pending) {
+                        p.cancelled.store(true, Ordering::Release);
                         out.push(NetEvent::ConnectFailed {
                             host: p.host,
                             port: p.port,
@@ -1234,6 +1238,8 @@ impl NetDriver {
                 .next_resolve
                 .checked_add(1)
                 .ok_or_else(|| failed("DNS id exhausted"))?;
+            let deadline = Instant::now() + self.connect_timeout;
+            let cancelled = Arc::new(AtomicBool::new(false));
             self.resolver
                 .as_ref()
                 .ok_or_else(|| failed("DNS worker unavailable"))?
@@ -1241,6 +1247,8 @@ impl NetDriver {
                     id,
                     host: host.clone(),
                     port,
+                    deadline,
+                    cancelled: cancelled.clone(),
                 })
                 .map_err(failed)?;
             self.pending.insert(
@@ -1249,7 +1257,8 @@ impl NetDriver {
                     host: host.clone(),
                     port,
                     expected,
-                    deadline: Instant::now() + self.connect_timeout,
+                    deadline,
+                    cancelled,
                 },
             );
             self.dns_outstanding += 1;
@@ -1271,15 +1280,23 @@ impl NetDriver {
         let results = self.resolved_sender.clone();
         let waker = self.waker();
         // getaddrinfo can block. One lazy, bounded worker keeps it off the io loop.
-        // Dropping the sender ends the worker after any in-flight OS lookup returns.
+        // Cancelled/expired queued jobs still send one completion to release their
+        // outstanding slot. An active OS lookup cannot be cancelled and keeps its
+        // slot until it returns. Dropping the driver also cancels queued work.
         std::thread::Builder::new()
             .name("openergy-dns".into())
             .spawn(move || {
                 while let Ok(job) = receiver.recv() {
-                    let addresses = (job.host.as_str(), job.port)
-                        .to_socket_addrs()
-                        .map(|a| a.collect())
-                        .map_err(|e| format!("dns_failed: {e}"));
+                    let addresses = if job.cancelled.load(Ordering::Acquire) {
+                        Err("shutdown".into())
+                    } else if job.deadline <= Instant::now() {
+                        Err("connect_timeout: no response before deadline".into())
+                    } else {
+                        (job.host.as_str(), job.port)
+                            .to_socket_addrs()
+                            .map(|a| a.collect())
+                            .map_err(|e| format!("dns_failed: {e}"))
+                    };
                     if results.send(ResolveResult { id: job.id, addresses }).is_err() {
                         break;
                     }
@@ -1636,6 +1653,7 @@ impl NetDriver {
             .collect();
         for id in expired {
             if let Some(p) = self.pending.remove(&id) {
+                p.cancelled.store(true, Ordering::Release);
                 out.push(NetEvent::ConnectFailed {
                     host: p.host,
                     port: p.port,
@@ -1846,5 +1864,8 @@ impl NetDriver {
 impl Drop for NetDriver {
     fn drop(&mut self) {
         self.handle.inner.closed.store(true, Ordering::Release);
+        for pending in self.pending.values() {
+            pending.cancelled.store(true, Ordering::Release);
+        }
     }
 }
