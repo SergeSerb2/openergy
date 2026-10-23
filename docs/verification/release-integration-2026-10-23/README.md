@@ -19,13 +19,21 @@ hashes and cleanup observations. No replacement task was started for that work.
 
 The [native Windows run](../release-integration-2026-10-22/windows-bounded-discovery-2026-10-23.md)
 passes retained discovery 19/19 and virtual control 23/23. Startup remains
-failed at 11/14. A separate ordering diagnosis is running; the original failed
-probe and its frozen inputs remain unchanged.
+failed at 11/14. The original failed probe and its frozen inputs remain unchanged.
 
 The [fresh startup contract review](discovery-startup-contract-review.md) found
 a P2 verification defect: the probe does not prove that its target startup
 sends failed before replacement. It found no concrete product defect in that
-scope. The possible ordering still needs a native trace; acceptance stays failed.
+scope. The later [native diagnostic](../release-integration-2026-10-22/windows-discovery-startup-diagnosis-2026-10-23.md)
+observed both failed-start preservation and accepted replacements before caller
+drop. Its second run reproduced the three failed checks. The parent checked the
+committed trace ordering and copied output hashes. The original untraced run's
+precise interleaving stays unknown, and its acceptance result stays failed.
+
+A separate implementation task is repairing the verification with actual
+startup-outcome witnesses and strict failed-start/accepted-start cases. It must
+preserve the real identity, state and cleanup checks and show a failing baseline
+before fresh independent review and native acceptance.
 
 The [bounded virtual idle observation](virtual-idle-resources.md) records two
 30-second phases and the actual stop delay on the checkpoint binary. It does
@@ -36,3 +44,7 @@ The [source-history scan](source-history-refresh.md) retains raw exit 1 with
 The parent independently repeated 96 source-blob comparisons. Its patch-history
 scope excludes proof of merge-only resolution coverage and later commits.
 It is not a zero-finding or broad secret-free result.
+
+A narrow source-history supplement is checking the omitted merge diffs at that
+same pinned head. It is separate from product/provenance review and does not
+scan stopped sibling refs.

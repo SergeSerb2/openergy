@@ -10,6 +10,10 @@ The reviewed checkout is `4deb2d2`. Its product, vendor and probe source is
 identical to `e4f48ba`. The reviewer ran no binaries, builds or traffic and made
 no edits. This review does not replace native runtime acceptance.
 
+Later evidence: the [two-run native diagnostic](../release-integration-2026-10-22/windows-discovery-startup-diagnosis-2026-10-23.md)
+demonstrated the possible ordering in a matched reproduction. The original
+untraced failure keeps its result and its precise interleaving remains unknown.
+
 ## Missing precondition
 
 The probe queues sixteen cache replays, drops thirty-two distinct limited

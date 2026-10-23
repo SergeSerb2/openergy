@@ -38,5 +38,27 @@
     "startup_accepted": false
   },
   "scope": "Parent source/evidence cross-check; does not independently execute Windows binaries or rerun Gitleaks.",
-  "parent_commit_before_this_record": "2277821eb0ddad14562cf381812f2986d79e055d"
+  "parent_commit_before_this_record": "2277821eb0ddad14562cf381812f2986d79e055d",
+  "windows_ordering_diagnosis": {
+    "source_commit": "e4f48ba47ea69aa76a08de5cf0cf61c68d903c03",
+    "diagnostic_commit": "848aba6e671ba25a38e3466ab2f21f405fac739a",
+    "copied_output_hashes_matched": 8,
+    "observed_run2_timestamps_ns": {
+      "limited_open_before": 9187689200,
+      "limited_old_closed_before_drop": 9187936900,
+      "limited_drop_complete": 9187939000,
+      "standard_started_event_before_drop": 9188165800,
+      "standard_drop_complete": 9188170000
+    },
+    "run1_checks": [
+      14,
+      14
+    ],
+    "run2_checks": [
+      11,
+      14
+    ],
+    "original_startup_acceptance_unchanged": "FAIL 11/14",
+    "scope": "Committed trace and report cross-check only; parent did not run Windows binaries. The original untraced run interleaving remains unknown."
+  }
 }
