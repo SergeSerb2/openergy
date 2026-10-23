@@ -1,0 +1,538 @@
+{
+  "schema_version": 1,
+  "scope": "Defensive Gitleaks patch-history evidence for the exact accepted parent and its reachable ancestors only. The filename identifies the selected parent; it does not mean full historical snapshots were scanned.",
+  "source_commit": "7ad8265f9237aad8d37672095c884f051b5e4c2f",
+  "observation_date_local": "2026-10-23",
+  "timezone": "America/Vancouver",
+  "tool": {
+    "version": "8.30.1",
+    "archive_url": "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_darwin_arm64.tar.gz",
+    "checksums_url": "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_checksums.txt",
+    "archive_sha256": "b40ab0ae55c505963e365f271a8d3846efbc170aa17f2607f13df610a9aeb6a5",
+    "binary_sha256": "ba52fb1bfabbcde42f032afad3d6e0b19dff8ed105229a16e7caa338bbc0e84f",
+    "existing_archive_rehashed_before_use": true,
+    "actual_executable_rehashed_before_use": true,
+    "version_stdout": "8.30.1",
+    "version_exit_code": 0,
+    "download_install_or_global_change": false
+  },
+  "policy": {
+    "detector": "Gitleaks 8.30.1 built-in default rules and built-in allowlists",
+    "custom_config": null,
+    "rule_filter": null,
+    "scanner_baseline": false,
+    "new_allowlists_or_suppressions": false,
+    "root_gitleaks_toml_present": false,
+    "removed_environment_variables": [
+      "GITLEAKS_CONFIG",
+      "GITLEAKS_CONFIG_TOML"
+    ],
+    "empty_ignore_file_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ignore_inline_gitleaks_allow": true,
+    "redaction_percent": 100,
+    "max_archive_depth": 2,
+    "max_decode_depth": 5,
+    "timeout_seconds": 120,
+    "external_diff_and_textconv_disabled": true,
+    "external_driver_config_lookup": {
+      "exit_code": 1,
+      "stdout_empty": true,
+      "stderr_empty": true,
+      "meaning": "Expected empty local configuration lookup; not a scanner failure."
+    }
+  },
+  "baseline_and_delta": {
+    "mode": "Two full repeat scans. The prior primary is an immutable comparison baseline, not a scanner suppression baseline. No delta-only scanner invocation.",
+    "reason": "Prior runs took less than one second each. The two current scanner invocations took 1.225 seconds in total.",
+    "primary_source_commit": "ca618418dc8c4d93b8fd04eeda3fefa01003b8e7",
+    "primary_raw_exit_code": 1,
+    "primary_findings_count": 84,
+    "primary_raw_report_sha256": "f32505a06c28f8ea409ec4ee064dc3ad86e961baaf67471cc3833903834f36c7",
+    "primary_sanitized_findings_sha256": "9d4ba649ac2a55d2d710f99803930eb7756aa9ceea319fefa56bf2498ba1842c",
+    "primary_merge_raw_exit_code": 0,
+    "primary_merge_findings_count": 0,
+    "primary_merge_raw_report_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "both_retained_primary_raw_reports_rehashed_match": true,
+    "primary_reachable_set": {
+      "count": 231,
+      "git_command": [
+        "git",
+        "rev-list",
+        "ca618418dc8c4d93b8fd04eeda3fefa01003b8e7"
+      ],
+      "sorted_ids_lf_sha256": "aa1035f8cc15f8e3544b0c848c4434caab5db9bb6b389656ce81d4eb53f8d50f"
+    },
+    "primary_is_ancestor_and_reachable_subset": true,
+    "new_reachable_set": {
+      "count": 23,
+      "git_command": [
+        "git",
+        "rev-list",
+        "7ad8265f9237aad8d37672095c884f051b5e4c2f",
+        "^ca618418dc8c4d93b8fd04eeda3fefa01003b8e7"
+      ],
+      "sorted_ids_lf_sha256": "a0fe7c64c4c1e04cb8c70c15f09d0aa7f3589af174aedd87af786de82e33191f",
+      "commit_ids": [
+        "2277821eb0ddad14562cf381812f2986d79e055d",
+        "2df79f0ddf0a629e231cc5803e6c53d740cda5af",
+        "30f1c1cfc16d74a3dac2ee5d90bba391fb7c5bbf",
+        "3e03c6b0594f45829495b19fa48a02917264ed1c",
+        "4deb2d208c78934b586dc4cf65c127cf4fcdcf9a",
+        "52481804256d7492a6b53a5cba274173887143f0",
+        "542ab5df5549cb68991356d0dba69f3c7b470098",
+        "57468d235ad0809ae3ba9b7a6405c5de710bbd44",
+        "6c3997e3a311b3a855c5ebf16ea0d79c7747cf71",
+        "6da26a1ca7bba877e9de2bd4e2806a73a8d99fa5",
+        "6edeb1fe36d2ac01b62f33a4fa7ba241096e3964",
+        "73313c270fd5cedf6c3124ef0a26b7c9338b7a14",
+        "787a4afb8aa80b47192bd28c0ac60e662bef810d",
+        "7ad8265f9237aad8d37672095c884f051b5e4c2f",
+        "7e0731ea0c4b8109a93d2d2e8fe28cb241edc1f4",
+        "7f27cbbbefb8ae3f4384e0b002f88149a38b738d",
+        "83126fa04a366d33d9f633cb2be38e4e9e8b5c71",
+        "988e7837f212fcbde355e8e2f7452e82faf5a412",
+        "b78228318b8582febca44658c978fbf7d0feea2b",
+        "bc31628872059339338dcbef54c458a024eb1459",
+        "c7f69894ac1b6bc163987cb4cc67cd29d2872742",
+        "f7b10e7550aa11200385b06b69f6dcb2328dd9b5",
+        "f7fe8c0dddfa1011cbe48005f09cef75e25fb9cc"
+      ]
+    },
+    "removed_primary_commits": [],
+    "new_merge_commits": [],
+    "all_23_new_commits_are_nonmerge_and_in_current_full_scan": true,
+    "finding_identity_comparison": {
+      "previous_findings": 84,
+      "retained_previous_findings": 84,
+      "new_findings": 11,
+      "missing_previous_findings": 0
+    },
+    "finding_count_note": "The current 95 findings include all prior 84. Do not add the old and new full-scan counts."
+  },
+  "coverage_sets": {
+    "set_hash_encoding": "Lexicographically sorted full commit IDs, one per line, with a final LF.",
+    "reachable": {
+      "count": 254,
+      "git_command": [
+        "git",
+        "rev-list",
+        "7ad8265f9237aad8d37672095c884f051b5e4c2f"
+      ],
+      "sorted_ids_lf_sha256": "318368110e5ff3b7f05d9a57f311a01effb880cca54152c905527a2d8fe5a3e8"
+    },
+    "nonmerge": {
+      "count": 243,
+      "git_command": [
+        "git",
+        "rev-list",
+        "--no-merges",
+        "7ad8265f9237aad8d37672095c884f051b5e4c2f"
+      ],
+      "sorted_ids_lf_sha256": "1ea59d47f09a9727e10e72958c62d60f32f5911f00c1aed3e1da2a231df01a4a",
+      "emitted_log_headers": 243,
+      "nonempty_patches": 243
+    },
+    "merges": {
+      "count": 11,
+      "git_command": [
+        "git",
+        "rev-list",
+        "--merges",
+        "7ad8265f9237aad8d37672095c884f051b5e4c2f"
+      ],
+      "sorted_ids_lf_sha256": "648f5a1c2d949aebc2c3fb307794bc858f935a21e660c9d4bb2c7dda7ecdde55",
+      "commit_ids": [
+        "06b61287afd7f31aa3002d252389f2c2b17f73f5",
+        "0c17956c19f2ce67456617d26a24db65af7c9ff6",
+        "0deb256f36655de7e4df04c25096a6e36d5c52cc",
+        "1826234316f4847206175a4ac11ae009ed747141",
+        "2220d82310b193b0bfec160dcbf99cc347c80dd9",
+        "2e29de45670a6e1caccd18f9a3568ac038d66870",
+        "45ff5500b843fa7d17ce10da9dce74c011a7e5a3",
+        "631ea60c2bab0669deced48170b5c405b029d215",
+        "7c8a123b975d73a3f6ed4c02aa86764fff573f04",
+        "a93d9351bf5037df983345df1d55fcb75d454faa",
+        "d537fe14dda763dde22ac0f1beb0ccde73b1e953"
+      ]
+    },
+    "partition_verified": true,
+    "combined_accepted_parent_patch_coverage": "254 reachable commits: 243 non-merge patches plus 11 merges with all 22 parent pairs accounted for (21 nonempty emitted patches and 1 identical-tree empty diff). This is not every-snapshot coverage.",
+    "private_full_set_and_replay_evidence": "reachable-commits.txt, baseline-reachable-commits.txt, new-reachable-commits.txt, coverage.json and the two patch-stream replays."
+  },
+  "scans": {
+    "nonmerge": {
+      "exit_code": 1,
+      "findings_count": 95,
+      "rule_counts": {
+        "generic-api-key": 95
+      },
+      "scanner_commit_counter": [
+        243
+      ],
+      "status_saved_before_parse": true,
+      "started_at_utc": "2026-10-23T19:15:12.033552+00:00",
+      "ended_at_utc": "2026-10-23T19:15:12.785726+00:00",
+      "elapsed_seconds": 0.752174,
+      "config_environment_names_removed": [],
+      "command": [
+        "<verified-gitleaks-8.30.1>",
+        "git",
+        "<repo>",
+        "--log-opts=--no-merges --no-ext-diff --no-textconv 7ad8265f9237aad8d37672095c884f051b5e4c2f",
+        "--redact=100",
+        "--ignore-gitleaks-allow",
+        "--gitleaks-ignore-path",
+        "<private>/empty.gitleaksignore",
+        "--max-archive-depth",
+        "2",
+        "--max-decode-depth",
+        "5",
+        "--timeout",
+        "120",
+        "--no-banner",
+        "--no-color",
+        "--report-format",
+        "json",
+        "--report-path",
+        "<private>/nonmerge.findings.json"
+      ],
+      "trace_and_replay": {
+        "underlying_history_command": [
+          "git",
+          "log",
+          "-p",
+          "-U0",
+          "--no-merges",
+          "--no-ext-diff",
+          "--no-textconv",
+          "7ad8265f9237aad8d37672095c884f051b5e4c2f"
+        ],
+        "git_process_counts": {
+          "exact pinned patch log": 1,
+          "local configured URL lookup; no network": 1,
+          "reachable Git archive blob read": 6
+        },
+        "all_traced_git_processes_exit_zero": true,
+        "replay_exit_code": 0,
+        "patch_stream_sha256": "23e29c8b91f721abb3773c2e80503215ecff29eb1b452f2158ee5cf3d6f4e57d",
+        "patch_stream_bytes": 14245533
+      },
+      "private_artifact_sha256": {
+        "nonmerge.findings.json": "837313f7b25405241fb6d61c25d68fbd03daebe4d0bc9a6038998251101aa517",
+        "nonmerge.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "nonmerge.stderr": "464f9e5419ee87b48606224a7f862009ddfd362756b6639540d54a77d5c78b19",
+        "nonmerge.exit": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+        "nonmerge.result.json": "77c2df02bed3996519d79ba12bf0b2ec6a3a6739afb39f9e6371c41e02010e94",
+        "nonmerge.trace": "b4f8b86771770a72d29ead46ebd50657d399323837f36e7b1ecd283eeb5b750a",
+        "nonmerge.trace2.jsonl": "21d19e972553e10a9019e61c0dc2e354a2b30125bd6a933cac61f52c57c5fe7c",
+        "nonmerge.patches.raw": "23e29c8b91f721abb3773c2e80503215ecff29eb1b452f2158ee5cf3d6f4e57d",
+        "nonmerge.patches.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "nonmerge.patches.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      "raw_status": "Findings present; raw exit 1 is preserved.",
+      "diagnostics": "One expected findings-present warning; no scanner error."
+    },
+    "merges": {
+      "exit_code": 0,
+      "findings_count": 0,
+      "rule_counts": {},
+      "scanner_commit_counter": [
+        11
+      ],
+      "status_saved_before_parse": true,
+      "started_at_utc": "2026-10-23T19:15:12.787288+00:00",
+      "ended_at_utc": "2026-10-23T19:15:13.259724+00:00",
+      "elapsed_seconds": 0.472436,
+      "config_environment_names_removed": [],
+      "command": [
+        "<verified-gitleaks-8.30.1>",
+        "git",
+        "<repo>",
+        "--log-opts=--merges --diff-merges=separate --no-ext-diff --no-textconv 7ad8265f9237aad8d37672095c884f051b5e4c2f",
+        "--redact=100",
+        "--ignore-gitleaks-allow",
+        "--gitleaks-ignore-path",
+        "<private>/empty.gitleaksignore",
+        "--max-archive-depth",
+        "2",
+        "--max-decode-depth",
+        "5",
+        "--timeout",
+        "120",
+        "--no-banner",
+        "--no-color",
+        "--report-format",
+        "json",
+        "--report-path",
+        "<private>/merges.findings.json"
+      ],
+      "trace_and_replay": {
+        "underlying_history_command": [
+          "git",
+          "log",
+          "-p",
+          "-U0",
+          "--merges",
+          "--diff-merges=separate",
+          "--no-ext-diff",
+          "--no-textconv",
+          "7ad8265f9237aad8d37672095c884f051b5e4c2f"
+        ],
+        "git_process_counts": {
+          "exact pinned patch log": 1,
+          "local configured URL lookup; no network": 1,
+          "reachable Git archive blob read": 3
+        },
+        "all_traced_git_processes_exit_zero": true,
+        "replay_exit_code": 0,
+        "patch_stream_sha256": "96020396e849b3bdf3a7e230dd248e92f21d26b0b213046d03eb8fd83a7e9b20",
+        "patch_stream_bytes": 11620607
+      },
+      "private_artifact_sha256": {
+        "merges.findings.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "merges.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "merges.stderr": "89397f74ba1a07f3152735dcfed4513d0e391beb0cf91c126ca4f4658c113f6e",
+        "merges.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "merges.result.json": "fb7649888815b6859cbb3022172a0c195631b669a335c51ba19ad5f24177a0ff",
+        "merges.trace": "aeea334dfd4b99a828cb1e83fdaf69abf40209c08edcc55ed095c6295279d2e5",
+        "merges.trace2.jsonl": "e0b3020a0ef2dacc9506c4aedefc93ae764f2c7fc2e893f0806dba00ab7227e6",
+        "merges.patches.raw": "96020396e849b3bdf3a7e230dd248e92f21d26b0b213046d03eb8fd83a7e9b20",
+        "merges.patches.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "merges.patches.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      "raw_status": "Zero findings for separate merge-parent patches; raw exit 0 is preserved.",
+      "diagnostics": "No scanner errors or warnings."
+    }
+  },
+  "merge_parent_coverage": {
+    "enumeration_command": [
+      "git",
+      "rev-list",
+      "--merges",
+      "--parents",
+      "7ad8265f9237aad8d37672095c884f051b5e4c2f"
+    ],
+    "direct_diff_command_template": [
+      "git",
+      "diff",
+      "-p",
+      "-U0",
+      "--no-ext-diff",
+      "--no-textconv",
+      "<parent>",
+      "<merge>"
+    ],
+    "unique_merges": 11,
+    "parent_pairs": 22,
+    "emitted_parent_patches": 21,
+    "identical_tree_empty_pairs": 1,
+    "missing_nonempty_parent_diffs": 0,
+    "all_emitted_patches_match_direct_diff": true,
+    "comparison_note": "A single log-entry separator LF is the only allowed byte difference. All 22 direct-diff hashes, merge/parent identities and tree identities were independently checked against the unchanged prior supplement.",
+    "same_parent_pairs_and_direct_patch_hashes_as_primary_supplement": true,
+    "immutable_parent_pair_record": "source-history-merge-supplement.json#merge_coverage.merges",
+    "immutable_parent_pair_record_file_sha256": "ff1f28f132c2e1d7429cb614ac3bde90e21a33402a7a8357377ec10a3bd122b5",
+    "same_patch_stream_sha256_as_primary_supplement": "96020396e849b3bdf3a7e230dd248e92f21d26b0b213046d03eb8fd83a7e9b20",
+    "empty_pair": {
+      "merge_commit": "06b61287afd7f31aa3002d252389f2c2b17f73f5",
+      "parent_number": 2,
+      "parent_commit": "f6401e98f0203cb0e13c954e482ba6b6444e70f6",
+      "merge_tree_git_oid": "e03abf0b639e551235781d369b9e7a397b7b872d",
+      "parent_tree_git_oid": "e03abf0b639e551235781d369b9e7a397b7b872d",
+      "direct_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "private_current_per_parent_record_sha256": "c804f0f4287ed01bfd2b2200069a2931023c068e63a6bc5485f9fcaa12b12316"
+  },
+  "triage": {
+    "method": "Read each candidate only from its exact historical Git evidence blob and reported line. Reconstruct the redacted scanner match and require it to occur on that exact line. Require a unique JSON leaf holding a 64-character lowercase SHA-256 and prove it equals the Git blob at the source commit explicitly named by that evidence. All source commits read must be reachable from the scanned HEAD. The vendor original-file record also requires the matching cached crate archive member and recorded archive/revision identifiers. A same-evidence-commit hash is only a secondary check. No code from history is run.",
+    "findings_count": 95,
+    "classification_counts": {
+      "verified upstream archive source-file SHA-256, not a credential": 1,
+      "verified tracked-source SHA-256, not a credential": 94
+    },
+    "unresolved_count": 0,
+    "credentials_identified_among_reported_findings": 0,
+    "all_84_prior_exact_locations_evidence_blobs_json_leaves_and_source_checks_reverified": true,
+    "source_blob_comparisons": 107,
+    "prior_source_blob_comparisons": 96,
+    "new_source_blob_comparisons": 11,
+    "all_declared_source_revisions_reachable": true,
+    "cached_vendor_archive_member_and_recorded_revision_reverified": true,
+    "new_verified_manifest_findings": {
+      "evidence_file": "docs/verification/release-integration-2026-10-23/virtual-baseline.json",
+      "evidence_commit": "988e7837f212fcbde355e8e2f7452e82faf5a412",
+      "evidence_blob_git_oid": "6419b7b6255b501186cf945eb4d1012942d33223",
+      "evidence_blob_sha256": "e82bccd1a066fed8542a491a77180d69e9b3de7b04686b7e09118c4b686fe35b",
+      "count": 11,
+      "json_path_template": [
+        "source_input_sha256",
+        "<source_path>"
+      ],
+      "recorded_source_commit_field": "source_commit",
+      "recorded_source_commit": "ca618418dc8c4d93b8fd04eeda3fefa01003b8e7",
+      "classification": "verified tracked-source SHA-256, not a credential",
+      "findings": [
+        {
+          "rule": "generic-api-key",
+          "line": 118,
+          "end_line": 118,
+          "start_column": 33,
+          "end_column": 110,
+          "source_path": "crates/platform-linux/src/keymap.rs",
+          "verified_sha256": "e30286da66b02322186f9c3cdc808a6a347691e0e7c458184517a1507604f42e",
+          "source_blob_git_oid": "f34214f0c3b32e74d4e2d75f9ae81ab3e7cddde0"
+        },
+        {
+          "rule": "generic-api-key",
+          "line": 123,
+          "end_line": 123,
+          "start_column": 33,
+          "end_column": 119,
+          "source_path": "crates/platform-linux/src/unicode_keysyms.rs",
+          "verified_sha256": "b632ddb45d402b9045b0d6003a71e1ea5a9448ddfea7780dfc3cb3028571d58f",
+          "source_blob_git_oid": "a9c62990dcfe4f98605746b5934b658386f11307"
+        },
+        {
+          "rule": "generic-api-key",
+          "line": 130,
+          "end_line": 130,
+          "start_column": 33,
+          "end_column": 110,
+          "source_path": "crates/platform-macos/src/keymap.rs",
+          "verified_sha256": "0dc9a9583802b154f87b4dd68a41c87a4b6902024218b2accee47d8d917fe314",
+          "source_blob_git_oid": "e68baeb6c11e3f8fed82cada283b088040916ca2"
+        },
+        {
+          "rule": "generic-api-key",
+          "line": 139,
+          "end_line": 139,
+          "start_column": 35,
+          "end_column": 112,
+          "source_path": "crates/platform-windows/src/keymap.rs",
+          "verified_sha256": "a9d531bbe6ed9916a389de4b384aa2321f7f04848c73e378fc61da7aca400aeb",
+          "source_blob_git_oid": "f512025374c89556606ea747b0e81a62e239ebdf"
+        },
+        {
+          "rule": "generic-api-key",
+          "line": 154,
+          "end_line": 154,
+          "start_column": 27,
+          "end_column": 102,
+          "source_path": "crates/protocol/src/keys.rs",
+          "verified_sha256": "bdcde8427a2534a8e2e96987da21ca792bdf38d60415d5d32b52f949293fbaff",
+          "source_blob_git_oid": "393d649e9442f61b599c95eb39245edf4cb7f644"
+        },
+        {
+          "rule": "generic-api-key",
+          "line": 171,
+          "end_line": 171,
+          "start_column": 30,
+          "end_column": 107,
+          "source_path": "spikes/macos-input/src/keymap.rs",
+          "verified_sha256": "92e7f3b1d0bbedeea88f5e6ac4fea656a7f81553d09188aafd9af50e861412b7",
+          "source_blob_git_oid": "ca4014369098ce29ba03d25bcc8f9ab72cd2a9b1"
+        },
+        {
+          "rule": "generic-api-key",
+          "line": 229,
+          "end_line": 229,
+          "start_column": 27,
+          "end_column": 127,
+          "source_path": "tools/e2e/scenarios/P03-barrier-held-key-repeat.toml",
+          "verified_sha256": "4509b9ef55a445beb7475ecd073995bd52cc6a69941cb1133e8e2d3e9ed945c6",
+          "source_blob_git_oid": "e7dc0c2241f952f620a52279462c364ce3ecddf4"
+        },
+        {
+          "rule": "generic-api-key",
+          "line": 234,
+          "end_line": 234,
+          "start_column": 27,
+          "end_column": 128,
+          "source_path": "tools/e2e/scenarios/P08-deskflow-held-key-repeat.toml",
+          "verified_sha256": "fbdd91475d3e4026d26e83f6b48f43bc96770c2dc63a7d1dfa81d5153d0e64fb",
+          "source_blob_git_oid": "dedf2d8aa516004caa5584d3a1e06c8855fee1fe"
+        },
+        {
+          "rule": "generic-api-key",
+          "line": 253,
+          "end_line": 253,
+          "start_column": 27,
+          "end_column": 122,
+          "source_path": "tools/e2e/scenarios/Q4-two-held-shift-keys.toml",
+          "verified_sha256": "509688ef6b21092bbddfddb998f2341ef9c3f1fad4bd1fcd9d874c470cf116e3",
+          "source_blob_git_oid": "77fd1ce9575c016231edcc8170daebaa8a768f0c"
+        },
+        {
+          "rule": "generic-api-key",
+          "line": 257,
+          "end_line": 257,
+          "start_column": 27,
+          "end_column": 126,
+          "source_path": "tools/e2e/scenarios/Q8-zero-button-key-release.toml",
+          "verified_sha256": "06a9f1d3f26a810504f8330f37d8e9d5ac3818e51740e66cbd0c626f18f03d88",
+          "source_blob_git_oid": "17c7ad41387f6dfffae88e046d947bead8d88cae"
+        },
+        {
+          "rule": "generic-api-key",
+          "line": 313,
+          "end_line": 313,
+          "start_column": 26,
+          "end_column": 105,
+          "source_path": "vendor/mdns-sd/src/fuzz_api.rs",
+          "verified_sha256": "6d16f18f4e5b59b9194da86f0562b1ddb5cdc1151f43d80fe06bcde65e4b19a4",
+          "source_blob_git_oid": "ec138511eca4277f4ff30ae984d23888456c7794"
+        }
+      ]
+    },
+    "full_current_triage_private_sha256": "ca68b99d5d055c9d9963d08de0f8daaf1adde5908412b11734b950e6c66e6248",
+    "sanitization": "Only verified source hashes, Git identities, paths and locations are published. No scanner Match, Secret, author, email, message or link fields. Any unresolved candidate content would remain private."
+  },
+  "preserved_evidence_sha256": {
+    "docs/verification/release-integration-2026-10-23/source-history-refresh.md": "30a38660cb3581fb1e4e1d4c1e8fcbaa6ce33c8bc0a086991448dfdd23b05de7",
+    "docs/verification/release-integration-2026-10-23/source-history-refresh.json": "f73e4f8a5381dc47852bb9324212853cc1b7b3f8dbaec4af8c3c373cc9d3faf9",
+    "docs/verification/release-integration-2026-10-23/source-history-findings.json": "9d4ba649ac2a55d2d710f99803930eb7756aa9ceea319fefa56bf2498ba1842c",
+    "docs/verification/release-integration-2026-10-23/source-history-merge-supplement.md": "93fcb159928684fbd238478819f5d23e4090a58d7ebf3e82f7ded563a1891450",
+    "docs/verification/release-integration-2026-10-23/source-history-merge-supplement.json": "ff1f28f132c2e1d7429cb614ac3bde90e21a33402a7a8357377ec10a3bd122b5",
+    "docs/verification/release-integration-2026-10-23/parent-cross-checks.json": "d6a3c8cda6aee25d07a92db5d886c181a8907b46ee917dc6fbd853d99c0eebf5",
+    "docs/verification/release-integration-2026-10-23/README.md": "e044dc6eb14d859807c1a86742861eef5a46ebc2bd42def0a4cf2009a2a9c29a"
+  },
+  "private_retention": {
+    "directory_mode": "0700",
+    "all_new_file_modes": "0600",
+    "outside_repository": true,
+    "local_locator": "/tmp/oe-source-history-current-20261023-state.json",
+    "prior_artifact_inventory_sha256": "0229ab99c35cc3fe9b15889efb0e436d528af62485185e65f57bea7e3e34ea45",
+    "all_preexisting_private_artifacts_byte_unchanged": true,
+    "raw_candidate_reports_patch_streams_traces_and_helpers_committed": false,
+    "artifact_manifest_sha256": "b9666963dec2de4b573863db787a04676ed4678abf59364b8b01f000049dc7dc",
+    "artifact_manifest_note": "Hashes every retained run artifact present before writing this manifest, including scripts, private full triage, per-parent diffs and raw scanner outputs. The manifest is not self-hashed."
+  },
+  "workflow_notes": [
+    "One initial helper snippet failed Python syntax parsing before any command executed. It was corrected before the two Gitleaks runs; no scanner exit was lost or rerun.",
+    "The report writer first stopped on the copied triage helper at mode 0644 inside the mode-0700 private directory. The helper mode was normalized to 0600 before report creation; its content and saved scanner exits were unchanged. All retained new artifacts passed the final mode check."
+  ],
+  "validation": {
+    "checkout_initial_head": "7ad8265f9237aad8d37672095c884f051b5e4c2f",
+    "checkout_initial_status": "",
+    "checkout_status_after_scans_and_triage": "",
+    "json_and_coverage_integrity": "passed",
+    "95_raw_location_identities_verified": true,
+    "all_prior_reports_match_pinned_git_bytes": true,
+    "all_prior_private_artifacts_unchanged": true,
+    "new_private_permissions_verified": true,
+    "source_build_typecheck_tests_mocks_or_product_runtime_run": false,
+    "reason": "Only two verification documents are added; the real scanner command is the task validation.",
+    "expected_new_files": [
+      "source-history-current-snapshot.md",
+      "source-history-current-snapshot.json"
+    ]
+  },
+  "limitations": [
+    "Raw non-merge exit 1 / 95 findings and merge exit 0 / 0 findings are separate real results. Classification does not turn the raw non-merge result into a passing scan.",
+    "Patch-history evidence under the stated detector and built-in allowlists does not prove every historical full snapshot secret-free or the project free of secrets or vulnerabilities.",
+    "Uncommitted files, sibling branches/refs/worktrees, unreachable objects, external systems, installed state, later commits and this evidence commit are excluded. No --all scan.",
+    "No product services, product-port network traffic, native input, settings, builds, tests, GitHub changes, push, publication, dependency updates or global configuration changes.",
+    "Stopped mDNS expiry, IPC/Synergy3 and release-provenance/security-review tasks were not accessed or resumed. No claim about their acceptance or other runtime/release gates.",
+    "No child agents or other-thread messages. No code from history executed."
+  ]
+}
