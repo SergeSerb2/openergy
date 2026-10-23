@@ -1,0 +1,39 @@
+RegisterExecutionPolicyException /private/tmp/oe-sparkle-cli-build-njko0i6t/products/InstallerStatus.xpc (in target 'SparkleInstallerStatus' from project 'Sparkle')
+    cd /tmp/oe-sparkle-cli-build-njko0i6t/source
+    builtin-RegisterExecutionPolicyException /private/tmp/oe-sparkle-cli-build-njko0i6t/products/InstallerStatus.xpc
+
+RegisterExecutionPolicyException /private/tmp/oe-sparkle-cli-build-njko0i6t/products/Installer.xpc (in target 'SparkleInstallerLauncher' from project 'Sparkle')
+    cd /tmp/oe-sparkle-cli-build-njko0i6t/source
+    builtin-RegisterExecutionPolicyException /private/tmp/oe-sparkle-cli-build-njko0i6t/products/Installer.xpc
+
+RegisterExecutionPolicyException /private/tmp/oe-sparkle-cli-build-njko0i6t/products/InstallerConnection.xpc (in target 'SparkleInstallerConnection' from project 'Sparkle')
+    cd /tmp/oe-sparkle-cli-build-njko0i6t/source
+    builtin-RegisterExecutionPolicyException /private/tmp/oe-sparkle-cli-build-njko0i6t/products/InstallerConnection.xpc
+
+RegisterExecutionPolicyException /private/tmp/oe-sparkle-cli-build-njko0i6t/products/Downloader.xpc (in target 'SparkleDownloader' from project 'Sparkle')
+    cd /tmp/oe-sparkle-cli-build-njko0i6t/source
+    builtin-RegisterExecutionPolicyException /private/tmp/oe-sparkle-cli-build-njko0i6t/products/Downloader.xpc
+
+RegisterExecutionPolicyException /private/tmp/oe-sparkle-cli-build-njko0i6t/products/Updater.app (in target 'Installer Progress' from project 'Sparkle')
+    cd /tmp/oe-sparkle-cli-build-njko0i6t/source
+    builtin-RegisterExecutionPolicyException /private/tmp/oe-sparkle-cli-build-njko0i6t/products/Updater.app
+
+RegisterWithLaunchServices /private/tmp/oe-sparkle-cli-build-njko0i6t/products/Updater.app (in target 'Installer Progress' from project 'Sparkle')
+    cd /tmp/oe-sparkle-cli-build-njko0i6t/source
+    builtin-lsregisterurl --record-path /private/tmp/oe-sparkle-cli-build-njko0i6t/objects/XCBuildData/registered-launchservices.txt -- /System/Library/Frameworks/CoreServices.framework/Versions/Current/Frameworks/LaunchServices.framework/Versions/Current/Support/lsregister -f -R -trusted /private/tmp/oe-sparkle-cli-build-njko0i6t/products/Updater.app
+
+RegisterExecutionPolicyException /private/tmp/oe-sparkle-cli-build-njko0i6t/products/Autoupdate (in target 'Autoupdate' from project 'Sparkle')
+    cd /tmp/oe-sparkle-cli-build-njko0i6t/source
+    builtin-RegisterExecutionPolicyException /private/tmp/oe-sparkle-cli-build-njko0i6t/products/Autoupdate
+
+RegisterExecutionPolicyException /private/tmp/oe-sparkle-cli-build-njko0i6t/products/Sparkle.framework (in target 'Sparkle' from project 'Sparkle')
+    cd /tmp/oe-sparkle-cli-build-njko0i6t/source
+    builtin-RegisterExecutionPolicyException /private/tmp/oe-sparkle-cli-build-njko0i6t/products/Sparkle.framework
+
+RegisterExecutionPolicyException /private/tmp/oe-sparkle-cli-build-njko0i6t/products/sparkle.app (in target 'sparkle-cli' from project 'Sparkle')
+    cd /tmp/oe-sparkle-cli-build-njko0i6t/source
+    builtin-RegisterExecutionPolicyException /private/tmp/oe-sparkle-cli-build-njko0i6t/products/sparkle.app
+
+RegisterWithLaunchServices /private/tmp/oe-sparkle-cli-build-njko0i6t/products/sparkle.app (in target 'sparkle-cli' from project 'Sparkle')
+    cd /tmp/oe-sparkle-cli-build-njko0i6t/source
+    builtin-lsregisterurl --record-path /private/tmp/oe-sparkle-cli-build-njko0i6t/objects/XCBuildData/registered-launchservices.txt -- /System/Library/Frameworks/CoreServices.framework/Versions/Current/Frameworks/LaunchServices.framework/Versions/Current/Support/lsregister -f -R -trusted /private/tmp/oe-sparkle-cli-build-njko0i6t/products/sparkle.app

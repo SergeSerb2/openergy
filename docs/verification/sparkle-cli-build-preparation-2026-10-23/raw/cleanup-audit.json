@@ -1,0 +1,137 @@
+{
+  "audited_at": "2026-10-23T16:35:38.053131-07:00",
+  "launchservices": [
+    {
+      "path": "/private/tmp/oe-sparkle-cli-build-njko0i6t/products/Updater.app",
+      "bundle_identifier": "org.sparkle-project.Sparkle.Updater",
+      "version": "2.10.0",
+      "build": "2064",
+      "receipt_recorded": true,
+      "shared_database_readback": false
+    },
+    {
+      "path": "/private/tmp/oe-sparkle-cli-build-njko0i6t/products/sparkle.app",
+      "bundle_identifier": "org.sparkle-project.sparkle-cli",
+      "version": "2.10.0",
+      "build": "2064",
+      "receipt_recorded": true,
+      "shared_database_readback": false
+    }
+  ],
+  "execution_policy": [
+    {
+      "path": "/private/tmp/oe-sparkle-cli-build-njko0i6t/products/InstallerStatus.xpc",
+      "exists": true,
+      "bundle_identifier": "org.sparkle-project.InstallerStatus",
+      "version": "2.10.0",
+      "build": "2064",
+      "observation": "Build log contains completed task; persistent exception state not read back."
+    },
+    {
+      "path": "/private/tmp/oe-sparkle-cli-build-njko0i6t/products/Installer.xpc",
+      "exists": true,
+      "bundle_identifier": "org.sparkle-project.InstallerLauncher",
+      "version": "2.10.0",
+      "build": "2064",
+      "observation": "Build log contains completed task; persistent exception state not read back."
+    },
+    {
+      "path": "/private/tmp/oe-sparkle-cli-build-njko0i6t/products/InstallerConnection.xpc",
+      "exists": true,
+      "bundle_identifier": "org.sparkle-project.InstallerConnection",
+      "version": "2.10.0",
+      "build": "2064",
+      "observation": "Build log contains completed task; persistent exception state not read back."
+    },
+    {
+      "path": "/private/tmp/oe-sparkle-cli-build-njko0i6t/products/Downloader.xpc",
+      "exists": true,
+      "bundle_identifier": "org.sparkle-project.DownloaderService",
+      "version": "2.10.0",
+      "build": "2064",
+      "observation": "Build log contains completed task; persistent exception state not read back."
+    },
+    {
+      "path": "/private/tmp/oe-sparkle-cli-build-njko0i6t/products/Updater.app",
+      "exists": true,
+      "bundle_identifier": "org.sparkle-project.Sparkle.Updater",
+      "version": "2.10.0",
+      "build": "2064",
+      "observation": "Build log contains completed task; persistent exception state not read back."
+    },
+    {
+      "path": "/private/tmp/oe-sparkle-cli-build-njko0i6t/products/Autoupdate",
+      "exists": true,
+      "bundle_identifier": null,
+      "version": null,
+      "build": null,
+      "observation": "Build log contains completed task; persistent exception state not read back."
+    },
+    {
+      "path": "/private/tmp/oe-sparkle-cli-build-njko0i6t/products/Sparkle.framework",
+      "exists": true,
+      "bundle_identifier": "org.sparkle-project.Sparkle",
+      "version": "2.10.0",
+      "build": "2064",
+      "observation": "Build log contains completed task; persistent exception state not read back."
+    },
+    {
+      "path": "/private/tmp/oe-sparkle-cli-build-njko0i6t/products/sparkle.app",
+      "exists": true,
+      "bundle_identifier": "org.sparkle-project.sparkle-cli",
+      "version": "2.10.0",
+      "build": "2064",
+      "observation": "Build log contains completed task; persistent exception state not read back."
+    }
+  ],
+  "owned_xcode_process_readback": {
+    "command": [
+      "/bin/ps",
+      "-o",
+      "pid,ppid,ni,etime,comm",
+      "-p",
+      "40861,41387,60261,61021"
+    ],
+    "exit_code": 1,
+    "stdout": "  PID  PPID NI ELAPSED COMM\n",
+    "stderr": ""
+  },
+  "error_result_bundle": {
+    "path": "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/ResultBundle_2026-23-10_16-31-0008.xcresult",
+    "exists": true,
+    "files": {
+      "Data/data.0~ajlfa4qSvx21NCk1Iec0fkXo1WED6C64LB_Qz79h_LQaSGX-jCEZcbHMeZmnry6-9e6oyqMI0gBXkezREE-6XA==": {
+        "sha256": "7ebf76ba3b07549cad943b7c894d2d1bf19f4827f9acc5c944a420a758bb696f",
+        "bytes": 196
+      },
+      "Data/data.0~vHQIViDjsuLGwmOxjt7IpTB33TU3iIt3yHVZge55Jw0klVteGTfCut9JHgW2z2FbyPawWBuWU3h3xggucnhAbA==": {
+        "sha256": "6ffb3fe86847d66f9f33091cb4b397ffd8425306203a267200936f8ea24bd2a4",
+        "bytes": 993
+      },
+      "Data/refs.0~ajlfa4qSvx21NCk1Iec0fkXo1WED6C64LB_Qz79h_LQaSGX-jCEZcbHMeZmnry6-9e6oyqMI0gBXkezREE-6XA==": {
+        "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
+        "bytes": 1
+      },
+      "Data/refs.0~vHQIViDjsuLGwmOxjt7IpTB33TU3iIt3yHVZge55Jw0klVteGTfCut9JHgW2z2FbyPawWBuWU3h3xggucnhAbA==": {
+        "sha256": "6e3c37ee863f7dac4ae379e286a49931542bc11b5765fc9802824a89f0b58814",
+        "bytes": 67
+      },
+      "Info.plist": {
+        "sha256": "f54a387cfe861481d31006fc7590352d6a3650f8f43909b5f4b20306a5b75758",
+        "bytes": 776
+      }
+    }
+  },
+  "cleanup_performed": false,
+  "shared_service_queries_performed": false,
+  "cleanup_assessment": {
+    "safe_reversal_established": false,
+    "reason": [
+      "Upstream bundle identifiers are shared official identities, not unique test identifiers.",
+      "No pre-build LaunchServices or execution-policy snapshot exists.",
+      "Receipt paths prove build registration was requested/recorded, not prior associations or final persistent database state.",
+      "Unregistering by identity or deleting exception state could affect other copies. No unregister, launchd, defaults, or policy command was run."
+    ],
+    "disposition": "Retain all artifacts, receipts, source exports, and the fallback result bundle. No shared-state reversal under the current limits."
+  }
+}

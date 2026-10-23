@@ -1,0 +1,23 @@
+{
+  "started_at": "2026-10-23T16:33:23.998000-07:00",
+  "ended_at": "2026-10-23T16:33:25.022727-07:00",
+  "controller_sha256": "3ce71399549e2c20d503dfd3907da73bc94431545672d16cd6d33227146c7f43",
+  "prepare_exit_code": 0,
+  "preflight_command": [
+    "/Users/serge/.local/bin/python3.11",
+    "/Users/serge/.t3/worktrees/openergy/t3-cdc1c0ae/tools/release/prepare_sparkle_cli.py",
+    "preflight",
+    "--root",
+    "/private/tmp/oe-sparkle-cli-build-1d0k7qnm",
+    "--reviewed-source-sha256",
+    "5342ed8f91a16eafc114a4dd6b85a48ebe67a7d5d4c12c7770c154efbcebb629"
+  ],
+  "preflight_exit_code": 1,
+  "preflight_stdout": "",
+  "preflight_stderr": "BLOCKED: source/recipe prepared; compilation is disabled because Xcode registers products with shared host services. Evidence: /private/tmp/oe-sparkle-cli-build-1d0k7qnm\n",
+  "invalid_root_exit_code": 1,
+  "invalid_root_stderr": "Use only a private root created by prepare\n",
+  "products_empty": true,
+  "no_build_log": true,
+  "syntax_ast_parsed": true
+}
