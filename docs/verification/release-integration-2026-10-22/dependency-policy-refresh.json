@@ -1,0 +1,4890 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-22",
+  "time_zone": "America/Vancouver",
+  "source_commit": "7c1e488ab2a62c81ce01bf6f7d1a42ee4590c9bf",
+  "runtime_changed": false,
+  "dependencies_changed": false,
+  "policy_changed": false,
+  "tool": {
+    "version": "0.20.2",
+    "archive_url": "https://github.com/EmbarkStudios/cargo-deny/releases/download/0.20.2/cargo-deny-0.20.2-aarch64-apple-darwin.tar.gz",
+    "checksum_url": "https://github.com/EmbarkStudios/cargo-deny/releases/download/0.20.2/cargo-deny-0.20.2-aarch64-apple-darwin.tar.gz.sha256",
+    "archive_sha256": "fe67d82a10d8597a3549364cb733a3f9cc1bfff9031b7ae46384a9f2a72090c3",
+    "binary_sha256": "5f65c07c459c9514f0c97cc2e2fb6b120daef2d95aee31062cab4816cf027eb1"
+  },
+  "fetch": {
+    "source_commit": "7c1e488ab2a62c81ce01bf6f7d1a42ee4590c9bf",
+    "started_at_utc": "2026-10-23T03:37:02.160996+00:00",
+    "command": [
+      "cargo-deny",
+      "--locked",
+      "--color",
+      "never",
+      "-L",
+      "info",
+      "fetch",
+      "db",
+      "index"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.701
+  },
+  "advisory_database": {
+    "commit": "640bf5a9f06e66d8721e8772766531fe77c8630d",
+    "last_commit": "2026-10-22T12:49:47+02:00\nAssigned RUSTSEC-2026-0384 to tokio",
+    "remote_head_output": "640bf5a9f06e66d8721e8772766531fe77c8630d\tHEAD",
+    "remote_exit": 0,
+    "url": "https://github.com/RustSec/advisory-db",
+    "working_tree_clean": true,
+    "remote_head_confirmed_at_utc": "2026-10-23T03:41:37.063520+00:00",
+    "remote_head_matches": true
+  },
+  "all_features_combined_graph": {
+    "command": [
+      "cargo-deny",
+      "--locked",
+      "--all-features",
+      "--color",
+      "never",
+      "-L",
+      "info",
+      "--format",
+      "json",
+      "check",
+      "--show-stats"
+    ],
+    "started_at_utc": "2026-10-23T03:37:17.556394+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.618,
+    "graph_packages": 93,
+    "summary": {
+      "advisories": {
+        "errors": 0,
+        "helps": 0,
+        "notes": 0,
+        "warnings": 0
+      },
+      "bans": {
+        "errors": 0,
+        "helps": 0,
+        "notes": 0,
+        "warnings": 2
+      },
+      "licenses": {
+        "errors": 0,
+        "helps": 93,
+        "notes": 0,
+        "warnings": 3
+      },
+      "sources": {
+        "errors": 0,
+        "helps": 0,
+        "notes": 0,
+        "warnings": 0
+      }
+    },
+    "diagnostics": [
+      {
+        "code": "license-not-encountered",
+        "graphs": [],
+        "labels": [
+          {
+            "column": 66,
+            "line": 9,
+            "message": "unmatched license allowance",
+            "span": "BSD-2-Clause"
+          }
+        ],
+        "message": "license was not encountered",
+        "severity": "warning"
+      },
+      {
+        "code": "license-not-encountered",
+        "graphs": [],
+        "labels": [
+          {
+            "column": 128,
+            "line": 9,
+            "message": "unmatched license allowance",
+            "span": "CC0-1.0"
+          }
+        ],
+        "message": "license was not encountered",
+        "severity": "warning"
+      },
+      {
+        "code": "license-not-encountered",
+        "graphs": [],
+        "labels": [
+          {
+            "column": 120,
+            "line": 9,
+            "message": "unmatched license allowance",
+            "span": "Zlib"
+          }
+        ],
+        "message": "license was not encountered",
+        "severity": "warning"
+      },
+      {
+        "code": "duplicate",
+        "graphs": [
+          {
+            "Krate": {
+              "name": "windows-sys",
+              "version": "0.52.0"
+            },
+            "parents": [
+              {
+                "Krate": {
+                  "name": "ring",
+                  "version": "0.17.14"
+                },
+                "parents": [
+                  {
+                    "Krate": {
+                      "name": "rcgen",
+                      "version": "0.14.10"
+                    },
+                    "parents": [
+                      {
+                        "Krate": {
+                          "name": "openergy-net",
+                          "version": "0.1.0"
+                        },
+                        "parents": [
+                          {
+                            "Krate": {
+                              "name": "openergy-daemon",
+                              "version": "0.1.0"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "Krate": {
+                      "name": "rustls",
+                      "version": "0.23.46"
+                    },
+                    "parents": [
+                      {
+                        "Krate": {
+                          "name": "openergy-net",
+                          "version": "0.1.0"
+                        },
+                        "repeat": true
+                      }
+                    ]
+                  },
+                  {
+                    "Krate": {
+                      "name": "rustls-webpki",
+                      "version": "0.103.16"
+                    },
+                    "parents": [
+                      {
+                        "Krate": {
+                          "name": "rustls",
+                          "version": "0.23.46"
+                        },
+                        "repeat": true
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "Krate": {
+              "name": "windows-sys",
+              "version": "0.61.2"
+            },
+            "parents": [
+              {
+                "Krate": {
+                  "name": "errno",
+                  "version": "0.3.14"
+                },
+                "parents": [
+                  {
+                    "Krate": {
+                      "name": "rustix",
+                      "version": "1.1.5"
+                    },
+                    "parents": [
+                      {
+                        "Krate": {
+                          "name": "gethostname",
+                          "version": "1.1.0"
+                        },
+                        "parents": [
+                          {
+                            "Krate": {
+                              "name": "x11rb",
+                              "version": "0.13.2"
+                            },
+                            "parents": [
+                              {
+                                "Krate": {
+                                  "name": "openergy-platform-linux",
+                                  "version": "0.1.0"
+                                },
+                                "parents": [
+                                  {
+                                    "Krate": {
+                                      "name": "openergy-daemon",
+                                      "version": "0.1.0"
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "Krate": {
+                          "name": "x11rb",
+                          "version": "0.13.2"
+                        },
+                        "repeat": true
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Krate": {
+                  "name": "if-addrs",
+                  "version": "0.15.0"
+                },
+                "parents": [
+                  {
+                    "Krate": {
+                      "name": "mdns-sd",
+                      "version": "0.21.6"
+                    },
+                    "parents": [
+                      {
+                        "Krate": {
+                          "name": "openergy-net",
+                          "version": "0.1.0"
+                        },
+                        "parents": [
+                          {
+                            "Krate": {
+                              "name": "openergy-daemon",
+                              "version": "0.1.0"
+                            },
+                            "repeat": true
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Krate": {
+                  "name": "mio",
+                  "version": "1.2.4"
+                },
+                "parents": [
+                  {
+                    "Krate": {
+                      "name": "mdns-sd",
+                      "version": "0.21.6"
+                    },
+                    "repeat": true
+                  },
+                  {
+                    "Krate": {
+                      "name": "openergy-daemon",
+                      "version": "0.1.0"
+                    },
+                    "repeat": true
+                  },
+                  {
+                    "Krate": {
+                      "name": "openergy-net",
+                      "version": "0.1.0"
+                    },
+                    "repeat": true
+                  }
+                ]
+              },
+              {
+                "Krate": {
+                  "name": "openergy-daemon",
+                  "version": "0.1.0"
+                },
+                "repeat": true
+              },
+              {
+                "Krate": {
+                  "name": "openergy-net",
+                  "version": "0.1.0"
+                },
+                "repeat": true
+              },
+              {
+                "Krate": {
+                  "name": "openergy-platform-windows",
+                  "version": "0.1.0"
+                },
+                "parents": [
+                  {
+                    "Krate": {
+                      "name": "openergy-daemon",
+                      "version": "0.1.0"
+                    },
+                    "repeat": true
+                  }
+                ]
+              },
+              {
+                "Krate": {
+                  "name": "rustix",
+                  "version": "1.1.5"
+                },
+                "repeat": true
+              },
+              {
+                "Krate": {
+                  "name": "socket-pktinfo",
+                  "version": "0.4.1"
+                },
+                "parents": [
+                  {
+                    "Krate": {
+                      "name": "mdns-sd",
+                      "version": "0.21.6"
+                    },
+                    "repeat": true
+                  }
+                ]
+              },
+              {
+                "Krate": {
+                  "name": "socket2",
+                  "version": "0.6.5"
+                },
+                "parents": [
+                  {
+                    "Krate": {
+                      "name": "mdns-sd",
+                      "version": "0.21.6"
+                    },
+                    "repeat": true
+                  },
+                  {
+                    "Krate": {
+                      "name": "socket-pktinfo",
+                      "version": "0.4.1"
+                    },
+                    "repeat": true
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "labels": [
+          {
+            "column": 1,
+            "line": 76,
+            "message": "lock entries",
+            "span": "windows-sys 0.52.0 registry+https://github.com/rust-lang/crates.io-index\nwindows-sys 0.61.2 registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "message": "found 2 duplicate entries for crate 'windows-sys'",
+        "severity": "warning"
+      },
+      {
+        "code": "duplicate",
+        "graphs": [
+          {
+            "Krate": {
+              "name": "winnow",
+              "version": "0.7.15"
+            },
+            "parents": [
+              {
+                "Krate": {
+                  "name": "toml",
+                  "version": "0.9.12+spec-1.1.0"
+                },
+                "parents": [
+                  {
+                    "Krate": {
+                      "name": "openergy-config",
+                      "version": "0.1.0"
+                    },
+                    "parents": [
+                      {
+                        "Krate": {
+                          "name": "openergy-daemon",
+                          "version": "0.1.0"
+                        }
+                      },
+                      {
+                        "Krate": {
+                          "name": "openergy-session",
+                          "version": "0.1.0"
+                        },
+                        "parents": [
+                          {
+                            "Krate": {
+                              "name": "openergy-daemon",
+                              "version": "0.1.0"
+                            },
+                            "repeat": true
+                          },
+                          {
+                            "Krate": {
+                              "name": "openergy-net",
+                              "version": "0.1.0"
+                            },
+                            "parents": [
+                              {
+                                "Krate": {
+                                  "name": "openergy-daemon",
+                                  "version": "0.1.0"
+                                },
+                                "repeat": true
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "Krate": {
+                      "name": "openergy-e2e",
+                      "version": "0.1.0"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "Krate": {
+              "name": "winnow",
+              "version": "1.0.4"
+            },
+            "parents": [
+              {
+                "Krate": {
+                  "name": "toml_parser",
+                  "version": "1.1.5+spec-1.1.0"
+                },
+                "parents": [
+                  {
+                    "Krate": {
+                      "name": "toml",
+                      "version": "0.9.12+spec-1.1.0"
+                    },
+                    "parents": [
+                      {
+                        "Krate": {
+                          "name": "openergy-config",
+                          "version": "0.1.0"
+                        },
+                        "parents": [
+                          {
+                            "Krate": {
+                              "name": "openergy-daemon",
+                              "version": "0.1.0"
+                            }
+                          },
+                          {
+                            "Krate": {
+                              "name": "openergy-session",
+                              "version": "0.1.0"
+                            },
+                            "parents": [
+                              {
+                                "Krate": {
+                                  "name": "openergy-daemon",
+                                  "version": "0.1.0"
+                                },
+                                "repeat": true
+                              },
+                              {
+                                "Krate": {
+                                  "name": "openergy-net",
+                                  "version": "0.1.0"
+                                },
+                                "parents": [
+                                  {
+                                    "Krate": {
+                                      "name": "openergy-daemon",
+                                      "version": "0.1.0"
+                                    },
+                                    "repeat": true
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "Krate": {
+                          "name": "openergy-e2e",
+                          "version": "0.1.0"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "labels": [
+          {
+            "column": 1,
+            "line": 87,
+            "message": "lock entries",
+            "span": "winnow 0.7.15 registry+https://github.com/rust-lang/crates.io-index\nwinnow 1.0.4 registry+https://github.com/rust-lang/crates.io-index"
+          }
+        ],
+        "message": "found 2 duplicate entries for crate 'winnow'",
+        "severity": "warning"
+      }
+    ]
+  },
+  "explicit_target_scans": [
+    {
+      "command": [
+        "cargo-deny",
+        "--locked",
+        "--all-features",
+        "--target",
+        "aarch64-apple-darwin",
+        "--color",
+        "never",
+        "-L",
+        "info",
+        "--format",
+        "json",
+        "check",
+        "--show-stats"
+      ],
+      "started_at_utc": "2026-10-23T03:40:12.187864+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.748,
+      "target": "aarch64-apple-darwin",
+      "summary": {
+        "advisories": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        },
+        "bans": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 1
+        },
+        "licenses": {
+          "errors": 0,
+          "helps": 73,
+          "notes": 0,
+          "warnings": 4
+        },
+        "sources": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        }
+      },
+      "graph_packages": 73,
+      "warnings": [
+        {
+          "code": "duplicate",
+          "graphs": [
+            {
+              "Krate": {
+                "name": "winnow",
+                "version": "0.7.15"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "toml",
+                    "version": "0.9.12+spec-1.1.0"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "openergy-config",
+                        "version": "0.1.0"
+                      },
+                      "parents": [
+                        {
+                          "Krate": {
+                            "name": "openergy-daemon",
+                            "version": "0.1.0"
+                          }
+                        },
+                        {
+                          "Krate": {
+                            "name": "openergy-session",
+                            "version": "0.1.0"
+                          },
+                          "parents": [
+                            {
+                              "Krate": {
+                                "name": "openergy-daemon",
+                                "version": "0.1.0"
+                              },
+                              "repeat": true
+                            },
+                            {
+                              "Krate": {
+                                "name": "openergy-net",
+                                "version": "0.1.0"
+                              },
+                              "parents": [
+                                {
+                                  "Krate": {
+                                    "name": "openergy-daemon",
+                                    "version": "0.1.0"
+                                  },
+                                  "repeat": true
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "Krate": {
+                        "name": "openergy-e2e",
+                        "version": "0.1.0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Krate": {
+                "name": "winnow",
+                "version": "1.0.4"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "toml_parser",
+                    "version": "1.1.5+spec-1.1.0"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "toml",
+                        "version": "0.9.12+spec-1.1.0"
+                      },
+                      "parents": [
+                        {
+                          "Krate": {
+                            "name": "openergy-config",
+                            "version": "0.1.0"
+                          },
+                          "parents": [
+                            {
+                              "Krate": {
+                                "name": "openergy-daemon",
+                                "version": "0.1.0"
+                              }
+                            },
+                            {
+                              "Krate": {
+                                "name": "openergy-session",
+                                "version": "0.1.0"
+                              },
+                              "parents": [
+                                {
+                                  "Krate": {
+                                    "name": "openergy-daemon",
+                                    "version": "0.1.0"
+                                  },
+                                  "repeat": true
+                                },
+                                {
+                                  "Krate": {
+                                    "name": "openergy-net",
+                                    "version": "0.1.0"
+                                  },
+                                  "parents": [
+                                    {
+                                      "Krate": {
+                                        "name": "openergy-daemon",
+                                        "version": "0.1.0"
+                                      },
+                                      "repeat": true
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "Krate": {
+                            "name": "openergy-e2e",
+                            "version": "0.1.0"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "labels": [
+            {
+              "column": 1,
+              "line": 69,
+              "message": "lock entries",
+              "span": "winnow 0.7.15 registry+https://github.com/rust-lang/crates.io-index\nwinnow 1.0.4 registry+https://github.com/rust-lang/crates.io-index"
+            }
+          ],
+          "message": "found 2 duplicate entries for crate 'winnow'",
+          "severity": "warning"
+        },
+        {
+          "code": "license-not-encountered",
+          "graphs": [],
+          "labels": [
+            {
+              "column": 32,
+              "line": 9,
+              "message": "unmatched license allowance",
+              "span": "Apache-2.0 WITH LLVM-exception"
+            }
+          ],
+          "message": "license was not encountered",
+          "severity": "warning"
+        },
+        {
+          "code": "license-not-encountered",
+          "graphs": [],
+          "labels": [
+            {
+              "column": 66,
+              "line": 9,
+              "message": "unmatched license allowance",
+              "span": "BSD-2-Clause"
+            }
+          ],
+          "message": "license was not encountered",
+          "severity": "warning"
+        },
+        {
+          "code": "license-not-encountered",
+          "graphs": [],
+          "labels": [
+            {
+              "column": 128,
+              "line": 9,
+              "message": "unmatched license allowance",
+              "span": "CC0-1.0"
+            }
+          ],
+          "message": "license was not encountered",
+          "severity": "warning"
+        },
+        {
+          "code": "license-not-encountered",
+          "graphs": [],
+          "labels": [
+            {
+              "column": 120,
+              "line": 9,
+              "message": "unmatched license allowance",
+              "span": "Zlib"
+            }
+          ],
+          "message": "license was not encountered",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "command": [
+        "cargo-deny",
+        "--locked",
+        "--all-features",
+        "--target",
+        "x86_64-apple-darwin",
+        "--color",
+        "never",
+        "-L",
+        "info",
+        "--format",
+        "json",
+        "check",
+        "--show-stats"
+      ],
+      "started_at_utc": "2026-10-23T03:40:12.936182+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.6,
+      "target": "x86_64-apple-darwin",
+      "summary": {
+        "advisories": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        },
+        "bans": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 1
+        },
+        "licenses": {
+          "errors": 0,
+          "helps": 73,
+          "notes": 0,
+          "warnings": 4
+        },
+        "sources": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        }
+      },
+      "graph_packages": 73,
+      "warnings": [
+        {
+          "code": "duplicate",
+          "graphs": [
+            {
+              "Krate": {
+                "name": "winnow",
+                "version": "0.7.15"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "toml",
+                    "version": "0.9.12+spec-1.1.0"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "openergy-config",
+                        "version": "0.1.0"
+                      },
+                      "parents": [
+                        {
+                          "Krate": {
+                            "name": "openergy-daemon",
+                            "version": "0.1.0"
+                          }
+                        },
+                        {
+                          "Krate": {
+                            "name": "openergy-session",
+                            "version": "0.1.0"
+                          },
+                          "parents": [
+                            {
+                              "Krate": {
+                                "name": "openergy-daemon",
+                                "version": "0.1.0"
+                              },
+                              "repeat": true
+                            },
+                            {
+                              "Krate": {
+                                "name": "openergy-net",
+                                "version": "0.1.0"
+                              },
+                              "parents": [
+                                {
+                                  "Krate": {
+                                    "name": "openergy-daemon",
+                                    "version": "0.1.0"
+                                  },
+                                  "repeat": true
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "Krate": {
+                        "name": "openergy-e2e",
+                        "version": "0.1.0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Krate": {
+                "name": "winnow",
+                "version": "1.0.4"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "toml_parser",
+                    "version": "1.1.5+spec-1.1.0"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "toml",
+                        "version": "0.9.12+spec-1.1.0"
+                      },
+                      "parents": [
+                        {
+                          "Krate": {
+                            "name": "openergy-config",
+                            "version": "0.1.0"
+                          },
+                          "parents": [
+                            {
+                              "Krate": {
+                                "name": "openergy-daemon",
+                                "version": "0.1.0"
+                              }
+                            },
+                            {
+                              "Krate": {
+                                "name": "openergy-session",
+                                "version": "0.1.0"
+                              },
+                              "parents": [
+                                {
+                                  "Krate": {
+                                    "name": "openergy-daemon",
+                                    "version": "0.1.0"
+                                  },
+                                  "repeat": true
+                                },
+                                {
+                                  "Krate": {
+                                    "name": "openergy-net",
+                                    "version": "0.1.0"
+                                  },
+                                  "parents": [
+                                    {
+                                      "Krate": {
+                                        "name": "openergy-daemon",
+                                        "version": "0.1.0"
+                                      },
+                                      "repeat": true
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "Krate": {
+                            "name": "openergy-e2e",
+                            "version": "0.1.0"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "labels": [
+            {
+              "column": 1,
+              "line": 69,
+              "message": "lock entries",
+              "span": "winnow 0.7.15 registry+https://github.com/rust-lang/crates.io-index\nwinnow 1.0.4 registry+https://github.com/rust-lang/crates.io-index"
+            }
+          ],
+          "message": "found 2 duplicate entries for crate 'winnow'",
+          "severity": "warning"
+        },
+        {
+          "code": "license-not-encountered",
+          "graphs": [],
+          "labels": [
+            {
+              "column": 32,
+              "line": 9,
+              "message": "unmatched license allowance",
+              "span": "Apache-2.0 WITH LLVM-exception"
+            }
+          ],
+          "message": "license was not encountered",
+          "severity": "warning"
+        },
+        {
+          "code": "license-not-encountered",
+          "graphs": [],
+          "labels": [
+            {
+              "column": 66,
+              "line": 9,
+              "message": "unmatched license allowance",
+              "span": "BSD-2-Clause"
+            }
+          ],
+          "message": "license was not encountered",
+          "severity": "warning"
+        },
+        {
+          "code": "license-not-encountered",
+          "graphs": [],
+          "labels": [
+            {
+              "column": 128,
+              "line": 9,
+              "message": "unmatched license allowance",
+              "span": "CC0-1.0"
+            }
+          ],
+          "message": "license was not encountered",
+          "severity": "warning"
+        },
+        {
+          "code": "license-not-encountered",
+          "graphs": [],
+          "labels": [
+            {
+              "column": 120,
+              "line": 9,
+              "message": "unmatched license allowance",
+              "span": "Zlib"
+            }
+          ],
+          "message": "license was not encountered",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "command": [
+        "cargo-deny",
+        "--locked",
+        "--all-features",
+        "--target",
+        "x86_64-unknown-linux-gnu",
+        "--color",
+        "never",
+        "-L",
+        "info",
+        "--format",
+        "json",
+        "check",
+        "--show-stats"
+      ],
+      "started_at_utc": "2026-10-23T03:40:13.536461+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.644,
+      "target": "x86_64-unknown-linux-gnu",
+      "summary": {
+        "advisories": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        },
+        "bans": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 1
+        },
+        "licenses": {
+          "errors": 0,
+          "helps": 79,
+          "notes": 0,
+          "warnings": 3
+        },
+        "sources": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        }
+      },
+      "graph_packages": 79,
+      "warnings": [
+        {
+          "code": "license-not-encountered",
+          "graphs": [],
+          "labels": [
+            {
+              "column": 66,
+              "line": 9,
+              "message": "unmatched license allowance",
+              "span": "BSD-2-Clause"
+            }
+          ],
+          "message": "license was not encountered",
+          "severity": "warning"
+        },
+        {
+          "code": "license-not-encountered",
+          "graphs": [],
+          "labels": [
+            {
+              "column": 128,
+              "line": 9,
+              "message": "unmatched license allowance",
+              "span": "CC0-1.0"
+            }
+          ],
+          "message": "license was not encountered",
+          "severity": "warning"
+        },
+        {
+          "code": "license-not-encountered",
+          "graphs": [],
+          "labels": [
+            {
+              "column": 120,
+              "line": 9,
+              "message": "unmatched license allowance",
+              "span": "Zlib"
+            }
+          ],
+          "message": "license was not encountered",
+          "severity": "warning"
+        },
+        {
+          "code": "duplicate",
+          "graphs": [
+            {
+              "Krate": {
+                "name": "winnow",
+                "version": "0.7.15"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "toml",
+                    "version": "0.9.12+spec-1.1.0"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "openergy-config",
+                        "version": "0.1.0"
+                      },
+                      "parents": [
+                        {
+                          "Krate": {
+                            "name": "openergy-daemon",
+                            "version": "0.1.0"
+                          }
+                        },
+                        {
+                          "Krate": {
+                            "name": "openergy-session",
+                            "version": "0.1.0"
+                          },
+                          "parents": [
+                            {
+                              "Krate": {
+                                "name": "openergy-daemon",
+                                "version": "0.1.0"
+                              },
+                              "repeat": true
+                            },
+                            {
+                              "Krate": {
+                                "name": "openergy-net",
+                                "version": "0.1.0"
+                              },
+                              "parents": [
+                                {
+                                  "Krate": {
+                                    "name": "openergy-daemon",
+                                    "version": "0.1.0"
+                                  },
+                                  "repeat": true
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "Krate": {
+                        "name": "openergy-e2e",
+                        "version": "0.1.0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Krate": {
+                "name": "winnow",
+                "version": "1.0.4"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "toml_parser",
+                    "version": "1.1.5+spec-1.1.0"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "toml",
+                        "version": "0.9.12+spec-1.1.0"
+                      },
+                      "parents": [
+                        {
+                          "Krate": {
+                            "name": "openergy-config",
+                            "version": "0.1.0"
+                          },
+                          "parents": [
+                            {
+                              "Krate": {
+                                "name": "openergy-daemon",
+                                "version": "0.1.0"
+                              }
+                            },
+                            {
+                              "Krate": {
+                                "name": "openergy-session",
+                                "version": "0.1.0"
+                              },
+                              "parents": [
+                                {
+                                  "Krate": {
+                                    "name": "openergy-daemon",
+                                    "version": "0.1.0"
+                                  },
+                                  "repeat": true
+                                },
+                                {
+                                  "Krate": {
+                                    "name": "openergy-net",
+                                    "version": "0.1.0"
+                                  },
+                                  "parents": [
+                                    {
+                                      "Krate": {
+                                        "name": "openergy-daemon",
+                                        "version": "0.1.0"
+                                      },
+                                      "repeat": true
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "Krate": {
+                            "name": "openergy-e2e",
+                            "version": "0.1.0"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "labels": [
+            {
+              "column": 1,
+              "line": 73,
+              "message": "lock entries",
+              "span": "winnow 0.7.15 registry+https://github.com/rust-lang/crates.io-index\nwinnow 1.0.4 registry+https://github.com/rust-lang/crates.io-index"
+            }
+          ],
+          "message": "found 2 duplicate entries for crate 'winnow'",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "command": [
+        "cargo-deny",
+        "--locked",
+        "--all-features",
+        "--target",
+        "x86_64-pc-windows-msvc",
+        "--color",
+        "never",
+        "-L",
+        "info",
+        "--format",
+        "json",
+        "check",
+        "--show-stats"
+      ],
+      "started_at_utc": "2026-10-23T03:40:14.180948+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.635,
+      "target": "x86_64-pc-windows-msvc",
+      "summary": {
+        "advisories": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        },
+        "bans": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 1
+        },
+        "licenses": {
+          "errors": 0,
+          "helps": 75,
+          "notes": 0,
+          "warnings": 4
+        },
+        "sources": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        }
+      },
+      "graph_packages": 75,
+      "warnings": [
+        {
+          "code": "license-not-encountered",
+          "graphs": [],
+          "labels": [
+            {
+              "column": 32,
+              "line": 9,
+              "message": "unmatched license allowance",
+              "span": "Apache-2.0 WITH LLVM-exception"
+            }
+          ],
+          "message": "license was not encountered",
+          "severity": "warning"
+        },
+        {
+          "code": "license-not-encountered",
+          "graphs": [],
+          "labels": [
+            {
+              "column": 66,
+              "line": 9,
+              "message": "unmatched license allowance",
+              "span": "BSD-2-Clause"
+            }
+          ],
+          "message": "license was not encountered",
+          "severity": "warning"
+        },
+        {
+          "code": "license-not-encountered",
+          "graphs": [],
+          "labels": [
+            {
+              "column": 128,
+              "line": 9,
+              "message": "unmatched license allowance",
+              "span": "CC0-1.0"
+            }
+          ],
+          "message": "license was not encountered",
+          "severity": "warning"
+        },
+        {
+          "code": "license-not-encountered",
+          "graphs": [],
+          "labels": [
+            {
+              "column": 120,
+              "line": 9,
+              "message": "unmatched license allowance",
+              "span": "Zlib"
+            }
+          ],
+          "message": "license was not encountered",
+          "severity": "warning"
+        },
+        {
+          "code": "duplicate",
+          "graphs": [
+            {
+              "Krate": {
+                "name": "winnow",
+                "version": "0.7.15"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "toml",
+                    "version": "0.9.12+spec-1.1.0"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "openergy-config",
+                        "version": "0.1.0"
+                      },
+                      "parents": [
+                        {
+                          "Krate": {
+                            "name": "openergy-daemon",
+                            "version": "0.1.0"
+                          }
+                        },
+                        {
+                          "Krate": {
+                            "name": "openergy-session",
+                            "version": "0.1.0"
+                          },
+                          "parents": [
+                            {
+                              "Krate": {
+                                "name": "openergy-daemon",
+                                "version": "0.1.0"
+                              },
+                              "repeat": true
+                            },
+                            {
+                              "Krate": {
+                                "name": "openergy-net",
+                                "version": "0.1.0"
+                              },
+                              "parents": [
+                                {
+                                  "Krate": {
+                                    "name": "openergy-daemon",
+                                    "version": "0.1.0"
+                                  },
+                                  "repeat": true
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "Krate": {
+                        "name": "openergy-e2e",
+                        "version": "0.1.0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Krate": {
+                "name": "winnow",
+                "version": "1.0.4"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "toml_parser",
+                    "version": "1.1.5+spec-1.1.0"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "toml",
+                        "version": "0.9.12+spec-1.1.0"
+                      },
+                      "parents": [
+                        {
+                          "Krate": {
+                            "name": "openergy-config",
+                            "version": "0.1.0"
+                          },
+                          "parents": [
+                            {
+                              "Krate": {
+                                "name": "openergy-daemon",
+                                "version": "0.1.0"
+                              }
+                            },
+                            {
+                              "Krate": {
+                                "name": "openergy-session",
+                                "version": "0.1.0"
+                              },
+                              "parents": [
+                                {
+                                  "Krate": {
+                                    "name": "openergy-daemon",
+                                    "version": "0.1.0"
+                                  },
+                                  "repeat": true
+                                },
+                                {
+                                  "Krate": {
+                                    "name": "openergy-net",
+                                    "version": "0.1.0"
+                                  },
+                                  "parents": [
+                                    {
+                                      "Krate": {
+                                        "name": "openergy-daemon",
+                                        "version": "0.1.0"
+                                      },
+                                      "repeat": true
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "Krate": {
+                            "name": "openergy-e2e",
+                            "version": "0.1.0"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "labels": [
+            {
+              "column": 1,
+              "line": 71,
+              "message": "lock entries",
+              "span": "winnow 0.7.15 registry+https://github.com/rust-lang/crates.io-index\nwinnow 1.0.4 registry+https://github.com/rust-lang/crates.io-index"
+            }
+          ],
+          "message": "found 2 duplicate entries for crate 'winnow'",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "command": [
+        "cargo-deny",
+        "--locked",
+        "--all-features",
+        "--target",
+        "aarch64-unknown-linux-gnu",
+        "--color",
+        "never",
+        "-L",
+        "info",
+        "--format",
+        "json",
+        "check",
+        "--show-stats"
+      ],
+      "started_at_utc": "2026-10-23T03:40:14.816378+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.621,
+      "target": "aarch64-unknown-linux-gnu",
+      "summary": {
+        "advisories": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        },
+        "bans": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 1
+        },
+        "licenses": {
+          "errors": 0,
+          "helps": 79,
+          "notes": 0,
+          "warnings": 3
+        },
+        "sources": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        }
+      },
+      "graph_packages": 79,
+      "warnings": [
+        {
+          "code": "license-not-encountered",
+          "graphs": [],
+          "labels": [
+            {
+              "column": 66,
+              "line": 9,
+              "message": "unmatched license allowance",
+              "span": "BSD-2-Clause"
+            }
+          ],
+          "message": "license was not encountered",
+          "severity": "warning"
+        },
+        {
+          "code": "license-not-encountered",
+          "graphs": [],
+          "labels": [
+            {
+              "column": 128,
+              "line": 9,
+              "message": "unmatched license allowance",
+              "span": "CC0-1.0"
+            }
+          ],
+          "message": "license was not encountered",
+          "severity": "warning"
+        },
+        {
+          "code": "license-not-encountered",
+          "graphs": [],
+          "labels": [
+            {
+              "column": 120,
+              "line": 9,
+              "message": "unmatched license allowance",
+              "span": "Zlib"
+            }
+          ],
+          "message": "license was not encountered",
+          "severity": "warning"
+        },
+        {
+          "code": "duplicate",
+          "graphs": [
+            {
+              "Krate": {
+                "name": "winnow",
+                "version": "0.7.15"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "toml",
+                    "version": "0.9.12+spec-1.1.0"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "openergy-config",
+                        "version": "0.1.0"
+                      },
+                      "parents": [
+                        {
+                          "Krate": {
+                            "name": "openergy-daemon",
+                            "version": "0.1.0"
+                          }
+                        },
+                        {
+                          "Krate": {
+                            "name": "openergy-session",
+                            "version": "0.1.0"
+                          },
+                          "parents": [
+                            {
+                              "Krate": {
+                                "name": "openergy-daemon",
+                                "version": "0.1.0"
+                              },
+                              "repeat": true
+                            },
+                            {
+                              "Krate": {
+                                "name": "openergy-net",
+                                "version": "0.1.0"
+                              },
+                              "parents": [
+                                {
+                                  "Krate": {
+                                    "name": "openergy-daemon",
+                                    "version": "0.1.0"
+                                  },
+                                  "repeat": true
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "Krate": {
+                        "name": "openergy-e2e",
+                        "version": "0.1.0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Krate": {
+                "name": "winnow",
+                "version": "1.0.4"
+              },
+              "parents": [
+                {
+                  "Krate": {
+                    "name": "toml_parser",
+                    "version": "1.1.5+spec-1.1.0"
+                  },
+                  "parents": [
+                    {
+                      "Krate": {
+                        "name": "toml",
+                        "version": "0.9.12+spec-1.1.0"
+                      },
+                      "parents": [
+                        {
+                          "Krate": {
+                            "name": "openergy-config",
+                            "version": "0.1.0"
+                          },
+                          "parents": [
+                            {
+                              "Krate": {
+                                "name": "openergy-daemon",
+                                "version": "0.1.0"
+                              }
+                            },
+                            {
+                              "Krate": {
+                                "name": "openergy-session",
+                                "version": "0.1.0"
+                              },
+                              "parents": [
+                                {
+                                  "Krate": {
+                                    "name": "openergy-daemon",
+                                    "version": "0.1.0"
+                                  },
+                                  "repeat": true
+                                },
+                                {
+                                  "Krate": {
+                                    "name": "openergy-net",
+                                    "version": "0.1.0"
+                                  },
+                                  "parents": [
+                                    {
+                                      "Krate": {
+                                        "name": "openergy-daemon",
+                                        "version": "0.1.0"
+                                      },
+                                      "repeat": true
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "Krate": {
+                            "name": "openergy-e2e",
+                            "version": "0.1.0"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "labels": [
+            {
+              "column": 1,
+              "line": 73,
+              "message": "lock entries",
+              "span": "winnow 0.7.15 registry+https://github.com/rust-lang/crates.io-index\nwinnow 1.0.4 registry+https://github.com/rust-lang/crates.io-index"
+            }
+          ],
+          "message": "found 2 duplicate entries for crate 'winnow'",
+          "severity": "warning"
+        }
+      ]
+    }
+  ],
+  "registry_freshness": {
+    "started_at_utc": "2026-10-23T03:38:14.747961+00:00",
+    "completed_at_utc": "2026-10-23T03:38:15.658493+00:00",
+    "elapsed_seconds": 0.91,
+    "requests": 104,
+    "package_versions": 107,
+    "yanked_versions": 0,
+    "checksum_mismatches": 0,
+    "failures": [],
+    "entries": [
+      {
+        "name": "asn1-rs",
+        "url": "https://index.crates.io/as/n1/asn1-rs",
+        "fetched_at_utc": "2026-10-23T03:38:15.018418+00:00",
+        "response_sha256": "2ed9053e9c6bd912d5b821b8c52dcc36c7aced85b5248a6cbcb93f928e1e295b",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"4a30cb1ce55362d27e8c76b3a3b8bb97\"",
+          "Last-Modified": "Mon, 18 May 2026 10:29:53 GMT",
+          "Age": "258",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "asn1-rs",
+            "version": "0.7.2",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "asn1-rs-derive",
+        "url": "https://index.crates.io/as/n1/asn1-rs-derive",
+        "fetched_at_utc": "2026-10-23T03:38:15.010995+00:00",
+        "response_sha256": "c3a4a2cb4756cd4d7d9280904ffd9a2e879f72065ea484eda3b4ea10fa31af1e",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"1b4324b0add827236971be918547dbd4\"",
+          "Last-Modified": "Sun, 01 Feb 2026 11:23:49 GMT",
+          "Age": "258",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "asn1-rs-derive",
+            "version": "0.6.0",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "asn1-rs-impl",
+        "url": "https://index.crates.io/as/n1/asn1-rs-impl",
+        "fetched_at_utc": "2026-10-23T03:38:14.849697+00:00",
+        "response_sha256": "e93b3877f671368e8c03b52c52b32fe590a89598277bc11e5cbcde3f2871ba3b",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:14 GMT",
+          "ETag": "\"28934f09d05633cbd59b556a2264d632\"",
+          "Last-Modified": "Sun, 01 Feb 2026 11:23:49 GMT",
+          "Age": "258",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "asn1-rs-impl",
+            "version": "0.2.0",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "autocfg",
+        "url": "https://index.crates.io/au/to/autocfg",
+        "fetched_at_utc": "2026-10-23T03:38:15.015553+00:00",
+        "response_sha256": "60e52e9e0cf800ffcb1b365fc5e4ec9d35bbacea049fb8cff46453961e2f07f3",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"969de01c8e79621ba01d87545090fc22\"",
+          "Last-Modified": "Fri, 22 May 2026 11:03:06 GMT",
+          "Age": "528",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "autocfg",
+            "version": "1.5.1",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "base64",
+        "url": "https://index.crates.io/ba/se/base64",
+        "fetched_at_utc": "2026-10-23T03:38:14.869685+00:00",
+        "response_sha256": "42a061d4b29c30417df7b028aa5274a1dfe5b7304794ac05e5bce9ac44b40153",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:14 GMT",
+          "ETag": "\"0a30877d3d90dcb766fb987c9d120ad9\"",
+          "Last-Modified": "Tue, 04 Aug 2026 12:34:35 GMT",
+          "Age": "271",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "base64",
+            "version": "0.23.1",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "bit-vec",
+        "url": "https://index.crates.io/bi/t-/bit-vec",
+        "fetched_at_utc": "2026-10-23T03:38:14.888231+00:00",
+        "response_sha256": "948d403b2a577f2d2379425e87c43cf4a06709ae3bd13e47d190776d34784d5d",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:14 GMT",
+          "ETag": "\"8fc4d5109f0bfe18dfc87d005b55767b\"",
+          "Last-Modified": "Fri, 10 Jul 2026 12:48:25 GMT",
+          "Age": "250",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "bit-vec",
+            "version": "0.9.1",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "bitflags",
+        "url": "https://index.crates.io/bi/tf/bitflags",
+        "fetched_at_utc": "2026-10-23T03:38:14.912690+00:00",
+        "response_sha256": "d3aa8cbad37c9526e2cf25544efcb8ba215649143476a2dd732e413e570cd017",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:14 GMT",
+          "ETag": "\"2f227433c3a80beec62d23c34bbed0ae\"",
+          "Last-Modified": "Thu, 10 Sep 2026 01:11:40 GMT",
+          "Age": "157",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "bitflags",
+            "version": "2.13.2",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "block-buffer",
+        "url": "https://index.crates.io/bl/oc/block-buffer",
+        "fetched_at_utc": "2026-10-23T03:38:14.929950+00:00",
+        "response_sha256": "122617d2ea1d3810b4a8bd59c6903a643a83e6305f8862fb4f0663a982e29f68",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:14 GMT",
+          "ETag": "\"0b68a59cad32dee87a150237c416e660\"",
+          "Last-Modified": "Thu, 11 Jun 2026 15:40:07 GMT",
+          "Age": "366",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "block-buffer",
+            "version": "0.12.1",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "cc",
+        "url": "https://index.crates.io/2/cc",
+        "fetched_at_utc": "2026-10-23T03:38:14.955157+00:00",
+        "response_sha256": "1eac6b2b10d65d773e9bcd8e87ce205338fbf25dff42c08e7401f86862db6d2a",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:14 GMT",
+          "ETag": "\"7cd636a0e98118aaa702ab09dc2965f3\"",
+          "Last-Modified": "Mon, 19 Oct 2026 07:39:45 GMT",
+          "Age": "6",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "cc",
+            "version": "1.9.0",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "cfg-if",
+        "url": "https://index.crates.io/cf/g-/cfg-if",
+        "fetched_at_utc": "2026-10-23T03:38:14.973718+00:00",
+        "response_sha256": "093922503d2239eb28afdcc1d3c334aac7abc9d9269f96907d5ff1144e841010",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:14 GMT",
+          "ETag": "\"6080fbc76b90d35eeb6603653b6330ef\"",
+          "Last-Modified": "Wed, 16 Sep 2026 17:36:12 GMT",
+          "Age": "243",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "cfg-if",
+            "version": "1.0.5",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "const-oid",
+        "url": "https://index.crates.io/co/ns/const-oid",
+        "fetched_at_utc": "2026-10-23T03:38:14.991781+00:00",
+        "response_sha256": "91d6eab181f4b58564d22d2d52daf06ee35c89254d8872be78cb163371c3c7a6",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:14 GMT",
+          "ETag": "\"6b871022d5d69d225310d3c311a78aaf\"",
+          "Last-Modified": "Wed, 07 Jan 2026 23:11:59 GMT",
+          "Age": "126",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "const-oid",
+            "version": "0.10.2",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "cpufeatures",
+        "url": "https://index.crates.io/cp/uf/cpufeatures",
+        "fetched_at_utc": "2026-10-23T03:38:15.011385+00:00",
+        "response_sha256": "f947bbced0242d2afec044c148bf0220e8c6cc4d1d454f35c3e7a32cbd215b8d",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"79ee26535188ff3158f33956c562207d\"",
+          "Last-Modified": "Thu, 27 Aug 2026 21:37:03 GMT",
+          "Age": "264",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "cpufeatures",
+            "version": "0.3.1",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "crypto-common",
+        "url": "https://index.crates.io/cr/yp/crypto-common",
+        "fetched_at_utc": "2026-10-23T03:38:15.030041+00:00",
+        "response_sha256": "694d6109ac84d0e80af5a064e452755ad3d3ef74addbd3e0a3b112abf48c861f",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"1095fc085a08af8f69ee3d9d725aa3d1\"",
+          "Last-Modified": "Tue, 19 May 2026 16:01:24 GMT",
+          "Age": "367",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "crypto-common",
+            "version": "0.2.2",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "data-encoding",
+        "url": "https://index.crates.io/da/ta/data-encoding",
+        "fetched_at_utc": "2026-10-23T03:38:15.034370+00:00",
+        "response_sha256": "fb8202345c08fbe1ebe2f3fd6306c9ac38345196675cfa15bd4e763bb459a58a",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"4d1ab27a022085be68bfcdda27f99f6b\"",
+          "Last-Modified": "Mon, 03 Aug 2026 10:39:54 GMT",
+          "Age": "108",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "data-encoding",
+            "version": "2.11.1",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "der-parser",
+        "url": "https://index.crates.io/de/r-/der-parser",
+        "fetched_at_utc": "2026-10-23T03:38:15.039206+00:00",
+        "response_sha256": "fc50b2092069babbcf2a5bc272285d3f57f824a120748bb9c426ee4ae8246afa",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"a3cb9470d46759956794fc047d5b6e82\"",
+          "Last-Modified": "Sun, 01 Feb 2026 11:41:08 GMT",
+          "Age": "258",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "der-parser",
+            "version": "10.0.0",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "deranged",
+        "url": "https://index.crates.io/de/ra/deranged",
+        "fetched_at_utc": "2026-10-23T03:38:15.039634+00:00",
+        "response_sha256": "aa8be5ca64acb0b0f049ed7f773e50cb064686b632caf6722b9e2bdb0ad3655c",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"4129c51b7dc5a2bca808fb9d217c6b1b\"",
+          "Last-Modified": "Tue, 13 Oct 2026 07:25:43 GMT",
+          "Age": "442",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "deranged",
+            "version": "0.5.9",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "digest",
+        "url": "https://index.crates.io/di/ge/digest",
+        "fetched_at_utc": "2026-10-23T03:38:15.053304+00:00",
+        "response_sha256": "59f9abb0ee56765e0b2c05ae52ccf037303a7ae6a090f5f340383334b9ea1c6e",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"ee51eaf789a1e18da9bd391070985d7d\"",
+          "Last-Modified": "Sun, 03 May 2026 12:54:49 GMT",
+          "Age": "259",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "digest",
+            "version": "0.11.3",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "displaydoc",
+        "url": "https://index.crates.io/di/sp/displaydoc",
+        "fetched_at_utc": "2026-10-23T03:38:15.057764+00:00",
+        "response_sha256": "5b870968434348789c48263b41524586592ee0923b5efbaaf443db8ec66a3211",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"884b0d6dc007486ebd5eaa77b756f9bc\"",
+          "Last-Modified": "Tue, 28 Jul 2026 13:58:22 GMT",
+          "Age": "341",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "displaydoc",
+            "version": "0.2.7",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "equivalent",
+        "url": "https://index.crates.io/eq/ui/equivalent",
+        "fetched_at_utc": "2026-10-23T03:38:15.060722+00:00",
+        "response_sha256": "357c762682a097493601e2a51a75e473ab3c1d0e876b543352c67c8a9b3b4152",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"35a7faa8b2e9da232dedd10d856b89f2\"",
+          "Last-Modified": "Tue, 13 Oct 2026 23:06:50 GMT",
+          "Age": "28",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "equivalent",
+            "version": "1.0.3",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "errno",
+        "url": "https://index.crates.io/er/rn/errno",
+        "fetched_at_utc": "2026-10-23T03:38:15.062839+00:00",
+        "response_sha256": "49f9272c19fd91100581009c2caabab0ca1fae26af4bc0175dcd3aabded3c5fa",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"dbf55119c473f2632617757c53fe8ff6\"",
+          "Last-Modified": "Sun, 01 Feb 2026 11:46:57 GMT",
+          "Age": "552",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "errno",
+            "version": "0.3.14",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "fastrand",
+        "url": "https://index.crates.io/fa/st/fastrand",
+        "fetched_at_utc": "2026-10-23T03:38:15.073857+00:00",
+        "response_sha256": "3dc52a8b46b0b421c30baec14ff476cda34f63f2ccfe75be431e005064469333",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"ad8944fca44c6ce31488b7121f7530ca\"",
+          "Last-Modified": "Sun, 19 Jul 2026 12:40:55 GMT",
+          "Age": "414",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "fastrand",
+            "version": "2.5.0",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "find-msvc-tools",
+        "url": "https://index.crates.io/fi/nd/find-msvc-tools",
+        "fetched_at_utc": "2026-10-23T03:38:15.076002+00:00",
+        "response_sha256": "782f2bd425a45754a59a62100b354aa52ee3429cceb45132ae42de589c6997ab",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"bec6f678585c802c3bb5dc43db544e8b\"",
+          "Last-Modified": "Mon, 19 Oct 2026 07:39:38 GMT",
+          "Age": "427",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "find-msvc-tools",
+            "version": "0.1.15",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "flume",
+        "url": "https://index.crates.io/fl/um/flume",
+        "fetched_at_utc": "2026-10-23T03:38:15.085471+00:00",
+        "response_sha256": "075882fc359220f5e8d36f0e7f96e05ac03cf97d2cde75f1dc2ac8ad51bc9f8b",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"825d622c78e421d9ff8f0907e4944bc0\"",
+          "Last-Modified": "Sun, 01 Feb 2026 11:51:04 GMT",
+          "Age": "172",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "flume",
+            "version": "0.12.0",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "futures-core",
+        "url": "https://index.crates.io/fu/tu/futures-core",
+        "fetched_at_utc": "2026-10-23T03:38:15.083239+00:00",
+        "response_sha256": "9b24e771005b4548343ec4b73fe3531a8cbcf6fa7c6eb923a5058e8aab093915",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"13374bbcc8cb7c2bf93308339fb2a596\"",
+          "Last-Modified": "Tue, 11 Aug 2026 12:13:03 GMT",
+          "Age": "425",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "futures-core",
+            "version": "0.3.34",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "futures-sink",
+        "url": "https://index.crates.io/fu/tu/futures-sink",
+        "fetched_at_utc": "2026-10-23T03:38:15.092343+00:00",
+        "response_sha256": "d637309312a7ad42855913cb1ad66966757261af1d88257bf204d18e0a77b92f",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"7ad5c3fa83d8188a5115818b28a729a4\"",
+          "Last-Modified": "Tue, 11 Aug 2026 12:13:07 GMT",
+          "Age": "200",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "futures-sink",
+            "version": "0.3.34",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "gethostname",
+        "url": "https://index.crates.io/ge/th/gethostname",
+        "fetched_at_utc": "2026-10-23T03:38:15.095435+00:00",
+        "response_sha256": "903a9bcb8074951a28e9635e71e499167725c35f607a32d1dfdc3bcba16ddb66",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"245074ba5e8363bf8343959a5ac305d2\"",
+          "Last-Modified": "Sun, 01 Feb 2026 11:56:07 GMT",
+          "Age": "205",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "gethostname",
+            "version": "1.1.0",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "getrandom",
+        "url": "https://index.crates.io/ge/tr/getrandom",
+        "fetched_at_utc": "2026-10-23T03:38:15.109785+00:00",
+        "response_sha256": "4f871328d4b65bd7c3511d8a359e8f2ff119866af406254a86ff7c675512913a",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"6359f7be20d9b7eb51d2083fe3fb6e24\"",
+          "Last-Modified": "Wed, 17 Jun 2026 18:02:07 GMT",
+          "Age": "127",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "getrandom",
+            "version": "0.2.17",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "hashbrown",
+        "url": "https://index.crates.io/ha/sh/hashbrown",
+        "fetched_at_utc": "2026-10-23T03:38:15.112267+00:00",
+        "response_sha256": "a713c43dbc6c92bbcec527544196023ca4271afed3dd5abbe766e70c67f512c6",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"d84d9c7b755fbddc8892e7c85ce010c4\"",
+          "Last-Modified": "Sat, 09 May 2026 04:35:06 GMT",
+          "Age": "28",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "hashbrown",
+            "version": "0.17.1",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "hybrid-array",
+        "url": "https://index.crates.io/hy/br/hybrid-array",
+        "fetched_at_utc": "2026-10-23T03:38:15.114680+00:00",
+        "response_sha256": "94398eb4d20764cd1b38e808d447ae6d0844f7c21e21aaaccacf3eb5feaab546",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"6023cb355116178aa20a44c7100bcae6\"",
+          "Last-Modified": "Tue, 08 Sep 2026 18:21:41 GMT",
+          "Age": "24",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "hybrid-array",
+            "version": "0.4.15",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "if-addrs",
+        "url": "https://index.crates.io/if/-a/if-addrs",
+        "fetched_at_utc": "2026-10-23T03:38:15.239451+00:00",
+        "response_sha256": "9543bcbde08d4bd7b1a79cfe2ceae740e32c227be1468cc8e4c9f7978fe928cf",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"59ac24efbbacb6ba557867125d754ad2\"",
+          "Last-Modified": "Sun, 08 Feb 2026 05:55:05 GMT",
+          "Age": "0",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "if-addrs",
+            "version": "0.15.0",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "indexmap",
+        "url": "https://index.crates.io/in/de/indexmap",
+        "fetched_at_utc": "2026-10-23T03:38:15.137497+00:00",
+        "response_sha256": "40c32ec5860cc3e23155cafc712892fe7b7ac3558b75115d8bb3d70b89247792",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"b05a0db0aa53103cca024eabdb841190\"",
+          "Last-Modified": "Sat, 05 Sep 2026 01:53:49 GMT",
+          "Age": "425",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "indexmap",
+            "version": "2.14.2",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "itoa",
+        "url": "https://index.crates.io/it/oa/itoa",
+        "fetched_at_utc": "2026-10-23T03:38:15.135045+00:00",
+        "response_sha256": "5e275f1d7a32dd49bc850af460efbf99064cd058f4566f5f86a969e2a535eece",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"ea8494d560f1b8174443495b370e272f\"",
+          "Last-Modified": "Fri, 20 Mar 2026 00:12:38 GMT",
+          "Age": "28",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "itoa",
+            "version": "1.0.18",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "lazy_static",
+        "url": "https://index.crates.io/la/zy/lazy_static",
+        "fetched_at_utc": "2026-10-23T03:38:15.132974+00:00",
+        "response_sha256": "6ddaa92126b6724ec4b08a4e4e6ca0b2906dc7dd3a05a56c245b3e3be6704f39",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"8dcd87988feb12531ca2713588b737df\"",
+          "Last-Modified": "Thu, 01 Oct 2026 07:18:55 GMT",
+          "Age": "576",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "lazy_static",
+            "version": "1.5.1",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "libc",
+        "url": "https://index.crates.io/li/bc/libc",
+        "fetched_at_utc": "2026-10-23T03:38:15.155545+00:00",
+        "response_sha256": "de437e8dbc298365b02d7ec43a8e8480094eecde6bd7d4ddbc52553d92ae571f",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"3493734e19f35430b70d023b1c1ad969\"",
+          "Last-Modified": "Fri, 16 Oct 2026 22:56:47 GMT",
+          "Age": "253",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "libc",
+            "version": "0.2.191",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "linux-raw-sys",
+        "url": "https://index.crates.io/li/nu/linux-raw-sys",
+        "fetched_at_utc": "2026-10-23T03:38:15.159521+00:00",
+        "response_sha256": "4cef178ea82fc38ea711a33df62bff0bef3e3c2569e0061080896a192baca324",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"7d87fe5764a1be6bd4e785bd9d455670\"",
+          "Last-Modified": "Sun, 01 Feb 2026 12:16:22 GMT",
+          "Age": "442",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "linux-raw-sys",
+            "version": "0.12.1",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "lock_api",
+        "url": "https://index.crates.io/lo/ck/lock_api",
+        "fetched_at_utc": "2026-10-23T03:38:15.152967+00:00",
+        "response_sha256": "d7a74b6e2c178ebe08b19b5996036caef9f840367ccb73771ea765c3486ce8ad",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"7bfd4e0482ad27090f8d93b1d7ea03de\"",
+          "Last-Modified": "Wed, 21 Oct 2026 10:30:38 GMT",
+          "Age": "404",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "lock_api",
+            "version": "0.4.14",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "log",
+        "url": "https://index.crates.io/3/l/log",
+        "fetched_at_utc": "2026-10-23T03:38:15.174313+00:00",
+        "response_sha256": "77bf6b28e1f98f2177ddd68b0234ca3f6e1e6bc6e89d2523cdb6db393f4f3ea2",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"4a4dbe26e9d919ba1f6441374e389a54\"",
+          "Last-Modified": "Sat, 22 Aug 2026 11:44:29 GMT",
+          "Age": "279",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "log",
+            "version": "0.4.34",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "mdns-sd",
+        "url": "https://index.crates.io/md/ns/mdns-sd",
+        "fetched_at_utc": "2026-10-23T03:38:15.305863+00:00",
+        "response_sha256": "251fcd258e795e86c5399f1389929596fc89c764315851e0c9eceee867470588",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"ed42384cb070dfce87016c0eafc4e41c\"",
+          "Last-Modified": "Mon, 19 Oct 2026 04:42:53 GMT",
+          "Age": "0",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "mdns-sd",
+            "version": "0.21.6",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "memchr",
+        "url": "https://index.crates.io/me/mc/memchr",
+        "fetched_at_utc": "2026-10-23T03:38:15.178119+00:00",
+        "response_sha256": "577209be17cbaaf1a862c0e01a84d515d91bcc229476fd34e67ffd44a5a84f27",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"b80703e5b81110869d945dc7d919a9c1\"",
+          "Last-Modified": "Wed, 08 Jul 2026 00:49:56 GMT",
+          "Age": "552",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "memchr",
+            "version": "2.8.3",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "minimal-lexical",
+        "url": "https://index.crates.io/mi/ni/minimal-lexical",
+        "fetched_at_utc": "2026-10-23T03:38:15.193309+00:00",
+        "response_sha256": "b87b71896d5d575228ee5260191df38a53c537e9423aa68226bc5563fe3c7d6a",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"aff0c3db34ef17ed6442a8e6cc476896\"",
+          "Last-Modified": "Sun, 01 Feb 2026 12:23:19 GMT",
+          "Age": "226",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "minimal-lexical",
+            "version": "0.2.1",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "mio",
+        "url": "https://index.crates.io/3/m/mio",
+        "fetched_at_utc": "2026-10-23T03:38:15.201628+00:00",
+        "response_sha256": "7c86eac1151d864b95b9cda116c39f79e22dda6b36f92f784bb48f4e5fe6b6f1",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"732ab8798e476c1d72e0b69746b9b2d5\"",
+          "Last-Modified": "Sat, 03 Oct 2026 16:33:12 GMT",
+          "Age": "127",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "mio",
+            "version": "1.2.4",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "nom",
+        "url": "https://index.crates.io/3/n/nom",
+        "fetched_at_utc": "2026-10-23T03:38:15.214640+00:00",
+        "response_sha256": "24b6380acf0e74079001ba7ab4be214bbdd6476a26683ca78206f5720f6b7d40",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"d109b005e3bafb304de8e842641b1bff\"",
+          "Last-Modified": "Sun, 01 Feb 2026 12:29:26 GMT",
+          "Age": "226",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "nom",
+            "version": "7.1.3",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "num-bigint",
+        "url": "https://index.crates.io/nu/m-/num-bigint",
+        "fetched_at_utc": "2026-10-23T03:38:15.220746+00:00",
+        "response_sha256": "96d8afcfa019a6c065f282a5c18888c6ddb7308f6e9dfd95da27d537d1aca848",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"c7032f5f1bb8dc0938e69d74a0d4882a\"",
+          "Last-Modified": "Sun, 05 Jul 2026 01:20:59 GMT",
+          "Age": "258",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "num-bigint",
+            "version": "0.4.8",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "num-conv",
+        "url": "https://index.crates.io/nu/m-/num-conv",
+        "fetched_at_utc": "2026-10-23T03:38:15.233120+00:00",
+        "response_sha256": "fbf9e6b3975428a96ea37452e7101241e285f62703975886b9d78b6f40f84595",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"fc906d9e8ae880165eafbc8be7503c3e\"",
+          "Last-Modified": "Mon, 18 May 2026 18:35:53 GMT",
+          "Age": "200",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "num-conv",
+            "version": "0.2.2",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "num-integer",
+        "url": "https://index.crates.io/nu/m-/num-integer",
+        "fetched_at_utc": "2026-10-23T03:38:15.239034+00:00",
+        "response_sha256": "5de871ff11e4c41c4bc34ae504802e8b3fac32bf4f0dc8c5f9daeec1465caeab",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"652b1b38eb11992fbc3e79855b762dfa\"",
+          "Last-Modified": "Wed, 12 Aug 2026 00:11:59 GMT",
+          "Age": "258",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "num-integer",
+            "version": "0.1.47",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "num-traits",
+        "url": "https://index.crates.io/nu/m-/num-traits",
+        "fetched_at_utc": "2026-10-23T03:38:15.250422+00:00",
+        "response_sha256": "15b5132965f616441319773bc71cc14547a115e8f2023e93d18e02a5b23240df",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"76a21bb3c96a942255e245aa9971cbcc\"",
+          "Last-Modified": "Sun, 01 Feb 2026 12:30:29 GMT",
+          "Age": "528",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "num-traits",
+            "version": "0.2.19",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "oid-registry",
+        "url": "https://index.crates.io/oi/d-/oid-registry",
+        "fetched_at_utc": "2026-10-23T03:38:15.258054+00:00",
+        "response_sha256": "440431a1c99b2adbdab2b1dcdf977dcfb0d9f4a172b4d22c1ec23e590d625a09",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"dd9d305f983a965b1fb70bbedcce313d\"",
+          "Last-Modified": "Sun, 01 Feb 2026 12:32:08 GMT",
+          "Age": "258",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "oid-registry",
+            "version": "0.8.1",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "once_cell",
+        "url": "https://index.crates.io/on/ce/once_cell",
+        "fetched_at_utc": "2026-10-23T03:38:15.261472+00:00",
+        "response_sha256": "01e5bf656ebaac2c7502405054837f773f6ebaa24c3be59456bc5882940f0e90",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"ae10a7d8aa86c09f91d7e5a4d922faff\"",
+          "Last-Modified": "Thu, 12 Mar 2026 10:59:54 GMT",
+          "Age": "523",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "once_cell",
+            "version": "1.21.4",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "pem",
+        "url": "https://index.crates.io/3/p/pem",
+        "fetched_at_utc": "2026-10-23T03:38:15.271162+00:00",
+        "response_sha256": "94b53654f4fb68eef35497d6d94a4d829933f7b320ee38acac5d711ec3f79788",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"873e2089e85b2f406c4f04d1c08948cd\"",
+          "Last-Modified": "Tue, 28 Jul 2026 13:38:48 GMT",
+          "Age": "367",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "pem",
+            "version": "4.0.0",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "powerfmt",
+        "url": "https://index.crates.io/po/we/powerfmt",
+        "fetched_at_utc": "2026-10-23T03:38:15.276276+00:00",
+        "response_sha256": "6e544722119eb91475c3044fbda6588b29401eec454907ea79659ab1e55f9714",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"309539484a5f4720af234179d474278c\"",
+          "Last-Modified": "Mon, 05 Oct 2026 09:01:11 GMT",
+          "Age": "442",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "powerfmt",
+            "version": "0.2.1",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "proc-macro2",
+        "url": "https://index.crates.io/pr/oc/proc-macro2",
+        "fetched_at_utc": "2026-10-23T03:38:15.283272+00:00",
+        "response_sha256": "955448bc91f9c490e3bdc028f9d79a561b4f43142025ec46a99bdacaa140233c",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"ababb59157c6e9a714a9b1cb302e842e\"",
+          "Last-Modified": "Sun, 19 Jul 2026 00:18:27 GMT",
+          "Age": "442",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "proc-macro2",
+            "version": "1.0.107",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "quote",
+        "url": "https://index.crates.io/qu/ot/quote",
+        "fetched_at_utc": "2026-10-23T03:38:15.295681+00:00",
+        "response_sha256": "4359f39471050245ed6788ac1d3ee77f398405fb410433a755435f5ec1adb745",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"7296b7c948e281168b0eae7465fe3918\"",
+          "Last-Modified": "Sun, 19 Jul 2026 00:16:58 GMT",
+          "Age": "260",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "quote",
+            "version": "1.0.47",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "rcgen",
+        "url": "https://index.crates.io/rc/ge/rcgen",
+        "fetched_at_utc": "2026-10-23T03:38:15.414135+00:00",
+        "response_sha256": "a1e1ee69760a8c9aea0b3c22f5bf25b562332d4a4985dec5955a161e3d388516",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"26cb54b1f4e6b6d98565159207d4da2b\"",
+          "Last-Modified": "Fri, 28 Aug 2026 21:30:03 GMT",
+          "Age": "0",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "rcgen",
+            "version": "0.14.10",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "ring",
+        "url": "https://index.crates.io/ri/ng/ring",
+        "fetched_at_utc": "2026-10-23T03:38:15.310649+00:00",
+        "response_sha256": "53e4f7b2aac2d09174abecf713e93395c3ff09b4a27254babcdf11fc55b49121",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"102e946c78cd205de837279e3c7cfd8e\"",
+          "Last-Modified": "Sun, 01 Feb 2026 12:46:00 GMT",
+          "Age": "338",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "ring",
+            "version": "0.17.14",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "rusticata-macros",
+        "url": "https://index.crates.io/ru/st/rusticata-macros",
+        "fetched_at_utc": "2026-10-23T03:38:15.315634+00:00",
+        "response_sha256": "9c36d68499ac5c8bb5ea82f4c3e3dead9ed3bb961be6f4d163072174be0e3dee",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"5e81dfb64fff99f4ccc43d551de73467\"",
+          "Last-Modified": "Sun, 01 Feb 2026 12:52:39 GMT",
+          "Age": "258",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "rusticata-macros",
+            "version": "4.1.0",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "rustix",
+        "url": "https://index.crates.io/ru/st/rustix",
+        "fetched_at_utc": "2026-10-23T03:38:15.354412+00:00",
+        "response_sha256": "58f60e0414bc1677377bbe47b43ad3a13528c41a4a92f48a7eb585e2154cb57c",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"14dd4110b0f70305e60e4f268b1d176d\"",
+          "Last-Modified": "Wed, 16 Sep 2026 23:05:05 GMT",
+          "Age": "443",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "rustix",
+            "version": "1.1.5",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "rustls",
+        "url": "https://index.crates.io/ru/st/rustls",
+        "fetched_at_utc": "2026-10-23T03:38:15.339990+00:00",
+        "response_sha256": "1895c31fe2ba17cbfba065cdd209f00418274224555d371c481bb1f4e2983311",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"8c0d4ea7c8f052a814d576564e5692fd\"",
+          "Last-Modified": "Wed, 14 Oct 2026 09:54:17 GMT",
+          "Age": "7",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "rustls",
+            "version": "0.23.46",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "rustls-pki-types",
+        "url": "https://index.crates.io/ru/st/rustls-pki-types",
+        "fetched_at_utc": "2026-10-23T03:38:15.335740+00:00",
+        "response_sha256": "1334d820c4eda5cabff98a69e1c38a0c633a69826c478ba5bcf1dadbe08bed5c",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"7552a787456b8b55eb5b97141f091c13\"",
+          "Last-Modified": "Thu, 23 Jul 2026 09:56:12 GMT",
+          "Age": "7",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "rustls-pki-types",
+            "version": "1.15.1",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "rustls-webpki",
+        "url": "https://index.crates.io/ru/st/rustls-webpki",
+        "fetched_at_utc": "2026-10-23T03:38:15.363950+00:00",
+        "response_sha256": "cead5e7351c96f83b1ab3c6cb446cb14b206313d0b2988e2d282d4d1a6dc1c2a",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"cd28bb03a5ee703240731055c5dc8070\"",
+          "Last-Modified": "Tue, 20 Oct 2026 09:03:08 GMT",
+          "Age": "338",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "rustls-webpki",
+            "version": "0.103.16",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "scopeguard",
+        "url": "https://index.crates.io/sc/op/scopeguard",
+        "fetched_at_utc": "2026-10-23T03:38:15.361532+00:00",
+        "response_sha256": "c713b0531b312c2906973e4fc9530b17ff1591f563449eb63d179343dd1b7df7",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"daa938084f25f8a693ae8f14a8fad0d3\"",
+          "Last-Modified": "Sun, 01 Feb 2026 12:54:59 GMT",
+          "Age": "403",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "scopeguard",
+            "version": "1.2.0",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "serde",
+        "url": "https://index.crates.io/se/rd/serde",
+        "fetched_at_utc": "2026-10-23T03:38:15.383989+00:00",
+        "response_sha256": "9eb6e78eab279f168b5787e4eb801765e1d5a2b40c50789e12166a616d73bbc5",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"971e1a71d7d6afbfc90a23ad91931103\"",
+          "Last-Modified": "Sat, 18 Jul 2026 23:05:14 GMT",
+          "Age": "523",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "serde",
+            "version": "1.0.229",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "serde_core",
+        "url": "https://index.crates.io/se/rd/serde_core",
+        "fetched_at_utc": "2026-10-23T03:38:15.380598+00:00",
+        "response_sha256": "58280b0772569b5900e04a8672d3541e2340b31a54c348a269b1beee3552811a",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"0677ae846370eef57d00db4af7ab39fc\"",
+          "Last-Modified": "Sat, 18 Jul 2026 23:05:12 GMT",
+          "Age": "522",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "serde_core",
+            "version": "1.0.229",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "serde_derive",
+        "url": "https://index.crates.io/se/rd/serde_derive",
+        "fetched_at_utc": "2026-10-23T03:38:15.389415+00:00",
+        "response_sha256": "9e45aa13a3855f66e4aad308ee5035a49e5690054189ce1216964d548f4d53de",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"9c7b92bacea8bca17ee2630b642f06e5\"",
+          "Last-Modified": "Sat, 18 Jul 2026 23:05:09 GMT",
+          "Age": "523",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "serde_derive",
+            "version": "1.0.229",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "serde_json",
+        "url": "https://index.crates.io/se/rd/serde_json",
+        "fetched_at_utc": "2026-10-23T03:38:15.406790+00:00",
+        "response_sha256": "320ccb6ff902a966f5a6b47d8592d9778cd39ef225e5fbc300990f02db91995c",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"7f59728e0b1d1dae90b81f04f402ca9f\"",
+          "Last-Modified": "Sun, 11 Oct 2026 15:31:48 GMT",
+          "Age": "36",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "serde_json",
+            "version": "1.0.154",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "serde_spanned",
+        "url": "https://index.crates.io/se/rd/serde_spanned",
+        "fetched_at_utc": "2026-10-23T03:38:15.403324+00:00",
+        "response_sha256": "677183dd2674856f4a562313f22923707badae895dbcda173b291f92e3d052c7",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"ca2ffe1d51310e62e7ad487d8bc1835a\"",
+          "Last-Modified": "Thu, 08 Oct 2026 00:54:03 GMT",
+          "Age": "178",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "serde_spanned",
+            "version": "1.1.2",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "sha2",
+        "url": "https://index.crates.io/sh/a2/sha2",
+        "fetched_at_utc": "2026-10-23T03:38:15.411726+00:00",
+        "response_sha256": "82ee9e7e65a28c6818dfe81322720136c8ff9cdea9c88ad5d04e098353015ba0",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"c9b8b9a2f6b3ec7339f84f37e4e7c612\"",
+          "Last-Modified": "Mon, 12 Oct 2026 18:58:24 GMT",
+          "Age": "346",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "sha2",
+            "version": "0.11.1",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "shlex",
+        "url": "https://index.crates.io/sh/le/shlex",
+        "fetched_at_utc": "2026-10-23T03:38:15.421391+00:00",
+        "response_sha256": "e8f4bfd70f87bb7a82a31fc1ab0e0d6fc6df32f6a5d208865197f317552b1639",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"3551aae3414a9e2af608d5557937845a\"",
+          "Last-Modified": "Sun, 17 May 2026 18:56:14 GMT",
+          "Age": "323",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "shlex",
+            "version": "2.0.1",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "socket-pktinfo",
+        "url": "https://index.crates.io/so/ck/socket-pktinfo",
+        "fetched_at_utc": "2026-10-23T03:38:15.540520+00:00",
+        "response_sha256": "179ce03a8fcc5530d4d60853385352003bfda961e873b142947eb1d3c37f60c6",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"15cebe232fe89377b6cc387ce0c3a2f4\"",
+          "Last-Modified": "Sun, 26 Jul 2026 17:21:28 GMT",
+          "Age": "0",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "socket-pktinfo",
+            "version": "0.4.1",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "socket2",
+        "url": "https://index.crates.io/so/ck/socket2",
+        "fetched_at_utc": "2026-10-23T03:38:15.431930+00:00",
+        "response_sha256": "e1be13bcfbe8d2eeead156b95f7a2f6c47e1573c401bdd61d6406fb54a9927c1",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"0c5edeada62be967c8a3b29cab8718f3\"",
+          "Last-Modified": "Mon, 13 Jul 2026 19:46:00 GMT",
+          "Age": "259",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "socket2",
+            "version": "0.6.5",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "spin",
+        "url": "https://index.crates.io/sp/in/spin",
+        "fetched_at_utc": "2026-10-23T03:38:15.434482+00:00",
+        "response_sha256": "96bc0c045cb5889661881520e6c17f8cc68d2b3cca718922febc10e001e2797a",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"b8374c02fb2a69300259be4e52cdd190\"",
+          "Last-Modified": "Mon, 17 Aug 2026 20:21:32 GMT",
+          "Age": "205",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "spin",
+            "version": "0.9.9",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "subtle",
+        "url": "https://index.crates.io/su/bt/subtle",
+        "fetched_at_utc": "2026-10-23T03:38:15.441026+00:00",
+        "response_sha256": "00cf3bd40c680b9dcc25f659b14486a440f02d2ac7273b381c55ab8b1e56bdb4",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"89c8e8ca45bd93395130145419a64710\"",
+          "Last-Modified": "Sun, 01 Feb 2026 13:03:21 GMT",
+          "Age": "127",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "subtle",
+            "version": "2.6.1",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "syn",
+        "url": "https://index.crates.io/3/s/syn",
+        "fetched_at_utc": "2026-10-23T03:38:15.465787+00:00",
+        "response_sha256": "bf3c3b2623e984ab1d93f0c88d35e2fb2d9e0579cd3eacecd992fcb29a487a51",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"3cbc980b5ba8cfe72334def1395cf491\"",
+          "Last-Modified": "Mon, 12 Oct 2026 15:04:11 GMT",
+          "Age": "443",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "syn",
+            "version": "2.0.119",
+            "yanked": false,
+            "checksum_matches_lock": true
+          },
+          {
+            "name": "syn",
+            "version": "3.0.9",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "synstructure",
+        "url": "https://index.crates.io/sy/ns/synstructure",
+        "fetched_at_utc": "2026-10-23T03:38:15.452481+00:00",
+        "response_sha256": "919dc9ca5c851ec1d6d2431321ce79fe5401b7a6823430762f0eda8308eb9d4c",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"d6e733b0d0f0e8f615e6dca3951c5d98\"",
+          "Last-Modified": "Thu, 30 Jul 2026 19:43:06 GMT",
+          "Age": "279",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "synstructure",
+            "version": "0.13.2",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "thiserror",
+        "url": "https://index.crates.io/th/is/thiserror",
+        "fetched_at_utc": "2026-10-23T03:38:15.468839+00:00",
+        "response_sha256": "320c3e915f0afe44092342b497ec2189a5c502fbc0e1bd816e8db3e8c6d82914",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"4bfc7961f795fa99bb7d3a9490fb2bd6\"",
+          "Last-Modified": "Wed, 23 Sep 2026 20:24:09 GMT",
+          "Age": "522",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "thiserror",
+            "version": "2.0.21",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "thiserror-impl",
+        "url": "https://index.crates.io/th/is/thiserror-impl",
+        "fetched_at_utc": "2026-10-23T03:38:15.475078+00:00",
+        "response_sha256": "a6346a79d7139dc845c4dc27d0374d35f82ef16b71a456412fdd2eaa137c7422",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"4803462287650fdbd601e802b340eae4\"",
+          "Last-Modified": "Wed, 23 Sep 2026 20:24:06 GMT",
+          "Age": "522",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "thiserror-impl",
+            "version": "2.0.21",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "time",
+        "url": "https://index.crates.io/ti/me/time",
+        "fetched_at_utc": "2026-10-23T03:38:15.493615+00:00",
+        "response_sha256": "b574ab0ea1b19243597030482e4c8e61b25f92c2fcc8438be2c0ea5a34fc3f0c",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"d882262552cce2ce6866320ec46b3237\"",
+          "Last-Modified": "Sat, 01 Aug 2026 08:08:36 GMT",
+          "Age": "201",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "time",
+            "version": "0.3.55",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "time-core",
+        "url": "https://index.crates.io/ti/me/time-core",
+        "fetched_at_utc": "2026-10-23T03:38:15.487349+00:00",
+        "response_sha256": "469819f5aff17460119e3f772813282e6d3b4cac8b5051462c8b7908a287dd75",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"c966e5dfc58d9601576289b5bb249a2a\"",
+          "Last-Modified": "Sat, 13 Jun 2026 20:32:14 GMT",
+          "Age": "201",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "time-core",
+            "version": "0.1.9",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "time-macros",
+        "url": "https://index.crates.io/ti/me/time-macros",
+        "fetched_at_utc": "2026-10-23T03:38:15.496025+00:00",
+        "response_sha256": "81150216d7be9f50c423e046ca2fdc15a8f8c33dff7a83c2477fb7004bc00b95",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"1d7b2a3497827234ae252713197ea67f\"",
+          "Last-Modified": "Mon, 20 Jul 2026 08:27:39 GMT",
+          "Age": "201",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "time-macros",
+            "version": "0.2.32",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "toml",
+        "url": "https://index.crates.io/to/ml/toml",
+        "fetched_at_utc": "2026-10-23T03:38:15.515047+00:00",
+        "response_sha256": "9a0dace2b08e7488dba7f6c06f6d91f2162634825fbb2e2d271524849597ce43",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"50a3a81194c90546c0985cc4a816a2b9\"",
+          "Last-Modified": "Fri, 09 Oct 2026 02:46:33 GMT",
+          "Age": "231",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "toml",
+            "version": "0.9.12+spec-1.1.0",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "toml_datetime",
+        "url": "https://index.crates.io/to/ml/toml_datetime",
+        "fetched_at_utc": "2026-10-23T03:38:15.518445+00:00",
+        "response_sha256": "3c3f35d22f6e95d34eb6234007367c88471e11933f22149c5105a4681d8d84b8",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"288de37906701e4a05f01136dd19aef6\"",
+          "Last-Modified": "Thu, 08 Oct 2026 00:54:04 GMT",
+          "Age": "231",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "toml_datetime",
+            "version": "0.7.5+spec-1.1.0",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "toml_parser",
+        "url": "https://index.crates.io/to/ml/toml_parser",
+        "fetched_at_utc": "2026-10-23T03:38:15.522363+00:00",
+        "response_sha256": "cdb357d89bf93443cc2fc39c9ec93d91a94c61ce68a08fe099835c373d4e6829",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"9eb9a61f17d6c6d19559f791d14bc44c\"",
+          "Last-Modified": "Fri, 09 Oct 2026 02:46:31 GMT",
+          "Age": "414",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "toml_parser",
+            "version": "1.1.5+spec-1.1.0",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "toml_writer",
+        "url": "https://index.crates.io/to/ml/toml_writer",
+        "fetched_at_utc": "2026-10-23T03:38:15.542676+00:00",
+        "response_sha256": "bf0f6b0fa6e0dc5a8aec560958c2aefc57307046bdd07732497e22f14de1554a",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"4942e8a98b515f67feead7ca376f80f7\"",
+          "Last-Modified": "Thu, 08 Oct 2026 00:54:06 GMT",
+          "Age": "156",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "toml_writer",
+            "version": "1.1.3+spec-1.1.0",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "typenum",
+        "url": "https://index.crates.io/ty/pe/typenum",
+        "fetched_at_utc": "2026-10-23T03:38:15.536526+00:00",
+        "response_sha256": "1f1fcc1b809a17356e58ff98d756623949107f3091049b0f40c1f1ee4321567b",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"fff0d9602f7645ffff30aa33c4fc8fa2\"",
+          "Last-Modified": "Fri, 29 May 2026 16:00:43 GMT",
+          "Age": "359",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "typenum",
+            "version": "1.20.1",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "unicode-ident",
+        "url": "https://index.crates.io/un/ic/unicode-ident",
+        "fetched_at_utc": "2026-10-23T03:38:15.544903+00:00",
+        "response_sha256": "4c12cadce7c0428aeaac8dc8f2f607bdc523b42be795c7fda601dd42a0f4cbeb",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"1dba390b2b4688955a22def0e3f15ccc\"",
+          "Last-Modified": "Mon, 12 Oct 2026 04:20:29 GMT",
+          "Age": "443",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "unicode-ident",
+            "version": "1.0.27",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "untrusted",
+        "url": "https://index.crates.io/un/tr/untrusted",
+        "fetched_at_utc": "2026-10-23T03:38:15.562652+00:00",
+        "response_sha256": "2be5d039854423fb45862f248c48492c9a2b44a959908d613ca19bf134ca785d",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"174e4c2e34946a46a328a50913c1ca2e\"",
+          "Last-Modified": "Sun, 01 Feb 2026 13:10:29 GMT",
+          "Age": "259",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "untrusted",
+            "version": "0.9.0",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "wasi",
+        "url": "https://index.crates.io/wa/si/wasi",
+        "fetched_at_utc": "2026-10-23T03:38:15.567835+00:00",
+        "response_sha256": "808ec7ca7eb436c8927170e7a0411c8fe264b934831a68ee434d78a5fcc1ffef",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"9ec28cd263220c833a4b3bd4a8f9e91d\"",
+          "Last-Modified": "Sun, 01 Feb 2026 13:13:14 GMT",
+          "Age": "442",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "wasi",
+            "version": "0.11.1+wasi-snapshot-preview1",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "windows-link",
+        "url": "https://index.crates.io/wi/nd/windows-link",
+        "fetched_at_utc": "2026-10-23T03:38:15.565515+00:00",
+        "response_sha256": "2f6055c24a984135453c9932bd3c2d82e5885d0cc9a27877f7b24a405e7c8830",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"8a139c5ab8bf38a5513b4961de82f0cc\"",
+          "Last-Modified": "Thu, 03 Sep 2026 16:39:04 GMT",
+          "Age": "428",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "windows-link",
+            "version": "0.2.1",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "windows-sys",
+        "url": "https://index.crates.io/wi/nd/windows-sys",
+        "fetched_at_utc": "2026-10-23T03:38:15.576567+00:00",
+        "response_sha256": "2faa637e651ef2166c886b88a623f14a58013a749c0368303dbd2a6a7da62a87",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"f6f8aea22c386f7e26ae25df69cacd36\"",
+          "Last-Modified": "Sun, 01 Feb 2026 13:14:55 GMT",
+          "Age": "552",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "windows-sys",
+            "version": "0.52.0",
+            "yanked": false,
+            "checksum_matches_lock": true
+          },
+          {
+            "name": "windows-sys",
+            "version": "0.61.2",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "windows-targets",
+        "url": "https://index.crates.io/wi/nd/windows-targets",
+        "fetched_at_utc": "2026-10-23T03:38:15.593749+00:00",
+        "response_sha256": "3452f88b45a81f84b4efc353fb54d389900835d13c994786444a4556578a1887",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"04a4f217db8821e758a02318b35808dc\"",
+          "Last-Modified": "Sun, 01 Feb 2026 13:14:56 GMT",
+          "Age": "293",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "windows-targets",
+            "version": "0.52.6",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "windows_aarch64_gnullvm",
+        "url": "https://index.crates.io/wi/nd/windows_aarch64_gnullvm",
+        "fetched_at_utc": "2026-10-23T03:38:15.585644+00:00",
+        "response_sha256": "bed91703cf6b0c84ef5f3c34145ac4e5b5b301cedb71d96e0ab380e67903a2a5",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"adfeb8495192ac9e212b6cd6b8567c67\"",
+          "Last-Modified": "Sun, 01 Feb 2026 13:14:57 GMT",
+          "Age": "292",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "windows_aarch64_gnullvm",
+            "version": "0.52.6",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "windows_aarch64_msvc",
+        "url": "https://index.crates.io/wi/nd/windows_aarch64_msvc",
+        "fetched_at_utc": "2026-10-23T03:38:15.585974+00:00",
+        "response_sha256": "9be6a4634a5404574dfd059e04c3d37250d8c5cbbbbdb3f0149f52e402a196f9",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"09288a20c6593aadf91bc6827369b143\"",
+          "Last-Modified": "Sun, 01 Feb 2026 13:14:57 GMT",
+          "Age": "293",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "windows_aarch64_msvc",
+            "version": "0.52.6",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "windows_i686_gnu",
+        "url": "https://index.crates.io/wi/nd/windows_i686_gnu",
+        "fetched_at_utc": "2026-10-23T03:38:15.597309+00:00",
+        "response_sha256": "3e11f0dd2bba89aeec7f4eeb60376fc44d4ed02ba643ee4bef85e13e3e309c29",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"c0b46ec3753b70a69e7e87dd206dc8cd\"",
+          "Last-Modified": "Sun, 01 Feb 2026 13:14:58 GMT",
+          "Age": "293",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "windows_i686_gnu",
+            "version": "0.52.6",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "windows_i686_gnullvm",
+        "url": "https://index.crates.io/wi/nd/windows_i686_gnullvm",
+        "fetched_at_utc": "2026-10-23T03:38:15.605555+00:00",
+        "response_sha256": "54b61ecdc75892e2ecb300af82416402ce983aa9ce45cfa32556dd90d4903e45",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"601f322c39066d5c8101d8f9dd12d181\"",
+          "Last-Modified": "Sun, 01 Feb 2026 13:14:58 GMT",
+          "Age": "404",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "windows_i686_gnullvm",
+            "version": "0.52.6",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "windows_i686_msvc",
+        "url": "https://index.crates.io/wi/nd/windows_i686_msvc",
+        "fetched_at_utc": "2026-10-23T03:38:15.607748+00:00",
+        "response_sha256": "ff10deca2efe3840a0b5ca398e8a6735d6d29b3964f5382c44516198dadf8172",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"e6ce5e33bad850d7a32ffbde6c3fe229\"",
+          "Last-Modified": "Sun, 01 Feb 2026 13:14:58 GMT",
+          "Age": "292",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "windows_i686_msvc",
+            "version": "0.52.6",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "windows_x86_64_gnu",
+        "url": "https://index.crates.io/wi/nd/windows_x86_64_gnu",
+        "fetched_at_utc": "2026-10-23T03:38:15.611085+00:00",
+        "response_sha256": "14e58eb975cd09b665d5e4e8296e3e8fbe649c8c5530d51c6ce6e211cfa613bd",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"22fa9c8ff9eaafd89d8ae71727314129\"",
+          "Last-Modified": "Sun, 01 Feb 2026 13:14:58 GMT",
+          "Age": "292",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "windows_x86_64_gnu",
+            "version": "0.52.6",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "windows_x86_64_gnullvm",
+        "url": "https://index.crates.io/wi/nd/windows_x86_64_gnullvm",
+        "fetched_at_utc": "2026-10-23T03:38:15.616781+00:00",
+        "response_sha256": "cb3ac6b86bc8e73c220ae3754a563f0b398e85e0410f6c1adb9d1fd8a3042822",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"a892fd852e2a5ef1258467ba9083b2d5\"",
+          "Last-Modified": "Sun, 01 Feb 2026 13:14:58 GMT",
+          "Age": "293",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "windows_x86_64_gnullvm",
+            "version": "0.52.6",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "windows_x86_64_msvc",
+        "url": "https://index.crates.io/wi/nd/windows_x86_64_msvc",
+        "fetched_at_utc": "2026-10-23T03:38:15.626320+00:00",
+        "response_sha256": "4ece67c0169b40a384e90ee21c630603f7a27d04aa840dc0f1a708eeb647a7ef",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"b93b25c5223f70b10177090989a62fb6\"",
+          "Last-Modified": "Sun, 01 Feb 2026 13:14:58 GMT",
+          "Age": "293",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "windows_x86_64_msvc",
+            "version": "0.52.6",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "winnow",
+        "url": "https://index.crates.io/wi/nn/winnow",
+        "fetched_at_utc": "2026-10-23T03:38:15.635864+00:00",
+        "response_sha256": "8ccdbd515f63aacd0a9d1b841bc5f83a6cd91f3ce4cb8a490d89e9a63bf5d58c",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"3beff4e2b9b58d0652baa0f7deecefa5\"",
+          "Last-Modified": "Mon, 13 Jul 2026 14:31:43 GMT",
+          "Age": "231",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "winnow",
+            "version": "0.7.15",
+            "yanked": false,
+            "checksum_matches_lock": true
+          },
+          {
+            "name": "winnow",
+            "version": "1.0.4",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "x11rb",
+        "url": "https://index.crates.io/x1/1r/x11rb",
+        "fetched_at_utc": "2026-10-23T03:38:15.640542+00:00",
+        "response_sha256": "b5d018bdee495ef0a187d8784020cf018260e9d4b895f02104a3e619f677a24c",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"8944c5dffc93899aac544c2838e11886\"",
+          "Last-Modified": "Thu, 16 Jul 2026 16:11:45 GMT",
+          "Age": "206",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "x11rb",
+            "version": "0.13.2",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "x11rb-protocol",
+        "url": "https://index.crates.io/x1/1r/x11rb-protocol",
+        "fetched_at_utc": "2026-10-23T03:38:15.638214+00:00",
+        "response_sha256": "65d348f38ff57fb6e3c93a551087286f52b833d8dbd3250d7e9448cd5c5c860f",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"70274334d7c986408bc127e7003fb175\"",
+          "Last-Modified": "Thu, 16 Jul 2026 16:11:24 GMT",
+          "Age": "205",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "x11rb-protocol",
+            "version": "0.13.2",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "x509-parser",
+        "url": "https://index.crates.io/x5/09/x509-parser",
+        "fetched_at_utc": "2026-10-23T03:38:15.649845+00:00",
+        "response_sha256": "4bbaa72a2a901b45ef6e97d0e161961d193afc136ac983e3081b82ce46ac7e52",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"3a62670d32855fb34a51616040e0a981\"",
+          "Last-Modified": "Thu, 05 Feb 2026 09:30:34 GMT",
+          "Age": "259",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "x509-parser",
+            "version": "0.18.1",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "yasna",
+        "url": "https://index.crates.io/ya/sn/yasna",
+        "fetched_at_utc": "2026-10-23T03:38:15.655379+00:00",
+        "response_sha256": "917d41d3d2522bb4397400f908dbdd1a5a0da8b1dcb885331fb1ad24045f4d27",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"df69dd0e128ba8e5fd64cfb29e822b33\"",
+          "Last-Modified": "Sat, 14 Mar 2026 04:29:58 GMT",
+          "Age": "259",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "yasna",
+            "version": "0.6.0",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "zeroize",
+        "url": "https://index.crates.io/ze/ro/zeroize",
+        "fetched_at_utc": "2026-10-23T03:38:15.656951+00:00",
+        "response_sha256": "6f9748f20e2993c7f3051f5afe7b638c16df384a7cafe5dbdb286fcf41938f32",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"f9171972d5ef281a37a88c8c19be6e39\"",
+          "Last-Modified": "Tue, 06 Oct 2026 17:49:22 GMT",
+          "Age": "258",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "zeroize",
+            "version": "1.9.1",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      },
+      {
+        "name": "zmij",
+        "url": "https://index.crates.io/zm/ij/zmij",
+        "fetched_at_utc": "2026-10-23T03:38:15.658342+00:00",
+        "response_sha256": "bf81df6dbb5da354e0b03658806f2ab9e549f8ad331cf567de3ad7b06e048b0e",
+        "headers": {
+          "Date": "Fri, 23 Oct 2026 03:38:15 GMT",
+          "ETag": "\"0f5848725eb0fd28678f4a7c5c93c833\"",
+          "Last-Modified": "Mon, 13 Jul 2026 12:58:55 GMT",
+          "Age": "293",
+          "Cache-Control": "public,max-age=600"
+        },
+        "packages": [
+          {
+            "name": "zmij",
+            "version": "1.0.23",
+            "yanked": false,
+            "checksum_matches_lock": true
+          }
+        ]
+      }
+    ]
+  },
+  "metadata": {
+    "command": [
+      "cargo",
+      "metadata",
+      "--locked",
+      "--offline",
+      "--all-features",
+      "--format-version",
+      "1"
+    ],
+    "exit_code": 0,
+    "workspace_packages": 11,
+    "external_packages": 107,
+    "packages_total": 118,
+    "packages": [
+      {
+        "name": "asn1-rs",
+        "version": "0.7.2",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "asn1-rs-derive",
+        "version": "0.6.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "asn1-rs-impl",
+        "version": "0.2.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT/Apache-2.0"
+      },
+      {
+        "name": "autocfg",
+        "version": "1.5.1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "Apache-2.0 OR MIT"
+      },
+      {
+        "name": "base64",
+        "version": "0.23.1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "bit-vec",
+        "version": "0.9.1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "Apache-2.0 OR MIT"
+      },
+      {
+        "name": "bitflags",
+        "version": "2.13.2",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "block-buffer",
+        "version": "0.12.1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "cc",
+        "version": "1.9.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "cfg-if",
+        "version": "1.0.5",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "const-oid",
+        "version": "0.10.2",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "Apache-2.0 OR MIT"
+      },
+      {
+        "name": "cpufeatures",
+        "version": "0.3.1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "crypto-common",
+        "version": "0.2.2",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "data-encoding",
+        "version": "2.11.1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT"
+      },
+      {
+        "name": "der-parser",
+        "version": "10.0.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "deranged",
+        "version": "0.5.9",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "digest",
+        "version": "0.11.3",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "displaydoc",
+        "version": "0.2.7",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "equivalent",
+        "version": "1.0.3",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "Apache-2.0 OR MIT"
+      },
+      {
+        "name": "errno",
+        "version": "0.3.14",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "fastrand",
+        "version": "2.5.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "Apache-2.0 OR MIT"
+      },
+      {
+        "name": "find-msvc-tools",
+        "version": "0.1.15",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "flume",
+        "version": "0.12.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "Apache-2.0/MIT"
+      },
+      {
+        "name": "futures-core",
+        "version": "0.3.34",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "futures-sink",
+        "version": "0.3.34",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "gethostname",
+        "version": "1.1.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "getrandom",
+        "version": "0.2.17",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "hashbrown",
+        "version": "0.17.1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "hybrid-array",
+        "version": "0.4.15",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "if-addrs",
+        "version": "0.15.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR BSD-3-Clause"
+      },
+      {
+        "name": "indexmap",
+        "version": "2.14.2",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "Apache-2.0 OR MIT"
+      },
+      {
+        "name": "itoa",
+        "version": "1.0.18",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "lazy_static",
+        "version": "1.5.1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "libc",
+        "version": "0.2.191",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "linux-raw-sys",
+        "version": "0.12.1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT"
+      },
+      {
+        "name": "lock_api",
+        "version": "0.4.14",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "log",
+        "version": "0.4.34",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "mdns-sd",
+        "version": "0.21.6",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "Apache-2.0 OR MIT"
+      },
+      {
+        "name": "memchr",
+        "version": "2.8.3",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "Unlicense OR MIT"
+      },
+      {
+        "name": "minimal-lexical",
+        "version": "0.2.1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT/Apache-2.0"
+      },
+      {
+        "name": "mio",
+        "version": "1.2.4",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT"
+      },
+      {
+        "name": "nom",
+        "version": "7.1.3",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT"
+      },
+      {
+        "name": "num-bigint",
+        "version": "0.4.8",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "num-conv",
+        "version": "0.2.2",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "num-integer",
+        "version": "0.1.47",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "num-traits",
+        "version": "0.2.19",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "oid-registry",
+        "version": "0.8.1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "once_cell",
+        "version": "1.21.4",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "pem",
+        "version": "4.0.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT"
+      },
+      {
+        "name": "powerfmt",
+        "version": "0.2.1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "proc-macro2",
+        "version": "1.0.107",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "quote",
+        "version": "1.0.47",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "rcgen",
+        "version": "0.14.10",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "ring",
+        "version": "0.17.14",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "Apache-2.0 AND ISC"
+      },
+      {
+        "name": "rusticata-macros",
+        "version": "4.1.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT/Apache-2.0"
+      },
+      {
+        "name": "rustix",
+        "version": "1.1.5",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT"
+      },
+      {
+        "name": "rustls",
+        "version": "0.23.46",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "Apache-2.0 OR ISC OR MIT"
+      },
+      {
+        "name": "rustls-pki-types",
+        "version": "1.15.1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "rustls-webpki",
+        "version": "0.103.16",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "ISC"
+      },
+      {
+        "name": "scopeguard",
+        "version": "1.2.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "serde",
+        "version": "1.0.229",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "serde_core",
+        "version": "1.0.229",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "serde_derive",
+        "version": "1.0.229",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "serde_json",
+        "version": "1.0.154",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "serde_spanned",
+        "version": "1.1.2",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "sha2",
+        "version": "0.11.1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "shlex",
+        "version": "2.0.1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "socket-pktinfo",
+        "version": "0.4.1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT"
+      },
+      {
+        "name": "socket2",
+        "version": "0.6.5",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "spin",
+        "version": "0.9.9",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT"
+      },
+      {
+        "name": "subtle",
+        "version": "2.6.1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "BSD-3-Clause"
+      },
+      {
+        "name": "syn",
+        "version": "2.0.119",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "syn",
+        "version": "3.0.9",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "synstructure",
+        "version": "0.13.2",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT"
+      },
+      {
+        "name": "thiserror",
+        "version": "2.0.21",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "thiserror-impl",
+        "version": "2.0.21",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "time",
+        "version": "0.3.55",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "time-core",
+        "version": "0.1.9",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "time-macros",
+        "version": "0.2.32",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "toml",
+        "version": "0.9.12+spec-1.1.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "toml_datetime",
+        "version": "0.7.5+spec-1.1.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "toml_parser",
+        "version": "1.1.5+spec-1.1.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "toml_writer",
+        "version": "1.1.3+spec-1.1.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "typenum",
+        "version": "1.20.1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "unicode-ident",
+        "version": "1.0.27",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "(MIT OR Apache-2.0) AND Unicode-3.0"
+      },
+      {
+        "name": "untrusted",
+        "version": "0.9.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "ISC"
+      },
+      {
+        "name": "wasi",
+        "version": "0.11.1+wasi-snapshot-preview1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT"
+      },
+      {
+        "name": "windows-link",
+        "version": "0.2.1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "windows-sys",
+        "version": "0.52.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "windows-sys",
+        "version": "0.61.2",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "windows-targets",
+        "version": "0.52.6",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "windows_aarch64_gnullvm",
+        "version": "0.52.6",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "windows_aarch64_msvc",
+        "version": "0.52.6",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "windows_i686_gnu",
+        "version": "0.52.6",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "windows_i686_gnullvm",
+        "version": "0.52.6",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "windows_i686_msvc",
+        "version": "0.52.6",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "windows_x86_64_gnu",
+        "version": "0.52.6",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "windows_x86_64_gnullvm",
+        "version": "0.52.6",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "windows_x86_64_msvc",
+        "version": "0.52.6",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "winnow",
+        "version": "0.7.15",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT"
+      },
+      {
+        "name": "winnow",
+        "version": "1.0.4",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT"
+      },
+      {
+        "name": "x11rb",
+        "version": "0.13.2",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "x11rb-protocol",
+        "version": "0.13.2",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "x509-parser",
+        "version": "0.18.1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "yasna",
+        "version": "0.6.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT OR Apache-2.0"
+      },
+      {
+        "name": "zeroize",
+        "version": "1.9.1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "Apache-2.0 OR MIT"
+      },
+      {
+        "name": "zmij",
+        "version": "1.0.23",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "license": "MIT"
+      }
+    ],
+    "scope_note": "Cargo metadata inventory is broader than the activated cargo-deny graphs; registry checks cover every external locked inventory version. This is not a claim that all inventory crates are linked into every platform binary."
+  },
+  "notices": {
+    "command": [
+      "python3",
+      "docs/verification/public-release-audit-2026-10-21/generate-notices.py",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "notices verified"
+  },
+  "input_integrity": {
+    "files_checked": 114,
+    "changes": [],
+    "sha256_by_path": {
+      "Cargo.lock": "0cc466112ead33a26cb59fce717d83c202bd470e6ba64394ab7c81ac560c6f3f",
+      "Cargo.toml": "1249baacd47b641edbab7350fa10f94d5a08624223c0ef1d7c8e49707c96fb0d",
+      "THIRD_PARTY_NOTICES.md": "4b5b633761919c64b0ec44b86a7f545befe19ce454d452346ae8a86f7068f869",
+      "crates/config/Cargo.toml": "2a747685780dabe93f139c609859005c2baad60e6599c4b8442273f5dea79968",
+      "crates/config/src/cli.rs": "21df1802c13c89bb4569f1e0f3b0290aa212dfdb1a6d2e7ce9aa5e32d0262246",
+      "crates/config/src/layout.rs": "04b27afdd4cb1e05c321845c79370aabeb79d0afd2574a29ee3d357412c46c06",
+      "crates/config/src/lib.rs": "214d8694a6d1b93bffd10b3ccb150da95191b6ce64b83a7a9e347ea9290979a4",
+      "crates/config/src/model.rs": "06eba7851d8a9789a342dc7d374880eedadcfc9a106026b7c3f3e69a4cf7b0b3",
+      "crates/config/src/synergy.rs": "8e1650d35a9a20c87504832e81b1b0fdd0dcb9a289e39d988c9c9f4f4e86f3e0",
+      "crates/config/src/synergy3.rs": "9faca911b846568795c23d01b768d6de3113d90f73e65e24418c79bdc44621fc",
+      "crates/daemon/Cargo.toml": "4cb03349cb6d9cf4a6f95dce64cd0e3ed5306a7faa7762326fdc00d28a48aefa",
+      "crates/daemon/src/adapter.rs": "874a75cebedcc5120306f4dec0d9d326932379fceb6ca072451bc8cf04d6185a",
+      "crates/daemon/src/allocator.rs": "1b0193bd0f658b47d219bb931cb045df7f25ee9f61ba11c4cd2c1f653a006ffd",
+      "crates/daemon/src/clipboard_json.rs": "5ec7fc4e24fd1d8054a60bffa0d7ac671d4357fc73c44abf59c81d9c26343299",
+      "crates/daemon/src/events.rs": "cee67a01d3ef29d5dc6aa300169ec61287c7edd0e492913de7f0fa3bb800dfad",
+      "crates/daemon/src/interfaces.rs": "80e2a11a6eb67be30ce263635c85edcee0d4e6185fc64514add27d3ee96df550",
+      "crates/daemon/src/ipc_server.rs": "4ceb1dc908211fd0b6493c55787f32582b8b248bedff20c99d800fed41a2301e",
+      "crates/daemon/src/lifetime.rs": "922a15a92661fdb6ca5f848852b79cc67e34c9b9b2ad266f7f4d4e7fd6f194e5",
+      "crates/daemon/src/logger.rs": "2faf11b9ec28a1d12ced24b662014e21aa86bae798dec6f4a15a0fd2a728e298",
+      "crates/daemon/src/main.rs": "ba5a5d6ae3817bed2a9fd6955b9fee751983bc6b1f53c0df9f9e12f76519bb61",
+      "crates/daemon/src/runtime.rs": "187c2301efa9873791597289a45247abc6221c9cf8538db492d20e4b0d202af9",
+      "crates/daemon/src/windows_pipe.rs": "9234c4be2e35e228cd8dba0b6b5c153ff419b1eeb15ad96b9dd6b7a531711a6c",
+      "crates/daemon/src/workers.rs": "5109cd76c0a1911b74512b3d8d2cf4d49df27fed417a55d3ac68a1f1ca8028b2",
+      "crates/ipc/Cargo.toml": "6ba4201f9b8b94fa813fc3699d422165b7db6102e14c2b70292c7cc83f7073d3",
+      "crates/ipc/src/lib.rs": "04d612b9256a8229932d76900b75671f6b66a23e242491077ed73212e16aeaec",
+      "crates/net/Cargo.toml": "c74312dcc7dc550825d7c247961e2fd44f7ca1dbbdfc7bb6c28e7351ef30637c",
+      "crates/net/examples/audit_transport.rs": "5c4e2986ccce3b2fccdb8c71df1d34d15d22292f857c5bc9574d673fa5033c5e",
+      "crates/net/examples/discovery.rs": "685ca4b9e1e4abf6aad00489c957eb1ab813b55609c2f417808455169f19f77b",
+      "crates/net/examples/guardrails.rs": "8ebd7471140b4157964109fdaaeeb63513c95fab5ed112e22dae2a8860134202",
+      "crates/net/examples/lifecycle.rs": "f143c2eb29f20fc1f0ed80b17a3b44a8fa6782293b8b88607245e8288c98b9dd",
+      "crates/net/examples/priority_peer.rs": "37f5a97dcf4a37bccc8f13acdc92f9e2bcb16794c410e09352d596fd0c7061df",
+      "crates/net/examples/tls_peer.rs": "03849b13c29090840707dd8b343cdbefc5fe9d42ae25095a7e61bc1db34c790d",
+      "crates/net/examples/trust_directories.rs": "61d7dd28b7288c86606d6df851893ecfa6b5f03c01f0c4b1fab8e27c0ebbdcd8",
+      "crates/net/src/cli.rs": "b22cef41a524d556c81afb98e7b6d5d57557749ce9ca586145881995b82acb41",
+      "crates/net/src/connect_error.rs": "a3c944fefddc2b4a9e759298b5a4c9d5637503bf88fcbbf5dc0baf7e78929568",
+      "crates/net/src/discovery.rs": "bdbf309bc7f2b63ab72e03c19b20f75a1d397acdd452a288592739fd71fe0897",
+      "crates/net/src/identity.rs": "102aa396739087ce2f117f775f18508475ff3b4326fe702b7ad4d1a4d886b07c",
+      "crates/net/src/lib.rs": "1bfcda0c11d7bb5be7f23005d9db9170e62317161877e52b616c79c655317ac9",
+      "crates/net/src/reactor.rs": "43476e3ab801096113d91632c9b0426ff0221fade860a18f46f7120594d44887",
+      "crates/net/src/tls.rs": "b6c852d4d03ea27549e24eeba5d80ca65432dd6a90ea6f2cf1cf33dda1157abe",
+      "crates/net/src/trust.rs": "830010af377e5b93a32334d8386f325cc10e19fe83520dda26b267a0a81ee6ff",
+      "crates/net/src/windows_permissions.rs": "2dbca5dc28eb51dc87c89bb2b0a8b7f009037094db45c7085db635ae598090c4",
+      "crates/platform-linux/Cargo.toml": "d9f8772dc001e12d2fe9f1489d35918deeeeead9daab8131371ea91cf0b1a4ac",
+      "crates/platform-linux/examples/x11_probe.rs": "d61e6bf76b0d7802a0ad124110feb1991239a90b1008b0edad3bb62cdbc0e761",
+      "crates/platform-linux/src/clipboard.rs": "c30058611fc426f3f2b0bc5d4c9f53bf8ef48ea4cb3915098894c22277fdf88c",
+      "crates/platform-linux/src/image.rs": "085b0a326643393ce926234a249d2b9baeb21a62d77ceaab7d2468a0422d1eb8",
+      "crates/platform-linux/src/keymap.rs": "e30286da66b02322186f9c3cdc808a6a347691e0e7c458184517a1507604f42e",
+      "crates/platform-linux/src/lib.rs": "3c34c73f6ab833b843195e5c2a99bee7affc7d46bd7fe7fd3786be3cb033e441",
+      "crates/platform-linux/src/native.rs": "00588627b702216ab2a35ee288d83241cb8705456a101b7e904e8c47107d6579",
+      "crates/platform-linux/src/sink.rs": "0144d18b20dbd1fa55727ff59e4daa9f6e7a89c3f25a7ada027bfb260e791be3",
+      "crates/platform-linux/src/source.rs": "e1429aab6c7549219cdca6a844cd944061909e93ca5d32e6d009e23acd74b5f8",
+      "crates/platform-linux/src/unicode_keysyms.rs": "b632ddb45d402b9045b0d6003a71e1ea5a9448ddfea7780dfc3cb3028571d58f",
+      "crates/platform-macos/Cargo.toml": "7b2607a96c77a79f3e8f6ab482fc39249e74a0ea8a283e3b6db5cf0cffdb2280",
+      "crates/platform-macos/examples/focuslab_inject.rs": "d8ba4769e3c54bb904ab9c54eb4e3d0437f3d84c1d261b0429df59b33f4f60ad",
+      "crates/platform-macos/examples/mac_probe.rs": "93e5dbde8d0a2d7f6c4f6a980baafa60a305b1e6df73272c44e5db0218f92c5c",
+      "crates/platform-macos/src/displays.rs": "1d6860ac0ceb6ebf9234eb7e7bbabeb789584a33b7b85134515d4111ce34ae5e",
+      "crates/platform-macos/src/ffi.rs": "6b106e9e9d2e0b1453f2d846d991182914ce6a4a87acb0e400637b65aeeb6ef8",
+      "crates/platform-macos/src/inject.rs": "2604c4e71c7f7713ef71a0e6c5d558422f97f5eea81307861dcfce144c9bddbc",
+      "crates/platform-macos/src/keymap.rs": "0dc9a9583802b154f87b4dd68a41c87a4b6902024218b2accee47d8d917fe314",
+      "crates/platform-macos/src/lib.rs": "aafa994a8696824968671f1cda6a2f06933bdc2f9e472606d783ae86d8b0801e",
+      "crates/platform-macos/src/pasteboard.rs": "6b53e3063f6a4a015a4761dcc9a9399d5a47d73b87c92947d036cbf7e2f62d39",
+      "crates/platform-macos/src/permissions.rs": "ee6111c35d5985a55b8187c6f573bff7bb372397e32ed3dcbaf87d48e15d3914",
+      "crates/platform-macos/src/screens.rs": "384cc286565139bc0605cc6493222c7c52621f7ace2701a0471242160deb55b0",
+      "crates/platform-macos/src/tap.rs": "fd28e13ff29fa5fe453ad8b4cba3b85c80e013c9971021a088546d491e96a571",
+      "crates/platform-macos/src/types.rs": "71cbea2c52890d808d32412d9b33e095033dfe570e20387d38d4a2df3228284a",
+      "crates/platform-windows/Cargo.toml": "080605b569ed545650abd65a3cc551dbb5c3231f8eb3d8589b5598fc3f6cf460",
+      "crates/platform-windows/src/clipboard.rs": "451bc0555457ce95f7f5d2ba7ae657834925cd708b186e14678686b12ce8dc80",
+      "crates/platform-windows/src/keymap.rs": "a9d531bbe6ed9916a389de4b384aa2321f7f04848c73e378fc61da7aca400aeb",
+      "crates/platform-windows/src/lib.rs": "1ce695c6f22dbd55d4cdded98f147a32812ffae7b1eb7f2ff8ad7f319daaeedb",
+      "crates/platform-windows/src/native.rs": "3aeddda52041991234e601dab0afe7c388b1aa9e858b308004d24bda84810cc1",
+      "crates/platform-windows/src/sink.rs": "1ca075dd2e12e9d383ae29254138573a9ea6bfa190bc94ce233b9f1043f5d7fb",
+      "crates/platform-windows/src/source.rs": "c5726f8d3ba7903903bdfe671252a622ceb3784356583784dd23a20ac76975ab",
+      "crates/platform/Cargo.toml": "88ee6e62955081ae5017549067c0055bd3ebd7a7e52b739b4b59455cebcc02ce",
+      "crates/platform/examples/virtual_demo.rs": "a4ab3a3995e1799f233375861ad4512085b8318427d0721a4793475eb32028e0",
+      "crates/platform/src/click.rs": "08801f4736e89a7512bf33a017fa92c66fc3dcb8221e6703ffbbf8321b8feee7",
+      "crates/platform/src/lib.rs": "77cf31c3b30f62eddbe89051702a95d7b529ffaef4eafea5214916b54b5652b5",
+      "crates/platform/src/script.rs": "bbe2991d5f2152f7bb6f3314bec2601b1e58a1318b14ba753f72f3043e5d3c01",
+      "crates/platform/src/virtual_backend.rs": "ae8c8ca58f828b6b106d09079e5b960bb9e4b035567917b5e0da682663d97a18",
+      "crates/protocol/Cargo.toml": "c91717334a50d2e68057c5e306b685e95a1506fc4d0bd9b08f443b62d6897445",
+      "crates/protocol/examples/wire_probe.rs": "f59443a83fef0d835259b5d8a9fd34b22f027d66cbb1049f19c7b9edb5abec68",
+      "crates/protocol/src/clipboard.rs": "4fb846e2fe3812f4136e77b64a509f120f5ba25675a8fcca9392269c672583da",
+      "crates/protocol/src/codec.rs": "9641df927d3391e26279bd138307192b6e04feb785e8f459b27cb57a748b7c0e",
+      "crates/protocol/src/keys.rs": "bdcde8427a2534a8e2e96987da21ca792bdf38d60415d5d32b52f949293fbaff",
+      "crates/protocol/src/lib.rs": "82cccc4173141f0a597431e27179d088007c9d0ada50dc6d0f5716dabe49c103",
+      "crates/session/Cargo.toml": "a1c5e86b885cb1cf079c19600bf180fb04fb3847173b9d5324426047865fae18",
+      "crates/session/src/client.rs": "9905587a134a14c3ac0da9c1efab8c78f2ed0702e53905f9a9ad399f425a0084",
+      "crates/session/src/clipboard.rs": "b65912bcdc8e852d2b03e4955966bf127f3b6f02ad52ae790ff1ba469c37ef18",
+      "crates/session/src/common.rs": "cb5a10b02ea47486643f82c8c8484f952ce2234b27dbe805ef20a49c1cb3f46d",
+      "crates/session/src/hotkey.rs": "709cf340dec0b839bc8a97d3b11fd796a45add44107a35e93db63622991b2c7a",
+      "crates/session/src/layout.rs": "8408d750040ebe5b7357859219ce416888e77fb3ed005894b32f36ad69f94fab",
+      "crates/session/src/lib.rs": "a1acd5fa946c692f758a9eea75f19b73e81eb5c0cabc4b5835ffeb14c0a561a5",
+      "crates/session/src/server.rs": "c7a7f2597c174de865734e2e09c1db7f5e7ff3b0efecfb711cafe507e18357c3",
+      "deny.toml": "48165f414b8cf95491ba9489fb711d9151b1250eb142db86d2bb75c020b9e0a8",
+      "rust-toolchain.toml": "f715f440167e20fd8ea9afa0498c3d1ab80174cfcb8cbc895f106a34d907a1e1",
+      "spikes/macos-input/Cargo.toml": "66fa2711dc2075ff1d9b2cfd65e870f7162af4b7644406ab6df956ea440d64eb",
+      "spikes/macos-input/src/displays.rs": "097255ecbb3479ef3a415cd5d88f87d3c88bfd256704a3e37bc6eb762b9f597d",
+      "spikes/macos-input/src/ffi.rs": "d36d47365bdd1892d360ebb895f3188b4f565c8be74658f83cb1748f97c5bbea",
+      "spikes/macos-input/src/inject.rs": "28805a5ca112d88d643e0b9d4438b23d581010689395e1298627644c946a2e05",
+      "spikes/macos-input/src/keymap.rs": "92e7f3b1d0bbedeea88f5e6ac4fea656a7f81553d09188aafd9af50e861412b7",
+      "spikes/macos-input/src/lib.rs": "8f535b679342e67334c540d7f9157b7bbe18463504f04fdd397f864a457c3c3d",
+      "spikes/macos-input/src/main.rs": "1f27d60bf5ecf8ef9eca5dcac926fbcb6b7554d93e9dba3af69cad487c537136",
+      "spikes/macos-input/src/pasteboard.rs": "1a2f8d72c09493dfe72096820a7a79771bef3a9abec45bda6d7de06c116a829e",
+      "spikes/macos-input/src/permissions.rs": "f429d183c05cc3673bf8e0c99126575e37cee029b3b4abacf9ba3eb485893afd",
+      "spikes/macos-input/src/tap.rs": "41d71dd216657056f405c837f6f308bb10809bae73ca70c1c2c097f14932d19f",
+      "spikes/macos-input/src/types.rs": "099b05491e7d85ed04bcec133ffc2164f995f486064fe637172174dcc4741abf",
+      "tools/e2e/Cargo.toml": "78bb98248bc0c14ead549803d241fd912b95b068b894b2040d1d36d6ac55b83c",
+      "tools/e2e/src/guardian.rs": "8b48c734c7f4f111ff0e9c17461d8a02d2d0e9e6c51317b9d19279cf61c8e00a",
+      "tools/e2e/src/main.rs": "a38b74212fc8ccda9388da68f5a3d4da558ff872df56d0ab3251b2f7c0bd18f3",
+      "tools/e2e/src/model.rs": "f7b7004ad68da192e3e094ed49a554d9d4741fc89ab068cc34fe5e4c661236c4",
+      "tools/e2e/src/process.rs": "10ee9511a9ef68a81f4a4ac9c199a186e62b995d479d2e2e61004e32d89f9f0b",
+      "tools/e2e/src/runner.rs": "cd42127261573a5a6ce0b9d8a31a9d1013aa34b1486db97af0decb871970d564",
+      "tools/e2e/src/steps.rs": "de99717892fa32348af6d24bdb44b84097feb3b4e14c4316ec18219369621184",
+      "tools/e2e/src/util.rs": "c2d962c283abae42984bd310fbab30d286a0664d6f9752aeba3f47cb81b16fc6",
+      "tools/e2e/src/wire.rs": "60593d4a4461ce5f81ddbe94c4f19976cde2c14e46a6d48f0a431a5d5a7ef22c"
+    }
+  },
+  "observed_existing_daemon": {
+    "sha256": "683de1fc9c64c062dc98482975f3f8dc05542426af36716a3a4fb299c406b5a4",
+    "bytes": 3707520
+  },
+  "initial_cli_setup_failure": {
+    "command": [
+      "cargo-deny",
+      "--locked",
+      "--all-features",
+      "--color",
+      "never",
+      "-L",
+      "info",
+      "--format",
+      "json",
+      "--target",
+      "aarch64-apple-darwin",
+      "--target",
+      "x86_64-apple-darwin",
+      "--target",
+      "x86_64-unknown-linux-gnu",
+      "--target",
+      "x86_64-pc-windows-msvc",
+      "--target",
+      "aarch64-unknown-linux-gnu",
+      "check",
+      "--show-stats"
+    ],
+    "exit_code": 2,
+    "stderr": "error: the argument '--target <CFG>' cannot be used multiple times\n\nUsage: cargo-deny [OPTIONS] <COMMAND>\n\nFor more information, try '--help'.",
+    "effect": "Rejected before scanning; target checks then ran one supported --target per command. The first reporting loop also failed to decode the plain-text CLI error as JSON. No product or policy failure is counted."
+  },
+  "sanitized_combined_log": {
+    "path": "dependency-policy-refresh.ndjson",
+    "sha256": "93c7d5b0c8d5036cff04fe8c26ab15fac6ea194b0f3a72b280165ab168be6728",
+    "substitution": "absolute checkout root replaced by <repo>; diagnostic values and summary preserved"
+  },
+  "limits": [
+    "No dependency, manifest, lockfile, policy, notice text, runtime or installed software change.",
+    "No new compilation or runtime/native acceptance run; existing Mac executable hash and size were only read.",
+    "No independent security-review clearance, signed/notarized distribution or hosted execution clearance.",
+    "Native input/clipboard and positive Windows migration/recovery remain release gates.",
+    "GitHub private reporting setup remains deferred."
+  ]
+}

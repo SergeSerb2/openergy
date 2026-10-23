@@ -12,6 +12,10 @@ or mocks were added. Native backend probes ran only inside isolated Linux Xvfb.
 
 ## Final hardening follow-up
 
+The [dependency-policy refresh](dependency-policy-refresh.md) checks current
+RustSec data, all-features and five platform graphs, registry yank/checksum
+metadata and notice freshness without changing dependencies or runtime code.
+
 The [Windows pipe deadline follow-up](windows-ipc-deadlines.md) verifies all
 19 request/idle/refusal/shutdown checks against real Windows named pipes. The
 retained pre-deadline control fails exactly the six timeout/recovery cases.
