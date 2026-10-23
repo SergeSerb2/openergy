@@ -136,6 +136,12 @@ pub(crate) struct DirectoryLock {
 }
 impl DirectoryLock {
     pub(crate) fn acquire(path: &Path) -> std::io::Result<Self> {
+        Self::with_wait(path, true)
+    }
+    pub(crate) fn try_acquire(path: &Path) -> std::io::Result<Self> {
+        Self::with_wait(path, false)
+    }
+    fn with_wait(path: &Path, wait: bool) -> std::io::Result<Self> {
         // Migrate the old empty directory sentinel without deleting user data.
         if entry_exists(path)? {
             let kind = fs::symlink_metadata(path)?.file_type();
@@ -154,11 +160,24 @@ impl DirectoryLock {
             #[cfg(unix)]
             {
                 use std::os::unix::fs::OpenOptionsExt;
-                options.mode(0o600);
+                options.mode(0o600).custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK);
             }
             options.open(path)?
         };
-        file.lock()?;
+        if !file.metadata()?.is_file() {
+            return Err(std::io::Error::other("TLS lock must be a regular file"));
+        }
+        if wait {
+            file.lock()?;
+        } else {
+            file.try_lock().map_err(|error| match error {
+                std::fs::TryLockError::WouldBlock => std::io::Error::new(
+                    std::io::ErrorKind::WouldBlock,
+                    "TLS files are busy; retry the operation",
+                ),
+                std::fs::TryLockError::Error(error) => error,
+            })?;
+        }
         Ok(Self { _file: file })
     }
 }

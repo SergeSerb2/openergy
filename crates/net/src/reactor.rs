@@ -1470,9 +1470,9 @@ impl NetDriver {
                 }
                 let mut store = TrustStore::load(&c.trust_dir).map_err(failed)?;
                 if c.outbound {
-                    store.trust_server(*fp).map_err(failed)?;
+                    store.try_trust_server(*fp).map_err(failed)?;
                 } else {
-                    store.trust_client(*fp).map_err(failed)?;
+                    store.try_trust_client(*fp).map_err(failed)?;
                 }
                 c.announce(out);
                 c.read_ready = true;

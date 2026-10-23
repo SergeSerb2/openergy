@@ -116,17 +116,29 @@ impl TrustStore {
         self.clients.contains(fp)
     }
     pub fn trust_server(&mut self, fp: Fingerprint) -> Result<(), TrustError> {
-        self.modify(&[fp], &[], None).map(|_| ())
+        self.modify(&[fp], &[], None, true).map(|_| ())
     }
     pub fn trust_client(&mut self, fp: Fingerprint) -> Result<(), TrustError> {
-        self.modify(&[], &[fp], None).map(|_| ())
+        self.modify(&[], &[fp], None, true).map(|_| ())
+    }
+    /// Live IO owners must not wait for another process's trust-file lock.
+    pub fn try_trust_server(&mut self, fp: Fingerprint) -> Result<(), TrustError> {
+        self.modify(&[fp], &[], None, false).map(|_| ())
+    }
+    /// Nonblocking counterpart of `trust_client`; a busy store is unchanged.
+    pub fn try_trust_client(&mut self, fp: Fingerprint) -> Result<(), TrustError> {
+        self.modify(&[], &[fp], None, false).map(|_| ())
     }
     /// Preflight an offline approval for both roles before saving either list.
     pub fn trust_both(&mut self, fp: Fingerprint) -> Result<(), TrustError> {
-        self.modify(&[fp], &[fp], None).map(|_| ())
+        self.modify(&[fp], &[fp], None, true).map(|_| ())
     }
     pub fn revoke(&mut self, fp: &Fingerprint) -> Result<(), TrustError> {
-        self.modify(&[], &[], Some(*fp)).map(|_| ())
+        self.modify(&[], &[], Some(*fp), true).map(|_| ())
+    }
+    /// Nonblocking revocation for a live IO owner; callers can retry on busy.
+    pub fn try_revoke(&mut self, fp: &Fingerprint) -> Result<(), TrustError> {
+        self.modify(&[], &[], Some(*fp), false).map(|_| ())
     }
     pub fn servers(&self) -> &[Fingerprint] {
         &self.servers
@@ -139,9 +151,16 @@ impl TrustStore {
         add_servers: &[Fingerprint],
         add_clients: &[Fingerprint],
         remove: Option<Fingerprint>,
+        wait: bool,
     ) -> Result<usize, TrustError> {
         private_dir(&self.dir).map_err(fail)?;
-        let _lock = DirectoryLock::acquire(&self.dir.join(".trust-lock")).map_err(fail)?;
+        let lock_path = self.dir.join(".trust-lock");
+        let _lock = if wait {
+            DirectoryLock::acquire(&lock_path)
+        } else {
+            DirectoryLock::try_acquire(&lock_path)
+        }
+        .map_err(fail)?;
         let mut next = Self::load(&self.dir)?;
         let servers = next.servers.clone();
         let clients = next.clients.clone();
@@ -184,6 +203,6 @@ impl TrustStore {
             servers: read(&dir.join("trusted-servers"), false)?,
             clients: read(&dir.join("trusted-clients"), false)?,
         };
-        self.modify(&other.servers, &other.clients, None)
+        self.modify(&other.servers, &other.clients, None, true)
     }
 }

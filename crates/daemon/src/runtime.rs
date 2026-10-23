@@ -1156,9 +1156,9 @@ impl Runtime {
                         } else {
                             let store = self.driver.trust_store_mut();
                             let result = if self.cfg.role == Role::Server {
-                                store.trust_client(fp)
+                                store.try_trust_client(fp)
                             } else {
-                                store.trust_server(fp)
+                                store.try_trust_server(fp)
                             };
                             result.map_err(|e| IpcError::new("trust_failed", e.to_string()))?;
                         }
@@ -1167,7 +1167,7 @@ impl Runtime {
                     _ => {
                         self.driver
                             .trust_store_mut()
-                            .revoke(&fp)
+                            .try_revoke(&fp)
                             .map_err(|e| IpcError::new("trust_failed", e.to_string()))?;
                         if self.expected_pin.as_ref().is_some_and(|(_, pin)| *pin == fp) {
                             self.expected_pin = None;
