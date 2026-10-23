@@ -1,6 +1,6 @@
 # Alpha readiness and evidence
 
-Status date: **2026-10-22**. Openergy is source-stage alpha software, version
+Status date: **2026-10-23**. Openergy is source-stage alpha software, version
 `0.1.0`. No release artifacts have been published as of this date. Preparing
 source for public review does not establish production readiness, authorize a
 visibility change, or imply a supported binary release.
@@ -10,7 +10,8 @@ visibility change, or imply a supported binary release.
 | Surface | Existing evidence | Limit |
 | --- | --- | --- |
 | Daemon and CLI | [Real-process verification](../../crates/daemon/VERIFICATION.md), IPC, loopback TCP/TLS, and virtual input/clipboard scenarios. | Virtual ledgers do not prove native capture/injection or recovery after every OS failure. |
-| macOS app | Historical app/daemon E2E report in the daemon verification record. | It checks app logic with isolated state. It is not a complete first-install, TCC, native UI, or signing acceptance run. |
+| macOS app | [Current packaged app flow](../verification/macos-app-current-flow-2026-10-23/README.md): 25/25 real model/IPC checks with an owned virtual peer, including reconnect and crash recovery. | Rendering was disabled. It is not a complete first-install, TCC, native UI, or signing acceptance run. |
+| macOS updates | [Sparkle integration](../verification/sparkle-integration-2026-10-23/README.md): six real updater command paths, local archive/feed signature verification and live empty Cloudflare feed. | No app release is published. Visual UI, archive download through Sparkle, installation, daemon handoff, relaunch and trusted distribution remain unverified. |
 | macOS native backend | [Backend verification](../../crates/platform-macos/VERIFICATION.md) and [27.0.1 focus lab](../verification/focus-lab-macos-27.0.1/README.md). | The focus run did not reproduce the legacy activation bug. Current-build 27.2 fix acceptance remains open. |
 | Linux X11 | [X11 verification](../../crates/platform-linux/VERIFICATION.md) in isolated Xvfb. | No broad distribution, window manager, physical hardware, or Wayland claim. |
 | Linux x86-64 artifact | [Python 3.11 package and real-command checks](../verification/release-integration-2026-10-22/linux-amd64-python311.md) under AMD64 emulation, including extracted executable checks. | Not physical x86-64 desktop or performance acceptance. |
