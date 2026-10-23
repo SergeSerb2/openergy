@@ -30,29 +30,37 @@ drop. Its second run reproduced the three failed checks. The parent checked the
 committed trace ordering and copied output hashes. The original untraced run's
 precise interleaving stays unknown, and its acceptance result stays failed.
 
-A separate implementation task is repairing the verification with actual
-startup-outcome witnesses and strict failed-start/accepted-start cases. It must
-preserve the real identity, state and cleanup checks and show a failing baseline
-before fresh independent review and native acceptance.
+A separate implementation task repaired the verification with actual startup
+outcomes and distinct failed-start/accepted-start cases. It preserves identity,
+state and cleanup checks and supplies a failing baseline. Native acceptance
+retains its separate gate.
 
 The [R7 source review](discovery-observed-startup-review-r7.md) of its first
 candidate found two remaining verification gaps: a pre-failure search event could
 pass the repeat check, and the limited-state gauge did not prove standard-browse
-drop cleanup. The active implementation task is correcting both. That candidate
-is not integrated or accepted. A separate Windows task observes actual worker and
-socket removal after normal shutdown and Drop while its private helper stays alive.
+drop cleanup. That first candidate was superseded. A separate Windows observation
+checks actual worker/socket removal after normal shutdown and Drop while each
+private helper stays alive.
 
 The [fresh R8 source review](discovery-observed-startup-review-r8.md) found no
 concrete P1/P2 product or verification defect in revised candidate `e6a9125`.
-Both R7 objections are closed in source. Matching final runtime evidence and
-native Windows startup acceptance remain pending. The reviewed source is now
+Both R7 objections are closed in source. Native Windows startup acceptance
+remains open. The reviewed source is now
 integrated locally as `7f27cbb` and `6da26a1`; product/probe source matches
-`e6a9125` exactly. Its final saved runtime evidence still requires parent checks.
+`e6a9125` exactly.
 The [fresh combined release run](combined-virtual.md) passes all 89 existing
 non-Docker scenarios with zero cleanup failures. All 248 recorded inputs and
 both frozen artifacts stay unchanged, and no owned process or assigned listener
-remains. Thirty Docker cases stay explicitly excluded. The final Mac discovery
-evidence is committed as `8e891f1` and is under separate saved-evidence review.
+remains. Thirty Docker cases stay explicitly excluded.
+
+The [final Mac discovery evidence](discovery-startup-r7-repair.md), from `8e891f1`,
+is integrated locally. The [independent R9 audit](discovery-final-evidence-review-r9.md)
+found no concrete P1/P2 source or final-evidence defect. It supports startup
+61/61 twice, a working-observer baseline failure of 45/61, retained recovery 19/19
+and actual owned shutdown 4/4. It audited saved records and did not independently
+execute binaries. Three superseded private metadata originals changed from old
+raw hashes; their committed copies remain intact and final acceptance does not
+depend on them. Windows startup and broader release gates remain open.
 
 The separate [native Windows cleanup observation](windows-owned-cleanup.md)
 passes normal explicit shutdown and Drop on the frozen `e4f48ba` library. The

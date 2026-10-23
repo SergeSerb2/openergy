@@ -1,0 +1,37 @@
+{
+  "taskId": "node:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-observed-startup-final-evidence-review-r9-20261023",
+  "status": "completed",
+  "providerInstanceId": "codex",
+  "model": "gpt-6.1-sol",
+  "options": [
+    {
+      "id": "reasoningEffort",
+      "value": "xhigh"
+    },
+    {
+      "id": "serviceTier",
+      "value": "default"
+    }
+  ],
+  "reviewed_evidence": "8e891f1575483f003756b6b84dc157eb049a9986",
+  "reviewed_source": "e6a9125be2fc59fbe92fef6ea351b222298bfc52",
+  "scope": "Independent audit of immutable Git blobs and saved runtime evidence; no independent runtime execution.",
+  "product_or_final_evidence_findings_p1_p2": 0,
+  "mac_scoped_evidence_supported": true,
+  "windows_startup_accepted": false,
+  "source_identities_verified": 20,
+  "source_hashes_verified": 10,
+  "retained_artifact_hashes_verified": 6,
+  "ambiguity_library_hashes_verified": 3,
+  "baseline_archive_files_checked": 706,
+  "final_raw_copied_records_checked": 83,
+  "committed_preservation_files_checked": 399,
+  "superseded_private_metadata_hash_mismatches": [
+    "baseline-source-scope.json",
+    "independent-evidence-inspection.json",
+    "postflight.json"
+  ],
+  "preservation_limit": "Their committed copies match both preservation manifests. Final acceptance does not depend on the changed superseded private metadata.",
+  "summary_path_transform": "Review checkout root replaced by <REVIEW_CHECKOUT>.",
+  "summary": "R9: **No concrete P1/P2 source regression or final-evidence defect found.** The saved evidence supports the scoped Mac conclusions.\n\nReviewed evidence commit `8e891f1575483f003756b6b84dc157eb049a9986` and source `e6a9125be2fc59fbe92fef6ea351b222298bfc52`, parent `2253049d72f4ee5aa079045432c5014bb0c4be78`. Source also matches checkout commit `f7b10e7`. This was an audit of Git blobs and saved runtime records, **not independent runtime execution**.\n\n- **Identity and baseline:** Verified 20 source identities, 10 source hashes, six retained artifact hashes, and three ambiguity-library hashes. The reconstructed `884ff876` baseline preserves removal/insertion before initial send. Its limited/standard argument affects logging only. Across 706 archived files, only the final probe and instrumented vendor source differ. Its 54 requests have matching outcomes: 16 Disconnected and 16 Accepted distinct starts, four actual Disconnected replacements, gauge **33 → 17 at 3,001 ms**, and exactly **16 failed behavior checks**, yielding **45/61**. Observation and relevant cleanup work.\n\n- **Both fixed runs:** Verified **61/61 each**, with 54 matched requests per run. Distinct outcomes were **13/19** and **15/17** Disconnected/Accepted; gauges **20/18 → 1**, then final zero. All four replacement combinations obtained actual Disconnected witnesses. Checks retain old identity, fresh data, goodbye/return behavior, held successors, and generation-drop safety. Fresh standard repeats follow the failed-send barrier and receiver drain. Each mandatory active standard Drop records exactly one completed normal Disconnected removal, then a command barrier, with no explicit stop masking it. Both R7 gaps are closed in source and these saved Mac runs.\n\n- **Negative controls:** Missing initial observation rejects zero matches. The ambiguity helper adds one actual public browse; two real Accepted sends cause rejection. Its exact source delta and linked libraries match. Missing cleanup observation fails **59/61 despite gauge 1**. Unknown, duplicate, and Full cleanup rejection has source support only; no runtime coverage is claimed.\n\n- **Retained flow and ownership:** Verified **19/19**, burst **800**, selected peak **64**, and unchanged retained probe body. All **4/4** owned-shutdown cases have matching raw OS records: the child remains alive, threads return **2 → 1**, and UDP descriptors return **5 → 0**. Resource cases establish cleanup after descriptor release. Shutdown acknowledgement is not treated as a join.\n\n- **Integrity and cleanup:** All **83 final raw/copied records** match their hashes and declared path-only transformations. All **302 original plus 97 superseded committed files** match preservation hashes. Command records, environments, toolchain identity, result logs, and structured summaries agree. Saved postflight records report no remaining fixtures, assigned endpoints, or private TMP entries. See the [final report](<REVIEW_CHECKOUT>/docs/verification/release-integration-2026-10-23/discovery-startup-r7-repair.md:92).\n\nOne preservation limit: three superseded private metadata originals differ from their old raw hashes (`baseline-source-scope.json`, `independent-evidence-inspection.json`, and `postflight.json`). Their committed copies still match both preservation manifests. Final acceptance does not depend on them.\n\nOriginal native Windows **11/14 remains failed and unaccepted**. I did not count superseded passes, R8 source review, or the separate combined release run as independent discovery execution. The stated cache/expiry/timer/query/byte, slow-DNS, native input/clipboard, migration, security/provenance, and distribution limits remain open. No files were changed and no system verification was run."
+}
