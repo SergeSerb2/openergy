@@ -1,0 +1,47 @@
+{
+  "taskId": "node:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-dns-verifier-source-review-r9-8333a48-20261023",
+  "status": "completed",
+  "providerInstanceId": "codex",
+  "model": "gpt-6.1-sol",
+  "options": [
+    {
+      "id": "reasoningEffort",
+      "value": "xhigh"
+    },
+    {
+      "id": "serviceTier",
+      "value": "default"
+    }
+  ],
+  "reviewed_commit": "8333a48df046bdc7e5f0cfc687ed09f2b75b39f3",
+  "parent_commit": "c7f6989",
+  "scope": "Independent immutable-source review; no builds, probes, tests, traffic or private runtime artifact inspection.",
+  "product_findings_p1_p2": 0,
+  "verification_findings_p2": 2,
+  "candidate_accepted": false,
+  "findings": [
+    {
+      "id": "R9-1",
+      "severity": "P2",
+      "area": "verification",
+      "issue": "Base hostname requests can attempt endpoints that the fixture does not own.",
+      "line": 1290
+    },
+    {
+      "id": "R9-2",
+      "severity": "P2",
+      "area": "verification",
+      "issue": "Base frame exchange discards complete transcripts and can miss duplicate or stale public events.",
+      "line": 1012
+    }
+  ],
+  "all_finding_paths": "crates/net/examples/dns_queue_cancel_c4806a3d.rs",
+  "r8_dispositions": {
+    "R8-1": "Early abort removed; complete ownership still open under R9-1.",
+    "R8-2": "Closed in source.",
+    "R8-3": "Closed in source.",
+    "R8-4": "Closed in source."
+  },
+  "windows_followup_action": "Parent instructed the live Windows task to start no further candidate probes and complete owned-fixture cleanup; final execution/cleanup report pending.",
+  "summary": "**R9: two P2 verifier defects. No concrete product P1/P2 found. Candidate `8333a48` remains unaccepted.**\n\nReviewed all six implementation commits against `c7f6989`, the complete R5/R7/R8 records, and the README at evidence commit `4f506a9`. All locations below refer to the immutable candidate’s `crates/net/examples/dns_queue_cancel_c4806a3d.rs`.\n\n1. **P2 — Base hostname flows can contact an unowned address.**\n\n   **Locations:** lines **1290–1295**, **1106**, and **1205**.\n\n   Queue fixtures and the initial healthy listener bind only IPv4. Queue recovery and lifecycle recovery nevertheless request `localhost`. The IPv6 healthy listener does not exist until line **1227**. The new ownership guard covers only the refusal fixtures.\n\n   **Trigger:** `localhost` selects `::1` first, and another process owns `::1:25116`. The probe can connect to that process before checking the selected peer at line **1128**. With no listener there, it still attempts an unowned endpoint. Additional resolved localhost addresses have the same gap.\n\n   **Wrong result:** an independent flow violates the owned-address constraint. Checking the peer after connection cannot prevent that contact.\n\n   **Smallest fix:** extend retained address ownership to every localhost endpoint used by queue and healthy flows. Own all healthy listeners before issuing hostname requests, and inspect stale accepts across all owned families. Where complete ownership is unavailable, leave that hostname case UNVERIFIED and continue safe independent cases.\n\n2. **P2 — Base frame exchange can discard stale or duplicate public events.**\n\n   **Locations:** lines **1012**, **1024**, **1037–1041**, and **1137–1144**.\n\n   `exchange` collects events in a private vector. It returns success when it finds any matching BACK frame, then discards that vector.\n\n   **Trigger:** a duplicate obsolete-job `ConnectFailed`, extra `Connected`, or duplicate BACK frame arrives during those polls alongside the expected frame.\n\n   **Wrong result:** the helper can return success. The later `obsolete.len() == 16` check cannot see the discarded event, so the queue batch still prints PASS. The command can return UNVERIFIED instead of FAIL when another gate lacks coverage, or pass if the remaining gates pass.\n\n   **Smallest fix:** retain the complete exchange transcript and require exact event identity and cardinality. Reject extra failures, connections, and frames. Check for extra outbound frame bytes during the actively driven quiet interval as well.\n\nThe R8 findings have these source dispositions:\n\n- **R8-1:** the refusal-fixture early abort is removed. Independent execution continues, but its complete ownership requirement remains open under finding 1.\n- **R8-2:** closed. A valid Timeout on an unqualified refusal fixture remains UNVERIFIED; wrong events and demonstrated deadline violations retain FAIL.\n- **R8-3:** closed. TLS calls `listen` on the retained socket. Setup failures release owned resources and skip the client command.\n- **R8-4:** closed. TLS and fallback checks require complete records, exact cardinality, matching identities and deadlines, and no trace overflow.\n\nThe new timeout recovery paths retain the affected caller without recreation, reset, or reconfiguration. TLS recovery uses TLS with an explicit peer pin. Their complete public transcripts enforce exact frames, quiet polling, and shutdown events.\n\nThe five-second caller budget remains separate from six-second observation. Poll brackets preserve timing uncertainty without adding grace. I found no concrete defect in the Unix/Windows socket branches or the ten-line production trace delta. Disabled trace formatting does not allocate.\n\nRuntime timing, fallback qualification, the matching strict `615c16e1` negative control, and native Windows acceptance remain unverified. I inspected no private runtime artifacts and ran no builds, probes, tests, or traffic.\n\n**Checkout clean; HEAD unchanged at `a9a8bca`. No files changed.**"
+}

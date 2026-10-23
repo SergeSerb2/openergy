@@ -102,6 +102,14 @@ coverage. Same-driver recovery calls are now present. No product P1/P2 was
 found. The candidate remains unaccepted while the implementation addresses
 the findings and preserves unavailable Mac coverage as UNVERIFIED.
 
+The [DNS verifier R9 review](dns-verifier-source-review-r9.md) of `8333a48`
+finds two more verification gaps: base hostname flows do not own every target
+family, and base frame exchange can discard extra public events. Most R8
+objections close in source, but this candidate remains unaccepted. The parent
+instructed the Windows task to stop further probe commands and complete cleanup.
+A new implementation follow-up addresses both gaps; saved Mac evidence remains
+under a separate audit. No DNS candidate has been integrated here.
+
 The later [combined-binary idle observation](combined-idle-resources.md) measures
 the exact new release artifact. Its role-off idle RSS is 8.265625 MiB and reaches
 8.609375 MiB during 30 status CLI calls. Displayed CPU-counter deltas are 0.00 s
