@@ -255,7 +255,7 @@
     "No deterministic slow-DNS timing result; active OS lookup remains uncancellable.",
     "No cache-expiry runtime result.",
     "No native, Windows migration, original provenance/security or trusted distribution acceptance.",
-    "Native Windows source verification remains pending. The original full virtual regression has one preserved environment failure, with its separate focused pass recorded."
+    "The initial native Windows probe failed its OS refusal prerequisite; later refusal/lifecycle paths are not yet verified. The original full virtual run remains88/89 with a separately diagnosed undersized range and focused passes."
   ],
   "independent_review": {
     "reviewed_commits": [
@@ -1255,6 +1255,25 @@
     "owned_fixture_processes_remaining": 0,
     "assigned_tcp_listeners_remaining": 0,
     "docker_socket_exists": false,
-    "native_acceptance": false
+    "native_acceptance": false,
+    "later_capacity_diagnosis": {
+      "scenario": "P07-hostile-field-bounds",
+      "declared_local_nodes": 13,
+      "configured_local_port_capacity": 10,
+      "reason": "The runner reserves one port per node; this range cannot fit the scenario.",
+      "fix_commit": "91247ca",
+      "verification_record": "e2e-port-capacity.json"
+    }
+  },
+  "native_windows_initial": {
+    "source_commit": "07adb0a3cdc4cff1aa77ce31dbe078a48db56bd5",
+    "record": "windows-dns-cancellation.json",
+    "native_build_and_strict_clippy": "PASS",
+    "queue_and_frame_batches": 8,
+    "full_probe_exit_code": 1,
+    "refusal_only_exit_code": 1,
+    "blocked_at": "Direct OS refusal prerequisite:500ms connect_timeout returned TimedOut rather than ConnectionRefused.",
+    "netdriver_refusal_and_later_lifecycle": "Not reached; not passed.",
+    "supplementary_diagnosis": "Active, original failures preserved."
   }
 }

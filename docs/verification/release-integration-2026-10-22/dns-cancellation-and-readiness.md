@@ -71,13 +71,18 @@ The full virtual-daemon run completed in 208.849 seconds with **88/89 passed**,
 failed before executing its steps because no free port was available in the
 configured ten-port range. That run's exit status remains **1**. A focused retry
 of only that case on the separate 25900–25999 range passed **1/1**, exit **0**.
-This is coverage across two runs, not a passing original full batch. The reason
-for the earlier range's exhaustion was not established. All 235 source/scenario
+This is coverage across two runs, not a passing original full batch. A later
+[runner audit and fix](e2e-port-capacity.md) established that P07 needs 13 local
+node ports, exceeding that run's ten-port range. All 235 source/scenario
 inputs stayed unchanged; no fixture processes or assigned listeners remained.
 
 ## Remaining work
 
-Native Windows verification is pending. Retained discovery replay remains
+The [first native Windows probe](windows-dns-cancellation.md) passed builds,
+strict Clippy and eight queue/frame batches, but both modes exited 1 at the
+unchanged 500 ms direct OS refusal prerequisite. It timed out before the driver
+refusal matrix and later lifecycle checks. Supplementary diagnosis is active;
+those later paths are not verified. Retained discovery replay remains
 separate active work. Deterministic slow-DNS timing and cache-expiry runtime remain unverified.
 The separate cache-expiry test was provider-stopped and was not rerouted.
 

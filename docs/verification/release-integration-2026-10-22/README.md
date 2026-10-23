@@ -12,6 +12,14 @@ or mocks were added. Native backend probes ran only inside isolated Linux Xvfb.
 
 ## Final hardening follow-up
 
+The [E2E port-capacity fix](e2e-port-capacity.md) rejects undersized ranges before
+any scenario starts. It explains the retained 88/89 run and verifies the actual
+P07 flow with the new default and an exact thirteen-port range.
+
+The [native Windows DNS check](windows-dns-cancellation.md) records a fresh
+source-pinned build and eight passed queue/frame batches. It keeps both failed
+OS refusal prerequisites visible and leaves later driver checks unverified.
+
 The [DNS cancellation and connection-readiness follow-up](dns-cancellation-and-readiness.md)
 verifies obsolete-job recovery and fixes a reproduced false `Connected` event
 after address fallback. Earlier failed reports remain intact.
