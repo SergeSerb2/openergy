@@ -1,0 +1,64 @@
+[
+  {
+    "label": "copy-unaccepted-cli",
+    "arguments": [
+      "ditto",
+      "/private/tmp/oe-sparkle-cli-build-njko0i6t/products/sparkle.app",
+      "/private/tmp/oe-stopped-update-llil939f/driver/sparkle.app"
+    ],
+    "exit": 0
+  },
+  {
+    "label": "copy-official-framework",
+    "arguments": [
+      "ditto",
+      "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/swift/artifacts/sparkle/Sparkle/Sparkle.xcframework/macos-arm64_x86_64/Sparkle.framework",
+      "/private/tmp/oe-stopped-update-llil939f/driver/sparkle.app/Contents/Frameworks/Sparkle.framework"
+    ],
+    "exit": 0
+  },
+  {
+    "label": "local-adhoc-cli-sign",
+    "arguments": [
+      "codesign",
+      "--force",
+      "--options",
+      "0",
+      "--timestamp=none",
+      "--sign",
+      "-",
+      "/private/tmp/oe-stopped-update-llil939f/driver/sparkle.app"
+    ],
+    "exit": 0
+  },
+  {
+    "label": "verify-cli-bundle-seal",
+    "arguments": [
+      "codesign",
+      "--verify",
+      "--deep",
+      "--strict",
+      "/private/tmp/oe-stopped-update-llil939f/driver/sparkle.app"
+    ],
+    "exit": 0
+  },
+  {
+    "label": "verify-arm64",
+    "arguments": [
+      "lipo",
+      "-verify_arch",
+      "arm64",
+      "/private/tmp/oe-stopped-update-llil939f/driver/sparkle.app/Contents/MacOS/sparkle"
+    ],
+    "exit": 0
+  },
+  {
+    "label": "inspect-cli-linkage",
+    "arguments": [
+      "otool",
+      "-L",
+      "/private/tmp/oe-stopped-update-llil939f/driver/sparkle.app/Contents/MacOS/sparkle"
+    ],
+    "exit": 0
+  }
+]

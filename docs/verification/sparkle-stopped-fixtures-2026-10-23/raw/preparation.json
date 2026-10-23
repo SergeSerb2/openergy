@@ -1,0 +1,47 @@
+{
+  "fixture_root": "/private/tmp/oe-stopped-update-llil939f",
+  "bundle_identifier": "dev.openergy.updater-fixture.5b4a5cb7d61d444eaf4a3d673e1df4a5",
+  "old_build": "1",
+  "candidate_build": "2",
+  "public_key": "C2AzUknoPp/NWwuTkH8FjVvYIn7Nukz5Iwx4PU48gas=",
+  "fixture_key_source": "new ephemeral CryptoKit key; production signing key never read",
+  "expected_jobs": [
+    "dev.openergy.updater-fixture.5b4a5cb7d61d444eaf4a3d673e1df4a5-sparkle-updater",
+    "dev.openergy.updater-fixture.5b4a5cb7d61d444eaf4a3d673e1df4a5-sparkle-progress"
+  ],
+  "planned_loopback": "127.0.0.1:25600",
+  "server_started": false,
+  "installer_executed": false,
+  "candidate_or_old_app_executed": false,
+  "relaunch_supported": false,
+  "relaunch_limit": "stopped target only; no argument-free private bootstrap; neither target may be launched",
+  "archive_validation": "offline official verifier accepts archive signature, rejects altered signature; both full feeds verify",
+  "source_app": "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/bundle-final/Openergy.app",
+  "metadata_recovery": "Initial controller exited1 only while naming the external signer in final metadata. All14 preparation commands finished with their expected exits. Key deletion ran in finally. No signing or packaging command repeated.",
+  "files": {
+    "public/openergy-fixture.zip": {
+      "sha256": "a4bf7a1386fd870fed820a169a005fd6deb99adfa4546c836a3550b6b7308183",
+      "bytes": 7492869
+    },
+    "public/valid.xml": {
+      "sha256": "7bbca8672ae296f224c39747402a28bd7d2968380c189a6cd539c70f6fb44fe5",
+      "bytes": 1147
+    },
+    "public/signature-negative.xml": {
+      "sha256": "5596abb836ece3afe959a1ec00996a16120898e8165f41fbb10a932db9627eda",
+      "bytes": 1147
+    },
+    "old/Openergy.app/Contents/Info.plist": {
+      "sha256": "f4baff7a0d3d77b8f1d926cc2f9a1e6a4e368649eef9c65556a415374f86e9e0",
+      "bytes": 1898
+    },
+    "candidate/Openergy.app/Contents/Info.plist": {
+      "sha256": "030f618e5869af2d88145a2a97d5748335cc537bbbd89d5d33b9905244d7125f",
+      "bytes": 1898
+    }
+  },
+  "signer": {
+    "path": "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/swift/artifacts/sparkle/Sparkle/bin/sign_update",
+    "sha256": "43c249771bafc3aa581228abae00731a012d324691b8292860896635050be76b"
+  }
+}

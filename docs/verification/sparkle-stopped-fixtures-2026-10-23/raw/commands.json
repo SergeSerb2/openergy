@@ -1,0 +1,160 @@
+[
+  {
+    "label": "generate-ephemeral-key",
+    "arguments": [
+      "swift",
+      "-module-cache-path",
+      "/private/tmp/oe-stopped-update-llil939f/module-cache",
+      "/private/tmp/oe-stopped-update-llil939f/generate-key.swift",
+      "/private/tmp/oe-stopped-update-llil939f"
+    ],
+    "exit": 0
+  },
+  {
+    "label": "copy-old",
+    "arguments": [
+      "ditto",
+      "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/bundle-final/Openergy.app",
+      "/private/tmp/oe-stopped-update-llil939f/old/Openergy.app"
+    ],
+    "exit": 0
+  },
+  {
+    "label": "sign-old",
+    "arguments": [
+      "codesign",
+      "--force",
+      "--options",
+      "0",
+      "--timestamp=none",
+      "--sign",
+      "-",
+      "/private/tmp/oe-stopped-update-llil939f/old/Openergy.app"
+    ],
+    "exit": 0
+  },
+  {
+    "label": "copy-candidate",
+    "arguments": [
+      "ditto",
+      "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/bundle-final/Openergy.app",
+      "/private/tmp/oe-stopped-update-llil939f/candidate/Openergy.app"
+    ],
+    "exit": 0
+  },
+  {
+    "label": "sign-candidate",
+    "arguments": [
+      "codesign",
+      "--force",
+      "--options",
+      "0",
+      "--timestamp=none",
+      "--sign",
+      "-",
+      "/private/tmp/oe-stopped-update-llil939f/candidate/Openergy.app"
+    ],
+    "exit": 0
+  },
+  {
+    "label": "archive-candidate",
+    "arguments": [
+      "ditto",
+      "-c",
+      "-k",
+      "--sequesterRsrc",
+      "--keepParent",
+      "/private/tmp/oe-stopped-update-llil939f/candidate/Openergy.app",
+      "/private/tmp/oe-stopped-update-llil939f/candidate.zip"
+    ],
+    "exit": 0
+  },
+  {
+    "label": "extract-roundtrip",
+    "arguments": [
+      "ditto",
+      "-x",
+      "-k",
+      "/private/tmp/oe-stopped-update-llil939f/public/openergy-fixture.zip",
+      "/private/tmp/oe-stopped-update-llil939f/roundtrip"
+    ],
+    "exit": 0
+  },
+  {
+    "label": "sign-archive",
+    "arguments": [
+      "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/swift/artifacts/sparkle/Sparkle/bin/sign_update",
+      "--ed-key-file",
+      "/private/tmp/oe-stopped-update-llil939f/ephemeral-seed",
+      "-p",
+      "/private/tmp/oe-stopped-update-llil939f/public/openergy-fixture.zip"
+    ],
+    "exit": 0
+  },
+  {
+    "label": "verify-archive",
+    "arguments": [
+      "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/swift/artifacts/sparkle/Sparkle/bin/sign_update",
+      "--verify",
+      "--ed-key-file",
+      "/private/tmp/oe-stopped-update-llil939f/public-verifier",
+      "/private/tmp/oe-stopped-update-llil939f/public/openergy-fixture.zip",
+      "aUVUN07fQrH2nzYLH9pz7HWXISeHnYYy3ioQqf+2a0AAAcucN/Rx9ljXAtFjY0AFc0rtMdY99DQJT5UOI7YkBw=="
+    ],
+    "exit": 0
+  },
+  {
+    "label": "reject-wrong-archive-signature",
+    "arguments": [
+      "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/swift/artifacts/sparkle/Sparkle/bin/sign_update",
+      "--verify",
+      "--ed-key-file",
+      "/private/tmp/oe-stopped-update-llil939f/public-verifier",
+      "/private/tmp/oe-stopped-update-llil939f/public/openergy-fixture.zip",
+      "aEVUN07fQrH2nzYLH9pz7HWXISeHnYYy3ioQqf+2a0AAAcucN/Rx9ljXAtFjY0AFc0rtMdY99DQJT5UOI7YkBw=="
+    ],
+    "exit": 1
+  },
+  {
+    "label": "sign-feed-valid.xml",
+    "arguments": [
+      "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/swift/artifacts/sparkle/Sparkle/bin/sign_update",
+      "--ed-key-file",
+      "/private/tmp/oe-stopped-update-llil939f/ephemeral-seed",
+      "/private/tmp/oe-stopped-update-llil939f/public/valid.xml"
+    ],
+    "exit": 0
+  },
+  {
+    "label": "verify-feed-valid.xml",
+    "arguments": [
+      "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/swift/artifacts/sparkle/Sparkle/bin/sign_update",
+      "--verify",
+      "--ed-key-file",
+      "/private/tmp/oe-stopped-update-llil939f/public-verifier",
+      "/private/tmp/oe-stopped-update-llil939f/public/valid.xml"
+    ],
+    "exit": 0
+  },
+  {
+    "label": "sign-feed-signature-negative.xml",
+    "arguments": [
+      "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/swift/artifacts/sparkle/Sparkle/bin/sign_update",
+      "--ed-key-file",
+      "/private/tmp/oe-stopped-update-llil939f/ephemeral-seed",
+      "/private/tmp/oe-stopped-update-llil939f/public/signature-negative.xml"
+    ],
+    "exit": 0
+  },
+  {
+    "label": "verify-feed-signature-negative.xml",
+    "arguments": [
+      "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/swift/artifacts/sparkle/Sparkle/bin/sign_update",
+      "--verify",
+      "--ed-key-file",
+      "/private/tmp/oe-stopped-update-llil939f/public-verifier",
+      "/private/tmp/oe-stopped-update-llil939f/public/signature-negative.xml"
+    ],
+    "exit": 0
+  }
+]

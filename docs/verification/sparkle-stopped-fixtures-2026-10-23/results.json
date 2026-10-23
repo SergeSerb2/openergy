@@ -1,0 +1,90 @@
+{
+  "base_commit": "b93fc8c688d11bb057b6b6f0041966d8cd0168fc",
+  "private_root": "/private/tmp/oe-stopped-update-llil939f",
+  "installer_executed": false,
+  "old_or_candidate_app_executed": false,
+  "cli_executed": false,
+  "server_started": false,
+  "resource_seal_only": "prepared copy passes; original build artifact still unaccepted; no runtime/trust acceptance",
+  "initial_preparation_exit": 1,
+  "initial_failure": "ValueError naming external sign_update path relative to fixture root during final metadata; all14 expected commands had completed and finally removed seed",
+  "original_failure_record_limit": "Parent tool stream recorded the error; initial controller and stdout/stderr were not frozen as files before correction. prepare-corrected.py is a later revision, not a claimed byte-exact original. No cryptographic or packaging commands repeated.",
+  "records": [
+    {
+      "file": "raw/preparation.json",
+      "sha256": "233dbeb4757b9fdfb9dec7bc626161b83c8282874e7200bb87319370e1e9c1db",
+      "original": "/private/tmp/oe-stopped-update-llil939f/preparation.json",
+      "transformation": "none"
+    },
+    {
+      "file": "raw/driver-preparation.json",
+      "sha256": "99dccd01200d30e28eacb49aa1f8e26394894360182f1321152a9173d3b9c6ed",
+      "original": "/private/tmp/oe-stopped-update-llil939f/driver-preparation.json",
+      "transformation": "none"
+    },
+    {
+      "file": "raw/commands.json",
+      "sha256": "cd775db85a59bb26ebbe2f562b7c17a4a93ab1b12d9e1b108667bdb6b738cd1a",
+      "original": "/private/tmp/oe-stopped-update-llil939f/commands.json",
+      "transformation": "none"
+    },
+    {
+      "file": "raw/driver-preparation-commands.json",
+      "sha256": "2505bdd66f7ac7a7e6a0f780a0d82a9785cfdc5ad4d02a3e686a7fc86e466619",
+      "original": "/private/tmp/oe-stopped-update-llil939f/driver-preparation-commands.json",
+      "transformation": "none"
+    },
+    {
+      "file": "raw/operation-DO-NOT-RUN.json",
+      "sha256": "f87557156aad0e55925822132ce2894410ccbeb55a934b7eb197694140cf026b",
+      "original": "/private/tmp/oe-stopped-update-llil939f/operation-DO-NOT-RUN.json",
+      "transformation": "none"
+    },
+    {
+      "file": "raw/key-cleanup.json",
+      "sha256": "27248a8e85d8485b35c4556e802e770f7de1d75995bfd4af7bd3efb4cf5d0663",
+      "original": "/private/tmp/oe-stopped-update-llil939f/key-cleanup.json",
+      "transformation": "none"
+    },
+    {
+      "file": "raw/public/valid.xml",
+      "sha256": "7bbca8672ae296f224c39747402a28bd7d2968380c189a6cd539c70f6fb44fe5",
+      "original": "/private/tmp/oe-stopped-update-llil939f/public/valid.xml",
+      "transformation": "none"
+    },
+    {
+      "file": "raw/public/signature-negative.xml",
+      "sha256": "5596abb836ece3afe959a1ec00996a16120898e8165f41fbb10a932db9627eda",
+      "original": "/private/tmp/oe-stopped-update-llil939f/public/signature-negative.xml",
+      "transformation": "none"
+    },
+    {
+      "file": "prepare-corrected.py",
+      "sha256": "8b4f45ebe6203d7b416365a2b7560e5179e69795f72ebaf53045cb66e8cde1e4",
+      "original": "/tmp/oe-prepare-stopped-update-fixtures-20261023.py",
+      "transformation": "none; corrected prepare controller was not rerun"
+    },
+    {
+      "file": "finalize.py",
+      "sha256": "cc841ff9db1615fb3c44c83bec6275b9e5b15bf18b47c3b88349fdabecfcdec3",
+      "original": "/tmp/oe-finalize-stopped-update-fixtures-20261023.py",
+      "transformation": "none; corrected prepare controller was not rerun"
+    },
+    {
+      "file": "raw/bundle-trees.json.gz",
+      "sha256": "e9f4bb633bb488b3277cd4f9754c338537e3b5a5235c9e6259593bb0d5a288f2",
+      "original": "/private/tmp/oe-stopped-update-llil939f/bundle-trees.json",
+      "original_sha256": "f90a9357558c5a553204105531f793b89f1f9b80848c2069dff9feecf77d3c94",
+      "transformation": "gzip mtime0"
+    },
+    {
+      "file": "raw/prepared-driver-tree.json.gz",
+      "sha256": "890685c742b5c78aac072e437b081a21d96f359a2bfdaa712f0a79a595fb4327",
+      "original": "/private/tmp/oe-stopped-update-llil939f/prepared-driver-tree.json",
+      "original_sha256": "4cfc05f1cbfab3ccb885a860a5643c6794e104ffbcc538c707d19c056b48a82c",
+      "transformation": "gzip mtime0"
+    }
+  ],
+  "host_effects_scope_required": "fixture-specific transient launchd helpers and user helper caches outside temporary folder; stopped target only; no running-target relaunch permission",
+  "status": "preparation complete; operation gated pending independent review and host-effect scope"
+}

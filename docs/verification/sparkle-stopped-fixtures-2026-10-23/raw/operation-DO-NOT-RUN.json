@@ -1,0 +1,29 @@
+{
+  "status": "DO NOT RUN: fixture helper/cache effects need scope approval; no running-target/relaunch support",
+  "negative_command": [
+    "/private/tmp/oe-stopped-update-llil939f/driver/sparkle.app/Contents/MacOS/sparkle",
+    "/private/tmp/oe-stopped-update-llil939f/old/Openergy.app",
+    "--check-immediately",
+    "--feed-url",
+    "http://127.0.0.1:25600/signature-negative.xml",
+    "--user-agent-name",
+    "Openergy-private-verification",
+    "--verbose"
+  ],
+  "positive_command": [
+    "/private/tmp/oe-stopped-update-llil939f/driver/sparkle.app/Contents/MacOS/sparkle",
+    "/private/tmp/oe-stopped-update-llil939f/old/Openergy.app",
+    "--check-immediately",
+    "--feed-url",
+    "http://127.0.0.1:25600/valid.xml",
+    "--user-agent-name",
+    "Openergy-private-verification",
+    "--verbose"
+  ],
+  "required_preflight": "Fresh non-running fixture ID; exclusive owned loopbackserver; exact file hashes and private target parent; inventory fixture job/cache paths; no installed app or global settings touched",
+  "future_environment": {
+    "CFFIXED_USER_HOME": "/private/tmp/oe-stopped-update-llil939f/config",
+    "TMPDIR": "/private/tmp/oe-stopped-update-llil939f/config/"
+  },
+  "scope": "complete download and stopped-bundle signature rejection/replacement only; no target app execution or relaunch"
+}
