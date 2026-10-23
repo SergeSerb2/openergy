@@ -19,7 +19,7 @@ target/release/openergy-e2e run --scenario 'S13-*' --keep
 target/release/openergy-e2e run --scenario 'L*' --report /tmp/lab-results.json
 ```
 
-Default destination ports are **24990–24999** for local peers and
+Default destination ports are **24980–24999** for local peers and
 **24930–24939** for Docker publications. Change them with `--port-range A-B`
 and `--lab-port-range A-B`. Ranges must not overlap. Both have at most 101
 ports. The lab range starts at 24900 or above. Port 24800 is always refused,
@@ -27,6 +27,12 @@ including a range that contains it. The runner reserves free ports before
 startup. It releases a reservation immediately before launching its owner.
 Another program can still claim a port during that unavoidable handoff;
 startup then fails with retained artifacts.
+
+Each declared node needs one reserved port, including raw client nodes. Before
+starting a run, the runner checks that each selected scenario fits its local
+and lab ranges. For example, `P07-hostile-field-bounds` needs 13 local ports;
+a ten-port range is rejected as a CLI error before any scenario starts.
+This capacity check does not guarantee that other processes leave ports free.
 
 `OPENERGY_BIN=/absolute/path/openergy` or `--openergy PATH` selects the daemon.
 The default is the binary beside the runner. `--scenario-dir DIR` selects an

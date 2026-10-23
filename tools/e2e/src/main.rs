@@ -59,7 +59,7 @@ fn run(args: &[String]) -> Result<bool> {
     let mut options = Options {
         root: root.clone(),
         binary,
-        port_range: (24990, 24999),
+        port_range: (24980, 24999),
         lab_range: (24930, 24939),
         keep: false,
         no_docker: false,
@@ -165,6 +165,24 @@ fn run(args: &[String]) -> Result<bool> {
             println!("{}\t{}\t{}", s.name, s.blocked_by.join(","), s.requirement);
         }
         return Ok(true);
+    }
+    // Reserve one destination port per declared node. Reject an undersized
+    // range before starting any scenario, rather than fail halfway through a run.
+    for scenario in &scenarios {
+        let local = scenario.nodes.iter().filter(|node| node.kind != "lab").count();
+        let lab = scenario.nodes.len() - local;
+        for (flag, range, required) in [
+            ("--port-range", options.port_range, local),
+            ("--lab-port-range", options.lab_range, lab),
+        ] {
+            let capacity = usize::from(range.1 - range.0) + 1;
+            if required > capacity {
+                return Err(Failure::runner(format!(
+                    "{} needs {required} node ports, but {flag} {}-{} has {capacity}; choose a wider range",
+                    scenario.name, range.0, range.1
+                )));
+            }
+        }
     }
     if !cfg!(unix) {
         return Err(Failure::environment(
