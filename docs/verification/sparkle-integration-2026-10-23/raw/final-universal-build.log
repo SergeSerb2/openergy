@@ -1,0 +1,29 @@
+Sparkle: configured
+
+==> Building the daemon (arm64 x86_64)
+    Finished `release` profile [optimized] target(s) in 0.11s
+   Compiling ring v0.17.14
+   Compiling rustls v0.23.46
+   Compiling rustls-webpki v0.103.16
+   Compiling rcgen v0.14.10
+   Compiling openergy-net v0.1.0 (/Users/serge/.t3/worktrees/openergy/t3-52422617/crates/net)
+   Compiling openergy-daemon v0.1.0 (/Users/serge/.t3/worktrees/openergy/t3-52422617/crates/daemon)
+    Finished `release` profile [optimized] target(s) in 28.05s
+
+==> Building the app (arm64 x86_64)
+Building for production...
+[Planning deferred tasks]
+[2 / 5] Openergy-product
+[4 / 5] Openergy-product
+warning: The x86_64 architecture is deprecated for your deployment target (macOS 27.0). You should update your ARCHS build setting to remove the x86_64 architecture.
+Build complete! (1.04 secs.)
+
+==> Assembling the bundle
+/private/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/bundle-final/.openergy-bundle.Z15oPG/Openergy.app/Contents/Info.plist: OK
+
+==> Signing with the explicitly selected mode
+Ad-hoc signed, unnotarized local build. This is not a trusted distribution build.
+
+==> Done
+Size: 15M
+/private/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/bundle-final/Openergy.app
