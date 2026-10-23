@@ -70,5 +70,6 @@ hash, current proposal and preservation bridge are recorded in
 
 [results.json](results.json) binds public metadata, command receipts, whole-bundle
 trees and controller revisions. No executable, application archive, private key
-or TLS identity is committed. Runtime acceptance and independent preparation
-review remain open.
+or TLS identity is committed. The [corrected scope review R2](review-r2.md) found
+no P1/P2 and closed R1's scope omission. Runtime acceptance remains open. The
+execution-scope decision is pending; no approval is assumed.
