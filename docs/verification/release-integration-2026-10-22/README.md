@@ -12,6 +12,10 @@ or mocks were added. Native backend probes ran only inside isolated Linux Xvfb.
 
 ## Final hardening follow-up
 
+The [DNS cancellation and connection-readiness follow-up](dns-cancellation-and-readiness.md)
+verifies obsolete-job recovery and fixes a reproduced false `Connected` event
+after address fallback. Earlier failed reports remain intact.
+
 The [source-history scan refresh](source-history-refresh.md) preserves the raw
 64-finding Gitleaks result and verifies every reported value against historical
 source blobs. It adds no scanner exception or history rewrite.
