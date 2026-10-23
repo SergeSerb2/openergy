@@ -35,6 +35,13 @@ startup-outcome witnesses and strict failed-start/accepted-start cases. It must
 preserve the real identity, state and cleanup checks and show a failing baseline
 before fresh independent review and native acceptance.
 
+The [R7 source review](discovery-observed-startup-review-r7.md) of its first
+candidate found two remaining verification gaps: a pre-failure search event could
+pass the repeat check, and the limited-state gauge did not prove standard-browse
+drop cleanup. The active implementation task is correcting both. That candidate
+is not integrated or accepted. A separate Windows task observes actual worker and
+socket removal after normal shutdown and Drop while its private helper stays alive.
+
 The [bounded virtual idle observation](virtual-idle-resources.md) records two
 30-second phases and the actual stop delay on the checkpoint binary. It does
 not supply native performance or long-term memory acceptance.
