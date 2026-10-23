@@ -94,6 +94,14 @@ refusal port ownership ends too early, and the new pending-timeout cases omit
 healthy reuse of the same driver. That candidate is not accepted. The existing
 implementation task is addressing both findings and preserving its reports.
 
+The [DNS verifier R8 review](dns-verifier-source-review-r8.md) of `082baaf`
+finds four remaining verification defects: qualification failure stops
+independent flows, unqualified refusal timeouts become failures, macOS TLS
+handoff releases ownership, and incomplete or duplicate traces can grant
+coverage. Same-driver recovery calls are now present. No product P1/P2 was
+found. The candidate remains unaccepted while the implementation addresses
+the findings and preserves unavailable Mac coverage as UNVERIFIED.
+
 The later [combined-binary idle observation](combined-idle-resources.md) measures
 the exact new release artifact. Its role-off idle RSS is 8.265625 MiB and reaches
 8.609375 MiB during 30 status CLI calls. Displayed CPU-counter deltas are 0.00 s

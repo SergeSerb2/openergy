@@ -1,0 +1,55 @@
+{
+  "taskId": "node:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-dns-verifier-source-review-r8-082baaf-20261023",
+  "status": "completed",
+  "providerInstanceId": "codex",
+  "model": "gpt-6.1-sol",
+  "options": [
+    {
+      "id": "reasoningEffort",
+      "value": "xhigh"
+    },
+    {
+      "id": "serviceTier",
+      "value": "default"
+    }
+  ],
+  "reviewed_commit": "082baaf70630a011ef3015bd7fd2a35915386120",
+  "parent_commit": "c7f6989",
+  "scope": "Independent review of immutable source; no builds, probes, tests, traffic or mutable implementation evidence.",
+  "product_findings_p1_p2": 0,
+  "verification_findings_p2": 4,
+  "candidate_accepted": false,
+  "findings": [
+    {
+      "id": "R8-1",
+      "severity": "P2",
+      "area": "verification",
+      "line": 588,
+      "issue": "Failed exclusivity aborts independent flow coverage."
+    },
+    {
+      "id": "R8-2",
+      "severity": "P2",
+      "area": "verification",
+      "line": 660,
+      "issue": "A valid Timeout on an unqualified refusal fixture is misclassified as a refusal failure."
+    },
+    {
+      "id": "R8-3",
+      "severity": "P2",
+      "area": "verification",
+      "line": 611,
+      "issue": "macOS TLS handoff drops the owned reservation before rebinding."
+    },
+    {
+      "id": "R8-4",
+      "severity": "P2",
+      "area": "verification",
+      "line": 873,
+      "issue": "Incomplete or duplicate trace records can grant coverage."
+    }
+  ],
+  "all_finding_paths": "crates/net/examples/dns_queue_cancel_c4806a3d.rs",
+  "same_driver_recovery_calls_present": true,
+  "summary": "R8 source review of `082baaf70630a011ef3015bd7fd2a35915386120` against `c7f6989`: **four P2 verification defects; no concrete product P1/P2 found.**\n\nAll locations below refer to the candidate’s `crates/net/examples/dns_queue_cancel_c4806a3d.rs` blob.\n\n1. **P2 — Failed exclusivity stops independent coverage.** At **line 588**, a successful competing bind returns an error. The `?` at **line 1230** then exits before all eight queue batches, lifecycle checks, and timeout/recovery cases. This applies when Darwin’s connected owner cannot retain exclusivity; it does not establish a product fault. **Minimal fix:** record the exclusivity rejection, leave affected gates UNVERIFIED, and continue independent flows using strictly owned fixtures.\n\n2. **P2 — Unqualified refusal timeouts become FAIL.** At **lines 660–663**, `observed.refusal()` returns `Fail` for a valid Timeout, and `.max(Unverified)` preserves that failure. Thus an exclusively owned endpoint that times out during qualification and API observation produces a false refusal-contract failure. **Minimal fix:** preserve the actual transcript and classify a valid Timeout on an unqualified refusal fixture as UNVERIFIED. Continue rejecting independently wrong events, duplicates, or deadline violations.\n\n3. **P2 — macOS TLS handoff releases ownership.** At **lines 611–617**, the code drops the reserved socket before binding its replacement. A competing process can acquire the address during that gap and abort the TLS timeout/recovery coverage. Aborting before a client command prevents an unrelated connection, but does not meet continuous ownership. **Minimal fix:** retain an unconnected, bound TLS reservation and call `listen` on that same socket. Leave unavailable refusal qualification UNVERIFIED.\n\n4. **P2 — Incomplete or duplicate traces can grant coverage.** At **lines 873–878**, TLS qualification accepts any matching readiness trace without requiring a unique attempt/readiness pair or matching connection and address. Duplicate readiness traces can therefore still yield PASS. At **lines 823–827**, missing connection/deadline fields can also compare equal as `None == None`. **Minimal fix:** require complete, uniquely correlated trace records with explicit cardinality; missing or ambiguous evidence must leave coverage UNVERIFIED.\n\nSame-driver recovery calls now exist for both timeout drivers and check exact bidirectional frames and extra events. The production diff remains four trace sites totaling ten added lines; I found no concrete behavior or resource-leak defect there.\n\nCheckout remains clean at `290a47b`. No builds, probes, tests, traffic, or mutable evidence were used. Native and runtime gates remain unaccepted."
+}
