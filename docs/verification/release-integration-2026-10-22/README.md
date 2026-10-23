@@ -12,6 +12,15 @@ or mocks were added. Native backend probes ran only inside isolated Linux Xvfb.
 
 ## Final hardening follow-up
 
+The [source-history scan refresh](source-history-refresh.md) preserves the raw
+64-finding Gitleaks result and verifies every reported value against historical
+source blobs. It adds no scanner exception or history rewrite.
+
+The [initial discovery recovery](discovery-recovery-initial.md) and
+[Windows discovery/control evidence](windows-discovery-recovery.md) retain their
+exact intermediate source scope. Retained-cache replay and worker shutdown
+acceptance gaps remain explicit; these records do not approve final recovery.
+
 The [dependency-policy refresh](dependency-policy-refresh.md) checks current
 RustSec data, all-features and five platform graphs, registry yank/checksum
 metadata and notice freshness without changing dependencies or runtime code.
