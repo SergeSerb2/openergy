@@ -11,6 +11,9 @@ export PATH="$HOME/.cargo/bin:$PATH"
 export CARGO_BUILD_JOBS=2
 PYTHON="${PYTHON:-python3}"
 [[ "$(uname -s)" == "Darwin" ]] || { echo "bundle.sh requires macOS" >&2; exit 1; }
+# Validate the public update configuration before any builds or destination changes.
+SPARKLE_TOOL="$ROOT/tools/release/sparkle.py"
+"$PYTHON" "$SPARKLE_TOOL" config
 VERSION="$("$PYTHON" "$ROOT/tools/release/release.py" version)"
 MACOS_MIN="$("$PYTHON" -c 'import plistlib,sys; print(plistlib.load(open(sys.argv[1], "rb"))["LSMinimumSystemVersion"])' "$APP_SRC/Support/Info.plist")"
 export MACOSX_DEPLOYMENT_TARGET="$MACOS_MIN"
@@ -51,8 +54,12 @@ done
 step "Building the app (${ARCHS[*]})"
 SWIFT_ARCH_FLAGS=()
 for arch in "${ARCHS[@]}"; do SWIFT_ARCH_FLAGS+=(--arch "$arch"); done
-(cd "$APP_SRC" && nice -n 15 swift build -c release --jobs 2 --disable-automatic-resolution "${SWIFT_ARCH_FLAGS[@]}")
-APP_BIN="$(cd "$APP_SRC" && swift build -c release --disable-automatic-resolution "${SWIFT_ARCH_FLAGS[@]}" --show-bin-path)/Openergy"
+SWIFT_SCRATCH_PATH="${SWIFT_SCRATCH_PATH:-$APP_SRC/.build}"
+mkdir -p "$SWIFT_SCRATCH_PATH"
+SWIFT_SCRATCH_PATH="$(cd "$SWIFT_SCRATCH_PATH" && pwd -P)"
+SWIFT_FLAGS=(--scratch-path "$SWIFT_SCRATCH_PATH" -c release --jobs 2 --disable-automatic-resolution "${SWIFT_ARCH_FLAGS[@]}")
+(cd "$APP_SRC" && nice -n 15 swift build "${SWIFT_FLAGS[@]}")
+APP_BIN="$(cd "$APP_SRC" && swift build "${SWIFT_FLAGS[@]}" --show-bin-path)/Openergy"
 
 step "Assembling the bundle"
 # Helpers avoids an Openergy/openergy collision on case-insensitive volumes.
@@ -75,8 +82,9 @@ done
 ICONSET="$WORK/AppIcon.iconset"
 nice -n 15 swift "$APP_SRC/scripts/make-icon.swift" "$ICONSET" >/dev/null
 iconutil -c icns "$ICONSET" -o "$STAGED_APP/Contents/Resources/AppIcon.icns"
-sed -e "s/__VERSION__/$VERSION/g" -e "s/__BUILD__/$BUILD_NUMBER/g" \
-  "$APP_SRC/Support/Info.plist" > "$STAGED_APP/Contents/Info.plist"
+"$PYTHON" "$SPARKLE_TOOL" configure-plist --template "$APP_SRC/Support/Info.plist" \
+  --output "$STAGED_APP/Contents/Info.plist" --version "$VERSION" --build "$BUILD_NUMBER"
+"$PYTHON" "$SPARKLE_TOOL" embed --app "$STAGED_APP" --scratch "$SWIFT_SCRATCH_PATH"
 plutil -lint "$STAGED_APP/Contents/Info.plist"
 printf 'APPL????' > "$STAGED_APP/Contents/PkgInfo"
 for binary in "$STAGED_APP/Contents/MacOS/Openergy" "$STAGED_APP/Contents/Helpers/openergy"; do
@@ -85,12 +93,9 @@ for binary in "$STAGED_APP/Contents/MacOS/Openergy" "$STAGED_APP/Contents/Helper
 done
 
 step "Signing with the explicitly selected mode"
-TIMESTAMP=--timestamp=none
-[[ "$IDENTITY" == Developer\ ID\ Application:* ]] && TIMESTAMP=--timestamp
-SIGN_FLAGS=(--force --options runtime "$TIMESTAMP" --sign "$IDENTITY")
-codesign "${SIGN_FLAGS[@]}" --identifier dev.openergy.daemon "$STAGED_APP/Contents/Helpers/openergy"
-codesign "${SIGN_FLAGS[@]}" "$STAGED_APP"
-codesign --verify --deep --strict "$STAGED_APP"
+VERIFY_ARCH_FLAGS=()
+for arch in "${ARCHS[@]}"; do VERIFY_ARCH_FLAGS+=(--arch "$arch"); done
+"$PYTHON" "$SPARKLE_TOOL" sign --app "$STAGED_APP" "${VERIFY_ARCH_FLAGS[@]}"
 # Version reads are isolated too. Never start the application or native backend here.
 mkdir -p "$WORK/check/tls"
 DAEMON_VERSION="$(OPENERGY_CONFIG="$WORK/check/config.toml" OPENERGY_CONFIG_DIR="$WORK/check" \
