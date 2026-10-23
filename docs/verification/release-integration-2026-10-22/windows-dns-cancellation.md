@@ -1,5 +1,12 @@
 # Native Windows DNS cancellation and connection readiness verification
 
+## Later supplementary diagnosis
+
+The [separate supplementary run](windows-dns-supplement.md) measures the OS
+refusal window and exercises the driver refusal and later lifecycle contracts
+independently. It preserves both original exit-1 results in this record and does not
+grant overall Windows acceptance.
+
 FAIL for the unchanged full and refusal-only probes on source `07adb0a3cdc4cff1aa77ce31dbe078a48db56bd5`, on 2026-10-22 (America/Vancouver). Both exit 1 at the direct OS refusal prerequisite. The eight queue batches and their frame checks pass. This is a partial native result, not an overall Windows pass.
 
 The checkout started clean at that exact commit. The Git archive and a per-file manifest were transferred through the existing `sergecode-windows` key-auth alias with `BatchMode=yes` and `ConnectTimeout=8`. A new protected current-user-only fixture was created under the current user's temporary directory. Source, target, frozen binaries, runtime, TEMP and TMP stayed inside it. Previous frozen fixtures were not written. Execution used native AMD64 MSVC in session 0 with two build jobs and `BelowNormal` priority.

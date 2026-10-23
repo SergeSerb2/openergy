@@ -12,6 +12,19 @@ or mocks were added. Native backend probes ran only inside isolated Linux Xvfb.
 
 ## Final hardening follow-up
 
+The [pause handoff](pause-handoff.md) records the integrated source, separate IPC
+candidate, completed reviews, preserved failures and next work after the user's
+requested pause.
+
+The [bounded discovery integration](discovery-bounded-integration.md) passes
+14/14 startup, 19/19 retained-discovery and 4/4 owned-shutdown checks on the
+integrated source. Its [vendor policy check](vendor-dependency-policy.md) covers
+the combined graph and five platform graphs without granting runtime acceptance.
+
+The [supplementary Windows diagnosis](windows-dns-supplement.md) passes ten
+independent driver refusal cases and later IPv6/lifecycle contracts. The original
+500 ms OS prerequisite remains failed; overall Windows acceptance stays open.
+
 The [E2E port-capacity fix](e2e-port-capacity.md) rejects undersized ranges before
 any scenario starts. It explains the retained 88/89 run and verifies the actual
 P07 flow with the new default and an exact thirteen-port range.

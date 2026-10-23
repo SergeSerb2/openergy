@@ -1,0 +1,20 @@
+{
+  "candidate": "231b7f6908498d5d9b3380ed7fa8f568ac7b39c3",
+  "taskId": "node:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-ipc-aggregate-independent-review-r2-20261022",
+  "providerInstanceId": "codex",
+  "model": "gpt-6.1-sol",
+  "options": [
+    {
+      "id": "reasoningEffort",
+      "value": "xhigh"
+    },
+    {
+      "id": "serviceTier",
+      "value": "priority"
+    }
+  ],
+  "status": "completed",
+  "scope": "Independent source and saved evidence review only. No builds or runtime reproduction.",
+  "integration_status": "Not integrated. One P2 import-budget finding remains open at user-requested pause.",
+  "summary": "Found **one P2**, no P1, in candidate `231b7f6`.\n\n**P2 — Synergy 3 import bypasses the budget before cloning derived names.**\n\n- **Code evidence:** [layout.rs:150](crates/config/src/layout.rs:150) calls `link.into_owned()` inside `derive_synergy3_links` without a budget check. [synergy3.rs:335](crates/config/src/synergy3.rs:335) runs that derivation, then clones target names into `links.ranges`. `cfg.validate()` reaches the new budget only at line 429. [runtime.rs:1045](crates/daemon/src/runtime.rs:1045) runs this import on the daemon owner, including with `apply:false`.\n- **Trigger:** Import a schema-17 `db.json` with one approximately 1 MiB generated screen name, rectangle `(0,0,1000,10000)`, and 100 adjacent targets at `(1000,100*i,1000,100)`. The file remains below the 16 MiB input limit. Its distinct right-edge ranges cause at least 100 long source-name copies.\n- **Wrong result:** Import materializes at least roughly 100 MiB of source-name data, plus other copies, before the 8 MiB budget can reject it. The owner cannot dispatch other IPC requests during this work. This leaves the expansion problem reachable through import.\n- **Falsifiable check:** Through real `config.import_synergy` with `apply:false`, measure this fixture under a bounded RSS guard. Confirm whether rejection occurs before the large derived-name allocation. **I did not run this check.**\n- **Smallest fix:** Keep Synergy 3’s final records borrowed through its identical-key overwrite rule. Check their byte charge before converting names to owned strings, and propagate the budget error to the importer.\n\nClean areas from source review:\n\n- Native config validation checks the budget before `derive_links` clones names. Valid names cannot expand through JSON escaping.\n- Capped response encoding completes before any header reaches the stream. Oversized responses retain the typed-error path.\n- Receive-buffer shrinking preserves successor bytes after parsing an owned request.\n- Bus broadcasts share encoded frames. Queue and drained-batch limits apply separately; they do not provide a global RSS cap.\n- Unix writes check stop between chunks and use absolute budgets. The owner exits after stop dispatch. Windows cancellation reaps the overlapped operation before releasing its buffer; native Windows validation remains absent.\n\nI independently checked saved evidence against immutable blobs: **all 82 source hashes in each final report match the candidate**, as do the eight changed-Rust hashes in the manifest. Both reports identify the same binary hash. The supplement matches the committed probe; the main final report uses an earlier probe revision, as documented.\n\nThe saved exact-limit, recovery, retention, and shutdown results support their stated cases. They are **saved evidence, not independent runtime reproduction** in this round.\n\nBoth checkouts remain clean. No edits, builds, traffic, runtime probes, or thread messages were performed. This review is complete; I am stopping here for the parent’s handoff and pause.\n\n"
+}
