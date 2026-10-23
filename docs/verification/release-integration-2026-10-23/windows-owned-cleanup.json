@@ -1,0 +1,2399 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-23",
+  "timezone": "America/Vancouver",
+  "result": "PASS: both normal Discovery-owned Windows worker and UDP cleanup cases observed while helper remained alive.",
+  "scope": {
+    "frozen_source_commit": "e4f48ba47ea69aa76a08de5cf0cf61c68d903c03",
+    "parent_root_compared": "30f1c1cfc16d74a3dac2ee5d90bba391fb7c5bbf",
+    "product_lifecycle_source_diff": "empty for crates/vendor/Cargo/toolchain source",
+    "api": "openergy_net::discovery::Discovery, real public initialization, ordinary loopback advertisement and self-resolution",
+    "normal_cases": [
+      "explicit shutdown with Discovery object retained alive until later exit",
+      "normal Drop without preceding explicit shutdown"
+    ],
+    "runtime_case_count": 2,
+    "one_run_each": true,
+    "cleanup_deadline_ms": 10000,
+    "poll_interval_ms": 50,
+    "init_deadline_seconds": 15,
+    "helper_internal_publication_deadline_seconds": 10,
+    "custom_mdns_ports": [
+      25090,
+      25092
+    ],
+    "custom_service_ports": [
+      25094,
+      25096
+    ],
+    "other_sockets": "Existing OS-assigned loopback command-wake socket; public reports alias its port.",
+    "production_24800_5353_used": false,
+    "descriptor_exhaustion_or_stress": false,
+    "future_outcome_verifier": "Not integrated or run; source/probe change remains separate.",
+    "unit_tests_mocks_computer_use_worker_hooks_or_child_agents": false
+  },
+  "proof_method": {
+    "worker_identity": "log::Log callback at exact real mdns service_daemon.rs exec_command trace line 4058 calls the genuine Win32 GetCurrentThreadId. No product or worker source instrumentation, thread enumeration assumption, fabricated metric, private-field access or injected command.",
+    "identity_cross_check": "Observed callback ID differs from genuine main thread ID; it belongs to the private helper OS thread inventory and carries native description mDNS_daemon.",
+    "thread_inventory": "Separate PowerShell observer refreshes the same live process identity and uses native System.Diagnostics.Process.Threads; requires nonempty thread inventory before and after cleanup.",
+    "socket_inventory": "Separate native observer uses GetExtendedUdpTable for AF_INET and AF_INET6, UDP_TABLE_OWNER_PID. Native data query must return 0; global combined inventory must be nonempty. Own PID filtering happens only after successful global queries. Size-query 122 is expected and recorded; malformed tables or exhausted resize retries throw.",
+    "alive_proof": "Each resource snapshot checks the helper process identity alive before and after OS queries. After worker and all owned UDP endpoints disappear, the observer receives a fresh ALIVE ping and takes another absence snapshot before sending exit.",
+    "submission_is_not_acceptance": "CLEANUP_RETURNED and public shutdown success are only boundaries. Neither acknowledgement, submission nor process exit supplies the cleanup verdict.",
+    "baseline": "Fresh helper READY snapshot occurs before any Discovery::new or network warm-up. Both cases: one main thread/zero UDP, then main plus log-bound mDNS worker/three UDP, then main only/zero UDP while alive. No additional persistent framework/runtime thread appeared in the recorded snapshots. Short-lived threads between snapshots are not excluded.",
+    "explicit_shutdown_isolated_from_drop": "The helper keeps Some(Discovery) after shutdown and through post-cleanup ping/snapshot. Drop happens only on later normal process exit, after the gate is already observed."
+  },
+  "source_contract": [
+    {
+      "path": "crates/net/src/discovery.rs",
+      "line_start": 27,
+      "line_end": 69,
+      "git_blob": "aa3b3aeede24f1805331a3600ba943f9a18470a6",
+      "file_sha256": "7c861e1cbbc65b4e24b2e851db7b1e74044791be1565e510f5980531e3269f71",
+      "body": "    last_snapshot: Instant,\n    browse_retry: Option<Instant>,\n}\nimpl Discovery {\n    /// Loopback excludes all interfaces before browsing or advertising. A custom\n    /// UDP port also avoids touching the workstation's Bonjour service during checks.\n    pub fn new(scope: DiscoveryScope, mdns_port: u16) -> Result<Self, NetError> {\n        Self::with_browse(scope, mdns_port, true)\n    }\n    pub(crate) fn with_browse(scope: DiscoveryScope, mdns_port: u16, browse: bool) -> Result<Self, NetError> {\n        if mdns_port == 24800 {\n            return Err(NetError::ProductionPortDenied);\n        }\n        let daemon = ServiceDaemon::new_with_port(mdns_port).map_err(failed)?;\n        let setup = (|| {\n            if scope == DiscoveryScope::Loopback {\n                daemon.disable_interface(IfKind::All).map_err(failed)?;\n                daemon.enable_interface(IfKind::LoopbackV4).map_err(failed)?;\n            }\n            let monitor = daemon.monitor().map_err(failed)?;\n            let events = if browse {\n                Some(daemon.browse_limited(SERVICE_TYPE, 64).map_err(failed)?)\n            } else {\n                None\n            };\n            Ok((monitor, events))\n        })();\n        let (monitor, events) = match setup {\n            Ok(v) => v,\n            Err(e) => {\n                let _ = daemon.shutdown();\n                return Err(e);\n            }\n        };\n        Ok(Self {\n            daemon,\n            events,\n            monitor,\n            peers: BTreeMap::new(),\n            published: None,\n            scope,\n            dirty: false,\n            last_snapshot: Instant::now() - Duration::from_secs(1),\n"
+    },
+    {
+      "path": "crates/net/src/discovery.rs",
+      "line_start": 170,
+      "line_end": 181,
+      "git_blob": "aa3b3aeede24f1805331a3600ba943f9a18470a6",
+      "file_sha256": "7c861e1cbbc65b4e24b2e851db7b1e74044791be1565e510f5980531e3269f71",
+      "body": "        // Exit already unregisters services and stops browsing on the owned\n        // worker. Separate cleanup commands can fail before Exit is submitted\n        // (e.g. no descriptor for mdns-sd's temporary command-wake socket).\n        self.daemon.shutdown().map_err(failed)?;\n        Ok(())\n    }\n}\nimpl Drop for Discovery {\n    fn drop(&mut self) {\n        let _ = self.shutdown();\n    }\n}\n"
+    },
+    {
+      "path": "vendor/mdns-sd/src/service_daemon.rs",
+      "line_start": 402,
+      "line_end": 433,
+      "git_blob": "e7a162f7b5d3edf63a0b9e18bfb42fb3ec19803c",
+      "file_sha256": "3f1bf0a78767e928db84c19a005718869208c68747eee5f7ff05fce6e73ac4a5",
+      "body": "    /// [`monitor`](Self::monitor).\n    pub fn new_with_port(port: u16) -> Result<Self> {\n        // Use port 0 to allow the system assign a random available port,\n        // no need for a pre-defined port number.\n        let signal_addr = SocketAddrV4::new(LOOPBACK_V4, 0);\n\n        let signal_sock = UdpSocket::bind(signal_addr)\n            .map_err(|e| e_fmt!(\"failed to create signal_sock for daemon: {}\", e))?;\n\n        // Get the socket with the OS chosen port\n        let signal_addr = signal_sock\n            .local_addr()\n            .map_err(|e| e_fmt!(\"failed to get signal sock addr: {}\", e))?;\n\n        // Must be nonblocking so we can listen to it together with mDNS sockets.\n        signal_sock\n            .set_nonblocking(true)\n            .map_err(|e| e_fmt!(\"failed to set nonblocking for signal socket: {}\", e))?;\n\n        let poller = Poll::new().map_err(|e| e_fmt!(\"failed to create mio Poll: {e}\"))?;\n\n        let (sender, receiver) = bounded(100);\n\n        // Spawn the daemon thread\n        let mio_sock = MioUdpSocket::from_std(signal_sock);\n        let cmd_sender = sender.clone();\n        thread::Builder::new()\n            .name(\"mDNS_daemon\".to_string())\n            .spawn(move || {\n                Self::daemon_thread(mio_sock, poller, receiver, port, cmd_sender, signal_addr)\n            })\n            .map_err(|e| e_fmt!(\"thread builder failed to spawn: {}\", e))?;\n"
+    },
+    {
+      "path": "vendor/mdns-sd/src/service_daemon.rs",
+      "line_start": 917,
+      "line_end": 944,
+      "git_blob": "e7a162f7b5d3edf63a0b9e18bfb42fb3ec19803c",
+      "file_sha256": "3f1bf0a78767e928db84c19a005718869208c68747eee5f7ff05fce6e73ac4a5",
+      "body": "    fn daemon_thread(\n        signal_sock: MioUdpSocket,\n        poller: Poll,\n        receiver: Receiver<Command>,\n        port: u16,\n        cmd_sender: Sender<Command>,\n        signal_addr: SocketAddr,\n    ) {\n        let mut zc = Zeroconf::new(signal_sock, poller, port, cmd_sender, signal_addr);\n\n        if let Some(cmd) = zc.run(receiver) {\n            match cmd {\n                Command::Exit(resp_s) => {\n                    // It is guaranteed that the receiver already dropped,\n                    // i.e. the daemon command channel closed.\n                    if let Err(e) = resp_s.send(DaemonStatus::Shutdown) {\n                        debug!(\"exit: failed to send response of shutdown: {}\", e);\n                    }\n                }\n                _ => {\n                    debug!(\"Unexpected command: {:?}\", cmd);\n                }\n            }\n        }\n    }\n}\n\n/// Creates a new UDP socket that uses `intf` to send and recv multicast.\n"
+    },
+    {
+      "path": "vendor/mdns-sd/src/service_daemon.rs",
+      "line_start": 4054,
+      "line_end": 4070,
+      "git_blob": "e7a162f7b5d3edf63a0b9e18bfb42fb3ec19803c",
+      "file_sha256": "3f1bf0a78767e928db84c19a005718869208c68747eee5f7ff05fce6e73ac4a5",
+      "body": "    /// The entry point that executes all commands received by the daemon.\n    ///\n    /// `repeating`: whether this is a retransmission.\n    fn exec_command(&mut self, command: Command, repeating: bool) {\n        trace!(\"exec_command: {:?} repeating: {}\", &command, repeating);\n        match command {\n            Command::Browse(ty, next_delay, cache_only, listener) => {\n                self.exec_command_browse(repeating, ty, next_delay, cache_only, listener);\n            }\n\n            Command::BrowseLimited(ty, listener, state) => {\n                self.exec_command_browse_with_state(false, ty, 1, false, listener, Some(state));\n            }\n\n            Command::ResolveHostname(hostname, next_delay, listener, timeout) => {\n                self.exec_command_resolve_hostname(\n                    repeating, hostname, next_delay, listener, timeout,\n"
+    }
+  ],
+  "frozen_inputs": {
+    "source_archive_sha256": "21a551059f2dbbd7fc694e668512efb99805b33029490f424156c92c762ccf08",
+    "source_manifest_sha256": "53cf3242666110a06275cd01eb5b01495bf7be65a48ff3066da08bdd8682e556",
+    "project_source_files_verified": 801,
+    "original_artifact_files_verified": 1679,
+    "net_rlib_sha256": "c36d0a889628e3bfd84a60818df38ea1e3bb3ff0e78f5fd87d53249f64ef03ff",
+    "net_fingerprint_sha256": "9d1c61d2ec0a73e44e7fd457d575b53c7e6866fabb3e739f7c01a491ce3a22b5",
+    "selected_actual_net_dependencies": {
+      "log": {
+        "crate": "log",
+        "path": "<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\deps\\liblog-0d1942c19c6f2e24.rlib",
+        "sha256": "1113b4f6e2a7565a8713619fed2aa771bc725c8bd051390bbbb9dc5cb58d50f5",
+        "fingerprint_hex": "5e17b1a3d0cf0570",
+        "recorded_dependency_value": 8072086402137921374
+      },
+      "mdns_sd": {
+        "crate": "mdns_sd",
+        "path": "<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\deps\\libmdns_sd-97b021b8bc89fed1.rlib",
+        "sha256": "db0a51cd4838e5451002577319b2a69153068d2b2c04a2040a296d5b31ba0a68",
+        "fingerprint_hex": "fe1033979a6076cf",
+        "recorded_dependency_value": 14949242230180876542
+      }
+    },
+    "old_roots_manifest_original_sha256": "18c4e621b05f0c49900bfba433cad8b217823a3e296a105ae76fd85627b27e18",
+    "old_roots_manifest_copied_sha256": "b3af795407a485122f6cd3cac53959455b01f4a61fdf4801edd3a203b0f934af",
+    "old_roots_manifest": "windows-owned-cleanup/old-inputs-manifest.json",
+    "old_manifest_transform": "UTF-8/LF and private root aliases only; per-file paths, byte lengths, hashes and original readonly flags retained.",
+    "old_fixture_file_audits": [
+      {
+        "label": "frozen",
+        "files": 2579,
+        "all_bytes_hashes_readonly_flags_match": true,
+        "root_current_user_only_protected": true,
+        "fixture_executables": 0
+      },
+      {
+        "label": "startup-diagnostic",
+        "files": 73,
+        "all_bytes_hashes_readonly_flags_match": true,
+        "root_current_user_only_protected": true,
+        "fixture_executables": 0
+      }
+    ],
+    "old_fixture_access": "Read-only; every old file bytes/hash/readonly flag and each old protected current-user root ACL preserved."
+  },
+  "build": {
+    "start": {
+      "started_utc": "2026-10-23T17:51:57.0802159Z",
+      "source_commit": "e4f48ba47ea69aa76a08de5cf0cf61c68d903c03",
+      "source_sha256": "fb7bceb8ced3f9c3ecf8a3ab146b612ca42910ede1b4845fa2905ccdd311ef81",
+      "source_bytes": 5086,
+      "net_sha256": "c36d0a889628e3bfd84a60818df38ea1e3bb3ff0e78f5fd87d53249f64ef03ff",
+      "net_fingerprint": "<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\.fingerprint\\openergy-net-4755de466071af44\\lib-openergy_net.json",
+      "net_fingerprint_sha256": "9d1c61d2ec0a73e44e7fd457d575b53c7e6866fabb3e739f7c01a491ce3a22b5",
+      "selected_dependencies": {
+        "log": {
+          "crate": "log",
+          "path": "<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\deps\\liblog-0d1942c19c6f2e24.rlib",
+          "sha256": "1113b4f6e2a7565a8713619fed2aa771bc725c8bd051390bbbb9dc5cb58d50f5",
+          "fingerprint_hex": "5e17b1a3d0cf0570",
+          "recorded_dependency_value": 8072086402137921374
+        },
+        "mdns_sd": {
+          "crate": "mdns_sd",
+          "path": "<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\deps\\libmdns_sd-97b021b8bc89fed1.rlib",
+          "sha256": "db0a51cd4838e5451002577319b2a69153068d2b2c04a2040a296d5b31ba0a68",
+          "fingerprint_hex": "fe1033979a6076cf",
+          "recorded_dependency_value": 14949242230180876542
+        }
+      },
+      "tools": {
+        "tools": [
+          {
+            "name": "cargo.exe",
+            "bytes": 27543552,
+            "sha256": "aa5b8980be3681899fde765ba47e2ed361463ae9dd8ee7cd1963c18d23743a0f"
+          },
+          {
+            "name": "rustc.exe",
+            "bytes": 110592,
+            "sha256": "ba03e3ba03a73d9fef19ab3659140f94b43615ec1d587fe9befc9aed3bd5aa72"
+          },
+          {
+            "name": "cargo-clippy.exe",
+            "bytes": 1175040,
+            "sha256": "bea1e468b531a389f6fe164d76ba98f73a2dac3495998dd085365df92105134f"
+          },
+          {
+            "name": "clippy-driver.exe",
+            "bytes": 11308544,
+            "sha256": "648db1897ec48a9f64bae9e0624761abab7b2904a6ab25d53cc2869a0245f99e"
+          },
+          {
+            "name": "rustfmt.exe",
+            "bytes": 4735488,
+            "sha256": "231e4b294d5f6d9f025a9025514e3e6b0ee5defa524fd016498e1c77eb96980a"
+          }
+        ],
+        "rustup_settings_sha256": "af11a5540001371324994abaa9ea1e69d50fed1acb1a87e4abef179e8816058f",
+        "cargo_configs": [],
+        "toolchains": [
+          "stable-x86_64-pc-windows-msvc (active, default)",
+          "nightly-x86_64-pc-windows-msvc",
+          "nightly-2026-08-10-x86_64-pc-windows-msvc",
+          "1.98.0-x86_64-pc-windows-msvc",
+          "1.99.1-x86_64-pc-windows-msvc"
+        ],
+        "rustc": [
+          "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+          "binary: rustc",
+          "commit-hash: 58cf8f9c35b355199727627d07ae34a4e2846d67",
+          "commit-date: 2026-10-13",
+          "host: x86_64-pc-windows-msvc",
+          "release: 1.99.1",
+          "LLVM version: 23.1.1"
+        ],
+        "cargo": [
+          "cargo 1.99.1 (5f94df478 2026-08-27)"
+        ],
+        "powershell": "7.6.4",
+        "powershell_path": "c:\\program files\\powershell\\7\\pwsh.exe",
+        "powershell_sha256": "db6dd81183fe57d22e03b911ec9a30a2fd7c40542e97743615355a6fb44f458f",
+        "os": "Microsoft Windows NT 10.0.26340.0",
+        "architecture": "AMD64"
+      },
+      "old_fixture_counts": [
+        {
+          "label": "frozen",
+          "files": 2579
+        },
+        {
+          "label": "startup-diagnostic",
+          "files": 73
+        }
+      ],
+      "session": 0,
+      "priority": "BelowNormal",
+      "cargo_build_jobs": "2",
+      "compiler_invocations_at_once": 1,
+      "arguments": [
+        "--edition=2021",
+        "--crate-name",
+        "owned_cleanup",
+        "--target",
+        "x86_64-pc-windows-msvc",
+        "-D",
+        "warnings",
+        "-C",
+        "opt-level=3",
+        "-C",
+        "panic=abort",
+        "-C",
+        "codegen-units=1",
+        "-C",
+        "lto=thin",
+        "-C",
+        "strip=symbols",
+        "--extern",
+        "openergy_net=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\libopenergy_net.rlib",
+        "--extern",
+        "log=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\deps\\liblog-0d1942c19c6f2e24.rlib",
+        "-L",
+        "dependency=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\deps",
+        "-L",
+        "dependency=<FROZEN_FIXTURE>\\target\\release\\deps",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\libc-08e3751533f86ee2\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\ring-808720db1c61002f\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\rustls-d819052e0a6d63e6\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde_core-365d1e5cc6382f48\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde_json-a6e20e9b06fa74a6\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde-032d36e65f1be6d3\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\zmij-f7a237327a1b169e\\out",
+        "<OWNED_FIXTURE>\\owned_cleanup.rs",
+        "-o",
+        "<OWNED_FIXTURE>\\bin\\owned_cleanup.exe"
+      ],
+      "acl": {
+        "root_protected": true,
+        "current_user_only_items": 13,
+        "reparse_points": 0
+      }
+    },
+    "rust": {
+      "started_utc": "2026-10-23T17:51:57.4060956Z",
+      "ended_utc": "2026-10-23T17:52:05.7539892Z",
+      "elapsed_ms": 8347,
+      "exit": 0,
+      "arguments": [
+        "--edition=2021",
+        "--crate-name",
+        "owned_cleanup",
+        "--target",
+        "x86_64-pc-windows-msvc",
+        "-D",
+        "warnings",
+        "-C",
+        "opt-level=3",
+        "-C",
+        "panic=abort",
+        "-C",
+        "codegen-units=1",
+        "-C",
+        "lto=thin",
+        "-C",
+        "strip=symbols",
+        "--extern",
+        "openergy_net=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\libopenergy_net.rlib",
+        "--extern",
+        "log=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\deps\\liblog-0d1942c19c6f2e24.rlib",
+        "-L",
+        "dependency=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\deps",
+        "-L",
+        "dependency=<FROZEN_FIXTURE>\\target\\release\\deps",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\libc-08e3751533f86ee2\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\ring-808720db1c61002f\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\rustls-d819052e0a6d63e6\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde_core-365d1e5cc6382f48\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde_json-a6e20e9b06fa74a6\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde-032d36e65f1be6d3\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\zmij-f7a237327a1b169e\\out",
+        "<OWNED_FIXTURE>\\owned_cleanup.rs",
+        "-o",
+        "<OWNED_FIXTURE>\\bin\\owned_cleanup.exe"
+      ],
+      "source_sha256": "fb7bceb8ced3f9c3ecf8a3ab146b612ca42910ede1b4845fa2905ccdd311ef81",
+      "compiler_sha256": "ba03e3ba03a73d9fef19ab3659140f94b43615ec1d587fe9befc9aed3bd5aa72",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "started_local": "2026-10-23T10:51:57.406095-07:00",
+      "ended_local": "2026-10-23T10:52:05.753989-07:00"
+    },
+    "csharp": {
+      "started_utc": "2026-10-23T17:52:05.7588404Z",
+      "ended_utc": "2026-10-23T17:52:06.2949689Z",
+      "elapsed_ms": 536,
+      "exit": 0,
+      "source_sha256": "23d64792b1c619a6e846d4ee4f22e53de82b470dc3395102390b828ff222c67d",
+      "dll_sha256": "0885c68c7868cd811565ea96ac3703b0f3bd477a4bbfa197f5d7cdf51c74a08e",
+      "compiler_options": [
+        "/warnaserror+",
+        "/optimize+"
+      ],
+      "runtime": ".NET 10.0.10",
+      "roslyn": [
+        {
+          "name": "Microsoft.CodeAnalysis.CSharp.dll",
+          "sha256": "b266aa0dece20b641ad9f1547a349afcc64936bd36a6e801fde1b9fda55e3119"
+        },
+        {
+          "name": "Microsoft.CodeAnalysis.dll",
+          "sha256": "28f2649bc8e46af4a49604217632829cd0c764860af8049d6b0ef1c3d95983e5"
+        }
+      ],
+      "started_local": "2026-10-23T10:52:05.758840-07:00",
+      "ended_local": "2026-10-23T10:52:06.294968-07:00"
+    },
+    "binaries": [
+      {
+        "path": "bin/owned_cleanup.exe",
+        "bytes": 845824,
+        "sha256": "bf73cb35fbd2ac298592646aba0749cc2d3bca0a584bdbc40c45246e3b7723b4",
+        "readonly": true
+      },
+      {
+        "path": "bin/owned_cleanup.pdb",
+        "bytes": 1478656,
+        "sha256": "f0197088952b92b1ea631fa8018f5df411d366875825275540e427ca6ebc8c48",
+        "readonly": true
+      },
+      {
+        "path": "bin/OwnedNativeObserver.dll",
+        "bytes": 5120,
+        "sha256": "0885c68c7868cd811565ea96ac3703b0f3bd477a4bbfa197f5d7cdf51c74a08e",
+        "readonly": true
+      }
+    ],
+    "package_rebuilds": 0,
+    "native_compiler_runs": 1,
+    "rust_flags_strict_warnings": true,
+    "native_observer_compiler_strict_warnings": true,
+    "initial_build_transport_exit": "unknown after 90-second timeout; preserved, not relabelled success",
+    "durable_compiler_results_and_finalizer": "Both saved compiler results exited 0. Metadata-only finalizer verified the same sources/DLL and wrote explicit frozen file records; no recompilation.",
+    "native_tool_identity": {
+      "recorded_utc": "2026-10-23T18:02:02.9611967Z",
+      "installed_native_tools_match_prior_snapshot": true,
+      "native_tools": [
+        {
+          "name": "vswhere.exe",
+          "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\vswhere.exe",
+          "bytes": 469456,
+          "sha256": "c54f3b7c9164ea9a0db8641e81ecdda80c2664ef5a47c4191406f848cc07c662",
+          "file_version": "3.1.7.39155"
+        },
+        {
+          "name": "cl.exe",
+          "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+          "bytes": 677736,
+          "sha256": "88c8344236a27a6e727e0a8edc49aaa2690bdc7a9464b9d18cc7abe70a9f1c0d",
+          "file_version": "19.44.35228.0"
+        },
+        {
+          "name": "link.exe",
+          "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\link.exe",
+          "bytes": 3252576,
+          "sha256": "ca11e6c45debd34bf652dfe984c5360a531a005ed78bf72852330c9c2590cf0d",
+          "file_version": "14.44.35228.0"
+        },
+        {
+          "name": "lib.exe",
+          "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\lib.exe",
+          "bytes": 23376,
+          "sha256": "3d694c782f93e998fec5db0c2df78153565da23a028ee4618561fa0c33408489",
+          "file_version": "14.44.35228.0"
+        },
+        {
+          "name": "c1.dll",
+          "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\c1.dll",
+          "bytes": 3430200,
+          "sha256": "48bb561939cfd8fbf194bb73b111b2083912da4fb81af2c181cbe8f4b89e5ad1",
+          "file_version": "19.44.35228.0"
+        },
+        {
+          "name": "c1xx.dll",
+          "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\c1xx.dll",
+          "bytes": 12332384,
+          "sha256": "688fe28f3065283edf668868e76aeab28f03f80e2171c14c7d4e37f64513f623",
+          "file_version": "19.44.35228.0"
+        },
+        {
+          "name": "c2.dll",
+          "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\c2.dll",
+          "bytes": 10462008,
+          "sha256": "98050f97d60f7e95fcaf3525a7103e4818fba498a43563922476819ce88ed162",
+          "file_version": "19.44.35228.0"
+        },
+        {
+          "name": "mspdbcore.dll",
+          "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\mspdbcore.dll",
+          "bytes": 1321824,
+          "sha256": "ff7482bf01d1dcad8d5e368333e4495ed3572713edeec7044623e5f5fff999b9",
+          "file_version": "14.44.35228.0"
+        },
+        {
+          "name": "tar.exe",
+          "path": "C:\\WINDOWS\\system32\\tar.exe",
+          "bytes": 93136,
+          "sha256": "d36370bff102d58e0ef192d68e3c4241b2f44feeaa441e84129045532b71fd93",
+          "file_version": "3.8.9 (WinBuild.160101.0800)"
+        },
+        {
+          "name": "NETSTAT.EXE",
+          "path": "C:\\WINDOWS\\system32\\NETSTAT.EXE",
+          "bytes": 73728,
+          "sha256": "250113401692823b970de94ff46a8d9c9c686d8e8e6dfbd10d3fc00d1f462f11",
+          "file_version": "10.0.26100.8951 (WinBuild.160101.0800)"
+        },
+        {
+          "name": "rustup.exe",
+          "path": "<USERPROFILE>\\.cargo\\bin\\rustup.exe",
+          "bytes": 12724224,
+          "sha256": "00f139da614dced87d3c3d4121c43eebdac3c1bf8a5ee86b9d80dfd71c8d70fd",
+          "file_version": null
+        },
+        {
+          "name": "pwsh.exe",
+          "path": "C:\\program files\\powershell\\7\\pwsh.exe",
+          "bytes": 301368,
+          "sha256": "db6dd81183fe57d22e03b911ec9a30a2fd7c40542e97743615355a6fb44f458f",
+          "file_version": "7.6.4.500"
+        },
+        {
+          "name": "powershell.exe",
+          "path": "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+          "bytes": 495616,
+          "sha256": "30d263415d5e12f148500e2765b7cfef99adaab04f7681057ac859b785a535fa",
+          "file_version": "10.0.26100.9596 (WinBuild.160101.0800)"
+        },
+        {
+          "name": "ssh.exe",
+          "path": "C:\\WINDOWS\\System32\\OpenSSH\\ssh.exe",
+          "bytes": 1256448,
+          "sha256": "98d447730047f5df91373e852d057928a921c3d1e89938700ab656ba84b19dc8",
+          "file_version": "9.5.6.4"
+        }
+      ],
+      "os_api_libraries": [
+        {
+          "name": "kernel32.dll",
+          "bytes": 845168,
+          "sha256": "2fcbdd52613276c257c2fe89cc44afd90e6ba7dafa8e7dd1e7576687c2fd7a68",
+          "file_version": "10.0.26100.9072 (WinBuild.160101.0800)"
+        },
+        {
+          "name": "KernelBase.dll",
+          "bytes": 4245824,
+          "sha256": "ae233b23c8d256e4a342693c413df9faa023b7b09cd7aa86748993cc80bb1da6",
+          "file_version": "10.0.26100.9072 (WinBuild.160101.0800)"
+        },
+        {
+          "name": "iphlpapi.dll",
+          "bytes": 221192,
+          "sha256": "c3b21798ff85134a15bead09b73cd9d9ac80ec7e0d2d367e1dd87dc8036e43ea",
+          "file_version": "10.0.26100.8951 (WinBuild.160101.0800)"
+        },
+        {
+          "name": "ntdll.dll",
+          "bytes": 2543424,
+          "sha256": "70531093d420f912bac151f9716da553a23f25337a7f2a916c9714b758cc9b87",
+          "file_version": "10.0.26100.9352 (WinBuild.160101.0800)"
+        }
+      ],
+      "note": "OS API hashes are post-observation file identities. Installed native tool hashes match the earlier frozen snapshot; this does not assert linker-process tracing."
+    }
+  },
+  "cases": [
+    {
+      "mode": "shutdown",
+      "arguments": [
+        "shutdown",
+        "25090",
+        "25094"
+      ],
+      "started_utc": "2026-10-23T17:56:27.6762644Z",
+      "passed": true,
+      "forced_cleanup": false,
+      "cleanup_deadline_ms": 10000,
+      "poll_interval_ms": 50,
+      "pid": "<HELPER_PID_SHUTDOWN>",
+      "session": 0,
+      "priority": "BelowNormal",
+      "main_tid": "<MAIN_TID_SHUTDOWN>",
+      "baseline": {
+        "phase": "baseline-before-any-Discovery-init",
+        "recorded_utc": "2026-10-23T17:56:27.9087701Z",
+        "elapsed_ms": 237.033,
+        "cleanup_elapsed_ms": null,
+        "helper_alive_before_and_after": true,
+        "pid": "<HELPER_PID_SHUTDOWN>",
+        "start_time": "2026-10-23T17:56:27.6872456Z",
+        "thread_inventory_nonempty": true,
+        "thread_count": 1,
+        "threads": [
+          {
+            "tid": "<MAIN_TID_SHUTDOWN>",
+            "state": "Wait",
+            "start_address": "<NATIVE_START_ADDRESS_1>",
+            "description": "main"
+          }
+        ],
+        "worker_native_tid": "<NOT_YET_OBSERVED>",
+        "worker_present": false,
+        "global_udp_count": 92,
+        "native_udp_queries": [
+          {
+            "Family": 2,
+            "NativeReturnCodes": [
+              122,
+              0
+            ],
+            "BufferBytes": 876,
+            "Rows": 62
+          },
+          {
+            "Family": 23,
+            "NativeReturnCodes": [
+              122,
+              0
+            ],
+            "BufferBytes": 1132,
+            "Rows": 30
+          }
+        ],
+        "owned_udp": [],
+        "owned_udp_count": 0
+      },
+      "publication_resolved": true,
+      "init_publication_elapsed_us": 1033100,
+      "worker_native_tid": "<MDNS_TID_SHUTDOWN>",
+      "live": {
+        "phase": "live-before-cleanup",
+        "recorded_utc": "2026-10-23T17:56:28.9894082Z",
+        "elapsed_ms": 1317.6614,
+        "cleanup_elapsed_ms": null,
+        "helper_alive_before_and_after": true,
+        "pid": "<HELPER_PID_SHUTDOWN>",
+        "start_time": "2026-10-23T17:56:27.6872456Z",
+        "thread_inventory_nonempty": true,
+        "thread_count": 2,
+        "threads": [
+          {
+            "tid": "<MAIN_TID_SHUTDOWN>",
+            "state": "Wait",
+            "start_address": "0",
+            "description": "main"
+          },
+          {
+            "tid": "<MDNS_TID_SHUTDOWN>",
+            "state": "Wait",
+            "start_address": "<NATIVE_START_ADDRESS_1>",
+            "description": "mDNS_daemon"
+          }
+        ],
+        "worker_native_tid": "<MDNS_TID_SHUTDOWN>",
+        "worker_present": true,
+        "global_udp_count": 95,
+        "native_udp_queries": [
+          {
+            "Family": 2,
+            "NativeReturnCodes": [
+              122,
+              0
+            ],
+            "BufferBytes": 900,
+            "Rows": 64
+          },
+          {
+            "Family": 23,
+            "NativeReturnCodes": [
+              122,
+              0
+            ],
+            "BufferBytes": 1160,
+            "Rows": 31
+          }
+        ],
+        "owned_udp": [
+          {
+            "Family": 2,
+            "Address": "0.0.0.0",
+            "Scope": 0,
+            "Port": 25090,
+            "ProcessId": "<HELPER_PID_SHUTDOWN>"
+          },
+          {
+            "Family": 2,
+            "Address": "127.0.0.1",
+            "Scope": 0,
+            "Port": "<OS_ASSIGNED_WAKE_PORT_SHUTDOWN>",
+            "ProcessId": "<HELPER_PID_SHUTDOWN>"
+          },
+          {
+            "Family": 23,
+            "Address": "::",
+            "Scope": 0,
+            "Port": 25090,
+            "ProcessId": "<HELPER_PID_SHUTDOWN>"
+          }
+        ],
+        "owned_udp_count": 3
+      },
+      "cleanup_submission_returned_ms": 2.5953,
+      "resources_absent_observed_ms": 12.6786,
+      "confirmed": {
+        "phase": "confirmed-after-ping-before-exit",
+        "recorded_utc": "2026-10-23T17:56:29.0550699Z",
+        "elapsed_ms": 1383.3251,
+        "cleanup_elapsed_ms": 54.4001,
+        "helper_alive_before_and_after": true,
+        "pid": "<HELPER_PID_SHUTDOWN>",
+        "start_time": "2026-10-23T17:56:27.6872456Z",
+        "thread_inventory_nonempty": true,
+        "thread_count": 1,
+        "threads": [
+          {
+            "tid": "<MAIN_TID_SHUTDOWN>",
+            "state": "Wait",
+            "start_address": "0",
+            "description": "main"
+          }
+        ],
+        "worker_native_tid": "<MDNS_TID_SHUTDOWN>",
+        "worker_present": false,
+        "global_udp_count": 92,
+        "native_udp_queries": [
+          {
+            "Family": 2,
+            "NativeReturnCodes": [
+              122,
+              0
+            ],
+            "BufferBytes": 876,
+            "Rows": 62
+          },
+          {
+            "Family": 23,
+            "NativeReturnCodes": [
+              122,
+              0
+            ],
+            "BufferBytes": 1132,
+            "Rows": 30
+          }
+        ],
+        "owned_udp": [],
+        "owned_udp_count": 0
+      },
+      "helper_ping_after_resource_absence": true,
+      "exit": 0,
+      "stderr": "",
+      "ended_utc": "2026-10-23T17:56:29.0696379Z",
+      "total_elapsed_ms": 1398.4116,
+      "transcript": [
+        {
+          "at_utc": "2026-10-23T17:56:27.8454385Z",
+          "elapsed_ms": 175.1889,
+          "direction": "helper-to-observer",
+          "line": "READY pid=<HELPER_PID_SHUTDOWN> main_tid=<MAIN_TID_SHUTDOWN> mode=shutdown"
+        },
+        {
+          "at_utc": "2026-10-23T17:56:27.9228237Z",
+          "elapsed_ms": 251.0887,
+          "direction": "observer-to-helper",
+          "line": "init"
+        },
+        {
+          "at_utc": "2026-10-23T17:56:27.9482145Z",
+          "elapsed_ms": 276.4861,
+          "direction": "helper-to-observer",
+          "line": "WORKER_LOG native_tid=<MDNS_TID_SHUTDOWN> source_line=4058"
+        },
+        {
+          "at_utc": "2026-10-23T17:56:28.9643692Z",
+          "elapsed_ms": 1292.6374,
+          "direction": "helper-to-observer",
+          "line": "LIVE worker_tid=<MDNS_TID_SHUTDOWN> resolved=true init_elapsed_us=1033100"
+        },
+        {
+          "at_utc": "2026-10-23T17:56:29.0012023Z",
+          "elapsed_ms": 1329.4599,
+          "direction": "observer-to-helper",
+          "line": "cleanup"
+        },
+        {
+          "at_utc": "2026-10-23T17:56:29.0020736Z",
+          "elapsed_ms": 1330.3288,
+          "direction": "helper-to-observer",
+          "line": "CLEANUP_RETURNED mode=shutdown object_retained=true"
+        },
+        {
+          "at_utc": "2026-10-23T17:56:29.0424934Z",
+          "elapsed_ms": 1370.7522,
+          "direction": "observer-to-helper",
+          "line": "ping"
+        },
+        {
+          "at_utc": "2026-10-23T17:56:29.0428354Z",
+          "elapsed_ms": 1371.0849,
+          "direction": "helper-to-observer",
+          "line": "ALIVE pid=<HELPER_PID_SHUTDOWN> cleanup_done=true object_retained=true"
+        },
+        {
+          "at_utc": "2026-10-23T17:56:29.0564183Z",
+          "elapsed_ms": 1384.6746,
+          "direction": "observer-to-helper",
+          "line": "exit"
+        },
+        {
+          "at_utc": "2026-10-23T17:56:29.0567025Z",
+          "elapsed_ms": 1384.9505,
+          "direction": "helper-to-observer",
+          "line": "EXITING"
+        }
+      ],
+      "samples": [
+        {
+          "phase": "baseline-before-any-Discovery-init",
+          "recorded_utc": "2026-10-23T17:56:27.9087701Z",
+          "elapsed_ms": 237.033,
+          "cleanup_elapsed_ms": null,
+          "helper_alive_before_and_after": true,
+          "pid": "<HELPER_PID_SHUTDOWN>",
+          "start_time": "2026-10-23T17:56:27.6872456Z",
+          "thread_inventory_nonempty": true,
+          "thread_count": 1,
+          "threads": [
+            {
+              "tid": "<MAIN_TID_SHUTDOWN>",
+              "state": "Wait",
+              "start_address": "<NATIVE_START_ADDRESS_1>",
+              "description": "main"
+            }
+          ],
+          "worker_native_tid": "<NOT_YET_OBSERVED>",
+          "worker_present": false,
+          "global_udp_count": 92,
+          "native_udp_queries": [
+            {
+              "Family": 2,
+              "NativeReturnCodes": [
+                122,
+                0
+              ],
+              "BufferBytes": 876,
+              "Rows": 62
+            },
+            {
+              "Family": 23,
+              "NativeReturnCodes": [
+                122,
+                0
+              ],
+              "BufferBytes": 1132,
+              "Rows": 30
+            }
+          ],
+          "owned_udp": [],
+          "owned_udp_count": 0
+        },
+        {
+          "phase": "live-before-cleanup",
+          "recorded_utc": "2026-10-23T17:56:28.9894082Z",
+          "elapsed_ms": 1317.6614,
+          "cleanup_elapsed_ms": null,
+          "helper_alive_before_and_after": true,
+          "pid": "<HELPER_PID_SHUTDOWN>",
+          "start_time": "2026-10-23T17:56:27.6872456Z",
+          "thread_inventory_nonempty": true,
+          "thread_count": 2,
+          "threads": [
+            {
+              "tid": "<MAIN_TID_SHUTDOWN>",
+              "state": "Wait",
+              "start_address": "0",
+              "description": "main"
+            },
+            {
+              "tid": "<MDNS_TID_SHUTDOWN>",
+              "state": "Wait",
+              "start_address": "<NATIVE_START_ADDRESS_1>",
+              "description": "mDNS_daemon"
+            }
+          ],
+          "worker_native_tid": "<MDNS_TID_SHUTDOWN>",
+          "worker_present": true,
+          "global_udp_count": 95,
+          "native_udp_queries": [
+            {
+              "Family": 2,
+              "NativeReturnCodes": [
+                122,
+                0
+              ],
+              "BufferBytes": 900,
+              "Rows": 64
+            },
+            {
+              "Family": 23,
+              "NativeReturnCodes": [
+                122,
+                0
+              ],
+              "BufferBytes": 1160,
+              "Rows": 31
+            }
+          ],
+          "owned_udp": [
+            {
+              "Family": 2,
+              "Address": "0.0.0.0",
+              "Scope": 0,
+              "Port": 25090,
+              "ProcessId": "<HELPER_PID_SHUTDOWN>"
+            },
+            {
+              "Family": 2,
+              "Address": "127.0.0.1",
+              "Scope": 0,
+              "Port": "<OS_ASSIGNED_WAKE_PORT_SHUTDOWN>",
+              "ProcessId": "<HELPER_PID_SHUTDOWN>"
+            },
+            {
+              "Family": 23,
+              "Address": "::",
+              "Scope": 0,
+              "Port": 25090,
+              "ProcessId": "<HELPER_PID_SHUTDOWN>"
+            }
+          ],
+          "owned_udp_count": 3
+        },
+        {
+          "phase": "poll-cleanup",
+          "recorded_utc": "2026-10-23T17:56:29.0121401Z",
+          "elapsed_ms": 1340.3973,
+          "cleanup_elapsed_ms": 12.6786,
+          "helper_alive_before_and_after": true,
+          "pid": "<HELPER_PID_SHUTDOWN>",
+          "start_time": "2026-10-23T17:56:27.6872456Z",
+          "thread_inventory_nonempty": true,
+          "thread_count": 1,
+          "threads": [
+            {
+              "tid": "<MAIN_TID_SHUTDOWN>",
+              "state": "Wait"
+            }
+          ],
+          "worker_native_tid": "<MDNS_TID_SHUTDOWN>",
+          "worker_present": false,
+          "global_udp_count": 92,
+          "native_udp_queries": [
+            {
+              "Family": 2,
+              "NativeReturnCodes": [
+                122,
+                0
+              ],
+              "BufferBytes": 876,
+              "Rows": 62
+            },
+            {
+              "Family": 23,
+              "NativeReturnCodes": [
+                122,
+                0
+              ],
+              "BufferBytes": 1132,
+              "Rows": 30
+            }
+          ],
+          "owned_udp": [],
+          "owned_udp_count": 0
+        },
+        {
+          "phase": "confirmed-after-ping-before-exit",
+          "recorded_utc": "2026-10-23T17:56:29.0550699Z",
+          "elapsed_ms": 1383.3251,
+          "cleanup_elapsed_ms": 54.4001,
+          "helper_alive_before_and_after": true,
+          "pid": "<HELPER_PID_SHUTDOWN>",
+          "start_time": "2026-10-23T17:56:27.6872456Z",
+          "thread_inventory_nonempty": true,
+          "thread_count": 1,
+          "threads": [
+            {
+              "tid": "<MAIN_TID_SHUTDOWN>",
+              "state": "Wait",
+              "start_address": "0",
+              "description": "main"
+            }
+          ],
+          "worker_native_tid": "<MDNS_TID_SHUTDOWN>",
+          "worker_present": false,
+          "global_udp_count": 92,
+          "native_udp_queries": [
+            {
+              "Family": 2,
+              "NativeReturnCodes": [
+                122,
+                0
+              ],
+              "BufferBytes": 876,
+              "Rows": 62
+            },
+            {
+              "Family": 23,
+              "NativeReturnCodes": [
+                122,
+                0
+              ],
+              "BufferBytes": 1132,
+              "Rows": 30
+            }
+          ],
+          "owned_udp": [],
+          "owned_udp_count": 0
+        }
+      ],
+      "started_local": "2026-10-23T10:56:27.676264-07:00",
+      "ended_local": "2026-10-23T10:56:29.069637-07:00",
+      "case_run_count": 1,
+      "owned_worker_identification": "Genuine GetCurrentThreadId callback at frozen mdns exec_command trace site; same native ID exists in OS process thread inventory with description mDNS_daemon.",
+      "extra_persistent_runtime_threads_observed": 0,
+      "baseline_warmed": false,
+      "timing_meaning": "Elapsed to completed successful OS snapshot after cleanup command, an observation upper bound; not exact teardown latency."
+    },
+    {
+      "mode": "drop",
+      "arguments": [
+        "drop",
+        "25092",
+        "25096"
+      ],
+      "started_utc": "2026-10-23T17:56:29.0807151Z",
+      "passed": true,
+      "forced_cleanup": false,
+      "cleanup_deadline_ms": 10000,
+      "poll_interval_ms": 50,
+      "pid": "<HELPER_PID_DROP>",
+      "session": 0,
+      "priority": "BelowNormal",
+      "main_tid": "<MAIN_TID_DROP>",
+      "baseline": {
+        "phase": "baseline-before-any-Discovery-init",
+        "recorded_utc": "2026-10-23T17:56:29.1189953Z",
+        "elapsed_ms": 38.3267,
+        "cleanup_elapsed_ms": null,
+        "helper_alive_before_and_after": true,
+        "pid": "<HELPER_PID_DROP>",
+        "start_time": "2026-10-23T17:56:29.0815347Z",
+        "thread_inventory_nonempty": true,
+        "thread_count": 1,
+        "threads": [
+          {
+            "tid": "<MAIN_TID_DROP>",
+            "state": "Wait",
+            "start_address": "<NATIVE_START_ADDRESS_1>",
+            "description": "main"
+          }
+        ],
+        "worker_native_tid": "<NOT_YET_OBSERVED>",
+        "worker_present": false,
+        "global_udp_count": 92,
+        "native_udp_queries": [
+          {
+            "Family": 2,
+            "NativeReturnCodes": [
+              122,
+              0
+            ],
+            "BufferBytes": 876,
+            "Rows": 62
+          },
+          {
+            "Family": 23,
+            "NativeReturnCodes": [
+              122,
+              0
+            ],
+            "BufferBytes": 1132,
+            "Rows": 30
+          }
+        ],
+        "owned_udp": [],
+        "owned_udp_count": 0
+      },
+      "publication_resolved": true,
+      "init_publication_elapsed_us": 934341,
+      "worker_native_tid": "<MDNS_TID_DROP>",
+      "live": {
+        "phase": "live-before-cleanup",
+        "recorded_utc": "2026-10-23T17:56:30.0674781Z",
+        "elapsed_ms": 986.816,
+        "cleanup_elapsed_ms": null,
+        "helper_alive_before_and_after": true,
+        "pid": "<HELPER_PID_DROP>",
+        "start_time": "2026-10-23T17:56:29.0815347Z",
+        "thread_inventory_nonempty": true,
+        "thread_count": 2,
+        "threads": [
+          {
+            "tid": "<MAIN_TID_DROP>",
+            "state": "Wait",
+            "start_address": "0",
+            "description": "main"
+          },
+          {
+            "tid": "<MDNS_TID_DROP>",
+            "state": "Wait",
+            "start_address": "<NATIVE_START_ADDRESS_1>",
+            "description": "mDNS_daemon"
+          }
+        ],
+        "worker_native_tid": "<MDNS_TID_DROP>",
+        "worker_present": true,
+        "global_udp_count": 93,
+        "native_udp_queries": [
+          {
+            "Family": 2,
+            "NativeReturnCodes": [
+              122,
+              0
+            ],
+            "BufferBytes": 888,
+            "Rows": 63
+          },
+          {
+            "Family": 23,
+            "NativeReturnCodes": [
+              122,
+              0
+            ],
+            "BufferBytes": 1132,
+            "Rows": 30
+          }
+        ],
+        "owned_udp": [
+          {
+            "Family": 2,
+            "Address": "0.0.0.0",
+            "Scope": 0,
+            "Port": 25092,
+            "ProcessId": "<HELPER_PID_DROP>"
+          },
+          {
+            "Family": 2,
+            "Address": "127.0.0.1",
+            "Scope": 0,
+            "Port": "<OS_ASSIGNED_WAKE_PORT_DROP>",
+            "ProcessId": "<HELPER_PID_DROP>"
+          },
+          {
+            "Family": 23,
+            "Address": "::",
+            "Scope": 0,
+            "Port": 25092,
+            "ProcessId": "<HELPER_PID_DROP>"
+          }
+        ],
+        "owned_udp_count": 3
+      },
+      "cleanup_submission_returned_ms": 1.2189,
+      "resources_absent_observed_ms": 10.0609,
+      "confirmed": {
+        "phase": "confirmed-after-ping-before-exit",
+        "recorded_utc": "2026-10-23T17:56:30.0964753Z",
+        "elapsed_ms": 1015.8354,
+        "cleanup_elapsed_ms": 28.2186,
+        "helper_alive_before_and_after": true,
+        "pid": "<HELPER_PID_DROP>",
+        "start_time": "2026-10-23T17:56:29.0815347Z",
+        "thread_inventory_nonempty": true,
+        "thread_count": 1,
+        "threads": [
+          {
+            "tid": "<MAIN_TID_DROP>",
+            "state": "Wait",
+            "start_address": "0",
+            "description": "main"
+          }
+        ],
+        "worker_native_tid": "<MDNS_TID_DROP>",
+        "worker_present": false,
+        "global_udp_count": 90,
+        "native_udp_queries": [
+          {
+            "Family": 2,
+            "NativeReturnCodes": [
+              122,
+              0
+            ],
+            "BufferBytes": 864,
+            "Rows": 61
+          },
+          {
+            "Family": 23,
+            "NativeReturnCodes": [
+              122,
+              0
+            ],
+            "BufferBytes": 1104,
+            "Rows": 29
+          }
+        ],
+        "owned_udp": [],
+        "owned_udp_count": 0
+      },
+      "helper_ping_after_resource_absence": true,
+      "exit": 0,
+      "stderr": "",
+      "ended_utc": "2026-10-23T17:56:30.1011324Z",
+      "total_elapsed_ms": 1020.4727,
+      "transcript": [
+        {
+          "at_utc": "2026-10-23T17:56:29.1112458Z",
+          "elapsed_ms": 30.5818,
+          "direction": "helper-to-observer",
+          "line": "READY pid=<HELPER_PID_DROP> main_tid=<MAIN_TID_DROP> mode=drop"
+        },
+        {
+          "at_utc": "2026-10-23T17:56:29.1194903Z",
+          "elapsed_ms": 38.8228,
+          "direction": "observer-to-helper",
+          "line": "init"
+        },
+        {
+          "at_utc": "2026-10-23T17:56:29.1348099Z",
+          "elapsed_ms": 54.1544,
+          "direction": "helper-to-observer",
+          "line": "WORKER_LOG native_tid=<MDNS_TID_DROP> source_line=4058"
+        },
+        {
+          "at_utc": "2026-10-23T17:56:30.0581755Z",
+          "elapsed_ms": 977.5407,
+          "direction": "helper-to-observer",
+          "line": "LIVE worker_tid=<MDNS_TID_DROP> resolved=true init_elapsed_us=934341"
+        },
+        {
+          "at_utc": "2026-10-23T17:56:30.0684978Z",
+          "elapsed_ms": 987.8265,
+          "direction": "observer-to-helper",
+          "line": "cleanup"
+        },
+        {
+          "at_utc": "2026-10-23T17:56:30.0694115Z",
+          "elapsed_ms": 988.7442,
+          "direction": "helper-to-observer",
+          "line": "CLEANUP_RETURNED mode=drop object_retained=false"
+        },
+        {
+          "at_utc": "2026-10-23T17:56:30.0884629Z",
+          "elapsed_ms": 1007.7996,
+          "direction": "observer-to-helper",
+          "line": "ping"
+        },
+        {
+          "at_utc": "2026-10-23T17:56:30.0888293Z",
+          "elapsed_ms": 1008.1566,
+          "direction": "helper-to-observer",
+          "line": "ALIVE pid=<HELPER_PID_DROP> cleanup_done=true object_retained=false"
+        },
+        {
+          "at_utc": "2026-10-23T17:56:30.0969100Z",
+          "elapsed_ms": 1016.233,
+          "direction": "observer-to-helper",
+          "line": "exit"
+        },
+        {
+          "at_utc": "2026-10-23T17:56:30.0972314Z",
+          "elapsed_ms": 1016.5574,
+          "direction": "helper-to-observer",
+          "line": "EXITING"
+        }
+      ],
+      "samples": [
+        {
+          "phase": "baseline-before-any-Discovery-init",
+          "recorded_utc": "2026-10-23T17:56:29.1189953Z",
+          "elapsed_ms": 38.3267,
+          "cleanup_elapsed_ms": null,
+          "helper_alive_before_and_after": true,
+          "pid": "<HELPER_PID_DROP>",
+          "start_time": "2026-10-23T17:56:29.0815347Z",
+          "thread_inventory_nonempty": true,
+          "thread_count": 1,
+          "threads": [
+            {
+              "tid": "<MAIN_TID_DROP>",
+              "state": "Wait",
+              "start_address": "<NATIVE_START_ADDRESS_1>",
+              "description": "main"
+            }
+          ],
+          "worker_native_tid": "<NOT_YET_OBSERVED>",
+          "worker_present": false,
+          "global_udp_count": 92,
+          "native_udp_queries": [
+            {
+              "Family": 2,
+              "NativeReturnCodes": [
+                122,
+                0
+              ],
+              "BufferBytes": 876,
+              "Rows": 62
+            },
+            {
+              "Family": 23,
+              "NativeReturnCodes": [
+                122,
+                0
+              ],
+              "BufferBytes": 1132,
+              "Rows": 30
+            }
+          ],
+          "owned_udp": [],
+          "owned_udp_count": 0
+        },
+        {
+          "phase": "live-before-cleanup",
+          "recorded_utc": "2026-10-23T17:56:30.0674781Z",
+          "elapsed_ms": 986.816,
+          "cleanup_elapsed_ms": null,
+          "helper_alive_before_and_after": true,
+          "pid": "<HELPER_PID_DROP>",
+          "start_time": "2026-10-23T17:56:29.0815347Z",
+          "thread_inventory_nonempty": true,
+          "thread_count": 2,
+          "threads": [
+            {
+              "tid": "<MAIN_TID_DROP>",
+              "state": "Wait",
+              "start_address": "0",
+              "description": "main"
+            },
+            {
+              "tid": "<MDNS_TID_DROP>",
+              "state": "Wait",
+              "start_address": "<NATIVE_START_ADDRESS_1>",
+              "description": "mDNS_daemon"
+            }
+          ],
+          "worker_native_tid": "<MDNS_TID_DROP>",
+          "worker_present": true,
+          "global_udp_count": 93,
+          "native_udp_queries": [
+            {
+              "Family": 2,
+              "NativeReturnCodes": [
+                122,
+                0
+              ],
+              "BufferBytes": 888,
+              "Rows": 63
+            },
+            {
+              "Family": 23,
+              "NativeReturnCodes": [
+                122,
+                0
+              ],
+              "BufferBytes": 1132,
+              "Rows": 30
+            }
+          ],
+          "owned_udp": [
+            {
+              "Family": 2,
+              "Address": "0.0.0.0",
+              "Scope": 0,
+              "Port": 25092,
+              "ProcessId": "<HELPER_PID_DROP>"
+            },
+            {
+              "Family": 2,
+              "Address": "127.0.0.1",
+              "Scope": 0,
+              "Port": "<OS_ASSIGNED_WAKE_PORT_DROP>",
+              "ProcessId": "<HELPER_PID_DROP>"
+            },
+            {
+              "Family": 23,
+              "Address": "::",
+              "Scope": 0,
+              "Port": 25092,
+              "ProcessId": "<HELPER_PID_DROP>"
+            }
+          ],
+          "owned_udp_count": 3
+        },
+        {
+          "phase": "poll-cleanup",
+          "recorded_utc": "2026-10-23T17:56:30.0783405Z",
+          "elapsed_ms": 997.6734,
+          "cleanup_elapsed_ms": 10.0609,
+          "helper_alive_before_and_after": true,
+          "pid": "<HELPER_PID_DROP>",
+          "start_time": "2026-10-23T17:56:29.0815347Z",
+          "thread_inventory_nonempty": true,
+          "thread_count": 1,
+          "threads": [
+            {
+              "tid": "<MAIN_TID_DROP>",
+              "state": "Wait"
+            }
+          ],
+          "worker_native_tid": "<MDNS_TID_DROP>",
+          "worker_present": false,
+          "global_udp_count": 90,
+          "native_udp_queries": [
+            {
+              "Family": 2,
+              "NativeReturnCodes": [
+                122,
+                0
+              ],
+              "BufferBytes": 864,
+              "Rows": 61
+            },
+            {
+              "Family": 23,
+              "NativeReturnCodes": [
+                122,
+                0
+              ],
+              "BufferBytes": 1104,
+              "Rows": 29
+            }
+          ],
+          "owned_udp": [],
+          "owned_udp_count": 0
+        },
+        {
+          "phase": "confirmed-after-ping-before-exit",
+          "recorded_utc": "2026-10-23T17:56:30.0964753Z",
+          "elapsed_ms": 1015.8354,
+          "cleanup_elapsed_ms": 28.2186,
+          "helper_alive_before_and_after": true,
+          "pid": "<HELPER_PID_DROP>",
+          "start_time": "2026-10-23T17:56:29.0815347Z",
+          "thread_inventory_nonempty": true,
+          "thread_count": 1,
+          "threads": [
+            {
+              "tid": "<MAIN_TID_DROP>",
+              "state": "Wait",
+              "start_address": "0",
+              "description": "main"
+            }
+          ],
+          "worker_native_tid": "<MDNS_TID_DROP>",
+          "worker_present": false,
+          "global_udp_count": 90,
+          "native_udp_queries": [
+            {
+              "Family": 2,
+              "NativeReturnCodes": [
+                122,
+                0
+              ],
+              "BufferBytes": 864,
+              "Rows": 61
+            },
+            {
+              "Family": 23,
+              "NativeReturnCodes": [
+                122,
+                0
+              ],
+              "BufferBytes": 1104,
+              "Rows": 29
+            }
+          ],
+          "owned_udp": [],
+          "owned_udp_count": 0
+        }
+      ],
+      "started_local": "2026-10-23T10:56:29.080715-07:00",
+      "ended_local": "2026-10-23T10:56:30.101132-07:00",
+      "case_run_count": 1,
+      "owned_worker_identification": "Genuine GetCurrentThreadId callback at frozen mdns exec_command trace site; same native ID exists in OS process thread inventory with description mDNS_daemon.",
+      "extra_persistent_runtime_threads_observed": 0,
+      "baseline_warmed": false,
+      "timing_meaning": "Elapsed to completed successful OS snapshot after cleanup command, an observation upper bound; not exact teardown latency."
+    }
+  ],
+  "preflight": {
+    "recorded_utc": "2026-10-23T17:56:27.2159574Z",
+    "global_udp_count": 92,
+    "native_queries": [
+      {
+        "Family": 2,
+        "NativeReturnCodes": [
+          122,
+          0
+        ],
+        "BufferBytes": 876,
+        "Rows": 62
+      },
+      {
+        "Family": 23,
+        "NativeReturnCodes": [
+          122,
+          0
+        ],
+        "BufferBytes": 1132,
+        "Rows": 30
+      }
+    ],
+    "tools": {
+      "tools": [
+        {
+          "name": "cargo.exe",
+          "bytes": 27543552,
+          "sha256": "aa5b8980be3681899fde765ba47e2ed361463ae9dd8ee7cd1963c18d23743a0f"
+        },
+        {
+          "name": "rustc.exe",
+          "bytes": 110592,
+          "sha256": "ba03e3ba03a73d9fef19ab3659140f94b43615ec1d587fe9befc9aed3bd5aa72"
+        },
+        {
+          "name": "cargo-clippy.exe",
+          "bytes": 1175040,
+          "sha256": "bea1e468b531a389f6fe164d76ba98f73a2dac3495998dd085365df92105134f"
+        },
+        {
+          "name": "clippy-driver.exe",
+          "bytes": 11308544,
+          "sha256": "648db1897ec48a9f64bae9e0624761abab7b2904a6ab25d53cc2869a0245f99e"
+        },
+        {
+          "name": "rustfmt.exe",
+          "bytes": 4735488,
+          "sha256": "231e4b294d5f6d9f025a9025514e3e6b0ee5defa524fd016498e1c77eb96980a"
+        }
+      ],
+      "rustup_settings_sha256": "af11a5540001371324994abaa9ea1e69d50fed1acb1a87e4abef179e8816058f",
+      "cargo_configs": [],
+      "toolchains": [
+        "stable-x86_64-pc-windows-msvc (active, default)",
+        "nightly-x86_64-pc-windows-msvc",
+        "nightly-2026-08-10-x86_64-pc-windows-msvc",
+        "1.98.0-x86_64-pc-windows-msvc",
+        "1.99.1-x86_64-pc-windows-msvc"
+      ],
+      "rustc": [
+        "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+        "binary: rustc",
+        "commit-hash: 58cf8f9c35b355199727627d07ae34a4e2846d67",
+        "commit-date: 2026-10-13",
+        "host: x86_64-pc-windows-msvc",
+        "release: 1.99.1",
+        "LLVM version: 23.1.1"
+      ],
+      "cargo": [
+        "cargo 1.99.1 (5f94df478 2026-08-27)"
+      ],
+      "powershell": "7.6.4",
+      "powershell_path": "c:\\program files\\powershell\\7\\pwsh.exe",
+      "powershell_sha256": "db6dd81183fe57d22e03b911ec9a30a2fd7c40542e97743615355a6fb44f458f",
+      "os": "Microsoft Windows NT 10.0.26340.0",
+      "architecture": "AMD64"
+    },
+    "acl": {
+      "root_protected": true,
+      "current_user_only_items": 28,
+      "reparse_points": 0
+    },
+    "cleanup_deadline_ms": 10000,
+    "poll_interval_ms": 50,
+    "init_deadline_seconds": 15,
+    "normal_cases_only": true,
+    "inventory": {
+      "recorded_utc": "2026-10-23T17:56:27.0572261Z",
+      "tcp_inventory_lines": 502,
+      "udp_inventory_lines": 66,
+      "process_inventory_count": 404,
+      "tcp_exit": 0,
+      "udp_exit": 0,
+      "assigned_tcp_listeners": [],
+      "assigned_udp_endpoints": [],
+      "fixture_processes": [],
+      "build_processes": []
+    }
+  },
+  "postflight": {
+    "recorded_utc": "2026-10-23T18:00:01.1695181Z",
+    "old_fixture_audits": [
+      {
+        "label": "frozen",
+        "files": 2579,
+        "all_bytes_hashes_readonly_flags_match": true,
+        "root_current_user_only_protected": true,
+        "fixture_executables": 0
+      },
+      {
+        "label": "startup-diagnostic",
+        "files": 73,
+        "all_bytes_hashes_readonly_flags_match": true,
+        "root_current_user_only_protected": true,
+        "fixture_executables": 0
+      }
+    ],
+    "new_inputs_unchanged": 6,
+    "new_binaries_unchanged": [
+      {
+        "path": "bin/owned_cleanup.exe",
+        "bytes": 845824,
+        "sha256": "bf73cb35fbd2ac298592646aba0749cc2d3bca0a584bdbc40c45246e3b7723b4",
+        "readonly": true
+      },
+      {
+        "path": "bin/owned_cleanup.pdb",
+        "bytes": 1478656,
+        "sha256": "f0197088952b92b1ea631fa8018f5df411d366875825275540e427ca6ebc8c48",
+        "readonly": true
+      },
+      {
+        "path": "bin/OwnedNativeObserver.dll",
+        "bytes": 5120,
+        "sha256": "0885c68c7868cd811565ea96ac3703b0f3bd477a4bbfa197f5d7cdf51c74a08e",
+        "readonly": true
+      }
+    ],
+    "tools": {
+      "tools": [
+        {
+          "name": "cargo.exe",
+          "bytes": 27543552,
+          "sha256": "aa5b8980be3681899fde765ba47e2ed361463ae9dd8ee7cd1963c18d23743a0f"
+        },
+        {
+          "name": "rustc.exe",
+          "bytes": 110592,
+          "sha256": "ba03e3ba03a73d9fef19ab3659140f94b43615ec1d587fe9befc9aed3bd5aa72"
+        },
+        {
+          "name": "cargo-clippy.exe",
+          "bytes": 1175040,
+          "sha256": "bea1e468b531a389f6fe164d76ba98f73a2dac3495998dd085365df92105134f"
+        },
+        {
+          "name": "clippy-driver.exe",
+          "bytes": 11308544,
+          "sha256": "648db1897ec48a9f64bae9e0624761abab7b2904a6ab25d53cc2869a0245f99e"
+        },
+        {
+          "name": "rustfmt.exe",
+          "bytes": 4735488,
+          "sha256": "231e4b294d5f6d9f025a9025514e3e6b0ee5defa524fd016498e1c77eb96980a"
+        }
+      ],
+      "rustup_settings_sha256": "af11a5540001371324994abaa9ea1e69d50fed1acb1a87e4abef179e8816058f",
+      "cargo_configs": [],
+      "toolchains": [
+        "stable-x86_64-pc-windows-msvc (active, default)",
+        "nightly-x86_64-pc-windows-msvc",
+        "nightly-2026-08-10-x86_64-pc-windows-msvc",
+        "1.98.0-x86_64-pc-windows-msvc",
+        "1.99.1-x86_64-pc-windows-msvc"
+      ],
+      "rustc": [
+        "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+        "binary: rustc",
+        "commit-hash: 58cf8f9c35b355199727627d07ae34a4e2846d67",
+        "commit-date: 2026-10-13",
+        "host: x86_64-pc-windows-msvc",
+        "release: 1.99.1",
+        "LLVM version: 23.1.1"
+      ],
+      "cargo": [
+        "cargo 1.99.1 (5f94df478 2026-08-27)"
+      ],
+      "powershell": "7.6.4",
+      "powershell_path": "c:\\program files\\powershell\\7\\pwsh.exe",
+      "powershell_sha256": "db6dd81183fe57d22e03b911ec9a30a2fd7c40542e97743615355a6fb44f458f",
+      "os": "Microsoft Windows NT 10.0.26340.0",
+      "architecture": "AMD64"
+    },
+    "tool_defaults_unchanged": true,
+    "acl": {
+      "root_protected": true,
+      "current_user_only_items": 41,
+      "reparse_points": 0
+    },
+    "native_udp_queries": [
+      {
+        "Family": 2,
+        "NativeReturnCodes": [
+          122,
+          0
+        ],
+        "BufferBytes": 840,
+        "Rows": 59
+      },
+      {
+        "Family": 23,
+        "NativeReturnCodes": [
+          122,
+          0
+        ],
+        "BufferBytes": 1132,
+        "Rows": 30
+      }
+    ],
+    "native_global_udp_count": 89,
+    "temp_entries": [],
+    "live_sharing_process_identity_unchanged": true,
+    "case_verdicts": [
+      {
+        "mode": "shutdown",
+        "passed": true,
+        "exit": 0,
+        "resources_absent_observed_ms": 12.6786
+      },
+      {
+        "mode": "drop",
+        "passed": true,
+        "exit": 0,
+        "resources_absent_observed_ms": 10.0609
+      }
+    ],
+    "passed": true,
+    "inventory": {
+      "recorded_utc": "2026-10-23T18:00:01.0253338Z",
+      "tcp_inventory_lines": 594,
+      "udp_inventory_lines": 63,
+      "process_inventory_count": 434,
+      "tcp_exit": 0,
+      "udp_exit": 0,
+      "assigned_tcp_listeners": [],
+      "assigned_udp_endpoints": [],
+      "fixture_processes": [],
+      "build_processes": []
+    }
+  },
+  "final_retention_audit": {
+    "recorded_utc": "2026-10-23T18:02:03.8176671Z",
+    "acl": {
+      "root_protected": true,
+      "current_user_only_items": 44,
+      "reparse_points": 0
+    },
+    "remaining_fixture_processes": 0,
+    "remaining_assigned_tcp_listeners": 0,
+    "remaining_assigned_udp_endpoints": 0,
+    "temp_entries": 0,
+    "bundle_sha256": "f8e10d8047045c5794f22099c520b835443b600e55cd18d4e7193afbdafd784e",
+    "all_helper_workflow_sources_readonly": true
+  },
+  "source_and_workflow_copies": [
+    {
+      "path": "source/native-observer.cs",
+      "bytes": 4833,
+      "sha256": "23d64792b1c619a6e846d4ee4f22e53de82b470dc3395102390b828ff222c67d"
+    },
+    {
+      "path": "source/owned_cleanup.rs",
+      "bytes": 5086,
+      "sha256": "fb7bceb8ced3f9c3ecf8a3ab146b612ca42910ede1b4845fa2905ccdd311ef81"
+    },
+    {
+      "path": "workflow/build.ps1",
+      "bytes": 6563,
+      "sha256": "a4fc90951abcb3afa373bfb50c1b9e53872216eac02781765a6376cc78d3c889"
+    },
+    {
+      "path": "workflow/common.ps1",
+      "bytes": 4838,
+      "sha256": "96c40a4e7921633a7853984eb973b76b4a387207b9aa9e4b8a3eb39785ebf7b9"
+    },
+    {
+      "path": "workflow/finalize-build.ps1",
+      "bytes": 1303,
+      "sha256": "0225a1e63d9eef33c03a93c680fcb706af75866c1530f5dbc5c6f1a4eea16bd9"
+    },
+    {
+      "path": "workflow/observe.ps1",
+      "bytes": 10011,
+      "sha256": "0b379916837d7a1df63cab815ced5f918e3ab73f0fc20834380a339e1e5536b7"
+    },
+    {
+      "path": "workflow/postflight.ps1",
+      "bytes": 3985,
+      "sha256": "74b1b7a560cec599bf9776c7ae48e767c27ecced54cd0c25c6199756b6ae2931"
+    },
+    {
+      "path": "workflow/setup.input.ps1",
+      "bytes": 1473,
+      "sha256": "260d6b22928df78f229e46349ce36c16036e211ca9e3067ca04cacf34c6fe3a3"
+    }
+  ],
+  "copied_output_files": [
+    {
+      "path": "outputs/rustc.log",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "copied_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_bytes": 0,
+      "copied_bytes": 0
+    }
+  ],
+  "preserved_errors": [
+    {
+      "stage": "initial build/report transport",
+      "transport_exit": null,
+      "remote_exit_unknown": true,
+      "elapsed_ms": 90007,
+      "stderr_sha256": "3e2f777239e8875796a6a61feebd144090ede865f96db1df16a9bbcefd597d90",
+      "observed": "Rust exit 0 and C# exit 0 were durably saved, and binaries were read-only. The remaining FileInfo metadata serialization/freeze-report stage did not complete before transport timeout; no source-metadata-private or frozen-binary report existed. Exact transport exit/cause is unknown.",
+      "response": "Preserved original build.ps1 and raw transport. Inspected durable results and confirmed no active compiler. finalize-build.ps1 wrote only explicit metadata and frozen hash records; no duplicate compilation."
+    },
+    {
+      "stage": "private timed-out build process cleanup audit",
+      "transport_exit": 1,
+      "remote_exit_unknown": false,
+      "error": "Get-Process: Cannot find a process with the process identifier <PRIVATE_BUILD_PROCESS_ID>.",
+      "stderr_sha256": "f1404194c199aefdf43d3e277685b770cfed0f5c7a76753369afda0207a28406",
+      "observed": "Process existed in the initial CIM snapshot but was gone before Get-Process. The audit stopped before a Kill call. Local wrapper then failed to parse empty stdout as JSON.",
+      "local_wrapper_error": "json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+      "response": "No stop was confirmed. Later exact original build-command inventory found zero remaining processes. Both normal resource cases had exit 0; neither was repeated."
+    }
+  ],
+  "private_build_final_audit": {
+    "recorded_utc": "2026-10-23T17:59:57.1281203Z",
+    "exact_original_private_build_command_remaining": 0,
+    "forced_stop_confirmed": false
+  },
+  "runtime_errors": "No normal case, native UDP query, native thread metadata query, helper exit or cleanup failed. No helper was forced to stop.",
+  "transport_records": [
+    {
+      "started_utc": "2026-10-23T17:51:54.718911+00:00",
+      "elapsed_ms": 90007,
+      "transport_exit": null,
+      "remote_exit_unknown": true,
+      "script_sha256": "4a4247a0149c66ac0ba6c3e8198844d1c056d7ee3f14f27b74dd0d96efb45dd1",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "3e2f777239e8875796a6a61feebd144090ede865f96db1df16a9bbcefd597d90",
+      "name": "build-attached",
+      "decoded_input": "$root='<OWNED_FIXTURE>';$frozen='<FROZEN_FIXTURE>';$previous='<PRIOR_STARTUP_FIXTURE>';$ErrorActionPreference='Stop';foreach($e in @(Get-Content -Raw (Join-Path $root 'input-hashes.json')|ConvertFrom-Json)){if((Get-FileHash (Join-Path $root $e.path) -Algorithm SHA256).Hash -ne $e.sha256){throw 'input transfer mismatch'}};$tokens=$null;$errors=$null;$null=[System.Management.Automation.Language.Parser]::ParseFile((Join-Path $root 'build.ps1'),[ref]$tokens,[ref]$errors);if($errors.Count -gt 0){throw ($errors|Out-String)};& (Join-Path $root 'build.ps1') -FrozenPath $frozen -PreviousDiagnosticPath $previous",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <SSH_ALIAS> pwsh.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_PRIVATE_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T17:54:47.587670+00:00",
+      "elapsed_ms": 927,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "9a41c5822e7e9904775fb17ceb86f2eed68de789815d4dd6e095d495c7062257",
+      "stdout_sha256": "775f6a323e00857ae1ebd0f9161930330efbdd7e7450b5ca9214b52124e24353",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "build-recovery-inspect",
+      "decoded_input": "$root='<OWNED_FIXTURE>';$ErrorActionPreference='Stop';[ordered]@{files=@(Get-ChildItem $root -File|Select-Object Name,Length,LastWriteTimeUtc);rust=$(if(Test-Path (Join-Path $root 'rustc-result.json')){Get-Content -Raw (Join-Path $root 'rustc-result.json')|ConvertFrom-Json}else{$null});csharp=$(if(Test-Path (Join-Path $root 'csharp-result.json')){Get-Content -Raw (Join-Path $root 'csharp-result.json')|ConvertFrom-Json}else{$null});active_compiler_count=@(Get-CimInstance Win32_Process -ErrorAction Stop|Where-Object {$_.Name -in @('cargo.exe','rustc.exe','cargo-clippy.exe','clippy-driver.exe')}).Count;bin=@(Get-ChildItem (Join-Path $root 'bin') -File|Select-Object Name,Length,IsReadOnly)}|ConvertTo-Json -Depth 12",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <SSH_ALIAS> pwsh.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_PRIVATE_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T17:55:22.669924+00:00",
+      "elapsed_ms": 1293,
+      "transport_exit": 1,
+      "remote_exit_unknown": false,
+      "script_sha256": "e2e7cdc67909a996183c73661b762a1843a582c194618ab0d746993af0081980",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "f1404194c199aefdf43d3e277685b770cfed0f5c7a76753369afda0207a28406",
+      "name": "build-timeout-owned-cleanup",
+      "decoded_input": "$root='<OWNED_FIXTURE>';$encoded='<BASE64_OF_PRIVATE_BUILD_COMMAND>';$ErrorActionPreference='Stop';$matches=@(Get-CimInstance Win32_Process -ErrorAction Stop|Where-Object {$_.Name -eq 'pwsh.exe' -and $_.CommandLine -and $_.CommandLine.Contains($encoded)});$record=[ordered]@{recorded_utc=[DateTime]::UtcNow.ToString('o');matching_private_build_processes=$matches.Count;stopped=@()};foreach($m in $matches){$p=Get-Process -Id $m.ProcessId -ErrorAction Stop;if($p.Path -ne (Get-Command pwsh.exe).Source -or $p.StartTime.ToUniversalTime() -ne $m.CreationDate.ToUniversalTime()){throw 'refuse cleanup of unmatched private build process'};$record.stopped+=@([ordered]@{pid=$p.Id;path=$p.Path;working_set_bytes=$p.WorkingSet64;start_time=$p.StartTime.ToUniversalTime().ToString('o')});$p.Kill();$null=$p.WaitForExit(5000)};$record|ConvertTo-Json -Depth 6|Set-Content (Join-Path $root 'private-build-timeout-cleanup.json');$record|ConvertTo-Json -Depth 6",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <SSH_ALIAS> pwsh.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_PRIVATE_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T17:55:24.535006+00:00",
+      "elapsed_ms": 1013,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "92c3f01b0b1e93d81edae98a669c2949ce980999b81baf420cd0e55025c4aae7",
+      "stdout_sha256": "ffd32eac6fd96f01f928df13c5fcf378d1ba69d40bbf37bc291abdc25886b099",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "finalize-build",
+      "decoded_input": "& '<OWNED_FIXTURE>\\finalize-build.ps1'",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <SSH_ALIAS> pwsh.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_PRIVATE_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T17:57:27.544462+00:00",
+      "elapsed_ms": 671,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "0b1dea7cef7b0e2e4d7c1a7363ec55c6dd588c2e438f0f532a00c360cde81238",
+      "stdout_sha256": "acb8f69994d31ff2d8af36d9d0d2d1534230e1159deeeab17401c3760f50c54a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "observation-inspect",
+      "decoded_input": "$root='<OWNED_FIXTURE>';$ErrorActionPreference='Stop';Get-Content -Raw (Join-Path $root 'observation-result.json')",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <SSH_ALIAS> pwsh.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_PRIVATE_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T17:56:28.504059+00:00",
+      "elapsed_ms": 4703,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "47cf1e1a0e98e2a2a73396c5f09aa47fb0bbd7d381a3ac80cb936106a6eb7477",
+      "stdout_sha256": "047dcd1086717a666af23c7e89b2baac8a9586a47fc8a5e7ea1ba0298f36c67c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "observe-attached",
+      "decoded_input": "$root='<OWNED_FIXTURE>';$ErrorActionPreference='Stop';foreach($e in @(Get-Content -Raw (Join-Path $root 'input-hashes-final.json')|ConvertFrom-Json)){$p=Join-Path $root $e.path;if((Get-FileHash $p -Algorithm SHA256).Hash -ne $e.sha256){throw 'final input transfer mismatch'};(Get-Item $p).IsReadOnly=$true};$tokens=$null;$errors=$null;$null=[System.Management.Automation.Language.Parser]::ParseFile((Join-Path $root 'observe.ps1'),[ref]$tokens,[ref]$errors);if($errors.Count -gt 0){throw ($errors|Out-String)};& (Join-Path $root 'observe.ps1')",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <SSH_ALIAS> pwsh.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_PRIVATE_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T17:59:58.989547+00:00",
+      "elapsed_ms": 5330,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "62d91d57d203d81779ef99b1ad91042922a16f0147569794243572b13222dee4",
+      "stdout_sha256": "172133e404bad5cba3b13fe5f9eaafe0a269b3f05f14fd01d537bb55298e6cbe",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "postflight-attached",
+      "decoded_input": "$root='<OWNED_FIXTURE>';$expected='<BASE64_OF_PRIVATE_BUILD_COMMAND>';$ErrorActionPreference='Stop';$privateBuild=@(Get-CimInstance Win32_Process -ErrorAction Stop|Where-Object {$_.Name -eq 'pwsh.exe' -and $_.CommandLine -and $_.CommandLine.Contains($expected)});[ordered]@{recorded_utc=[DateTime]::UtcNow.ToString('o');exact_original_private_build_command_remaining=$privateBuild.Count;forced_stop_confirmed=$false}|ConvertTo-Json|Set-Content (Join-Path $root 'build-timeout-final-audit.json');if($privateBuild.Count -ne 0){throw 'original private metadata serializer remains'};& (Join-Path $root 'postflight.ps1');$items=@(Get-ChildItem $root -File|Where-Object {$_.Extension -in @('.rs','.cs','.ps1','.json')}|Select-Object -ExpandProperty Name)+@('logs','runtime');& tar.exe -cf (Join-Path $root 'raw-evidence.tar') -C $root @items;if($LASTEXITCODE -ne 0){throw 'raw evidence archive failed'};[ordered]@{sha256=(Get-FileHash (Join-Path $root 'raw-evidence.tar') -Algorithm SHA256).Hash.ToLower();bytes=(Get-Item (Join-Path $root 'raw-evidence.tar')).Length}|ConvertTo-Json",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <SSH_ALIAS> pwsh.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_PRIVATE_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T18:02:04.853851+00:00",
+      "elapsed_ms": 2071,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "97a829286053b4dd791349a783d2ea57a9f7d500bf45778586e3564ea14c02bf",
+      "stdout_sha256": "6aa9386fb460fe23b017578989baeeff97b0b4a4f6a213ed1b67efdc1d52b755",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "retention-final",
+      "decoded_input": "$root='<OWNED_FIXTURE>';$frozen='<FROZEN_FIXTURE>';. (Join-Path $root 'common.ps1');$recorded=Get-Content -Raw (Join-Path $frozen 'tool-audit-before.json')|ConvertFrom-Json;$nativeTools=@(foreach($e in $recorded.tools){$f=Get-Item $e.path;$hash=Hash $f.FullName;if($hash -ne $e.sha256){throw 'recorded installed native tool changed'};[ordered]@{name=$f.Name;path=$f.FullName;bytes=$f.Length;sha256=$hash;file_version=$f.VersionInfo.FileVersion}});$os=@(foreach($name in @('kernel32.dll','KernelBase.dll','iphlpapi.dll','ntdll.dll')){$f=Get-Item (Join-Path ([Environment]::SystemDirectory) $name);[ordered]@{name=$name;bytes=$f.Length;sha256=(Hash $f.FullName);file_version=$f.VersionInfo.FileVersion}});$tools=[ordered]@{recorded_utc=[DateTime]::UtcNow.ToString('o');installed_native_tools_match_prior_snapshot=$true;native_tools=$nativeTools;os_api_libraries=$os;note='OS API hashes are post-observation file identities. Installed native tool hashes match the earlier frozen snapshot; this does not assert linker-process tracing.'};Save-Json $tools (Join-Path $root 'native-tools-final.json');foreach($f in @(Get-ChildItem $root -File|Where-Object {$_.Extension -in @('.rs','.cs','.ps1')})){$f.IsReadOnly=$true};$acl=Assert-ACL;$inv=Inventory 'retention-final';$final=[ordered]@{recorded_utc=[DateTime]::UtcNow.ToString('o');acl=$acl;remaining_fixture_processes=$inv.fixture_processes.Count;remaining_assigned_tcp_listeners=$inv.assigned_tcp_listeners.Count;remaining_assigned_udp_endpoints=$inv.assigned_udp_endpoints.Count;temp_entries=@(Get-ChildItem (Join-Path $root 'temp') -Force).Count;bundle_sha256=(Hash (Join-Path $root 'raw-evidence.tar'));all_helper_workflow_sources_readonly=@(Get-ChildItem $root -File|Where-Object {$_.Extension -in @('.rs','.cs','.ps1')}|Where-Object {-not $_.IsReadOnly}).Count -eq 0};if($final.remaining_fixture_processes -ne 0 -or $final.remaining_assigned_tcp_listeners -ne 0 -or $final.remaining_assigned_udp_endpoints -ne 0 -or $final.temp_entries -ne 0){throw 'final owned retention cleanup incomplete'};Save-Json $final (Join-Path $root 'retention-final.json');[ordered]@{native_tools=$tools;retention=$final}|ConvertTo-Json -Depth 8",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <SSH_ALIAS> pwsh.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_PRIVATE_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T17:50:13.361910+00:00",
+      "elapsed_ms": 914,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "260d6b22928df78f229e46349ce36c16036e211ca9e3067ca04cacf34c6fe3a3",
+      "stdout_sha256": "800fbe7aff705d0aa2c72e2c93004316d554b2cd9631c1dc0d102c40c6d299df",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "setup",
+      "decoded_input": "$ErrorActionPreference='Stop';$ProgressPreference='SilentlyContinue'\n$tool=Join-Path $env:USERPROFILE '.rustup/toolchains/1.99.1-x86_64-pc-windows-msvc/bin/rustc.exe'\nif(-not (Test-Path -LiteralPath $tool)){throw 'pinned existing Rust unavailable'}\n$pwsh=(Get-Command pwsh.exe -ErrorAction Stop).Source\nif((Get-Process -Id $PID).SessionId -ne 0){throw 'session 0 required'}\n$sid=[Security.Principal.WindowsIdentity]::GetCurrent().User\n$root=Join-Path ([IO.Path]::GetTempPath()) ('oe-win-owned-cleanup-e4f48ba-'+[guid]::NewGuid().ToString('N'))\nif(Test-Path -LiteralPath $root){throw 'fixture exists'}\n$acl=New-Object Security.AccessControl.DirectorySecurity\n$acl.SetAccessRuleProtection($true,$false)\n$rule=New-Object Security.AccessControl.FileSystemAccessRule($sid,'FullControl','ContainerInherit,ObjectInherit','None','Allow')\n$acl.AddAccessRule($rule)\n[IO.Directory]::CreateDirectory($root,$acl)|Out-Null\nforeach($name in @('source','target','bin','runtime','temp','logs')){[IO.Directory]::CreateDirectory((Join-Path $root $name))|Out-Null}\n$a=Get-Acl -LiteralPath $root\nif(-not $a.AreAccessRulesProtected -or @($a.Access).Count -ne 1 -or $a.Access[0].IdentityReference.Translate([Security.Principal.SecurityIdentifier]).Value -ne $sid.Value){throw 'fixture ACL mismatch'}\n[ordered]@{root=$root;pwsh=$pwsh;created_utc=[DateTime]::UtcNow.ToString('o');session=(Get-Process -Id $PID).SessionId;protected=$a.AreAccessRulesProtected;current_user_only=$true}|ConvertTo-Json\n",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <SSH_ALIAS> pwsh.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_PRIVATE_INPUT>"
+    }
+  ],
+  "sanitization": {
+    "originals_retained": true,
+    "transforms": [
+      "Replace new/old fixture roots, user profile/local-appdata, hostname, username and SID with named aliases; replace task-provided SSH alias.",
+      "Replace native process/thread IDs with stable role aliases in report fields and transcript labels. Preserve actual IDs privately. Native start addresses and command-wake ephemeral port are also aliased. Custom assigned ports and times are retained.",
+      "Redact nested base64 literals that identify the private build command, while retaining exact original decoded-command hashes and raw inputs privately.",
+      "Omit unrelated whole-machine process command lines/inventories from committed copies; keep their raw hashes, relevant aggregate counts and sharing-identity comparison.",
+      "Normalize copied reports/manifests/logs to UTF-8/LF. Exact helper/native observer/workflow source bytes are copied unchanged."
+    ],
+    "native_id_aliases": "Roles are matched by actual equality before redaction; zero worker ID before initialization is labelled NOT_YET_OBSERVED.",
+    "case_outputs": "windows-owned-cleanup/outputs/shutdown-case.json and windows-owned-cleanup/outputs/drop-case.json"
+  },
+  "private_retention": {
+    "local_directory": "/tmp/oe-win-owned-cleanup-20261023-6tnNR7",
+    "windows_directory": "<OWNED_FIXTURE>; exact locator in private state.json",
+    "raw_bundle": {
+      "sha256": "f8e10d8047045c5794f22099c520b835443b600e55cd18d4e7193afbdafd784e",
+      "bytes": 1345536
+    },
+    "original_files": [
+      {
+        "path": "build-attached.input.ps1",
+        "bytes": 832,
+        "sha256": "4a4247a0149c66ac0ba6c3e8198844d1c056d7ee3f14f27b74dd0d96efb45dd1"
+      },
+      {
+        "path": "build-attached.stderr",
+        "bytes": 11,
+        "sha256": "3e2f777239e8875796a6a61feebd144090ede865f96db1df16a9bbcefd597d90"
+      },
+      {
+        "path": "build-attached.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "build-attached.transport.json",
+        "bytes": 397,
+        "sha256": "fe9d076accb2cebfebe61ab308af60d0cbd22742e4aa053cdb9a8564ec022e7b"
+      },
+      {
+        "path": "build-recovery-inspect.input.ps1",
+        "bytes": 800,
+        "sha256": "9a41c5822e7e9904775fb17ceb86f2eed68de789815d4dd6e095d495c7062257"
+      },
+      {
+        "path": "build-recovery-inspect.json",
+        "bytes": 5439,
+        "sha256": "d011211763c0af0b401884d35739a8c20391d2d57ceeb8c7bd2edab6663a4534"
+      },
+      {
+        "path": "build-recovery-inspect.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "build-recovery-inspect.stdout",
+        "bytes": 5582,
+        "sha256": "775f6a323e00857ae1ebd0f9161930330efbdd7e7450b5ca9214b52124e24353"
+      },
+      {
+        "path": "build-recovery-inspect.transport.json",
+        "bytes": 393,
+        "sha256": "44a833eeb5ad316dc6666c9f63686f45f0ff6b7f64df39e935d718b54707176a"
+      },
+      {
+        "path": "build-timeout-owned-cleanup.input.ps1",
+        "bytes": 3214,
+        "sha256": "e2e7cdc67909a996183c73661b762a1843a582c194618ab0d746993af0081980"
+      },
+      {
+        "path": "build-timeout-owned-cleanup.stderr",
+        "bytes": 234,
+        "sha256": "f1404194c199aefdf43d3e277685b770cfed0f5c7a76753369afda0207a28406"
+      },
+      {
+        "path": "build-timeout-owned-cleanup.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "build-timeout-owned-cleanup.transport.json",
+        "bytes": 394,
+        "sha256": "b47ed49a7bcf51742dcc4b31e2c247ad2c3924bddb63aa0f4568de1cf248789d"
+      },
+      {
+        "path": "build.ps1",
+        "bytes": 6563,
+        "sha256": "a4fc90951abcb3afa373bfb50c1b9e53872216eac02781765a6376cc78d3c889"
+      },
+      {
+        "path": "bundle.json",
+        "bytes": 103,
+        "sha256": "8d372343ad176381562347a99296eb9ffcc9efe5ab8d100cdb2bc5f18efb456d"
+      },
+      {
+        "path": "common.ps1",
+        "bytes": 4838,
+        "sha256": "96c40a4e7921633a7853984eb973b76b4a387207b9aa9e4b8a3eb39785ebf7b9"
+      },
+      {
+        "path": "download.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "finalize-build.input.ps1",
+        "bytes": 118,
+        "sha256": "92c3f01b0b1e93d81edae98a669c2949ce980999b81baf420cd0e55025c4aae7"
+      },
+      {
+        "path": "finalize-build.ps1",
+        "bytes": 1303,
+        "sha256": "0225a1e63d9eef33c03a93c680fcb706af75866c1530f5dbc5c6f1a4eea16bd9"
+      },
+      {
+        "path": "finalize-build.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "finalize-build.stdout",
+        "bytes": 50,
+        "sha256": "ffd32eac6fd96f01f928df13c5fcf378d1ba69d40bbf37bc291abdc25886b099"
+      },
+      {
+        "path": "finalize-build.transport.json",
+        "bytes": 394,
+        "sha256": "40f4aa614b5d98cc13b8e5652815631f1aa73acd4854c1fb6b8ad841163cbb7a"
+      },
+      {
+        "path": "finish.py",
+        "bytes": 2515,
+        "sha256": "5ec8834263450f034642201aef0dedfa3bcc2a76b0fe8b33a90270621f4ab61b"
+      },
+      {
+        "path": "input-hashes-final.json",
+        "bytes": 721,
+        "sha256": "b32490e1945724c74b2b3a1dd6db496eb246ea038942968b3fb0a286ba2609f4"
+      },
+      {
+        "path": "input-hashes.json",
+        "bytes": 480,
+        "sha256": "7fa593227fad8367a605468810808c76dd5570cd88b6cd9d4d2e99f947f63b9d"
+      },
+      {
+        "path": "launch-build.py",
+        "bytes": 1359,
+        "sha256": "9fff1ea2894071051adf592a868686447c1d10067ba63c2dd3c5be0abc5fffa2"
+      },
+      {
+        "path": "launch-observation.py",
+        "bytes": 1295,
+        "sha256": "3ce963489d1fc714abc9fa5001edf0aa10975cb3bf278366ee5fc639b8bd627b"
+      },
+      {
+        "path": "make-evidence.py",
+        "bytes": 18613,
+        "sha256": "8c01587bc7d4801240f5c3ebd4c224a73d2334ac270b6c494b771bf6fcf1bcf5"
+      },
+      {
+        "path": "native-observer.cs",
+        "bytes": 4833,
+        "sha256": "23d64792b1c619a6e846d4ee4f22e53de82b470dc3395102390b828ff222c67d"
+      },
+      {
+        "path": "native-tools-final.json",
+        "bytes": 5267,
+        "sha256": "d79979abbdd0c1aefc24ded9c0a2b720245f5a78e4daed4c82149aff901b6b0b"
+      },
+      {
+        "path": "observation-inspect.input.ps1",
+        "bytes": 194,
+        "sha256": "0b1dea7cef7b0e2e4d7c1a7363ec55c6dd588c2e438f0f532a00c360cde81238"
+      },
+      {
+        "path": "observation-inspect.json",
+        "bytes": 23246,
+        "sha256": "b8065bf121a85aefaaa753411228127e4202c522ca30f03a47893b34bc95e8a3"
+      },
+      {
+        "path": "observation-inspect.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "observation-inspect.stdout",
+        "bytes": 24156,
+        "sha256": "acb8f69994d31ff2d8af36d9d0d2d1534230e1159deeeab17401c3760f50c54a"
+      },
+      {
+        "path": "observation-inspect.transport.json",
+        "bytes": 393,
+        "sha256": "02e8b5c4eb0b40416a611678997588e4778e4b2d66c676fd0454f5e03830eb0b"
+      },
+      {
+        "path": "observe-attached.input.ps1",
+        "bytes": 623,
+        "sha256": "47cf1e1a0e98e2a2a73396c5f09aa47fb0bbd7d381a3ac80cb936106a6eb7477"
+      },
+      {
+        "path": "observe-attached.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "observe-attached.stdout",
+        "bytes": 37,
+        "sha256": "047dcd1086717a666af23c7e89b2baac8a9586a47fc8a5e7ea1ba0298f36c67c"
+      },
+      {
+        "path": "observe-attached.transport.json",
+        "bytes": 394,
+        "sha256": "8448b54c947067d3fd865457e92168bdebe3b807de30f99d3122ca5f61a3aa04"
+      },
+      {
+        "path": "observe.ps1",
+        "bytes": 10011,
+        "sha256": "0b379916837d7a1df63cab815ced5f918e3ab73f0fc20834380a339e1e5536b7"
+      },
+      {
+        "path": "owned_cleanup.rs",
+        "bytes": 5086,
+        "sha256": "fb7bceb8ced3f9c3ecf8a3ab146b612ca42910ede1b4845fa2905ccdd311ef81"
+      },
+      {
+        "path": "postflight-attached.input.ps1",
+        "bytes": 3343,
+        "sha256": "62d91d57d203d81779ef99b1ad91042922a16f0147569794243572b13222dee4"
+      },
+      {
+        "path": "postflight-attached.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "postflight-attached.stdout",
+        "bytes": 138,
+        "sha256": "172133e404bad5cba3b13fe5f9eaafe0a269b3f05f14fd01d537bb55298e6cbe"
+      },
+      {
+        "path": "postflight-attached.transport.json",
+        "bytes": 394,
+        "sha256": "bd97d8dca7573aa4e806d7cb088a8e967e6dbf3d66e17817c8f0aa37e4d6ffbe"
+      },
+      {
+        "path": "postflight.ps1",
+        "bytes": 3985,
+        "sha256": "74b1b7a560cec599bf9776c7ae48e767c27ecced54cd0c25c6199756b6ae2931"
+      },
+      {
+        "path": "raw/build-start.json",
+        "bytes": 6523,
+        "sha256": "33f1d527f57e1b94d2550abd0e312eeabba45fde5a1b0e9c435f36f8dbe8989f"
+      },
+      {
+        "path": "raw/build-timeout-final-audit.json",
+        "bytes": 147,
+        "sha256": "c1e4abcce18a40d44983a94e89ea8b5558ff341b50b1fac016cf8f7bb823f89b"
+      },
+      {
+        "path": "raw/build.ps1",
+        "bytes": 6563,
+        "sha256": "a4fc90951abcb3afa373bfb50c1b9e53872216eac02781765a6376cc78d3c889"
+      },
+      {
+        "path": "raw/common.ps1",
+        "bytes": 4838,
+        "sha256": "96c40a4e7921633a7853984eb973b76b4a387207b9aa9e4b8a3eb39785ebf7b9"
+      },
+      {
+        "path": "raw/csharp-result.json",
+        "bytes": 728,
+        "sha256": "388852ac951ff48f0a26a4bedb946a915de48a31575a08082784b60adb280366"
+      },
+      {
+        "path": "raw/drop-process.json",
+        "bytes": 309,
+        "sha256": "8ccfef411c859115f0d0421b82e37176854fedf7ab00fdc1ec08c07e72f4f371"
+      },
+      {
+        "path": "raw/drop-result.json",
+        "bytes": 11141,
+        "sha256": "81b2214b485cd0d60b1c6b92dea30dad077f8945077c0d0bdd2992b99145433d"
+      },
+      {
+        "path": "raw/drop-samples-progress.json",
+        "bytes": 3534,
+        "sha256": "ae9ce715f3a49b8dc0c5b007ba212d164470edb249f696139d22cf54e84c05d6"
+      },
+      {
+        "path": "raw/finalize-build.ps1",
+        "bytes": 1303,
+        "sha256": "0225a1e63d9eef33c03a93c680fcb706af75866c1530f5dbc5c6f1a4eea16bd9"
+      },
+      {
+        "path": "raw/frozen-binaries.json",
+        "bytes": 538,
+        "sha256": "785ea262753664641ef4522b4065db24b9e9281fc913f8318bc3c372fbb80442"
+      },
+      {
+        "path": "raw/input-hashes-final.json",
+        "bytes": 721,
+        "sha256": "b32490e1945724c74b2b3a1dd6db496eb246ea038942968b3fb0a286ba2609f4"
+      },
+      {
+        "path": "raw/input-hashes.json",
+        "bytes": 480,
+        "sha256": "7fa593227fad8367a605468810808c76dd5570cd88b6cd9d4d2e99f947f63b9d"
+      },
+      {
+        "path": "raw/logs/postflight-processes.json",
+        "bytes": 254016,
+        "sha256": "3d4a7b1813a2efc257b9429bec706b49888fcc6e963b4d6f010c874fa241987b"
+      },
+      {
+        "path": "raw/logs/postflight-tcp.txt",
+        "bytes": 44702,
+        "sha256": "6809c99f588b3a50df00102f8debb31b613e86cd54bc27947c1750219c564a2c"
+      },
+      {
+        "path": "raw/logs/postflight-udp.txt",
+        "bytes": 4649,
+        "sha256": "8433594dd590a6a70599f0cf12ba9893b5f8bbe65e137032a802b25e5d52a34c"
+      },
+      {
+        "path": "raw/logs/pre-observation-processes.json",
+        "bytes": 190734,
+        "sha256": "83731e04df11b5384e0af35d2a3e93ae4243b80732b62ff4a7c5524063a3f953"
+      },
+      {
+        "path": "raw/logs/pre-observation-tcp.txt",
+        "bytes": 37853,
+        "sha256": "6585e23aac0194d07763b6d403a3b05846c80e9b0dc6c2fafe0f728cbb457eb7"
+      },
+      {
+        "path": "raw/logs/pre-observation-udp.txt",
+        "bytes": 4882,
+        "sha256": "10e7399c8364402645077515770fb34b3092552f95535925a191ddc6842f069a"
+      },
+      {
+        "path": "raw/logs/rustc.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "raw/native-observer.cs",
+        "bytes": 4833,
+        "sha256": "23d64792b1c619a6e846d4ee4f22e53de82b470dc3395102390b828ff222c67d"
+      },
+      {
+        "path": "raw/observation-result.json",
+        "bytes": 24154,
+        "sha256": "cdcba4937f183b9c39ea89f7651b9772cbf15148af43637d10986ad1729de8d5"
+      },
+      {
+        "path": "raw/observation-start.json",
+        "bytes": 3267,
+        "sha256": "107ddd0fe2f835bb40d487a80f931c1a51e8a28523ff74622ce82460a0bbabe9"
+      },
+      {
+        "path": "raw/observe.ps1",
+        "bytes": 10011,
+        "sha256": "0b379916837d7a1df63cab815ced5f918e3ab73f0fc20834380a339e1e5536b7"
+      },
+      {
+        "path": "raw/old-inputs-before.json",
+        "bytes": 665378,
+        "sha256": "18c4e621b05f0c49900bfba433cad8b217823a3e296a105ae76fd85627b27e18"
+      },
+      {
+        "path": "raw/owned_cleanup.rs",
+        "bytes": 5086,
+        "sha256": "fb7bceb8ced3f9c3ecf8a3ab146b612ca42910ede1b4845fa2905ccdd311ef81"
+      },
+      {
+        "path": "raw/postflight.json",
+        "bytes": 4642,
+        "sha256": "b68a04bd9a50dabd6096e7917968627a47d66fa0f52ad85c503f40de56b0dd64"
+      },
+      {
+        "path": "raw/postflight.ps1",
+        "bytes": 3985,
+        "sha256": "74b1b7a560cec599bf9776c7ae48e767c27ecced54cd0c25c6199756b6ae2931"
+      },
+      {
+        "path": "raw/rustc-result.json",
+        "bytes": 3121,
+        "sha256": "706c89a65f8424b77798236a33f0d9e0248ef33b34129549f3d26ce5beb037eb"
+      },
+      {
+        "path": "raw/shutdown-process.json",
+        "bytes": 318,
+        "sha256": "2b4af690dee8033d3671ece21cc44b1d2a7a7fd3a32bc75c151c39d53244b4e8"
+      },
+      {
+        "path": "raw/shutdown-result.json",
+        "bytes": 11194,
+        "sha256": "86eb7d056abb457280a47d24d7bb6ea4598e04ef04b87fd85147989203ec492a"
+      },
+      {
+        "path": "raw/shutdown-samples-progress.json",
+        "bytes": 3546,
+        "sha256": "e20551dfd7466c224f1ca6701940b1bcf554c8a9fe6a4234e49aee79a8aa1e09"
+      },
+      {
+        "path": "raw/source-metadata.json",
+        "bytes": 346,
+        "sha256": "ff403bc582b98b6d50f758b055cc6734185c8209de3c43cfebd84d2c6a39c699"
+      },
+      {
+        "path": "raw-evidence.tar",
+        "bytes": 1345536,
+        "sha256": "f8e10d8047045c5794f22099c520b835443b600e55cd18d4e7193afbdafd784e"
+      },
+      {
+        "path": "recover-build.py",
+        "bytes": 1313,
+        "sha256": "90a344f134ee6c817e21b183bdf37a7403cccbf174d5550aa6b2b1dad869c17f"
+      },
+      {
+        "path": "retention-final.input.ps1",
+        "bytes": 2327,
+        "sha256": "97a829286053b4dd791349a783d2ea57a9f7d500bf45778586e3564ea14c02bf"
+      },
+      {
+        "path": "retention-final.json",
+        "bytes": 430,
+        "sha256": "bb1faceac0713454629e15253f300caf22856549c606b8a822ad074d58e1ca68"
+      },
+      {
+        "path": "retention-final.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "retention-final.stdout",
+        "bytes": 6168,
+        "sha256": "6aa9386fb460fe23b017578989baeeff97b0b4a4f6a213ed1b67efdc1d52b755"
+      },
+      {
+        "path": "retention-final.transport.json",
+        "bytes": 394,
+        "sha256": "10ac1281ceb2cabe9736efd5822c75ab169bb641fd5bd0e153728b932d9815c3"
+      },
+      {
+        "path": "setup.input.ps1",
+        "bytes": 1473,
+        "sha256": "260d6b22928df78f229e46349ce36c16036e211ca9e3067ca04cacf34c6fe3a3"
+      },
+      {
+        "path": "setup.py",
+        "bytes": 686,
+        "sha256": "8e364863da5718297bef93e1b4d991597d1eef9210e750f6c5040ffd2e14d9f1"
+      },
+      {
+        "path": "setup.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "setup.stdout",
+        "bytes": 315,
+        "sha256": "800fbe7aff705d0aa2c72e2c93004316d554b2cd9631c1dc0d102c40c6d299df"
+      },
+      {
+        "path": "setup.transport.json",
+        "bytes": 393,
+        "sha256": "dc9c192f3d46b313b7b90449cb2b845c6923908c16f576ed59b3a9157dc8f392"
+      },
+      {
+        "path": "state.json",
+        "bytes": 538,
+        "sha256": "08fc481001fbc4709efb1680d622833b438e40ed4a946051751c879faa1348c1"
+      },
+      {
+        "path": "transfer-build.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "transfer-finalize.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "transfer-observe.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "transfer-postflight.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "transport.py",
+        "bytes": 1370,
+        "sha256": "88dd09a63cc8693a4f19000610b4c0884bfda008f45f1a517081c4d9ff0bdf9b"
+      }
+    ]
+  },
+  "remaining_gates": [
+    "Only the two normal owned-worker/socket cleanup cases are accepted on this exact source. No descriptor-exhaustion, stress, soak or abnormal cleanup case ran.",
+    "Original Windows startup 11/14 remains FAIL pending separate outcome-verifier repair. Retained 19/19 and control 23/23 remain preserved and were not rerun. No later IPC/outcome-verifier combined acceptance is claimed.",
+    "Whole-cache/expiry/timer/query/record-byte bounds, slow DNS, native input/clipboard, positive interactive Windows migration, original security/provenance/privilege and trusted distribution remain open.",
+    "Stopped IPC Synergy3 work, original expiry/NSEC/orphan-record experiment and original blocked release-provenance review were not continued, rerouted or rephrased.",
+    "No installed/live sharing/backend/state/config/TLS/default IPC, desktop/windowstation/TCC/login/service/task/elevation/account/credential, firewall/network/global limit/toolchain default, Docker/signing/publication/GitHub/push/merge change. No other-thread message or agent. GitHub private reporting deferred."
+  ],
+  "typescript_validation": "Not applicable: Rust/C#/PowerShell evidence-only native flow, no TypeScript package change."
+}

@@ -1,0 +1,460 @@
+{
+  "mode": "shutdown",
+  "arguments": [
+    "shutdown",
+    "25090",
+    "25094"
+  ],
+  "started_utc": "2026-10-23T17:56:27.6762644Z",
+  "passed": true,
+  "forced_cleanup": false,
+  "cleanup_deadline_ms": 10000,
+  "poll_interval_ms": 50,
+  "pid": "<HELPER_PID_SHUTDOWN>",
+  "session": 0,
+  "priority": "BelowNormal",
+  "main_tid": "<MAIN_TID_SHUTDOWN>",
+  "baseline": {
+    "phase": "baseline-before-any-Discovery-init",
+    "recorded_utc": "2026-10-23T17:56:27.9087701Z",
+    "elapsed_ms": 237.033,
+    "cleanup_elapsed_ms": null,
+    "helper_alive_before_and_after": true,
+    "pid": "<HELPER_PID_SHUTDOWN>",
+    "start_time": "2026-10-23T17:56:27.6872456Z",
+    "thread_inventory_nonempty": true,
+    "thread_count": 1,
+    "threads": [
+      {
+        "tid": "<MAIN_TID_SHUTDOWN>",
+        "state": "Wait",
+        "start_address": "<NATIVE_START_ADDRESS_1>",
+        "description": "main"
+      }
+    ],
+    "worker_native_tid": "<NOT_YET_OBSERVED>",
+    "worker_present": false,
+    "global_udp_count": 92,
+    "native_udp_queries": [
+      {
+        "Family": 2,
+        "NativeReturnCodes": [
+          122,
+          0
+        ],
+        "BufferBytes": 876,
+        "Rows": 62
+      },
+      {
+        "Family": 23,
+        "NativeReturnCodes": [
+          122,
+          0
+        ],
+        "BufferBytes": 1132,
+        "Rows": 30
+      }
+    ],
+    "owned_udp": [],
+    "owned_udp_count": 0
+  },
+  "publication_resolved": true,
+  "init_publication_elapsed_us": 1033100,
+  "worker_native_tid": "<MDNS_TID_SHUTDOWN>",
+  "live": {
+    "phase": "live-before-cleanup",
+    "recorded_utc": "2026-10-23T17:56:28.9894082Z",
+    "elapsed_ms": 1317.6614,
+    "cleanup_elapsed_ms": null,
+    "helper_alive_before_and_after": true,
+    "pid": "<HELPER_PID_SHUTDOWN>",
+    "start_time": "2026-10-23T17:56:27.6872456Z",
+    "thread_inventory_nonempty": true,
+    "thread_count": 2,
+    "threads": [
+      {
+        "tid": "<MAIN_TID_SHUTDOWN>",
+        "state": "Wait",
+        "start_address": "0",
+        "description": "main"
+      },
+      {
+        "tid": "<MDNS_TID_SHUTDOWN>",
+        "state": "Wait",
+        "start_address": "<NATIVE_START_ADDRESS_1>",
+        "description": "mDNS_daemon"
+      }
+    ],
+    "worker_native_tid": "<MDNS_TID_SHUTDOWN>",
+    "worker_present": true,
+    "global_udp_count": 95,
+    "native_udp_queries": [
+      {
+        "Family": 2,
+        "NativeReturnCodes": [
+          122,
+          0
+        ],
+        "BufferBytes": 900,
+        "Rows": 64
+      },
+      {
+        "Family": 23,
+        "NativeReturnCodes": [
+          122,
+          0
+        ],
+        "BufferBytes": 1160,
+        "Rows": 31
+      }
+    ],
+    "owned_udp": [
+      {
+        "Family": 2,
+        "Address": "0.0.0.0",
+        "Scope": 0,
+        "Port": 25090,
+        "ProcessId": "<HELPER_PID_SHUTDOWN>"
+      },
+      {
+        "Family": 2,
+        "Address": "127.0.0.1",
+        "Scope": 0,
+        "Port": "<OS_ASSIGNED_WAKE_PORT_SHUTDOWN>",
+        "ProcessId": "<HELPER_PID_SHUTDOWN>"
+      },
+      {
+        "Family": 23,
+        "Address": "::",
+        "Scope": 0,
+        "Port": 25090,
+        "ProcessId": "<HELPER_PID_SHUTDOWN>"
+      }
+    ],
+    "owned_udp_count": 3
+  },
+  "cleanup_submission_returned_ms": 2.5953,
+  "resources_absent_observed_ms": 12.6786,
+  "confirmed": {
+    "phase": "confirmed-after-ping-before-exit",
+    "recorded_utc": "2026-10-23T17:56:29.0550699Z",
+    "elapsed_ms": 1383.3251,
+    "cleanup_elapsed_ms": 54.4001,
+    "helper_alive_before_and_after": true,
+    "pid": "<HELPER_PID_SHUTDOWN>",
+    "start_time": "2026-10-23T17:56:27.6872456Z",
+    "thread_inventory_nonempty": true,
+    "thread_count": 1,
+    "threads": [
+      {
+        "tid": "<MAIN_TID_SHUTDOWN>",
+        "state": "Wait",
+        "start_address": "0",
+        "description": "main"
+      }
+    ],
+    "worker_native_tid": "<MDNS_TID_SHUTDOWN>",
+    "worker_present": false,
+    "global_udp_count": 92,
+    "native_udp_queries": [
+      {
+        "Family": 2,
+        "NativeReturnCodes": [
+          122,
+          0
+        ],
+        "BufferBytes": 876,
+        "Rows": 62
+      },
+      {
+        "Family": 23,
+        "NativeReturnCodes": [
+          122,
+          0
+        ],
+        "BufferBytes": 1132,
+        "Rows": 30
+      }
+    ],
+    "owned_udp": [],
+    "owned_udp_count": 0
+  },
+  "helper_ping_after_resource_absence": true,
+  "exit": 0,
+  "stderr": "",
+  "ended_utc": "2026-10-23T17:56:29.0696379Z",
+  "total_elapsed_ms": 1398.4116,
+  "transcript": [
+    {
+      "at_utc": "2026-10-23T17:56:27.8454385Z",
+      "elapsed_ms": 175.1889,
+      "direction": "helper-to-observer",
+      "line": "READY pid=<HELPER_PID_SHUTDOWN> main_tid=<MAIN_TID_SHUTDOWN> mode=shutdown"
+    },
+    {
+      "at_utc": "2026-10-23T17:56:27.9228237Z",
+      "elapsed_ms": 251.0887,
+      "direction": "observer-to-helper",
+      "line": "init"
+    },
+    {
+      "at_utc": "2026-10-23T17:56:27.9482145Z",
+      "elapsed_ms": 276.4861,
+      "direction": "helper-to-observer",
+      "line": "WORKER_LOG native_tid=<MDNS_TID_SHUTDOWN> source_line=4058"
+    },
+    {
+      "at_utc": "2026-10-23T17:56:28.9643692Z",
+      "elapsed_ms": 1292.6374,
+      "direction": "helper-to-observer",
+      "line": "LIVE worker_tid=<MDNS_TID_SHUTDOWN> resolved=true init_elapsed_us=1033100"
+    },
+    {
+      "at_utc": "2026-10-23T17:56:29.0012023Z",
+      "elapsed_ms": 1329.4599,
+      "direction": "observer-to-helper",
+      "line": "cleanup"
+    },
+    {
+      "at_utc": "2026-10-23T17:56:29.0020736Z",
+      "elapsed_ms": 1330.3288,
+      "direction": "helper-to-observer",
+      "line": "CLEANUP_RETURNED mode=shutdown object_retained=true"
+    },
+    {
+      "at_utc": "2026-10-23T17:56:29.0424934Z",
+      "elapsed_ms": 1370.7522,
+      "direction": "observer-to-helper",
+      "line": "ping"
+    },
+    {
+      "at_utc": "2026-10-23T17:56:29.0428354Z",
+      "elapsed_ms": 1371.0849,
+      "direction": "helper-to-observer",
+      "line": "ALIVE pid=<HELPER_PID_SHUTDOWN> cleanup_done=true object_retained=true"
+    },
+    {
+      "at_utc": "2026-10-23T17:56:29.0564183Z",
+      "elapsed_ms": 1384.6746,
+      "direction": "observer-to-helper",
+      "line": "exit"
+    },
+    {
+      "at_utc": "2026-10-23T17:56:29.0567025Z",
+      "elapsed_ms": 1384.9505,
+      "direction": "helper-to-observer",
+      "line": "EXITING"
+    }
+  ],
+  "samples": [
+    {
+      "phase": "baseline-before-any-Discovery-init",
+      "recorded_utc": "2026-10-23T17:56:27.9087701Z",
+      "elapsed_ms": 237.033,
+      "cleanup_elapsed_ms": null,
+      "helper_alive_before_and_after": true,
+      "pid": "<HELPER_PID_SHUTDOWN>",
+      "start_time": "2026-10-23T17:56:27.6872456Z",
+      "thread_inventory_nonempty": true,
+      "thread_count": 1,
+      "threads": [
+        {
+          "tid": "<MAIN_TID_SHUTDOWN>",
+          "state": "Wait",
+          "start_address": "<NATIVE_START_ADDRESS_1>",
+          "description": "main"
+        }
+      ],
+      "worker_native_tid": "<NOT_YET_OBSERVED>",
+      "worker_present": false,
+      "global_udp_count": 92,
+      "native_udp_queries": [
+        {
+          "Family": 2,
+          "NativeReturnCodes": [
+            122,
+            0
+          ],
+          "BufferBytes": 876,
+          "Rows": 62
+        },
+        {
+          "Family": 23,
+          "NativeReturnCodes": [
+            122,
+            0
+          ],
+          "BufferBytes": 1132,
+          "Rows": 30
+        }
+      ],
+      "owned_udp": [],
+      "owned_udp_count": 0
+    },
+    {
+      "phase": "live-before-cleanup",
+      "recorded_utc": "2026-10-23T17:56:28.9894082Z",
+      "elapsed_ms": 1317.6614,
+      "cleanup_elapsed_ms": null,
+      "helper_alive_before_and_after": true,
+      "pid": "<HELPER_PID_SHUTDOWN>",
+      "start_time": "2026-10-23T17:56:27.6872456Z",
+      "thread_inventory_nonempty": true,
+      "thread_count": 2,
+      "threads": [
+        {
+          "tid": "<MAIN_TID_SHUTDOWN>",
+          "state": "Wait",
+          "start_address": "0",
+          "description": "main"
+        },
+        {
+          "tid": "<MDNS_TID_SHUTDOWN>",
+          "state": "Wait",
+          "start_address": "<NATIVE_START_ADDRESS_1>",
+          "description": "mDNS_daemon"
+        }
+      ],
+      "worker_native_tid": "<MDNS_TID_SHUTDOWN>",
+      "worker_present": true,
+      "global_udp_count": 95,
+      "native_udp_queries": [
+        {
+          "Family": 2,
+          "NativeReturnCodes": [
+            122,
+            0
+          ],
+          "BufferBytes": 900,
+          "Rows": 64
+        },
+        {
+          "Family": 23,
+          "NativeReturnCodes": [
+            122,
+            0
+          ],
+          "BufferBytes": 1160,
+          "Rows": 31
+        }
+      ],
+      "owned_udp": [
+        {
+          "Family": 2,
+          "Address": "0.0.0.0",
+          "Scope": 0,
+          "Port": 25090,
+          "ProcessId": "<HELPER_PID_SHUTDOWN>"
+        },
+        {
+          "Family": 2,
+          "Address": "127.0.0.1",
+          "Scope": 0,
+          "Port": "<OS_ASSIGNED_WAKE_PORT_SHUTDOWN>",
+          "ProcessId": "<HELPER_PID_SHUTDOWN>"
+        },
+        {
+          "Family": 23,
+          "Address": "::",
+          "Scope": 0,
+          "Port": 25090,
+          "ProcessId": "<HELPER_PID_SHUTDOWN>"
+        }
+      ],
+      "owned_udp_count": 3
+    },
+    {
+      "phase": "poll-cleanup",
+      "recorded_utc": "2026-10-23T17:56:29.0121401Z",
+      "elapsed_ms": 1340.3973,
+      "cleanup_elapsed_ms": 12.6786,
+      "helper_alive_before_and_after": true,
+      "pid": "<HELPER_PID_SHUTDOWN>",
+      "start_time": "2026-10-23T17:56:27.6872456Z",
+      "thread_inventory_nonempty": true,
+      "thread_count": 1,
+      "threads": [
+        {
+          "tid": "<MAIN_TID_SHUTDOWN>",
+          "state": "Wait"
+        }
+      ],
+      "worker_native_tid": "<MDNS_TID_SHUTDOWN>",
+      "worker_present": false,
+      "global_udp_count": 92,
+      "native_udp_queries": [
+        {
+          "Family": 2,
+          "NativeReturnCodes": [
+            122,
+            0
+          ],
+          "BufferBytes": 876,
+          "Rows": 62
+        },
+        {
+          "Family": 23,
+          "NativeReturnCodes": [
+            122,
+            0
+          ],
+          "BufferBytes": 1132,
+          "Rows": 30
+        }
+      ],
+      "owned_udp": [],
+      "owned_udp_count": 0
+    },
+    {
+      "phase": "confirmed-after-ping-before-exit",
+      "recorded_utc": "2026-10-23T17:56:29.0550699Z",
+      "elapsed_ms": 1383.3251,
+      "cleanup_elapsed_ms": 54.4001,
+      "helper_alive_before_and_after": true,
+      "pid": "<HELPER_PID_SHUTDOWN>",
+      "start_time": "2026-10-23T17:56:27.6872456Z",
+      "thread_inventory_nonempty": true,
+      "thread_count": 1,
+      "threads": [
+        {
+          "tid": "<MAIN_TID_SHUTDOWN>",
+          "state": "Wait",
+          "start_address": "0",
+          "description": "main"
+        }
+      ],
+      "worker_native_tid": "<MDNS_TID_SHUTDOWN>",
+      "worker_present": false,
+      "global_udp_count": 92,
+      "native_udp_queries": [
+        {
+          "Family": 2,
+          "NativeReturnCodes": [
+            122,
+            0
+          ],
+          "BufferBytes": 876,
+          "Rows": 62
+        },
+        {
+          "Family": 23,
+          "NativeReturnCodes": [
+            122,
+            0
+          ],
+          "BufferBytes": 1132,
+          "Rows": 30
+        }
+      ],
+      "owned_udp": [],
+      "owned_udp_count": 0
+    }
+  ],
+  "started_local": "2026-10-23T10:56:27.676264-07:00",
+  "ended_local": "2026-10-23T10:56:29.069637-07:00",
+  "case_run_count": 1,
+  "owned_worker_identification": "Genuine GetCurrentThreadId callback at frozen mdns exec_command trace site; same native ID exists in OS process thread inventory with description mDNS_daemon.",
+  "extra_persistent_runtime_threads_observed": 0,
+  "baseline_warmed": false,
+  "timing_meaning": "Elapsed to completed successful OS snapshot after cleanup command, an observation upper bound; not exact teardown latency."
+}
