@@ -42,6 +42,11 @@ drop cleanup. The active implementation task is correcting both. That candidate
 is not integrated or accepted. A separate Windows task observes actual worker and
 socket removal after normal shutdown and Drop while its private helper stays alive.
 
+The [fresh R8 source review](discovery-observed-startup-review-r8.md) found no
+concrete P1/P2 product or verification defect in revised candidate `e6a9125`.
+Both R7 objections are closed in source. Matching final runtime evidence and
+native Windows startup acceptance remain pending; the candidate is not integrated.
+
 The [bounded virtual idle observation](virtual-idle-resources.md) records two
 30-second phases and the actual stop delay on the checkpoint binary. It does
 not supply native performance or long-term memory acceptance.
