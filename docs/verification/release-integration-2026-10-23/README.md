@@ -22,6 +22,11 @@ passes retained discovery 19/19 and virtual control 23/23. Startup remains
 failed at 11/14. A separate ordering diagnosis is running; the original failed
 probe and its frozen inputs remain unchanged.
 
+The [fresh startup contract review](discovery-startup-contract-review.md) found
+a P2 verification defect: the probe does not prove that its target startup
+sends failed before replacement. It found no concrete product defect in that
+scope. The possible ordering still needs a native trace; acceptance stays failed.
+
 The [bounded virtual idle observation](virtual-idle-resources.md) records two
 30-second phases and the actual stop delay on the checkpoint binary. It does
 not supply native performance or long-term memory acceptance.
