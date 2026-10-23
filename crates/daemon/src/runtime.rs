@@ -1181,7 +1181,10 @@ impl Runtime {
                             })
                             .collect::<Vec<_>>();
                         for conn in conns {
-                            self.execute(NetCommand::Close { conn });
+                            // Revocation must cut off application reads before the
+                            // IPC reply, including connections authenticated by an
+                            // explicit pin. Graceful close can still read peer input.
+                            self.execute(NetCommand::Reject { conn });
                         }
                     }
                 }

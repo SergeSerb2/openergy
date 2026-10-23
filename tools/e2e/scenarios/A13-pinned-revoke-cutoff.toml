@@ -1,0 +1,120 @@
+# Requirement: Revoking an explicit TLS pin cuts off input before acknowledging the control request.
+name = "A13-pinned-revoke-cutoff"
+requirement = "No input sent after trust.revoke replies reaches the sink; held input is released and the peer needs approval again."
+timeout_ms = 2500
+
+[[node]]
+id = "server"
+kind = "openergy"
+role = "server"
+platform = "virtual"
+tls = true
+require_client_trust = false
+
+[[node]]
+id = "client"
+kind = "openergy"
+role = "client"
+platform = "virtual"
+remote = "server"
+tls = true
+
+[[step]]
+do = "wait_status"
+node = "client"
+fields = { pending_trust = { "$len" = 1 } }
+save = "pending"
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "trust.approve"
+params = { fingerprint = "${pending.pending_trust.0.fingerprint}" }
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "connection.connect"
+params = { host = "127.0.0.1", port = "${server.port}", fingerprint = "${pending.pending_trust.0.fingerprint}" }
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "set_screens"
+node = "server"
+rects = [{ x = 0, y = 0, w = 1920, h = 1080, scale = 1.0 }]
+
+[[step]]
+do = "set_screens"
+node = "client"
+rects = [{ x = 0, y = 0, w = 1920, h = 1080, scale = 1.0 }]
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "mouse_move_abs", x = 1919, y = 540 }, { type = "mouse_move_rel", dx = 20, dy = 0 }]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { active_screen = "client" }
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "key_down", key = 97, modifiers = 0, button = 1 }]
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+expect = [{ event = { type = "key_down", key = 97, modifiers = 0, button = 1 } }]
+
+[[step]]
+do = "ledger_mark"
+node = "client"
+save = "before"
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "trust.revoke"
+params = { fingerprint = "${pending.pending_trust.0.fingerprint}" }
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "key_down", key = 98, modifiers = 0, button = 2 }, { type = "key_up", key = 98, modifiers = 0, button = 2 }]
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+since = "${before.sequence}"
+exact = true
+expect = [{ event = { type = "key_up", key = 97, modifiers = 0, button = 1 } }, { release_all = true }]
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "virtual.recorded"
+fields = { "stats.pressed_keys" = 0, "stats.pressed_buttons" = 0 }
+
+[[step]]
+do = "wait_status"
+node = "client"
+fields = { pending_trust = { "$len" = 1 }, peers = { "$len" = 0 } }
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "trust.list"
+fields = { servers = [] }
