@@ -1,0 +1,22 @@
+[DEBUG-oe-startup] at_ns=8213850200 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited("_oe-guard._tcp.local.", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false
+[DEBUG-oe-startup] at_ns=8229754600 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse("_oe-guard._tcp.local.", 1, false, Sender) repeating: true
+[DEBUG-oe-startup] at_ns=9187689200 thread=ThreadId(1) CALL guard-limited before live_closed=false
+[DEBUG-oe-startup] at_ns=9187738400 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited("_oe-guard._tcp.local.", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false
+[DEBUG-oe-startup] at_ns=9187936900 thread=ThreadId(1) CALL guard-limited returned live_closed=true new_closed=false
+[DEBUG-oe-startup] at_ns=9187939000 thread=ThreadId(1) CALL guard-limited dropped live_closed=true
+[DEBUG-oe-startup] at_ns=9187939400 thread=ThreadId(1) CALL guard-standard before live_closed=true
+[DEBUG-oe-startup] at_ns=9187952900 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse("_oe-guard._tcp.local.", 1, false, Sender) repeating: false
+[DEBUG-oe-startup] at_ns=9188165800 thread=ThreadId(1) CALL guard-standard returned live_closed=true new_disconnected=false first_event=Ok(SearchStarted("_oe-guard._tcp.local. on 1 interfaces [Loopback Pseudo-Interface 1 (1)]"))
+[DEBUG-oe-startup] at_ns=9188170000 thread=ThreadId(1) CALL guard-standard dropped live_closed=true
+[DEBUG-oe-startup] at_ns=9241744300 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse("_oe-guard._tcp.local.", 1, false, Sender) repeating: true
+[DEBUG-oe-startup] at_ns=13515005000 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited("_oe-guard._tcp.local.", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false
+[DEBUG-oe-startup] at_ns=13535908600 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse("_oe-guard._tcp.local.", 1, false, Sender) repeating: true
+[DEBUG-oe-startup] at_ns=13536252400 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse("_oe-guard._tcp.local.", 1, false, Sender) repeating: false
+[DEBUG-oe-startup] at_ns=13575458400 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited("_oe-guard._tcp.local.", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false
+[DEBUG-oe-startup] at_ns=13575462900 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-guard._tcp.local.)(repeating:false): sending on a closed channel
+[DEBUG-oe-startup] at_ns=13575465100 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse("_oe-guard._tcp.local.", 1, false, Sender) repeating: false
+[DEBUG-oe-startup] at_ns=13575467200 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-guard._tcp.local.)(repeating:false): sending on a closed channel
+[DEBUG-oe-startup] at_ns=13575685100 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse("_oe-guard._tcp.local.", 1, false, Sender) repeating: true
+[DEBUG-oe-startup] at_ns=14530910800 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited("_oe-guard._tcp.local.", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false
+[DEBUG-oe-startup] at_ns=14531635900 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: StopBrowse("_oe-guard._tcp.local.") repeating: false
+discovery_recovery: limited startup checks failed

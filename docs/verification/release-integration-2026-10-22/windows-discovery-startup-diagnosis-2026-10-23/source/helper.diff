@@ -1,0 +1,69 @@
+--- e4f48ba/crates/net/examples/discovery_recovery.rs
++++ diagnostic/startup_diagnostic.rs
+@@ -558,6 +558,36 @@
+     }
+     false
+ }
++// Diagnostic-only caller observations and existing log::Log records.
++// No worker instrumentation, injected command, wait, or acceptance change.
++static DIAG_CLOCK: std::sync::OnceLock<Instant> = std::sync::OnceLock::new();
++struct StartupTrace;
++static STARTUP_TRACE: StartupTrace = StartupTrace;
++fn diag_mark(message: impl std::fmt::Display) {
++    let elapsed = DIAG_CLOCK.get_or_init(Instant::now).elapsed().as_nanos();
++    eprintln!("[DEBUG-oe-startup] at_ns={elapsed} thread={:?} {message}", thread::current().id());
++}
++impl log::Log for StartupTrace {
++    fn enabled(&self, metadata: &log::Metadata<'_>) -> bool {
++        metadata.target() == "mdns_sd::service_daemon"
++    }
++    fn log(&self, record: &log::Record<'_>) {
++        if !self.enabled(record.metadata()) { return; }
++        // Exact frozen-source sites: command entry, initial-send failure.
++        if record.line() != Some(4058) && record.line() != Some(4232) { return; }
++        let message = record.args().to_string();
++        if message.contains(GUARD_TYPE) || message.contains("_oe-c") {
++            diag_mark(format_args!("LIB line={} level={} {message}", record.line().unwrap_or(0), record.level()));
++        }
++    }
++    fn flush(&self) {}
++}
++fn diag_logger() {
++    DIAG_CLOCK.get_or_init(Instant::now);
++    log::set_logger(&STARTUP_TRACE).expect("diagnostic logger");
++    log::set_max_level(log::LevelFilter::Trace);
++}
++
+ fn startup_probe(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
+     fs::create_dir(root)?;
+     let daemon = daemon(mdns_port)?;
+@@ -597,9 +627,18 @@
+         let ty = format!("_oe-c{index:03}._tcp.local.");
+         drop(retry(|| daemon.browse_limited(&ty, 64))?);
+     }
+-    // Failed replacement must preserve both the prior sender and its state.
+-    drop(retry(|| daemon.browse_limited(GUARD_TYPE, 64))?);
+-    drop(retry(|| daemon.browse(GUARD_TYPE))?);
++    // Diagnostic version of the two ordinary API calls. Original assertions below are unchanged.
++    diag_mark(format_args!("CALL guard-limited before live_closed={}", live.is_closed()));
++    let cancelled_limited = retry(|| daemon.browse_limited(GUARD_TYPE, 64))?;
++    diag_mark(format_args!("CALL guard-limited returned live_closed={} new_closed={}", live.is_closed(), cancelled_limited.is_closed()));
++    drop(cancelled_limited);
++    diag_mark(format_args!("CALL guard-limited dropped live_closed={}", live.is_closed()));
++    diag_mark(format_args!("CALL guard-standard before live_closed={}", live.is_closed()));
++    let cancelled_standard = retry(|| daemon.browse(GUARD_TYPE))?;
++    let first_event = cancelled_standard.try_recv();
++    diag_mark(format_args!("CALL guard-standard returned live_closed={} new_disconnected={} first_event={first_event:?}", live.is_closed(), cancelled_standard.is_disconnected()));
++    drop(cancelled_standard);
++    diag_mark(format_args!("CALL guard-standard dropped live_closed={}", live.is_closed()));
+     let after_barrier = limited_states(&daemon)?;
+     thread::sleep(Duration::from_millis(300));
+     let after_settle = limited_states(&daemon)?;
+@@ -707,6 +746,7 @@
+     }
+ }
+ fn main() {
++    diag_logger();
+     if let Err(error) = run() {
+         eprintln!("discovery_recovery: {error}");
+         std::process::exit(1);
