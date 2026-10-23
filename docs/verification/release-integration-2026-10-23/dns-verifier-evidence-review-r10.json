@@ -1,0 +1,54 @@
+{
+  "taskId": "node:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-dns-verifier-mac-evidence-review-r10-4f506a9-20261023",
+  "status": "completed",
+  "providerInstanceId": "codex",
+  "model": "gpt-6.1-sol",
+  "options": [
+    {
+      "id": "reasoningEffort",
+      "value": "xhigh"
+    },
+    {
+      "id": "serviceTier",
+      "value": "default"
+    }
+  ],
+  "reviewed_evidence": "4f506a95ca8f2af467ace6da5b9db890569c8f1d",
+  "reviewed_source": "8333a48df046bdc7e5f0cfc687ed09f2b75b39f3",
+  "base": "c7f6989",
+  "scope": "Independent saved-evidence audit; no builds, binaries, probes, helpers, tests or traffic executed.",
+  "product_findings_p1_p2": 0,
+  "evidence_findings_p2": 1,
+  "candidate_accepted": false,
+  "findings": [
+    {
+      "id": "R10-1",
+      "severity": "P2",
+      "path": "docs/verification/release-integration-2026-10-23/dns-verifier-repair-mac/README.md",
+      "line": 27,
+      "issue": "Historical false-Connected count is overstated for the earlier run.",
+      "correct_counts": {
+        "7a56d17": 4,
+        "40b1d12": 6
+      },
+      "strict_negative_control_gate_satisfied": false
+    }
+  ],
+  "source_hashes_checked": 132,
+  "ledger_entries_checked": 212,
+  "archive_files": 213,
+  "private_originals_checked": 190,
+  "historical_dns_files_checked": 48,
+  "pre_r7_raw_records_checked": 34,
+  "compiled_source_patch_sections_checked": 13,
+  "parent_count_check": {
+    "exact_raw_and_derived_counts": [
+      4,
+      6
+    ],
+    "all_derived_events_present_in_raw": true,
+    "independent_runtime_execution": false
+  },
+  "source_acceptance_limit": "R9 separately found two remaining source defects in base ownership and complete public event handling. Saved literal base-flow PASS markers do not close those contracts.",
+  "summary": "R10 found **one P2 evidence-reporting defect** in evidence `4f506a9`, audited against source `8333a48` and base `c7f6989`. No concrete product P1/P2 was established.\n\n**P2 — The historical false-Connected count is overstated.** In `dns-verifier-repair-mac/README.md:27`, “six hostname false-Connected observations each” is incorrect. The `7a56d17` run contains **four**; `raw/baseline-refusal.log:5023` and `:5579` show typed refusal for the other two hostname cases. The `40b1d12` run contains six. Correct the summary while preserving both original transcripts and exits. Neither run qualifies the new strict negative-control gate.\n\nThe remaining audit supports these bounded conclusions:\n\n- **Identity:** All 132 source hashes match `8333a48`, including the development inputs used for the build. The final executable and net library match their recorded sizes and SHA-256 values. The production delta is exactly ten trace lines at four sites.\n- **Commands:** Normal records **104.971 s / exit 2**; owned conflict records **74.406 s / exit 2**. Both sample child niceness 15 from controller niceness 0. Saved build records retain Rust 1.99.1, two jobs, deployment target 15.0, and locked/offline operation.\n- **Flows:** Normal executes ten safely owned matrix requests. Conflict retains IPv6-only `::1:25119`, records actual `AddrInUse`, skips four unsafe requests, and executes six. Each command completes eight validated 16-job batches—**128 obsolete-job failures per command**—plus frames and lifecycle checks. All six final recovery exchanges use the same affected callers, exact PASS/BACK frames, matching connection IDs, and stale/extra-event checks.\n- **Timing:** All 22 observed cases match their derived brackets. The short TCP and TLS receipt intervals cross the caller deadline bounds. No demonstrated deferral past the first eligible poll appears. TLS has the complete correlated attempt/readiness pair and real peer bytes; fallback has only one IPv6 attempt. Refusal, strict timing, fallback, and the matching new negative control correctly remain **UNVERIFIED**.\n- **Preservation:** All 212 ledger entries match the 213-file archive. All 190 private originals match their hashes and declared path-only transformations. The 48 historical DNS files and 34 pre-R7 raw records retain their hashes. Exact overlays, 114-input baseline manifests, and all 13 compiled-source patch sections reconcile.\n- **Cleanup:** Immediate audits preserve two `AddrInUse` results per command; the later audit records 40/40 successful binds. Empty OS inventories support no broader conclusion. Private permissions and recorded identity removal remain consistent.\n\nThis was saved-evidence review only. I ran no builds, binaries, tests, probes, helpers, or traffic. No Windows acceptance is established. The checkout remains clean."
+}

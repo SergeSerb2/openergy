@@ -110,6 +110,14 @@ instructed the Windows task to stop further probe commands and complete cleanup.
 A new implementation follow-up addresses both gaps; saved Mac evidence remains
 under a separate audit. No DNS candidate has been integrated here.
 
+The [Mac DNS evidence R10 audit](dns-verifier-evidence-review-r10.md) supports
+the saved source/artifact bindings and literal exit-2 results, but finds one
+historical count error: the earlier two runs contain four and six false
+`Connected` observations, rather than six each. The parent repeated both counts
+and sent a narrow summary correction request. Raw transcripts stay unchanged.
+Neither run closes the strict negative-control gate, and R9's source defects
+still prevent candidate acceptance.
+
 The later [combined-binary idle observation](combined-idle-resources.md) measures
 the exact new release artifact. Its role-off idle RSS is 8.265625 MiB and reaches
 8.609375 MiB during 30 status CLI calls. Displayed CPU-counter deltas are 0.00 s
