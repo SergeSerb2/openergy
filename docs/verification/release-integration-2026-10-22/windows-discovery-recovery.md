@@ -2,6 +2,16 @@
 
 PASS on source `ac5c45081a9e060392cb850eddd625f07b591bfe` on 2026-10-22 (America/Vancouver). The isolated checkout started clean at that exact commit. This report covers one real loopback discovery run and one real CLI/named-pipe run with the virtual daemon. It does not clear the original release or Windows privilege findings.
 
+Parent integration qualification: this is the same intermediate discovery source
+as the [first-iteration record](discovery-recovery-initial.md). The probe removes
+the 800 advertisements before checking fresh-peer recovery. Independent review
+found that a retained large cache can overflow each replacement subscription;
+that case remains open here. The printed `worker-shutdown=true` includes an
+acknowledged raw sentinel worker and submission of Discovery shutdown. It does
+not acknowledge the Discovery worker itself. Successful process/endpoint cleanup
+below retains its separate meaning. The eight passing original checks do not
+clear these two review gaps or verify a later source revision.
+
 The already-running parent build completed at 2026-10-22T20:56:24.424668-07:00. It was not restarted or duplicated. Native AMD64 MSVC used pinned Rust 1.99.1, two build jobs, `BelowNormal` priority and session 0. Strict release/all-targets Clippy passed for the eight selected packages; daemon/platform release builds and both discovery example builds passed. Build arguments and timings are in the [JSON evidence](windows-discovery-recovery.json).
 
 Source identity and frozen binaries:

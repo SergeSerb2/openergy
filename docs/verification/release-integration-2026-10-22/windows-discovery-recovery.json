@@ -366,5 +366,12 @@
     "Firewall and network configuration",
     "Docker state",
     "Repository settings, signing, publication, PR and remote refs"
-  ]
+  ],
+  "parent_integration_qualification": {
+    "status": "intermediate ac5c450; retained-cache and Discovery-worker proof gaps open",
+    "record": "discovery-recovery-initial.md",
+    "retained_namespace_exercised": false,
+    "discovery_worker_acknowledged_by_probe": false,
+    "scope_note": "The original eight checks passed. The full burst is removed before checking recovery; worker-shutdown=true includes raw sentinel acknowledgement and a submitted Discovery shutdown request. Final process/endpoint cleanup is a separate observed result. No later revision is verified here."
+  }
 }
