@@ -1,0 +1,820 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-22",
+  "timezone": "America/Vancouver",
+  "result": "FAIL: unchanged full and refusal-only modes both exit 1 at the direct OS refusal prerequisite; queue/frame subset passes",
+  "source": {
+    "commit": "07adb0a3cdc4cff1aa77ce31dbe078a48db56bd5",
+    "starting_clean": true,
+    "files": 658,
+    "git_blob_exact_matches": 657,
+    "conversions": [
+      {
+        "path": "tools/windows/openergy-run.cmd",
+        "git_bytes": 502,
+        "archive_bytes": 511,
+        "git_blob": "9cd6f37ce26dde4edcad6f808492171f8daf3462",
+        "git_clean_filter_blob": "9cd6f37ce26dde4edcad6f808492171f8daf3462",
+        "git_sha256": "74772411a85032212c7f4ba1be1948233804dcb21166c5caef0a6611ea2c3210",
+        "archive_sha256": "f784708ca8aa30160c34a96c406ee3b666d3d82d3cad6756f7aa8d6b6b21d11e",
+        "crlf_only": true
+      }
+    ],
+    "archive_sha256": "23dfa9257d79c286cda94bf1381b60981ddb082a8edb24c0ba1ed54bc06c203f",
+    "manifest_sha256": "e3f31a782b3165c049ff7cbc360da894f599c7cd51b1cf68b9dc007bd1681e3c",
+    "example_sha256": "a7dbab22249c7c65443c6943d04ab3c078d9d3f02a97016f5596fd0f6e6d4a2f",
+    "manifest_file": "windows-dns-cancellation-source-manifest.json",
+    "source_changed": false,
+    "archive_git_clean_filter_verification": "657 exact Git blobs; tools/windows/openergy-run.cmd CRLF only under *.cmd text eol=crlf, Git clean filter matches committed blob",
+    "remote_source_before_build": {
+      "files": 658,
+      "all_hashes_match": true,
+      "readonly_files": 658
+    },
+    "remote_source_after_build": {
+      "files": 658,
+      "all_hashes_match": true,
+      "readonly_files": 658
+    },
+    "remote_source_after_probes": {
+      "files": 658,
+      "all_hashes_match": true,
+      "readonly": true
+    }
+  },
+  "prior_evidence": {
+    "windows_record": "windows-discovery-recovery.md/.json",
+    "windows_source": "ac5c45081a9e060392cb850eddd625f07b591bfe",
+    "predates_current_tcp_changes": true,
+    "reused_build_or_runtime_result": false,
+    "parent_mac_result": "User supplied context only; not independently reproduced here.",
+    "parent_source_review": "User supplied no-P1/P2 context for a8a40f45 and 2e7c659d; not independently repeated here."
+  },
+  "machine": {
+    "os": "Microsoft Windows 10.0.26340",
+    "architecture": "AMD64",
+    "session": 0,
+    "powershell": "7.6.4",
+    "rustc": [
+      "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "binary: rustc",
+      "commit-hash: 58cf8f9c35b355199727627d07ae34a4e2846d67",
+      "commit-date: 2026-10-13",
+      "host: x86_64-pc-windows-msvc",
+      "release: 1.99.1",
+      "LLVM version: 23.1.1"
+    ],
+    "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)"
+  },
+  "access": {
+    "alias": "sergecode-windows",
+    "options": [
+      "BatchMode=yes",
+      "ConnectTimeout=8"
+    ],
+    "existing_key_auth": true,
+    "credentials_or_network_changes": false
+  },
+  "isolation": {
+    "fixture": "<WINDOWS_FIXTURE> under %LOCALAPPDATA%/Temp/oe-win-dns-07adb0a-<RANDOM>",
+    "new_fixture": true,
+    "root_acl_protected": true,
+    "current_user_only_allow_rules": 1,
+    "private_temp_and_tmp": "<WINDOWS_FIXTURE>/temp",
+    "source_readonly": true,
+    "frozen_binaries_readonly": true,
+    "priority": "BelowNormal",
+    "observed_cargo_priority": "BelowNormal",
+    "max_jobs": 2,
+    "discovery": false,
+    "tls": false,
+    "native_backend": false,
+    "default_ports_used": false,
+    "allow_port_24800": "0",
+    "toolchain_install_or_defaults_changed": false,
+    "previous_fixtures_written": false,
+    "tcp_port_range": {
+      "first": 25100,
+      "last": 25119
+    }
+  },
+  "build": {
+    "source_commit": "07adb0a3cdc4cff1aa77ce31dbe078a48db56bd5",
+    "started_utc": "2026-10-23T04:33:53.4027807Z",
+    "session": 0,
+    "priority": "BelowNormal",
+    "jobs": 2,
+    "target": "x86_64-pc-windows-msvc",
+    "toolchains_before": [
+      "stable-x86_64-pc-windows-msvc (default)",
+      "nightly-x86_64-pc-windows-msvc",
+      "nightly-2026-08-10-x86_64-pc-windows-msvc",
+      "1.98.0-x86_64-pc-windows-msvc",
+      "1.99.1-x86_64-pc-windows-msvc (active)"
+    ],
+    "steps": [
+      {
+        "name": "clippy",
+        "arguments": [
+          "clippy",
+          "--locked",
+          "--release",
+          "--target",
+          "x86_64-pc-windows-msvc",
+          "--jobs",
+          "2",
+          "-p",
+          "openergy-daemon",
+          "-p",
+          "openergy-platform-windows",
+          "-p",
+          "openergy-net",
+          "-p",
+          "openergy-session",
+          "-p",
+          "openergy-platform",
+          "-p",
+          "openergy-protocol",
+          "-p",
+          "openergy-config",
+          "-p",
+          "openergy-ipc",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit": 0,
+        "elapsed_ms": 30729,
+        "started_utc": "2026-10-23T04:33:58.9688468Z",
+        "started_local": "2026-10-22T21:33:58.968846-07:00"
+      },
+      {
+        "name": "release",
+        "arguments": [
+          "build",
+          "--locked",
+          "--release",
+          "--target",
+          "x86_64-pc-windows-msvc",
+          "--jobs",
+          "2",
+          "-p",
+          "openergy-daemon",
+          "-p",
+          "openergy-platform-windows",
+          "-p",
+          "openergy-net",
+          "-p",
+          "openergy-session",
+          "-p",
+          "openergy-platform",
+          "-p",
+          "openergy-protocol",
+          "-p",
+          "openergy-config",
+          "-p",
+          "openergy-ipc"
+        ],
+        "exit": 0,
+        "elapsed_ms": 85097,
+        "started_utc": "2026-10-23T04:34:29.7130688Z",
+        "started_local": "2026-10-22T21:34:29.713068-07:00"
+      },
+      {
+        "name": "example",
+        "arguments": [
+          "build",
+          "--locked",
+          "--release",
+          "--target",
+          "x86_64-pc-windows-msvc",
+          "--jobs",
+          "2",
+          "-p",
+          "openergy-net",
+          "--example",
+          "dns_queue_cancel_c4806a3d"
+        ],
+        "exit": 0,
+        "elapsed_ms": 34844,
+        "started_utc": "2026-10-23T04:35:54.8155762Z",
+        "started_local": "2026-10-22T21:35:54.815576-07:00"
+      }
+    ],
+    "passed": true,
+    "source_extracted": {
+      "files": 658,
+      "all_hashes_match": true,
+      "readonly_files": 0
+    },
+    "source_before": {
+      "files": 658,
+      "all_hashes_match": true,
+      "readonly_files": 658
+    },
+    "current_user_only_acl_items": 769,
+    "source_after": {
+      "files": 658,
+      "all_hashes_match": true,
+      "readonly_files": 658
+    },
+    "artifacts": [
+      {
+        "path": "x86_64-pc-windows-msvc/release/openergy.exe",
+        "bytes": 4102656,
+        "sha256": "e0e88ac730943d63eb235d4bc2885152c379f0be03c0389e013db868eaf1ce38"
+      },
+      {
+        "path": "x86_64-pc-windows-msvc/release/examples/dns_queue_cancel_c4806a3d.exe",
+        "bytes": 2392064,
+        "sha256": "4a1e7cb4293e94d627308a4bab01e97962fadfb1d78169b2507ad57074cf4127"
+      }
+    ],
+    "toolchains_after": [
+      "stable-x86_64-pc-windows-msvc (default)",
+      "nightly-x86_64-pc-windows-msvc",
+      "nightly-2026-08-10-x86_64-pc-windows-msvc",
+      "1.98.0-x86_64-pc-windows-msvc",
+      "1.99.1-x86_64-pc-windows-msvc (active)"
+    ],
+    "ended_utc": "2026-10-23T04:36:30.0346292Z",
+    "started_local": "2026-10-22T21:33:53.402780-07:00",
+    "ended_local": "2026-10-22T21:36:30.034629-07:00",
+    "library_artifacts": [
+      {
+        "path": "target/x86_64-pc-windows-msvc/release/libopenergy_config.rlib",
+        "bytes": 4956660,
+        "sha256": "e0c384f63d6a8b17aca0f59cb3e48bbba86fd426940a1947fc86d20f34f6d5d5"
+      },
+      {
+        "path": "target/x86_64-pc-windows-msvc/release/libopenergy_ipc.rlib",
+        "bytes": 1470662,
+        "sha256": "02a611da55198603c1da45f13be2c2aeac7cd3d0267b59513d08f42df04f303f"
+      },
+      {
+        "path": "target/x86_64-pc-windows-msvc/release/libopenergy_net.rlib",
+        "bytes": 2009294,
+        "sha256": "1ba0d30e9f9649ce598b6d1035772d3712690e4a58e4011e41faa7ce3f241695"
+      },
+      {
+        "path": "target/x86_64-pc-windows-msvc/release/libopenergy_platform_windows.rlib",
+        "bytes": 2502216,
+        "sha256": "e1f089eeea82e04076cc08ae4f8cf161ae1f52a75bcffc2cb3bfe4db1db33552"
+      },
+      {
+        "path": "target/x86_64-pc-windows-msvc/release/libopenergy_platform.rlib",
+        "bytes": 2145816,
+        "sha256": "3600f940733517b1cf9a44dbcb4b7e616ce406981a08df7ddc61a9b516bf6c50"
+      },
+      {
+        "path": "target/x86_64-pc-windows-msvc/release/libopenergy_protocol.rlib",
+        "bytes": 274448,
+        "sha256": "e0e7fed6080833a4d5843d11ee6f7a4dbe2204119c9c41cc5c3caffa8871f4c6"
+      },
+      {
+        "path": "target/x86_64-pc-windows-msvc/release/libopenergy_session.rlib",
+        "bytes": 1036556,
+        "sha256": "afedd1f9fe61cd52ab14373cf276a6b1e4884e1000ea3ddcfb4733aefdaa003e"
+      }
+    ]
+  },
+  "runtime": [
+    {
+      "mode": "full",
+      "arguments": [
+        "<WINDOWS_FIXTURE>\\runtime\\full"
+      ],
+      "started_utc": "2026-10-23T04:36:30.4675240Z",
+      "session": 0,
+      "priority": "BelowNormal",
+      "binary_sha256": "4a1e7cb4293e94d627308a4bab01e97962fadfb1d78169b2507ad57074cf4127",
+      "timeout_seconds": 180,
+      "timed_out": false,
+      "forced_cleanup": false,
+      "exit": 1,
+      "elapsed_ms": 19316,
+      "ended_utc": "2026-10-23T04:36:49.7860504Z",
+      "stdout_sha256": "434f62bdc8f543d32b83524eb548735d3eaa1c25a357bbe442e7d2ef3f0acc2d",
+      "stderr_sha256": "72d1652569b57e088567458f2e4cc4b91614c4faaff608b087caa47e28d7cb54",
+      "started_local": "2026-10-22T21:36:30.467524-07:00",
+      "ended_local": "2026-10-22T21:36:49.786050-07:00"
+    },
+    {
+      "mode": "refusal-only",
+      "arguments": [
+        "<WINDOWS_FIXTURE>\\runtime\\refusal-only",
+        "--refusal-only"
+      ],
+      "started_utc": "2026-10-23T04:36:49.8603318Z",
+      "session": 0,
+      "priority": "BelowNormal",
+      "binary_sha256": "4a1e7cb4293e94d627308a4bab01e97962fadfb1d78169b2507ad57074cf4127",
+      "timeout_seconds": 180,
+      "timed_out": false,
+      "forced_cleanup": false,
+      "exit": 1,
+      "elapsed_ms": 578,
+      "ended_utc": "2026-10-23T04:36:50.4389214Z",
+      "stdout_sha256": "f3ea40fa66676c0e3387fba4d3d537a1645d5cc60bde2b60e5799c7955d2b935",
+      "stderr_sha256": "72d1652569b57e088567458f2e4cc4b91614c4faaff608b087caa47e28d7cb54",
+      "started_local": "2026-10-22T21:36:49.860331-07:00",
+      "ended_local": "2026-10-22T21:36:50.438921-07:00"
+    }
+  ],
+  "probe_source": {
+    "path": "crates/net/examples/dns_queue_cancel_c4806a3d.rs",
+    "sha256": "a7dbab22249c7c65443c6943d04ab3c078d9d3f02a97016f5596fd0f6e6d4a2f",
+    "unchanged": true,
+    "commands": [
+      "<WINDOWS_FIXTURE>/bin/dns_queue_cancel_c4806a3d.exe <WINDOWS_FIXTURE>/runtime/full",
+      "<WINDOWS_FIXTURE>/bin/dns_queue_cancel_c4806a3d.exe <WINDOWS_FIXTURE>/runtime/refusal-only --refusal-only"
+    ],
+    "executions": {
+      "full": 1,
+      "refusal-only": 1
+    },
+    "retries_after_runtime_failure": 0,
+    "assertions_or_timing_changes": false
+  },
+  "observed_queue_subset": {
+    "passed_batches": 8,
+    "cancel_batches": 4,
+    "deadline_batches": 4,
+    "jobs_per_batch": 16,
+    "exactly_once_obsolete_failures": 128,
+    "frame_roundtrips": 8,
+    "outbound_frame_hex": "0000000450415353",
+    "inbound_frame_hex": "000000044241434b",
+    "source_frame_validation": "exact outbound length-prefixed PASS bytes and inbound NetEvent::Frame payload BACK",
+    "stale_tcp_accepts": 0,
+    "overflow_rejected_in_all_batches": true,
+    "cancelled_outstanding_budget_retained_until_completion": true,
+    "late_duplicate_event_check_passed_all_batches": true,
+    "rounds": [
+      {
+        "mode": "shutdown",
+        "round": 0,
+        "jobs": 16,
+        "admission_us": 918,
+        "overflow_rejected": "PASS",
+        "dns_budget_rejections": 1,
+        "recovery_admission_us": 65,
+        "recovery_connected_us": 2052436,
+        "recovery_roundtrip_us": 2052553,
+        "exactly_one_failure": "PASS",
+        "stale_tcp": "NONE",
+        "frame_roundtrip": "PASS",
+        "peer": "127.0.0.1:25116"
+      },
+      {
+        "mode": "disconnect_all",
+        "round": 1,
+        "jobs": 16,
+        "admission_us": 9,
+        "overflow_rejected": "PASS",
+        "dns_budget_rejections": 2,
+        "recovery_admission_us": 289,
+        "recovery_connected_us": 2039053,
+        "recovery_roundtrip_us": 2039222,
+        "exactly_one_failure": "PASS",
+        "stale_tcp": "NONE",
+        "frame_roundtrip": "PASS",
+        "peer": "127.0.0.1:25116"
+      },
+      {
+        "mode": "shutdown",
+        "round": 2,
+        "jobs": 16,
+        "admission_us": 11,
+        "overflow_rejected": "PASS",
+        "dns_budget_rejections": 1,
+        "recovery_admission_us": 17,
+        "recovery_connected_us": 2053729,
+        "recovery_roundtrip_us": 2053825,
+        "exactly_one_failure": "PASS",
+        "stale_tcp": "NONE",
+        "frame_roundtrip": "PASS",
+        "peer": "127.0.0.1:25116"
+      },
+      {
+        "mode": "disconnect_all",
+        "round": 3,
+        "jobs": 16,
+        "admission_us": 10,
+        "overflow_rejected": "PASS",
+        "dns_budget_rejections": 2,
+        "recovery_admission_us": 454,
+        "recovery_connected_us": 2035456,
+        "recovery_roundtrip_us": 2035619,
+        "exactly_one_failure": "PASS",
+        "stale_tcp": "NONE",
+        "frame_roundtrip": "PASS",
+        "peer": "127.0.0.1:25116"
+      },
+      {
+        "mode": "deadline",
+        "round": 0,
+        "jobs": 16,
+        "admission_us": 11,
+        "overflow_rejected": "PASS",
+        "dns_budget_rejections": 0,
+        "recovery_admission_us": 2,
+        "recovery_connected_us": 2035513,
+        "recovery_roundtrip_us": 2035628,
+        "exactly_one_failure": "PASS",
+        "stale_tcp": "NONE",
+        "frame_roundtrip": "PASS",
+        "peer": "127.0.0.1:25116"
+      },
+      {
+        "mode": "deadline",
+        "round": 1,
+        "jobs": 16,
+        "admission_us": 10,
+        "overflow_rejected": "PASS",
+        "dns_budget_rejections": 0,
+        "recovery_admission_us": 2,
+        "recovery_connected_us": 2033313,
+        "recovery_roundtrip_us": 2033507,
+        "exactly_one_failure": "PASS",
+        "stale_tcp": "NONE",
+        "frame_roundtrip": "PASS",
+        "peer": "127.0.0.1:25116"
+      },
+      {
+        "mode": "deadline",
+        "round": 2,
+        "jobs": 16,
+        "admission_us": 19,
+        "overflow_rejected": "PASS",
+        "dns_budget_rejections": 0,
+        "recovery_admission_us": 4,
+        "recovery_connected_us": 2020416,
+        "recovery_roundtrip_us": 2020565,
+        "exactly_one_failure": "PASS",
+        "stale_tcp": "NONE",
+        "frame_roundtrip": "PASS",
+        "peer": "127.0.0.1:25116"
+      },
+      {
+        "mode": "deadline",
+        "round": 3,
+        "jobs": 16,
+        "admission_us": 11,
+        "overflow_rejected": "PASS",
+        "dns_budget_rejections": 0,
+        "recovery_admission_us": 2,
+        "recovery_connected_us": 2032598,
+        "recovery_roundtrip_us": 2032669,
+        "exactly_one_failure": "PASS",
+        "stale_tcp": "NONE",
+        "frame_roundtrip": "PASS",
+        "peer": "127.0.0.1:25116"
+      }
+    ],
+    "healthy_connect_us_min": 2020416,
+    "healthy_connect_us_max": 2053729,
+    "frame_roundtrip_us_min": 2020565,
+    "frame_roundtrip_us_max": 2053825,
+    "invalid_nul_hostname_typed_dns_failure": true
+  },
+  "refusal_prerequisite_failure": {
+    "modes": [
+      "full",
+      "refusal-only"
+    ],
+    "address": "127.0.0.1:25117",
+    "expected": "std::io::ErrorKind::ConnectionRefused",
+    "observed": "std::io::ErrorKind::TimedOut, message connection timed out",
+    "direct_connect_timeout_ms": 500,
+    "refusal_ports_intended": [
+      25117,
+      25119
+    ],
+    "second_port_reached": false,
+    "direct_ipv6_refusal_reached": false,
+    "typed_netdriver_refusals_executed": 0,
+    "classification_weakened": false,
+    "diagnosis_limit": "The unchanged direct OS control fails before the NetDriver refusal matrix. This is a native prerequisite/timing mismatch; it does not establish wrong NetDriver refusal classification."
+  },
+  "resolver_and_fallback": {
+    "preflight_localhost_order": [
+      "::1",
+      "127.0.0.1"
+    ],
+    "rust_probe_localhost_order": [
+      "[::1]:25117",
+      "127.0.0.1:25117"
+    ],
+    "rust_order_observed_in_both_modes": true,
+    "global_dns_or_hosts_changed": false,
+    "healthy_queue_listeners": "127.0.0.1 only at 25116",
+    "healthy_queue_peers": [
+      "127.0.0.1:25116",
+      "127.0.0.1:25116",
+      "127.0.0.1:25116",
+      "127.0.0.1:25116",
+      "127.0.0.1:25116",
+      "127.0.0.1:25116",
+      "127.0.0.1:25116",
+      "127.0.0.1:25116"
+    ],
+    "fallback_assessment": "IPv6-to-IPv4 fallback is supported by the observed IPv6-first localhost order, the source preserving resolver order, and eight successful localhost connections to IPv4-only listeners. This is an inference from the real run; each queue lookup and socket attempt was not traced.",
+    "per_attempt_fallback_trace": false,
+    "ipv6_prerequisite": {
+      "supported": true,
+      "bind": true,
+      "error": null
+    },
+    "ipv6_prerequisite_missing": false,
+    "positive_ipv6_netdriver_frames_executed": false
+  },
+  "unexecuted_after_first_failure": [
+    "10 typed NetDriver refusal outcomes across 25117 and 25119",
+    "handle-mediated inbound connection, DisconnectAll listener preservation and Shutdown listener closure contracts",
+    "valid and invalid reconfigure, same-handle/same-waker and driver-drop contracts",
+    "post-reconfigure localhost/numeric frame paths and healthy IPv6 NetDriver frame path",
+    "final RESULT marker"
+  ],
+  "postflight": {
+    "recorded_utc": "2026-10-23T04:37:03.8491748Z",
+    "passed": true,
+    "source_files": 658,
+    "source_all_match": true,
+    "source_readonly": true,
+    "acl_protected": true,
+    "current_user_only_acl_items": 2743,
+    "remaining_fixture_executables": [],
+    "remaining_assigned_tcp_listeners": [],
+    "remaining_assigned_udp_endpoints": [],
+    "tcp_inventory_lines": 302,
+    "udp_inventory_lines": 66,
+    "tcp_inventory_exit": 0,
+    "udp_inventory_exit": 0,
+    "binaries": [
+      {
+        "path": "target/x86_64-pc-windows-msvc/release/openergy.exe",
+        "bytes": 4102656,
+        "sha256": "e0e88ac730943d63eb235d4bc2885152c379f0be03c0389e013db868eaf1ce38",
+        "readonly": false
+      },
+      {
+        "path": "bin/openergy.exe",
+        "bytes": 4102656,
+        "sha256": "e0e88ac730943d63eb235d4bc2885152c379f0be03c0389e013db868eaf1ce38",
+        "readonly": true
+      },
+      {
+        "path": "target/x86_64-pc-windows-msvc/release/examples/dns_queue_cancel_c4806a3d.exe",
+        "bytes": 2392064,
+        "sha256": "4a1e7cb4293e94d627308a4bab01e97962fadfb1d78169b2507ad57074cf4127",
+        "readonly": false
+      },
+      {
+        "path": "bin/dns_queue_cancel_c4806a3d.exe",
+        "bytes": 2392064,
+        "sha256": "4a1e7cb4293e94d627308a4bab01e97962fadfb1d78169b2507ad57074cf4127",
+        "readonly": true
+      }
+    ],
+    "tools": [
+      {
+        "name": "cargo.exe",
+        "bytes": 27543552,
+        "sha256": "aa5b8980be3681899fde765ba47e2ed361463ae9dd8ee7cd1963c18d23743a0f"
+      },
+      {
+        "name": "rustc.exe",
+        "bytes": 110592,
+        "sha256": "ba03e3ba03a73d9fef19ab3659140f94b43615ec1d587fe9befc9aed3bd5aa72"
+      },
+      {
+        "name": "cargo-clippy.exe",
+        "bytes": 1175040,
+        "sha256": "bea1e468b531a389f6fe164d76ba98f73a2dac3495998dd085365df92105134f"
+      },
+      {
+        "name": "clippy-driver.exe",
+        "bytes": 11308544,
+        "sha256": "648db1897ec48a9f64bae9e0624761abab7b2904a6ab25d53cc2869a0245f99e"
+      },
+      {
+        "name": "rustdoc.exe",
+        "bytes": 10895872,
+        "sha256": "e0d1377b110ca9ded22d58054b75e9a3ade64437b0a036d472c2ed7fbbe7ea65"
+      },
+      {
+        "name": "rustc_driver-58995fd3f1c8ecc6.dll",
+        "bytes": 206004736,
+        "sha256": "49372ce03e58bc7556d228c3a9e0d92d6643ba881a5563c76aa610646196d495"
+      }
+    ],
+    "helper_tools": [
+      {
+        "name": "pwsh.exe",
+        "bytes": 301368,
+        "version": "7.6.4.500",
+        "sha256": "db6dd81183fe57d22e03b911ec9a30a2fd7c40542e97743615355a6fb44f458f"
+      },
+      {
+        "name": "tar.exe",
+        "bytes": 93136,
+        "version": "3.8.9 (WinBuild.160101.0800)",
+        "sha256": "d36370bff102d58e0ef192d68e3c4241b2f44feeaa441e84129045532b71fd93"
+      },
+      {
+        "name": "rustup.exe",
+        "bytes": 12724224,
+        "version": null,
+        "sha256": "00f139da614dced87d3c3d4121c43eebdac3c1bf8a5ee86b9d80dfd71c8d70fd"
+      }
+    ],
+    "toolchains_after": [
+      "stable-x86_64-pc-windows-msvc (active, default)",
+      "nightly-x86_64-pc-windows-msvc",
+      "nightly-2026-08-10-x86_64-pc-windows-msvc",
+      "1.98.0-x86_64-pc-windows-msvc",
+      "1.99.1-x86_64-pc-windows-msvc"
+    ],
+    "runtime_dirs": [
+      "runtime/full",
+      "runtime/refusal-only"
+    ],
+    "temp_entries": [],
+    "file_hashes": [
+      {
+        "name": "source-07adb0a.tar",
+        "bytes": 6205440,
+        "sha256": "23dfa9257d79c286cda94bf1381b60981ddb082a8edb24c0ba1ed54bc06c203f"
+      },
+      {
+        "name": "source-manifest.json",
+        "bytes": 179989,
+        "sha256": "e3f31a782b3165c049ff7cbc360da894f599c7cd51b1cf68b9dc007bd1681e3c"
+      },
+      {
+        "name": "build.ps1",
+        "bytes": 5793,
+        "sha256": "f77079967f1da2d02ab50afbb08757740b9f0bac5e567a6e98512839f058287a"
+      },
+      {
+        "name": "run-probes.ps1",
+        "bytes": 2991,
+        "sha256": "767e6484eb5f4935b874a66a56d060fa96ffc2d14360c8b43640b9d411ec63e5"
+      },
+      {
+        "name": "postflight.ps1",
+        "bytes": 4890,
+        "sha256": "478422588ff8300ab5c37b51fdf737c32b5fdc7f51a27d8443e6b18f6689bdf3"
+      }
+    ]
+  },
+  "toolchain_defaults": {
+    "before": [
+      "stable-x86_64-pc-windows-msvc (active, default)",
+      "nightly-x86_64-pc-windows-msvc",
+      "nightly-2026-08-10-x86_64-pc-windows-msvc",
+      "1.98.0-x86_64-pc-windows-msvc",
+      "1.99.1-x86_64-pc-windows-msvc"
+    ],
+    "after": [
+      "stable-x86_64-pc-windows-msvc (active, default)",
+      "nightly-x86_64-pc-windows-msvc",
+      "nightly-2026-08-10-x86_64-pc-windows-msvc",
+      "1.98.0-x86_64-pc-windows-msvc",
+      "1.99.1-x86_64-pc-windows-msvc"
+    ],
+    "unchanged": true,
+    "note": "The build selected existing 1.99.1 through a process-local environment and direct toolchain binaries. Global default stayed stable-x86_64-pc-windows-msvc."
+  },
+  "retained_helper_failures": [
+    {
+      "stage": "initial read-only SSH tool query",
+      "exit": 1,
+      "error": "At line:1 char:68\nAn expression was expected after '('.\nCategoryInfo : ParserError: (:) [], ParentContainsErrorRecordException\nFullyQualifiedErrorId : ExpectedExpression",
+      "resolution": "Use PowerShell EncodedCommand to prevent remote login-shell interpolation."
+    },
+    {
+      "stage": "first fixture setup transport",
+      "error": "subprocess.TimeoutExpired: SSH powershell.exe EncodedCommand timed out after 30 seconds",
+      "exit": null,
+      "resolution": "Recover only the newly created fixture by exact prefix; inspect durable result before retrying any setup.",
+      "local_helper_exit": 1,
+      "remote_exit": "unknown after transport timeout",
+      "observed_after_recovery": "Exactly one new protected fixture existed, with empty source/target and no preflight result. Reused that fixture; no duplicate fixture created."
+    },
+    {
+      "stage": "first asynchronous build launch",
+      "transport_exit": 0,
+      "build_exit": null,
+      "observed": "Start-Process returned a session-0 BelowNormal process. At the next audit the owned process was absent, with no build result, progress, or log content. No build pass claimed.",
+      "resolution": "Keep the SSH session open and wait for the owned build process; first verify source and target are empty."
+    }
+  ],
+  "raw_evidence": {
+    "private_windows": "<WINDOWS_FIXTURE>",
+    "private_local": "<PRIVATE_LOCAL_EVIDENCE>/raw",
+    "downloaded_bundle_sha256": "aa5fe95529819521eaac6723497716d03c4a28abce0c1330ef88a3782ac61344",
+    "raw_file_sha256": {
+      "build-attached-process.json": "63827a13d6df08daaef1f7388d879bf981817f904face1710827311c7ebb52e3",
+      "build-exit.json": "dbfa01d703c23a76e6a6efaf61eaf01684a8a1fc8c54b37090dc4bf9fff96798",
+      "build-process.json": "1fadcc9948d6148b2b872cc83179257b4571b6a8c73258303a0ac62316d31491",
+      "build-progress.json": "23a004f31914860c6c9d9f53b329d87119c34d1d76264cd6962e77e7dff75165",
+      "build-result.json": "552d74f9e328908da094f36200941eee10f63392a91e6b08603a3cfe8ccdba98",
+      "build.ps1": "f77079967f1da2d02ab50afbb08757740b9f0bac5e567a6e98512839f058287a",
+      "fixture-preflight.json": "58da8a2d711a9a42e774dcc724e845e1773b819252e0dc7375551caae3a7e454",
+      "full-process.json": "d2fe3f24231013db5fbf9c35ce95fb20ead66e3320c7d0088eaa821133914b32",
+      "full-result.json": "23a69e681314cc1638fb5b919e6f7f2c03e5c5c1f6fa7c4e73323b1b7ca34002",
+      "logs/build-attached.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logs/build-attached.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logs/build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logs/build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logs/clippy.log": "24ac2c2bb6e73a3ddfb376ad3302ecbf7b0dd7edf1bc7f1638afc066885b7270",
+      "logs/example.log": "5a1c30f1679daf60b782ee0b3fa5b534c999b75aff82ea3afc5ac7fb5271a699",
+      "logs/full.stderr": "72d1652569b57e088567458f2e4cc4b91614c4faaff608b087caa47e28d7cb54",
+      "logs/full.stdout": "434f62bdc8f543d32b83524eb548735d3eaa1c25a357bbe442e7d2ef3f0acc2d",
+      "logs/postflight-netstat-tcp.txt": "e3859bdde6bc1cac4e85a013be5154d14f326f29d41cbd86ced197da64526cc6",
+      "logs/postflight-netstat-udp.txt": "de834a66811ac3775966592683c07173aedfb64ee08f2cfa5df95cf9ef3d931b",
+      "logs/preflight-netstat.txt": "057276d33add70aff74ce5bf8d5851377628e3e2aadbc0bba23cdccabd414623",
+      "logs/refusal-only.stderr": "72d1652569b57e088567458f2e4cc4b91614c4faaff608b087caa47e28d7cb54",
+      "logs/refusal-only.stdout": "f3ea40fa66676c0e3387fba4d3d537a1645d5cc60bde2b60e5799c7955d2b935",
+      "logs/release.log": "53964a37a8cb12dfd83510f4c8730e64aaca435584ce17542557f8b50376d354",
+      "postflight.json": "35306a08bf5235af7d3fc7fa50ffa4c01fa8b61296d84f3f300640cf01affd2a",
+      "postflight.ps1": "478422588ff8300ab5c37b51fdf737c32b5fdc7f51a27d8443e6b18f6689bdf3",
+      "refusal-only-process.json": "8f6d9847b350901edc2ddd8720987c12848a939cd588e3aac55e00158163f4ef",
+      "refusal-only-result.json": "17e02d921acf9a5395e7a7c9fd334ec4d03abd8563b58392692667ea3b957077",
+      "run-probes.ps1": "767e6484eb5f4935b874a66a56d060fa96ffc2d14360c8b43640b9d411ec63e5",
+      "runtime-result.json": "33b4f66f6680420b7f18c8676fd90982f30b178ae96eb4798e5579fb481d51ae",
+      "source-manifest.json": "e3f31a782b3165c049ff7cbc360da894f599c7cd51b1cf68b9dc007bd1681e3c"
+    },
+    "retention": "Original source archive, per-file manifest, source, built and frozen binaries, scripts, logs and all failures retained. No fixture artifacts deleted.",
+    "sanitized_stdout_stderr": {
+      "full.stdout": "SCOPE resolver=real_std_to_socket_addrs host=localhost ports=25100..25119 discovery=OFF tls=OFF native=NONE slow_lookup_control=UNAVAILABLE\nQUEUE mode=shutdown round=0 jobs=16 admission_us=918 overflow_rejected=PASS dns_budget_rejections=1 recovery_admission_us=65 recovery_connected_us=2052436 recovery_roundtrip_us=2052553 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS peer=127.0.0.1:25116\nQUEUE mode=disconnect_all round=1 jobs=16 admission_us=9 overflow_rejected=PASS dns_budget_rejections=2 recovery_admission_us=289 recovery_connected_us=2039053 recovery_roundtrip_us=2039222 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS peer=127.0.0.1:25116\nQUEUE mode=shutdown round=2 jobs=16 admission_us=11 overflow_rejected=PASS dns_budget_rejections=1 recovery_admission_us=17 recovery_connected_us=2053729 recovery_roundtrip_us=2053825 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS peer=127.0.0.1:25116\nQUEUE mode=disconnect_all round=3 jobs=16 admission_us=10 overflow_rejected=PASS dns_budget_rejections=2 recovery_admission_us=454 recovery_connected_us=2035456 recovery_roundtrip_us=2035619 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS peer=127.0.0.1:25116\nQUEUE mode=deadline round=0 jobs=16 admission_us=11 overflow_rejected=PASS dns_budget_rejections=0 recovery_admission_us=2 recovery_connected_us=2035513 recovery_roundtrip_us=2035628 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS peer=127.0.0.1:25116\nQUEUE mode=deadline round=1 jobs=16 admission_us=10 overflow_rejected=PASS dns_budget_rejections=0 recovery_admission_us=2 recovery_connected_us=2033313 recovery_roundtrip_us=2033507 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS peer=127.0.0.1:25116\nQUEUE mode=deadline round=2 jobs=16 admission_us=19 overflow_rejected=PASS dns_budget_rejections=0 recovery_admission_us=4 recovery_connected_us=2020416 recovery_roundtrip_us=2020565 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS peer=127.0.0.1:25116\nQUEUE mode=deadline round=3 jobs=16 admission_us=11 overflow_rejected=PASS dns_budget_rejections=0 recovery_admission_us=2 recovery_connected_us=2032598 recovery_roundtrip_us=2032669 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS peer=127.0.0.1:25116\nFAILURE case=invalid_hostname events=[ConnectFailed { host: \"invalid\\0hostname\", port: 25117, error: \"dns_failed: file name contained an unexpected NUL byte\" }] classified_dns=PASS\nRESOLVER host=localhost addresses=[[::1]:25117, 127.0.0.1:25117]\n",
+      "full.stderr": "dns_queue_cancel_c4806a3d: expected direct OS refusal at 127.0.0.1:25117: Err(Error { kind: TimedOut, message: \"connection timed out\" })\n",
+      "refusal-only.stdout": "RESOLVER host=localhost addresses=[[::1]:25117, 127.0.0.1:25117]\n",
+      "refusal-only.stderr": "dns_queue_cancel_c4806a3d: expected direct OS refusal at 127.0.0.1:25117: Err(Error { kind: TimedOut, message: \"connection timed out\" })\n"
+    },
+    "sanitized_build_logs": {
+      "clippy.log": "   Compiling serde_core v1.0.229\n   Compiling proc-macro2 v1.0.107\n   Compiling unicode-ident v1.0.27\n   Compiling quote v1.0.47\n   Compiling zmij v1.0.23\n   Compiling syn v3.0.9\n   Compiling serde v1.0.229\n   Compiling serde_json v1.0.154\n   Compiling find-msvc-tools v0.1.15\n   Compiling shlex v2.0.1\n   Compiling cc v1.9.0\n   Compiling serde_derive v1.0.229\n   Compiling ring v0.17.14\n    Checking log v0.4.34\n    Checking itoa v1.0.18\n    Checking windows-link v0.2.1\n    Checking memchr v2.8.3\n    Checking windows-sys v0.61.2\n   Compiling rustls v0.23.46\n    Checking cfg-if v1.0.5\n    Checking typenum v1.20.1\n    Checking getrandom v0.2.17\n    Checking scopeguard v1.2.0\n    Checking winnow v1.0.4\n    Checking hybrid-array v0.4.15\n    Checking untrusted v0.9.0\n    Checking zeroize v1.9.1\n    Checking rustls-pki-types v1.15.1\n    Checking toml_parser v1.1.5+spec-1.1.0\n    Checking lock_api v0.4.14\n    Checking openergy-platform v0.1.0 (<WINDOWS_FIXTURE>\\source\\crates\\platform)\n    Checking serde_spanned v1.1.2\n    Checking toml_datetime v0.7.5+spec-1.1.0\n    Checking time-core v0.1.9\n    Checking powerfmt v0.2.1\n    Checking winnow v0.7.15\n    Checking deranged v0.5.9\n    Checking num-conv v0.2.2\n    Checking toml_writer v1.1.3+spec-1.1.0\n    Checking openergy-protocol v0.1.0 (<WINDOWS_FIXTURE>\\source\\crates\\protocol)\n    Checking toml v0.9.12+spec-1.1.0\n    Checking time v0.3.55\n    Checking spin v0.9.9\n    Checking block-buffer v0.12.1\n    Checking crypto-common v0.2.2\n    Checking socket2 v0.6.5\n    Checking futures-sink v0.3.34\n    Checking base64 v0.23.1\n    Checking const-oid v0.10.2\n    Checking futures-core v0.3.34\n    Checking flume v0.12.0\n    Checking pem v4.0.0\n    Checking digest v0.11.3\n    Checking socket-pktinfo v0.4.1\n    Checking openergy-config v0.1.0 (<WINDOWS_FIXTURE>\\source\\crates\\config)\n    Checking yasna v0.6.0\n    Checking rustls-webpki v0.103.16\n    Checking mio v1.2.4\n    Checking if-addrs v0.15.0\n    Checking openergy-ipc v0.1.0 (<WINDOWS_FIXTURE>\\source\\crates\\ipc)\n    Checking subtle v2.6.1\n    Checking cpufeatures v0.3.1\n    Checking fastrand v2.5.0\n    Checking once_cell v1.21.4\n    Checking openergy-session v0.1.0 (<WINDOWS_FIXTURE>\\source\\crates\\session)\n    Checking mdns-sd v0.21.6\n    Checking sha2 v0.11.1\n    Checking rcgen v0.14.10\n    Checking openergy-net v0.1.0 (<WINDOWS_FIXTURE>\\source\\crates\\net)\n   Compiling libc v0.2.191\n    Checking openergy-platform-windows v0.1.0 (<WINDOWS_FIXTURE>\\source\\crates\\platform-windows)\n    Checking openergy-daemon v0.1.0 (<WINDOWS_FIXTURE>\\source\\crates\\daemon)\n    Finished `release` profile [optimized] target(s) in 30.58s\n",
+      "release.log": "   Compiling serde_core v1.0.229\n   Compiling windows-link v0.2.1\n   Compiling log v0.4.34\n   Compiling windows-sys v0.61.2\n   Compiling zmij v1.0.23\n   Compiling cfg-if v1.0.5\n   Compiling itoa v1.0.18\n   Compiling memchr v2.8.3\n   Compiling serde_json v1.0.154\n   Compiling serde v1.0.229\n   Compiling typenum v1.20.1\n   Compiling hybrid-array v0.4.15\n   Compiling getrandom v0.2.17\n   Compiling winnow v1.0.4\n   Compiling scopeguard v1.2.0\n   Compiling zeroize v1.9.1\n   Compiling untrusted v0.9.0\n   Compiling rustls-pki-types v1.15.1\n   Compiling ring v0.17.14\n   Compiling lock_api v0.4.14\n   Compiling toml_parser v1.1.5+spec-1.1.0\n   Compiling toml_datetime v0.7.5+spec-1.1.0\n   Compiling serde_spanned v1.1.2\n   Compiling powerfmt v0.2.1\n   Compiling time-core v0.1.9\n   Compiling num-conv v0.2.2\n   Compiling toml_writer v1.1.3+spec-1.1.0\n   Compiling winnow v0.7.15\n   Compiling deranged v0.5.9\n   Compiling time v0.3.55\n   Compiling toml v0.9.12+spec-1.1.0\n   Compiling spin v0.9.9\n   Compiling block-buffer v0.12.1\n   Compiling crypto-common v0.2.2\n   Compiling openergy-platform v0.1.0 (<WINDOWS_FIXTURE>\\source\\crates\\platform)\n   Compiling socket2 v0.6.5\n   Compiling futures-sink v0.3.34\n   Compiling futures-core v0.3.34\n   Compiling base64 v0.23.1\n   Compiling openergy-protocol v0.1.0 (<WINDOWS_FIXTURE>\\source\\crates\\protocol)\n   Compiling const-oid v0.10.2\n   Compiling digest v0.11.3\n   Compiling pem v4.0.0\n   Compiling flume v0.12.0\n   Compiling socket-pktinfo v0.4.1\n   Compiling openergy-config v0.1.0 (<WINDOWS_FIXTURE>\\source\\crates\\config)\n   Compiling yasna v0.6.0\n   Compiling rustls-webpki v0.103.16\n   Compiling openergy-ipc v0.1.0 (<WINDOWS_FIXTURE>\\source\\crates\\ipc)\n   Compiling if-addrs v0.15.0\n   Compiling mio v1.2.4\n   Compiling fastrand v2.5.0\n   Compiling once_cell v1.21.4\n   Compiling subtle v2.6.1\n   Compiling cpufeatures v0.3.1\n   Compiling sha2 v0.11.1\n   Compiling rustls v0.23.46\n   Compiling mdns-sd v0.21.6\n   Compiling openergy-session v0.1.0 (<WINDOWS_FIXTURE>\\source\\crates\\session)\n   Compiling rcgen v0.14.10\n   Compiling openergy-net v0.1.0 (<WINDOWS_FIXTURE>\\source\\crates\\net)\n   Compiling libc v0.2.191\n   Compiling openergy-platform-windows v0.1.0 (<WINDOWS_FIXTURE>\\source\\crates\\platform-windows)\n   Compiling openergy-daemon v0.1.0 (<WINDOWS_FIXTURE>\\source\\crates\\daemon)\n    Finished `release` profile [optimized] target(s) in 1m 24s\n",
+      "example.log": "   Compiling log v0.4.34\n   Compiling windows-sys v0.61.2\n   Compiling openergy-config v0.1.0 (<WINDOWS_FIXTURE>\\source\\crates\\config)\n   Compiling socket2 v0.6.5\n   Compiling socket-pktinfo v0.4.1\n   Compiling mio v1.2.4\n   Compiling if-addrs v0.15.0\n   Compiling openergy-ipc v0.1.0 (<WINDOWS_FIXTURE>\\source\\crates\\ipc)\n   Compiling openergy-platform v0.1.0 (<WINDOWS_FIXTURE>\\source\\crates\\platform)\n   Compiling mdns-sd v0.21.6\n   Compiling openergy-session v0.1.0 (<WINDOWS_FIXTURE>\\source\\crates\\session)\n   Compiling openergy-net v0.1.0 (<WINDOWS_FIXTURE>\\source\\crates\\net)\n    Finished `release` profile [optimized] target(s) in 34.77s\n"
+    },
+    "build_transport_exit": 0,
+    "probe_transport_exit": 1,
+    "postflight_transport_exit": 0
+  },
+  "open_gates": [
+    "Overall native Windows unchanged probe pass",
+    "Typed NetDriver refusal matrix and lifecycle/IPv6 contracts skipped after the first failure",
+    "Active OS DNS timing and cancellation of a currently executing OS lookup",
+    "Deterministic slow-DNS head-of-line regression",
+    "Provider-stopped cache-expiry crafted test (not rerouted or run)",
+    "Native input/clipboard",
+    "Positive Windows migration",
+    "Privilege and original release-provenance security review",
+    "Trusted signing and distribution"
+  ],
+  "preserved_scope": [
+    "Live sharing and installed/native daemon/backend",
+    "Production config, TLS, credentials, default IPC, port 24800 and mDNS 5353",
+    "Desktop, windowstation, input, clipboard, TCC and login",
+    "Accounts, services, tasks, elevation and firewall",
+    "Global DNS, hosts, resolver and network settings",
+    "Toolchain defaults and installed toolchains",
+    "Previous frozen fixtures",
+    "Docker, artifact signing/publication, GitHub posts, push/merge and other-agent messages"
+  ],
+  "testing_method": {
+    "unit_tests_or_mocks": false,
+    "real_interface": "Native MSVC openergy-net library NetDriver commands/events, std OS resolver and IPv4/IPv6 loopback sockets",
+    "native_daemon_executed": false,
+    "built_openergy_exe_executed": false,
+    "typescript_validation": "Not applicable to this Rust-only evidence scope."
+  },
+  "local_tools": [
+    {
+      "name": "git",
+      "sha256": "5f593b5dfc0e9e583d326d25a27e1a268419d4ae9440866da0bd94096a58b76d",
+      "bytes": 200560,
+      "version": "git version 2.54.0 (Apple Git-157)"
+    },
+    {
+      "name": "ssh",
+      "sha256": "e8566266a67f8fc474fb3d93ca086f9f7db8fc3e313086e7071c2ef6b92efda5",
+      "bytes": 1748944,
+      "version": "OpenSSH_10.5p1, LibreSSL 3.3.6"
+    },
+    {
+      "name": "scp",
+      "sha256": "3a7aa774b418fdd0a84586177a8c0919a3cddaa0df785cdb4e52886cddf86cda",
+      "bytes": 338000
+    },
+    {
+      "name": "python3",
+      "sha256": "5f593b5dfc0e9e583d326d25a27e1a268419d4ae9440866da0bd94096a58b76d",
+      "bytes": 200560,
+      "version": "Python 3.9.6"
+    }
+  ]
+}
