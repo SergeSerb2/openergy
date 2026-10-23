@@ -315,7 +315,7 @@ def archive(args):
         ET.register_namespace("sparkle", NS)
         rss = ET.Element("rss", {"version": "2.0"})
         channel = ET.SubElement(rss, "channel")
-        ET.SubElement(channel, "title").text = "Openergy updates"
+        ET.SubElement(channel, "title").text = "Openergy Updates"
         ET.SubElement(channel, "link").text = feed
         ET.SubElement(channel, "description").text = "Universal macOS updates for Openergy"
         item = ET.SubElement(channel, "item")
