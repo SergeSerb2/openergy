@@ -17,6 +17,17 @@ isolated child worktree; they are not integrated or accepted. The
 [stopped-task record](ipc-task-stopped.json) preserves status, input/report
 hashes and cleanup observations. No replacement task was started for that work.
 
-The native Windows bounded-discovery check and exact-head source-history scan
-run separately. Their results must retain their exact source scope before any
-release-readiness claim.
+The [native Windows run](../release-integration-2026-10-22/windows-bounded-discovery-2026-10-23.md)
+passes retained discovery 19/19 and virtual control 23/23. Startup remains
+failed at 11/14. A separate ordering diagnosis is running; the original failed
+probe and its frozen inputs remain unchanged.
+
+The [bounded virtual idle observation](virtual-idle-resources.md) records two
+30-second phases and the actual stop delay on the checkpoint binary. It does
+not supply native performance or long-term memory acceptance.
+
+The [source-history scan](source-history-refresh.md) retains raw exit 1 with
+84 findings. All 84 are verified source-file hash records, with none unresolved.
+The parent independently repeated 96 source-blob comparisons. Its patch-history
+scope excludes proof of merge-only resolution coverage and later commits.
+It is not a zero-finding or broad secret-free result.

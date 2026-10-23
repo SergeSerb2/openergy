@@ -1,0 +1,42 @@
+{
+  "source_history": {
+    "scanned_head": "ca618418dc8c4d93b8fd04eeda3fefa01003b8e7",
+    "findings_checked": 84,
+    "source_blob_comparisons": 96,
+    "unique_git_blobs_read": 105,
+    "all_declared_json_values_match_actual_source_sha256": true,
+    "all_declared_source_revisions_reachable": true,
+    "vendor_original_archive_member_matches": true,
+    "raw_exit_preserved": 1,
+    "scanner_commits": 220,
+    "reachable_commits": 231,
+    "merge_commits_without_separate_diff_coverage": 11,
+    "evidence_file_sha256": "9d4ba649ac2a55d2d710f99803930eb7756aa9ceea319fefa56bf2498ba1842c"
+  },
+  "windows": {
+    "source_commit": "e4f48ba47ea69aa76a08de5cf0cf61c68d903c03",
+    "source_manifest_sha256": "53cf3242666110a06275cd01eb5b01495bf7be65a48ff3066da08bdd8682e556",
+    "all_801_source_files_match_independent_mac_git_archive": true,
+    "copied_artifact_manifest_sha256": "67254ad8b623c6eb9db2d4f7793f25405c79ddafc3ba80d1871af57df30aa142",
+    "mode_verdicts_checked": {
+      "startup": {
+        "exit": 1,
+        "passed": 11,
+        "total": 14
+      },
+      "retained": {
+        "exit": 0,
+        "passed": 19,
+        "total": 19
+      },
+      "control": {
+        "exit": 0,
+        "passed": 23,
+        "total": 23
+      }
+    },
+    "startup_accepted": false
+  },
+  "scope": "Parent source/evidence cross-check; does not independently execute Windows binaries or rerun Gitleaks.",
+  "parent_commit_before_this_record": "2277821eb0ddad14562cf381812f2986d79e055d"
+}
