@@ -88,6 +88,12 @@ observation window. No product P1/P2 was established. An isolated verifier repai
 is in progress. It must keep the original failures and add real deadline
 coverage before native acceptance.
 
+The [DNS verifier R7 source review](dns-verifier-source-review-r7.md) confirms
+the R5 timing repairs but finds two remaining verification gaps in `7a56d17`:
+refusal port ownership ends too early, and the new pending-timeout cases omit
+healthy reuse of the same driver. That candidate is not accepted. The existing
+implementation task is addressing both findings and preserving its reports.
+
 The later [combined-binary idle observation](combined-idle-resources.md) measures
 the exact new release artifact. Its role-off idle RSS is 8.265625 MiB and reaches
 8.609375 MiB during 30 status CLI calls. Displayed CPU-counter deltas are 0.00 s
