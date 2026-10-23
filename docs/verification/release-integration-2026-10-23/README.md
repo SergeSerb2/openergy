@@ -108,7 +108,8 @@ family, and base frame exchange can discard extra public events. Most R8
 objections close in source, but this candidate remains unaccepted. The parent
 instructed the Windows task to stop further probe commands and complete cleanup.
 A new implementation follow-up addresses both gaps; saved Mac evidence remains
-under a separate audit. No DNS candidate has been integrated here.
+under a separate audit. The later [R11 integration](dns-verifier-r11-integration.md)
+records the exact reviewed source now integrated here and its open runtime gates.
 
 The [Mac DNS evidence R10 audit](dns-verifier-evidence-review-r10.md) supports
 the saved source/artifact bindings and literal exit-2 results, but finds one

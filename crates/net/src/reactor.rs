@@ -380,6 +380,8 @@ impl Connection {
                 Ok::<_, io::Error>(())
             })();
             if result.is_ok() {
+                log::trace!(target: "openergy_net::connect_observer",
+                    "phase=fallback conn={} addr={} deadline={:?}", self.id.0, self.peer, self.deadline);
                 return Ok(true);
             }
         }
@@ -1405,6 +1407,8 @@ impl NetDriver {
                 close_notify: false,
             },
         );
+        log::trace!(target: "openergy_net::connect_observer",
+            "phase=attempt conn={} addr={} outbound={} deadline={:?}", id.0, peer, outbound, deadline);
         Ok(())
     }
     fn accept(&mut self, out: &mut Vec<NetEvent>) {
@@ -1813,6 +1817,9 @@ impl NetDriver {
                     match completion {
                         Ok(()) => {
                             c.connecting = false;
+                            log::trace!(target: "openergy_net::connect_observer",
+                                "phase=tcp_ready conn={} addr={} tls={} deadline={:?}",
+                                c.id.0, c.peer, c.tls.is_some(), c.deadline);
                             let _ = c.stream.set_nodelay(true);
                             if c.tls.is_some() {
                                 c.client_hello_at = Some(Instant::now() + c.client_hello_delay);
@@ -1822,6 +1829,9 @@ impl NetDriver {
                         #[cfg(unix)]
                         Err(error) if error.raw_os_error() == Some(libc::EINPROGRESS) => continue,
                         Err(error) => {
+                            log::trace!(target: "openergy_net::connect_observer",
+                                "phase=failed conn={} addr={} kind={:?} deadline={:?}",
+                                c.id.0, c.peer, error.kind(), c.deadline);
                             c.failure = Some(match c.retry_address(self.poll.registry()) {
                                 Ok(true) => continue,
                                 Err(error) => error.to_string(),
