@@ -60,6 +60,9 @@ computers and users that should have that access.
   `connect_failed` and preserves the configuration and existing connections.
   Retry after the creator finishes. Identity reads still share the creator lock;
   an incomplete key/certificate pair is never accepted or silently replaced.
+- Certificate and private-key PEM files are limited to 1 MiB (1,048,576 bytes)
+  each, including ignored padding. Oversized files are refused without replacing
+  the identity. Both generated files are checked before either is saved.
 - Offline `trust approve` stores a pin in **both** server and client lists.
   Live IPC approval knows the pending connection's role. Use the app or
   `ctl trust.approve` when you need approval for that role only.

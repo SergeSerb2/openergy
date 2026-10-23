@@ -12,6 +12,10 @@ or mocks were added. Native backend probes ran only inside isolated Linux Xvfb.
 
 ## Final hardening follow-up
 
+The [identity-file resource follow-up](identity-file-bounds.md) records bounded
+PEM reads, exact-limit controls, generated-output preflight, and real CLI/startup/
+live TLS refusal and recovery. It preserves the original memory measurements.
+
 The [identity-file contention follow-up](identity-lock-contention.md) records a
 second reproduced lock stall, prompt startup/live TLS refusal, preserved active
 input and connections, and refusal of an incomplete identity without key replacement.
