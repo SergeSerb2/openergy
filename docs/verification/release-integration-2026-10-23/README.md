@@ -45,7 +45,10 @@ socket removal after normal shutdown and Drop while its private helper stays ali
 The [fresh R8 source review](discovery-observed-startup-review-r8.md) found no
 concrete P1/P2 product or verification defect in revised candidate `e6a9125`.
 Both R7 objections are closed in source. Matching final runtime evidence and
-native Windows startup acceptance remain pending; the candidate is not integrated.
+native Windows startup acceptance remain pending. The reviewed source is now
+integrated locally as `7f27cbb` and `6da26a1`; product/probe source matches
+`e6a9125` exactly. Its final saved runtime evidence still requires parent checks.
+A fresh combined release binary and full virtual suite are being prepared.
 
 The separate [native Windows cleanup observation](windows-owned-cleanup.md)
 passes normal explicit shutdown and Drop on the frozen `e4f48ba` library. The
