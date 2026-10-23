@@ -114,7 +114,7 @@ and the [correctness follow-up](MIGRATION-CORRECTNESS-FOLLOWUP.md).
 
 ## Safe verification
 
-The identity/control drivers require PowerShell 7 and an already-built Windows
+The identity/control/deadline drivers require PowerShell 7 and an already-built Windows
 binary. Run the lifecycle drivers from a non-administrator terminal. The lifecycle
 driver also runs under Windows PowerShell 5.1.
 They use real binaries and kernel pipes. They create only private temporary
@@ -124,11 +124,21 @@ state and virtual daemons. They do not register tasks or alter Synergy.
 pwsh -File tools/windows/verify-pipe-identity.ps1 -Exe target/release/openergy.exe
 pwsh -File tools/windows/verify-control.ps1 -BinaryPath target/release/openergy.exe -Port 25241
 pwsh -File tools/windows/verify-lifecycle.ps1 -BinaryPath target/release/openergy.exe -Port 25240
+$Report = Join-Path $env:TEMP ('oe-ipc-deadlines-'+[guid]::NewGuid().ToString('N')+'.json')
+pwsh -NoProfile -File tools/windows/verify-ipc-deadlines.ps1 -BinaryPath target/release/openergy.exe -ReportPath $Report
 ```
 
-Run the control driver through session-0 SSH. Port arguments are restricted to
+Run the control and deadline drivers through session-0 SSH. Port arguments are restricted to
 25240–25259. No driver uses port 24800 or a native platform. Successful driver
-labs are removed. Failures retain control/lifecycle artifacts for inspection.
+labs are removed by the control/lifecycle drivers. Failures retain their artifacts
+for inspection.
+
+The deadline driver retains its private evidence on success and failure. It
+uses a role-off virtual daemon and real named-pipe/CLI requests. Its 19 checks
+cover 63 silent or partial clients, absolute drips, completed idle reuse,
+fragmentation, pipelining, refusal recovery and shutdown. An existing report or
+lab directory is refused. The report records the executable and script hashes;
+native desktop, service and migration acceptance remain separate.
 
 See [verification](VERIFICATION.md) for results and remaining release gates, and
 [lifecycle ownership](LIFECYCLE-OWNERSHIP.md) for the occupied-endpoint and migration
