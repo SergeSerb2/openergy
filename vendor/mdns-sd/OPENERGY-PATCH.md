@@ -46,6 +46,14 @@ startup outcome. Only a recorded `Disconnected` result covers failed startup;
 accepted starts have separate lifecycle checks. Missing or duplicate outcomes
 fail verification. No production request identifier or observation map is added.
 
+The separate opt-in `mdns_sd::cleanup` trace follows completed normal removal in
+`push_service`. It reports actual limited/standard kind and Disconnected/Full
+reason. Explicit stop and same-type replacement do not emit this trace. Disabled
+logging adds no formatting/allocation. The process probe requires exactly one
+Disconnected removal for a serialized accepted standard drop, followed by a real
+command barrier. A limited-state gauge alone cannot establish standard cleanup.
+Missing, duplicate, unknown or Full cleanup evidence cannot pass that check.
+
 The opt-in `ServiceDaemon::browse_limited(type, limit)` accepts limits 1..=64.
 It keeps the latest resolved state of at most that many selected peers on the
 existing worker, behind a mutex. Existing peers keep their slots until removal.

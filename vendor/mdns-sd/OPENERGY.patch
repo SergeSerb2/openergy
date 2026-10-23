@@ -144,13 +144,16 @@
          self.clear_service_retransmissions(ty_domain);
          sender
      }
-@@ -1532,6 +1604,28 @@
+@@ -1532,6 +1604,31 @@
          let Some(sender) = self.service_queriers.get(ty_domain).cloned() else {
              return;
          };
 +        if let Some(state) = self.limited_browses.get(ty_domain) {
 +            if sender.is_disconnected() {
 +                self.remove_service_subscription(ty_domain);
++                trace!(target: "mdns_sd::cleanup",
++                    "type={} kind=limited reason=Disconnected completed=true", ty_domain
++                );
 +                return;
 +            }
 +            let mut state = state.lock().unwrap_or_else(|e| e.into_inner());
@@ -173,7 +176,23 @@
          match sender.try_send(event) {
              Ok(()) => {}
              Err(TrySendError::Full(_)) => {
-@@ -1602,11 +1696,11 @@
+@@ -1540,9 +1637,15 @@
+                     ty_domain
+                 );
+                 self.remove_service_subscription(ty_domain);
++                trace!(target: "mdns_sd::cleanup",
++                    "type={} kind=standard reason=Full completed=true", ty_domain
++                );
+             }
+             Err(TrySendError::Disconnected(_)) => {
+                 self.remove_service_subscription(ty_domain);
++                trace!(target: "mdns_sd::cleanup",
++                    "type={} kind=standard reason=Disconnected completed=true", ty_domain
++                );
+             }
+         }
+     }
+@@ -1602,11 +1705,11 @@
  
                  for intf in self.my_intfs.values() {
                      if let Some(sock) = self.ipv4_sock.as_ref() {
@@ -187,7 +206,7 @@
                      }
                  }
              }
-@@ -2638,6 +2732,7 @@
+@@ -2638,6 +2741,7 @@
          info: &ServiceInfo,
          intf: &MyIntf,
          sock: &PktInfoUdpSocket,
@@ -195,7 +214,7 @@
      ) -> Vec<u8> {
          let is_ipv4 = sock.domain() == Domain::IPV4;
  
-@@ -2699,6 +2794,26 @@
+@@ -2699,6 +2803,26 @@
          }
  
          for address in if_addrs {
@@ -222,7 +241,7 @@
              out.add_answer_record(DnsAddress::new(
                  hostname,
                  ip_address_rr_type(&address),
-@@ -2993,24 +3108,28 @@
+@@ -2993,24 +3117,28 @@
          sender: &Sender<ServiceEvent>,
          now: Instant,
      ) {
@@ -269,7 +288,7 @@
              let resolved_event = match self.resolve_service_from_cache(ty_domain, &alias) {
                  Ok(resolved_service) if resolved_service.is_valid() => {
                      debug!("Resolved service from cache: {}", alias);
-@@ -3031,6 +3150,10 @@
+@@ -3031,6 +3159,10 @@
                  }
              };
  
@@ -280,7 +299,7 @@
              self.push_service(
                  ty_domain,
                  ServiceEvent::ServiceFound(ty_domain.to_string(), alias.clone()),
-@@ -3919,7 +4042,9 @@
+@@ -3919,7 +4051,9 @@
                      );
                      self.push_service(&ty_domain, event);
                      if self.service_queriers.contains_key(&ty_domain) {
@@ -291,7 +310,7 @@
                      }
                  }
              }
-@@ -3934,6 +4059,10 @@
+@@ -3934,6 +4068,10 @@
          match command {
              Command::Browse(ty, next_delay, cache_only, listener) => {
                  self.exec_command_browse(repeating, ty, next_delay, cache_only, listener);
@@ -302,7 +321,7 @@
              }
  
              Command::ResolveHostname(hostname, next_delay, listener, timeout) => {
-@@ -4018,6 +4147,10 @@
+@@ -4018,6 +4156,10 @@
      }
  
      fn exec_command_get_metrics(&mut self, resp_s: Sender<HashMap<String, i64>>) {
@@ -313,7 +332,7 @@
          self.set_counter(Counter::CachedPTR, self.cache.ptr_count() as i64);
          self.set_counter(Counter::CachedSRV, self.cache.srv_count() as i64);
          self.set_counter(Counter::CachedAddr, self.cache.addr_count() as i64);
-@@ -4071,6 +4204,18 @@
+@@ -4071,6 +4213,18 @@
          cache_only: bool,
          listener: Sender<ServiceEvent>,
      ) {
@@ -332,7 +351,7 @@
          let pretty_addrs: Vec<String> = self
              .my_intfs
              .iter()
-@@ -4083,14 +4228,31 @@
+@@ -4083,14 +4237,31 @@
              pretty_addrs.join(", ")
          ));
          if !repeating {
@@ -366,7 +385,7 @@
              // Binds a `listener` to querying mDNS domain type `ty`.
              //
              // If there is already a `listener`, it will be updated, i.e. overwritten.
-@@ -4243,7 +4405,7 @@
+@@ -4243,7 +4414,7 @@
  
                  for (if_index, intf) in self.my_intfs.iter() {
                      if let Some(sock) = self.ipv4_sock.as_ref() {
@@ -375,7 +394,7 @@
                          // repeat for one time just in case some peers miss the message
                          if !repeating && !packet.is_empty() {
                              let next_time = Instant::now() + Duration::from_millis(120);
-@@ -4257,7 +4419,7 @@
+@@ -4257,7 +4428,7 @@
  
                      // ipv6
                      if let Some(sock) = self.ipv6_sock.as_ref() {
@@ -384,7 +403,7 @@
                          if !repeating && !packet.is_empty() {
                              let next_time = Instant::now() + Duration::from_millis(120);
                              self.retransmissions.push(ReRun {
-@@ -4713,6 +4875,12 @@
+@@ -4713,6 +4884,12 @@
      /// Browsing for a service type (ty_domain, next_time_delay_in_seconds, channel::sender)
      Browse(String, u32, bool, Sender<ServiceEvent>),
  
@@ -397,7 +416,7 @@
      /// Resolve a hostname to IP addresses.
      ResolveHostname(String, u32, Sender<HostnameResolutionEvent>, Option<u64>), // (hostname, next_time_delay_in_seconds, sender, timeout_in_milliseconds)
  
-@@ -4767,6 +4935,7 @@
+@@ -4767,6 +4944,7 @@
      fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
          match self {
              Self::Browse(_, _, _, _) => write!(f, "Command Browse"),

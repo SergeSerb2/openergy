@@ -589,19 +589,27 @@ fn limited_has(view: &LimitedBrowse, expected: &str) -> bool {
 // public metrics barriers match each initial send without a production ID/map.
 // Only this executable's startup mode opts in. Publisher children do not log.
 const STARTUP_TRACE_TARGET: &str = "mdns_sd::startup";
+const CLEANUP_TRACE_TARGET: &str = "mdns_sd::cleanup";
 const ATTEMPTS: usize = 8;
 const ANCHOR_TYPE: &str = "_oe-anchor._tcp.local.";
 static TRACE_CLOCK: OnceLock<Instant> = OnceLock::new();
 static TRACE_RECORDS: Mutex<Vec<String>> = Mutex::new(Vec::new());
+static CLEANUP_OBSERVE: OnceLock<bool> = OnceLock::new();
 struct StartupTrace;
 static STARTUP_TRACE: StartupTrace = StartupTrace;
 impl log::Log for StartupTrace {
     fn enabled(&self, metadata: &log::Metadata<'_>) -> bool {
         metadata.target() == STARTUP_TRACE_TARGET
+            || (metadata.target() == CLEANUP_TRACE_TARGET && CLEANUP_OBSERVE.get().copied().unwrap_or(true))
     }
     fn log(&self, record: &log::Record<'_>) {
         if self.enabled(record.metadata()) {
-            mark(format_args!("SEND {}", record.args()));
+            let event = if record.target() == STARTUP_TRACE_TARGET {
+                "SEND"
+            } else {
+                "REMOVE"
+            };
+            mark(format_args!("{event} {}", record.args()));
         }
     }
     fn flush(&self) {}
@@ -648,14 +656,14 @@ fn kind_name(limited: bool) -> &'static str {
 }
 enum View {
     Limited(LimitedBrowse),
-    Standard(mdns_sd::Receiver<ServiceEvent>, bool),
+    Standard(mdns_sd::Receiver<ServiceEvent>, usize),
 }
 impl View {
     fn open(daemon: &ServiceDaemon, ty: &str, limited: bool) -> Result<Self> {
         if limited {
             Ok(Self::Limited(retry(|| daemon.browse_limited(ty, 64))?))
         } else {
-            Ok(Self::Standard(retry(|| daemon.browse(ty))?, false))
+            Ok(Self::Standard(retry(|| daemon.browse(ty))?, 0))
         }
     }
     fn closed(&self) -> bool {
@@ -667,18 +675,18 @@ impl View {
     fn has(&mut self, value: &str) -> bool {
         match self {
             Self::Limited(view) => limited_has(view, value),
-            Self::Standard(rx, started) => poll_until(Duration::from_secs(4), || {
+            Self::Standard(rx, starts) => poll_until(Duration::from_secs(4), || {
                 let mut found = false;
                 for event in rx.try_iter() {
                     match event {
-                        ServiceEvent::SearchStarted(_) => *started = true,
+                        ServiceEvent::SearchStarted(_) => *starts += 1,
                         ServiceEvent::ServiceResolved(info) => {
                             found |= info.get_property_val_str("name") == Some(value);
                         }
                         _ => {}
                     }
                 }
-                found && *started && !rx.is_disconnected()
+                found && *starts > 0 && !rx.is_disconnected()
             }),
         }
     }
@@ -693,24 +701,89 @@ impl View {
             }
         })
     }
-    fn drain(&self) {
-        if let Self::Standard(rx, _) = self {
-            for _ in rx.try_iter() {}
+    fn drain(&mut self) {
+        if let Self::Standard(rx, starts) = self {
+            for event in rx.try_iter() {
+                if matches!(event, ServiceEvent::SearchStarted(_)) {
+                    *starts += 1;
+                }
+            }
+            mark(format_args!("STANDARD_DRAIN complete observed_starts={starts}"));
         }
     }
-    fn repeated_start(&self) -> bool {
+    fn repeated_start(&mut self) -> bool {
         match self {
             // The limited API hides its lifetime events. Its observable checks
             // are exact state, same open view, fresh resolution and goodbye.
             Self::Limited(_) => !self.closed(),
-            Self::Standard(rx, _) => poll_until(Duration::from_secs(4), || {
-                !rx.is_disconnected()
-                    && rx
-                        .try_iter()
-                        .any(|event| matches!(event, ServiceEvent::SearchStarted(_)))
-            }),
+            Self::Standard(rx, starts) => {
+                // Initial start, first 10..50ms query, then 1/2/4/... seconds.
+                // Count actual public events, including the post-barrier drain.
+                // Bounded setup should never reach a longer interval; reject
+                // unestablished coverage rather than cap its wait and pass.
+                let Some(deadline) = standard_query_deadline(*starts) else {
+                    return false;
+                };
+                let seconds = deadline.as_secs();
+                mark(format_args!(
+                    "REPEAT_WAIT observed_starts={starts} deadline_secs={seconds}"
+                ));
+                poll_until(deadline, || {
+                    for event in rx.try_iter() {
+                        if let ServiceEvent::SearchStarted(detail) = event {
+                            *starts += 1;
+                            mark(format_args!("REPEAT received {detail}"));
+                            return !rx.is_disconnected();
+                        }
+                    }
+                    false
+                })
+            }
         }
     }
+    fn standard_cleanup_deadline(&self) -> Option<Duration> {
+        match self {
+            Self::Standard(_, starts) => standard_query_deadline(*starts),
+            Self::Limited(_) => None,
+        }
+    }
+}
+fn standard_query_deadline(starts: usize) -> Option<Duration> {
+    (starts <= 7).then(|| Duration::from_secs((1_u64 << starts.saturating_sub(2)) + 2))
+}
+fn automatic_cleanup(
+    daemon: &ServiceDaemon,
+    since: usize,
+    ty: &str,
+    limited: bool,
+    deadline: Duration,
+) -> Result<bool> {
+    let prefix = format!("REMOVE type={ty} ");
+    let expected = format!("kind={} reason=Disconnected completed=true", kind_name(limited));
+    let observe = || {
+        let records = TRACE_RECORDS.lock().expect("cleanup trace lock");
+        let mut count = 0;
+        let mut valid = 0;
+        for line in &records[since..] {
+            if let Some((_, detail)) = line.split_once(&prefix) {
+                count += 1;
+                valid += usize::from(detail == expected);
+            }
+        }
+        (count, valid)
+    };
+    let witnessed_in_time = poll_until(deadline, || observe().0 > 0);
+    // Completed normal removal precedes this real command barrier. No explicit
+    // stop or same-type replacement is submitted until this check is finished.
+    let states = limited_states(daemon)?;
+    let (count, valid) = observe();
+    let passed = witnessed_in_time && count == 1 && valid == 1;
+    mark(format_args!(
+        "CLEANUP_BARRIER type={ty} kind={} count={count} valid={valid} passed={passed}",
+        kind_name(limited)
+    ));
+    println!("AUTOMATIC_CLEANUP type={ty} kind={} witnessed_in_time={witnessed_in_time} matched={count} valid={valid} states={states} passed={passed}", kind_name(limited));
+    Ok(passed)
 }
 fn poll_until(deadline: Duration, mut accept: impl FnMut() -> bool) -> bool {
     let start = Instant::now();
@@ -864,7 +937,6 @@ fn startup_probe(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
                 format!("{label}-{attempt}-live-baseline"),
                 started && resolved && !old.closed() && before == 1 + i64::from(old_limited),
             );
-            old.drain();
             let since = cursor();
             mark(format_args!(
                 "CALL drop-replacement type={ty} kind={}",
@@ -888,16 +960,22 @@ fn startup_probe(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
                     format!("{label}-{attempt}-accepted-transient-state"),
                     (1..=1 + i64::from(new_limited)).contains(&after),
                 );
+                let removed = automatic_cleanup(&daemon, since, &ty, new_limited, Duration::from_secs(3))?;
+                let exact = exact_states(&daemon, 1, Duration::from_secs(3))?;
                 check(
                     &mut results,
                     format!("{label}-{attempt}-accepted-drop-cleanup"),
-                    exact_states(&daemon, 1, Duration::from_secs(3))?,
+                    removed && exact,
                 );
                 retry(|| daemon.stop_browse(&ty))?;
                 limited_states(&daemon)?;
                 continue;
             }
             witnessed = true;
+            old.drain();
+            mark(format_args!(
+                "DRAIN_AFTER_FAILED_BARRIER type={ty} outcome=Disconnected"
+            ));
             check(
                 &mut results,
                 format!("{label}-failed-preserves-exact-identity-state"),
@@ -985,6 +1063,48 @@ fn startup_probe(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
         println!("FAILED_REPLACEMENT_COVERAGE case={label} witnessed={witnessed} budget={ATTEMPTS}");
         check(&mut results, format!("{label}-disconnected-coverage"), witnessed);
     }
+    // Required positive standard-drop case, independent of natural immediate
+    // drop outcomes in the failed-start attempt loop.
+    let ty = "_oe-drop-std._tcp.local.";
+    let (mut active_standard, accepted) = held_view(&daemon, ty, false)?;
+    advertise(&mut publisher, ty, "held-standard")?;
+    let resolved = active_standard.has("held-standard");
+    let committed_states = limited_states(&daemon)?;
+    active_standard.drain();
+    let repeated = active_standard.repeated_start();
+    let cleanup_deadline = active_standard.standard_cleanup_deadline();
+    let committed = accepted
+        && resolved
+        && repeated
+        && !active_standard.closed()
+        && committed_states == 1
+        && cleanup_deadline.is_some();
+    check(
+        &mut results,
+        "required-held-standard-start-resolution-commit-active",
+        committed,
+    );
+    let since = cursor();
+    drop(active_standard);
+    mark(format_args!("DROP held-active-standard-complete type={ty}"));
+    let removed = automatic_cleanup(&daemon, since, ty, false, cleanup_deadline.unwrap_or(Duration::ZERO))?;
+    let exact = limited_states(&daemon)? == 1;
+    check(
+        &mut results,
+        "required-accepted-standard-drop-automatic-removal",
+        removed && exact,
+    );
+    println!("ACCEPTED_STANDARD_DROP_COVERAGE type={ty} committed_active={committed} normal_removal={removed}");
+    check(
+        &mut results,
+        "required-accepted-standard-drop-coverage",
+        committed && removed,
+    );
+    if !removed {
+        mark(format_args!("EXPLICIT_STOP_AFTER_FAILED_AUTOMATIC_CHECK type={ty}"));
+        retry(|| daemon.stop_browse(ty))?;
+        limited_states(&daemon)?;
+    }
     advertise(&mut publisher, ANCHOR_TYPE, "anchor-final")?;
     let anchor_fresh = anchor.has("anchor-final");
     let anchor_states = limited_states(&daemon)?;
@@ -1041,6 +1161,9 @@ fn main() {
         && std::env::var_os("OPENERGY_STARTUP_OBSERVE").as_deref() != Some(std::ffi::OsStr::new("0"))
     {
         TRACE_CLOCK.get_or_init(Instant::now);
+        CLEANUP_OBSERVE.get_or_init(|| {
+            std::env::var_os("OPENERGY_STARTUP_CLEANUP_OBSERVE").as_deref() != Some(std::ffi::OsStr::new("0"))
+        });
         log::set_logger(&STARTUP_TRACE).expect("startup observer logger");
         log::set_max_level(log::LevelFilter::Trace);
     }

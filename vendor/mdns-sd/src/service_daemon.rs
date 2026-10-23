@@ -1607,6 +1607,9 @@ impl Zeroconf {
         if let Some(state) = self.limited_browses.get(ty_domain) {
             if sender.is_disconnected() {
                 self.remove_service_subscription(ty_domain);
+                trace!(target: "mdns_sd::cleanup",
+                    "type={} kind=limited reason=Disconnected completed=true", ty_domain
+                );
                 return;
             }
             let mut state = state.lock().unwrap_or_else(|e| e.into_inner());
@@ -1634,9 +1637,15 @@ impl Zeroconf {
                     ty_domain
                 );
                 self.remove_service_subscription(ty_domain);
+                trace!(target: "mdns_sd::cleanup",
+                    "type={} kind=standard reason=Full completed=true", ty_domain
+                );
             }
             Err(TrySendError::Disconnected(_)) => {
                 self.remove_service_subscription(ty_domain);
+                trace!(target: "mdns_sd::cleanup",
+                    "type={} kind=standard reason=Disconnected completed=true", ty_domain
+                );
             }
         }
     }
