@@ -23,6 +23,19 @@ are included. `OPENERGY.patch` is the complete code delta against that archive.
 
 ## Delivery behavior
 
+The initial SearchStarted send must succeed before either browse API replaces
+an existing subscription. The worker installs the new shared state, sender and
+retransmission generation together after that send. If the caller already
+cancelled, the command drops its new state and preserves the old sender, state
+and retransmissions. This also applies when a standard browse would replace a
+limited view. A cancellation after a successful initial send still follows the
+existing disconnected-subscriber cleanup path.
+
+`get_metrics()["limited-view-states"]` reports the actual size of the worker's
+limited-state map. It does not count caller-owned snapshots or states still in
+queued commands. A metrics command after the queued starts acts as a command
+barrier for the public-API lifecycle probe.
+
 The opt-in `ServiceDaemon::browse_limited(type, limit)` accepts limits 1..=64.
 It keeps the latest resolved state of at most that many selected peers on the
 existing worker, behind a mutex. Existing peers keep their slots until removal.

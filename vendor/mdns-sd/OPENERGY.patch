@@ -69,7 +69,24 @@
  
  /// The default max length of the service name without domain, not including the
  /// leading underscore (`_`). It is set to 15 per
-@@ -478,6 +517,31 @@
+@@ -167,6 +206,8 @@
+ /// Currently all counters are for outgoing packets.
+ #[derive(Hash, Eq, PartialEq)]
+ enum Counter {
++    /// Number of shared limited-view states currently owned by the worker.
++    LimitedViewStates,
+     Register,
+     RegisterResend,
+     Unregister,
+@@ -194,6 +235,7 @@
+ impl fmt::Display for Counter {
+     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+         match self {
++            Self::LimitedViewStates => write!(f, "limited-view-states"),
+             Self::Register => write!(f, "register"),
+             Self::RegisterResend => write!(f, "register-resend"),
+             Self::Unregister => write!(f, "unregister"),
+@@ -478,6 +520,31 @@
          Ok(resp_r)
      }
  
@@ -101,7 +118,7 @@
      /// Stops searching for a specific service type.
      ///
      /// # Errors
-@@ -1165,6 +1229,9 @@
+@@ -1165,6 +1232,9 @@
  
      /// Active "Browse" commands.
      service_queriers: HashMap<String, Sender<ServiceEvent>>, // <ty_domain, channel::sender>
@@ -111,7 +128,7 @@
  
      /// Active "ResolveHostname" commands.
      ///
-@@ -1432,6 +1499,7 @@
+@@ -1432,6 +1502,7 @@
              dns_registry_map,
              hostname_resolvers: HashMap::new(),
              service_queriers: HashMap::new(),
@@ -119,7 +136,7 @@
              retransmissions: Vec::new(),
              delayed_responses: Vec::new(),
              counters: HashMap::new(),
-@@ -1502,6 +1570,7 @@
+@@ -1502,6 +1573,7 @@
  
      fn remove_service_subscription(&mut self, ty_domain: &str) -> Option<Sender<ServiceEvent>> {
          let sender = self.service_queriers.remove(ty_domain);
@@ -127,7 +144,7 @@
          self.clear_service_retransmissions(ty_domain);
          sender
      }
-@@ -1532,6 +1601,28 @@
+@@ -1532,6 +1604,28 @@
          let Some(sender) = self.service_queriers.get(ty_domain).cloned() else {
              return;
          };
@@ -156,7 +173,7 @@
          match sender.try_send(event) {
              Ok(()) => {}
              Err(TrySendError::Full(_)) => {
-@@ -1602,11 +1693,11 @@
+@@ -1602,11 +1696,11 @@
  
                  for intf in self.my_intfs.values() {
                      if let Some(sock) = self.ipv4_sock.as_ref() {
@@ -170,7 +187,7 @@
                      }
                  }
              }
-@@ -2638,6 +2729,7 @@
+@@ -2638,6 +2732,7 @@
          info: &ServiceInfo,
          intf: &MyIntf,
          sock: &PktInfoUdpSocket,
@@ -178,7 +195,7 @@
      ) -> Vec<u8> {
          let is_ipv4 = sock.domain() == Domain::IPV4;
  
-@@ -2699,6 +2791,26 @@
+@@ -2699,6 +2794,26 @@
          }
  
          for address in if_addrs {
@@ -205,7 +222,7 @@
              out.add_answer_record(DnsAddress::new(
                  hostname,
                  ip_address_rr_type(&address),
-@@ -2993,24 +3105,28 @@
+@@ -2993,24 +3108,28 @@
          sender: &Sender<ServiceEvent>,
          now: Instant,
      ) {
@@ -252,7 +269,7 @@
              let resolved_event = match self.resolve_service_from_cache(ty_domain, &alias) {
                  Ok(resolved_service) if resolved_service.is_valid() => {
                      debug!("Resolved service from cache: {}", alias);
-@@ -3031,6 +3147,10 @@
+@@ -3031,6 +3150,10 @@
                  }
              };
  
@@ -263,7 +280,7 @@
              self.push_service(
                  ty_domain,
                  ServiceEvent::ServiceFound(ty_domain.to_string(), alias.clone()),
-@@ -3919,7 +4039,9 @@
+@@ -3919,7 +4042,9 @@
                      );
                      self.push_service(&ty_domain, event);
                      if self.service_queriers.contains_key(&ty_domain) {
@@ -274,24 +291,64 @@
                      }
                  }
              }
-@@ -3933,7 +4055,16 @@
-         trace!("exec_command: {:?} repeating: {}", &command, repeating);
+@@ -3934,6 +4059,10 @@
          match command {
              Command::Browse(ty, next_delay, cache_only, listener) => {
-+                if !repeating {
-+                    self.limited_browses.remove(&ty);
-+                }
                  self.exec_command_browse(repeating, ty, next_delay, cache_only, listener);
 +            }
 +
 +            Command::BrowseLimited(ty, listener, state) => {
-+                self.remove_service_subscription(&ty);
-+                self.limited_browses.insert(ty.clone(), state);
-+                self.exec_command_browse(false, ty, 1, false, listener);
++                self.exec_command_browse_with_state(false, ty, 1, false, listener, Some(state));
              }
  
              Command::ResolveHostname(hostname, next_delay, listener, timeout) => {
-@@ -4243,7 +4374,7 @@
+@@ -4018,6 +4147,10 @@
+     }
+ 
+     fn exec_command_get_metrics(&mut self, resp_s: Sender<HashMap<String, i64>>) {
++        self.set_counter(
++            Counter::LimitedViewStates,
++            self.limited_browses.len() as i64,
++        );
+         self.set_counter(Counter::CachedPTR, self.cache.ptr_count() as i64);
+         self.set_counter(Counter::CachedSRV, self.cache.srv_count() as i64);
+         self.set_counter(Counter::CachedAddr, self.cache.addr_count() as i64);
+@@ -4070,6 +4203,18 @@
+         next_delay: u32,
+         cache_only: bool,
+         listener: Sender<ServiceEvent>,
++    ) {
++        self.exec_command_browse_with_state(repeating, ty, next_delay, cache_only, listener, None);
++    }
++
++    fn exec_command_browse_with_state(
++        &mut self,
++        repeating: bool,
++        ty: String,
++        next_delay: u32,
++        cache_only: bool,
++        listener: Sender<ServiceEvent>,
++        limited_state: Option<Arc<Mutex<LimitedServiceState>>>,
+     ) {
+         let pretty_addrs: Vec<String> = self
+             .my_intfs
+@@ -4090,7 +4235,14 @@
+                 );
+                 return;
+             }
+-            self.clear_service_retransmissions(&ty);
++            // Commit replacement only after the initial send succeeds. A caller
++            // can drop its receiver while this command is queued. In that case
++            // leave the prior sender, state, and retransmissions intact, and
++            // drop the new state with the cancelled command.
++            self.remove_service_subscription(&ty);
++            if let Some(state) = limited_state {
++                self.limited_browses.insert(ty.clone(), state);
++            }
+             // Binds a `listener` to querying mDNS domain type `ty`.
+             //
+             // If there is already a `listener`, it will be updated, i.e. overwritten.
+@@ -4243,7 +4395,7 @@
  
                  for (if_index, intf) in self.my_intfs.iter() {
                      if let Some(sock) = self.ipv4_sock.as_ref() {
@@ -300,7 +357,7 @@
                          // repeat for one time just in case some peers miss the message
                          if !repeating && !packet.is_empty() {
                              let next_time = Instant::now() + Duration::from_millis(120);
-@@ -4257,7 +4388,7 @@
+@@ -4257,7 +4409,7 @@
  
                      // ipv6
                      if let Some(sock) = self.ipv6_sock.as_ref() {
@@ -309,7 +366,7 @@
                          if !repeating && !packet.is_empty() {
                              let next_time = Instant::now() + Duration::from_millis(120);
                              self.retransmissions.push(ReRun {
-@@ -4713,6 +4844,12 @@
+@@ -4713,6 +4865,12 @@
      /// Browsing for a service type (ty_domain, next_time_delay_in_seconds, channel::sender)
      Browse(String, u32, bool, Sender<ServiceEvent>),
  
@@ -322,7 +379,7 @@
      /// Resolve a hostname to IP addresses.
      ResolveHostname(String, u32, Sender<HostnameResolutionEvent>, Option<u64>), // (hostname, next_time_delay_in_seconds, sender, timeout_in_milliseconds)
  
-@@ -4767,6 +4904,7 @@
+@@ -4767,6 +4925,7 @@
      fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
          match self {
              Self::Browse(_, _, _, _) => write!(f, "Command Browse"),

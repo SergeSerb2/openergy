@@ -206,6 +206,8 @@ pub enum DaemonStatus {
 /// Currently all counters are for outgoing packets.
 #[derive(Hash, Eq, PartialEq)]
 enum Counter {
+    /// Number of shared limited-view states currently owned by the worker.
+    LimitedViewStates,
     Register,
     RegisterResend,
     Unregister,
@@ -233,6 +235,7 @@ enum Counter {
 impl fmt::Display for Counter {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
+            Self::LimitedViewStates => write!(f, "limited-view-states"),
             Self::Register => write!(f, "register"),
             Self::RegisterResend => write!(f, "register-resend"),
             Self::Unregister => write!(f, "unregister"),
@@ -4055,16 +4058,11 @@ impl Zeroconf {
         trace!("exec_command: {:?} repeating: {}", &command, repeating);
         match command {
             Command::Browse(ty, next_delay, cache_only, listener) => {
-                if !repeating {
-                    self.limited_browses.remove(&ty);
-                }
                 self.exec_command_browse(repeating, ty, next_delay, cache_only, listener);
             }
 
             Command::BrowseLimited(ty, listener, state) => {
-                self.remove_service_subscription(&ty);
-                self.limited_browses.insert(ty.clone(), state);
-                self.exec_command_browse(false, ty, 1, false, listener);
+                self.exec_command_browse_with_state(false, ty, 1, false, listener, Some(state));
             }
 
             Command::ResolveHostname(hostname, next_delay, listener, timeout) => {
@@ -4149,6 +4147,10 @@ impl Zeroconf {
     }
 
     fn exec_command_get_metrics(&mut self, resp_s: Sender<HashMap<String, i64>>) {
+        self.set_counter(
+            Counter::LimitedViewStates,
+            self.limited_browses.len() as i64,
+        );
         self.set_counter(Counter::CachedPTR, self.cache.ptr_count() as i64);
         self.set_counter(Counter::CachedSRV, self.cache.srv_count() as i64);
         self.set_counter(Counter::CachedAddr, self.cache.addr_count() as i64);
@@ -4202,6 +4204,18 @@ impl Zeroconf {
         cache_only: bool,
         listener: Sender<ServiceEvent>,
     ) {
+        self.exec_command_browse_with_state(repeating, ty, next_delay, cache_only, listener, None);
+    }
+
+    fn exec_command_browse_with_state(
+        &mut self,
+        repeating: bool,
+        ty: String,
+        next_delay: u32,
+        cache_only: bool,
+        listener: Sender<ServiceEvent>,
+        limited_state: Option<Arc<Mutex<LimitedServiceState>>>,
+    ) {
         let pretty_addrs: Vec<String> = self
             .my_intfs
             .iter()
@@ -4221,7 +4235,14 @@ impl Zeroconf {
                 );
                 return;
             }
-            self.clear_service_retransmissions(&ty);
+            // Commit replacement only after the initial send succeeds. A caller
+            // can drop its receiver while this command is queued. In that case
+            // leave the prior sender, state, and retransmissions intact, and
+            // drop the new state with the cancelled command.
+            self.remove_service_subscription(&ty);
+            if let Some(state) = limited_state {
+                self.limited_browses.insert(ty.clone(), state);
+            }
             // Binds a `listener` to querying mDNS domain type `ty`.
             //
             // If there is already a `listener`, it will be updated, i.e. overwritten.

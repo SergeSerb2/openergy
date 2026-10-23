@@ -2,7 +2,7 @@
 //! Exercise normal discovery, an overflowing upstream subscription, recovery,
 //! TXT updates and goodbye removal, including selected peers while all 800
 //! burst advertisements stay live. No native backend or production endpoint.
-use mdns_sd::{DaemonStatus, IfKind, ServiceDaemon, ServiceInfo, UnregisterStatus};
+use mdns_sd::{DaemonStatus, IfKind, LimitedBrowse, ServiceDaemon, ServiceEvent, ServiceInfo, UnregisterStatus};
 use openergy_net::discovery::{Discovery, DiscoveryScope, SERVICE_TYPE};
 use std::{
     collections::BTreeSet,
@@ -16,6 +16,7 @@ use std::{
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 const BURST: usize = 800;
+const GUARD_TYPE: &str = "_oe-guard._tcp.local.";
 
 fn retry<T>(mut f: impl FnMut() -> mdns_sd::Result<T>) -> Result<T> {
     let start = Instant::now();
@@ -80,10 +81,24 @@ fn publisher(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
     fs::write(root.join("ready-initial"), "ready")?;
     let mut burst = Vec::new();
     let mut recovery = None;
+    let mut guard = None;
     for line in io::stdin().lock().lines() {
         let phase = line?;
         let (phase_name, selected) = phase.split_once(' ').unwrap_or((&phase, ""));
         match phase_name {
+            "guard-start" | "guard-update" | "guard-final" => {
+                let properties = [("name", phase_name)];
+                let info = ServiceInfo::new(
+                    GUARD_TYPE,
+                    "guard",
+                    "openergy-guard-lab.local.",
+                    "127.0.0.1",
+                    service_port,
+                    &properties[..],
+                )?;
+                guard = Some(info.get_fullname().to_owned());
+                retry(|| daemon.register(info.clone()))?;
+            }
             "burst" => {
                 for i in 0..BURST {
                     let name = format!("burst-{i:04}");
@@ -194,6 +209,7 @@ fn publisher(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
                 }
                 let mut names: Vec<_> = initial.into_iter().collect();
                 names.extend(recovery);
+                names.extend(guard);
                 unregister(&daemon, &names)?;
                 thread::sleep(Duration::from_secs(2));
                 stop(&daemon)?;
@@ -518,10 +534,160 @@ fn probe(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
         Err("discovery recovery checks failed".into())
     }
 }
+// Public-API lifecycle probe. The replay workload is ordinary ServiceInfo
+// traffic on a private loopback port; it does not inject commands or DNS bytes.
+fn limited_states(daemon: &ServiceDaemon) -> Result<i64> {
+    let metrics = retry(|| daemon.get_metrics())?.recv_timeout(Duration::from_secs(3))?;
+    println!("STARTUP_METRICS={metrics:?}");
+    metrics
+        .get("limited-view-states")
+        .copied()
+        .ok_or_else(|| "missing worker state metric".into())
+}
+fn limited_has(view: &LimitedBrowse, expected: &str) -> bool {
+    let start = Instant::now();
+    while start.elapsed() < Duration::from_secs(4) {
+        if view.take_snapshot().is_some_and(|peers| {
+            peers
+                .iter()
+                .any(|peer| peer.get_property_val_str("name") == Some(expected))
+        }) {
+            return !view.is_closed();
+        }
+        thread::sleep(Duration::from_millis(20));
+    }
+    false
+}
+fn startup_probe(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
+    fs::create_dir(root)?;
+    let daemon = daemon(mdns_port)?;
+    let cache_feed = daemon.browse(SERVICE_TYPE)?;
+    let log = File::create(root.join("publisher.log"))?;
+    let child = Command::new(std::env::current_exe()?)
+        .arg("publisher")
+        .arg(root)
+        .args([mdns_port.to_string(), service_port.to_string()])
+        .stdin(Stdio::piped())
+        .stdout(log.try_clone()?)
+        .stderr(log)
+        .spawn()?;
+    let mut publisher = Publisher {
+        child,
+        root: root.to_owned(),
+    };
+    publisher.ready("initial")?;
+    publisher.phase("burst")?;
+    let mut results = vec![(
+        "ordinary-replay-cache-overflow",
+        cache_feed.is_disconnected() && cache_feed.len() == 1000,
+    )];
+    let live = retry(|| daemon.browse_limited(GUARD_TYPE, 64))?;
+    publisher.phase("guard-start")?;
+    let live_resolved = limited_has(&live, "guard-start");
+    let before = limited_states(&daemon)?;
+    results.push(("live-handle-resolves", live_resolved && before == 1));
+
+    // Keep this workload bounded below the 100-command queue. The worker must
+    // replay ordinary retained records before handling the cancelled startups.
+    let mut replays = Vec::new();
+    for _ in 0..16 {
+        replays.push(retry(|| daemon.browse_cache(SERVICE_TYPE))?);
+    }
+    for index in 0..32 {
+        let ty = format!("_oe-c{index:03}._tcp.local.");
+        drop(retry(|| daemon.browse_limited(&ty, 64))?);
+    }
+    // Failed replacement must preserve both the prior sender and its state.
+    drop(retry(|| daemon.browse_limited(GUARD_TYPE, 64))?);
+    drop(retry(|| daemon.browse(GUARD_TYPE))?);
+    let after_barrier = limited_states(&daemon)?;
+    thread::sleep(Duration::from_millis(300));
+    let after_settle = limited_states(&daemon)?;
+    let replayed = replays
+        .iter()
+        .filter(|rx| rx.is_disconnected() && rx.len() == 1000)
+        .count();
+    println!("CANCELLED_STARTUPS distinct=32 replay_commands=16 replayed_overflows={replayed} before={before} after_barrier={after_barrier} after_settle={after_settle} live_closed={}", live.is_closed());
+    results.push(("ordinary-replay-commands-drained", replayed == 16));
+    results.push(("cancelled-distinct-types-retain-no-state", after_settle == before));
+    results.push(("cancelled-replacements-preserve-identity", !live.is_closed()));
+    publisher.phase("guard-update")?;
+    results.push((
+        "surviving-handle-receives-live-update",
+        limited_has(&live, "guard-update"),
+    ));
+
+    let replacement = retry(|| daemon.browse_limited(GUARD_TYPE, 64))?;
+    let replacement_resolved = limited_has(&replacement, "guard-update");
+    let after_replacement = limited_states(&daemon)?;
+    results.push((
+        "successful-limited-replacement-has-new-identity",
+        live.is_closed() && replacement_resolved && after_replacement == 1,
+    ));
+    let standard = retry(|| daemon.browse(GUARD_TYPE))?;
+    let start = Instant::now();
+    let mut standard_resolved = false;
+    while start.elapsed() < Duration::from_secs(4) && !standard_resolved {
+        standard_resolved |= standard.try_iter().any(|event| matches!(event, ServiceEvent::ServiceResolved(info) if info.get_property_val_str("name") == Some("guard-update")));
+        thread::sleep(Duration::from_millis(20));
+    }
+    results.push((
+        "successful-standard-replacement-releases-state",
+        replacement.is_closed() && standard_resolved && limited_states(&daemon)? == 0,
+    ));
+    drop(replays);
+    let mut standard_replays = Vec::new();
+    for _ in 0..16 {
+        standard_replays.push(retry(|| daemon.browse_cache(SERVICE_TYPE))?);
+    }
+    drop(retry(|| daemon.browse_limited(GUARD_TYPE, 64))?);
+    drop(retry(|| daemon.browse(GUARD_TYPE))?);
+    let standard_states = limited_states(&daemon)?;
+    let replayed = standard_replays
+        .iter()
+        .filter(|rx| rx.is_disconnected() && rx.len() == 1000)
+        .count();
+    results.push((
+        "cancelled-replacements-preserve-standard-identity",
+        !standard.is_disconnected() && standard_states == 0 && replayed == 16,
+    ));
+    publisher.phase("guard-final")?;
+    let start = Instant::now();
+    let mut standard_updated = false;
+    while start.elapsed() < Duration::from_secs(4) && !standard_updated {
+        standard_updated |= standard.try_iter().any(|event| matches!(event, ServiceEvent::ServiceResolved(info) if info.get_property_val_str("name") == Some("guard-final")));
+        thread::sleep(Duration::from_millis(20));
+    }
+    results.push(("surviving-standard-handle-receives-live-update", standard_updated));
+    let final_view = retry(|| daemon.browse_limited(GUARD_TYPE, 64))?;
+    let final_resolved = limited_has(&final_view, "guard-final");
+    results.push((
+        "standard-to-limited-replacement",
+        standard.is_disconnected() && final_resolved && limited_states(&daemon)? == 1,
+    ));
+    retry(|| daemon.stop_browse(GUARD_TYPE))?;
+    let after_stop = limited_states(&daemon)?;
+    results.push((
+        "final-stop-clears-worker-state",
+        final_view.is_closed() && after_stop == 0,
+    ));
+    publisher.phase("finish")?;
+    results.push(("publisher-exits-zero", publisher.child.wait()?.success()));
+    stop(&daemon)?;
+    results.push(("worker-shutdown-ack", final_view.is_closed()));
+    for (name, passed) in &results {
+        println!("CHECK {name}={passed}");
+    }
+    if results.iter().all(|(_, passed)| *passed) {
+        Ok(())
+    } else {
+        Err("limited startup checks failed".into())
+    }
+}
 fn run() -> Result<()> {
     let args: Vec<_> = std::env::args().skip(1).collect();
-    if args.len() != 4 || !matches!(args[0].as_str(), "probe" | "publisher") {
-        return Err("discovery_recovery probe NEW_DIR MDNS_PORT SERVICE_PORT".into());
+    if args.len() != 4 || !matches!(args[0].as_str(), "probe" | "startup" | "publisher") {
+        return Err("discovery_recovery probe|startup NEW_DIR MDNS_PORT SERVICE_PORT".into());
     }
     let mdns_port: u16 = args[2].parse()?;
     let service_port: u16 = args[3].parse()?;
@@ -534,6 +700,8 @@ fn run() -> Result<()> {
     }
     if args[0] == "publisher" {
         publisher(Path::new(&args[1]), mdns_port, service_port)
+    } else if args[0] == "startup" {
+        startup_probe(Path::new(&args[1]), mdns_port, service_port)
     } else {
         probe(Path::new(&args[1]), mdns_port, service_port)
     }

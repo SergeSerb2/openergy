@@ -1,0 +1,48 @@
+RETAINED_CACHE_METRICS={"browse": 2, "dns-registry-timer": 0, "cache-refresh-srv-txt": 0, "cached-nsec": 0, "cached-subtype": 0, "dns-registry-active": 0, "timer": 7704, "dns-registry-probe": 0, "known-answer-suppression": 0, "cache-refresh-addr": 0, "cached-srv": 499, "cached-addr": 1, "cached-txt": 499, "limited-view-states": 0, "dns-registry-name-change": 0, "cache-refresh-ptr": 0, "cached-ptr": 801}
+RETAINED_REPLAY attempt=1 drained=1000 disconnected=true elapsed_ms=91
+RETAINED_REPLAY attempt=2 drained=1000 disconnected=true elapsed_ms=94
+RETAINED_CACHE_AFTER_STOP={"browse": 2, "dns-registry-timer": 0, "cache-refresh-srv-txt": 0, "cached-nsec": 0, "cached-subtype": 0, "dns-registry-active": 0, "timer": 8006, "dns-registry-probe": 0, "known-answer-suppression": 0, "cache-refresh-addr": 0, "cached-srv": 499, "cached-addr": 1, "cached-txt": 499, "limited-view-states": 0, "dns-registry-name-change": 0, "cache-refresh-ptr": 0, "cached-ptr": 801}
+LIMITED_REPLAY peak=64 closed=false
+RETAINED_NAMESPACE burst=800 selected=burst-0012 full_polls=168 empty_polls=0 update_seen=true update_stays_fresh=true removal_seen=true removal_regressed=false
+AFTER_REMOVAL peers=["after-removal", "burst-0013", "burst-0017", "burst-0026", "burst-0029", "burst-0058", "burst-0074", "burst-0081", "burst-0093", "burst-0103", "burst-0106", "burst-0124", "burst-0140", "burst-0143", "burst-0145", "burst-0155", "burst-0180", "burst-0207", "burst-0212", "burst-0218", "burst-0223", "burst-0224", "burst-0234", "burst-0242", "burst-0270", "burst-0272", "burst-0274", "burst-0286", "burst-0288", "burst-0312", "burst-0316", "burst-0317", "burst-0335", "burst-0339", "burst-0343", "burst-0355", "burst-0367", "burst-0370", "burst-0372", "burst-0375", "burst-0381", "burst-0391", "burst-0393", "burst-0404", "burst-0419", "burst-0420", "burst-0436", "burst-0440", "burst-0444", "burst-0468", "burst-0478", "burst-0480", "burst-0504", "burst-0527", "burst-0563", "burst-0584", "burst-0619", "burst-0712", "burst-0713", "burst-0729", "burst-0730", "burst-0746", "burst-0759", "burst-replacement"]
+AFTER_REMOVAL_CACHE={"browse": 7, "dns-registry-timer": 0, "cache-refresh-srv-txt": 0, "cached-nsec": 0, "cached-subtype": 0, "dns-registry-active": 0, "timer": 7748, "dns-registry-probe": 0, "known-answer-suppression": 0, "cache-refresh-addr": 0, "cached-srv": 499, "cached-addr": 1, "cached-txt": 499, "limited-view-states": 1, "dns-registry-name-change": 0, "cache-refresh-ptr": 0, "cached-ptr": 801}
+RECOVERY_OBSERVATION_MS=0
+SNAPSHOTS count=13 peak=64 too_close=false
+CHECK initial-resolution=true
+CHECK real-upstream-channel-overflow=true
+CHECK limited-retained-replay=true
+CHECK retained-namespace-stays-useful=true
+CHECK retained-selection-stable=true
+CHECK retained-selected-peer-live-update=true
+CHECK retained-selected-peer-goodbye=true
+CHECK retained-first-peer-goodbye-and-new-peer=true
+CHECK retained-selected-survivors-stable=true
+CHECK paused-update-coalesces-to-latest=true
+CHECK paused-goodbye-replaces-view=true
+CHECK fresh-advertisement-after-overflow=true
+CHECK updated-port-and-untrusted-hint=true
+CHECK goodbye-removes-all-peers=true
+CHECK publisher-exits-zero=true
+CHECK discovery-shutdown-submitted=true
+CHECK sentinel-worker-shutdown-ack=true
+CHECK snapshot-cap=true
+CHECK snapshot-emission-spacing=true
+BURST_SERVICES=800 SNAPSHOT_PEAK=64
+       41.01 real         3.22 user         0.36 sys
+            12189696  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                1769  page reclaims
+                   9  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+               13420  messages sent
+               30422  messages received
+                   0  signals received
+                  11  voluntary context switches
+               12950  involuntary context switches
+         35986518331  instructions retired
+         10103863922  cycles elapsed
+             9716216  peak memory footprint

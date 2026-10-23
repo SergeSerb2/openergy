@@ -23,8 +23,9 @@ Both licenses and all existing test/example sources are retained. Original and
 modified hashes are separate. There is no package checksum that presents the
 modified tree as the original archive. No Cargo registry source was patched.
 
-The [332-line exact upstream delta](../../vendor/mdns-sd/OPENERGY.patch) changes
-two upstream source files. The [patch record](../../vendor/mdns-sd/OPENERGY-PATCH.md)
+Candidate `884ff876` had a 332-line delta across two upstream source files.
+The [current exact upstream delta](../../vendor/mdns-sd/OPENERGY.patch) also
+includes the [cancelled-startup follow-up](DISCOVERY-LIMITED-STARTUP-20261022.md). The [patch record](../../vendor/mdns-sd/OPENERGY-PATCH.md)
 and `verify-source.py` explain and verify the source inventory.
 
 `browse_limited(type, 64)` uses a shared map of at most 64 selected resolved
