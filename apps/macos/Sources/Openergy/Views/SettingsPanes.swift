@@ -471,6 +471,7 @@ struct PermissionRow: View {
 
 struct AdvancedPane: View {
     let model: AppModel
+    var updater: AppUpdater? = nil
 
     var body: some View {
         Form {
@@ -509,6 +510,25 @@ struct AdvancedPane: View {
                     LabeledContent("Process", value: "openergy (\(pid))")
                 }
                 Button("Restart Connection") { model.reconnect() }
+            }
+
+            Section {
+                Toggle("Automatically check for updates", isOn: Binding(
+                    get: { updater?.automaticallyChecksForUpdates ?? false },
+                    set: { updater?.setAutomaticallyChecksForUpdates($0) }
+                ))
+                .disabled(updater?.started != true)
+                Toggle("Automatically download and install updates", isOn: Binding(
+                    get: { updater?.automaticallyDownloadsUpdates ?? false },
+                    set: { updater?.setAutomaticallyDownloadsUpdates($0) }
+                ))
+                .disabled(updater?.allowsAutomaticUpdates != true)
+                Button("Check for Updates…") { updater?.checkForUpdates() }
+                    .disabled(updater?.canCheckForUpdates != true)
+            } header: {
+                Text("Updates")
+            } footer: {
+                FooterText(updater?.status ?? "Updates are disabled in this mode.")
             }
         }
         .formStyle(.grouped)

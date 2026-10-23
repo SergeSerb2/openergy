@@ -1,0 +1,194 @@
+{
+  "baseCommit": "41ad7c70fbc95d22c2e11c7f10e0790ea7369067",
+  "sparkleVersion": "2.10.0",
+  "sparkleRevision": "eef1a539a373c1f1a320624b1130fc5de7b2e100",
+  "build": "macOS 27.2 arm64; Swift 6.4; language mode 6; deployment 15.0; nice 15; jobs 2",
+  "primaryRuns": {
+    "current": {
+      "exitCode": 0,
+      "requests": [
+        "/current.xml"
+      ],
+      "commandJSON": {
+        "candidateStoppedBeforeDownload": false,
+        "checks": 1,
+        "cycleFinished": true,
+        "elapsedSeconds": 0.02257004167768173,
+        "errorCode": 1001,
+        "errorDomain": "SUSparkleErrorDomain",
+        "expected": "current",
+        "feedLoaded": true,
+        "limit": "Feed parsing and candidate selection only. Signed archive download, installation and relaunch are not exercised.",
+        "outcome": "no-update",
+        "passed": true,
+        "schemaVersion": 1,
+        "started": true
+      }
+    },
+    "candidate": {
+      "exitCode": 0,
+      "requests": [
+        "/candidate.xml"
+      ],
+      "commandJSON": {
+        "candidateStoppedBeforeDownload": true,
+        "candidateVersion": "2",
+        "checks": 1,
+        "cycleFinished": true,
+        "elapsedSeconds": 0.022575166658498347,
+        "errorCode": 1,
+        "errorDomain": "dev.openergy.updater.fixture-stop",
+        "expected": "candidate",
+        "feedLoaded": true,
+        "limit": "Feed parsing and candidate selection only. Signed archive download, installation and relaunch are not exercised.",
+        "outcome": "candidate-observed-installation-not-exercised",
+        "passed": true,
+        "schemaVersion": 1,
+        "started": true
+      }
+    },
+    "transport": {
+      "exitCode": 0,
+      "requests": [
+        "/transport.xml"
+      ],
+      "commandJSON": {
+        "candidateStoppedBeforeDownload": false,
+        "checks": 1,
+        "cycleFinished": true,
+        "elapsedSeconds": 0.022874541667988524,
+        "errorCode": 2001,
+        "errorDomain": "SUSparkleErrorDomain",
+        "expected": "failure",
+        "feedLoaded": false,
+        "limit": "Feed parsing and candidate selection only. Signed archive download, installation and relaunch are not exercised.",
+        "outcome": "feed-failure",
+        "passed": true,
+        "schemaVersion": 1,
+        "started": true
+      }
+    },
+    "malformed": {
+      "exitCode": 0,
+      "requests": [
+        "/malformed.xml"
+      ],
+      "commandJSON": {
+        "candidateStoppedBeforeDownload": false,
+        "checks": 1,
+        "cycleFinished": true,
+        "elapsedSeconds": 0.02294012499623932,
+        "errorCode": 1000,
+        "errorDomain": "SUSparkleErrorDomain",
+        "expected": "failure",
+        "feedLoaded": false,
+        "limit": "Feed parsing and candidate selection only. Signed archive download, installation and relaunch are not exercised.",
+        "outcome": "feed-failure",
+        "passed": true,
+        "schemaVersion": 1,
+        "started": true
+      }
+    },
+    "unconfigured": {
+      "exitCode": 0,
+      "requests": [],
+      "commandJSON": {
+        "candidateStoppedBeforeDownload": false,
+        "checks": 0,
+        "cycleFinished": false,
+        "elapsedSeconds": 0.5043870416702703,
+        "errorCode": 1,
+        "errorDomain": "dev.openergy.updater.configuration",
+        "expected": "unconfigured",
+        "feedLoaded": false,
+        "limit": "Feed parsing and candidate selection only. Signed archive download, installation and relaunch are not exercised.",
+        "outcome": "unconfigured-no-request",
+        "passed": true,
+        "schemaVersion": 1,
+        "started": false
+      }
+    }
+  },
+  "otherConfigurationRejections": [
+    {
+      "case": "feed-only",
+      "exitCode": 0,
+      "outcome": "unconfigured-no-request",
+      "started": false,
+      "checks": 0,
+      "requests": []
+    },
+    {
+      "case": "key-only",
+      "exitCode": 0,
+      "outcome": "unconfigured-no-request",
+      "started": false,
+      "checks": 0,
+      "requests": []
+    },
+    {
+      "case": "bad-key",
+      "exitCode": 0,
+      "outcome": "unconfigured-no-request",
+      "started": false,
+      "checks": 0,
+      "requests": []
+    },
+    {
+      "case": "userinfo",
+      "exitCode": 0,
+      "outcome": "unconfigured-no-request",
+      "started": false,
+      "checks": 0,
+      "requests": []
+    },
+    {
+      "case": "fragment",
+      "exitCode": 0,
+      "outcome": "unconfigured-no-request",
+      "started": false,
+      "checks": 0,
+      "requests": []
+    },
+    {
+      "case": "insecure",
+      "exitCode": 0,
+      "outcome": "unconfigured-no-request",
+      "started": false,
+      "checks": 0,
+      "requests": []
+    },
+    {
+      "case": "bad-scheme",
+      "exitCode": 0,
+      "outcome": "unconfigured-no-request",
+      "started": false,
+      "checks": 0,
+      "requests": []
+    }
+  ],
+  "boundedDeadline": {
+    "exitCode": 1,
+    "requests": [
+      "/stall.xml"
+    ],
+    "commandJSON": {
+      "candidateStoppedBeforeDownload": false,
+      "checks": 1,
+      "cycleFinished": false,
+      "elapsedSeconds": 1.0043202916713199,
+      "expected": "failure",
+      "feedLoaded": false,
+      "limit": "Feed parsing and candidate selection only. Signed archive download, installation and relaunch are not exercised.",
+      "outcome": "deadline-exceeded",
+      "passed": false,
+      "schemaVersion": 1,
+      "started": true
+    }
+  },
+  "allStandardErrorEmpty": true,
+  "archiveRequests": [],
+  "privatePreferencesVerified": true,
+  "remainingUserFixturePreferenceFiles": 0,
+  "limit": "No archive download, archive signature validation, installation, relaunch or GUI verification."
+}
