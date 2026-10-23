@@ -16,6 +16,10 @@ The [source-history scan refresh](source-history-refresh.md) preserves the raw
 64-finding Gitleaks result and verifies every reported value against historical
 source blobs. It adds no scanner exception or history rewrite.
 
+The [owned discovery shutdown follow-up](discovery-owned-shutdown.md) verifies
+the integrated worker-leak fix through four live-child cases, including private
+descriptor exhaustion. It keeps retained replay and DNS refusal failures open.
+
 The [initial discovery recovery](discovery-recovery-initial.md) and
 [Windows discovery/control evidence](windows-discovery-recovery.md) retain their
 exact intermediate source scope. Retained-cache replay and worker shutdown

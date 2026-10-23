@@ -155,7 +155,7 @@ Upstream expiry runtime verification remains a separate open gate. No expiry
 example is included in this change. An exploratory expiry invocation had already
 completed before the 21:10:59 scope update arrived; its uncommitted source was
 removed immediately after that update, and its prior raw output remains only in
-`/tmp/oe-discovery-replay-20261022-8828/cache-expiry-1.log`. It is excluded from
+`<private>/cache-expiry-1.log`. It is excluded from
 this task's evidence and does not close that gate. No reroute or further expiry
 runtime work followed the update.
 
@@ -169,13 +169,13 @@ credentials, firewall, Docker or distribution state was changed.
 
 ```sh
 MACOSX_DEPLOYMENT_TARGET=15.0 CARGO_BUILD_JOBS=2 nice -n 15 \
-  /Users/serge/.cargo/bin/cargo +1.99.1 build --locked -p openergy-net \
+  cargo +1.99.1 build --locked -p openergy-net \
   --example discovery_recovery --example discovery_owned_shutdown -j 2
 nice -n 15 target/debug/examples/discovery_recovery probe NEW_DIR 25080 25081
 nice -n 15 python3 crates/net/examples/discovery_owned_shutdown.py \
   target/debug/examples/discovery_owned_shutdown OTHER_NEW_DIR 25083 25084
 MACOSX_DEPLOYMENT_TARGET=15.0 CARGO_BUILD_JOBS=2 nice -n 15 \
-  /Users/serge/.cargo/bin/cargo +1.99.1 clippy --locked -p openergy-net --lib \
+  cargo +1.99.1 clippy --locked -p openergy-net --lib \
   --example discovery_recovery --example discovery_owned_shutdown \
   --no-deps -j 2 -- -D warnings
 nice -n 15 /Users/serge/.cargo/bin/rustfmt +1.99.1 --edition 2021 --check \
@@ -191,4 +191,9 @@ Windows migration or trusted distribution gates.
 
 Raw committed reports: [discovery-replay-evidence-20261022](examples/discovery-replay-evidence-20261022/).
 Full original runtime directories remain at
-`/tmp/oe-discovery-replay-20261022-8828/`.
+`<private>/`.
+
+The public copies replace the local username and absolute fixture paths, and
+remove trailing whitespace from `ps` output. Result values are unchanged.
+[Normalization hashes](examples/discovery-replay-evidence-20261022/public-copy-normalization.json)
+identify both copies. The original bytes remain local.
