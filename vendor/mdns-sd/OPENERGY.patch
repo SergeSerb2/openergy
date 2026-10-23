@@ -313,11 +313,10 @@
          self.set_counter(Counter::CachedPTR, self.cache.ptr_count() as i64);
          self.set_counter(Counter::CachedSRV, self.cache.srv_count() as i64);
          self.set_counter(Counter::CachedAddr, self.cache.addr_count() as i64);
-@@ -4070,6 +4203,18 @@
-         next_delay: u32,
+@@ -4071,6 +4204,18 @@
          cache_only: bool,
          listener: Sender<ServiceEvent>,
-+    ) {
+     ) {
 +        self.exec_command_browse_with_state(repeating, ty, next_delay, cache_only, listener, None);
 +    }
 +
@@ -329,10 +328,29 @@
 +        cache_only: bool,
 +        listener: Sender<ServiceEvent>,
 +        limited_state: Option<Arc<Mutex<LimitedServiceState>>>,
-     ) {
++    ) {
          let pretty_addrs: Vec<String> = self
              .my_intfs
-@@ -4090,7 +4235,14 @@
+             .iter()
+@@ -4083,14 +4228,31 @@
+             pretty_addrs.join(", ")
+         ));
+         if !repeating {
+-            if let Err(e) = listener.try_send(started) {
++            let initial_send = listener.try_send(started);
++            trace!(target: "mdns_sd::startup",
++                "type={} kind={} outcome={}", &ty,
++                if limited_state.is_some() { "limited" } else { "standard" },
++                match &initial_send {
++                    Ok(()) => "Accepted",
++                    Err(TrySendError::Disconnected(_)) => "Disconnected",
++                    Err(TrySendError::Full(_)) => "Full",
++                }
++            );
++            if let Err(e) = initial_send {
+                 debug!(
+                     "Failed to send SearchStarted({})(repeating:{}): {}",
+                     &ty, repeating, e
                  );
                  return;
              }
@@ -348,7 +366,7 @@
              // Binds a `listener` to querying mDNS domain type `ty`.
              //
              // If there is already a `listener`, it will be updated, i.e. overwritten.
-@@ -4243,7 +4395,7 @@
+@@ -4243,7 +4405,7 @@
  
                  for (if_index, intf) in self.my_intfs.iter() {
                      if let Some(sock) = self.ipv4_sock.as_ref() {
@@ -357,7 +375,7 @@
                          // repeat for one time just in case some peers miss the message
                          if !repeating && !packet.is_empty() {
                              let next_time = Instant::now() + Duration::from_millis(120);
-@@ -4257,7 +4409,7 @@
+@@ -4257,7 +4419,7 @@
  
                      // ipv6
                      if let Some(sock) = self.ipv6_sock.as_ref() {
@@ -366,7 +384,7 @@
                          if !repeating && !packet.is_empty() {
                              let next_time = Instant::now() + Duration::from_millis(120);
                              self.retransmissions.push(ReRun {
-@@ -4713,6 +4865,12 @@
+@@ -4713,6 +4875,12 @@
      /// Browsing for a service type (ty_domain, next_time_delay_in_seconds, channel::sender)
      Browse(String, u32, bool, Sender<ServiceEvent>),
  
@@ -379,7 +397,7 @@
      /// Resolve a hostname to IP addresses.
      ResolveHostname(String, u32, Sender<HostnameResolutionEvent>, Option<u64>), // (hostname, next_time_delay_in_seconds, sender, timeout_in_milliseconds)
  
-@@ -4767,6 +4925,7 @@
+@@ -4767,6 +4935,7 @@
      fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
          match self {
              Self::Browse(_, _, _, _) => write!(f, "Command Browse"),

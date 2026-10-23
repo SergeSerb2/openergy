@@ -10,6 +10,7 @@ use std::{
     io::{self, BufRead, Write},
     path::{Path, PathBuf},
     process::{Child, Command, Stdio},
+    sync::{Mutex, OnceLock},
     thread,
     time::{Duration, Instant},
 };
@@ -82,10 +83,30 @@ fn publisher(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
     let mut burst = Vec::new();
     let mut recovery = None;
     let mut guard = None;
+    let mut startup_services = BTreeSet::new();
     for line in io::stdin().lock().lines() {
         let phase = line?;
         let (phase_name, selected) = phase.split_once(' ').unwrap_or((&phase, ""));
         match phase_name {
+            "advertise" => {
+                let (ty, value) = selected.split_once(' ').ok_or("missing advertisement value")?;
+                let properties = [("name", value)];
+                let info = ServiceInfo::new(
+                    ty,
+                    "witness",
+                    "openergy-startup-lab.local.",
+                    "127.0.0.1",
+                    service_port,
+                    &properties[..],
+                )?;
+                startup_services.insert(info.get_fullname().to_owned());
+                retry(|| daemon.register(info.clone()))?;
+            }
+            "withdraw" => {
+                let full = format!("witness.{selected}");
+                unregister(&daemon, std::slice::from_ref(&full))?;
+                startup_services.remove(&full);
+            }
             "guard-start" | "guard-update" | "guard-final" => {
                 let properties = [("name", phase_name)];
                 let info = ServiceInfo::new(
@@ -210,6 +231,7 @@ fn publisher(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
                 let mut names: Vec<_> = initial.into_iter().collect();
                 names.extend(recovery);
                 names.extend(guard);
+                names.extend(startup_services);
                 unregister(&daemon, &names)?;
                 thread::sleep(Duration::from_secs(2));
                 stop(&daemon)?;
@@ -243,9 +265,14 @@ impl Publisher {
     }
     fn phase(&mut self, phase: &str) -> Result<()> {
         self.begin(phase)?;
-        self.ready(phase)
+        self.ready(phase.split_once(' ').map_or(phase, |(name, _)| name))
     }
     fn begin(&mut self, phase: &str) -> Result<()> {
+        let phase_name = phase.split_once(' ').map_or(phase, |(name, _)| name);
+        let ready = self.root.join(format!("ready-{phase_name}"));
+        if ready.exists() {
+            fs::remove_file(ready)?;
+        }
         writeln!(self.child.stdin.as_mut().ok_or("publisher stdin missing")?, "{phase}")?;
         Ok(())
     }
@@ -558,10 +585,181 @@ fn limited_has(view: &LimitedBrowse, expected: &str) -> bool {
     }
     false
 }
+// The observer never controls the worker. Unique types or one request between
+// public metrics barriers match each initial send without a production ID/map.
+// Only this executable's startup mode opts in. Publisher children do not log.
+const STARTUP_TRACE_TARGET: &str = "mdns_sd::startup";
+const ATTEMPTS: usize = 8;
+const ANCHOR_TYPE: &str = "_oe-anchor._tcp.local.";
+static TRACE_CLOCK: OnceLock<Instant> = OnceLock::new();
+static TRACE_RECORDS: Mutex<Vec<String>> = Mutex::new(Vec::new());
+struct StartupTrace;
+static STARTUP_TRACE: StartupTrace = StartupTrace;
+impl log::Log for StartupTrace {
+    fn enabled(&self, metadata: &log::Metadata<'_>) -> bool {
+        metadata.target() == STARTUP_TRACE_TARGET
+    }
+    fn log(&self, record: &log::Record<'_>) {
+        if self.enabled(record.metadata()) {
+            mark(format_args!("SEND {}", record.args()));
+        }
+    }
+    fn flush(&self) {}
+}
+fn mark(message: impl std::fmt::Display) {
+    let mut records = TRACE_RECORDS.lock().expect("startup trace lock");
+    // A fixed finite probe must fail rather than lose observations silently.
+    assert!(records.len() < 1024, "startup observation capacity exceeded");
+    records.push(format!(
+        "at_ns={} {message}",
+        TRACE_CLOCK.get_or_init(Instant::now).elapsed().as_nanos()
+    ));
+}
+fn cursor() -> usize {
+    TRACE_RECORDS.lock().expect("startup trace lock").len()
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum Outcome {
+    Accepted,
+    Disconnected,
+}
+fn outcome(since: usize, ty: &str, kind: bool) -> Result<Outcome> {
+    let key = format!("SEND type={ty} kind={} outcome=", kind_name(kind));
+    let records = TRACE_RECORDS.lock().expect("startup trace lock");
+    let matches: Vec<_> = records[since..]
+        .iter()
+        .filter_map(|line| line.split_once(&key))
+        .collect();
+    if matches.len() != 1 {
+        return Err(format!("unverified initial send: {key} matches={}", matches.len()).into());
+    }
+    match matches[0].1 {
+        "Accepted" => Ok(Outcome::Accepted),
+        "Disconnected" => Ok(Outcome::Disconnected),
+        other => Err(format!("unverified initial send outcome: {other}").into()),
+    }
+}
+fn kind_name(limited: bool) -> &'static str {
+    if limited {
+        "limited"
+    } else {
+        "standard"
+    }
+}
+enum View {
+    Limited(LimitedBrowse),
+    Standard(mdns_sd::Receiver<ServiceEvent>, bool),
+}
+impl View {
+    fn open(daemon: &ServiceDaemon, ty: &str, limited: bool) -> Result<Self> {
+        if limited {
+            Ok(Self::Limited(retry(|| daemon.browse_limited(ty, 64))?))
+        } else {
+            Ok(Self::Standard(retry(|| daemon.browse(ty))?, false))
+        }
+    }
+    fn closed(&self) -> bool {
+        match self {
+            Self::Limited(view) => view.is_closed(),
+            Self::Standard(rx, _) => rx.is_disconnected(),
+        }
+    }
+    fn has(&mut self, value: &str) -> bool {
+        match self {
+            Self::Limited(view) => limited_has(view, value),
+            Self::Standard(rx, started) => poll_until(Duration::from_secs(4), || {
+                let mut found = false;
+                for event in rx.try_iter() {
+                    match event {
+                        ServiceEvent::SearchStarted(_) => *started = true,
+                        ServiceEvent::ServiceResolved(info) => {
+                            found |= info.get_property_val_str("name") == Some(value);
+                        }
+                        _ => {}
+                    }
+                }
+                found && *started && !rx.is_disconnected()
+            }),
+        }
+    }
+    fn removed(&mut self) -> bool {
+        poll_until(Duration::from_secs(4), || match self {
+            Self::Limited(view) => !view.is_closed() && view.take_snapshot().is_some_and(|peers| peers.is_empty()),
+            Self::Standard(rx, _) => {
+                !rx.is_disconnected()
+                    && rx
+                        .try_iter()
+                        .any(|event| matches!(event, ServiceEvent::ServiceRemoved(..)))
+            }
+        })
+    }
+    fn drain(&self) {
+        if let Self::Standard(rx, _) = self {
+            for _ in rx.try_iter() {}
+        }
+    }
+    fn repeated_start(&self) -> bool {
+        match self {
+            // The limited API hides its lifetime events. Its observable checks
+            // are exact state, same open view, fresh resolution and goodbye.
+            Self::Limited(_) => !self.closed(),
+            Self::Standard(rx, _) => poll_until(Duration::from_secs(4), || {
+                !rx.is_disconnected()
+                    && rx
+                        .try_iter()
+                        .any(|event| matches!(event, ServiceEvent::SearchStarted(_)))
+            }),
+        }
+    }
+}
+fn poll_until(deadline: Duration, mut accept: impl FnMut() -> bool) -> bool {
+    let start = Instant::now();
+    loop {
+        if accept() {
+            return true;
+        }
+        if start.elapsed() >= deadline {
+            return false;
+        }
+        thread::sleep(Duration::from_millis(20));
+    }
+}
+fn exact_states(daemon: &ServiceDaemon, expected: i64, deadline: Duration) -> Result<bool> {
+    let start = Instant::now();
+    loop {
+        let actual = limited_states(daemon)?;
+        println!(
+            "STATE_SAMPLE elapsed_ms={} expected={expected} actual={actual}",
+            start.elapsed().as_millis()
+        );
+        if actual == expected {
+            return Ok(true);
+        }
+        if start.elapsed() >= deadline {
+            return Ok(false);
+        }
+        thread::sleep(Duration::from_millis(20));
+    }
+}
+fn check(results: &mut Vec<(String, bool)>, name: impl Into<String>, passed: bool) {
+    let name = name.into();
+    println!("CHECK {name}={passed}");
+    results.push((name, passed));
+}
+fn advertise(publisher: &mut Publisher, ty: &str, value: &str) -> Result<()> {
+    publisher.phase(&format!("advertise {ty} {value}"))
+}
+fn held_view(daemon: &ServiceDaemon, ty: &str, limited: bool) -> Result<(View, bool)> {
+    let since = cursor();
+    mark(format_args!("CALL held type={ty} kind={}", kind_name(limited)));
+    let view = View::open(daemon, ty, limited)?;
+    limited_states(daemon)?; // Startup result alone precedes replacement commit.
+    let accepted = outcome(since, ty, limited)? == Outcome::Accepted;
+    Ok((view, accepted))
+}
 fn startup_probe(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
     fs::create_dir(root)?;
     let daemon = daemon(mdns_port)?;
-    let cache_feed = daemon.browse(SERVICE_TYPE)?;
     let log = File::create(root.join("publisher.log"))?;
     let child = Command::new(std::env::current_exe()?)
         .arg("publisher")
@@ -576,112 +774,244 @@ fn startup_probe(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
         root: root.to_owned(),
     };
     publisher.ready("initial")?;
-    publisher.phase("burst")?;
-    let mut results = vec![(
-        "ordinary-replay-cache-overflow",
-        cache_feed.is_disconnected() && cache_feed.len() == 1000,
-    )];
-    let live = retry(|| daemon.browse_limited(GUARD_TYPE, 64))?;
-    publisher.phase("guard-start")?;
-    let live_resolved = limited_has(&live, "guard-start");
-    let before = limited_states(&daemon)?;
-    results.push(("live-handle-resolves", live_resolved && before == 1));
+    let mut results = Vec::new();
+    let (mut anchor, anchor_started) = match held_view(&daemon, ANCHOR_TYPE, true) {
+        Ok(view) => view,
+        Err(error) => {
+            // The real missing-observer run must fail and still clean up its
+            // ordinary publisher and worker through their normal interfaces.
+            publisher.phase("finish")?;
+            println!(
+                "UNVERIFIED_CLEANUP publisher_exits_zero={} worker_shutdown_ack={}",
+                publisher.child.wait()?.success(),
+                stop(&daemon).is_ok()
+            );
+            return Err(error);
+        }
+    };
+    advertise(&mut publisher, ANCHOR_TYPE, "anchor-initial")?;
+    check(
+        &mut results,
+        "independent-guard-starts-resolves-exact-one",
+        anchor_started && anchor.has("anchor-initial") && limited_states(&daemon)? == 1,
+    );
 
-    // Keep this workload bounded below the 100-command queue. The worker must
-    // replay ordinary retained records before handling the cancelled startups.
-    let mut replays = Vec::new();
-    for _ in 0..16 {
-        replays.push(retry(|| daemon.browse_cache(SERVICE_TYPE))?);
-    }
+    // No replay workload, worker pause or pacing is used to obtain cancellation.
+    let since = cursor();
+    let mut types = Vec::new();
     for index in 0..32 {
         let ty = format!("_oe-c{index:03}._tcp.local.");
-        drop(retry(|| daemon.browse_limited(&ty, 64))?);
+        mark(format_args!("CALL drop-distinct type={ty} kind=limited"));
+        drop(View::open(&daemon, &ty, true)?);
+        mark(format_args!("DROP complete type={ty} kind=limited"));
+        types.push(ty);
     }
-    // Failed replacement must preserve both the prior sender and its state.
-    drop(retry(|| daemon.browse_limited(GUARD_TYPE, 64))?);
-    drop(retry(|| daemon.browse(GUARD_TYPE))?);
-    let after_barrier = limited_states(&daemon)?;
-    thread::sleep(Duration::from_millis(300));
-    let after_settle = limited_states(&daemon)?;
-    let replayed = replays
-        .iter()
-        .filter(|rx| rx.is_disconnected() && rx.len() == 1000)
-        .count();
-    println!("CANCELLED_STARTUPS distinct=32 replay_commands=16 replayed_overflows={replayed} before={before} after_barrier={after_barrier} after_settle={after_settle} live_closed={}", live.is_closed());
-    results.push(("ordinary-replay-commands-drained", replayed == 16));
-    results.push(("cancelled-distinct-types-retain-no-state", after_settle == before));
-    results.push(("cancelled-replacements-preserve-identity", !live.is_closed()));
-    publisher.phase("guard-update")?;
-    results.push((
-        "surviving-handle-receives-live-update",
-        limited_has(&live, "guard-update"),
-    ));
+    let at_barrier = limited_states(&daemon)?;
+    let mut failed = 0;
+    for ty in &types {
+        let actual = outcome(since, ty, true)?;
+        failed += usize::from(actual == Outcome::Disconnected);
+        println!("DISTINCT type={ty} outcome={actual:?}");
+    }
+    let accepted = 32 - failed;
+    println!(
+        "DISTINCT_COVERAGE submitted=32 matched=32 disconnected={failed} accepted={accepted} at_barrier={at_barrier}"
+    );
+    check(&mut results, "distinct-real-failed-send-coverage", failed > 0);
+    check(
+        &mut results,
+        "distinct-barrier-no-failed-state",
+        at_barrier >= 1 && at_barrier <= 1 + accepted as i64,
+    );
+    // Accepted immediate drops meet their first 10..50ms query/disconnect
+    // cleanup. Three seconds includes the next 1s retry and scheduling slack.
+    check(
+        &mut results,
+        "distinct-eventual-exact-guard-state",
+        exact_states(&daemon, 1, Duration::from_secs(3))?,
+    );
+    advertise(&mut publisher, ANCHOR_TYPE, "anchor-after-distinct")?;
+    check(
+        &mut results,
+        "distinct-preserves-guard-identity-fresh-update",
+        !anchor.closed() && anchor.has("anchor-after-distinct"),
+    );
+    // Explicit cleanup occurs AFTER the strict measurements. In the buggy
+    // baseline it permits independent replacement cases without hiding red.
+    for ty in &types {
+        retry(|| daemon.stop_browse(ty))?;
+    }
+    check(
+        &mut results,
+        "distinct-explicit-stop-cleanup",
+        limited_states(&daemon)? == 1,
+    );
 
-    let replacement = retry(|| daemon.browse_limited(GUARD_TYPE, 64))?;
-    let replacement_resolved = limited_has(&replacement, "guard-update");
-    let after_replacement = limited_states(&daemon)?;
-    results.push((
-        "successful-limited-replacement-has-new-identity",
-        live.is_closed() && replacement_resolved && after_replacement == 1,
-    ));
-    let standard = retry(|| daemon.browse(GUARD_TYPE))?;
-    let start = Instant::now();
-    let mut standard_resolved = false;
-    while start.elapsed() < Duration::from_secs(4) && !standard_resolved {
-        standard_resolved |= standard.try_iter().any(|event| matches!(event, ServiceEvent::ServiceResolved(info) if info.get_property_val_str("name") == Some("guard-update")));
-        thread::sleep(Duration::from_millis(20));
+    for (case, (old_limited, new_limited)) in [(true, true), (true, false), (false, true), (false, false)]
+        .into_iter()
+        .enumerate()
+    {
+        let label = format!("{}-over-{}", kind_name(new_limited), kind_name(old_limited));
+        let mut witnessed = false;
+        for attempt in 0..ATTEMPTS {
+            let ty = format!("_oe-r{case}{attempt}._tcp.local.");
+            let (mut old, started) = held_view(&daemon, &ty, old_limited)?;
+            advertise(&mut publisher, &ty, "old-live")?;
+            let resolved = old.has("old-live");
+            let before = limited_states(&daemon)?;
+            check(
+                &mut results,
+                format!("{label}-{attempt}-live-baseline"),
+                started && resolved && !old.closed() && before == 1 + i64::from(old_limited),
+            );
+            old.drain();
+            let since = cursor();
+            mark(format_args!(
+                "CALL drop-replacement type={ty} kind={}",
+                kind_name(new_limited)
+            ));
+            drop(View::open(&daemon, &ty, new_limited)?);
+            mark(format_args!("DROP complete type={ty} kind={}", kind_name(new_limited)));
+            let after = limited_states(&daemon)?;
+            let actual = outcome(since, &ty, new_limited)?;
+            println!("REPLACEMENT case={label} attempt={attempt} type={ty} outcome={actual:?} before={before} after={after} old_closed={}", old.closed());
+            if actual == Outcome::Accepted {
+                // This is a real accepted-then-dropped lifecycle, never a
+                // failed-start witness. Keep its observations and exact cleanup.
+                check(
+                    &mut results,
+                    format!("{label}-{attempt}-accepted-old-closed"),
+                    old.closed(),
+                );
+                check(
+                    &mut results,
+                    format!("{label}-{attempt}-accepted-transient-state"),
+                    (1..=1 + i64::from(new_limited)).contains(&after),
+                );
+                check(
+                    &mut results,
+                    format!("{label}-{attempt}-accepted-drop-cleanup"),
+                    exact_states(&daemon, 1, Duration::from_secs(3))?,
+                );
+                retry(|| daemon.stop_browse(&ty))?;
+                limited_states(&daemon)?;
+                continue;
+            }
+            witnessed = true;
+            check(
+                &mut results,
+                format!("{label}-failed-preserves-exact-identity-state"),
+                after == before && !old.closed(),
+            );
+            check(
+                &mut results,
+                format!(
+                    "{label}-{}",
+                    if old_limited {
+                        "failed-limited-view-stays-open"
+                    } else {
+                        "failed-standard-retains-repeated-search"
+                    }
+                ),
+                old.repeated_start(),
+            );
+            advertise(&mut publisher, &ty, "fresh-after-failure")?;
+            check(
+                &mut results,
+                format!("{label}-failed-fresh-update"),
+                old.has("fresh-after-failure"),
+            );
+            publisher.phase(&format!("withdraw {ty}"))?;
+            check(&mut results, format!("{label}-failed-goodbye"), old.removed());
+            advertise(&mut publisher, &ty, "returned-after-goodbye")?;
+            let returned = old.has("returned-after-goodbye");
+            let returned_states = limited_states(&daemon)?;
+            check(
+                &mut results,
+                format!("{label}-failed-resolves-returned-peer"),
+                returned && returned_states == before && !old.closed(),
+            );
+
+            let (mut successor, accepted) = held_view(&daemon, &ty, new_limited)?;
+            let fresh = successor.has("returned-after-goodbye");
+            let successor_states = limited_states(&daemon)?;
+            check(
+                &mut results,
+                format!("{label}-held-successor-start-resolution-closure"),
+                accepted
+                    && fresh
+                    && old.closed()
+                    && !successor.closed()
+                    && successor_states == 1 + i64::from(new_limited),
+            );
+            let (mut newest, accepted) = held_view(&daemon, &ty, true)?;
+            let fresh = newest.has("returned-after-goodbye");
+            let newest_states = limited_states(&daemon)?;
+            check(
+                &mut results,
+                format!("{label}-newest-one-live-generation"),
+                accepted && fresh && successor.closed() && !newest.closed() && newest_states == 2,
+            );
+            drop(old);
+            drop(successor);
+            mark(format_args!("DROP older-generations-complete type={ty}"));
+            advertise(&mut publisher, &ty, "newest-after-older-drops")?;
+            let fresh = newest.has("newest-after-older-drops");
+            let after_older_drops = limited_states(&daemon)?;
+            check(
+                &mut results,
+                format!("{label}-newest-survives-older-drops"),
+                fresh && !newest.closed() && after_older_drops == 2,
+            );
+            drop(newest);
+            mark(format_args!("DROP held-newest-complete type={ty}"));
+            // Held views can reach the 1s, 2s or 4s exponential retry. Eight
+            // seconds covers that next real retry plus scheduling slack.
+            check(
+                &mut results,
+                format!("{label}-held-drop-exact-cleanup"),
+                exact_states(&daemon, 1, Duration::from_secs(8))?,
+            );
+            let (final_view, accepted) = held_view(&daemon, &ty, true)?;
+            retry(|| daemon.stop_browse(&ty))?;
+            let stopped_states = limited_states(&daemon)?;
+            check(
+                &mut results,
+                format!("{label}-stop-closes-final-view"),
+                accepted && final_view.closed() && stopped_states == 1,
+            );
+            break;
+        }
+        println!("FAILED_REPLACEMENT_COVERAGE case={label} witnessed={witnessed} budget={ATTEMPTS}");
+        check(&mut results, format!("{label}-disconnected-coverage"), witnessed);
     }
-    results.push((
-        "successful-standard-replacement-releases-state",
-        replacement.is_closed() && standard_resolved && limited_states(&daemon)? == 0,
-    ));
-    drop(replays);
-    let mut standard_replays = Vec::new();
-    for _ in 0..16 {
-        standard_replays.push(retry(|| daemon.browse_cache(SERVICE_TYPE))?);
-    }
-    drop(retry(|| daemon.browse_limited(GUARD_TYPE, 64))?);
-    drop(retry(|| daemon.browse(GUARD_TYPE))?);
-    let standard_states = limited_states(&daemon)?;
-    let replayed = standard_replays
-        .iter()
-        .filter(|rx| rx.is_disconnected() && rx.len() == 1000)
-        .count();
-    results.push((
-        "cancelled-replacements-preserve-standard-identity",
-        !standard.is_disconnected() && standard_states == 0 && replayed == 16,
-    ));
-    publisher.phase("guard-final")?;
-    let start = Instant::now();
-    let mut standard_updated = false;
-    while start.elapsed() < Duration::from_secs(4) && !standard_updated {
-        standard_updated |= standard.try_iter().any(|event| matches!(event, ServiceEvent::ServiceResolved(info) if info.get_property_val_str("name") == Some("guard-final")));
-        thread::sleep(Duration::from_millis(20));
-    }
-    results.push(("surviving-standard-handle-receives-live-update", standard_updated));
-    let final_view = retry(|| daemon.browse_limited(GUARD_TYPE, 64))?;
-    let final_resolved = limited_has(&final_view, "guard-final");
-    results.push((
-        "standard-to-limited-replacement",
-        standard.is_disconnected() && final_resolved && limited_states(&daemon)? == 1,
-    ));
-    retry(|| daemon.stop_browse(GUARD_TYPE))?;
-    let after_stop = limited_states(&daemon)?;
-    results.push((
-        "final-stop-clears-worker-state",
-        final_view.is_closed() && after_stop == 0,
-    ));
+    advertise(&mut publisher, ANCHOR_TYPE, "anchor-final")?;
+    let anchor_fresh = anchor.has("anchor-final");
+    let anchor_states = limited_states(&daemon)?;
+    check(
+        &mut results,
+        "independent-guard-final-identity-fresh-exact-state",
+        anchor_fresh && !anchor.closed() && anchor_states == 1,
+    );
+    retry(|| daemon.stop_browse(ANCHOR_TYPE))?;
+    let final_states = limited_states(&daemon)?;
+    check(
+        &mut results,
+        "final-stop-exact-zero-state",
+        anchor.closed() && final_states == 0,
+    );
     publisher.phase("finish")?;
-    results.push(("publisher-exits-zero", publisher.child.wait()?.success()));
-    stop(&daemon)?;
-    results.push(("worker-shutdown-ack", final_view.is_closed()));
-    for (name, passed) in &results {
-        println!("CHECK {name}={passed}");
-    }
+    check(&mut results, "publisher-exits-zero", publisher.child.wait()?.success());
+    check(&mut results, "worker-shutdown-ack", stop(&daemon).is_ok());
+    println!(
+        "STARTUP_SUMMARY passed={} total={}",
+        results.iter().filter(|(_, ok)| *ok).count(),
+        results.len()
+    );
     if results.iter().all(|(_, passed)| *passed) {
         Ok(())
     } else {
-        Err("limited startup checks failed".into())
+        Err("observed startup checks or coverage failed".into())
     }
 }
 fn run() -> Result<()> {
@@ -707,7 +1037,18 @@ fn run() -> Result<()> {
     }
 }
 fn main() {
-    if let Err(error) = run() {
+    if std::env::args().nth(1).as_deref() == Some("startup")
+        && std::env::var_os("OPENERGY_STARTUP_OBSERVE").as_deref() != Some(std::ffi::OsStr::new("0"))
+    {
+        TRACE_CLOCK.get_or_init(Instant::now);
+        log::set_logger(&STARTUP_TRACE).expect("startup observer logger");
+        log::set_max_level(log::LevelFilter::Trace);
+    }
+    let result = run();
+    for record in TRACE_RECORDS.lock().expect("startup trace lock").iter() {
+        eprintln!("STARTUP_TRACE {record}");
+    }
+    if let Err(error) = result {
         eprintln!("discovery_recovery: {error}");
         std::process::exit(1);
     }

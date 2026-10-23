@@ -36,6 +36,16 @@ limited-state map. It does not count caller-owned snapshots or states still in
 queued commands. A metrics command after the queued starts acts as a command
 barrier for the public-API lifecycle probe.
 
+The opt-in `mdns_sd::startup` trace records the actual initial `try_send`
+result, service type and limited/standard kind, before the result is handled.
+It does not change subscription state, scheduling or lifetime. The log macro
+does not evaluate its formatting arguments when trace logging is disabled.
+The real-process probe matches unique types or serializes same-type requests
+between public metrics barriers. An immediate caller drop alone proves no
+startup outcome. Only a recorded `Disconnected` result covers failed startup;
+accepted starts have separate lifecycle checks. Missing or duplicate outcomes
+fail verification. No production request identifier or observation map is added.
+
 The opt-in `ServiceDaemon::browse_limited(type, limit)` accepts limits 1..=64.
 It keeps the latest resolved state of at most that many selected peers on the
 existing worker, behind a mutex. Existing peers keep their slots until removal.

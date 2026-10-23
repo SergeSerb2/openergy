@@ -4228,7 +4228,17 @@ impl Zeroconf {
             pretty_addrs.join(", ")
         ));
         if !repeating {
-            if let Err(e) = listener.try_send(started) {
+            let initial_send = listener.try_send(started);
+            trace!(target: "mdns_sd::startup",
+                "type={} kind={} outcome={}", &ty,
+                if limited_state.is_some() { "limited" } else { "standard" },
+                match &initial_send {
+                    Ok(()) => "Accepted",
+                    Err(TrySendError::Disconnected(_)) => "Disconnected",
+                    Err(TrySendError::Full(_)) => "Full",
+                }
+            );
+            if let Err(e) = initial_send {
                 debug!(
                     "Failed to send SearchStarted({})(repeating:{}): {}",
                     &ty, repeating, e
