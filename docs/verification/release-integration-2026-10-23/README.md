@@ -48,7 +48,11 @@ Both R7 objections are closed in source. Matching final runtime evidence and
 native Windows startup acceptance remain pending. The reviewed source is now
 integrated locally as `7f27cbb` and `6da26a1`; product/probe source matches
 `e6a9125` exactly. Its final saved runtime evidence still requires parent checks.
-A fresh combined release binary and full virtual suite are being prepared.
+The [fresh combined release run](combined-virtual.md) passes all 89 existing
+non-Docker scenarios with zero cleanup failures. All 248 recorded inputs and
+both frozen artifacts stay unchanged, and no owned process or assigned listener
+remains. Thirty Docker cases stay explicitly excluded. The final Mac discovery
+evidence is committed as `8e891f1` and is under separate saved-evidence review.
 
 The separate [native Windows cleanup observation](windows-owned-cleanup.md)
 passes normal explicit shutdown and Drop on the frozen `e4f48ba` library. The
