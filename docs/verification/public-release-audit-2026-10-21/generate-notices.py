@@ -8,6 +8,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import re
 import subprocess
 import sys
 
@@ -53,6 +54,42 @@ def package_notices(package):
     return [(p.relative_to(root).as_posix(), p.read_bytes(), None) for p in selected]
 
 
+def swift_notices():
+    manifest = (ROOT / 'apps/macos/Package.swift').read_text()
+    lock = ROOT / 'apps/macos/Package.resolved'
+    if not lock.exists():
+        if re.search(r'\.package\s*\(', manifest):
+            raise ValueError('Swift package dependencies require a committed Package.resolved')
+        return [], {}, None
+    pins = json.loads(lock.read_bytes()).get('pins', [])
+    policy = json.loads((HERE / 'licenses/Sparkle-2.10.0.json').read_bytes())
+    if len(pins) != 1:
+        raise ValueError('manual Swift dependency inventory review required')
+    pin = pins[0]
+    if (pin.get('identity') != 'sparkle'
+            or pin.get('location', '').removesuffix('.git') != policy['source_url']
+            or pin.get('state', {}).get('version') != policy['version']
+            or pin.get('state', {}).get('revision') != policy['revision']):
+        raise ValueError('Swift dependency differs from the reviewed Sparkle release')
+    declaration = (r'\.package\s*\(\s*url:\s*"https://github\.com/sparkle-project/Sparkle(?:\.git)?"'
+                   r'\s*,\s*exact:\s*"2\.10\.0"\s*\)')
+    if not re.search(declaration, manifest):
+        raise ValueError('Sparkle must use the reviewed exact Swift package version')
+    license_file = HERE / 'licenses/Sparkle-2.10.0-LICENSE.txt'
+    data = license_file.read_bytes()
+    digest = sha(data)
+    if digest != policy['license_sha256']:
+        raise ValueError('Sparkle upstream license bytes differ from the reviewed release')
+    package = {'name': policy['name'], 'version': policy['version'],
+               'declared_license': policy['license_expression'],
+               'source': 'swiftpm+' + policy['source_url'], 'url': policy['source_url'],
+               'upstream_revision': policy['revision'],
+               'binary_artifact_sha256': policy['binary_artifact_sha256'],
+               'license_files': [{'path': 'LICENSE', 'sha256': digest,
+                                  'source_url': policy['license_source_url']}]}
+    return [package], {digest: data.decode('utf-8')}, sha(lock.read_bytes())
+
+
 def generate(metadata):
     texts = {}
     packages = []
@@ -95,6 +132,9 @@ def generate(metadata):
         packages.append(entry)
     if not packages:
         raise ValueError('empty external dependency inventory')
+    swift_packages, swift_texts, swift_lock_sha256 = swift_notices()
+    packages.extend(swift_packages)
+    texts.update(swift_texts)
     x11 = (HERE / 'licenses/X11-keysymdef.txt').read_bytes()
     texts[sha(x11)] = x11.decode('utf-8')
     intro = '''# Third-party notices
@@ -102,8 +142,9 @@ def generate(metadata):
 Openergy's own work is available under MIT OR Apache-2.0. See LICENSE-MIT
 and LICENSE-APACHE. Third-party material keeps its own terms below.
 
-This inventory covers every external package resolved by the root Cargo.lock,
-including other platforms, build tools, and development dependencies. It is a
+This inventory covers every external package resolved by the root Cargo.lock
+and the reviewed macOS Package.resolved, including other platforms, build tools,
+and development dependencies. It is a
 conservative source inventory, not a claim that each package is linked into
 every binary. For dual-licensed packages with a separate MIT file, the MIT
 option is used here. Combined license files and ring's delegated notices are
@@ -112,8 +153,9 @@ The table preserves each package's original license expression.
 The mdns-sd path dependency is a locally modified copy of 0.21.6. Its linked
 patch record identifies the original archive and the local source delta.
 
-The Swift packages declare no external package dependencies. Apple and Windows
-system frameworks and the Rust toolchain are not vendored by this repository.
+The macOS app's pinned Sparkle binary framework retains the complete upstream
+license and bundled external notices. Apple and Windows system frameworks and
+the Rust toolchain are not vendored by this repository.
 The SVG icon and raster verification fixtures have no embedded third-party
 artwork attribution found in the tracked files; this is not an authorship proof.
 
@@ -158,6 +200,7 @@ python3 docs/verification/public-release-audit-2026-10-21/generate-notices.py
         rendered = '\n'.join(line.rstrip() for line in text.splitlines()).rstrip('\n')
         body += '### text-' + digest[:12] + '\n\n```text\n' + rendered + '\n```\n\n'
     inventory = {'schema_version': 1, 'cargo_lock_sha256': sha((ROOT / 'Cargo.lock').read_bytes()),
+                 'swift_package_resolved_sha256': swift_lock_sha256,
                  'packages': packages, 'x11_notice_sha256': sha(x11)}
     return body.rstrip() + '\n', json.dumps(inventory, indent=2, ensure_ascii=False) + '\n'
 

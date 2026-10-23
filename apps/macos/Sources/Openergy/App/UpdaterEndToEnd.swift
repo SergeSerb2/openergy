@@ -22,6 +22,12 @@ final class UpdaterVerificationSession {
 enum UpdaterEndToEnd {
     private enum Expected: String { case current, candidate, failure, unconfigured }
 
+    private struct FailureCause: Encodable {
+        let domain: String
+        let code: Int
+        let description: String
+    }
+
     private struct Result: Encodable {
         let schemaVersion = 1
         let expected: String
@@ -35,12 +41,13 @@ enum UpdaterEndToEnd {
         let candidateStoppedBeforeDownload: Bool
         let errorDomain: String?
         let errorCode: Int?
+        let errorCauses: [FailureCause]
         let elapsedSeconds: Double
         let limit = "Feed parsing and candidate selection only. Signed archive download, installation and relaunch are not exercised."
     }
 
     static func run(arguments: [String]) -> Never {
-        let usage = "usage: CFFIXED_USER_HOME=<private-config-dir> Openergy --updater-e2e <private-output-dir> --updater-config <private-config-dir> --updater-feed <loopback-feed-url> --updater-expect current|candidate|failure|unconfigured [--updater-timeout 15]\n"
+        let usage = "usage: CFFIXED_USER_HOME=<private-config-dir> Openergy --updater-e2e <private-output-dir> --updater-config <private-config-dir> --updater-feed <loopback-or-production-feed-url> --updater-expect current|candidate|failure|unconfigured [--updater-timeout 15]\n"
         var options: [String: String] = [:]
         let allowed: Set<String> = ["--updater-e2e", "--updater-config", "--updater-feed", "--updater-expect", "--updater-timeout"]
         var index = 1
@@ -55,7 +62,9 @@ enum UpdaterEndToEnd {
               let feed = options["--updater-feed"], let expected = options["--updater-expect"].flatMap(Expected.init),
               let timeout = Double(options["--updater-timeout"] ?? "15"), timeout.isFinite, (1...30).contains(timeout),
               let fixture = URLComponents(string: feed), ["http", "https"].contains(fixture.scheme ?? ""),
-              ["127.0.0.1", "::1", "[::1]"].contains(fixture.host ?? ""),
+              (["127.0.0.1", "::1", "[::1]"].contains(fixture.host ?? "")
+                  || (fixture.scheme == "https" && fixture.host == "openergy-updates.sergeserbinenko.com"
+                      && fixture.path == "/appcast.xml" && fixture.port == nil && fixture.query == nil)),
               fixture.user == nil, fixture.password == nil, fixture.fragment == nil,
               fixture.port.map({ (1...65535).contains($0) }) ?? true,
               let outputURL = privateDirectory(output), let configURL = privateDirectory(config),
@@ -83,7 +92,7 @@ enum UpdaterEndToEnd {
         } else {
             guard let configuration = try? AppUpdater.Configuration(bundle: .main, allowLoopbackFixture: true),
                   configuration.feedURL.absoluteString == feed else {
-                fail("The private bundle must contain the exact loopback fixture SUFeedURL and a valid SUPublicEDKey.\n")
+                fail("The private bundle must contain the exact fixture or production SUFeedURL and a valid SUPublicEDKey.\n")
             }
         }
 
@@ -125,10 +134,17 @@ enum UpdaterEndToEnd {
         case .failure: passed = outcome == "feed-failure" && session.checks == 1
         }
         let error = session.cycleError ?? session.startupError
+        var causes: [FailureCause] = []
+        var cause = error
+        while let current = cause, causes.count < 4 {
+            causes.append(FailureCause(domain: String(current.domain.prefix(256)), code: current.code,
+                                       description: String(current.localizedDescription.prefix(512))))
+            cause = current.userInfo[NSUnderlyingErrorKey] as? NSError
+        }
         let result = Result(expected: expected.rawValue, outcome: outcome, passed: passed, started: updater.started,
                             checks: session.checks, feedLoaded: session.feedLoaded, cycleFinished: session.cycleFinished,
                             candidateVersion: session.candidateVersion, candidateStoppedBeforeDownload: session.candidateStopped,
-                            errorDomain: error?.domain, errorCode: error?.code,
+                            errorDomain: error?.domain, errorCode: error?.code, errorCauses: causes,
                             elapsedSeconds: ProcessInfo.processInfo.systemUptime - began)
         UserDefaults(suiteName: defaultsDomain)?.synchronize()
         do {

@@ -6,14 +6,14 @@ The executable links Sparkle through `@executable_path/../Frameworks`. The bundl
 keeps the complete framework, its executable helpers, both XPC services, symlinks,
 permissions, resources, and the upstream license in `Resources/Sparkle-LICENSE.txt`.
 
-The intended public feed is
+The public feed is
 `https://openergy-updates.sergeserbinenko.com/appcast.xml`.
-The dedicated Cloudflare bucket is `openergy-releases`. The release owner has
-provisioned the bucket/domain; SSL issuance and live hosting proof are parent-owned.
-The feed initially has zero releases until signed release gates clear. This local
-tooling does not establish Developer ID trust, notarization, publication or a trusted
-update installation. The existing trusted draft publisher and its release gates
-remain separate.
+The dedicated Cloudflare R2 bucket is `openergy-releases`. Its custom domain
+serves the signed empty feed over HTTPS. The channel page is
+`https://openergy-updates.sergeserbinenko.com/index.html`.
+The feed has zero releases until release gates clear. Hosting the feed does not
+establish Developer ID trust, notarization or a trusted update installation.
+The existing trusted draft publisher and its release gates remain separate.
 
 ## Bundle configuration
 
@@ -29,15 +29,15 @@ nice -n 15 swift package --package-path apps/macos resolve
 # Explicit unconfigured fixture: no override values and no require-updates flag.
 env -u OPENERGY_UPDATE_FEED_URL -u OPENERGY_UPDATE_PUBLIC_KEY \
   OPENERGY_DISABLE_UPDATES=1 OPENERGY_REQUIRE_UPDATES=0 \
-  PYTHON=python3.14 DIST=dist/local apps/macos/scripts/bundle.sh
+  PYTHON=python3.11 DIST=dist/local apps/macos/scripts/bundle.sh
 
 # Validate the configured source defaults before a build.
-OPENERGY_REQUIRE_UPDATES=1 python3.14 tools/release/sparkle.py config
+OPENERGY_REQUIRE_UPDATES=1 python3.11 tools/release/sparkle.py config
 
 # Distribution candidate: the source public feed/key defaults are used.
 # Both Rust macOS targets must already be installed for the universal build.
 OPENERGY_REQUIRE_UPDATES=1 \
-UNIVERSAL=1 OPENERGY_BUILD=2 PYTHON=python3.14 DIST=dist/update-candidate \
+UNIVERSAL=1 OPENERGY_BUILD=2 PYTHON=python3.11 DIST=dist/update-candidate \
   apps/macos/scripts/bundle.sh
 ```
 
@@ -46,7 +46,9 @@ Both must be absent to use source defaults or both valid for an override.
 With both absent, a complete public `SUFeedURL`/`SUPublicEDKey` pair in the source
 Info.plist supplies release-owner defaults through the same validation. The source
 public key is `T6P8IZ5N6ivIZD3SdPRTOKWImB81Lfj2PFQqH4TMZ6o=`. Its private signing
-key is held externally by the parent; it is never part of this repository.
+key is held in `~/.config/openergy-release/sparkle-ed25519.key` with mode 0600;
+it is never part of this repository. Keep a private backup of that key. Future
+updates must use the matching key.
 Explicit empty values and partial configuration fail. A single environment
 override cannot borrow its other value from source defaults. The URL must use
 HTTPS, have a host, contain no userinfo or fragment, and use at most 2048 printable
@@ -64,8 +66,10 @@ checks. `SUAllowsAutomaticUpdates=true` exposes Sparkle's standard user control;
 `SUAutomaticallyUpdate=false` is the initial automatic-download preference.
 Users can change it through the updater settings. There is no custom silent
 installation or live relaunch policy. The app's updater lifecycle must gate
-startup on valid bundle configuration and exclude snapshot/E2E modes. The parent
-integration owns `SPUStandardUpdaterController`, settings, menu and updater E2E.
+startup on valid bundle configuration and exclude snapshot/E2E modes. One retained
+`SPUStandardUpdaterController` owns the normal app updater. Check for Updates is
+available in the app menu, menu-bar panel and Advanced settings. Advanced settings
+also expose Sparkle's automatic-check and automatic-download preferences.
 
 Use a fresh `DIST` each time. Staging is private to that destination and is removed
 on success, error or interruption. An existing app is never replaced. To keep
@@ -74,22 +78,25 @@ with `swift package --scratch-path "$SWIFT_SCRATCH_PATH" resolve` first. The
 default Swift scratch path is `apps/macos/.build`. Swift binary downloads remain
 in its normal cache so another worktree can reuse the pinned dependency.
 
-Default signing remains ad-hoc with hardened runtime, no timestamp and no trust
-claim. A named identity requires the existing explicit `OPENERGY_ALLOW_SIGNING=1`
+Default local signing is ad-hoc without Hardened Runtime, with no timestamp or
+trust claim. An ad-hoc app has no Team ID and cannot load Sparkle through
+Hardened Runtime's library validation. A named identity retains Hardened Runtime
+and requires the existing explicit `OPENERGY_ALLOW_SIGNING=1`
 and `OPENERGY_SIGN_IDENTITY` selection. The script does not discover identities,
 change Keychain state, add a library-validation exception, or notarize anything.
 It signs Sparkle's inner code first, then the framework, daemon and outer app.
 Downloader's upstream sandbox/network entitlements are retained. Signature,
 architecture, runpath and framework-linkage checks run before the final move.
 The original downloaded framework signature is checked before it is re-signed.
-Library validation on ad-hoc builds can still block a real app launch; packaged
-GUI/updater runtime acceptance is a separate gate and requires the parent flow.
+No build receives a library-validation exception entitlement. Packaged runtime,
+trusted signing, notarization and installed update acceptance are separate gates.
 
 ## Local signed update archive
 
 Use the new command for Sparkle updates. The existing `release.py package` creates
-native draft archives with `BUILD.json`; its copy/archive/extract contract flattens
-symlinks. Those archives are not Sparkle update payloads. This command does not
+native draft archives with `BUILD.json`; their copy/archive/extract path preserves
+and validates the framework's symlinks. Those archives are not Sparkle update
+payloads. This command does not
 modify that publisher, create a GitHub release, upload, or change permissions.
 
 The shared feed accepts **one universal archive**. The command checks arm64 and
@@ -97,10 +104,10 @@ x86_64 in the app, daemon, Sparkle framework and every helper/XPC executable. It
 rejects native-only bundles. Do not place a native-only payload on this channel.
 
 ```sh
-nice -n 15 python3.14 tools/release/sparkle.py archive \
+nice -n 15 python3.11 tools/release/sparkle.py archive \
   --app dist/update-candidate/Openergy.app \
   --version 0.1.0 --build 2 \
-  --download-url https://openergy-updates.sergeserbinenko.com/openergy-0.1.0-2-macos-universal.zip \
+  --download-url https://openergy-updates.sergeserbinenko.com/releases/openergy-0.1.0-2-macos-universal.zip \
   --private-key-file /private/external/location/sparkle-ed25519 \
   --output dist/sparkle-0.1.0-2
 ```
@@ -154,6 +161,33 @@ verify Gatekeeper and real updater behavior, confirm increasing build numbers,
 and publish the archive and signed feed at their configured HTTPS URLs. Preserve
 all normal release provenance and approval gates. Local EdDSA signing proves a
 key match; it does not establish Developer ID trust or permission to publish.
+
+## Cloudflare channel
+
+`deployment/cloudflare/updates.json` pins the dedicated bucket, hostname and
+Wrangler version. `tools/release/deploy_updates.py bootstrap` creates an unused
+channel with the signed empty feed and channel page. It refuses existing DNS
+records or an unexpected existing bucket. Repeating it against the configured
+channel preserves the existing feed. It never uploads an application archive.
+Bootstrap requires the existing `CLOUDFLARE_API_TOKEN` environment variable.
+
+Read-only verification needs no Cloudflare credential:
+
+```sh
+python3.11 tools/release/deploy_updates.py verify --report /tmp/openergy-feed-check.json
+```
+
+Select a fresh report path. If local name lookup is unavailable, `verify` accepts
+`--resolve-ip ADDRESS` after checking that address against public Cloudflare DNS.
+This changes only that HTTPS request. It retains hostname, SNI and certificate
+validation. It does not change system DNS. Use the ordinary URL for application
+configuration.
+
+After release acceptance, upload the signed universal ZIP under its exact
+`releases/` object name, then publish the matching signed `appcast.xml` last.
+Preserve its bytes and signature. Keep archive URLs immutable. The current
+bootstrap feed deliberately offers no application update.
+
 
 Official references (checked 2026-10-23): [Sparkle setup](https://sparkle-project.org/documentation/),
 [programmatic setup](https://sparkle-project.org/documentation/programmatic-setup/),

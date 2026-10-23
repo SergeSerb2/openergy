@@ -246,21 +246,46 @@ def range_bounds(value):
     return start, end + 1
 
 
+def staged_files(stage):
+    """Include framework links without following them into duplicate payloads."""
+    files = []
+    root = stage.resolve(strict=True)
+    for path in sorted(stage.rglob("*")):
+        if path.is_symlink():
+            target = Path(os.readlink(path))
+            if target.is_absolute() or not path.resolve(strict=True).is_relative_to(root):
+                raise ValueError("bundle symlink must resolve inside the staged payload")
+            files.append(path)
+        elif path.is_file():
+            files.append(path)
+        elif not path.is_dir():
+            raise ValueError("staged payload contains an unsupported file type")
+    return files
+
+
 def archive_tree(stage, archive, epoch):
-    files = sorted(p for p in stage.rglob("*") if p.is_file())
+    files = staged_files(stage)
     if archive.suffix == ".zip":
         stamp = datetime.datetime.fromtimestamp(max(epoch, 315532800), datetime.timezone.utc)
         with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as output:
             for path in files:
                 info = zipfile.ZipInfo(path.relative_to(stage).as_posix(), stamp.timetuple()[:6])
                 info.create_system = 3
-                info.external_attr = (0o100755 if path.stat().st_mode & 0o111 else 0o100644) << 16
+                link = path.is_symlink()
+                mode = stat.S_IFLNK | 0o777 if link else stat.S_IFREG | (0o755 if path.stat().st_mode & 0o111 else 0o644)
+                info.external_attr = mode << 16
                 info.compress_type = zipfile.ZIP_DEFLATED
-                output.writestr(info, path.read_bytes())
+                if link:
+                    output.writestr(info, os.readlink(path).encode("utf-8"))
+                else:
+                    with path.open("rb") as source, output.open(info, "w") as destination:
+                        shutil.copyfileobj(source, destination)
     else:
         with archive.open("wb") as raw, gzip.GzipFile(filename="", fileobj=raw, mode="wb", mtime=epoch) as compressed:
             with tarfile.open(fileobj=compressed, mode="w", format=tarfile.PAX_FORMAT) as output:
                 for path in files:
+                    if path.is_symlink():
+                        raise ValueError("tar release payloads must contain regular files only")
                     info = output.gettarinfo(str(path), path.relative_to(stage).as_posix())
                     info.uid = info.gid = 0
                     info.uname = info.gname = ""
@@ -268,6 +293,51 @@ def archive_tree(stage, archive, epoch):
                     info.mode = 0o755 if path.stat().st_mode & 0o111 else 0o644
                     with path.open("rb") as source:
                         output.addfile(info, source)
+
+
+def extract_generated_zip(stage, archive, extracted):
+    """Check our generated ZIP against staging before restoring framework links.
+
+    This is not a general archive extractor. Names, types, link targets and
+    regular-file bytes must match the complete staged payload exactly.
+    """
+    expected = {path.relative_to(stage).as_posix(): path for path in staged_files(stage)}
+    links = []
+    with zipfile.ZipFile(archive) as zipped:
+        for entry in zipped.infolist():
+            original = expected.pop(entry.filename, None)
+            if original is None:
+                raise ValueError("generated ZIP has an unexpected or duplicate entry")
+            destination = extracted / original.relative_to(stage)
+            kind = stat.S_IFMT(entry.external_attr >> 16)
+            if original.is_symlink():
+                target = os.readlink(original)
+                encoded = target.encode("utf-8")
+                if kind != stat.S_IFLNK or entry.file_size != len(encoded) or zipped.read(entry) != encoded:
+                    raise ValueError("generated ZIP symlink differs from staging")
+                links.append((destination, target))
+            else:
+                if kind != stat.S_IFREG or entry.file_size != original.stat().st_size:
+                    raise ValueError("generated ZIP regular file differs from staging")
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                with zipped.open(entry) as source, destination.open("xb") as output:
+                    shutil.copyfileobj(source, output)
+                with original.open("rb") as source, destination.open("rb") as copy:
+                    if hashlib.file_digest(source, "sha256").digest() != hashlib.file_digest(copy, "sha256").digest():
+                        raise ValueError("generated ZIP file bytes differ from staging")
+                mode = 0o755 if original.stat().st_mode & 0o111 else 0o644
+                if (entry.external_attr >> 16) & 0o777 != mode:
+                    raise ValueError("generated ZIP executable mode differs from staging")
+                destination.chmod(mode)
+    if expected:
+        raise ValueError("generated ZIP omits staged files")
+    for destination, target in links:
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.symlink_to(target)
+    root = extracted.resolve(strict=True)
+    for destination, _ in links:
+        if not destination.resolve(strict=True).is_relative_to(root):
+            raise ValueError("generated ZIP symlink escapes the extracted payload")
 
 
 def package(args):
@@ -294,7 +364,7 @@ def package(args):
             env = dict(os.environ, DIST=str(base / "bundle"), PYTHON=sys.executable,
                        OPENERGY_SIGN_IDENTITY="-", UNIVERSAL="0")
             run(["bash", ROOT / "apps/macos/scripts/bundle.sh"], env=env)
-            shutil.copytree(base / "bundle/Openergy.app", stage / "Openergy.app")
+            shutil.copytree(base / "bundle/Openergy.app", stage / "Openergy.app", symlinks=True)
             binary = stage / "Openergy.app/Contents/Helpers/openergy"
         else:
             binary = build(target)
@@ -342,6 +412,8 @@ def package(args):
             manifest["macos_sdk"] = run(["xcrun", "--sdk", "macosx", "--show-sdk-version"], capture=True).stdout.strip()
             manifest["xcode"] = run(["xcodebuild", "-version"], capture=True).stdout.strip()
             manifest["macos_build"] = os.environ.get("OPENERGY_BUILD", "1")
+            manifest["swift_package_resolved_sha256"] = hashlib.sha256(
+                (ROOT / "apps/macos/Package.resolved").read_bytes()).hexdigest()
         text = json.dumps(manifest, indent=2, sort_keys=True) + "\n"
         (stage / "BUILD.json").write_text(text, newline="\n")
         pending = base / archive.name
@@ -349,10 +421,7 @@ def package(args):
         # Exercise the archive extraction path and the archived daemon, not just staging.
         extracted = base / "extracted"
         if extension == ".zip":
-            with zipfile.ZipFile(pending) as zipped:
-                zipped.extractall(extracted)
-                for entry in zipped.infolist():
-                    (extracted / entry.filename).chmod((entry.external_attr >> 16) & 0o777)
+            extract_generated_zip(stage, pending, extracted)
         else:
             # This is our freshly generated payload, not an arbitrary archive.
             # Match its regular files to staging instead of relying on tarfile

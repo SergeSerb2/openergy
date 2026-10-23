@@ -29,6 +29,12 @@ response time or security backport window is promised. Report reproducible
 problems through [GitHub issues](https://github.com/SergeSerb2/openergy/issues).
 Use [SECURITY.md](SECURITY.md) for sensitive reports.
 
+The macOS app includes Sparkle update checks and update preferences. Its
+[update channel](https://openergy-updates.sergeserbinenko.com/index.html) is live
+with an empty signed feed. No application release is offered yet. Maintainers
+can use the [macOS update workflow](docs/macos-updates.md) to prepare signed
+universal update archives.
+
 ## Build and set up macOS
 
 Prerequisites: macOS 15 or later, Git, Rust with Cargo, and Xcode or Apple command

@@ -66,6 +66,12 @@ clipboard, TCC, login-item, or real-device acceptance. Those remain separate
 manual gates. In particular, virtual daemon checks do not establish that a
 downloaded app can control a desktop.
 
+The macOS app includes Sparkle. See [macOS updates](macos-updates.md) for its
+Cloudflare feed, bundle configuration, signing key and universal update archive
+workflow. Local ad-hoc bundles omit Hardened Runtime so Sparkle can load without
+a Team ID. Named signing identities retain Hardened Runtime. Neither mode alone
+establishes notarization or installed-update acceptance.
+
 ## Local archives
 
 ```sh

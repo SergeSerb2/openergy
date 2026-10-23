@@ -89,8 +89,7 @@ final class AppUpdater: NSObject, SPUUpdaterDelegate {
     }
 
     func checkForUpdates() {
-        guard started, let controller, controller.updater.canCheckForUpdates,
-              !controller.updater.sessionInProgress else { return }
+        guard started, let controller, controller.updater.canCheckForUpdates else { return }
         controller.checkForUpdates(nil)
         refreshSettings()
     }
@@ -123,7 +122,7 @@ final class AppUpdater: NSObject, SPUUpdaterDelegate {
             allowsAutomaticUpdates = false
             return
         }
-        canCheckForUpdates = updater.canCheckForUpdates && !updater.sessionInProgress
+        canCheckForUpdates = updater.canCheckForUpdates
         automaticallyChecksForUpdates = updater.automaticallyChecksForUpdates
         automaticallyDownloadsUpdates = updater.automaticallyDownloadsUpdates
         allowsAutomaticUpdates = updater.allowsAutomaticUpdates

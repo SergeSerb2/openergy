@@ -203,7 +203,10 @@ def sign(args):
     if identity != "-" and os.environ.get("OPENERGY_ALLOW_SIGNING") != "1":
         raise ValueError("named signing requires OPENERGY_ALLOW_SIGNING=1")
     timestamp = "--timestamp" if identity.startswith("Developer ID Application:") else "--timestamp=none"
-    flags = ["--force", "--options", "runtime", timestamp, "--sign", identity]
+    # An ad-hoc app has no Team ID, so Hardened Runtime library validation
+    # cannot load its non-platform framework. Local builds remain explicitly
+    # untrusted; named distribution/development identities retain the runtime.
+    flags = ["--force", "--options", "0" if identity == "-" else "runtime", timestamp, "--sign", identity]
     for path in nested_code(args.app):
         # Downloader's sandbox/network entitlements must survive re-signing.
         run("codesign", *flags, "--preserve-metadata=identifier,entitlements", path)
