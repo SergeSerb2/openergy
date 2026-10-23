@@ -57,9 +57,22 @@ def generate(metadata):
     texts = {}
     packages = []
     for package in sorted(metadata['packages'], key=lambda p: (p['name'], p['version'])):
+        source = package.get('source')
+        package_url = 'https://crates.io/crates/' + package['name'] + '/' + package['version']
+        upstream = None
         if package.get('source') is None:
-            continue
-        if package['source'] != 'registry+https://github.com/rust-lang/crates.io-index':
+            if package['id'] in metadata['workspace_members']:
+                continue
+            # A path dependency can still be third-party source. Fail closed for
+            # unknown paths instead of silently dropping their license notices.
+            manifest = Path(package['manifest_path']).resolve()
+            if (package['name'], package['version'], manifest) != (
+                    'mdns-sd', '0.21.6', ROOT / 'vendor/mdns-sd/Cargo.toml'):
+                raise ValueError('manual path source review required: ' + package['name'])
+            upstream = json.loads((manifest.parent / 'UPSTREAM.json').read_text())
+            source = 'path+vendor/mdns-sd'
+            package_url = 'vendor/mdns-sd/OPENERGY-PATCH.md'
+        elif source != 'registry+https://github.com/rust-lang/crates.io-index':
             raise ValueError('manual source review required: ' + package['name'])
         if not package.get('license'):
             raise ValueError('missing license: ' + package['name'])
@@ -72,11 +85,14 @@ def generate(metadata):
             if url:
                 entry['source_url'] = url
             licenses.append(entry)
-        packages.append({'name': package['name'], 'version': package['version'],
+        entry = {'name': package['name'], 'version': package['version'],
                          'declared_license': package['license'],
-                         'source': package['source'],
-                         'url': 'https://crates.io/crates/' + package['name'] + '/' + package['version'],
-                         'license_files': licenses})
+                         'source': source, 'url': package_url, 'license_files': licenses}
+        if upstream:
+            entry['upstream_archive_sha256'] = upstream['archive_sha256']
+            entry['upstream_revision'] = upstream['revision']
+            entry['locally_modified'] = True
+        packages.append(entry)
     if not packages:
         raise ValueError('empty external dependency inventory')
     x11 = (HERE / 'licenses/X11-keysymdef.txt').read_bytes()
@@ -93,6 +109,8 @@ every binary. For dual-licensed packages with a separate MIT file, the MIT
 option is used here. Combined license files and ring's delegated notices are
 retained in full. Unicode's additional terms are retained with unicode-ident.
 The table preserves each package's original license expression.
+The mdns-sd path dependency is a locally modified copy of 0.21.6. Its linked
+patch record identifies the original archive and the local source delta.
 
 The Swift packages declare no external package dependencies. Apple and Windows
 system frameworks and the Rust toolchain are not vendored by this repository.

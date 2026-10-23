@@ -2,7 +2,7 @@
 //! information only. mdns-sd owns its own internal worker thread; this wrapper
 //! is polled by the daemon io thread and does not create a forwarding thread.
 use crate::{identity::failed, DiscoveredPeer, Fingerprint, NetError};
-use mdns_sd::{DaemonEvent, IfKind, Receiver, ServiceDaemon, ServiceEvent, ServiceInfo, TryRecvError};
+use mdns_sd::{DaemonEvent, IfKind, LimitedBrowse, Receiver, ServiceDaemon, ServiceInfo};
 use std::{
     collections::BTreeMap,
     time::{Duration, Instant},
@@ -18,7 +18,7 @@ pub enum DiscoveryScope {
 
 pub struct Discovery {
     daemon: ServiceDaemon,
-    events: Option<Receiver<ServiceEvent>>,
+    events: Option<LimitedBrowse>,
     monitor: Receiver<DaemonEvent>,
     peers: BTreeMap<String, DiscoveredPeer>,
     published: Option<String>,
@@ -45,7 +45,7 @@ impl Discovery {
             }
             let monitor = daemon.monitor().map_err(failed)?;
             let events = if browse {
-                Some(daemon.browse(SERVICE_TYPE).map_err(failed)?)
+                Some(daemon.browse_limited(SERVICE_TYPE, 64).map_err(failed)?)
             } else {
                 None
             };
@@ -97,10 +97,8 @@ impl Discovery {
         if self.browse_retry.is_some_and(|deadline| Instant::now() >= deadline) {
             // A closed subscription can be recreated on the existing worker.
             // Back off even if its bounded command queue is still full.
-            // This cannot repair a retained-cache replay that itself fills
-            // mdns-sd's channel; that needs an upstream bounded-replay API.
             self.browse_retry = Some(Instant::now() + BROWSE_RETRY);
-            match self.daemon.browse(SERVICE_TYPE) {
+            match self.daemon.browse_limited(SERVICE_TYPE, 64) {
                 Ok(events) => {
                     self.events = Some(events);
                     self.browse_retry = None;
@@ -108,28 +106,19 @@ impl Discovery {
                 Err(error) => log::warn!("mDNS discovery browse retry failed: {error}"),
             }
         }
-        for _ in 0..256 {
-            let Some(events) = &self.events else {
-                break;
-            };
-            let event = match events.try_recv() {
-                Ok(event) => event,
-                Err(TryRecvError::Empty) => break,
-                Err(TryRecvError::Disconnected) => {
-                    // mdns-sd closes a full event channel. An empty-looking
-                    // disconnected channel otherwise freezes discovery forever.
-                    // Lost removals make the old snapshot unreliable.
-                    self.events = None;
-                    self.browse_retry = Some(Instant::now() + BROWSE_RETRY);
-                    log::warn!("mDNS discovery subscription closed; retrying");
-                    self.dirty |= !self.peers.is_empty();
-                    self.peers.clear();
-                    break;
-                }
-            };
-            match event {
-                ServiceEvent::ServiceResolved(info) => {
-                    if self.peers.len() < 64 || self.peers.contains_key(info.get_fullname()) {
+        if let Some(events) = &self.events {
+            if events.is_closed() {
+                self.events = None;
+                self.browse_retry = Some(Instant::now() + BROWSE_RETRY);
+                log::warn!("mDNS discovery subscription closed; retrying");
+                self.dirty |= !self.peers.is_empty();
+                self.peers.clear();
+            } else if let Some(snapshot) = events.take_snapshot() {
+                // Replace the complete selected view. Absence conveys removal;
+                // merging would retain peers lost while the caller was paused.
+                let peers = snapshot
+                    .into_iter()
+                    .map(|info| {
                         let peer = DiscoveredPeer {
                             name: info
                                 .get_property_val_str("name")
@@ -142,16 +131,13 @@ impl Discovery {
                                 .filter(|s| s.len() == 16 && s.bytes().all(|b| b.is_ascii_hexdigit()))
                                 .map(str::to_owned),
                         };
-                        if self.peers.get(info.get_fullname()) != Some(&peer) {
-                            self.peers.insert(info.get_fullname().to_owned(), peer);
-                            self.dirty = true;
-                        }
-                    }
+                        (info.get_fullname().to_owned(), peer)
+                    })
+                    .collect();
+                if self.peers != peers {
+                    self.peers = peers;
+                    self.dirty = true;
                 }
-                ServiceEvent::ServiceRemoved(_, name) => {
-                    self.dirty |= self.peers.remove(&name).is_some();
-                }
-                _ => {}
             }
         }
         if self.dirty && self.last_snapshot.elapsed() >= Duration::from_secs(1) {

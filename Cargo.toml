@@ -25,6 +25,9 @@ mdns-sd = "0.21"
 log = "0.4"
 libc = "0.2"
 
+[patch.crates-io]
+mdns-sd = { path = "vendor/mdns-sd" }
+
 [profile.release]
 opt-level = 3
 lto = "thin"

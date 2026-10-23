@@ -1,0 +1,30 @@
+USER    PID   TT   %CPU STAT PRI     STIME     UTIME COMMAND
+<HOST_USER> 22176   ??    0.1 S    31T   0:00.01   0:00.01 target/debug/examples/discovery_recovery probe /tmp/oe-bounded-discovery-20261022-5a69/patched-probe-final 25090 25091
+      22176         4.8 S    31T   0:00.03   0:00.91
+      22176         3.1 S    31T   0:00.04   0:00.44
+
+  PID    RSS      TIME  %CPU COMMAND
+22176  10576   0:01.45   8.0 target/debug/examples/discovery_recovery probe /tmp/oe-bounded-discovery-20261022-5a69/patched-probe-final 25090 25091
+
+UDP:
+p22176
+f3
+n127.0.0.1:64225
+f5
+n127.0.0.1:62781
+f7
+n*:25090
+f8
+n*:25090
+f9
+n*:25090
+f10
+n*:25090
+f11
+n*:25090
+f12
+n*:25090
+f13
+n*:25090
+f15
+n*:25090

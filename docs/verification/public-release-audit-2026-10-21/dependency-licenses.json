@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "cargo_lock_sha256": "0cc466112ead33a26cb59fce717d83c202bd470e6ba64394ab7c81ac560c6f3f",
+  "cargo_lock_sha256": "6d57d3d84fcef4208a9ce657e511b07099187dcda084cd9decb9ab9a56756800",
   "packages": [
     {
       "name": "asn1-rs",
@@ -488,14 +488,17 @@
       "name": "mdns-sd",
       "version": "0.21.6",
       "declared_license": "Apache-2.0 OR MIT",
-      "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "url": "https://crates.io/crates/mdns-sd/0.21.6",
+      "source": "path+vendor/mdns-sd",
+      "url": "vendor/mdns-sd/OPENERGY-PATCH.md",
       "license_files": [
         {
           "path": "LICENSE-MIT",
           "sha256": "cf0547f95d22b91b11540bc053d4973ad8beed39f98b614254c074ca4ed6b6af"
         }
-      ]
+      ],
+      "upstream_archive_sha256": "8562654710f72a9cbce4b0d5b7c366a2f94330ba1ce3740f15e932ea2d37b161",
+      "upstream_revision": "1a5cdb6ebb7299ee74dda75099461a2921b6e740",
+      "locally_modified": true
     },
     {
       "name": "memchr",

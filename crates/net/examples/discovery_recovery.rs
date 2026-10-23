@@ -5,6 +5,7 @@
 use mdns_sd::{DaemonStatus, IfKind, ServiceDaemon, ServiceInfo, UnregisterStatus};
 use openergy_net::discovery::{Discovery, DiscoveryScope, SERVICE_TYPE};
 use std::{
+    collections::BTreeSet,
     fs::{self, File},
     io::{self, BufRead, Write},
     path::{Path, PathBuf},
@@ -68,7 +69,13 @@ fn stop(daemon: &ServiceDaemon) -> Result<()> {
 }
 fn publisher(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
     let daemon = daemon(mdns_port)?;
-    let initial = register(&daemon, "initial", "initial", service_port, "0123456789abcdef")?;
+    let mut initial = Some(register(
+        &daemon,
+        "initial",
+        "initial",
+        service_port,
+        "0123456789abcdef",
+    )?);
     thread::sleep(Duration::from_secs(2));
     fs::write(root.join("ready-initial"), "ready")?;
     let mut burst = Vec::new();
@@ -115,6 +122,52 @@ fn publisher(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
                 unregister(&daemon, std::slice::from_ref(&full))?;
                 burst.retain(|name| name != &full);
             }
+            "retained-new" => {
+                // Remove the first peer, then advertise a new peer after its
+                // goodbye. The 800 burst advertisements remain registered.
+                unregister(&daemon, &[initial.take().ok_or("initial already removed")?])?;
+                thread::sleep(Duration::from_millis(1300));
+                burst.push(register(
+                    &daemon,
+                    "after-removal",
+                    "after-removal",
+                    service_port,
+                    "0123456789abcdef",
+                )?);
+            }
+            "retained-paused-update" => {
+                register(
+                    &daemon,
+                    "after-removal",
+                    "paused-intermediate",
+                    service_port + 1,
+                    "invalid-hint",
+                )?;
+                thread::sleep(Duration::from_millis(1100));
+                register(
+                    &daemon,
+                    "after-removal",
+                    "paused-latest",
+                    service_port + 1,
+                    "invalid-hint",
+                )?;
+                thread::sleep(Duration::from_millis(1100));
+            }
+            "retained-paused-remove" => {
+                let full = format!("after-removal.{SERVICE_TYPE}");
+                unregister(&daemon, std::slice::from_ref(&full))?;
+                burst.retain(|name| name != &full);
+                thread::sleep(Duration::from_millis(1300));
+            }
+            "restore-initial" => {
+                initial = Some(register(
+                    &daemon,
+                    "initial",
+                    "initial",
+                    service_port,
+                    "0123456789abcdef",
+                )?);
+            }
             "recover" => {
                 recovery = Some(register(
                     &daemon,
@@ -139,7 +192,7 @@ fn publisher(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
                 if !burst.is_empty() {
                     unregister(&daemon, &burst)?;
                 }
-                let mut names = vec![initial];
+                let mut names: Vec<_> = initial.into_iter().collect();
                 names.extend(recovery);
                 unregister(&daemon, &names)?;
                 thread::sleep(Duration::from_secs(2));
@@ -189,14 +242,36 @@ impl Drop for Publisher {
         let _ = self.child.wait();
     }
 }
+#[derive(Default)]
+struct Snapshots {
+    last: Option<Instant>,
+    count: usize,
+    peak: usize,
+    too_close: bool,
+}
+impl Snapshots {
+    fn poll(&mut self, discovery: &mut Discovery) {
+        if let Some(peers) = discovery.poll() {
+            let now = Instant::now();
+            self.too_close |= self
+                .last
+                .is_some_and(|last| now.duration_since(last) < Duration::from_secs(1));
+            self.last = Some(now);
+            self.count += 1;
+            self.peak = self.peak.max(peers.len());
+        }
+        self.peak = self.peak.max(discovery.snapshot().len());
+    }
+}
 fn observe(
     discovery: &mut Discovery,
+    snapshots: &mut Snapshots,
     seconds: u64,
     mut accept: impl FnMut(&[openergy_net::DiscoveredPeer]) -> bool,
 ) -> bool {
     let start = Instant::now();
     while start.elapsed() < Duration::from_secs(seconds) {
-        discovery.poll();
+        snapshots.poll(discovery);
         if accept(&discovery.snapshot()) {
             return true;
         }
@@ -224,9 +299,12 @@ fn probe(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
     };
     publisher.ready("initial")?;
     let mut results = Vec::new();
+    let mut emissions = Snapshots::default();
     results.push((
         "initial-resolution",
-        observe(&mut discovery, 5, |peers| peers.iter().any(|p| p.name == "initial")),
+        observe(&mut discovery, &mut emissions, 5, |peers| {
+            peers.iter().any(|p| p.name == "initial")
+        }),
     ));
     publisher.phase("burst")?;
     results.push((
@@ -255,26 +333,34 @@ fn probe(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
     retry(|| sentinel_daemon.stop_browse(SERVICE_TYPE))?;
     let after_stop = retry(|| sentinel_daemon.get_metrics())?.recv_timeout(Duration::from_secs(3))?;
     println!("RETAINED_CACHE_AFTER_STOP={after_stop:?}");
+    let limited_replay = retry(|| sentinel_daemon.browse_limited(SERVICE_TYPE, 64))?;
+    let start = Instant::now();
+    let mut replay_peak = 0;
+    while start.elapsed() < Duration::from_secs(1) {
+        if let Some(peers) = limited_replay.take_snapshot() {
+            replay_peak = replay_peak.max(peers.len());
+        }
+        thread::sleep(Duration::from_millis(20));
+    }
+    println!(
+        "LIMITED_REPLAY peak={replay_peak} closed={}",
+        limited_replay.is_closed()
+    );
+    results.push((
+        "limited-retained-replay",
+        replay_peak == 64 && !limited_replay.is_closed(),
+    ));
     // Deliberately stop draining during the publisher's burst. This models a
     // delayed caller, using real network events rather than injected messages.
     let mut largest = 0;
     let mut selected = None;
     let mut empty_polls = 0;
     let mut full_polls = 0;
-    let mut snapshots = 0;
-    let mut snapshot_spacing_ok = true;
-    let mut last_snapshot = None;
+    let mut stable_selection = None;
+    let mut selection_stays_stable = true;
     let retained_start = Instant::now();
     while retained_start.elapsed() < Duration::from_secs(6) {
-        if let Some(peers) = discovery.poll() {
-            let now = Instant::now();
-            if let Some(previous) = last_snapshot {
-                snapshot_spacing_ok &= now.duration_since(previous) >= Duration::from_secs(1);
-            }
-            last_snapshot = Some(now);
-            snapshots += 1;
-            largest = largest.max(peers.len());
-        }
+        emissions.poll(&mut discovery);
         let peers = discovery.snapshot();
         largest = largest.max(peers.len());
         // Permit the original one-second recovery backoff. The retained
@@ -282,15 +368,20 @@ fn probe(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
         if retained_start.elapsed() >= Duration::from_secs(2) {
             empty_polls += usize::from(peers.is_empty());
             full_polls += usize::from(peers.len() == 64);
+            let names: BTreeSet<_> = peers.iter().map(|p| p.name.clone()).collect();
+            if let Some(previous) = &stable_selection {
+                selection_stays_stable &= *previous == names;
+            } else {
+                stable_selection = Some(names);
+            }
         }
         thread::sleep(Duration::from_millis(20));
     }
-    results.push(("snapshot-cap", largest == 64));
-    results.push(("snapshot-emission-spacing", snapshot_spacing_ok && snapshots > 0));
     results.push(("retained-namespace-stays-useful", full_polls > 0 && empty_polls == 0));
+    results.push(("retained-selection-stable", selection_stays_stable));
     // Choose from the current snapshot immediately before updating. A full
     // display need not admit a new peer, so mutate an actually selected one.
-    observe(&mut discovery, 2, |peers| {
+    observe(&mut discovery, &mut emissions, 2, |peers| {
         selected = peers
             .iter()
             .find(|p| p.name.starts_with("burst-"))
@@ -298,9 +389,16 @@ fn probe(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
         selected.is_some()
     });
     let selected = selected.ok_or("no selected burst peer")?;
+    let survivors: BTreeSet<_> = discovery
+        .snapshot()
+        .iter()
+        .filter(|p| p.name != selected && p.name != "initial")
+        .map(|p| p.name.clone())
+        .collect();
+    let mut survivors_stable = true;
     publisher.begin(&format!("retained-update {selected}"))?;
     let updated_name = format!("{selected}-retained");
-    let update_seen = observe(&mut discovery, 8, |peers| {
+    let update_seen = observe(&mut discovery, &mut emissions, 8, |peers| {
         peers
             .iter()
             .any(|p| p.name == updated_name && p.port == service_port + 1 && p.fingerprint_hint.is_none())
@@ -308,7 +406,7 @@ fn probe(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
     publisher.ready("retained-update")?;
     let mut update_stays_fresh = update_seen;
     if update_seen {
-        observe(&mut discovery, 2, |peers| {
+        observe(&mut discovery, &mut emissions, 2, |peers| {
             update_stays_fresh &= peers
                 .iter()
                 .any(|p| p.name == updated_name && p.port == service_port + 1 && p.fingerprint_hint.is_none());
@@ -319,7 +417,8 @@ fn probe(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
     publisher.begin(&format!("retained-remove {selected}"))?;
     let mut removal_seen = false;
     let mut removal_regressed = false;
-    observe(&mut discovery, 5, |peers| {
+    observe(&mut discovery, &mut emissions, 5, |peers| {
+        survivors_stable &= survivors.iter().all(|name| peers.iter().any(|p| &p.name == name));
         let present = peers.iter().any(|p| p.name == selected || p.name == updated_name);
         if removal_seen && present {
             removal_regressed = true;
@@ -332,14 +431,48 @@ fn probe(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
         "retained-selected-peer-goodbye",
         update_seen && update_stays_fresh && removal_seen && !removal_regressed,
     ));
-    println!("RETAINED_NAMESPACE burst={BURST} selected={selected} full_polls={full_polls} empty_polls={empty_polls} snapshots={snapshots} update_seen={update_seen} update_stays_fresh={update_stays_fresh} removal_seen={removal_seen} removal_regressed={removal_regressed}");
+    println!("RETAINED_NAMESPACE burst={BURST} selected={selected} full_polls={full_polls} empty_polls={empty_polls} update_seen={update_seen} update_stays_fresh={update_stays_fresh} removal_seen={removal_seen} removal_regressed={removal_regressed}");
+    publisher.begin("retained-new")?;
+    let new_peer_seen = observe(&mut discovery, &mut emissions, 6, |peers| {
+        survivors_stable &= survivors.iter().all(|name| peers.iter().any(|p| &p.name == name));
+        !peers.iter().any(|p| p.name == "initial") && peers.iter().any(|p| p.name == "after-removal")
+    });
+    publisher.ready("retained-new")?;
+    println!(
+        "AFTER_REMOVAL peers={:?}",
+        discovery.snapshot().iter().map(|p| &p.name).collect::<Vec<_>>()
+    );
+    let new_metrics = retry(|| sentinel_daemon.get_metrics())?.recv_timeout(Duration::from_secs(3))?;
+    println!("AFTER_REMOVAL_CACHE={new_metrics:?}");
+    results.push(("retained-first-peer-goodbye-and-new-peer", new_peer_seen));
+    observe(&mut discovery, &mut emissions, 2, |peers| {
+        survivors_stable &= survivors.iter().all(|name| peers.iter().any(|p| &p.name == name));
+        false
+    });
+    results.push(("retained-selected-survivors-stable", survivors_stable));
+    // The caller does not poll while two real advertisements update one peer.
+    publisher.phase("retained-paused-update")?;
+    emissions.poll(&mut discovery);
+    let paused_latest = discovery
+        .snapshot()
+        .iter()
+        .any(|p| p.name == "paused-latest" && p.port == service_port + 1 && p.fingerprint_hint.is_none());
+    results.push(("paused-update-coalesces-to-latest", paused_latest));
+    publisher.phase("retained-paused-remove")?;
+    emissions.poll(&mut discovery);
+    let paused_removed = discovery
+        .snapshot()
+        .iter()
+        .all(|p| p.name != "after-removal" && p.name != "paused-intermediate" && p.name != "paused-latest");
+    results.push(("paused-goodbye-replaces-view", paused_latest && paused_removed));
     publisher.phase("clear")?;
-    observe(&mut discovery, 2, |_| false);
+    publisher.phase("restore-initial")?;
+    observe(&mut discovery, &mut emissions, 2, |_| false);
     publisher.phase("recover")?;
     let start = Instant::now();
     results.push((
         "fresh-advertisement-after-overflow",
-        observe(&mut discovery, 8, |peers| {
+        observe(&mut discovery, &mut emissions, 8, |peers| {
             peers.iter().any(|p| p.name == "initial")
                 && peers.iter().any(|p| {
                     p.name == "recovery"
@@ -352,7 +485,7 @@ fn probe(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
     publisher.phase("update")?;
     results.push((
         "updated-port-and-untrusted-hint",
-        observe(&mut discovery, 5, |peers| {
+        observe(&mut discovery, &mut emissions, 5, |peers| {
             peers
                 .iter()
                 .any(|p| p.name == "recovery-updated" && p.port == service_port + 1 && p.fingerprint_hint.is_none())
@@ -361,11 +494,20 @@ fn probe(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
     publisher.phase("finish")?;
     results.push((
         "goodbye-removes-all-peers",
-        observe(&mut discovery, 5, |peers| peers.is_empty()),
+        observe(&mut discovery, &mut emissions, 5, |peers| peers.is_empty()),
     ));
     results.push(("publisher-exits-zero", publisher.child.wait()?.success()));
     results.push(("discovery-shutdown-submitted", discovery.shutdown().is_ok()));
     results.push(("sentinel-worker-shutdown-ack", stop(&sentinel_daemon).is_ok()));
+    results.push(("snapshot-cap", emissions.peak == 64));
+    results.push((
+        "snapshot-emission-spacing",
+        !emissions.too_close && emissions.count >= 4,
+    ));
+    println!(
+        "SNAPSHOTS count={} peak={} too_close={}",
+        emissions.count, emissions.peak, emissions.too_close
+    );
     for (name, passed) in &results {
         println!("CHECK {name}={passed}");
     }

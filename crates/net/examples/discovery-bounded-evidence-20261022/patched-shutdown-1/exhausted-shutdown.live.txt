@@ -1,0 +1,16 @@
+USER    PID   TT   %CPU STAT PRI     STIME     UTIME COMMAND
+<HOST_USER>  2563   ??    0.0 S    31T   0:00.00   0:00.00 <WORKTREE>/target/debug/examples/discovery_owned_shutdown shutdown 25094 25095
+       2563         0.0 S    31T   0:00.00   0:00.00
+
+UDP:
+p2563
+f3
+n127.0.0.1:58220
+f5
+n*:25094
+f6
+n*:25094
+f7
+n*:25094
+f8
+n*:25094

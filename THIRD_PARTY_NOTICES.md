@@ -10,6 +10,8 @@ every binary. For dual-licensed packages with a separate MIT file, the MIT
 option is used here. Combined license files and ring's delegated notices are
 retained in full. Unicode's additional terms are retained with unicode-ident.
 The table preserves each package's original license expression.
+The mdns-sd path dependency is a locally modified copy of 0.21.6. Its linked
+patch record identifies the original archive and the local source delta.
 
 The Swift packages declare no external package dependencies. Apple and Windows
 system frameworks and the Rust toolchain are not vendored by this repository.
@@ -72,7 +74,7 @@ python3 docs/verification/public-release-audit-2026-10-21/generate-notices.py
 | [linux-raw-sys 0.12.1](https://crates.io/crates/linux-raw-sys/0.12.1) | Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT | [23f18e03dc49](#text-23f18e03dc49) |
 | [lock_api 0.4.14](https://crates.io/crates/lock_api/0.4.14) | MIT OR Apache-2.0 | [c9a75f18b9ab](#text-c9a75f18b9ab) |
 | [log 0.4.34](https://crates.io/crates/log/0.4.34) | MIT OR Apache-2.0 | [6485b8ed310d](#text-6485b8ed310d) |
-| [mdns-sd 0.21.6](https://crates.io/crates/mdns-sd/0.21.6) | Apache-2.0 OR MIT | [cf0547f95d22](#text-cf0547f95d22) |
+| [mdns-sd 0.21.6](vendor/mdns-sd/OPENERGY-PATCH.md) | Apache-2.0 OR MIT | [cf0547f95d22](#text-cf0547f95d22) |
 | [memchr 2.8.3](https://crates.io/crates/memchr/2.8.3) | Unlicense OR MIT | [0f96a83840e1](#text-0f96a83840e1) |
 | [minimal-lexical 0.2.1](https://crates.io/crates/minimal-lexical/0.2.1) | MIT/Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
 | [mio 1.2.4](https://crates.io/crates/mio/1.2.4) | MIT | [07919255c7e0](#text-07919255c7e0) |
