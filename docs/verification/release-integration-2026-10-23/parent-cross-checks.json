@@ -60,5 +60,20 @@
     ],
     "original_startup_acceptance_unchanged": "FAIL 11/14",
     "scope": "Committed trace and report cross-check only; parent did not run Windows binaries. The original untraced run interleaving remains unknown."
+  },
+  "source_history_merge_supplement": {
+    "source_commit": "ca618418dc8c4d93b8fd04eeda3fefa01003b8e7",
+    "candidate_commit": "0293a208badd03a3a2229bf6f7ea54fdfba1a141",
+    "unique_merges": 11,
+    "parent_pairs": 22,
+    "nonempty_direct_diffs_independently_hashed": 21,
+    "identical_tree_empty_pairs": 1,
+    "patch_replay_bytes": 11620607,
+    "patch_replay_sha256": "96020396e849b3bdf3a7e230dd248e92f21d26b0b213046d03eb8fd83a7e9b20",
+    "incremental_scan_exit": 0,
+    "incremental_findings": 0,
+    "primary_raw_exit_unchanged": 1,
+    "primary_findings_unchanged": 84,
+    "scope": "Parent reproduced direct Git diffs and checked all recorded hashes; did not repeat Gitleaks. No code from history executed."
   }
 }

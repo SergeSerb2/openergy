@@ -45,6 +45,10 @@ The parent independently repeated 96 source-blob comparisons. Its patch-history
 scope excludes proof of merge-only resolution coverage and later commits.
 It is not a zero-finding or broad secret-free result.
 
-A narrow source-history supplement is checking the omitted merge diffs at that
-same pinned head. It is separate from product/provenance review and does not
-scan stopped sibling refs.
+The [merge-diff supplement](source-history-merge-supplement.md) closes that
+specific gap at the same pinned head. All 11 merges are covered by 21 emitted
+parent diffs and one identical-tree parent. The incremental scan exits 0 with
+zero findings. The parent independently matched every direct diff and the full
+patch-stream hash. The primary exit 1 and 84 findings remain unchanged. This is
+patch-history evidence, separate from product/provenance review; it does not
+scan stopped sibling refs or establish every-snapshot secret absence.
