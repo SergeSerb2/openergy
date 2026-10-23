@@ -5,7 +5,7 @@ use openergy_net::{ConnectErrorKind, NetCommand, NetConfig, NetDriver, NetError,
 use openergy_session::ConnId;
 use std::{
     io::{self, Read, Write},
-    net::{TcpListener, TcpStream},
+    net::{SocketAddr, TcpListener, TcpStream, ToSocketAddrs},
     path::{Path, PathBuf},
     sync::Arc,
     time::{Duration, Instant},
@@ -16,6 +16,62 @@ const HEALTHY: u16 = 25116;
 const REFUSED: u16 = 25117;
 const INBOUND: u16 = 25118;
 const LIMIT: Duration = Duration::from_secs(3);
+
+fn refusal_controls(driver: &mut NetDriver) -> Result<bool> {
+    let first = refusal_port(driver, REFUSED)?;
+    let second = refusal_port(driver, 25119)?;
+    Ok(first && second)
+}
+fn refusal_port(driver: &mut NetDriver, port: u16) -> Result<bool> {
+    let mut addresses: Vec<_> = ("localhost", port).to_socket_addrs()?.collect();
+    println!("RESOLVER host=localhost addresses={addresses:?}");
+    addresses.extend([
+        SocketAddr::from(([127, 0, 0, 1], port)),
+        SocketAddr::from(([0, 0, 0, 0, 0, 0, 0, 1], port)),
+    ]);
+    addresses.sort_unstable();
+    addresses.dedup();
+    for addr in &addresses {
+        if !addr.ip().is_loopback() {
+            return Err(format!("non-loopback localhost result: {addr}").into());
+        }
+        // No SO_REUSEADDR: fail if another process owns either loopback address.
+        drop(TcpListener::bind(addr)?);
+        match TcpStream::connect_timeout(addr, Duration::from_millis(500)) {
+            Err(error) if error.kind() == io::ErrorKind::ConnectionRefused => {
+                println!(
+                    "OS_REFUSAL addr={addr} exclusive_bind=PASS kind={:?} errno={:?}",
+                    error.kind(),
+                    error.raw_os_error()
+                );
+            }
+            result => return Err(format!("expected direct OS refusal at {addr}: {result:?}").into()),
+        }
+    }
+    driver.set_connect_timeout(Duration::from_secs(5))?;
+    let mut passed = true;
+    for host in ["127.0.0.1", "::1", "localhost", "localhost", "localhost"] {
+        let mut out = Vec::new();
+        let started = Instant::now();
+        driver.execute_checked(connect(host, port), &mut out)?;
+        while out.is_empty() && started.elapsed() < Duration::from_secs(6) {
+            driver.poll(Some(Duration::from_millis(1)), &mut out)?;
+        }
+        // Retain late/duplicate failures and false Connected events too.
+        for _ in 0..20 {
+            driver.poll(Some(Duration::from_millis(1)), &mut out)?;
+        }
+        let refused = out.len() == 1 && failure(&out, port, ConnectErrorKind::Refused);
+        println!(
+            "FAILURE host={host} port={port} events={out:?} classified_refused={} elapsed_us={}",
+            if refused { "PASS" } else { "FAIL" },
+            started.elapsed().as_micros()
+        );
+        passed &= refused;
+    }
+    driver.set_connect_timeout(LIMIT)?;
+    Ok(passed)
+}
 
 fn config(root: &Path) -> NetConfig {
     NetConfig {
@@ -205,6 +261,10 @@ fn queue_round(
     poll_until(driver, &mut out, |events| connected(events).is_some())?;
     let connected_us = recovery.elapsed().as_micros();
     let conn = connected(&out).ok_or("missing healthy connection")?;
+    let peer_addr = driver.conn_info(conn).ok_or("missing healthy connection info")?.peer;
+    if peer_addr != healthy.local_addr()? {
+        return Err(format!("wrong healthy address: {peer_addr}").into());
+    }
     let mut peer = accept(driver, healthy).map_err(|error| {
         format!(
             "healthy accept failed: {error}; events={out:?}; conn_info={:?}",
@@ -223,7 +283,7 @@ fn queue_round(
     no_accept(stale)?;
     driver.execute_checked(NetCommand::Shutdown, &mut out)?;
     println!(
-        "QUEUE mode={} round={round} jobs=16 admission_us={admitted_us} overflow_rejected=PASS dns_budget_rejections={rejects} recovery_admission_us={admission_us} recovery_connected_us={connected_us} recovery_roundtrip_us={roundtrip_us} exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS",
+        "QUEUE mode={} round={round} jobs=16 admission_us={admitted_us} overflow_rejected=PASS dns_budget_rejections={rejects} recovery_admission_us={admission_us} recovery_connected_us={connected_us} recovery_roundtrip_us={roundtrip_us} exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS peer={peer_addr}",
         if expire { "deadline" } else if round.is_multiple_of(2) { "shutdown" } else { "disconnect_all" },
     );
     Ok(())
@@ -242,20 +302,7 @@ fn contracts(root: &Path, healthy: &TcpListener) -> Result<bool> {
     }
     println!("FAILURE case=invalid_hostname events={out:?} classified_dns=PASS");
     out.clear();
-    // Confirm the assigned refusal port is free; never disconnect another owner.
-    drop(TcpListener::bind(("127.0.0.1", REFUSED))?);
-    driver.execute_checked(connect("localhost", REFUSED), &mut out)?;
-    poll_until(&mut driver, &mut out, |events| {
-        events
-            .iter()
-            .any(|event| matches!(event, NetEvent::ConnectFailed { .. } | NetEvent::Disconnected { .. }))
-    })?;
-    let refused = out.len() == 1 && failure(&out, REFUSED, ConnectErrorKind::Refused);
-    println!(
-        "FAILURE case=refused_localhost events={out:?} classified_refused={}",
-        if refused { "PASS" } else { "FAIL" }
-    );
-    out.clear();
+    let refused = refusal_controls(&mut driver)?;
     // Real listener and inbound socket verify the original handle survives both resets.
     let inbound = ([127, 0, 0, 1], INBOUND).into();
     handle.send(NetCommand::Listen { addr: inbound })?;
@@ -313,6 +360,24 @@ fn contracts(root: &Path, healthy: &TcpListener) -> Result<bool> {
         connected(&out).ok_or("numeric recovery failed")?,
         &mut peer,
     )?;
+    driver.execute_checked(NetCommand::Shutdown, &mut out)?;
+    let healthy_v6 = TcpListener::bind(("::1", HEALTHY))?;
+    healthy_v6.set_nonblocking(true)?;
+    for host in ["::1", "localhost"] {
+        out.clear();
+        driver.execute_checked(connect(host, HEALTHY), &mut out)?;
+        poll_until(&mut driver, &mut out, |events| connected(events).is_some())?;
+        let conn = connected(&out).ok_or("IPv6 healthy connection missing")?;
+        let peer_addr = driver.conn_info(conn).ok_or("IPv6 connection info missing")?.peer;
+        let listener = if peer_addr.is_ipv6() { &healthy_v6 } else { healthy };
+        if peer_addr != listener.local_addr()? {
+            return Err(format!("unexpected healthy peer: {peer_addr}").into());
+        }
+        let mut peer = accept(&mut driver, listener)?;
+        exchange(&mut driver, conn, &mut peer)?;
+        println!("HEALTHY host={host} peer={peer_addr} frame_roundtrip=PASS");
+        driver.execute_checked(NetCommand::Shutdown, &mut out)?;
+    }
     drop(driver);
     if handle.send(connect("localhost", HEALTHY)) != Err(NetError::Shutdown) {
         return Err("old handle admitted work after driver drop".into());
@@ -324,10 +389,24 @@ fn contracts(root: &Path, healthy: &TcpListener) -> Result<bool> {
 fn run() -> Result<()> {
     let mut args = std::env::args().skip(1);
     let root = PathBuf::from(args.next().ok_or("dns_queue_cancel_c4806a3d NEW_ISOLATED_DIR")?);
+    let refusal_only = match args.next().as_deref() {
+        None => false,
+        Some("--refusal-only") => true,
+        _ => return Err("unknown probe mode".into()),
+    };
     if args.next().is_some() || !root.is_absolute() || root.exists() {
         return Err("requires a new absolute isolated directory".into());
     }
     std::fs::create_dir(&root)?;
+    if refusal_only {
+        let (mut driver, _) = NetDriver::new(config(&root))?;
+        driver.set_transport_mode(TransportMode::Frames)?;
+        return if refusal_controls(&mut driver)? {
+            Ok(())
+        } else {
+            Err("refusal matrix failed".into())
+        };
+    }
     let mut stale = Vec::new();
     for port in 25100..=25115 {
         let listener = TcpListener::bind(("127.0.0.1", port))?;
@@ -338,7 +417,7 @@ fn run() -> Result<()> {
     healthy.set_nonblocking(true)?;
     let (mut driver, _) = NetDriver::new(config(&root.join("queue")))?;
     driver.set_transport_mode(TransportMode::Frames)?;
-    println!("SCOPE resolver=real_std_to_socket_addrs host=localhost ports=25100..25118 discovery=OFF tls=OFF native=NONE slow_lookup_control=UNAVAILABLE");
+    println!("SCOPE resolver=real_std_to_socket_addrs host=localhost ports=25100..25119 discovery=OFF tls=OFF native=NONE slow_lookup_control=UNAVAILABLE");
     for round in 0..4 {
         queue_round(&mut driver, &stale, &healthy, round, false)?;
     }
@@ -349,7 +428,7 @@ fn run() -> Result<()> {
     let refused = contracts(&root.join("contracts"), &healthy)?;
     no_accept(&stale)?;
     println!(
-        "RESULT queue_and_lifecycle=PASS refused_localhost_control={} slow_dns_head_of_line_regression=NOT_MEASURED",
+        "RESULT queue_and_lifecycle=PASS refusal_matrix={} slow_dns_head_of_line_regression=NOT_MEASURED cache_expiry_runtime=UNVERIFIED",
         if refused { "PASS" } else { "FAIL" }
     );
     if !refused {

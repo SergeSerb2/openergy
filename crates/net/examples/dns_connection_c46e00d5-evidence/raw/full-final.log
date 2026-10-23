@@ -1,0 +1,30 @@
+SCOPE resolver=real_std_to_socket_addrs host=localhost ports=25100..25119 discovery=OFF tls=OFF native=NONE slow_lookup_control=UNAVAILABLE
+QUEUE mode=shutdown round=0 jobs=16 admission_us=238 overflow_rejected=PASS dns_budget_rejections=13 recovery_admission_us=1517 recovery_connected_us=2147 recovery_roundtrip_us=3450 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS peer=127.0.0.1:25116
+QUEUE mode=disconnect_all round=1 jobs=16 admission_us=40 overflow_rejected=PASS dns_budget_rejections=2 recovery_admission_us=234 recovery_connected_us=526 recovery_roundtrip_us=1680 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS peer=127.0.0.1:25116
+QUEUE mode=shutdown round=2 jobs=16 admission_us=69 overflow_rejected=PASS dns_budget_rejections=2 recovery_admission_us=224 recovery_connected_us=586 recovery_roundtrip_us=1756 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS peer=127.0.0.1:25116
+QUEUE mode=disconnect_all round=3 jobs=16 admission_us=26 overflow_rejected=PASS dns_budget_rejections=2 recovery_admission_us=247 recovery_connected_us=737 recovery_roundtrip_us=1996 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS peer=127.0.0.1:25116
+QUEUE mode=deadline round=0 jobs=16 admission_us=23 overflow_rejected=PASS dns_budget_rejections=0 recovery_admission_us=3 recovery_connected_us=402 recovery_roundtrip_us=1621 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS peer=127.0.0.1:25116
+QUEUE mode=deadline round=1 jobs=16 admission_us=26 overflow_rejected=PASS dns_budget_rejections=0 recovery_admission_us=3 recovery_connected_us=476 recovery_roundtrip_us=1722 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS peer=127.0.0.1:25116
+QUEUE mode=deadline round=2 jobs=16 admission_us=22 overflow_rejected=PASS dns_budget_rejections=0 recovery_admission_us=3 recovery_connected_us=643 recovery_roundtrip_us=1894 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS peer=127.0.0.1:25116
+QUEUE mode=deadline round=3 jobs=16 admission_us=21 overflow_rejected=PASS dns_budget_rejections=0 recovery_admission_us=3 recovery_connected_us=674 recovery_roundtrip_us=1915 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS peer=127.0.0.1:25116
+FAILURE case=invalid_hostname events=[ConnectFailed { host: "invalid\0hostname", port: 25117, error: "dns_failed: file name contained an unexpected NUL byte" }] classified_dns=PASS
+RESOLVER host=localhost addresses=[[::1]:25117, 127.0.0.1:25117]
+OS_REFUSAL addr=127.0.0.1:25117 exclusive_bind=PASS kind=ConnectionRefused errno=Some(61)
+OS_REFUSAL addr=[::1]:25117 exclusive_bind=PASS kind=ConnectionRefused errno=Some(61)
+FAILURE host=127.0.0.1 port=25117 events=[ConnectFailed { host: "127.0.0.1", port: 25117, error: "connect_refused: Connection refused (os error 61)" }] classified_refused=PASS elapsed_us=22678
+FAILURE host=::1 port=25117 events=[ConnectFailed { host: "::1", port: 25117, error: "connect_refused: Connection refused (os error 61)" }] classified_refused=PASS elapsed_us=22784
+FAILURE host=localhost port=25117 events=[ConnectFailed { host: "localhost", port: 25117, error: "connect_refused: Connection refused (os error 61)" }] classified_refused=PASS elapsed_us=23302
+FAILURE host=localhost port=25117 events=[ConnectFailed { host: "localhost", port: 25117, error: "connect_refused: Connection refused (os error 61)" }] classified_refused=PASS elapsed_us=23290
+FAILURE host=localhost port=25117 events=[ConnectFailed { host: "localhost", port: 25117, error: "connect_refused: Connection refused (os error 61)" }] classified_refused=PASS elapsed_us=23156
+RESOLVER host=localhost addresses=[[::1]:25119, 127.0.0.1:25119]
+OS_REFUSAL addr=127.0.0.1:25119 exclusive_bind=PASS kind=ConnectionRefused errno=Some(61)
+OS_REFUSAL addr=[::1]:25119 exclusive_bind=PASS kind=ConnectionRefused errno=Some(61)
+FAILURE host=127.0.0.1 port=25119 events=[ConnectFailed { host: "127.0.0.1", port: 25119, error: "connect_refused: Connection refused (os error 61)" }] classified_refused=PASS elapsed_us=22758
+FAILURE host=::1 port=25119 events=[ConnectFailed { host: "::1", port: 25119, error: "connect_refused: Connection refused (os error 61)" }] classified_refused=PASS elapsed_us=22795
+FAILURE host=localhost port=25119 events=[ConnectFailed { host: "localhost", port: 25119, error: "connect_refused: Connection refused (os error 61)" }] classified_refused=PASS elapsed_us=23280
+FAILURE host=localhost port=25119 events=[ConnectFailed { host: "localhost", port: 25119, error: "connect_refused: Connection refused (os error 61)" }] classified_refused=PASS elapsed_us=22966
+FAILURE host=localhost port=25119 events=[ConnectFailed { host: "localhost", port: 25119, error: "connect_refused: Connection refused (os error 61)" }] classified_refused=PASS elapsed_us=23496
+HEALTHY host=::1 peer=[::1]:25116 frame_roundtrip=PASS
+HEALTHY host=localhost peer=[::1]:25116 frame_roundtrip=PASS
+CONTRACTS same_driver=PASS same_handle=PASS same_waker=PASS disconnect_all_keeps_listener=PASS shutdown_closes_listener=PASS reconfigure=PASS invalid_reconfigure_recovery=PASS localhost=PASS numeric_loopback=PASS driver_drop=PASS
+RESULT queue_and_lifecycle=PASS refusal_matrix=PASS slow_dns_head_of_line_regression=NOT_MEASURED cache_expiry_runtime=UNVERIFIED

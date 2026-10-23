@@ -1,5 +1,12 @@
 # DNS queue cancellation and deadline evidence
 
+Historical candidate evidence follows. The refusal failure was later diagnosed
+and fixed in the [connection-readiness follow-up](../dns_connection_c46e00d5-evidence/README.md).
+Its original baseline and patched raw reports below remain unchanged, including
+their exit-1 results. Personal Cargo paths in this README/metadata and personal
+worktree prefixes in compiler logs were sanitized. Exact originals are retained
+privately; result values were not changed.
+
 Starting source: clean isolated checkout on `t3/cancel-stale-dns-lookups`, exactly
 `ac5c45081a9e060392cb850eddd625f07b591bfe`. The only product change is in
 `crates/net/src/reactor.rs`. The probe uses public `NetDriver`/`NetHandle` commands,
@@ -95,11 +102,11 @@ remain external gates. No PR, push, merge, publication, or live service change r
 
 ```sh
 MACOSX_DEPLOYMENT_TARGET=15.0 CARGO_BUILD_JOBS=2 RUSTUP_TOOLCHAIN=1.99.1 \
-  nice -n 15 /Users/serge/.cargo/bin/cargo +1.99.1 build --locked --offline -j 2 \
+  nice -n 15 $HOME/.cargo/bin/cargo +1.99.1 build --locked --offline -j 2 \
   -p openergy-net --example dns_queue_cancel_c4806a3d
 nice -n 15 target/debug/examples/dns_queue_cancel_c4806a3d /tmp/NEW-UNUSED-DNS-PROBE-DIR
 MACOSX_DEPLOYMENT_TARGET=15.0 CARGO_BUILD_JOBS=2 RUSTUP_TOOLCHAIN=1.99.1 \
-  nice -n 15 /Users/serge/.cargo/bin/cargo +1.99.1 clippy --locked --offline -j 2 \
+  nice -n 15 $HOME/.cargo/bin/cargo +1.99.1 clippy --locked --offline -j 2 \
   -p openergy-net --lib --example dns_queue_cancel_c4806a3d -- -D warnings
 ```
 

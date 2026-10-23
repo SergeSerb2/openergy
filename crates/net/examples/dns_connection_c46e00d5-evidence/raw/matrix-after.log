@@ -1,0 +1,7 @@
+OS_REFUSAL addr=127.0.0.1:25117 exclusive_bind=PASS kind=ConnectionRefused errno=Some(61)
+OS_REFUSAL addr=[::1]:25117 exclusive_bind=PASS kind=ConnectionRefused errno=Some(61)
+FAILURE host=127.0.0.1 port=25117 events=[ConnectFailed { host: "127.0.0.1", port: 25117, error: "connect_refused: Connection refused (os error 61)" }] classified_refused=PASS elapsed_us=22983
+FAILURE host=::1 port=25117 events=[ConnectFailed { host: "::1", port: 25117, error: "connect_refused: Connection refused (os error 61)" }] classified_refused=PASS elapsed_us=22744
+FAILURE host=localhost port=25117 events=[ConnectFailed { host: "localhost", port: 25117, error: "connect_refused: Connection refused (os error 61)" }] classified_refused=PASS elapsed_us=23331
+FAILURE host=localhost port=25117 events=[ConnectFailed { host: "localhost", port: 25117, error: "connect_refused: Connection refused (os error 61)" }] classified_refused=PASS elapsed_us=23153
+FAILURE host=localhost port=25117 events=[ConnectFailed { host: "localhost", port: 25117, error: "connect_refused: Connection refused (os error 61)" }] classified_refused=PASS elapsed_us=22948

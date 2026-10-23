@@ -1803,22 +1803,29 @@ impl NetDriver {
                     c.write_blocked = false;
                 }
                 if c.connecting && (readable || writable || closed) {
-                    match c.stream.take_error() {
-                        Ok(None) => {
+                    // A retry keeps its token, so another event in this batch
+                    // can describe the previous socket. Empty SO_ERROR alone
+                    // does not prove the new nonblocking connect completed.
+                    let completion = c.stream.take_error().and_then(|error| match error {
+                        Some(error) => Err(error),
+                        None => c.stream.peer_addr().map(|_| ()),
+                    });
+                    match completion {
+                        Ok(()) => {
                             c.connecting = false;
                             let _ = c.stream.set_nodelay(true);
                             if c.tls.is_some() {
                                 c.client_hello_at = Some(Instant::now() + c.client_hello_delay);
                             }
                         }
-                        result => {
+                        Err(error) if error.kind() == io::ErrorKind::NotConnected => continue,
+                        #[cfg(unix)]
+                        Err(error) if error.raw_os_error() == Some(libc::EINPROGRESS) => continue,
+                        Err(error) => {
                             c.failure = Some(match c.retry_address(self.poll.registry()) {
                                 Ok(true) => continue,
                                 Err(error) => error.to_string(),
-                                Ok(false) => match result {
-                                    Ok(Some(e)) | Err(e) => crate::connect_error::io_failure(e).to_string(),
-                                    _ => "TCP connect failed".into(),
-                                },
+                                Ok(false) => crate::connect_error::io_failure(error).to_string(),
                             });
                             self.remove(ConnId(token.0 as u64), DisconnectReason::Other, out);
                             continue;

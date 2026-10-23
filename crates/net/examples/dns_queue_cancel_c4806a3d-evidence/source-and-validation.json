@@ -49,7 +49,7 @@
   "checks": [
     {
       "command": [
-        "/Users/serge/.cargo/bin/rustc",
+        "$HOME/.cargo/bin/rustc",
         "+1.99.1",
         "--version"
       ],
@@ -59,7 +59,7 @@
     },
     {
       "command": [
-        "/Users/serge/.cargo/bin/cargo",
+        "$HOME/.cargo/bin/cargo",
         "+1.99.1",
         "--version"
       ],
@@ -69,7 +69,7 @@
     },
     {
       "command": [
-        "/Users/serge/.cargo/bin/rustfmt",
+        "$HOME/.cargo/bin/rustfmt",
         "+1.99.1",
         "--check",
         "crates/net/src/reactor.rs",

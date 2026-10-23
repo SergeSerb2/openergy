@@ -1,0 +1,8 @@
+OS_REFUSAL addr=127.0.0.1:25117 exclusive_bind=PASS kind=ConnectionRefused errno=Some(61)
+OS_REFUSAL addr=[::1]:25117 exclusive_bind=PASS kind=ConnectionRefused errno=Some(61)
+FAILURE host=127.0.0.1 port=25117 events=[ConnectFailed { host: "127.0.0.1", port: 25117, error: "connect_refused: Connection refused (os error 61)" }] classified_refused=PASS elapsed_us=23328
+FAILURE host=::1 port=25117 events=[ConnectFailed { host: "::1", port: 25117, error: "connect_refused: Connection refused (os error 61)" }] classified_refused=PASS elapsed_us=23317
+FAILURE host=localhost port=25117 events=[Connected { conn: ConnId(4), peer: 127.0.0.1:25117, fingerprint: None, tls: false, tls_version: None }, Disconnected { conn: ConnId(4), reason: ClosedByPeer }] classified_refused=FAIL elapsed_us=23998
+FAILURE host=localhost port=25117 events=[Connected { conn: ConnId(5), peer: 127.0.0.1:25117, fingerprint: None, tls: false, tls_version: None }, Disconnected { conn: ConnId(5), reason: ClosedByPeer }] classified_refused=FAIL elapsed_us=22499
+FAILURE host=localhost port=25117 events=[Connected { conn: ConnId(6), peer: 127.0.0.1:25117, fingerprint: None, tls: false, tls_version: None }, Disconnected { conn: ConnId(6), reason: ClosedByPeer }] classified_refused=FAIL elapsed_us=23506
+dns_queue_cancel_c4806a3d: refusal matrix failed
