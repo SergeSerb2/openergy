@@ -2,13 +2,14 @@
 //! information only. mdns-sd owns its own internal worker thread; this wrapper
 //! is polled by the daemon io thread and does not create a forwarding thread.
 use crate::{identity::failed, DiscoveredPeer, Fingerprint, NetError};
-use mdns_sd::{DaemonEvent, IfKind, Receiver, ServiceDaemon, ServiceEvent, ServiceInfo};
+use mdns_sd::{DaemonEvent, IfKind, Receiver, ServiceDaemon, ServiceEvent, ServiceInfo, TryRecvError};
 use std::{
     collections::BTreeMap,
     time::{Duration, Instant},
 };
 
 pub const SERVICE_TYPE: &str = "_openergy._tcp.local.";
+const BROWSE_RETRY: Duration = Duration::from_secs(1);
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum DiscoveryScope {
     Loopback,
@@ -24,6 +25,7 @@ pub struct Discovery {
     scope: DiscoveryScope,
     dirty: bool,
     last_snapshot: Instant,
+    browse_retry: Option<Instant>,
 }
 impl Discovery {
     /// Loopback excludes all interfaces before browsing or advertising. A custom
@@ -65,6 +67,7 @@ impl Discovery {
             scope,
             dirty: false,
             last_snapshot: Instant::now() - Duration::from_secs(1),
+            browse_retry: None,
         })
     }
     pub fn advertise(&mut self, name: &str, port: u16, fp: Fingerprint) -> Result<(), NetError> {
@@ -91,12 +94,36 @@ impl Discovery {
     }
     /// Returns changed snapshots at most once per second.
     pub fn poll(&mut self) -> Option<Vec<DiscoveredPeer>> {
+        if self.browse_retry.is_some_and(|deadline| Instant::now() >= deadline) {
+            // A closed subscription can be recreated on the existing worker.
+            // Back off even if its bounded command queue is still full.
+            self.browse_retry = Some(Instant::now() + BROWSE_RETRY);
+            match self.daemon.browse(SERVICE_TYPE) {
+                Ok(events) => {
+                    self.events = Some(events);
+                    self.browse_retry = None;
+                }
+                Err(error) => log::warn!("mDNS discovery browse retry failed: {error}"),
+            }
+        }
         for _ in 0..256 {
             let Some(events) = &self.events else {
                 break;
             };
-            let Ok(event) = events.try_recv() else {
-                break;
+            let event = match events.try_recv() {
+                Ok(event) => event,
+                Err(TryRecvError::Empty) => break,
+                Err(TryRecvError::Disconnected) => {
+                    // mdns-sd closes a full event channel. An empty-looking
+                    // disconnected channel otherwise freezes discovery forever.
+                    // Lost removals make the old snapshot unreliable.
+                    self.events = None;
+                    self.browse_retry = Some(Instant::now() + BROWSE_RETRY);
+                    log::warn!("mDNS discovery subscription closed; retrying");
+                    self.dirty |= !self.peers.is_empty();
+                    self.peers.clear();
+                    break;
+                }
             };
             match event {
                 ServiceEvent::ServiceResolved(info) => {
@@ -147,6 +174,8 @@ impl Discovery {
             .collect()
     }
     pub fn shutdown(&mut self) -> Result<(), NetError> {
+        self.events = None;
+        self.browse_retry = None;
         if let Some(name) = self.published.take() {
             self.daemon.unregister(&name).map_err(failed)?;
         }
