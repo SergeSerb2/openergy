@@ -97,6 +97,8 @@ impl Discovery {
         if self.browse_retry.is_some_and(|deadline| Instant::now() >= deadline) {
             // A closed subscription can be recreated on the existing worker.
             // Back off even if its bounded command queue is still full.
+            // This cannot repair a retained-cache replay that itself fills
+            // mdns-sd's channel; that needs an upstream bounded-replay API.
             self.browse_retry = Some(Instant::now() + BROWSE_RETRY);
             match self.daemon.browse(SERVICE_TYPE) {
                 Ok(events) => {
@@ -173,13 +175,15 @@ impl Discovery {
             })
             .collect()
     }
+    /// Requests worker shutdown; success means submission, not a worker join.
+    /// mdns-sd can also enqueue Exit and then report a wake-socket error.
     pub fn shutdown(&mut self) -> Result<(), NetError> {
         self.events = None;
         self.browse_retry = None;
-        if let Some(name) = self.published.take() {
-            self.daemon.unregister(&name).map_err(failed)?;
-        }
-        self.daemon.stop_browse(SERVICE_TYPE).map_err(failed)?;
+        self.published = None;
+        // Exit already unregisters services and stops browsing on the owned
+        // worker. Separate cleanup commands can fail before Exit is submitted
+        // (e.g. no descriptor for mdns-sd's temporary command-wake socket).
         self.daemon.shutdown().map_err(failed)?;
         Ok(())
     }

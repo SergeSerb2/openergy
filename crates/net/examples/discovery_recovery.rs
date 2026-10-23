@@ -1,6 +1,7 @@
 //! Real custom-port loopback multicast with a separate publisher process.
 //! Exercise normal discovery, an overflowing upstream subscription, recovery,
-//! TXT updates and goodbye removal. No native backend or production endpoint.
+//! TXT updates and goodbye removal, including selected peers while all 800
+//! burst advertisements stay live. No native backend or production endpoint.
 use mdns_sd::{DaemonStatus, IfKind, ServiceDaemon, ServiceInfo, UnregisterStatus};
 use openergy_net::discovery::{Discovery, DiscoveryScope, SERVICE_TYPE};
 use std::{
@@ -74,7 +75,8 @@ fn publisher(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
     let mut recovery = None;
     for line in io::stdin().lock().lines() {
         let phase = line?;
-        match phase.as_str() {
+        let (phase_name, selected) = phase.split_once(' ').unwrap_or((&phase, ""));
+        match phase_name {
             "burst" => {
                 for i in 0..BURST {
                     let name = format!("burst-{i:04}");
@@ -86,6 +88,32 @@ fn publisher(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
                 unregister(&daemon, &burst)?;
                 burst.clear();
                 thread::sleep(Duration::from_secs(2));
+            }
+            "retained-update" => {
+                if !burst.iter().any(|full| full == &format!("{selected}.{SERVICE_TYPE}")) {
+                    return Err("selected service is not in the live burst".into());
+                }
+                register(
+                    &daemon,
+                    selected,
+                    &format!("{selected}-retained"),
+                    service_port + 1,
+                    "invalid-hint",
+                )?;
+            }
+            "retained-remove" => {
+                // Keep 800 burst advertisements live even while removing the
+                // selected peer. Admission of the replacement is not required.
+                burst.push(register(
+                    &daemon,
+                    "burst-replacement",
+                    "burst-replacement",
+                    service_port,
+                    "0123456789abcdef",
+                )?);
+                let full = format!("{selected}.{SERVICE_TYPE}");
+                unregister(&daemon, std::slice::from_ref(&full))?;
+                burst.retain(|name| name != &full);
             }
             "recover" => {
                 recovery = Some(register(
@@ -121,7 +149,7 @@ fn publisher(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
             }
             _ => return Err("invalid publisher phase".into()),
         }
-        fs::write(root.join(format!("ready-{phase}")), "ready")?;
+        fs::write(root.join(format!("ready-{phase_name}")), "ready")?;
     }
     stop(&daemon)
 }
@@ -145,8 +173,12 @@ impl Publisher {
         Ok(())
     }
     fn phase(&mut self, phase: &str) -> Result<()> {
-        writeln!(self.child.stdin.as_mut().ok_or("publisher stdin missing")?, "{phase}")?;
+        self.begin(phase)?;
         self.ready(phase)
+    }
+    fn begin(&mut self, phase: &str) -> Result<()> {
+        writeln!(self.child.stdin.as_mut().ok_or("publisher stdin missing")?, "{phase}")?;
+        Ok(())
     }
 }
 impl Drop for Publisher {
@@ -201,14 +233,106 @@ fn probe(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
         "real-upstream-channel-overflow",
         sentinel.is_disconnected() && sentinel.len() == 1000,
     ));
+    let metrics = retry(|| sentinel_daemon.get_metrics())?.recv_timeout(Duration::from_secs(3))?;
+    println!("RETAINED_CACHE_METRICS={metrics:?}");
+    for attempt in 1..=2 {
+        let replay = retry(|| sentinel_daemon.browse(SERVICE_TYPE))?;
+        let mut drained = 0;
+        let start = Instant::now();
+        while start.elapsed() < Duration::from_millis(500) {
+            thread::sleep(Duration::from_millis(20));
+            drained += replay.try_iter().take(256).count();
+            if replay.is_disconnected() && replay.is_empty() {
+                break;
+            }
+        }
+        println!(
+            "RETAINED_REPLAY attempt={attempt} drained={drained} disconnected={} elapsed_ms={}",
+            replay.is_disconnected(),
+            start.elapsed().as_millis()
+        );
+    }
+    retry(|| sentinel_daemon.stop_browse(SERVICE_TYPE))?;
+    let after_stop = retry(|| sentinel_daemon.get_metrics())?.recv_timeout(Duration::from_secs(3))?;
+    println!("RETAINED_CACHE_AFTER_STOP={after_stop:?}");
     // Deliberately stop draining during the publisher's burst. This models a
     // delayed caller, using real network events rather than injected messages.
     let mut largest = 0;
-    observe(&mut discovery, 2, |peers| {
+    let mut selected = None;
+    let mut empty_polls = 0;
+    let mut full_polls = 0;
+    let mut snapshots = 0;
+    let mut snapshot_spacing_ok = true;
+    let mut last_snapshot = None;
+    let retained_start = Instant::now();
+    while retained_start.elapsed() < Duration::from_secs(6) {
+        if let Some(peers) = discovery.poll() {
+            let now = Instant::now();
+            if let Some(previous) = last_snapshot {
+                snapshot_spacing_ok &= now.duration_since(previous) >= Duration::from_secs(1);
+            }
+            last_snapshot = Some(now);
+            snapshots += 1;
+            largest = largest.max(peers.len());
+        }
+        let peers = discovery.snapshot();
         largest = largest.max(peers.len());
+        // Permit the original one-second recovery backoff. The retained
+        // namespace must then remain useful under normal 20ms polling.
+        if retained_start.elapsed() >= Duration::from_secs(2) {
+            empty_polls += usize::from(peers.is_empty());
+            full_polls += usize::from(peers.len() == 64);
+        }
+        thread::sleep(Duration::from_millis(20));
+    }
+    results.push(("snapshot-cap", largest == 64));
+    results.push(("snapshot-emission-spacing", snapshot_spacing_ok && snapshots > 0));
+    results.push(("retained-namespace-stays-useful", full_polls > 0 && empty_polls == 0));
+    // Choose from the current snapshot immediately before updating. A full
+    // display need not admit a new peer, so mutate an actually selected one.
+    observe(&mut discovery, 2, |peers| {
+        selected = peers
+            .iter()
+            .find(|p| p.name.starts_with("burst-"))
+            .map(|p| p.name.clone());
+        selected.is_some()
+    });
+    let selected = selected.ok_or("no selected burst peer")?;
+    publisher.begin(&format!("retained-update {selected}"))?;
+    let updated_name = format!("{selected}-retained");
+    let update_seen = observe(&mut discovery, 8, |peers| {
+        peers
+            .iter()
+            .any(|p| p.name == updated_name && p.port == service_port + 1 && p.fingerprint_hint.is_none())
+    });
+    publisher.ready("retained-update")?;
+    let mut update_stays_fresh = update_seen;
+    if update_seen {
+        observe(&mut discovery, 2, |peers| {
+            update_stays_fresh &= peers
+                .iter()
+                .any(|p| p.name == updated_name && p.port == service_port + 1 && p.fingerprint_hint.is_none());
+            false
+        });
+    }
+    results.push(("retained-selected-peer-live-update", update_seen && update_stays_fresh));
+    publisher.begin(&format!("retained-remove {selected}"))?;
+    let mut removal_seen = false;
+    let mut removal_regressed = false;
+    observe(&mut discovery, 5, |peers| {
+        let present = peers.iter().any(|p| p.name == selected || p.name == updated_name);
+        if removal_seen && present {
+            removal_regressed = true;
+        }
+        removal_seen |= !present && !peers.is_empty();
         false
     });
-    results.push(("snapshot-cap", largest == 64));
+    publisher.ready("retained-remove")?;
+    results.push((
+        "retained-selected-peer-goodbye",
+        update_seen && update_stays_fresh && removal_seen && !removal_regressed,
+    ));
+    println!("RETAINED_NAMESPACE burst={BURST} selected={selected} full_polls={full_polls} empty_polls={empty_polls} snapshots={snapshots} update_seen={update_seen} update_stays_fresh={update_stays_fresh} removal_seen={removal_seen} removal_regressed={removal_regressed}");
     publisher.phase("clear")?;
     observe(&mut discovery, 2, |_| false);
     publisher.phase("recover")?;
@@ -240,13 +364,12 @@ fn probe(root: &Path, mdns_port: u16, service_port: u16) -> Result<()> {
         observe(&mut discovery, 5, |peers| peers.is_empty()),
     ));
     results.push(("publisher-exits-zero", publisher.child.wait()?.success()));
-    discovery.shutdown()?;
-    stop(&sentinel_daemon)?;
+    results.push(("discovery-shutdown-submitted", discovery.shutdown().is_ok()));
+    results.push(("sentinel-worker-shutdown-ack", stop(&sentinel_daemon).is_ok()));
     for (name, passed) in &results {
         println!("CHECK {name}={passed}");
     }
     println!("BURST_SERVICES={BURST} SNAPSHOT_PEAK={largest}");
-    println!("CHECK worker-shutdown=true");
     if results.iter().all(|(_, passed)| *passed) {
         Ok(())
     } else {
