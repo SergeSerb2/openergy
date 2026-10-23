@@ -299,5 +299,107 @@
     "No retained-namespace, deterministic slow-DNS, Windows or native input/clipboard acceptance.",
     "Success of the shutdown API means submission; queue-full Exit rejection remains a boundary.",
     "Original security-review and trusted distribution gates remain open."
-  ]
+  ],
+  "later_release_validation": {
+    "source_commit": "986063a55bfa150faedb22ba0701c91f8c5216e5",
+    "runtime_inputs_identical_to_integration": true,
+    "source_inputs_unchanged": 114,
+    "checks": {
+      "fmt": {
+        "source": "986063a55bfa150faedb22ba0701c91f8c5216e5",
+        "command": [
+          "nice",
+          "-n",
+          "15",
+          "cargo",
+          "+1.99.1",
+          "fmt",
+          "--all",
+          "--",
+          "--check"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.344,
+        "observed_at_utc": "2026-10-23T04:24:59.010701+00:00"
+      },
+      "clippy": {
+        "source": "986063a55bfa150faedb22ba0701c91f8c5216e5",
+        "command": [
+          "nice",
+          "-n",
+          "15",
+          "cargo",
+          "+1.99.1",
+          "clippy",
+          "--workspace",
+          "--all-targets",
+          "--release",
+          "--locked",
+          "--offline",
+          "-j",
+          "2",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 1.309,
+        "observed_at_utc": "2026-10-23T04:25:00.319897+00:00"
+      },
+      "build": {
+        "source": "986063a55bfa150faedb22ba0701c91f8c5216e5",
+        "command": [
+          "nice",
+          "-n",
+          "15",
+          "cargo",
+          "+1.99.1",
+          "build",
+          "--release",
+          "--locked",
+          "--offline",
+          "-p",
+          "openergy-daemon",
+          "-p",
+          "openergy-e2e",
+          "-j",
+          "2"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 18.903,
+        "observed_at_utc": "2026-10-23T04:25:19.223258+00:00"
+      },
+      "version": {
+        "command": [
+          "<private>/openergy",
+          "version"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.129,
+        "stdout": "openergy 0.1.0\n",
+        "stderr": ""
+      }
+    },
+    "binaries": {
+      "openergy": {
+        "sha256": "762453b3ba6b59770b540859c3d3bb730f82392c7ad2ede7f260eafda27a2c6a",
+        "bytes": 3707520
+      },
+      "openergy-e2e": {
+        "sha256": "00380769d60d66ca86963b229186dd1fd568f438d3f8d6274eda6473075a64e5",
+        "bytes": 1050688
+      }
+    },
+    "size_comparison": {
+      "baseline_source": "ac5c45081a9e060392cb850eddd625f07b591bfe",
+      "baseline_sha256": "e95f7c7476358e3801892a6fd4f76adee10fa015edc819f75da0fdc724bd67dd",
+      "baseline_bytes": 3707520,
+      "source_commit": "986063a55bfa150faedb22ba0701c91f8c5216e5",
+      "current_sha256": "762453b3ba6b59770b540859c3d3bb730f82392c7ad2ede7f260eafda27a2c6a",
+      "current_bytes": 3707520,
+      "difference_bytes": 0,
+      "scope": "Mac ARM64 release daemon only; source differs by the owned discovery shutdown fix plus evidence/probes. This is not a Synergy runtime or package comparison."
+    },
+    "scope": "Build, lint, formatting and version command; no additional live daemon flow. The real owned-shutdown flow is recorded separately above."
+  }
 }

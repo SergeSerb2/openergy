@@ -45,6 +45,17 @@ This example is not the release daemon. All **114 tracked Rust, Cargo and
 toolchain inputs** matched the exact source commit after the run. The final
 audit found no remaining probe children or assigned UDP listeners.
 
+At the later documentation commit
+`986063a55bfa150faedb22ba0701c91f8c5216e5`, those same 114 inputs were unchanged.
+Workspace formatting, strict all-target release Clippy, and the locked offline
+release daemon/E2E-runner build passed with pinned Rust and two low-priority jobs.
+The frozen daemon's real `version` command returned `openergy 0.1.0`.
+Its size stayed **3,707,520 bytes**, equal to the earlier `ac5c450` release daemon.
+Its new SHA-256 is
+`762453b3ba6b59770b540859c3d3bb730f82392c7ad2ede7f260eafda27a2c6a`.
+This adds build and size evidence; it does not add a live daemon-flow result or
+a Synergy performance comparison.
+
 The [machine record](discovery-owned-shutdown.json) contains commands, source
 hashes, all four observations, raw-report hashes and the postflight audit.
 Original local outputs remain private. The candidate's
