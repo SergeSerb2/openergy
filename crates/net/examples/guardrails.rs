@@ -1,6 +1,6 @@
 //! Exercises real failed connects, a stalled socket, connect deadline, and a
 //! cross-thread wake. No platform code or production/LAN sockets are used.
-use openergy_net::{NetCommand, NetConfig, NetDriver, NetEvent, Priority, TransportMode};
+use openergy_net::{NetCommand, NetConfig, NetDriver, NetError, NetEvent, Priority, TransportMode};
 use openergy_session::DisconnectReason;
 use std::{
     net::{TcpListener, TcpStream},
@@ -67,17 +67,40 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     };
     out.clear();
     let start = Instant::now();
+    let mut refused = 0;
     for _ in 0..5 {
         let mut payload = b"SLOW".to_vec();
         payload.resize(1024 * 1024, 0);
-        driver.execute(
+        match driver.execute_checked(
             NetCommand::SendFrame {
                 conn,
                 payload,
                 priority: Priority::Input,
             },
             &mut out,
-        );
+        ) {
+            Ok(()) => {}
+            Err(NetError::QueueFull) => refused += 1,
+            Err(error) => return Err(error.into()),
+        }
+    }
+    if refused == 0 || driver.conn_info(conn).is_none() {
+        return Err("input budget did not refuse excess input while preserving its peer".into());
+    }
+    println!("INPUT_BUDGET refused={refused} peer_preserved=PASS");
+    // Input is refused before crossing the high-water limit. Control keeps its
+    // reserved allowance and must still trigger the slow-peer watchdog.
+    for _ in 0..2 {
+        let mut payload = b"SLOW".to_vec();
+        payload.resize(1024 * 1024, 0);
+        driver.execute_checked(
+            NetCommand::SendFrame {
+                conn,
+                payload,
+                priority: Priority::Control,
+            },
+            &mut out,
+        )?;
     }
     while start.elapsed() < Duration::from_secs(4)
         && !out.iter().any(|e| {
