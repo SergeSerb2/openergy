@@ -1,0 +1,25 @@
+{
+  "browser": "Chrome headless with fresh private profiles",
+  "t3_preview_error": "Preview automation snapshot timed out after 15000ms.",
+  "t3_preview_attempts": 2,
+  "per_process_resolver_mapping": {
+    "openergy-updates.sergeserbinenko.com": "172.67.192.42"
+  },
+  "public_dns_verified_separately": true,
+  "certificate_verification_disabled": false,
+  "results": [
+    {
+      "path": "/index.html",
+      "browser_exit": 0,
+      "dom_sha256": "a682c5bcbfe3117a3daef7ed4c5ad7e6957265e283e2a5df4a8803849c82af8e",
+      "expected_content_present": true
+    },
+    {
+      "path": "/appcast.xml",
+      "browser_exit": 0,
+      "dom_sha256": "d923b62e559cd8b09f9335e217ec3c1b623f969031c4859de7c6d3afc5412c99",
+      "expected_content_present": true
+    }
+  ],
+  "live_browser_profile_used": false
+}

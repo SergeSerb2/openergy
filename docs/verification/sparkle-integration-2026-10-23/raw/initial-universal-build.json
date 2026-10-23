@@ -1,0 +1,28 @@
+[
+  {
+    "name": "resolve",
+    "arguments": [
+      "nice",
+      "-n",
+      "15",
+      "swift",
+      "package",
+      "--package-path",
+      "apps/macos",
+      "--scratch-path",
+      "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/swift",
+      "resolve"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 3.52526925
+  },
+  {
+    "name": "bundle",
+    "arguments": [
+      "bash",
+      "apps/macos/scripts/bundle.sh"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 116.191959625
+  }
+]

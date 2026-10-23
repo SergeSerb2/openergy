@@ -1,0 +1,78 @@
+[
+  {
+    "name": "unconfigured",
+    "exit": 0,
+    "elapsed_seconds": 0.854616666,
+    "bundle_identifier": "dev.openergy.updater-e2e.d78795a9ae4f40549bacb8e26e354634",
+    "arguments": [
+      "nice",
+      "-n",
+      "15",
+      "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/e2e-local-unconfigured/Openergy.app/Contents/MacOS/Openergy",
+      "--updater-e2e",
+      "/private/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/e2e-local-unconfigured",
+      "--updater-config",
+      "/private/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/e2e-local-unconfigured/config",
+      "--updater-feed",
+      "http://127.0.0.1:25580/unused.xml",
+      "--updater-expect",
+      "unconfigured",
+      "--updater-timeout",
+      "25"
+    ],
+    "daemon_started": false,
+    "outcome": {
+      "candidateStoppedBeforeDownload": false,
+      "checks": 0,
+      "cycleFinished": false,
+      "elapsedSeconds": 0.5218129583372502,
+      "errorCode": 1,
+      "errorDomain": "dev.openergy.updater.configuration",
+      "expected": "unconfigured",
+      "feedLoaded": false,
+      "limit": "Feed parsing and candidate selection only. Signed archive download, installation and relaunch are not exercised.",
+      "outcome": "unconfigured-no-request",
+      "passed": true,
+      "schemaVersion": 1,
+      "started": false
+    }
+  },
+  {
+    "name": "cloudflare",
+    "exit": 1,
+    "elapsed_seconds": 0.342818584,
+    "bundle_identifier": "dev.openergy.updater-e2e.38a3ad0e75cd4a688468f10d61f1af2e",
+    "arguments": [
+      "nice",
+      "-n",
+      "15",
+      "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/e2e-local-cloudflare/Openergy.app/Contents/MacOS/Openergy",
+      "--updater-e2e",
+      "/private/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/e2e-local-cloudflare",
+      "--updater-config",
+      "/private/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/e2e-local-cloudflare/config",
+      "--updater-feed",
+      "https://openergy-updates.sergeserbinenko.com/appcast.xml",
+      "--updater-expect",
+      "current",
+      "--updater-timeout",
+      "25"
+    ],
+    "daemon_started": false,
+    "outcome": {
+      "candidateStoppedBeforeDownload": false,
+      "checks": 1,
+      "cycleFinished": true,
+      "elapsedSeconds": 0.024104750002152286,
+      "errorCode": 2001,
+      "errorDomain": "SUSparkleErrorDomain",
+      "expected": "current",
+      "feedLoaded": false,
+      "limit": "Feed parsing and candidate selection only. Signed archive download, installation and relaunch are not exercised.",
+      "outcome": "feed-failure",
+      "passed": false,
+      "schemaVersion": 1,
+      "started": true
+    }
+  }
+]

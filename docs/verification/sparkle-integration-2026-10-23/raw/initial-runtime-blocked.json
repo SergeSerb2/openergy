@@ -1,0 +1,25 @@
+[
+  {
+    "name": "unconfigured",
+    "exit": -6,
+    "elapsed_seconds": 0.21911979199999998,
+    "bundle_identifier": "dev.openergy.updater-e2e.cac4234e8db74d1cbdca506544d09bd3",
+    "arguments": [
+      "nice",
+      "-n",
+      "15",
+      "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/e2e-unconfigured/Openergy.app/Contents/MacOS/Openergy",
+      "--updater-e2e",
+      "/private/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/e2e-unconfigured",
+      "--updater-config",
+      "/private/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/e2e-unconfigured/config",
+      "--updater-feed",
+      "http://127.0.0.1:25580/unused.xml",
+      "--updater-expect",
+      "unconfigured",
+      "--updater-timeout",
+      "25"
+    ],
+    "daemon_started": false
+  }
+]
