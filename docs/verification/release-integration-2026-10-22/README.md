@@ -12,6 +12,10 @@ or mocks were added. Native backend probes ran only inside isolated Linux Xvfb.
 
 ## Final hardening follow-up
 
+The [live pin revocation follow-up](trust-revocation-cutoff.md) records input
+accepted after a successful revoke reply, the immediate-disconnect fix,
+the new A13 real-TLS regression, and stored-trust and persistence-failure controls.
+
 The [incomplete IPC request follow-up](ipc-read-deadlines.md) records the resumed
 hardening pass, a reproduced client-slot exhaustion failure, absolute request
 read deadlines, and real CLI/socket regressions. It also records the maintainer's

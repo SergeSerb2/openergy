@@ -47,6 +47,10 @@ computers and users that should have that access.
 - A new or changed identity can need approval. Do not approve an unexpected
   fingerprint to clear an error. Verify a deliberate key rotation on both
   computers. Revoke obsolete pins and reconnect to check the resulting state.
+- Use the app or `ctl trust.revoke` for an active peer. A successful live revoke
+  removes matching connections and their temporary explicit pin before replying.
+  Offline trust commands edit stored lists; they do not clear an in-memory
+  explicit pin on an existing connection.
 - Offline `trust approve` stores a pin in **both** server and client lists.
   Live IPC approval knows the pending connection's role. Use the app or
   `ctl trust.approve` when you need approval for that role only.

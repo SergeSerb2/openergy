@@ -1,0 +1,581 @@
+{
+  "date": "2026-10-22",
+  "environment": {
+    "os": "macOS 27.2",
+    "architecture": "aarch64",
+    "platform": "virtual",
+    "transport": "real TLS loopback",
+    "rust": "1.99.1",
+    "macos_deployment_target": "15.0",
+    "cargo_jobs": 2,
+    "priority": "reduced"
+  },
+  "baseline": {
+    "source_commit": "f9e3f25ee1fe1647d7c26224c4eba3ab6c92cca0",
+    "binary_sha256": "db35bd0760ff003f7fb287f434933bb97c233cd8d10c1db1ec387afa8aae24e7",
+    "binary_bytes": 3674144,
+    "scenario": {
+      "scenario": "A13-pinned-revoke-cutoff",
+      "outcome": "FAIL",
+      "failed_step": 16,
+      "failure": {
+        "kind": "product",
+        "message": "bounded wait failed: predicate did not match"
+      },
+      "cleanup_failures": [],
+      "elapsed_ms": 3381
+    },
+    "pinned_trials": [
+      {
+        "trial": 1,
+        "late_input_count": 1,
+        "pressed_keys_after": 0
+      },
+      {
+        "trial": 2,
+        "late_input_count": 1,
+        "pressed_keys_after": 0
+      },
+      {
+        "trial": 3,
+        "late_input_count": 1,
+        "pressed_keys_after": 0
+      },
+      {
+        "trial": 4,
+        "late_input_count": 1,
+        "pressed_keys_after": 0
+      },
+      {
+        "trial": 5,
+        "late_input_count": 1,
+        "pressed_keys_after": 0
+      }
+    ],
+    "stored_trust_control": [
+      {
+        "trial": 1,
+        "late_input_count": 0,
+        "pressed_keys_after": 0
+      },
+      {
+        "trial": 2,
+        "late_input_count": 0,
+        "pressed_keys_after": 0
+      },
+      {
+        "trial": 3,
+        "late_input_count": 0,
+        "pressed_keys_after": 0
+      },
+      {
+        "trial": 4,
+        "late_input_count": 0,
+        "pressed_keys_after": 0
+      },
+      {
+        "trial": 5,
+        "late_input_count": 0,
+        "pressed_keys_after": 0
+      }
+    ]
+  },
+  "fixed": {
+    "code_commit": "bcfe7217ba7374cfe81678e6404e6315bd920eb5",
+    "binary_sha256": "9b330921aa3c77fea05715c5516c0e21d1e0e3fb8dc6e1452c0359ec167ed912",
+    "binary_bytes": 3674144,
+    "scenario": {
+      "scenario": "A13-pinned-revoke-cutoff",
+      "outcome": "PASS",
+      "failed_step": null,
+      "failure": null,
+      "cleanup_failures": [],
+      "elapsed_ms": 1326
+    },
+    "pinned_trials": [
+      {
+        "trial": 1,
+        "late_input_count": 0,
+        "pressed_keys_after": 0
+      },
+      {
+        "trial": 2,
+        "late_input_count": 0,
+        "pressed_keys_after": 0
+      },
+      {
+        "trial": 3,
+        "late_input_count": 0,
+        "pressed_keys_after": 0
+      },
+      {
+        "trial": 4,
+        "late_input_count": 0,
+        "pressed_keys_after": 0
+      },
+      {
+        "trial": 5,
+        "late_input_count": 0,
+        "pressed_keys_after": 0
+      }
+    ]
+  },
+  "failure_and_empty_controls": [
+    {
+      "case": "unrelated fingerprint",
+      "passed": true,
+      "existing_peer_preserved": true,
+      "held_key_preserved": true,
+      "trust_files_unchanged": true
+    },
+    {
+      "case": "trust persistence refusal",
+      "passed": true,
+      "error": "trust_failed",
+      "existing_peer_preserved": true,
+      "held_key_preserved": true,
+      "trust_files_unchanged": true
+    },
+    {
+      "case": "retry after removing failure fixture",
+      "passed": true,
+      "held_key_released": true,
+      "requires_approval": true
+    }
+  ],
+  "daemon_audit": [
+    {
+      "check": "preserve_socket_file",
+      "passed": true
+    },
+    {
+      "check": "preserve_socket_symlink",
+      "passed": true
+    },
+    {
+      "check": "relative_paths",
+      "passed": true
+    },
+    {
+      "check": "replaced_socket_shutdown",
+      "passed": true
+    },
+    {
+      "check": "log_symlink",
+      "passed": true
+    },
+    {
+      "check": "log_permissions",
+      "passed": true
+    },
+    {
+      "check": "ipc_framing",
+      "passed": true
+    },
+    {
+      "check": "oversized_response",
+      "passed": true
+    },
+    {
+      "check": "cli_validation",
+      "passed": true
+    },
+    {
+      "check": "pinned_connect_rollback",
+      "passed": true
+    },
+    {
+      "check": "stale_socket_and_single_instance",
+      "passed": true
+    },
+    {
+      "check": "connecting_idempotence",
+      "passed": true
+    },
+    {
+      "check": "cli_connect_host",
+      "passed": true
+    },
+    {
+      "check": "pinned_trust_revoke",
+      "passed": true
+    },
+    {
+      "check": "daemon_argument_validation",
+      "passed": true
+    }
+  ],
+  "ipc_deadlines": {
+    "binary_sha256": "9b330921aa3c77fea05715c5516c0e21d1e0e3fb8dc6e1452c0359ec167ed912",
+    "script_sha256": "a0d88600ff678f825f5b06c7540724ac97f8b7575e26b8048a9ff5bfa0c0b897",
+    "platform": "virtual",
+    "transport": "private Unix socket",
+    "checks": [
+      {
+        "name": "initial public CLI status",
+        "passed": true
+      },
+      {
+        "name": "persistent client initial reply",
+        "passed": true
+      },
+      {
+        "name": "all 63 pending clients initially admitted",
+        "passed": true
+      },
+      {
+        "name": "empty clients expire",
+        "passed": true,
+        "closed": 16,
+        "total": 16
+      },
+      {
+        "name": "partial_header clients expire",
+        "passed": true,
+        "closed": 16,
+        "total": 16
+      },
+      {
+        "name": "partial_body clients expire",
+        "passed": true,
+        "closed": 16,
+        "total": 16
+      },
+      {
+        "name": "drip clients expire",
+        "passed": true,
+        "closed": 15,
+        "total": 15
+      },
+      {
+        "name": "public CLI recovers while incomplete clients stay open",
+        "passed": true,
+        "returncode": 0
+      },
+      {
+        "name": "completed-request idle client remains usable",
+        "passed": true
+      },
+      {
+        "name": "releasing one held client slot restores CLI access",
+        "passed": true
+      },
+      {
+        "name": "fragmented complete request succeeds",
+        "passed": true
+      },
+      {
+        "name": "pipelined complete requests preserve reply order",
+        "passed": true
+      },
+      {
+        "name": "unknown method returns an error",
+        "passed": true
+      },
+      {
+        "name": "valid request after method error succeeds",
+        "passed": true
+      },
+      {
+        "name": "partial frame after a completed request expires",
+        "passed": true
+      },
+      {
+        "name": "oversized header is refused",
+        "passed": true
+      },
+      {
+        "name": "public CLI works after refusal",
+        "passed": true
+      },
+      {
+        "name": "shutdown with a partial client exits cleanly",
+        "passed": true
+      },
+      {
+        "name": "owned IPC socket removed",
+        "passed": true
+      }
+    ],
+    "daemon_exit": 0,
+    "cleanup": true,
+    "passed": true
+  },
+  "virtual_suite": {
+    "passed": 89,
+    "failed": 0,
+    "excluded_count": 30,
+    "excluded": [
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I1-barrier-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I1-barrier-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I1-deskflow-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I1-deskflow-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-barrier-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-barrier-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-barrier-wrong-pin"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-deskflow-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-deskflow-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-deskflow-wrong-pin"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I3-barrier-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I3-barrier-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I3-deskflow-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I3-deskflow-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I4-barrier-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I4-barrier-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I4-deskflow-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I4-deskflow-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I5-barrier-export"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I5-deskflow-export"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L1-barrier-hello"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L1-deskflow-hello"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L2-barrier-clipboard"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L2-deskflow-clipboard"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L3-barrier-pair"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L3-deskflow-pair"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L4-barrier-raw-client"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L4-deskflow-raw-client"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "P03-barrier-held-key-repeat"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "P08-deskflow-held-key-repeat"
+      }
+    ],
+    "cleanup_failures": 0,
+    "scenarios": {
+      "A1-modifier-and-receiver-wheel": "PASS",
+      "A10-unsupported-hello-close": "PASS",
+      "A11-input-backpressure-release": "PASS",
+      "A12-restart-connected-roles": "PASS",
+      "A13-pinned-revoke-cutoff": "PASS",
+      "A2-client-direction-version-heartbeat-sequence": "PASS",
+      "A3-heartbeat-close-flush": "PASS",
+      "A4-config-live-rollback": "PASS",
+      "A5-unavailable-clipboard-readback": "PASS",
+      "A6-clipboard-backpressure": "PASS",
+      "A7-trust-lock-crash": "PASS",
+      "A8-config-save-rollback": "PASS",
+      "A9-tls-trusted-status": "PASS",
+      "C1-import-client-port": "PASS",
+      "C2-import-final-identity": "PASS",
+      "C3-clipboard-supported-cap": "PASS",
+      "D2-restart-disconnected-workers": "PASS",
+      "E1-repeated-ledger-tail": "PASS",
+      "N2-queued-release-reentry": "PASS",
+      "P01-impossible-hello-prefixes": "PASS",
+      "P02-short-established-frame": "PASS",
+      "P04-legacy-repeat-dialects": "PASS",
+      "P05-modern-repeat-truncated": "PASS",
+      "P06-legacy-repeat-truncated": "PASS",
+      "P07-hostile-field-bounds": "PASS",
+      "P09-clipboard-wire-containers": "PASS",
+      "Q1-primary-screen-name": "PASS",
+      "Q10-clipboard-policy-cancels-chunks": "PASS",
+      "Q11-layout-delay-unmapped-edge": "PASS",
+      "Q12-client-cannot-disable-heartbeat": "PASS",
+      "Q13-clipboard-readback-recovery": "PASS",
+      "Q14-client-duplicate-clipboard-formats": "PASS",
+      "Q15-server-duplicate-clipboard-formats": "PASS",
+      "Q16-lock-hotkey-grammar": "PASS",
+      "Q17-preentry-modifier-mask": "PASS",
+      "Q18-empty-clipboard-clear": "PASS",
+      "Q19-unavailable-is-not-clear": "PASS",
+      "Q2-client-setup-clipboard": "PASS",
+      "Q20-client-unsupported-only-clipboard": "PASS",
+      "Q20-server-unsupported-only-clipboard": "PASS",
+      "Q21-client-unsupported-only-local-clipboard": "PASS",
+      "Q21-server-unsupported-only-local-clipboard": "PASS",
+      "Q3-server-setup-clipboard": "PASS",
+      "Q4-two-held-shift-keys": "PASS",
+      "Q5-live-layout-peer-geometry": "PASS",
+      "Q6-disabled-clipboard-enter": "PASS",
+      "Q7-receive-disabled-ownership": "PASS",
+      "Q8-zero-button-key-release": "PASS",
+      "Q9-reconnect-clipboard-sequence": "PASS",
+      "R1-control-files": "PASS",
+      "R2-lifecycle": "PASS",
+      "R5-client-config-retains-clipboard": "PASS",
+      "R5-dead-corner-negative-origin": "PASS",
+      "R5-dead-corner-positive-origin": "PASS",
+      "R5-double-tap-stationary-timeout": "PASS",
+      "R5-incoming-clipboard-cancellation": "PASS",
+      "R5-server-live-alias-merge": "PASS",
+      "R5-server-live-alias-rename": "PASS",
+      "S0-smoke": "PASS",
+      "S1-connect": "PASS",
+      "S10-clipboard-cap": "PASS",
+      "S11-heartbeat": "PASS",
+      "S12-display-change": "PASS",
+      "S13-flood": "PASS",
+      "S13-garbage": "PASS",
+      "S13-oversized": "PASS",
+      "S13-truncated-hello": "PASS",
+      "S13-truncated": "PASS",
+      "S13-unknown": "PASS",
+      "S14-import-roundtrip": "PASS",
+      "S15-resources-latency": "PASS",
+      "S16-permissions": "PASS",
+      "S17-healthy": "PASS",
+      "S17-same-fingerprint": "PASS",
+      "S17-stale": "PASS",
+      "S18-click-numbering": "PASS",
+      "S19-config-patch": "PASS",
+      "S2-edge-mapping": "PASS",
+      "S2-wire-order": "PASS",
+      "S20-parent-exit": "PASS",
+      "S20-parent-off": "PASS",
+      "S21-fingerprint-import": "PASS",
+      "S3-input-order": "PASS",
+      "S4-disconnect-release": "PASS",
+      "S5-disconnect-release": "PASS",
+      "S6-trust-approval": "PASS",
+      "S7-wrong-pin": "PASS",
+      "S8-text-clipboard": "PASS",
+      "S9-large-dib": "PASS"
+    },
+    "S15_measurements": [
+      {
+        "cpu_percent": 0.0333100319716647,
+        "kind": "resources",
+        "rss_peak_bytes": 9355264,
+        "window_ms": 60041
+      },
+      {
+        "cpu_percent": 0.016647553841225092,
+        "kind": "resources",
+        "rss_peak_bytes": 9355264,
+        "window_ms": 60068
+      },
+      {
+        "kind": "capture_to_recorded_upper_bound",
+        "max_ms": 2.9208749999999997,
+        "p50_ms": 0.674791,
+        "p95_ms": 0.838583,
+        "p99_ms": 1.21325,
+        "samples": 1000
+      }
+    ]
+  },
+  "compiler_inputs": {
+    "reference": "ipc-read-deadlines.json:rust_inputs",
+    "count": 100,
+    "changed": {
+      "crates/daemon/src/runtime.rs": {
+        "before": "8f2a4bb49f2f70c70acbd92ef71aca3ca95a8f80af2e15fabfc945bfa919e230",
+        "after": "0fca76f02125016d05d8f284f263140777d322ca7237e00222f7b059afa0773f"
+      }
+    },
+    "canonical_full_manifest_sha256": "e13f3619ad692e3c8f87a0ad637159899eb52f54f2ab243345fc30df26c16a33"
+  },
+  "validation": {
+    "locked_release_build": true,
+    "strict_workspace_all_targets_release_clippy": true,
+    "workspace_fmt_check": true,
+    "expanded_audit_script_sha256": "f95a1060d94b96aaff65480508d74dbbd85e41768a49ea7cb5c2e2011e839315",
+    "A13_sha256": "3100e7e3c855e11b173ef2c2cb405c6a765e7fd22341e80a33d494876cbaa8db"
+  },
+  "raw_report_sha256": {
+    "e2e-baseline.json": "e0d06cccc179161f7df6cc3d0a5ebd38ced709c071bc69a3165b8539f1cda5dd",
+    "e2e-fixed.json": "8c9ca846b4de8d16bc61acab3d38b6c842ebfd4c18ef846279a39894e36896cb",
+    "probe-result.json": "cc0b0de3fecb260e211c92e053111cdeab75a1cf02aa931db7e3a4503d11eb0a",
+    "stored-trust-control.json": "2b44eaea884655fb2e1d85513be5d202cd171ce32d513f3bed4fc700b60ff3fe",
+    "pinned-fixed.json": "5746564d9c716827ed77edd197a689e242bce053478a058133415b23acbdb4d2",
+    "failure-and-empty-control.json": "7d07aeaddb78f1a7423107fdae298ef28b3619530b549eb4dec114a40402f4db",
+    "daemon-audit-expanded.json": "7079602e6c43626c3bde662a4cd1124caeb9d6ef86b485570af9dd570bba6c42",
+    "ipc-deadlines.json": "3c9c6bf068c178721fb36f88d670de61260a6ac9bb38c833c01656b8dd57c7b4",
+    "virtual-suite.json": "ec7deee72f5081d51c426748a81decc653fbdbafd7b154927fa3687a1c5cae5f"
+  },
+  "limits": [
+    "No native input/clipboard or installed process was used",
+    "Linux follow-up unavailable: configured Docker socket absent; engine not restarted",
+    "No new Windows runtime claim",
+    "No independent review verdict, trusted signing, publication or merge claim",
+    "Native acceptance remains a release gate; private reporting setup is deferred"
+  ]
+}

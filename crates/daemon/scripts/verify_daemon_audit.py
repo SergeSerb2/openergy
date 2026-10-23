@@ -328,11 +328,55 @@ def pinned_connect_rollback(node, revoke=False):
             require("result" in peer.call("connection.connect", {"host": "127.0.0.1", "port": node.port,
                                                                   "fingerprint": fingerprint}), "pinned connect failed")
             wait_status(peer, lambda s: s["state"] == "connected")
+            wait_status(node, lambda s: any(p["connected"] for p in s["peers"]))
+            node.call("virtual.inject", {"events": [{"type": "mouse_move_abs", "x": 1919, "y": 540},
+                                                    {"type": "mouse_move_rel", "dx": 20, "dy": 0}]})
+            wait_status(node, lambda s: s["active_screen"] == "client")
+            node.call("virtual.inject", {"events": [{"type": "key_down", "key": 97, "modifiers": 0, "button": 1}]})
+            deadline = time.monotonic() + 3
+            while time.monotonic() < deadline:
+                if peer.call("virtual.recorded")["result"]["stats"]["pressed_keys"] == 1:
+                    break
+                time.sleep(.01)
+            else:
+                raise AssertionError("key was not held before revocation")
+
+            files = [peer.dir / "tls" / name for name in ("trusted-servers", "trusted-clients")]
+            original = [p.read_bytes() if p.exists() else None for p in files]
+
+            def valid_peer_preserved():
+                require(peer.call("status.get")["result"]["state"] == "connected", "valid peer was disconnected")
+                require(peer.call("virtual.recorded")["result"]["stats"]["pressed_keys"] == 1,
+                        "valid peer's held input was released")
+                require([p.read_bytes() if p.exists() else None for p in files] == original,
+                        "failed or unrelated revocation changed trust files")
+
+            require("result" in peer.call("trust.revoke", {"fingerprint": ":".join(["00"] * 32)}),
+                    "unrelated fingerprint revoke failed")
+            valid_peer_preserved()
+            # A real nonempty lock directory forces persistence refusal without
+            # changing pins or using a mock. Every path belongs to this lab node.
+            lock = peer.dir / "tls" / ".trust-lock"
+            saved = lock.with_name(".trust-lock.saved")
+            lock.rename(saved)
+            lock.mkdir()
+            marker = lock / "occupied"
+            marker.write_text("owned refusal fixture")
+            try:
+                response = peer.call("trust.revoke", {"fingerprint": fingerprint})
+                require(response.get("error", {}).get("code") == "trust_failed", "save refusal was not reported")
+                valid_peer_preserved()
+            finally:
+                marker.unlink()
+                lock.rmdir()
+                saved.rename(lock)
             require("result" in peer.call("trust.revoke", {"fingerprint": fingerprint}), "trust revoke failed")
             pending = wait_status(peer, lambda s: len(s["pending_trust"]) == 1)
             require(pending["pending_trust"][0]["fingerprint"] == fingerprint, "revoked identity did not need approval")
             require(not any(p["connected"] for p in pending["peers"]), "revoked identity remained connected")
             require(not peer.call("trust.list")["result"]["servers"], "revoked server remained in the trust store")
+            require(peer.call("virtual.recorded")["result"]["stats"]["pressed_keys"] == 0,
+                    "successful revocation retained held input")
             return
         original = peer.config.read_bytes()
         (peer.dir / f'config.toml.{before["daemon"]["pid"]}.tmp').write_text("occupied temporary file")
