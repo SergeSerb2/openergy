@@ -95,11 +95,14 @@ backend, assigned loopback ports and production-port denial. Baseline and fixed
 cohort commands ran sequentially without a concurrent build. Builds used two
 Cargo jobs at reduced priority. No unit tests or mocks were added.
 
-The runtime matrix uses one TLS directory per daemon. Retained connections from
-other directories after direct `NetDriver::reconfigure` were reviewed in source,
-but this matrix does not exercise that path. The harness's Linux process-time
-counter was not executed here; no new Linux or Windows runtime acceptance is
-claimed. Filesystem operations remain synchronous.
+This runtime matrix uses one TLS directory per daemon. Its original review
+covered retained connections from other directories only in source. The later
+[retained-directory integration record](trust-directory-reconfiguration.md)
+now exercises direct `NetDriver::reconfigure` with real TLS peers, directory-
+specific revocation/read failures, recovery and continued frame delivery.
+That is a separate run; it does not change this matrix's scope. The harness's
+Linux process-time counter was not executed here; no new Linux or Windows
+runtime acceptance is claimed. Filesystem operations remain synchronous.
 
 Installed software, live sharing, native input/clipboard, permissions, login
 items, services, tasks and port 24800 were preserved. Native, security-review

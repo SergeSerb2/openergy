@@ -1,0 +1,352 @@
+{
+  "date": "2026-10-22",
+  "source_commit": "6b257db359d5a5014c3f5d59d05697147f2a099f",
+  "prior_evidence_commit": "a04a9d190c1d6c1c16a328af2ba3b3600e63130c",
+  "verified_runtime_change_commit": "e1798698320ebf1fb3b45e4005e1abc5c767666a",
+  "scope": "Real public NetDriver API and separate TCP/mutual-TLS peers; no platform/input/clipboard APIs or production endpoints",
+  "environment": {
+    "os": "macOS 27.2",
+    "architecture": "arm64",
+    "rust": "1.99.1",
+    "macos_deployment_target": "15.0",
+    "cargo_jobs": 2,
+    "priority": "nice 15",
+    "ports": [
+      25090,
+      25091,
+      25092,
+      25093
+    ],
+    "legacy_ports": [
+      24974,
+      24975
+    ]
+  },
+  "commands": {
+    "build_examples": "cargo build --locked --release -p openergy-net --example tls_peer --example trust_directories",
+    "build_legacy": "cargo build --locked --release -p openergy-net --example lifecycle",
+    "real_directory_run": "trust_directories EMPTY_PRIVATE_DIR 25090 OPENERGY_BIN",
+    "legacy_run": "lifecycle PRIVATE_DIR",
+    "clippy": "cargo clippy --locked --release --workspace --all-targets -- -D warnings",
+    "fmt": "cargo fmt --all -- --check"
+  },
+  "directory_run": {
+    "exit": 0,
+    "timed_out": false,
+    "cases": [
+      {
+        "case": "retained_revoke_and_admission",
+        "passed": true,
+        "mutual_tls": true,
+        "bidirectional_frames": true,
+        "same_driver_waker_handle": true,
+        "child_and_listener_cleanup": true
+      },
+      {
+        "case": "current_read_failure",
+        "passed": true,
+        "mutual_tls": true,
+        "bidirectional_frames": true,
+        "same_driver_waker_handle": true,
+        "child_and_listener_cleanup": true
+      },
+      {
+        "case": "retained_read_failure",
+        "passed": true,
+        "mutual_tls": true,
+        "bidirectional_frames": true,
+        "same_driver_waker_handle": true,
+        "child_and_listener_cleanup": true
+      },
+      {
+        "case": "prepare_refusal",
+        "passed": true,
+        "mutual_tls": true,
+        "bidirectional_frames": true,
+        "same_driver_waker_handle": true,
+        "child_and_listener_cleanup": true
+      }
+    ],
+    "passed": true,
+    "binary_sha256": {
+      "trust_directories": "f28d26e189584c04f83bd89370308550d6e46e529789d818620f622e0f449139",
+      "tls_peer": "7884371a0627628a49cf7f6d587687ce80d891c73474b09b42ba1f9ac1d794f4",
+      "openergy": "4ba143a7f99f03e2a0c5a844b6c40589ac10dc0c8543d6ca3f3f0341effc3091"
+    }
+  },
+  "cli_refusals": {
+    "cases": [
+      {
+        "case": "empty_arguments",
+        "exit": 1,
+        "expected_refusal": true,
+        "fixture_preserved": true,
+        "passed": true
+      },
+      {
+        "case": "nonempty_root",
+        "exit": 1,
+        "expected_refusal": true,
+        "fixture_preserved": true,
+        "passed": true
+      },
+      {
+        "case": "unsafe_port",
+        "exit": 1,
+        "expected_refusal": true,
+        "fixture_preserved": true,
+        "passed": true
+      },
+      {
+        "case": "symlink_root",
+        "exit": 1,
+        "expected_refusal": true,
+        "fixture_preserved": true,
+        "passed": true
+      },
+      {
+        "case": "root_permissions",
+        "exit": 1,
+        "expected_refusal": true,
+        "fixture_preserved": true,
+        "passed": true
+      },
+      {
+        "case": "echo_messages",
+        "exit": 1,
+        "expected_refusal": true,
+        "fixture_preserved": true,
+        "passed": true
+      },
+      {
+        "case": "echo_hello_only",
+        "exit": 1,
+        "expected_refusal": true,
+        "fixture_preserved": true,
+        "passed": true
+      },
+      {
+        "case": "echo_server",
+        "exit": 1,
+        "expected_refusal": true,
+        "fixture_preserved": true,
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  "legacy_peer_compatibility": {
+    "exit": 0,
+    "tls_cycle_passed": true,
+    "plaintext_cycle_passed": true,
+    "same_driver_waker_handle": true,
+    "binary_sha256": "ee02a4aaf42203a1e27db6f1d3100caa4b976cffd5be4cf4b3f1a789197a1a3e",
+    "passed": true
+  },
+  "stdout": {
+    "directory": [
+      "CASE {\"case\":\"retained_revoke_and_admission\",\"passed\":true,\"mutual_tls\":true,\"bidirectional_frames\":true,\"same_driver_waker_handle\":true,\"child_and_listener_cleanup\":true}",
+      "CASE {\"case\":\"current_read_failure\",\"passed\":true,\"mutual_tls\":true,\"bidirectional_frames\":true,\"same_driver_waker_handle\":true,\"child_and_listener_cleanup\":true}",
+      "CASE {\"case\":\"retained_read_failure\",\"passed\":true,\"mutual_tls\":true,\"bidirectional_frames\":true,\"same_driver_waker_handle\":true,\"child_and_listener_cleanup\":true}",
+      "CASE {\"case\":\"prepare_refusal\",\"passed\":true,\"mutual_tls\":true,\"bidirectional_frames\":true,\"same_driver_waker_handle\":true,\"child_and_listener_cleanup\":true}",
+      "PASS 4/4 real transport directory scenarios"
+    ],
+    "legacy": [
+      "CYCLE tls=true port=24974 bidirectional_frames=PASS StopListening_keeps_peer=PASS Shutdown_disconnected=1",
+      "CYCLE tls=false port=24975 bidirectional_frames=PASS StopListening_keeps_peer=PASS Shutdown_disconnected=1",
+      "REUSE same_driver=PASS same_waker=PASS original_handle=PASS TLS_on_to_off=PASS"
+    ]
+  },
+  "stderr_empty": true,
+  "binary_artifacts": {
+    "trust_directories": {
+      "sha256": "f28d26e189584c04f83bd89370308550d6e46e529789d818620f622e0f449139",
+      "bytes": 2224448
+    },
+    "tls_peer": {
+      "sha256": "7884371a0627628a49cf7f6d587687ce80d891c73474b09b42ba1f9ac1d794f4",
+      "bytes": 2155600
+    },
+    "openergy": {
+      "sha256": "4ba143a7f99f03e2a0c5a844b6c40589ac10dc0c8543d6ca3f3f0341effc3091",
+      "bytes": 3707520
+    },
+    "lifecycle": {
+      "sha256": "ee02a4aaf42203a1e27db6f1d3100caa4b976cffd5be4cf4b3f1a789197a1a3e",
+      "bytes": 2190880
+    }
+  },
+  "raw_report_sha256": {
+    "first-result.json": "450998f31f9c5434de9271bdb21d6307d2426cda827ffceb1a8be409c2d02a35",
+    "cli-refusals.json": "fe87c329da5ab94ec1e6dfe8091e1f6a40f68a0f0460c2421c21d604ff585c38",
+    "legacy-result.json": "665dc424fe3c31305a5678ebab7ceead208753569dc4cef6ab7cd66ee2e59c97",
+    "first.stdout": "0d6e00f454759e70c0538f3581b7496c91e697fc781daf0415f9ce09a3857875",
+    "first.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "legacy.stdout": "026eb1ed262076528cdd563f082854c8dab7e1153d4d84fee827a271e6d05419",
+    "legacy.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "fresh-clone.json": "1cd48550aa9a928df97b4f3bb9ce6e4132adfe3fddbfe0ba0d891b1512ae141d"
+  },
+  "source_integrity": {
+    "tracked_rust_cargo_toolchain_files": 113,
+    "changed_existing_inputs_from_prior_record": [
+      "crates/net/examples/tls_peer.rs"
+    ],
+    "added_inputs": [
+      "crates/net/examples/trust_directories.rs"
+    ],
+    "production_runtime_inputs_changed": false,
+    "daemon_bytes_and_hash_unchanged": true,
+    "dependencies_or_lockfile_changed": false
+  },
+  "rust_inputs": {
+    "Cargo.lock": "0cc466112ead33a26cb59fce717d83c202bd470e6ba64394ab7c81ac560c6f3f",
+    "Cargo.toml": "1249baacd47b641edbab7350fa10f94d5a08624223c0ef1d7c8e49707c96fb0d",
+    "crates/config/Cargo.toml": "2a747685780dabe93f139c609859005c2baad60e6599c4b8442273f5dea79968",
+    "crates/config/src/cli.rs": "21df1802c13c89bb4569f1e0f3b0290aa212dfdb1a6d2e7ce9aa5e32d0262246",
+    "crates/config/src/layout.rs": "04b27afdd4cb1e05c321845c79370aabeb79d0afd2574a29ee3d357412c46c06",
+    "crates/config/src/lib.rs": "214d8694a6d1b93bffd10b3ccb150da95191b6ce64b83a7a9e347ea9290979a4",
+    "crates/config/src/model.rs": "06eba7851d8a9789a342dc7d374880eedadcfc9a106026b7c3f3e69a4cf7b0b3",
+    "crates/config/src/synergy.rs": "8e1650d35a9a20c87504832e81b1b0fdd0dcb9a289e39d988c9c9f4f4e86f3e0",
+    "crates/config/src/synergy3.rs": "9faca911b846568795c23d01b768d6de3113d90f73e65e24418c79bdc44621fc",
+    "crates/daemon/Cargo.toml": "4cb03349cb6d9cf4a6f95dce64cd0e3ed5306a7faa7762326fdc00d28a48aefa",
+    "crates/daemon/src/adapter.rs": "874a75cebedcc5120306f4dec0d9d326932379fceb6ca072451bc8cf04d6185a",
+    "crates/daemon/src/allocator.rs": "1b0193bd0f658b47d219bb931cb045df7f25ee9f61ba11c4cd2c1f653a006ffd",
+    "crates/daemon/src/clipboard_json.rs": "5ec7fc4e24fd1d8054a60bffa0d7ac671d4357fc73c44abf59c81d9c26343299",
+    "crates/daemon/src/events.rs": "cee67a01d3ef29d5dc6aa300169ec61287c7edd0e492913de7f0fa3bb800dfad",
+    "crates/daemon/src/interfaces.rs": "80e2a11a6eb67be30ce263635c85edcee0d4e6185fc64514add27d3ee96df550",
+    "crates/daemon/src/ipc_server.rs": "4ceb1dc908211fd0b6493c55787f32582b8b248bedff20c99d800fed41a2301e",
+    "crates/daemon/src/lifetime.rs": "922a15a92661fdb6ca5f848852b79cc67e34c9b9b2ad266f7f4d4e7fd6f194e5",
+    "crates/daemon/src/logger.rs": "2faf11b9ec28a1d12ced24b662014e21aa86bae798dec6f4a15a0fd2a728e298",
+    "crates/daemon/src/main.rs": "ba5a5d6ae3817bed2a9fd6955b9fee751983bc6b1f53c0df9f9e12f76519bb61",
+    "crates/daemon/src/runtime.rs": "187c2301efa9873791597289a45247abc6221c9cf8538db492d20e4b0d202af9",
+    "crates/daemon/src/windows_pipe.rs": "9234c4be2e35e228cd8dba0b6b5c153ff419b1eeb15ad96b9dd6b7a531711a6c",
+    "crates/daemon/src/workers.rs": "5109cd76c0a1911b74512b3d8d2cf4d49df27fed417a55d3ac68a1f1ca8028b2",
+    "crates/ipc/Cargo.toml": "6ba4201f9b8b94fa813fc3699d422165b7db6102e14c2b70292c7cc83f7073d3",
+    "crates/ipc/src/lib.rs": "04d612b9256a8229932d76900b75671f6b66a23e242491077ed73212e16aeaec",
+    "crates/net/Cargo.toml": "c74312dcc7dc550825d7c247961e2fd44f7ca1dbbdfc7bb6c28e7351ef30637c",
+    "crates/net/examples/audit_transport.rs": "5c4e2986ccce3b2fccdb8c71df1d34d15d22292f857c5bc9574d673fa5033c5e",
+    "crates/net/examples/discovery.rs": "685ca4b9e1e4abf6aad00489c957eb1ab813b55609c2f417808455169f19f77b",
+    "crates/net/examples/guardrails.rs": "cd543cf6d051f8b43fa84931572ce5bca6ff1466cdc2f02108743c866e72a742",
+    "crates/net/examples/lifecycle.rs": "f143c2eb29f20fc1f0ed80b17a3b44a8fa6782293b8b88607245e8288c98b9dd",
+    "crates/net/examples/priority_peer.rs": "37f5a97dcf4a37bccc8f13acdc92f9e2bcb16794c410e09352d596fd0c7061df",
+    "crates/net/examples/tls_peer.rs": "03849b13c29090840707dd8b343cdbefc5fe9d42ae25095a7e61bc1db34c790d",
+    "crates/net/examples/trust_directories.rs": "61d7dd28b7288c86606d6df851893ecfa6b5f03c01f0c4b1fab8e27c0ebbdcd8",
+    "crates/net/src/cli.rs": "b22cef41a524d556c81afb98e7b6d5d57557749ce9ca586145881995b82acb41",
+    "crates/net/src/connect_error.rs": "a3c944fefddc2b4a9e759298b5a4c9d5637503bf88fcbbf5dc0baf7e78929568",
+    "crates/net/src/discovery.rs": "bdbf309bc7f2b63ab72e03c19b20f75a1d397acdd452a288592739fd71fe0897",
+    "crates/net/src/identity.rs": "102aa396739087ce2f117f775f18508475ff3b4326fe702b7ad4d1a4d886b07c",
+    "crates/net/src/lib.rs": "1bfcda0c11d7bb5be7f23005d9db9170e62317161877e52b616c79c655317ac9",
+    "crates/net/src/reactor.rs": "d2a23367db9df32a551a6cafe16f2ff8cb28416a5458ea0674a5e5f5e9e853be",
+    "crates/net/src/tls.rs": "b6c852d4d03ea27549e24eeba5d80ca65432dd6a90ea6f2cf1cf33dda1157abe",
+    "crates/net/src/trust.rs": "830010af377e5b93a32334d8386f325cc10e19fe83520dda26b267a0a81ee6ff",
+    "crates/net/src/windows_permissions.rs": "2dbca5dc28eb51dc87c89bb2b0a8b7f009037094db45c7085db635ae598090c4",
+    "crates/platform-linux/Cargo.toml": "d9f8772dc001e12d2fe9f1489d35918deeeeead9daab8131371ea91cf0b1a4ac",
+    "crates/platform-linux/examples/x11_probe.rs": "d61e6bf76b0d7802a0ad124110feb1991239a90b1008b0edad3bb62cdbc0e761",
+    "crates/platform-linux/src/clipboard.rs": "c30058611fc426f3f2b0bc5d4c9f53bf8ef48ea4cb3915098894c22277fdf88c",
+    "crates/platform-linux/src/image.rs": "085b0a326643393ce926234a249d2b9baeb21a62d77ceaab7d2468a0422d1eb8",
+    "crates/platform-linux/src/keymap.rs": "e30286da66b02322186f9c3cdc808a6a347691e0e7c458184517a1507604f42e",
+    "crates/platform-linux/src/lib.rs": "3c34c73f6ab833b843195e5c2a99bee7affc7d46bd7fe7fd3786be3cb033e441",
+    "crates/platform-linux/src/native.rs": "00588627b702216ab2a35ee288d83241cb8705456a101b7e904e8c47107d6579",
+    "crates/platform-linux/src/sink.rs": "0144d18b20dbd1fa55727ff59e4daa9f6e7a89c3f25a7ada027bfb260e791be3",
+    "crates/platform-linux/src/source.rs": "e1429aab6c7549219cdca6a844cd944061909e93ca5d32e6d009e23acd74b5f8",
+    "crates/platform-linux/src/unicode_keysyms.rs": "b632ddb45d402b9045b0d6003a71e1ea5a9448ddfea7780dfc3cb3028571d58f",
+    "crates/platform-macos/Cargo.toml": "7b2607a96c77a79f3e8f6ab482fc39249e74a0ea8a283e3b6db5cf0cffdb2280",
+    "crates/platform-macos/examples/focuslab_inject.rs": "d8ba4769e3c54bb904ab9c54eb4e3d0437f3d84c1d261b0429df59b33f4f60ad",
+    "crates/platform-macos/examples/mac_probe.rs": "93e5dbde8d0a2d7f6c4f6a980baafa60a305b1e6df73272c44e5db0218f92c5c",
+    "crates/platform-macos/src/displays.rs": "1d6860ac0ceb6ebf9234eb7e7bbabeb789584a33b7b85134515d4111ce34ae5e",
+    "crates/platform-macos/src/ffi.rs": "6b106e9e9d2e0b1453f2d846d991182914ce6a4a87acb0e400637b65aeeb6ef8",
+    "crates/platform-macos/src/inject.rs": "2604c4e71c7f7713ef71a0e6c5d558422f97f5eea81307861dcfce144c9bddbc",
+    "crates/platform-macos/src/keymap.rs": "0dc9a9583802b154f87b4dd68a41c87a4b6902024218b2accee47d8d917fe314",
+    "crates/platform-macos/src/lib.rs": "aafa994a8696824968671f1cda6a2f06933bdc2f9e472606d783ae86d8b0801e",
+    "crates/platform-macos/src/pasteboard.rs": "6b53e3063f6a4a015a4761dcc9a9399d5a47d73b87c92947d036cbf7e2f62d39",
+    "crates/platform-macos/src/permissions.rs": "ee6111c35d5985a55b8187c6f573bff7bb372397e32ed3dcbaf87d48e15d3914",
+    "crates/platform-macos/src/screens.rs": "384cc286565139bc0605cc6493222c7c52621f7ace2701a0471242160deb55b0",
+    "crates/platform-macos/src/tap.rs": "fd28e13ff29fa5fe453ad8b4cba3b85c80e013c9971021a088546d491e96a571",
+    "crates/platform-macos/src/types.rs": "71cbea2c52890d808d32412d9b33e095033dfe570e20387d38d4a2df3228284a",
+    "crates/platform-windows/Cargo.toml": "080605b569ed545650abd65a3cc551dbb5c3231f8eb3d8589b5598fc3f6cf460",
+    "crates/platform-windows/src/clipboard.rs": "451bc0555457ce95f7f5d2ba7ae657834925cd708b186e14678686b12ce8dc80",
+    "crates/platform-windows/src/keymap.rs": "a9d531bbe6ed9916a389de4b384aa2321f7f04848c73e378fc61da7aca400aeb",
+    "crates/platform-windows/src/lib.rs": "1ce695c6f22dbd55d4cdded98f147a32812ffae7b1eb7f2ff8ad7f319daaeedb",
+    "crates/platform-windows/src/native.rs": "3aeddda52041991234e601dab0afe7c388b1aa9e858b308004d24bda84810cc1",
+    "crates/platform-windows/src/sink.rs": "1ca075dd2e12e9d383ae29254138573a9ea6bfa190bc94ce233b9f1043f5d7fb",
+    "crates/platform-windows/src/source.rs": "c5726f8d3ba7903903bdfe671252a622ceb3784356583784dd23a20ac76975ab",
+    "crates/platform/Cargo.toml": "88ee6e62955081ae5017549067c0055bd3ebd7a7e52b739b4b59455cebcc02ce",
+    "crates/platform/examples/virtual_demo.rs": "a4ab3a3995e1799f233375861ad4512085b8318427d0721a4793475eb32028e0",
+    "crates/platform/src/click.rs": "08801f4736e89a7512bf33a017fa92c66fc3dcb8221e6703ffbbf8321b8feee7",
+    "crates/platform/src/lib.rs": "77cf31c3b30f62eddbe89051702a95d7b529ffaef4eafea5214916b54b5652b5",
+    "crates/platform/src/script.rs": "bbe2991d5f2152f7bb6f3314bec2601b1e58a1318b14ba753f72f3043e5d3c01",
+    "crates/platform/src/virtual_backend.rs": "ae8c8ca58f828b6b106d09079e5b960bb9e4b035567917b5e0da682663d97a18",
+    "crates/protocol/Cargo.toml": "c91717334a50d2e68057c5e306b685e95a1506fc4d0bd9b08f443b62d6897445",
+    "crates/protocol/examples/wire_probe.rs": "f59443a83fef0d835259b5d8a9fd34b22f027d66cbb1049f19c7b9edb5abec68",
+    "crates/protocol/src/clipboard.rs": "4fb846e2fe3812f4136e77b64a509f120f5ba25675a8fcca9392269c672583da",
+    "crates/protocol/src/codec.rs": "9641df927d3391e26279bd138307192b6e04feb785e8f459b27cb57a748b7c0e",
+    "crates/protocol/src/keys.rs": "bdcde8427a2534a8e2e96987da21ca792bdf38d60415d5d32b52f949293fbaff",
+    "crates/protocol/src/lib.rs": "82cccc4173141f0a597431e27179d088007c9d0ada50dc6d0f5716dabe49c103",
+    "crates/session/Cargo.toml": "a1c5e86b885cb1cf079c19600bf180fb04fb3847173b9d5324426047865fae18",
+    "crates/session/src/client.rs": "9905587a134a14c3ac0da9c1efab8c78f2ed0702e53905f9a9ad399f425a0084",
+    "crates/session/src/clipboard.rs": "b65912bcdc8e852d2b03e4955966bf127f3b6f02ad52ae790ff1ba469c37ef18",
+    "crates/session/src/common.rs": "cb5a10b02ea47486643f82c8c8484f952ce2234b27dbe805ef20a49c1cb3f46d",
+    "crates/session/src/hotkey.rs": "709cf340dec0b839bc8a97d3b11fd796a45add44107a35e93db63622991b2c7a",
+    "crates/session/src/layout.rs": "8408d750040ebe5b7357859219ce416888e77fb3ed005894b32f36ad69f94fab",
+    "crates/session/src/lib.rs": "a1acd5fa946c692f758a9eea75f19b73e81eb5c0cabc4b5835ffeb14c0a561a5",
+    "crates/session/src/server.rs": "c7a7f2597c174de865734e2e09c1db7f5e7ff3b0efecfb711cafe507e18357c3",
+    "rust-toolchain.toml": "f715f440167e20fd8ea9afa0498c3d1ab80174cfcb8cbc895f106a34d907a1e1",
+    "spikes/macos-input/Cargo.lock": "6b2bdaafd2c7cf3442398c0244d8a9ebfe140202aef0b61afd0d4227f6e70d26",
+    "spikes/macos-input/Cargo.toml": "66fa2711dc2075ff1d9b2cfd65e870f7162af4b7644406ab6df956ea440d64eb",
+    "spikes/macos-input/src/displays.rs": "097255ecbb3479ef3a415cd5d88f87d3c88bfd256704a3e37bc6eb762b9f597d",
+    "spikes/macos-input/src/ffi.rs": "d36d47365bdd1892d360ebb895f3188b4f565c8be74658f83cb1748f97c5bbea",
+    "spikes/macos-input/src/inject.rs": "28805a5ca112d88d643e0b9d4438b23d581010689395e1298627644c946a2e05",
+    "spikes/macos-input/src/keymap.rs": "92e7f3b1d0bbedeea88f5e6ac4fea656a7f81553d09188aafd9af50e861412b7",
+    "spikes/macos-input/src/lib.rs": "8f535b679342e67334c540d7f9157b7bbe18463504f04fdd397f864a457c3c3d",
+    "spikes/macos-input/src/main.rs": "1f27d60bf5ecf8ef9eca5dcac926fbcb6b7554d93e9dba3af69cad487c537136",
+    "spikes/macos-input/src/pasteboard.rs": "1a2f8d72c09493dfe72096820a7a79771bef3a9abec45bda6d7de06c116a829e",
+    "spikes/macos-input/src/permissions.rs": "f429d183c05cc3673bf8e0c99126575e37cee029b3b4abacf9ba3eb485893afd",
+    "spikes/macos-input/src/tap.rs": "41d71dd216657056f405c837f6f308bb10809bae73ca70c1c2c097f14932d19f",
+    "spikes/macos-input/src/types.rs": "099b05491e7d85ed04bcec133ffc2164f995f486064fe637172174dcc4741abf",
+    "tools/e2e/Cargo.toml": "78bb98248bc0c14ead549803d241fd912b95b068b894b2040d1d36d6ac55b83c",
+    "tools/e2e/src/guardian.rs": "8b48c734c7f4f111ff0e9c17461d8a02d2d0e9e6c51317b9d19279cf61c8e00a",
+    "tools/e2e/src/main.rs": "a38b74212fc8ccda9388da68f5a3d4da558ff872df56d0ab3251b2f7c0bd18f3",
+    "tools/e2e/src/model.rs": "f7b7004ad68da192e3e094ed49a554d9d4741fc89ab068cc34fe5e4c661236c4",
+    "tools/e2e/src/process.rs": "10ee9511a9ef68a81f4a4ac9c199a186e62b995d479d2e2e61004e32d89f9f0b",
+    "tools/e2e/src/runner.rs": "cd42127261573a5a6ce0b9d8a31a9d1013aa34b1486db97af0decb871970d564",
+    "tools/e2e/src/steps.rs": "de99717892fa32348af6d24bdb44b84097feb3b4e14c4316ec18219369621184",
+    "tools/e2e/src/util.rs": "c2d962c283abae42984bd310fbab30d286a0664d6f9752aeba3f47cb81b16fc6",
+    "tools/e2e/src/wire.rs": "60593d4a4461ce5f81ddbe94c4f19976cde2c14e46a6d48f0a431a5d5a7ef22c"
+  },
+  "validation": {
+    "locked_release_examples_build": "PASS",
+    "locked_release_legacy_example_build": "PASS",
+    "strict_release_workspace_all_targets_clippy": "PASS",
+    "fmt": "PASS",
+    "diff_check": "PASS",
+    "owned_children_and_listeners_cleanup": "PASS",
+    "local_markdown_links": {
+      "checked": 31,
+      "passed": true
+    },
+    "changed_file_personal_path_and_private_key_marker_scan": {
+      "files": 6,
+      "passed": true
+    }
+  },
+  "prior_exact_daemon_evidence": {
+    "record": "trust-refresh.json",
+    "full_virtual_suite_passed": 89,
+    "docker_excluded": 30,
+    "cleanup_failures": 0,
+    "full_suite_rerun_for_example_only_changes": false
+  },
+  "limits": [
+    "No production runtime code change or daemon size/speed claim in this follow-up",
+    "Directory-specific mutation checks used the original public NetHandle ReloadTrust command; they do not measure a 500 ms timer bound",
+    "No new Windows/Linux/native input or clipboard acceptance",
+    "Native, security-review and signed/notarized distribution gates remain open",
+    "GitHub private reporting setup remains deferred"
+  ],
+  "fresh_local_clone": {
+    "source_commit": "6b257db359d5a5014c3f5d59d05697147f2a099f",
+    "rust_cargo_toolchain_files": 113,
+    "all_hashes_matched": true,
+    "clean_clone": true
+  }
+}
