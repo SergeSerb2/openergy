@@ -47,6 +47,15 @@ concrete P1/P2 product or verification defect in revised candidate `e6a9125`.
 Both R7 objections are closed in source. Matching final runtime evidence and
 native Windows startup acceptance remain pending; the candidate is not integrated.
 
+The separate [native Windows cleanup observation](windows-owned-cleanup.md)
+passes normal explicit shutdown and Drop on the frozen `e4f48ba` library. The
+identified mDNS worker and all owned UDP endpoints disappear while each helper
+stays alive and answers a later ping. The parent matched the saved snapshots,
+96 private evidence-file hashes, eight exact helper/workflow copies and frozen
+library/source records. This closes only those two normal cleanup cases. A new
+private Windows task is checking the exact revised `e6a9125` startup verifier;
+the original startup 11/14 failure stays preserved.
+
 The [bounded virtual idle observation](virtual-idle-resources.md) records two
 30-second phases and the actual stop delay on the checkpoint binary. It does
 not supply native performance or long-term memory acceptance.

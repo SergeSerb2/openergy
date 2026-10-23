@@ -75,5 +75,54 @@
     "primary_raw_exit_unchanged": 1,
     "primary_findings_unchanged": 84,
     "scope": "Parent reproduced direct Git diffs and checked all recorded hashes; did not repeat Gitleaks. No code from history executed."
+  },
+  "windows_owned_cleanup": {
+    "candidate_commit": "dfa405cf9e6eb0d7774e59c62c17200a2599871f",
+    "library_source": "e4f48ba47ea69aa76a08de5cf0cf61c68d903c03",
+    "source_fragments_checked": 5,
+    "exact_helper_workflow_copies_checked": 8,
+    "private_original_hashes_checked": 96,
+    "prior_fixture_manifest_entries": 2652,
+    "library_and_dependency_hashes_match_frozen_manifest": true,
+    "source_manifest_matches_prior_parent_check": true,
+    "case_snapshots_match_private_originals": true,
+    "cases": {
+      "shutdown": {
+        "passed": true,
+        "threads": [
+          1,
+          2,
+          1
+        ],
+        "owned_udp": [
+          0,
+          3,
+          0
+        ],
+        "absence_observed_ms": 12.6786,
+        "helper_alive_after_absence": true,
+        "normal_exit": 0
+      },
+      "drop": {
+        "passed": true,
+        "threads": [
+          1,
+          2,
+          1
+        ],
+        "owned_udp": [
+          0,
+          3,
+          0
+        ],
+        "absence_observed_ms": 10.0609,
+        "helper_alive_after_absence": true,
+        "normal_exit": 0
+      }
+    },
+    "scope": "Parent immutable source and saved-evidence cross-check only; no independent Windows binary execution. Normal shutdown and Drop cases only; startup and broader release gates remain open.",
+    "audit_helper_sha256": "6101ab546b95bcb0fe7f78768e729f0bbea2c5b046097a2e393a2c8fe8a1e975",
+    "initial_audit_helper_sha256": "a87904640bcb8b92dc6a64edbe6b4799d0d5dbb8601e155e66cc1b4e5df056e6",
+    "initial_audit_limit": "Initial helper assumed a dependency basename had one manifest entry. The frozen library and target copies have identical bytes/hashes. Corrected selection uses the exact recorded target path. No runtime case or compiler was repeated."
   }
 }
