@@ -1,14 +1,14 @@
 use crate::{Fingerprint, NetError};
 use rustls::pki_types::{pem::PemObject, CertificateDer, PrivateKeyDer};
-#[cfg(not(windows))]
-use std::fs::OpenOptions;
 use std::{
-    fs::{self, File},
-    io::Write,
+    fs::{self, File, OpenOptions},
+    io::{Read, Write},
     path::{Path, PathBuf},
     sync::atomic::{AtomicU64, Ordering},
     time::{Duration, SystemTime},
 };
+
+const MAX_IDENTITY_FILE_LEN: u64 = 1024 * 1024;
 
 pub fn default_config_dir() -> Result<PathBuf, NetError> {
     #[cfg(target_os = "macos")]
@@ -77,12 +77,12 @@ impl Identity {
             atomic_write(&key_path, key.serialize_pem().as_bytes(), true).map_err(failed)?;
             atomic_write(&cert_path, cert.pem().as_bytes(), true).map_err(failed)?;
         }
-        let chain: Vec<_> = CertificateDer::pem_reader_iter(private_file(&cert_path).map_err(failed)?)
+        let chain: Vec<_> = CertificateDer::pem_slice_iter(&read_identity_file(&cert_path)?)
             .collect::<Result<_, _>>()
             .map_err(failed)?;
         let cert = chain.first().ok_or_else(|| failed("identity certificate is empty"))?;
         let fingerprint = Fingerprint::from_der(cert.as_ref());
-        let key = PrivateKeyDer::from_pem_reader(private_file(&key_path).map_err(failed)?).map_err(failed)?;
+        let key = PrivateKeyDer::from_pem_slice(&read_identity_file(&key_path)?).map_err(failed)?;
         let certified = rustls::sign::CertifiedKey::from_der(
             chain.clone(),
             key.clone_key(),
@@ -98,6 +98,23 @@ impl Identity {
             key,
         })
     }
+}
+
+fn read_identity_file(path: &Path) -> Result<Vec<u8>, NetError> {
+    let file = private_file(path).map_err(failed)?;
+    let too_large = || failed("TLS identity file exceeds 1 MiB (1048576 bytes)");
+    if file.metadata().map_err(failed)?.len() > MAX_IDENTITY_FILE_LEN {
+        return Err(too_large());
+    }
+    let mut bytes = Vec::new();
+    file.take(MAX_IDENTITY_FILE_LEN + 1)
+        .read_to_end(&mut bytes)
+        .map_err(failed)?;
+    // Reject growth after metadata, including ignored bytes after the first key.
+    if bytes.len() as u64 > MAX_IDENTITY_FILE_LEN {
+        return Err(too_large());
+    }
+    Ok(bytes)
 }
 
 fn entry_exists(path: &Path) -> std::io::Result<bool> {
@@ -135,7 +152,17 @@ pub(crate) fn private_file(path: &Path) -> std::io::Result<File> {
     }
     #[cfg(windows)]
     crate::windows_permissions::restrict(path, false)?;
-    let file = File::open(path)?;
+    let mut options = OpenOptions::new();
+    options.read(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK);
+    }
+    let file = options.open(path)?;
+    if !file.metadata()?.is_file() {
+        return Err(std::io::Error::other("TLS identity must be a regular file, not a link"));
+    }
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
