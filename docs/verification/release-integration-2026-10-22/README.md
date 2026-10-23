@@ -12,6 +12,11 @@ or mocks were added. Native backend probes ran only inside isolated Linux Xvfb.
 
 ## Final hardening follow-up
 
+The [current Windows transport follow-up](windows-transport-current.md) records
+a fresh pinned native MSVC build and real pipe, ACL, TCP/TLS and virtual
+clipboard/bounds checks. It preserves the failed observation-window probe,
+the stricter portable refusal check, exact source scope and native acceptance gates.
+
 The [receive-fairness follow-up](receive-fairness.md) records delayed control
 replies under a tiny-frame flood, the receive-event yield threshold, paired
 plaintext/mutual-TLS checks and the real 16-peer connection-churn matrix.

@@ -146,3 +146,9 @@ permissions, services, tasks and port 24800 were preserved. No new Linux,
 Windows, native or signed/notarized distribution acceptance is claimed.
 Those release gates and the two original security review threads remain open.
 GitHub private reporting setup remains deferred.
+
+The later [Windows transport record](windows-transport-current.md) separately
+verifies this runtime with a pinned native MSVC build and real pipe/TCP/TLS/
+virtual checks. It also corrects the standalone refused-connect probe's
+observation window for Windows. It does not extend this record's performance
+matrix or close native desktop acceptance.
