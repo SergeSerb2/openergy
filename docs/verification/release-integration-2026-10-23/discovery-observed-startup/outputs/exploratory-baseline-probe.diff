@@ -1,0 +1,93 @@
+--- final/crates/net/examples/discovery_recovery.rs
++++ exploratory-baseline/discovery_recovery.rs
+@@ -885,11 +885,6 @@
+                 );
+                 check(
+                     &mut results,
+-                    format!("{label}-{attempt}-accepted-transient-state"),
+-                    (1..=1 + i64::from(new_limited)).contains(&after),
+-                );
+-                check(
+-                    &mut results,
+                     format!("{label}-{attempt}-accepted-drop-cleanup"),
+                     exact_states(&daemon, 1, Duration::from_secs(3))?,
+                 );
+@@ -905,14 +900,7 @@
+             );
+             check(
+                 &mut results,
+-                format!(
+-                    "{label}-{}",
+-                    if old_limited {
+-                        "failed-limited-view-stays-open"
+-                    } else {
+-                        "failed-standard-retains-repeated-search"
+-                    }
+-                ),
++                format!("{label}-retained-query-or-open-limited-view"),
+                 old.repeated_start(),
+             );
+             advertise(&mut publisher, &ty, "fresh-after-failure")?;
+@@ -924,17 +912,14 @@
+             publisher.phase(&format!("withdraw {ty}"))?;
+             check(&mut results, format!("{label}-failed-goodbye"), old.removed());
+             advertise(&mut publisher, &ty, "returned-after-goodbye")?;
+-            let returned = old.has("returned-after-goodbye");
+-            let returned_states = limited_states(&daemon)?;
+             check(
+                 &mut results,
+                 format!("{label}-failed-resolves-returned-peer"),
+-                returned && returned_states == before && !old.closed(),
++                old.has("returned-after-goodbye") && limited_states(&daemon)? == before && !old.closed(),
+             );
+ 
+             let (mut successor, accepted) = held_view(&daemon, &ty, new_limited)?;
+             let fresh = successor.has("returned-after-goodbye");
+-            let successor_states = limited_states(&daemon)?;
+             check(
+                 &mut results,
+                 format!("{label}-held-successor-start-resolution-closure"),
+@@ -942,26 +927,23 @@
+                     && fresh
+                     && old.closed()
+                     && !successor.closed()
+-                    && successor_states == 1 + i64::from(new_limited),
++                    && limited_states(&daemon)? == 1 + i64::from(new_limited),
+             );
+             let (mut newest, accepted) = held_view(&daemon, &ty, true)?;
+             let fresh = newest.has("returned-after-goodbye");
+-            let newest_states = limited_states(&daemon)?;
+             check(
+                 &mut results,
+                 format!("{label}-newest-one-live-generation"),
+-                accepted && fresh && successor.closed() && !newest.closed() && newest_states == 2,
++                accepted && fresh && successor.closed() && !newest.closed() && limited_states(&daemon)? == 2,
+             );
+             drop(old);
+             drop(successor);
+             mark(format_args!("DROP older-generations-complete type={ty}"));
+             advertise(&mut publisher, &ty, "newest-after-older-drops")?;
+-            let fresh = newest.has("newest-after-older-drops");
+-            let after_older_drops = limited_states(&daemon)?;
+             check(
+                 &mut results,
+                 format!("{label}-newest-survives-older-drops"),
+-                fresh && !newest.closed() && after_older_drops == 2,
++                newest.has("newest-after-older-drops") && !newest.closed() && limited_states(&daemon)? == 2,
+             );
+             drop(newest);
+             mark(format_args!("DROP held-newest-complete type={ty}"));
+@@ -986,12 +968,10 @@
+         check(&mut results, format!("{label}-disconnected-coverage"), witnessed);
+     }
+     advertise(&mut publisher, ANCHOR_TYPE, "anchor-final")?;
+-    let anchor_fresh = anchor.has("anchor-final");
+-    let anchor_states = limited_states(&daemon)?;
+     check(
+         &mut results,
+         "independent-guard-final-identity-fresh-exact-state",
+-        anchor_fresh && !anchor.closed() && anchor_states == 1,
++        anchor.has("anchor-final") && !anchor.closed() && limited_states(&daemon)? == 1,
+     );
+     retry(|| daemon.stop_browse(ANCHOR_TYPE))?;
+     let final_states = limited_states(&daemon)?;

@@ -1,0 +1,49 @@
+--- 884ff876/vendor/mdns-sd/src/service_daemon.rs
++++ observed-baseline/vendor/mdns-sd/src/service_daemon.rs
+@@ -206,6 +206,8 @@
+ /// Currently all counters are for outgoing packets.
+ #[derive(Hash, Eq, PartialEq)]
+ enum Counter {
++    /// Number of shared limited-view states currently owned by the worker.
++    LimitedViewStates,
+     Register,
+     RegisterResend,
+     Unregister,
+@@ -233,6 +235,7 @@
+ impl fmt::Display for Counter {
+     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+         match self {
++            Self::LimitedViewStates => write!(f, "limited-view-states"),
+             Self::Register => write!(f, "register"),
+             Self::RegisterResend => write!(f, "register-resend"),
+             Self::Unregister => write!(f, "unregister"),
+@@ -4149,6 +4152,10 @@
+     }
+ 
+     fn exec_command_get_metrics(&mut self, resp_s: Sender<HashMap<String, i64>>) {
++        self.set_counter(
++            Counter::LimitedViewStates,
++            self.limited_browses.len() as i64,
++        );
+         self.set_counter(Counter::CachedPTR, self.cache.ptr_count() as i64);
+         self.set_counter(Counter::CachedSRV, self.cache.srv_count() as i64);
+         self.set_counter(Counter::CachedAddr, self.cache.addr_count() as i64);
+@@ -4214,7 +4221,17 @@
+             pretty_addrs.join(", ")
+         ));
+         if !repeating {
+-            if let Err(e) = listener.try_send(started) {
++            let initial_send = listener.try_send(started);
++            trace!(target: "mdns_sd::startup",
++                "type={} kind={} outcome={}", &ty,
++                if self.limited_browses.contains_key(&ty) { "limited" } else { "standard" },
++                match &initial_send {
++                    Ok(()) => "Accepted",
++                    Err(TrySendError::Disconnected(_)) => "Disconnected",
++                    Err(TrySendError::Full(_)) => "Full",
++                }
++            );
++            if let Err(e) = initial_send {
+                 debug!(
+                     "Failed to send SearchStarted({})(repeating:{}): {}",
+                     &ty, repeating, e

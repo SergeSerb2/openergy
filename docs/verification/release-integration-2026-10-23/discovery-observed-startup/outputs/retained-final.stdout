@@ -1,0 +1,30 @@
+RETAINED_CACHE_METRICS={"dns-registry-timer": 0, "cached-txt": 499, "cache-refresh-srv-txt": 0, "dns-registry-probe": 0, "dns-registry-active": 0, "cached-srv": 499, "cached-subtype": 0, "known-answer-suppression": 0, "browse": 2, "cache-refresh-addr": 0, "timer": 7704, "limited-view-states": 0, "cached-ptr": 801, "cached-addr": 1, "cached-nsec": 0, "cache-refresh-ptr": 0, "dns-registry-name-change": 0}
+RETAINED_REPLAY attempt=1 drained=1000 disconnected=true elapsed_ms=96
+RETAINED_REPLAY attempt=2 drained=1000 disconnected=true elapsed_ms=96
+RETAINED_CACHE_AFTER_STOP={"dns-registry-timer": 0, "cached-txt": 499, "cache-refresh-srv-txt": 0, "dns-registry-probe": 0, "dns-registry-active": 0, "cached-srv": 499, "cached-subtype": 0, "known-answer-suppression": 0, "browse": 2, "cache-refresh-addr": 0, "timer": 8006, "limited-view-states": 0, "cached-ptr": 801, "cached-addr": 1, "cached-nsec": 0, "cache-refresh-ptr": 0, "dns-registry-name-change": 0}
+LIMITED_REPLAY peak=64 closed=false
+RETAINED_NAMESPACE burst=800 selected=burst-0001 full_polls=169 empty_polls=0 update_seen=true update_stays_fresh=true removal_seen=true removal_regressed=false
+AFTER_REMOVAL peers=["after-removal", "burst-0009", "burst-0022", "burst-0042", "burst-0062", "burst-0066", "burst-0078", "burst-0084", "burst-0094", "burst-0096", "burst-0107", "burst-0121", "burst-0146", "burst-0153", "burst-0168", "burst-0169", "burst-0175", "burst-0177", "burst-0208", "burst-0210", "burst-0212", "burst-0220", "burst-0221", "burst-0224", "burst-0229", "burst-0231", "burst-0240", "burst-0248", "burst-0251", "burst-0260", "burst-0262", "burst-0263", "burst-0267", "burst-0274", "burst-0282", "burst-0286", "burst-0292", "burst-0293", "burst-0297", "burst-0307", "burst-0317", "burst-0320", "burst-0329", "burst-0334", "burst-0337", "burst-0340", "burst-0353", "burst-0354", "burst-0373", "burst-0391", "burst-0422", "burst-0429", "burst-0457", "burst-0491", "burst-0557", "burst-0558", "burst-0559", "burst-0564", "burst-0617", "burst-0653", "burst-0755", "burst-0764", "burst-0767", "burst-replacement"]
+AFTER_REMOVAL_CACHE={"dns-registry-timer": 0, "cached-txt": 499, "cache-refresh-srv-txt": 0, "dns-registry-probe": 0, "dns-registry-active": 0, "cached-srv": 499, "cached-subtype": 0, "known-answer-suppression": 0, "browse": 7, "cache-refresh-addr": 0, "timer": 7748, "limited-view-states": 1, "cached-ptr": 801, "cached-addr": 1, "cached-nsec": 0, "cache-refresh-ptr": 0, "dns-registry-name-change": 0}
+RECOVERY_OBSERVATION_MS=0
+SNAPSHOTS count=13 peak=64 too_close=false
+CHECK initial-resolution=true
+CHECK real-upstream-channel-overflow=true
+CHECK limited-retained-replay=true
+CHECK retained-namespace-stays-useful=true
+CHECK retained-selection-stable=true
+CHECK retained-selected-peer-live-update=true
+CHECK retained-selected-peer-goodbye=true
+CHECK retained-first-peer-goodbye-and-new-peer=true
+CHECK retained-selected-survivors-stable=true
+CHECK paused-update-coalesces-to-latest=true
+CHECK paused-goodbye-replaces-view=true
+CHECK fresh-advertisement-after-overflow=true
+CHECK updated-port-and-untrusted-hint=true
+CHECK goodbye-removes-all-peers=true
+CHECK publisher-exits-zero=true
+CHECK discovery-shutdown-submitted=true
+CHECK sentinel-worker-shutdown-ack=true
+CHECK snapshot-cap=true
+CHECK snapshot-emission-spacing=true
+BURST_SERVICES=800 SNAPSHOT_PEAK=64

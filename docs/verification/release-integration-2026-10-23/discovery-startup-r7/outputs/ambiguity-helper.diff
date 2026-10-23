@@ -1,0 +1,11 @@
+--- final/crates/net/examples/discovery_recovery.rs
++++ negative-process/ambiguity-probe.rs
+@@ -826,6 +826,8 @@
+     let since = cursor();
+     mark(format_args!("CALL held type={ty} kind={}", kind_name(limited)));
+     let view = View::open(daemon, ty, limited)?;
++    // Two actual held requests share this negative observation phase.
++    let _second_real_view = View::open(daemon, ty, limited)?;
+     limited_states(daemon)?; // Startup result alone precedes replacement commit.
+     let accepted = outcome(since, ty, limited)? == Outcome::Accepted;
+     Ok((view, accepted))
