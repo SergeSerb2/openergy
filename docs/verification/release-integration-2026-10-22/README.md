@@ -12,6 +12,10 @@ or mocks were added. Native backend probes ran only inside isolated Linux Xvfb.
 
 ## Final hardening follow-up
 
+The [trust-file contention follow-up](trust-lock-contention.md) records a
+reproduced session-thread stall, nonblocking live updates and preserved offline
+serialization. It covers five live routes and concurrent CLI/identity writers.
+
 The [live pin revocation follow-up](trust-revocation-cutoff.md) records input
 accepted after a successful revoke reply, the immediate-disconnect fix,
 the new A13 real-TLS regression, and stored-trust and persistence-failure controls.

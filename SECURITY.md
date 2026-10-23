@@ -51,6 +51,10 @@ computers and users that should have that access.
   removes matching connections and their temporary explicit pin before replying.
   Offline trust commands edit stored lists; they do not clear an in-memory
   explicit pin on an existing connection.
+- If another local process holds the trust-file lock, live approval/revocation
+  returns `trust_failed` with a retry message. Existing pins and connections
+  stay unchanged. Retry after the other update finishes. Offline CLI updates
+  still wait for that lock so concurrent writers preserve each other's changes.
 - Offline `trust approve` stores a pin in **both** server and client lists.
   Live IPC approval knows the pending connection's role. Use the app or
   `ctl trust.approve` when you need approval for that role only.
