@@ -26,8 +26,10 @@ use std::{
         mpsc::{self, SyncSender},
         Arc,
     },
-    time::Duration,
+    time::{Duration, Instant},
 };
+
+const REQUEST_READ_TIMEOUT: Duration = Duration::from_secs(10);
 
 #[cfg(unix)]
 pub struct SocketLock {
@@ -280,10 +282,18 @@ fn client(
     let queue = bus.client();
     let mut buf = Vec::new();
     let mut scratch = [0u8; 8192];
+    // Empty first requests and incomplete frames must not hold all 64 client
+    // slots forever. Completed requests may idle indefinitely for subscriptions.
+    // The deadline is absolute: additional partial bytes do not extend it.
+    let mut request_deadline = Some(Instant::now() + REQUEST_READ_TIMEOUT);
     while !stop.load(Ordering::Relaxed) {
+        if request_deadline.is_some_and(|deadline| Instant::now() >= deadline) {
+            return;
+        }
         match stream.read(&mut scratch) {
             Ok(0) => return,
             Ok(n) => {
+                request_deadline.get_or_insert_with(|| Instant::now() + REQUEST_READ_TIMEOUT);
                 buf.extend_from_slice(&scratch[..n]);
             }
             Err(e)
@@ -351,6 +361,9 @@ fn client(
                     return;
                 }
             }
+            // Start the next frame's read budget after the preceding response;
+            // time spent handling that request is not charged to its successor.
+            request_deadline = (!buf.is_empty()).then(|| Instant::now() + REQUEST_READ_TIMEOUT);
         }
         for ev in queue.drain() {
             let Ok(value) = serde_json::to_value(ev) else { return };

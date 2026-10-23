@@ -39,6 +39,12 @@ This file lists what the app needs. Round 2 freezes it into the `ipc` crate.
 `{"id":1,"method":"status.get","params":{}}`. Events after
 `events.subscribe`: `{"event":"status.changed","data":{...}}`.
 
+The first request and each unfinished request frame have a ten-second read
+deadline. Additional partial bytes do not extend that deadline. Once a request
+completes, the connection may stay idle for subscriptions. The next frame's read
+budget starts when its bytes arrive, or after the preceding response if bytes
+were already buffered. Clients must reconnect after a read-deadline closure.
+
 The daemon sends `status.changed` with the FULL status object (not a diff),
 coalesced to at most 10 per second. The app renders only from the latest status.
 
