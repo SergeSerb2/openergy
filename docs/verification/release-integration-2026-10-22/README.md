@@ -12,6 +12,9 @@ or mocks were added. Native backend probes ran only inside isolated Linux Xvfb.
 
 ## Final hardening follow-up
 
+Work [resumed on October 23](../release-integration-2026-10-23/README.md) from the
+saved checkpoint. Each earlier record below keeps its original source scope.
+
 The [pause handoff](pause-handoff.md) records the integrated source, separate IPC
 candidate, completed reviews, preserved failures and next work after the user's
 requested pause.

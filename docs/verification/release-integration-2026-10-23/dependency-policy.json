@@ -1,0 +1,3368 @@
+{
+  "source_commit": "e4f48ba47ea69aa76a08de5cf0cf61c68d903c03",
+  "source_archive_sha256": "21a551059f2dbbd7fc694e668512efb99805b33029490f424156c92c762ccf08",
+  "snapshot_file_count": 801,
+  "snapshot_files_unchanged": true,
+  "scope": "Dependency-policy and official registry metadata observation, not compilation or runtime acceptance.",
+  "tool": {
+    "version": "0.20.2",
+    "archive_url": "https://github.com/EmbarkStudios/cargo-deny/releases/download/0.20.2/cargo-deny-0.20.2-aarch64-apple-darwin.tar.gz",
+    "checksum_url": "https://github.com/EmbarkStudios/cargo-deny/releases/download/0.20.2/cargo-deny-0.20.2-aarch64-apple-darwin.tar.gz.sha256",
+    "archive_sha256": "fe67d82a10d8597a3549364cb733a3f9cc1bfff9031b7ae46384a9f2a72090c3",
+    "binary_sha256": "5f65c07c459c9514f0c97cc2e2fb6b120daef2d95aee31062cab4816cf027eb1"
+  },
+  "toolchain": "Rust 1.99.1",
+  "commands": [
+    {
+      "name": "fetch",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "<verified-tool>/cargo-deny",
+        "--locked",
+        "--color",
+        "never",
+        "fetch",
+        "db",
+        "index"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.678,
+      "observed_at_utc": "2026-10-23T16:42:22.507519+00:00"
+    },
+    {
+      "name": "combined",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "<verified-tool>/cargo-deny",
+        "--locked",
+        "--all-features",
+        "--color",
+        "never",
+        "-L",
+        "info",
+        "--format",
+        "json",
+        "check",
+        "--show-stats"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.64,
+      "observed_at_utc": "2026-10-23T16:42:23.148413+00:00"
+    },
+    {
+      "name": "aarch64-apple-darwin",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "<verified-tool>/cargo-deny",
+        "--locked",
+        "--all-features",
+        "--target",
+        "aarch64-apple-darwin",
+        "--color",
+        "never",
+        "-L",
+        "info",
+        "--format",
+        "json",
+        "check",
+        "--show-stats"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.605,
+      "observed_at_utc": "2026-10-23T16:42:23.753897+00:00"
+    },
+    {
+      "name": "x86_64-apple-darwin",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "<verified-tool>/cargo-deny",
+        "--locked",
+        "--all-features",
+        "--target",
+        "x86_64-apple-darwin",
+        "--color",
+        "never",
+        "-L",
+        "info",
+        "--format",
+        "json",
+        "check",
+        "--show-stats"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.64,
+      "observed_at_utc": "2026-10-23T16:42:25.394361+00:00"
+    },
+    {
+      "name": "x86_64-unknown-linux-gnu",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "<verified-tool>/cargo-deny",
+        "--locked",
+        "--all-features",
+        "--target",
+        "x86_64-unknown-linux-gnu",
+        "--color",
+        "never",
+        "-L",
+        "info",
+        "--format",
+        "json",
+        "check",
+        "--show-stats"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.605,
+      "observed_at_utc": "2026-10-23T16:42:25.999724+00:00"
+    },
+    {
+      "name": "x86_64-pc-windows-msvc",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "<verified-tool>/cargo-deny",
+        "--locked",
+        "--all-features",
+        "--target",
+        "x86_64-pc-windows-msvc",
+        "--color",
+        "never",
+        "-L",
+        "info",
+        "--format",
+        "json",
+        "check",
+        "--show-stats"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.825,
+      "observed_at_utc": "2026-10-23T16:42:26.824780+00:00"
+    },
+    {
+      "name": "aarch64-unknown-linux-gnu",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "<verified-tool>/cargo-deny",
+        "--locked",
+        "--all-features",
+        "--target",
+        "aarch64-unknown-linux-gnu",
+        "--color",
+        "never",
+        "-L",
+        "info",
+        "--format",
+        "json",
+        "check",
+        "--show-stats"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.642,
+      "observed_at_utc": "2026-10-23T16:42:28.466668+00:00"
+    },
+    {
+      "name": "metadata",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "cargo",
+        "+1.99.1",
+        "metadata",
+        "--locked",
+        "--offline",
+        "--all-features",
+        "--format-version",
+        "1"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.084,
+      "observed_at_utc": "2026-10-23T16:42:28.551101+00:00"
+    },
+    {
+      "name": "notices",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "python3",
+        "docs/verification/public-release-audit-2026-10-21/generate-notices.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.2,
+      "observed_at_utc": "2026-10-23T16:42:28.751234+00:00"
+    }
+  ],
+  "graphs": [
+    {
+      "name": "aarch64-apple-darwin",
+      "packages": 73,
+      "summary": {
+        "advisories": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        },
+        "bans": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 1
+        },
+        "licenses": {
+          "errors": 0,
+          "helps": 73,
+          "notes": 0,
+          "warnings": 4
+        },
+        "sources": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        }
+      },
+      "warnings": [
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "Apache-2.0 WITH LLVM-exception"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "BSD-2-Clause"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "CC0-1.0"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "Zlib"
+          ]
+        },
+        {
+          "code": "duplicate",
+          "message": "found 2 duplicate entries for crate 'winnow'",
+          "spans": [
+            "winnow 0.7.15 registry+https://github.com/rust-lang/crates.io-index\nwinnow 1.0.4 registry+https://github.com/rust-lang/crates.io-index"
+          ]
+        }
+      ],
+      "raw_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_stderr_sha256": "7dd80e461196e54f6f2424a581a802002c9412b7490da23f7345a7adeff5116c"
+    },
+    {
+      "name": "aarch64-unknown-linux-gnu",
+      "packages": 79,
+      "summary": {
+        "advisories": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        },
+        "bans": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 1
+        },
+        "licenses": {
+          "errors": 0,
+          "helps": 79,
+          "notes": 0,
+          "warnings": 3
+        },
+        "sources": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        }
+      },
+      "warnings": [
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "BSD-2-Clause"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "CC0-1.0"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "Zlib"
+          ]
+        },
+        {
+          "code": "duplicate",
+          "message": "found 2 duplicate entries for crate 'winnow'",
+          "spans": [
+            "winnow 0.7.15 registry+https://github.com/rust-lang/crates.io-index\nwinnow 1.0.4 registry+https://github.com/rust-lang/crates.io-index"
+          ]
+        }
+      ],
+      "raw_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_stderr_sha256": "928e075a941acb3f07ec8995ad726a66f020c5b1e387b319416034b18b012088"
+    },
+    {
+      "name": "combined",
+      "packages": 93,
+      "summary": {
+        "advisories": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        },
+        "bans": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 2
+        },
+        "licenses": {
+          "errors": 0,
+          "helps": 93,
+          "notes": 0,
+          "warnings": 3
+        },
+        "sources": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        }
+      },
+      "warnings": [
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "BSD-2-Clause"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "CC0-1.0"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "Zlib"
+          ]
+        },
+        {
+          "code": "duplicate",
+          "message": "found 2 duplicate entries for crate 'windows-sys'",
+          "spans": [
+            "windows-sys 0.52.0 registry+https://github.com/rust-lang/crates.io-index\nwindows-sys 0.61.2 registry+https://github.com/rust-lang/crates.io-index"
+          ]
+        },
+        {
+          "code": "duplicate",
+          "message": "found 2 duplicate entries for crate 'winnow'",
+          "spans": [
+            "winnow 0.7.15 registry+https://github.com/rust-lang/crates.io-index\nwinnow 1.0.4 registry+https://github.com/rust-lang/crates.io-index"
+          ]
+        }
+      ],
+      "raw_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_stderr_sha256": "09f6fa6517597bd090d2f0e9d1644094daa17fa1d4b6b8d13f117780c3e64889"
+    },
+    {
+      "name": "x86_64-apple-darwin",
+      "packages": 73,
+      "summary": {
+        "advisories": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        },
+        "bans": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 1
+        },
+        "licenses": {
+          "errors": 0,
+          "helps": 73,
+          "notes": 0,
+          "warnings": 4
+        },
+        "sources": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        }
+      },
+      "warnings": [
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "Apache-2.0 WITH LLVM-exception"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "BSD-2-Clause"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "CC0-1.0"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "Zlib"
+          ]
+        },
+        {
+          "code": "duplicate",
+          "message": "found 2 duplicate entries for crate 'winnow'",
+          "spans": [
+            "winnow 0.7.15 registry+https://github.com/rust-lang/crates.io-index\nwinnow 1.0.4 registry+https://github.com/rust-lang/crates.io-index"
+          ]
+        }
+      ],
+      "raw_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_stderr_sha256": "0e5c972c31553ac2e650406bbf658293adacf477ab5635ca14d4bd763762b363"
+    },
+    {
+      "name": "x86_64-pc-windows-msvc",
+      "packages": 75,
+      "summary": {
+        "advisories": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        },
+        "bans": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 1
+        },
+        "licenses": {
+          "errors": 0,
+          "helps": 75,
+          "notes": 0,
+          "warnings": 4
+        },
+        "sources": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        }
+      },
+      "warnings": [
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "Apache-2.0 WITH LLVM-exception"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "BSD-2-Clause"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "CC0-1.0"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "Zlib"
+          ]
+        },
+        {
+          "code": "duplicate",
+          "message": "found 2 duplicate entries for crate 'winnow'",
+          "spans": [
+            "winnow 0.7.15 registry+https://github.com/rust-lang/crates.io-index\nwinnow 1.0.4 registry+https://github.com/rust-lang/crates.io-index"
+          ]
+        }
+      ],
+      "raw_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_stderr_sha256": "0bcdefce5af702412e46e67b202d0c41ae0fc208d8003f3d8055b370cfd481f2"
+    },
+    {
+      "name": "x86_64-unknown-linux-gnu",
+      "packages": 79,
+      "summary": {
+        "advisories": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        },
+        "bans": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 1
+        },
+        "licenses": {
+          "errors": 0,
+          "helps": 79,
+          "notes": 0,
+          "warnings": 3
+        },
+        "sources": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        }
+      },
+      "warnings": [
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "BSD-2-Clause"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "CC0-1.0"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "Zlib"
+          ]
+        },
+        {
+          "code": "duplicate",
+          "message": "found 2 duplicate entries for crate 'winnow'",
+          "spans": [
+            "winnow 0.7.15 registry+https://github.com/rust-lang/crates.io-index\nwinnow 1.0.4 registry+https://github.com/rust-lang/crates.io-index"
+          ]
+        }
+      ],
+      "raw_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_stderr_sha256": "9de88b0b9c33126f11ed6bd42343acc30c43e67092d46607d4ab7303c28226da"
+    }
+  ],
+  "rustsec": {
+    "revision": "84d943a6deeb8cc6c6f632531aaf4f1c62275239",
+    "worktree_clean": true,
+    "remote_head": "84d943a6deeb8cc6c6f632531aaf4f1c62275239",
+    "remote_matches": true,
+    "observed_at_utc": "2026-10-23T16:43:07.314919+00:00"
+  },
+  "registry_summary": {
+    "names": 103,
+    "versions": 106,
+    "all_checksums_match_and_none_yanked": true,
+    "bad": []
+  },
+  "registry_observations": [
+    {
+      "name": "asn1-rs",
+      "url": "https://index.crates.io/as/n1/asn1-rs",
+      "status": 200,
+      "response_sha256": "2ed9053e9c6bd912d5b821b8c52dcc36c7aced85b5248a6cbcb93f928e1e295b",
+      "headers": {
+        "last-modified": "Mon, 18 May 2026 10:29:53 GMT",
+        "etag": "\"4a30cb1ce55362d27e8c76b3a3b8bb97\"",
+        "cache-control": "public,max-age=600",
+        "age": "547",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.378907+00:00",
+      "elapsed_seconds": 0.27,
+      "versions": [
+        {
+          "version": "0.7.2",
+          "yanked": false,
+          "checksum": "b7f43a50ac4fdca5df8e885c21b835997f0a1cdee65494a6847694a98652d9d8",
+          "lock_checksum": "b7f43a50ac4fdca5df8e885c21b835997f0a1cdee65494a6847694a98652d9d8",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "asn1-rs-derive",
+      "url": "https://index.crates.io/as/n1/asn1-rs-derive",
+      "status": 200,
+      "response_sha256": "c3a4a2cb4756cd4d7d9280904ffd9a2e879f72065ea484eda3b4ea10fa31af1e",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 11:23:49 GMT",
+        "etag": "\"1b4324b0add827236971be918547dbd4\"",
+        "cache-control": "public,max-age=600",
+        "age": "547",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.363773+00:00",
+      "elapsed_seconds": 0.255,
+      "versions": [
+        {
+          "version": "0.6.0",
+          "yanked": false,
+          "checksum": "3109e49b1e4909e9db6515a30c633684d68cdeaa252f215214cb4fa1a5bfee2c",
+          "lock_checksum": "3109e49b1e4909e9db6515a30c633684d68cdeaa252f215214cb4fa1a5bfee2c",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "asn1-rs-impl",
+      "url": "https://index.crates.io/as/n1/asn1-rs-impl",
+      "status": 200,
+      "response_sha256": "e93b3877f671368e8c03b52c52b32fe590a89598277bc11e5cbcde3f2871ba3b",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 11:23:49 GMT",
+        "etag": "\"28934f09d05633cbd59b556a2264d632\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "547",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.372109+00:00",
+      "elapsed_seconds": 0.263,
+      "versions": [
+        {
+          "version": "0.2.0",
+          "yanked": false,
+          "checksum": "7b18050c2cd6fe86c3a76584ef5e0baf286d038cda203eb6223df2cc413565f7",
+          "lock_checksum": "7b18050c2cd6fe86c3a76584ef5e0baf286d038cda203eb6223df2cc413565f7",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "autocfg",
+      "url": "https://index.crates.io/au/to/autocfg",
+      "status": 200,
+      "response_sha256": "60e52e9e0cf800ffcb1b365fc5e4ec9d35bbacea049fb8cff46453961e2f07f3",
+      "headers": {
+        "last-modified": "Fri, 22 May 2026 11:03:06 GMT",
+        "etag": "\"969de01c8e79621ba01d87545090fc22\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "129",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.365745+00:00",
+      "elapsed_seconds": 0.257,
+      "versions": [
+        {
+          "version": "1.5.1",
+          "yanked": false,
+          "checksum": "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53",
+          "lock_checksum": "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "base64",
+      "url": "https://index.crates.io/ba/se/base64",
+      "status": 200,
+      "response_sha256": "42a061d4b29c30417df7b028aa5274a1dfe5b7304794ac05e5bce9ac44b40153",
+      "headers": {
+        "last-modified": "Tue, 04 Aug 2026 12:34:35 GMT",
+        "etag": "\"0a30877d3d90dcb766fb987c9d120ad9\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "45",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.375981+00:00",
+      "elapsed_seconds": 0.267,
+      "versions": [
+        {
+          "version": "0.23.1",
+          "yanked": false,
+          "checksum": "ac07cdecf99051d9a5238b80f35af32cdeba5b336e55d957b318b50137e18da5",
+          "lock_checksum": "ac07cdecf99051d9a5238b80f35af32cdeba5b336e55d957b318b50137e18da5",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "bit-vec",
+      "url": "https://index.crates.io/bi/t-/bit-vec",
+      "status": 200,
+      "response_sha256": "948d403b2a577f2d2379425e87c43cf4a06709ae3bd13e47d190776d34784d5d",
+      "headers": {
+        "last-modified": "Fri, 10 Jul 2026 12:48:25 GMT",
+        "etag": "\"8fc4d5109f0bfe18dfc87d005b55767b\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "265",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.204366+00:00",
+      "elapsed_seconds": 0.095,
+      "versions": [
+        {
+          "version": "0.9.1",
+          "yanked": false,
+          "checksum": "b71798fca2c1fe1086445a7258a4bc81e6e49dcd24c8d0dd9a1e57395b603f51",
+          "lock_checksum": "b71798fca2c1fe1086445a7258a4bc81e6e49dcd24c8d0dd9a1e57395b603f51",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "bitflags",
+      "url": "https://index.crates.io/bi/tf/bitflags",
+      "status": 200,
+      "response_sha256": "d3aa8cbad37c9526e2cf25544efcb8ba215649143476a2dd732e413e570cd017",
+      "headers": {
+        "last-modified": "Thu, 10 Sep 2026 01:11:40 GMT",
+        "etag": "\"2f227433c3a80beec62d23c34bbed0ae\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "324",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.224083+00:00",
+      "elapsed_seconds": 0.02,
+      "versions": [
+        {
+          "version": "2.13.2",
+          "yanked": false,
+          "checksum": "3ded4057c258ba199e2d26386d3af3780957ecaee6c4ef4041c6b4b8b97c0b06",
+          "lock_checksum": "3ded4057c258ba199e2d26386d3af3780957ecaee6c4ef4041c6b4b8b97c0b06",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "block-buffer",
+      "url": "https://index.crates.io/bl/oc/block-buffer",
+      "status": 200,
+      "response_sha256": "122617d2ea1d3810b4a8bd59c6903a643a83e6305f8862fb4f0663a982e29f68",
+      "headers": {
+        "last-modified": "Thu, 11 Jun 2026 15:40:07 GMT",
+        "etag": "\"0b68a59cad32dee87a150237c416e660\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "44",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.239279+00:00",
+      "elapsed_seconds": 0.015,
+      "versions": [
+        {
+          "version": "0.12.1",
+          "yanked": false,
+          "checksum": "d2f6c7dbe95a6ed67ad9f18e57daf93a2f034c524b99fd2b76d18fdfeb6660aa",
+          "lock_checksum": "d2f6c7dbe95a6ed67ad9f18e57daf93a2f034c524b99fd2b76d18fdfeb6660aa",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "cc",
+      "url": "https://index.crates.io/2/cc",
+      "status": 200,
+      "response_sha256": "4dffd2330af4cf8ed698fa52b5ec411249a4ba187a7bcd6cb604758937fdb6eb",
+      "headers": {
+        "last-modified": "Fri, 23 Oct 2026 08:35:45 GMT",
+        "etag": "\"a592e2478e9d56063f8aa457f66be037\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "44",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.260703+00:00",
+      "elapsed_seconds": 0.021,
+      "versions": [
+        {
+          "version": "1.9.0",
+          "yanked": false,
+          "checksum": "877bf67ac8e52449eb2f9e98a344ea163beb70dd1f9eebe3cc5357dcfeaee4df",
+          "lock_checksum": "877bf67ac8e52449eb2f9e98a344ea163beb70dd1f9eebe3cc5357dcfeaee4df",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "cfg-if",
+      "url": "https://index.crates.io/cf/g-/cfg-if",
+      "status": 200,
+      "response_sha256": "093922503d2239eb28afdcc1d3c334aac7abc9d9269f96907d5ff1144e841010",
+      "headers": {
+        "last-modified": "Wed, 16 Sep 2026 17:36:12 GMT",
+        "etag": "\"6080fbc76b90d35eeb6603653b6330ef\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "324",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.276039+00:00",
+      "elapsed_seconds": 0.015,
+      "versions": [
+        {
+          "version": "1.0.5",
+          "yanked": false,
+          "checksum": "4e7648175b45a9a48536d676f68d918270699102aa8dab5496df06904c914600",
+          "lock_checksum": "4e7648175b45a9a48536d676f68d918270699102aa8dab5496df06904c914600",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "const-oid",
+      "url": "https://index.crates.io/co/ns/const-oid",
+      "status": 200,
+      "response_sha256": "91d6eab181f4b58564d22d2d52daf06ee35c89254d8872be78cb163371c3c7a6",
+      "headers": {
+        "last-modified": "Wed, 07 Jan 2026 23:11:59 GMT",
+        "etag": "\"6b871022d5d69d225310d3c311a78aaf\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "524",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.295286+00:00",
+      "elapsed_seconds": 0.019,
+      "versions": [
+        {
+          "version": "0.10.2",
+          "yanked": false,
+          "checksum": "a6ef517f0926dd24a1582492c791b6a4818a4d94e789a334894aa15b0d12f55c",
+          "lock_checksum": "a6ef517f0926dd24a1582492c791b6a4818a4d94e789a334894aa15b0d12f55c",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "cpufeatures",
+      "url": "https://index.crates.io/cp/uf/cpufeatures",
+      "status": 200,
+      "response_sha256": "f947bbced0242d2afec044c148bf0220e8c6cc4d1d454f35c3e7a32cbd215b8d",
+      "headers": {
+        "last-modified": "Thu, 27 Aug 2026 21:37:03 GMT",
+        "etag": "\"79ee26535188ff3158f33956c562207d\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "45",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.312321+00:00",
+      "elapsed_seconds": 0.017,
+      "versions": [
+        {
+          "version": "0.3.1",
+          "yanked": false,
+          "checksum": "5ca28b0ae3115b884660db4118d803791fd6756b6e88f39c0f3f7859060d7566",
+          "lock_checksum": "5ca28b0ae3115b884660db4118d803791fd6756b6e88f39c0f3f7859060d7566",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "crypto-common",
+      "url": "https://index.crates.io/cr/yp/crypto-common",
+      "status": 200,
+      "response_sha256": "694d6109ac84d0e80af5a064e452755ad3d3ef74addbd3e0a3b112abf48c861f",
+      "headers": {
+        "last-modified": "Tue, 19 May 2026 16:01:24 GMT",
+        "etag": "\"1095fc085a08af8f69ee3d9d725aa3d1\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "44",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.330583+00:00",
+      "elapsed_seconds": 0.018,
+      "versions": [
+        {
+          "version": "0.2.2",
+          "yanked": false,
+          "checksum": "ce6e4c961d6cd6c9a86db418387425e8bdeaf05b3c8bc1411e6dca4c252f1453",
+          "lock_checksum": "ce6e4c961d6cd6c9a86db418387425e8bdeaf05b3c8bc1411e6dca4c252f1453",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "data-encoding",
+      "url": "https://index.crates.io/da/ta/data-encoding",
+      "status": 200,
+      "response_sha256": "fb8202345c08fbe1ebe2f3fd6306c9ac38345196675cfa15bd4e763bb459a58a",
+      "headers": {
+        "last-modified": "Mon, 03 Aug 2026 10:39:54 GMT",
+        "etag": "\"4d1ab27a022085be68bfcdda27f99f6b\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "214",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.346252+00:00",
+      "elapsed_seconds": 0.016,
+      "versions": [
+        {
+          "version": "2.11.1",
+          "yanked": false,
+          "checksum": "4583a4551df46e2792f82ceeac45e850d2e2d5debba0b91f102385cda5b11f06",
+          "lock_checksum": "4583a4551df46e2792f82ceeac45e850d2e2d5debba0b91f102385cda5b11f06",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "der-parser",
+      "url": "https://index.crates.io/de/r-/der-parser",
+      "status": 200,
+      "response_sha256": "fc50b2092069babbcf2a5bc272285d3f57f824a120748bb9c426ee4ae8246afa",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 11:41:08 GMT",
+        "etag": "\"a3cb9470d46759956794fc047d5b6e82\"",
+        "cache-control": "public,max-age=600",
+        "age": "547",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.365265+00:00",
+      "elapsed_seconds": 0.019,
+      "versions": [
+        {
+          "version": "10.0.0",
+          "yanked": false,
+          "checksum": "07da5016415d5a3c4dd39b11ed26f915f52fc4e0dc197d87908bc916e51bc1a6",
+          "lock_checksum": "07da5016415d5a3c4dd39b11ed26f915f52fc4e0dc197d87908bc916e51bc1a6",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "deranged",
+      "url": "https://index.crates.io/de/ra/deranged",
+      "status": 200,
+      "response_sha256": "aa8be5ca64acb0b0f049ed7f773e50cb064686b632caf6722b9e2bdb0ad3655c",
+      "headers": {
+        "last-modified": "Tue, 13 Oct 2026 07:25:43 GMT",
+        "etag": "\"4129c51b7dc5a2bca808fb9d217c6b1b\"",
+        "cache-control": "public,max-age=600",
+        "age": "437",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.381598+00:00",
+      "elapsed_seconds": 0.018,
+      "versions": [
+        {
+          "version": "0.5.9",
+          "yanked": false,
+          "checksum": "9e9de72ce2ad1f90dc62fa25f0f430ef85eb4b0d8fa0be4f30373bc40a21d28e",
+          "lock_checksum": "9e9de72ce2ad1f90dc62fa25f0f430ef85eb4b0d8fa0be4f30373bc40a21d28e",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "digest",
+      "url": "https://index.crates.io/di/ge/digest",
+      "status": 200,
+      "response_sha256": "59f9abb0ee56765e0b2c05ae52ccf037303a7ae6a090f5f340383334b9ea1c6e",
+      "headers": {
+        "last-modified": "Sun, 03 May 2026 12:54:49 GMT",
+        "etag": "\"ee51eaf789a1e18da9bd391070985d7d\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "45",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.386874+00:00",
+      "elapsed_seconds": 0.022,
+      "versions": [
+        {
+          "version": "0.11.3",
+          "yanked": false,
+          "checksum": "f1dd6dbb5841937940781866fa1281a1ff7bd3bf827091440879f9994983d5c2",
+          "lock_checksum": "f1dd6dbb5841937940781866fa1281a1ff7bd3bf827091440879f9994983d5c2",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "displaydoc",
+      "url": "https://index.crates.io/di/sp/displaydoc",
+      "status": 200,
+      "response_sha256": "5b870968434348789c48263b41524586592ee0923b5efbaaf443db8ec66a3211",
+      "headers": {
+        "last-modified": "Tue, 28 Jul 2026 13:58:22 GMT",
+        "etag": "\"884b0d6dc007486ebd5eaa77b756f9bc\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "44",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.383106+00:00",
+      "elapsed_seconds": 0.017,
+      "versions": [
+        {
+          "version": "0.2.7",
+          "yanked": false,
+          "checksum": "c6232dd377dcc64799954cbd3a9bb882e9cdc1308ccd87b1c098f1fb2eaf82a8",
+          "lock_checksum": "c6232dd377dcc64799954cbd3a9bb882e9cdc1308ccd87b1c098f1fb2eaf82a8",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "equivalent",
+      "url": "https://index.crates.io/eq/ui/equivalent",
+      "status": 200,
+      "response_sha256": "357c762682a097493601e2a51a75e473ab3c1d0e876b543352c67c8a9b3b4152",
+      "headers": {
+        "last-modified": "Tue, 13 Oct 2026 23:06:50 GMT",
+        "etag": "\"35a7faa8b2e9da232dedd10d856b89f2\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "324",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.387760+00:00",
+      "elapsed_seconds": 0.016,
+      "versions": [
+        {
+          "version": "1.0.3",
+          "yanked": false,
+          "checksum": "00d174d5400e5e8fd687ad1049e2f578285fa914201b1af7e8b112a4546bd826",
+          "lock_checksum": "00d174d5400e5e8fd687ad1049e2f578285fa914201b1af7e8b112a4546bd826",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "errno",
+      "url": "https://index.crates.io/er/rn/errno",
+      "status": 200,
+      "response_sha256": "49f9272c19fd91100581009c2caabab0ca1fae26af4bc0175dcd3aabded3c5fa",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 11:46:57 GMT",
+        "etag": "\"dbf55119c473f2632617757c53fe8ff6\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "45",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.397410+00:00",
+      "elapsed_seconds": 0.021,
+      "versions": [
+        {
+          "version": "0.3.14",
+          "yanked": false,
+          "checksum": "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb",
+          "lock_checksum": "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "fastrand",
+      "url": "https://index.crates.io/fa/st/fastrand",
+      "status": 200,
+      "response_sha256": "3dc52a8b46b0b421c30baec14ff476cda34f63f2ccfe75be431e005064469333",
+      "headers": {
+        "last-modified": "Sun, 19 Jul 2026 12:40:55 GMT",
+        "etag": "\"ad8944fca44c6ce31488b7121f7530ca\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "266",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.401909+00:00",
+      "elapsed_seconds": 0.023,
+      "versions": [
+        {
+          "version": "2.5.0",
+          "yanked": false,
+          "checksum": "da7c62ceae207dd37ea5b845da6a0696c799f85e97da1ab5b7910be3c1c80223",
+          "lock_checksum": "da7c62ceae207dd37ea5b845da6a0696c799f85e97da1ab5b7910be3c1c80223",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "find-msvc-tools",
+      "url": "https://index.crates.io/fi/nd/find-msvc-tools",
+      "status": 200,
+      "response_sha256": "782f2bd425a45754a59a62100b354aa52ee3429cceb45132ae42de589c6997ab",
+      "headers": {
+        "last-modified": "Mon, 19 Oct 2026 07:39:38 GMT",
+        "etag": "\"bec6f678585c802c3bb5dc43db544e8b\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "44",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.402616+00:00",
+      "elapsed_seconds": 0.021,
+      "versions": [
+        {
+          "version": "0.1.15",
+          "yanked": false,
+          "checksum": "1c66915cc5391097de7a2b0b972e8505aa33c0df401fd3a6811dbdb32881ba48",
+          "lock_checksum": "1c66915cc5391097de7a2b0b972e8505aa33c0df401fd3a6811dbdb32881ba48",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "flume",
+      "url": "https://index.crates.io/fl/um/flume",
+      "status": 200,
+      "response_sha256": "075882fc359220f5e8d36f0e7f96e05ac03cf97d2cde75f1dc2ac8ad51bc9f8b",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 11:51:04 GMT",
+        "etag": "\"825d622c78e421d9ff8f0907e4944bc0\"",
+        "cache-control": "public,max-age=600",
+        "age": "558",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.411387+00:00",
+      "elapsed_seconds": 0.028,
+      "versions": [
+        {
+          "version": "0.12.0",
+          "yanked": false,
+          "checksum": "5e139bc46ca777eb5efaf62df0ab8cc5fd400866427e56c68b22e414e53bd3be",
+          "lock_checksum": "5e139bc46ca777eb5efaf62df0ab8cc5fd400866427e56c68b22e414e53bd3be",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "futures-core",
+      "url": "https://index.crates.io/fu/tu/futures-core",
+      "status": 200,
+      "response_sha256": "9b24e771005b4548343ec4b73fe3531a8cbcf6fa7c6eb923a5058e8aab093915",
+      "headers": {
+        "last-modified": "Tue, 11 Aug 2026 12:13:03 GMT",
+        "etag": "\"13374bbcc8cb7c2bf93308339fb2a596\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "267",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.406378+00:00",
+      "elapsed_seconds": 0.019,
+      "versions": [
+        {
+          "version": "0.3.34",
+          "yanked": false,
+          "checksum": "92d699e522242e69e3003b94ecc1f960f3a5e015aa7c5d7486e65ad01dd94f5e",
+          "lock_checksum": "92d699e522242e69e3003b94ecc1f960f3a5e015aa7c5d7486e65ad01dd94f5e",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "futures-sink",
+      "url": "https://index.crates.io/fu/tu/futures-sink",
+      "status": 200,
+      "response_sha256": "d637309312a7ad42855913cb1ad66966757261af1d88257bf204d18e0a77b92f",
+      "headers": {
+        "last-modified": "Tue, 11 Aug 2026 12:13:07 GMT",
+        "etag": "\"7ad5c3fa83d8188a5115818b28a729a4\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "266",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.409344+00:00",
+      "elapsed_seconds": 0.022,
+      "versions": [
+        {
+          "version": "0.3.34",
+          "yanked": false,
+          "checksum": "1944426bf7d03f1d14f708785e4b33efd750b36d48a157b836b3efc15ede8e1d",
+          "lock_checksum": "1944426bf7d03f1d14f708785e4b33efd750b36d48a157b836b3efc15ede8e1d",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "gethostname",
+      "url": "https://index.crates.io/ge/th/gethostname",
+      "status": 200,
+      "response_sha256": "903a9bcb8074951a28e9635e71e499167725c35f607a32d1dfdc3bcba16ddb66",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 11:56:07 GMT",
+        "etag": "\"245074ba5e8363bf8343959a5ac305d2\"",
+        "cache-control": "public,max-age=600",
+        "age": "547",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.412057+00:00",
+      "elapsed_seconds": 0.015,
+      "versions": [
+        {
+          "version": "1.1.0",
+          "yanked": false,
+          "checksum": "1bd49230192a3797a9a4d6abe9b3eed6f7fa4c8a8a4947977c6f80025f92cbd8",
+          "lock_checksum": "1bd49230192a3797a9a4d6abe9b3eed6f7fa4c8a8a4947977c6f80025f92cbd8",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "getrandom",
+      "url": "https://index.crates.io/ge/tr/getrandom",
+      "status": 200,
+      "response_sha256": "4f871328d4b65bd7c3511d8a359e8f2ff119866af406254a86ff7c675512913a",
+      "headers": {
+        "last-modified": "Wed, 17 Jun 2026 18:02:07 GMT",
+        "etag": "\"6359f7be20d9b7eb51d2083fe3fb6e24\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "268",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.421768+00:00",
+      "elapsed_seconds": 0.02,
+      "versions": [
+        {
+          "version": "0.2.17",
+          "yanked": false,
+          "checksum": "ff2abc00be7fca6ebc474524697ae276ad847ad0a6b3faa4bcb027e9a4614ad0",
+          "lock_checksum": "ff2abc00be7fca6ebc474524697ae276ad847ad0a6b3faa4bcb027e9a4614ad0",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "hashbrown",
+      "url": "https://index.crates.io/ha/sh/hashbrown",
+      "status": 200,
+      "response_sha256": "a713c43dbc6c92bbcec527544196023ca4271afed3dd5abbe766e70c67f512c6",
+      "headers": {
+        "last-modified": "Sat, 09 May 2026 04:35:06 GMT",
+        "etag": "\"d84d9c7b755fbddc8892e7c85ce010c4\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "324",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.422709+00:00",
+      "elapsed_seconds": 0.02,
+      "versions": [
+        {
+          "version": "0.17.1",
+          "yanked": false,
+          "checksum": "ed5909b6e89a2db4456e54cd5f673791d7eca6732202bbf2a9cc504fe2f9b84a",
+          "lock_checksum": "ed5909b6e89a2db4456e54cd5f673791d7eca6732202bbf2a9cc504fe2f9b84a",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "hybrid-array",
+      "url": "https://index.crates.io/hy/br/hybrid-array",
+      "status": 200,
+      "response_sha256": "94398eb4d20764cd1b38e808d447ae6d0844f7c21e21aaaccacf3eb5feaab546",
+      "headers": {
+        "last-modified": "Tue, 08 Sep 2026 18:21:41 GMT",
+        "etag": "\"6023cb355116178aa20a44c7100bcae6\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "159",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.423899+00:00",
+      "elapsed_seconds": 0.018,
+      "versions": [
+        {
+          "version": "0.4.15",
+          "yanked": false,
+          "checksum": "27f864f10dfb56725ce5ce5472bc52252c8f93a4ab86327122cebf62c5f59a17",
+          "lock_checksum": "27f864f10dfb56725ce5ce5472bc52252c8f93a4ab86327122cebf62c5f59a17",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "if-addrs",
+      "url": "https://index.crates.io/if/-a/if-addrs",
+      "status": 200,
+      "response_sha256": "9543bcbde08d4bd7b1a79cfe2ceae740e32c227be1468cc8e4c9f7978fe928cf",
+      "headers": {
+        "last-modified": "Sun, 08 Feb 2026 05:55:05 GMT",
+        "etag": "\"59ac24efbbacb6ba557867125d754ad2\"",
+        "cache-control": "public,max-age=600",
+        "age": "0",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.563196+00:00",
+      "elapsed_seconds": 0.154,
+      "versions": [
+        {
+          "version": "0.15.0",
+          "yanked": false,
+          "checksum": "c0a05c691e1fae256cf7013d99dad472dc52d5543322761f83ec8d47eab40d2b",
+          "lock_checksum": "c0a05c691e1fae256cf7013d99dad472dc52d5543322761f83ec8d47eab40d2b",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "indexmap",
+      "url": "https://index.crates.io/in/de/indexmap",
+      "status": 200,
+      "response_sha256": "40c32ec5860cc3e23155cafc712892fe7b7ac3558b75115d8bb3d70b89247792",
+      "headers": {
+        "last-modified": "Sat, 05 Sep 2026 01:53:49 GMT",
+        "etag": "\"b05a0db0aa53103cca024eabdb841190\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "267",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.432589+00:00",
+      "elapsed_seconds": 0.021,
+      "versions": [
+        {
+          "version": "2.14.2",
+          "yanked": false,
+          "checksum": "cc4e190f5d26ca7051642629da2c52fc03bde85a03197c99408dcd291734c855",
+          "lock_checksum": "cc4e190f5d26ca7051642629da2c52fc03bde85a03197c99408dcd291734c855",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "itoa",
+      "url": "https://index.crates.io/it/oa/itoa",
+      "status": 200,
+      "response_sha256": "5e275f1d7a32dd49bc850af460efbf99064cd058f4566f5f86a969e2a535eece",
+      "headers": {
+        "last-modified": "Fri, 20 Mar 2026 00:12:38 GMT",
+        "etag": "\"ea8494d560f1b8174443495b370e272f\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "129",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.427083+00:00",
+      "elapsed_seconds": 0.015,
+      "versions": [
+        {
+          "version": "1.0.18",
+          "yanked": false,
+          "checksum": "8f42a60cbdf9a97f5d2305f08a87dc4e09308d1276d28c869c684d7777685682",
+          "lock_checksum": "8f42a60cbdf9a97f5d2305f08a87dc4e09308d1276d28c869c684d7777685682",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "lazy_static",
+      "url": "https://index.crates.io/la/zy/lazy_static",
+      "status": 200,
+      "response_sha256": "6ddaa92126b6724ec4b08a4e4e6ca0b2906dc7dd3a05a56c245b3e3be6704f39",
+      "headers": {
+        "last-modified": "Thu, 01 Oct 2026 07:18:55 GMT",
+        "etag": "\"8dcd87988feb12531ca2713588b737df\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "11",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.437949+00:00",
+      "elapsed_seconds": 0.016,
+      "versions": [
+        {
+          "version": "1.5.1",
+          "yanked": false,
+          "checksum": "20870f649af7073d53e38067b2a84312175d56ea15217e1b15bc83506ec50afb",
+          "lock_checksum": "20870f649af7073d53e38067b2a84312175d56ea15217e1b15bc83506ec50afb",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "libc",
+      "url": "https://index.crates.io/li/bc/libc",
+      "status": 200,
+      "response_sha256": "de437e8dbc298365b02d7ec43a8e8480094eecde6bd7d4ddbc52553d92ae571f",
+      "headers": {
+        "last-modified": "Fri, 16 Oct 2026 22:56:47 GMT",
+        "etag": "\"3493734e19f35430b70d023b1c1ad969\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "324",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.442680+00:00",
+      "elapsed_seconds": 0.02,
+      "versions": [
+        {
+          "version": "0.2.191",
+          "yanked": false,
+          "checksum": "65cd87c9a6d60536580b316ad985726104730a5151c99845f2490428ef91240a",
+          "lock_checksum": "65cd87c9a6d60536580b316ad985726104730a5151c99845f2490428ef91240a",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "linux-raw-sys",
+      "url": "https://index.crates.io/li/nu/linux-raw-sys",
+      "status": 200,
+      "response_sha256": "4cef178ea82fc38ea711a33df62bff0bef3e3c2569e0061080896a192baca324",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 12:16:22 GMT",
+        "etag": "\"7d87fe5764a1be6bd4e785bd9d455670\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "547",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.441672+00:00",
+      "elapsed_seconds": 0.018,
+      "versions": [
+        {
+          "version": "0.12.1",
+          "yanked": false,
+          "checksum": "32a66949e030da00e8c7d4434b251670a91556f4144941d37452769c25d58a53",
+          "lock_checksum": "32a66949e030da00e8c7d4434b251670a91556f4144941d37452769c25d58a53",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "lock_api",
+      "url": "https://index.crates.io/lo/ck/lock_api",
+      "status": 200,
+      "response_sha256": "d7a74b6e2c178ebe08b19b5996036caef9f840367ccb73771ea765c3486ce8ad",
+      "headers": {
+        "last-modified": "Wed, 21 Oct 2026 10:30:38 GMT",
+        "etag": "\"7bfd4e0482ad27090f8d93b1d7ea03de\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "547",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.443185+00:00",
+      "elapsed_seconds": 0.016,
+      "versions": [
+        {
+          "version": "0.4.14",
+          "yanked": false,
+          "checksum": "224399e74b87b5f3557511d98dff8b14089b3dadafcab6bb93eab67d3aace965",
+          "lock_checksum": "224399e74b87b5f3557511d98dff8b14089b3dadafcab6bb93eab67d3aace965",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "log",
+      "url": "https://index.crates.io/3/l/log",
+      "status": 200,
+      "response_sha256": "77bf6b28e1f98f2177ddd68b0234ca3f6e1e6bc6e89d2523cdb6db393f4f3ea2",
+      "headers": {
+        "last-modified": "Sat, 22 Aug 2026 11:44:29 GMT",
+        "etag": "\"4a4dbe26e9d919ba1f6441374e389a54\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "268",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.450083+00:00",
+      "elapsed_seconds": 0.017,
+      "versions": [
+        {
+          "version": "0.4.34",
+          "yanked": false,
+          "checksum": "f9f8bd3e56ce4dfc153cf470fffbfa98c7620958b312ca5c3a4b8d5181fd13c6",
+          "lock_checksum": "f9f8bd3e56ce4dfc153cf470fffbfa98c7620958b312ca5c3a4b8d5181fd13c6",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "memchr",
+      "url": "https://index.crates.io/me/mc/memchr",
+      "status": 200,
+      "response_sha256": "577209be17cbaaf1a862c0e01a84d515d91bcc229476fd34e67ffd44a5a84f27",
+      "headers": {
+        "last-modified": "Wed, 08 Jul 2026 00:49:56 GMT",
+        "etag": "\"b80703e5b81110869d945dc7d919a9c1\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "214",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.452153+00:00",
+      "elapsed_seconds": 0.014,
+      "versions": [
+        {
+          "version": "2.8.3",
+          "yanked": false,
+          "checksum": "cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98",
+          "lock_checksum": "cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "minimal-lexical",
+      "url": "https://index.crates.io/mi/ni/minimal-lexical",
+      "status": 200,
+      "response_sha256": "b87b71896d5d575228ee5260191df38a53c537e9423aa68226bc5563fe3c7d6a",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 12:23:19 GMT",
+        "etag": "\"aff0c3db34ef17ed6442a8e6cc476896\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "425",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.458105+00:00",
+      "elapsed_seconds": 0.016,
+      "versions": [
+        {
+          "version": "0.2.1",
+          "yanked": false,
+          "checksum": "68354c5c6bd36d73ff3feceb05efa59b6acb7626617f4962be322a825e61f79a",
+          "lock_checksum": "68354c5c6bd36d73ff3feceb05efa59b6acb7626617f4962be322a825e61f79a",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "mio",
+      "url": "https://index.crates.io/3/m/mio",
+      "status": 200,
+      "response_sha256": "7c86eac1151d864b95b9cda116c39f79e22dda6b36f92f784bb48f4e5fe6b6f1",
+      "headers": {
+        "last-modified": "Sat, 03 Oct 2026 16:33:12 GMT",
+        "etag": "\"732ab8798e476c1d72e0b69746b9b2d5\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "267",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.463799+00:00",
+      "elapsed_seconds": 0.021,
+      "versions": [
+        {
+          "version": "1.2.4",
+          "yanked": false,
+          "checksum": "1788edb87fdc09c7e26304471e2f5be8cdefb1b6930d6e3985fc02ff53bf86ee",
+          "lock_checksum": "1788edb87fdc09c7e26304471e2f5be8cdefb1b6930d6e3985fc02ff53bf86ee",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "nom",
+      "url": "https://index.crates.io/3/n/nom",
+      "status": 200,
+      "response_sha256": "24b6380acf0e74079001ba7ab4be214bbdd6476a26683ca78206f5720f6b7d40",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 12:29:26 GMT",
+        "etag": "\"d109b005e3bafb304de8e842641b1bff\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "443",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.462805+00:00",
+      "elapsed_seconds": 0.02,
+      "versions": [
+        {
+          "version": "7.1.3",
+          "yanked": false,
+          "checksum": "d273983c5a657a70a3e8f2a01329822f3b8c8172b73826411a55751e404a0a4a",
+          "lock_checksum": "d273983c5a657a70a3e8f2a01329822f3b8c8172b73826411a55751e404a0a4a",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "num-bigint",
+      "url": "https://index.crates.io/nu/m-/num-bigint",
+      "status": 200,
+      "response_sha256": "96d8afcfa019a6c065f282a5c18888c6ddb7308f6e9dfd95da27d537d1aca848",
+      "headers": {
+        "last-modified": "Sun, 05 Jul 2026 01:20:59 GMT",
+        "etag": "\"c7032f5f1bb8dc0938e69d74a0d4882a\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "160",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.467386+00:00",
+      "elapsed_seconds": 0.017,
+      "versions": [
+        {
+          "version": "0.4.8",
+          "yanked": false,
+          "checksum": "c89e69e7e0f03bea5ef08013795c25018e101932225a656383bd384495ecc367",
+          "lock_checksum": "c89e69e7e0f03bea5ef08013795c25018e101932225a656383bd384495ecc367",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "num-conv",
+      "url": "https://index.crates.io/nu/m-/num-conv",
+      "status": 200,
+      "response_sha256": "fbf9e6b3975428a96ea37452e7101241e285f62703975886b9d78b6f40f84595",
+      "headers": {
+        "last-modified": "Mon, 18 May 2026 18:35:53 GMT",
+        "etag": "\"fc906d9e8ae880165eafbc8be7503c3e\"",
+        "cache-control": "public,max-age=600",
+        "age": "437",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.468090+00:00",
+      "elapsed_seconds": 0.016,
+      "versions": [
+        {
+          "version": "0.2.2",
+          "yanked": false,
+          "checksum": "521739c6d2bac4aa25192232afe6841231376b2b26d4d9fae5ecf8ca5772e441",
+          "lock_checksum": "521739c6d2bac4aa25192232afe6841231376b2b26d4d9fae5ecf8ca5772e441",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "num-integer",
+      "url": "https://index.crates.io/nu/m-/num-integer",
+      "status": 200,
+      "response_sha256": "5de871ff11e4c41c4bc34ae504802e8b3fac32bf4f0dc8c5f9daeec1465caeab",
+      "headers": {
+        "last-modified": "Wed, 12 Aug 2026 00:11:59 GMT",
+        "etag": "\"652b1b38eb11992fbc3e79855b762dfa\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "68",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.472590+00:00",
+      "elapsed_seconds": 0.014,
+      "versions": [
+        {
+          "version": "0.1.47",
+          "yanked": false,
+          "checksum": "7ce2d95d4b3734dc35aa2f45e1aa22cd416814592a4f9d9205e11affd5b8e10b",
+          "lock_checksum": "7ce2d95d4b3734dc35aa2f45e1aa22cd416814592a4f9d9205e11affd5b8e10b",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "num-traits",
+      "url": "https://index.crates.io/nu/m-/num-traits",
+      "status": 200,
+      "response_sha256": "15b5132965f616441319773bc71cc14547a115e8f2023e93d18e02a5b23240df",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 12:30:29 GMT",
+        "etag": "\"76a21bb3c96a942255e245aa9971cbcc\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "268",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.479218+00:00",
+      "elapsed_seconds": 0.016,
+      "versions": [
+        {
+          "version": "0.2.19",
+          "yanked": false,
+          "checksum": "071dfc062690e90b734c0b2273ce72ad0ffa95f0c74596bc250dcfd960262841",
+          "lock_checksum": "071dfc062690e90b734c0b2273ce72ad0ffa95f0c74596bc250dcfd960262841",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "oid-registry",
+      "url": "https://index.crates.io/oi/d-/oid-registry",
+      "status": 200,
+      "response_sha256": "440431a1c99b2adbdab2b1dcdf977dcfb0d9f4a172b4d22c1ec23e590d625a09",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 12:32:08 GMT",
+        "etag": "\"dd9d305f983a965b1fb70bbedcce313d\"",
+        "cache-control": "public,max-age=600",
+        "age": "547",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.478453+00:00",
+      "elapsed_seconds": 0.015,
+      "versions": [
+        {
+          "version": "0.8.1",
+          "yanked": false,
+          "checksum": "12f40cff3dde1b6087cc5d5f5d4d65712f34016a03ed60e9c08dcc392736b5b7",
+          "lock_checksum": "12f40cff3dde1b6087cc5d5f5d4d65712f34016a03ed60e9c08dcc392736b5b7",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "once_cell",
+      "url": "https://index.crates.io/on/ce/once_cell",
+      "status": 200,
+      "response_sha256": "01e5bf656ebaac2c7502405054837f773f6ebaa24c3be59456bc5882940f0e90",
+      "headers": {
+        "last-modified": "Thu, 12 Mar 2026 10:59:54 GMT",
+        "etag": "\"ae10a7d8aa86c09f91d7e5a4d922faff\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "324",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.484779+00:00",
+      "elapsed_seconds": 0.017,
+      "versions": [
+        {
+          "version": "1.21.4",
+          "yanked": false,
+          "checksum": "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50",
+          "lock_checksum": "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "pem",
+      "url": "https://index.crates.io/3/p/pem",
+      "status": 200,
+      "response_sha256": "94b53654f4fb68eef35497d6d94a4d829933f7b320ee38acac5d711ec3f79788",
+      "headers": {
+        "last-modified": "Tue, 28 Jul 2026 13:38:48 GMT",
+        "etag": "\"873e2089e85b2f406c4f04d1c08948cd\"",
+        "cache-control": "public,max-age=600",
+        "age": "160",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.481948+00:00",
+      "elapsed_seconds": 0.014,
+      "versions": [
+        {
+          "version": "4.0.0",
+          "yanked": false,
+          "checksum": "d354a98a3d1251555de99e8fdd8afda05573c31b82f59063a7b0a29b5527f120",
+          "lock_checksum": "d354a98a3d1251555de99e8fdd8afda05573c31b82f59063a7b0a29b5527f120",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "powerfmt",
+      "url": "https://index.crates.io/po/we/powerfmt",
+      "status": 200,
+      "response_sha256": "6e544722119eb91475c3044fbda6588b29401eec454907ea79659ab1e55f9714",
+      "headers": {
+        "last-modified": "Mon, 05 Oct 2026 09:01:11 GMT",
+        "etag": "\"309539484a5f4720af234179d474278c\"",
+        "cache-control": "public,max-age=600",
+        "age": "437",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.488960+00:00",
+      "elapsed_seconds": 0.016,
+      "versions": [
+        {
+          "version": "0.2.1",
+          "yanked": false,
+          "checksum": "4a6394b9e965e73d0a289ee54f589087e2c676aedf60885baf52c76b771e4958",
+          "lock_checksum": "4a6394b9e965e73d0a289ee54f589087e2c676aedf60885baf52c76b771e4958",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "proc-macro2",
+      "url": "https://index.crates.io/pr/oc/proc-macro2",
+      "status": 200,
+      "response_sha256": "955448bc91f9c490e3bdc028f9d79a561b4f43142025ec46a99bdacaa140233c",
+      "headers": {
+        "last-modified": "Sun, 19 Jul 2026 00:18:27 GMT",
+        "etag": "\"ababb59157c6e9a714a9b1cb302e842e\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "324",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.499895+00:00",
+      "elapsed_seconds": 0.021,
+      "versions": [
+        {
+          "version": "1.0.107",
+          "yanked": false,
+          "checksum": "985e7ec9bb745e6ce6535b544d84d6cd6f7ad8bd711c398938ae983b91a766d9",
+          "lock_checksum": "985e7ec9bb745e6ce6535b544d84d6cd6f7ad8bd711c398938ae983b91a766d9",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "quote",
+      "url": "https://index.crates.io/qu/ot/quote",
+      "status": 200,
+      "response_sha256": "4359f39471050245ed6788ac1d3ee77f398405fb410433a755435f5ec1adb745",
+      "headers": {
+        "last-modified": "Sun, 19 Jul 2026 00:16:58 GMT",
+        "etag": "\"7296b7c948e281168b0eae7465fe3918\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "324",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.497545+00:00",
+      "elapsed_seconds": 0.018,
+      "versions": [
+        {
+          "version": "1.0.47",
+          "yanked": false,
+          "checksum": "1fbf4db142a473a8d80c26bbf18454ed458bf8d26c8219c331daecfdbd079001",
+          "lock_checksum": "1fbf4db142a473a8d80c26bbf18454ed458bf8d26c8219c331daecfdbd079001",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "rcgen",
+      "url": "https://index.crates.io/rc/ge/rcgen",
+      "status": 200,
+      "response_sha256": "a1e1ee69760a8c9aea0b3c22f5bf25b562332d4a4985dec5955a161e3d388516",
+      "headers": {
+        "last-modified": "Fri, 28 Aug 2026 21:30:03 GMT",
+        "etag": "\"26cb54b1f4e6b6d98565159207d4da2b\"",
+        "cache-control": "public,max-age=600",
+        "age": "547",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.503730+00:00",
+      "elapsed_seconds": 0.022,
+      "versions": [
+        {
+          "version": "0.14.10",
+          "yanked": false,
+          "checksum": "8774e05a7d0de114588e6a28fe7e71694b82614ed569d86d8b389dfbc98b8ad8",
+          "lock_checksum": "8774e05a7d0de114588e6a28fe7e71694b82614ed569d86d8b389dfbc98b8ad8",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "ring",
+      "url": "https://index.crates.io/ri/ng/ring",
+      "status": 200,
+      "response_sha256": "53e4f7b2aac2d09174abecf713e93395c3ff09b4a27254babcdf11fc55b49121",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 12:46:00 GMT",
+        "etag": "\"102e946c78cd205de837279e3c7cfd8e\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "267",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.506010+00:00",
+      "elapsed_seconds": 0.021,
+      "versions": [
+        {
+          "version": "0.17.14",
+          "yanked": false,
+          "checksum": "a4689e6c2294d81e88dc6261c768b63bc4fcdb852be6d1352498b114f61383b7",
+          "lock_checksum": "a4689e6c2294d81e88dc6261c768b63bc4fcdb852be6d1352498b114f61383b7",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "rusticata-macros",
+      "url": "https://index.crates.io/ru/st/rusticata-macros",
+      "status": 200,
+      "response_sha256": "9c36d68499ac5c8bb5ea82f4c3e3dead9ed3bb961be6f4d163072174be0e3dee",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 12:52:39 GMT",
+        "etag": "\"5e81dfb64fff99f4ccc43d551de73467\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "547",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.504421+00:00",
+      "elapsed_seconds": 0.015,
+      "versions": [
+        {
+          "version": "4.1.0",
+          "yanked": false,
+          "checksum": "faf0c4a6ece9950b9abdb62b1cfcf2a68b3b67a10ba445b3bb85be2a293d0632",
+          "lock_checksum": "faf0c4a6ece9950b9abdb62b1cfcf2a68b3b67a10ba445b3bb85be2a293d0632",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "rustix",
+      "url": "https://index.crates.io/ru/st/rustix",
+      "status": 200,
+      "response_sha256": "58f60e0414bc1677377bbe47b43ad3a13528c41a4a92f48a7eb585e2154cb57c",
+      "headers": {
+        "last-modified": "Wed, 16 Sep 2026 23:05:05 GMT",
+        "etag": "\"14dd4110b0f70305e60e4f268b1d176d\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "547",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.533359+00:00",
+      "elapsed_seconds": 0.036,
+      "versions": [
+        {
+          "version": "1.1.5",
+          "yanked": false,
+          "checksum": "891efababe418670775f199f0d233d84843c227a0949a883ce15b37c78d6629d",
+          "lock_checksum": "891efababe418670775f199f0d233d84843c227a0949a883ce15b37c78d6629d",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "rustls",
+      "url": "https://index.crates.io/ru/st/rustls",
+      "status": 200,
+      "response_sha256": "1895c31fe2ba17cbfba065cdd209f00418274224555d371c481bb1f4e2983311",
+      "headers": {
+        "last-modified": "Wed, 14 Oct 2026 09:54:17 GMT",
+        "etag": "\"8c0d4ea7c8f052a814d576564e5692fd\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "45",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.526447+00:00",
+      "elapsed_seconds": 0.027,
+      "versions": [
+        {
+          "version": "0.23.46",
+          "yanked": false,
+          "checksum": "48e13bd8c0e9365c43cfa5c9e8f9ad49d3c8444926c9aac819e0e4dc503c8fdf",
+          "lock_checksum": "48e13bd8c0e9365c43cfa5c9e8f9ad49d3c8444926c9aac819e0e4dc503c8fdf",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "rustls-pki-types",
+      "url": "https://index.crates.io/ru/st/rustls-pki-types",
+      "status": 200,
+      "response_sha256": "1334d820c4eda5cabff98a69e1c38a0c633a69826c478ba5bcf1dadbe08bed5c",
+      "headers": {
+        "last-modified": "Thu, 23 Jul 2026 09:56:12 GMT",
+        "etag": "\"7552a787456b8b55eb5b97141f091c13\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "268",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.519253+00:00",
+      "elapsed_seconds": 0.015,
+      "versions": [
+        {
+          "version": "1.15.1",
+          "yanked": false,
+          "checksum": "2f4925028c7eb5d1fcdaf196971378ed9d2c1c4efc7dc5d011256f76c99c0a96",
+          "lock_checksum": "2f4925028c7eb5d1fcdaf196971378ed9d2c1c4efc7dc5d011256f76c99c0a96",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "rustls-webpki",
+      "url": "https://index.crates.io/ru/st/rustls-webpki",
+      "status": 200,
+      "response_sha256": "cead5e7351c96f83b1ab3c6cb446cb14b206313d0b2988e2d282d4d1a6dc1c2a",
+      "headers": {
+        "last-modified": "Tue, 20 Oct 2026 09:03:08 GMT",
+        "etag": "\"cd28bb03a5ee703240731055c5dc8070\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "268",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.528646+00:00",
+      "elapsed_seconds": 0.024,
+      "versions": [
+        {
+          "version": "0.103.16",
+          "yanked": false,
+          "checksum": "4443b1b6d39d7c663139942cc4558262562d2c84123bb6282ef177009ca8b281",
+          "lock_checksum": "4443b1b6d39d7c663139942cc4558262562d2c84123bb6282ef177009ca8b281",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "scopeguard",
+      "url": "https://index.crates.io/sc/op/scopeguard",
+      "status": 200,
+      "response_sha256": "c713b0531b312c2906973e4fc9530b17ff1591f563449eb63d179343dd1b7df7",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 12:54:59 GMT",
+        "etag": "\"daa938084f25f8a693ae8f14a8fad0d3\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "265",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.522804+00:00",
+      "elapsed_seconds": 0.017,
+      "versions": [
+        {
+          "version": "1.2.0",
+          "yanked": false,
+          "checksum": "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49",
+          "lock_checksum": "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "serde",
+      "url": "https://index.crates.io/se/rd/serde",
+      "status": 200,
+      "response_sha256": "9eb6e78eab279f168b5787e4eb801765e1d5a2b40c50789e12166a616d73bbc5",
+      "headers": {
+        "last-modified": "Sat, 18 Jul 2026 23:05:14 GMT",
+        "etag": "\"971e1a71d7d6afbfc90a23ad91931103\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "272",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.548488+00:00",
+      "elapsed_seconds": 0.029,
+      "versions": [
+        {
+          "version": "1.0.229",
+          "yanked": false,
+          "checksum": "4148590afebada386688f18773da617792bf2ef03ffc1e4cbd2b1d45b023e0ba",
+          "lock_checksum": "4148590afebada386688f18773da617792bf2ef03ffc1e4cbd2b1d45b023e0ba",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "serde_core",
+      "url": "https://index.crates.io/se/rd/serde_core",
+      "status": 200,
+      "response_sha256": "58280b0772569b5900e04a8672d3541e2340b31a54c348a269b1beee3552811a",
+      "headers": {
+        "last-modified": "Sat, 18 Jul 2026 23:05:12 GMT",
+        "etag": "\"0677ae846370eef57d00db4af7ab39fc\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "129",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.544146+00:00",
+      "elapsed_seconds": 0.021,
+      "versions": [
+        {
+          "version": "1.0.229",
+          "yanked": false,
+          "checksum": "67dca2c9c51e58a4791a4b1ed58308b39c64224d349a935ab5039aa360942a48",
+          "lock_checksum": "67dca2c9c51e58a4791a4b1ed58308b39c64224d349a935ab5039aa360942a48",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "serde_derive",
+      "url": "https://index.crates.io/se/rd/serde_derive",
+      "status": 200,
+      "response_sha256": "9e45aa13a3855f66e4aad308ee5035a49e5690054189ce1216964d548f4d53de",
+      "headers": {
+        "last-modified": "Sat, 18 Jul 2026 23:05:09 GMT",
+        "etag": "\"9c7b92bacea8bca17ee2630b642f06e5\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "129",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.553900+00:00",
+      "elapsed_seconds": 0.027,
+      "versions": [
+        {
+          "version": "1.0.229",
+          "yanked": false,
+          "checksum": "e7a5d71263a5a7d47b41f6b3f06ba276f10cc18b0931f1799f710578e2309348",
+          "lock_checksum": "e7a5d71263a5a7d47b41f6b3f06ba276f10cc18b0931f1799f710578e2309348",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "serde_json",
+      "url": "https://index.crates.io/se/rd/serde_json",
+      "status": 200,
+      "response_sha256": "320ccb6ff902a966f5a6b47d8592d9778cd39ef225e5fbc300990f02db91995c",
+      "headers": {
+        "last-modified": "Sun, 11 Oct 2026 15:31:48 GMT",
+        "etag": "\"7f59728e0b1d1dae90b81f04f402ca9f\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "272",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.555905+00:00",
+      "elapsed_seconds": 0.027,
+      "versions": [
+        {
+          "version": "1.0.154",
+          "yanked": false,
+          "checksum": "e7e9cc8b1b85264074fbcc02a88680c4096b1e47df8f739dceb03bf482f04bd6",
+          "lock_checksum": "e7e9cc8b1b85264074fbcc02a88680c4096b1e47df8f739dceb03bf482f04bd6",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "serde_spanned",
+      "url": "https://index.crates.io/se/rd/serde_spanned",
+      "status": 200,
+      "response_sha256": "677183dd2674856f4a562313f22923707badae895dbcda173b291f92e3d052c7",
+      "headers": {
+        "last-modified": "Thu, 08 Oct 2026 00:54:03 GMT",
+        "etag": "\"ca2ffe1d51310e62e7ad487d8bc1835a\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "160",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.549466+00:00",
+      "elapsed_seconds": 0.016,
+      "versions": [
+        {
+          "version": "1.1.2",
+          "yanked": false,
+          "checksum": "4e7523beb55eece201a2356bee0bbca0d1ab466c14c07703b2e0ee6d42cb0c2c",
+          "lock_checksum": "4e7523beb55eece201a2356bee0bbca0d1ab466c14c07703b2e0ee6d42cb0c2c",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "sha2",
+      "url": "https://index.crates.io/sh/a2/sha2",
+      "status": 200,
+      "response_sha256": "82ee9e7e65a28c6818dfe81322720136c8ff9cdea9c88ad5d04e098353015ba0",
+      "headers": {
+        "last-modified": "Mon, 12 Oct 2026 18:58:24 GMT",
+        "etag": "\"c9b8b9a2f6b3ec7339f84f37e4e7c612\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "45",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.561644+00:00",
+      "elapsed_seconds": 0.017,
+      "versions": [
+        {
+          "version": "0.11.1",
+          "yanked": false,
+          "checksum": "47d7069beb7d6ac7b9acd1039986e73443f24234f41074da099d6f994ac9ad19",
+          "lock_checksum": "47d7069beb7d6ac7b9acd1039986e73443f24234f41074da099d6f994ac9ad19",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "shlex",
+      "url": "https://index.crates.io/sh/le/shlex",
+      "status": 200,
+      "response_sha256": "e8f4bfd70f87bb7a82a31fc1ab0e0d6fc6df32f6a5d208865197f317552b1639",
+      "headers": {
+        "last-modified": "Sun, 17 May 2026 18:56:14 GMT",
+        "etag": "\"3551aae3414a9e2af608d5557937845a\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "45",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.566587+00:00",
+      "elapsed_seconds": 0.018,
+      "versions": [
+        {
+          "version": "2.0.1",
+          "yanked": false,
+          "checksum": "f8fadd59c855ef2080decdef8ff161eb6661b86933c9d82e5ba29dc602a55aba",
+          "lock_checksum": "f8fadd59c855ef2080decdef8ff161eb6661b86933c9d82e5ba29dc602a55aba",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "socket-pktinfo",
+      "url": "https://index.crates.io/so/ck/socket-pktinfo",
+      "status": 200,
+      "response_sha256": "179ce03a8fcc5530d4d60853385352003bfda961e873b142947eb1d3c37f60c6",
+      "headers": {
+        "last-modified": "Sun, 26 Jul 2026 17:21:28 GMT",
+        "etag": "\"15cebe232fe89377b6cc387ce0c3a2f4\"",
+        "cache-control": "public,max-age=600",
+        "age": "0",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.680753+00:00",
+      "elapsed_seconds": 0.131,
+      "versions": [
+        {
+          "version": "0.4.1",
+          "yanked": false,
+          "checksum": "612942246d0cc239cfd83af1dfd39be47f649208a3524e5e9da651910128e0ac",
+          "lock_checksum": "612942246d0cc239cfd83af1dfd39be47f649208a3524e5e9da651910128e0ac",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "socket2",
+      "url": "https://index.crates.io/so/ck/socket2",
+      "status": 200,
+      "response_sha256": "e1be13bcfbe8d2eeead156b95f7a2f6c47e1573c401bdd61d6406fb54a9927c1",
+      "headers": {
+        "last-modified": "Mon, 13 Jul 2026 19:46:00 GMT",
+        "etag": "\"0c5edeada62be967c8a3b29cab8718f3\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "267",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.570781+00:00",
+      "elapsed_seconds": 0.017,
+      "versions": [
+        {
+          "version": "0.6.5",
+          "yanked": false,
+          "checksum": "c3d1e2c7f27f8d4cb10542a02c49005dbd6e93095799d6f3be745fae9f8fedd4",
+          "lock_checksum": "c3d1e2c7f27f8d4cb10542a02c49005dbd6e93095799d6f3be745fae9f8fedd4",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "spin",
+      "url": "https://index.crates.io/sp/in/spin",
+      "status": 200,
+      "response_sha256": "96bc0c045cb5889661881520e6c17f8cc68d2b3cca718922febc10e001e2797a",
+      "headers": {
+        "last-modified": "Mon, 17 Aug 2026 20:21:32 GMT",
+        "etag": "\"b8374c02fb2a69300259be4e52cdd190\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "558",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.572709+00:00",
+      "elapsed_seconds": 0.017,
+      "versions": [
+        {
+          "version": "0.9.9",
+          "yanked": false,
+          "checksum": "3763264f6b73151db08c50ff20d7d8a0b8796e021cdea7ceedad07b80155fa0e",
+          "lock_checksum": "3763264f6b73151db08c50ff20d7d8a0b8796e021cdea7ceedad07b80155fa0e",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "subtle",
+      "url": "https://index.crates.io/su/bt/subtle",
+      "status": 200,
+      "response_sha256": "00cf3bd40c680b9dcc25f659b14486a440f02d2ac7273b381c55ab8b1e56bdb4",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 13:03:21 GMT",
+        "etag": "\"89c8e8ca45bd93395130145419a64710\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "45",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.577140+00:00",
+      "elapsed_seconds": 0.015,
+      "versions": [
+        {
+          "version": "2.6.1",
+          "yanked": false,
+          "checksum": "13c2bddecc57b384dee18652358fb23172facb8a2c51ccc10d74c157bdea3292",
+          "lock_checksum": "13c2bddecc57b384dee18652358fb23172facb8a2c51ccc10d74c157bdea3292",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "syn",
+      "url": "https://index.crates.io/3/s/syn",
+      "status": 200,
+      "response_sha256": "bf3c3b2623e984ab1d93f0c88d35e2fb2d9e0579cd3eacecd992fcb29a487a51",
+      "headers": {
+        "last-modified": "Mon, 12 Oct 2026 15:04:11 GMT",
+        "etag": "\"3cbc980b5ba8cfe72334def1395cf491\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "324",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.602809+00:00",
+      "elapsed_seconds": 0.04,
+      "versions": [
+        {
+          "version": "2.0.119",
+          "yanked": false,
+          "checksum": "872831b642d1a07999a962a351ed35b955ea2cfc8f3862091e2a240a84f17297",
+          "lock_checksum": "872831b642d1a07999a962a351ed35b955ea2cfc8f3862091e2a240a84f17297",
+          "checksum_matches": true
+        },
+        {
+          "version": "3.0.9",
+          "yanked": false,
+          "checksum": "d78c8dee4c7bf0e14673097256fed6142ce9d3b85a408189d07482442145823b",
+          "lock_checksum": "d78c8dee4c7bf0e14673097256fed6142ce9d3b85a408189d07482442145823b",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "synstructure",
+      "url": "https://index.crates.io/sy/ns/synstructure",
+      "status": 200,
+      "response_sha256": "919dc9ca5c851ec1d6d2431321ce79fe5401b7a6823430762f0eda8308eb9d4c",
+      "headers": {
+        "last-modified": "Thu, 30 Jul 2026 19:43:06 GMT",
+        "etag": "\"d6e733b0d0f0e8f615e6dca3951c5d98\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "265",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.581954+00:00",
+      "elapsed_seconds": 0.015,
+      "versions": [
+        {
+          "version": "0.13.2",
+          "yanked": false,
+          "checksum": "728a70f3dbaf5bab7f0c4b1ac8d7ae5ea60a4b5549c8a5914361c99147a709d2",
+          "lock_checksum": "728a70f3dbaf5bab7f0c4b1ac8d7ae5ea60a4b5549c8a5914361c99147a709d2",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "thiserror",
+      "url": "https://index.crates.io/th/is/thiserror",
+      "status": 200,
+      "response_sha256": "320c3e915f0afe44092342b497ec2189a5c502fbc0e1bd816e8db3e8c6d82914",
+      "headers": {
+        "last-modified": "Wed, 23 Sep 2026 20:24:09 GMT",
+        "etag": "\"4bfc7961f795fa99bb7d3a9490fb2bd6\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "268",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.590315+00:00",
+      "elapsed_seconds": 0.02,
+      "versions": [
+        {
+          "version": "2.0.21",
+          "yanked": false,
+          "checksum": "09e52cb86a36cede5cb101bf8908837b3e4c6e5e59fe7fd85c23fb56200d189e",
+          "lock_checksum": "09e52cb86a36cede5cb101bf8908837b3e4c6e5e59fe7fd85c23fb56200d189e",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "thiserror-impl",
+      "url": "https://index.crates.io/th/is/thiserror-impl",
+      "status": 200,
+      "response_sha256": "a6346a79d7139dc845c4dc27d0374d35f82ef16b71a456412fdd2eaa137c7422",
+      "headers": {
+        "last-modified": "Wed, 23 Sep 2026 20:24:06 GMT",
+        "etag": "\"4803462287650fdbd601e802b340eae4\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "547",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.591458+00:00",
+      "elapsed_seconds": 0.019,
+      "versions": [
+        {
+          "version": "2.0.21",
+          "yanked": false,
+          "checksum": "fe5197923287db20a58125f0bc85c062f7f2c892de97b18c356f9efb14b28524",
+          "lock_checksum": "fe5197923287db20a58125f0bc85c062f7f2c892de97b18c356f9efb14b28524",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "time",
+      "url": "https://index.crates.io/ti/me/time",
+      "status": 200,
+      "response_sha256": "b574ab0ea1b19243597030482e4c8e61b25f92c2fcc8438be2c0ea5a34fc3f0c",
+      "headers": {
+        "last-modified": "Sat, 01 Aug 2026 08:08:36 GMT",
+        "etag": "\"d882262552cce2ce6866320ec46b3237\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "387",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.604725+00:00",
+      "elapsed_seconds": 0.028,
+      "versions": [
+        {
+          "version": "0.3.55",
+          "yanked": false,
+          "checksum": "cdb87b95ec50ddfa440816d227a17b2ccbdda963a316a727fda0fc4334f7d134",
+          "lock_checksum": "cdb87b95ec50ddfa440816d227a17b2ccbdda963a316a727fda0fc4334f7d134",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "time-core",
+      "url": "https://index.crates.io/ti/me/time-core",
+      "status": 200,
+      "response_sha256": "469819f5aff17460119e3f772813282e6d3b4cac8b5051462c8b7908a287dd75",
+      "headers": {
+        "last-modified": "Sat, 13 Jun 2026 20:32:14 GMT",
+        "etag": "\"c966e5dfc58d9601576289b5bb249a2a\"",
+        "cache-control": "public,max-age=600",
+        "age": "437",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.597078+00:00",
+      "elapsed_seconds": 0.015,
+      "versions": [
+        {
+          "version": "0.1.9",
+          "yanked": false,
+          "checksum": "9e1c906769ad99c88eaa54e728060edef082f8e358ff32030cb7c7d315e81109",
+          "lock_checksum": "9e1c906769ad99c88eaa54e728060edef082f8e358ff32030cb7c7d315e81109",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "time-macros",
+      "url": "https://index.crates.io/ti/me/time-macros",
+      "status": 200,
+      "response_sha256": "81150216d7be9f50c423e046ca2fdc15a8f8c33dff7a83c2477fb7004bc00b95",
+      "headers": {
+        "last-modified": "Mon, 20 Jul 2026 08:27:39 GMT",
+        "etag": "\"1d7b2a3497827234ae252713197ea67f\"",
+        "cache-control": "public,max-age=600",
+        "age": "160",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.612486+00:00",
+      "elapsed_seconds": 0.022,
+      "versions": [
+        {
+          "version": "0.2.32",
+          "yanked": false,
+          "checksum": "7e689342a48d2ea927c87ea50cabf8594854bf940e9310208848d680d668ed85",
+          "lock_checksum": "7e689342a48d2ea927c87ea50cabf8594854bf940e9310208848d680d668ed85",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "toml",
+      "url": "https://index.crates.io/to/ml/toml",
+      "status": 200,
+      "response_sha256": "9a0dace2b08e7488dba7f6c06f6d91f2162634825fbb2e2d271524849597ce43",
+      "headers": {
+        "last-modified": "Fri, 09 Oct 2026 02:46:33 GMT",
+        "etag": "\"50a3a81194c90546c0985cc4a816a2b9\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "414",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.619404+00:00",
+      "elapsed_seconds": 0.028,
+      "versions": [
+        {
+          "version": "0.9.12+spec-1.1.0",
+          "yanked": false,
+          "checksum": "cf92845e79fc2e2def6a5d828f0801e29a2f8acc037becc5ab08595c7d5e9863",
+          "lock_checksum": "cf92845e79fc2e2def6a5d828f0801e29a2f8acc037becc5ab08595c7d5e9863",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "toml_datetime",
+      "url": "https://index.crates.io/to/ml/toml_datetime",
+      "status": 200,
+      "response_sha256": "3c3f35d22f6e95d34eb6234007367c88471e11933f22149c5105a4681d8d84b8",
+      "headers": {
+        "last-modified": "Thu, 08 Oct 2026 00:54:04 GMT",
+        "etag": "\"288de37906701e4a05f01136dd19aef6\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "443",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.621460+00:00",
+      "elapsed_seconds": 0.024,
+      "versions": [
+        {
+          "version": "0.7.5+spec-1.1.0",
+          "yanked": false,
+          "checksum": "92e1cfed4a3038bc5a127e35a2d360f145e1f4b971b551a2ba5fd7aedf7e1347",
+          "lock_checksum": "92e1cfed4a3038bc5a127e35a2d360f145e1f4b971b551a2ba5fd7aedf7e1347",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "toml_parser",
+      "url": "https://index.crates.io/to/ml/toml_parser",
+      "status": 200,
+      "response_sha256": "cdb357d89bf93443cc2fc39c9ec93d91a94c61ce68a08fe099835c373d4e6829",
+      "headers": {
+        "last-modified": "Fri, 09 Oct 2026 02:46:31 GMT",
+        "etag": "\"9eb9a61f17d6c6d19559f791d14bc44c\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "160",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.620451+00:00",
+      "elapsed_seconds": 0.017,
+      "versions": [
+        {
+          "version": "1.1.5+spec-1.1.0",
+          "yanked": false,
+          "checksum": "baa693a8032d7e1cada7d0041e96126df243179ff061456783ac7f12bda4744c",
+          "lock_checksum": "baa693a8032d7e1cada7d0041e96126df243179ff061456783ac7f12bda4744c",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "toml_writer",
+      "url": "https://index.crates.io/to/ml/toml_writer",
+      "status": 200,
+      "response_sha256": "bf0f6b0fa6e0dc5a8aec560958c2aefc57307046bdd07732497e22f14de1554a",
+      "headers": {
+        "last-modified": "Thu, 08 Oct 2026 00:54:06 GMT",
+        "etag": "\"4942e8a98b515f67feead7ca376f80f7\"",
+        "cache-control": "public,max-age=600",
+        "age": "0",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.743188+00:00",
+      "elapsed_seconds": 0.138,
+      "versions": [
+        {
+          "version": "1.1.3+spec-1.1.0",
+          "yanked": false,
+          "checksum": "06bdbd8cfc056b8d2e2e85f29b56a3bdbecb527cef81eb39e3e7b98af4652770",
+          "lock_checksum": "06bdbd8cfc056b8d2e2e85f29b56a3bdbecb527cef81eb39e3e7b98af4652770",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "typenum",
+      "url": "https://index.crates.io/ty/pe/typenum",
+      "status": 200,
+      "response_sha256": "1f1fcc1b809a17356e58ff98d756623949107f3091049b0f40c1f1ee4321567b",
+      "headers": {
+        "last-modified": "Fri, 29 May 2026 16:00:43 GMT",
+        "etag": "\"fff0d9602f7645ffff30aa33c4fc8fa2\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "45",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.627992+00:00",
+      "elapsed_seconds": 0.015,
+      "versions": [
+        {
+          "version": "1.20.1",
+          "yanked": false,
+          "checksum": "b6f5e870be6c3b371b77fe0ee0bafb859fa4964b4404c27de1d380043c4dda20",
+          "lock_checksum": "b6f5e870be6c3b371b77fe0ee0bafb859fa4964b4404c27de1d380043c4dda20",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "unicode-ident",
+      "url": "https://index.crates.io/un/ic/unicode-ident",
+      "status": 200,
+      "response_sha256": "4c12cadce7c0428aeaac8dc8f2f607bdc523b42be795c7fda601dd42a0f4cbeb",
+      "headers": {
+        "last-modified": "Mon, 12 Oct 2026 04:20:29 GMT",
+        "etag": "\"1dba390b2b4688955a22def0e3f15ccc\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "93",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.635126+00:00",
+      "elapsed_seconds": 0.016,
+      "versions": [
+        {
+          "version": "1.0.27",
+          "yanked": false,
+          "checksum": "a2c754d6c33795a1c324727428e5a7dedb5b06195f9890bdbcba760d3e246563",
+          "lock_checksum": "a2c754d6c33795a1c324727428e5a7dedb5b06195f9890bdbcba760d3e246563",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "untrusted",
+      "url": "https://index.crates.io/un/tr/untrusted",
+      "status": 200,
+      "response_sha256": "2be5d039854423fb45862f248c48492c9a2b44a959908d613ca19bf134ca785d",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 13:10:29 GMT",
+        "etag": "\"174e4c2e34946a46a328a50913c1ca2e\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "44",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.637113+00:00",
+      "elapsed_seconds": 0.017,
+      "versions": [
+        {
+          "version": "0.9.0",
+          "yanked": false,
+          "checksum": "8ecb6da28b8a351d773b68d5825ac39017e680750f980f3a1a85cd8dd28a47c1",
+          "lock_checksum": "8ecb6da28b8a351d773b68d5825ac39017e680750f980f3a1a85cd8dd28a47c1",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "wasi",
+      "url": "https://index.crates.io/wa/si/wasi",
+      "status": 200,
+      "response_sha256": "808ec7ca7eb436c8927170e7a0411c8fe264b934831a68ee434d78a5fcc1ffef",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 13:13:14 GMT",
+        "etag": "\"9ec28cd263220c833a4b3bd4a8f9e91d\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "266",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.638165+00:00",
+      "elapsed_seconds": 0.017,
+      "versions": [
+        {
+          "version": "0.11.1+wasi-snapshot-preview1",
+          "yanked": false,
+          "checksum": "ccf3ec651a847eb01de73ccad15eb7d99f80485de043efb2f370cd654f4ea44b",
+          "lock_checksum": "ccf3ec651a847eb01de73ccad15eb7d99f80485de043efb2f370cd654f4ea44b",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "windows-link",
+      "url": "https://index.crates.io/wi/nd/windows-link",
+      "status": 200,
+      "response_sha256": "2f6055c24a984135453c9932bd3c2d82e5885d0cc9a27877f7b24a405e7c8830",
+      "headers": {
+        "last-modified": "Thu, 03 Sep 2026 16:39:04 GMT",
+        "etag": "\"8a139c5ab8bf38a5513b4961de82f0cc\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "45",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.642924+00:00",
+      "elapsed_seconds": 0.015,
+      "versions": [
+        {
+          "version": "0.2.1",
+          "yanked": false,
+          "checksum": "f0805222e57f7521d6a62e36fa9163bc891acd422f971defe97d64e70d0a4fe5",
+          "lock_checksum": "f0805222e57f7521d6a62e36fa9163bc891acd422f971defe97d64e70d0a4fe5",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "windows-sys",
+      "url": "https://index.crates.io/wi/nd/windows-sys",
+      "status": 200,
+      "response_sha256": "2faa637e651ef2166c886b88a623f14a58013a749c0368303dbd2a6a7da62a87",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 13:14:55 GMT",
+        "etag": "\"f6f8aea22c386f7e26ae25df69cacd36\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "215",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.660592+00:00",
+      "elapsed_seconds": 0.025,
+      "versions": [
+        {
+          "version": "0.52.0",
+          "yanked": false,
+          "checksum": "282be5f36a8ce781fad8c8ae18fa3f9beff57ec1b52cb3de0789201425d9a33d",
+          "lock_checksum": "282be5f36a8ce781fad8c8ae18fa3f9beff57ec1b52cb3de0789201425d9a33d",
+          "checksum_matches": true
+        },
+        {
+          "version": "0.61.2",
+          "yanked": false,
+          "checksum": "ae137229bcbd6cdf0f7b80a31df61766145077ddf49416a728b02cb3921ff3fc",
+          "lock_checksum": "ae137229bcbd6cdf0f7b80a31df61766145077ddf49416a728b02cb3921ff3fc",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "windows-targets",
+      "url": "https://index.crates.io/wi/nd/windows-targets",
+      "status": 200,
+      "response_sha256": "3452f88b45a81f84b4efc353fb54d389900835d13c994786444a4556578a1887",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 13:14:56 GMT",
+        "etag": "\"04a4f217db8821e758a02318b35808dc\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "129",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.652600+00:00",
+      "elapsed_seconds": 0.015,
+      "versions": [
+        {
+          "version": "0.52.6",
+          "yanked": false,
+          "checksum": "9b724f72796e036ab90c1021d4780d4d3d648aca59e491e6b98e725b84e99973",
+          "lock_checksum": "9b724f72796e036ab90c1021d4780d4d3d648aca59e491e6b98e725b84e99973",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "windows_aarch64_gnullvm",
+      "url": "https://index.crates.io/wi/nd/windows_aarch64_gnullvm",
+      "status": 200,
+      "response_sha256": "bed91703cf6b0c84ef5f3c34145ac4e5b5b301cedb71d96e0ab380e67903a2a5",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 13:14:57 GMT",
+        "etag": "\"adfeb8495192ac9e212b6cd6b8567c67\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "266",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.653644+00:00",
+      "elapsed_seconds": 0.015,
+      "versions": [
+        {
+          "version": "0.52.6",
+          "yanked": false,
+          "checksum": "32a4622180e7a0ec044bb555404c800bc9fd9ec262ec147edd5989ccd0c02cd3",
+          "lock_checksum": "32a4622180e7a0ec044bb555404c800bc9fd9ec262ec147edd5989ccd0c02cd3",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "windows_aarch64_msvc",
+      "url": "https://index.crates.io/wi/nd/windows_aarch64_msvc",
+      "status": 200,
+      "response_sha256": "9be6a4634a5404574dfd059e04c3d37250d8c5cbbbbdb3f0149f52e402a196f9",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 13:14:57 GMT",
+        "etag": "\"09288a20c6593aadf91bc6827369b143\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "266",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.660548+00:00",
+      "elapsed_seconds": 0.018,
+      "versions": [
+        {
+          "version": "0.52.6",
+          "yanked": false,
+          "checksum": "09ec2a7bb152e2252b53fa7803150007879548bc709c039df7627cabbd05d469",
+          "lock_checksum": "09ec2a7bb152e2252b53fa7803150007879548bc709c039df7627cabbd05d469",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "windows_i686_gnu",
+      "url": "https://index.crates.io/wi/nd/windows_i686_gnu",
+      "status": 200,
+      "response_sha256": "3e11f0dd2bba89aeec7f4eeb60376fc44d4ed02ba643ee4bef85e13e3e309c29",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 13:14:58 GMT",
+        "etag": "\"c0b46ec3753b70a69e7e87dd206dc8cd\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "266",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.669662+00:00",
+      "elapsed_seconds": 0.017,
+      "versions": [
+        {
+          "version": "0.52.6",
+          "yanked": false,
+          "checksum": "8e9b5ad5ab802e97eb8e295ac6720e509ee4c243f69d781394014ebfe8bbfa0b",
+          "lock_checksum": "8e9b5ad5ab802e97eb8e295ac6720e509ee4c243f69d781394014ebfe8bbfa0b",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "windows_i686_gnullvm",
+      "url": "https://index.crates.io/wi/nd/windows_i686_gnullvm",
+      "status": 200,
+      "response_sha256": "54b61ecdc75892e2ecb300af82416402ce983aa9ce45cfa32556dd90d4903e45",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 13:14:58 GMT",
+        "etag": "\"601f322c39066d5c8101d8f9dd12d181\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "45",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.668561+00:00",
+      "elapsed_seconds": 0.015,
+      "versions": [
+        {
+          "version": "0.52.6",
+          "yanked": false,
+          "checksum": "0eee52d38c090b3caa76c563b86c3a4bd71ef1a819287c19d586d7334ae8ed66",
+          "lock_checksum": "0eee52d38c090b3caa76c563b86c3a4bd71ef1a819287c19d586d7334ae8ed66",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "windows_i686_msvc",
+      "url": "https://index.crates.io/wi/nd/windows_i686_msvc",
+      "status": 200,
+      "response_sha256": "ff10deca2efe3840a0b5ca398e8a6735d6d29b3964f5382c44516198dadf8172",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 13:14:58 GMT",
+        "etag": "\"e6ce5e33bad850d7a32ffbde6c3fe229\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "266",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.677094+00:00",
+      "elapsed_seconds": 0.017,
+      "versions": [
+        {
+          "version": "0.52.6",
+          "yanked": false,
+          "checksum": "240948bc05c5e7c6dabba28bf89d89ffce3e303022809e73deaefe4f6ec56c66",
+          "lock_checksum": "240948bc05c5e7c6dabba28bf89d89ffce3e303022809e73deaefe4f6ec56c66",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "windows_x86_64_gnu",
+      "url": "https://index.crates.io/wi/nd/windows_x86_64_gnu",
+      "status": 200,
+      "response_sha256": "14e58eb975cd09b665d5e4e8296e3e8fbe649c8c5530d51c6ce6e211cfa613bd",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 13:14:58 GMT",
+        "etag": "\"22fa9c8ff9eaafd89d8ae71727314129\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "266",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.678405+00:00",
+      "elapsed_seconds": 0.018,
+      "versions": [
+        {
+          "version": "0.52.6",
+          "yanked": false,
+          "checksum": "147a5c80aabfbf0c7d901cb5895d1de30ef2907eb21fbbab29ca94c5b08b1a78",
+          "lock_checksum": "147a5c80aabfbf0c7d901cb5895d1de30ef2907eb21fbbab29ca94c5b08b1a78",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "windows_x86_64_gnullvm",
+      "url": "https://index.crates.io/wi/nd/windows_x86_64_gnullvm",
+      "status": 200,
+      "response_sha256": "cb3ac6b86bc8e73c220ae3754a563f0b398e85e0410f6c1adb9d1fd8a3042822",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 13:14:58 GMT",
+        "etag": "\"a892fd852e2a5ef1258467ba9083b2d5\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "266",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.684266+00:00",
+      "elapsed_seconds": 0.016,
+      "versions": [
+        {
+          "version": "0.52.6",
+          "yanked": false,
+          "checksum": "24d5b23dc417412679681396f2b49f3de8c1473deb516bd34410872eff51ed0d",
+          "lock_checksum": "24d5b23dc417412679681396f2b49f3de8c1473deb516bd34410872eff51ed0d",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "windows_x86_64_msvc",
+      "url": "https://index.crates.io/wi/nd/windows_x86_64_msvc",
+      "status": 200,
+      "response_sha256": "4ece67c0169b40a384e90ee21c630603f7a27d04aa840dc0f1a708eeb647a7ef",
+      "headers": {
+        "last-modified": "Sun, 01 Feb 2026 13:14:58 GMT",
+        "etag": "\"b93b25c5223f70b10177090989a62fb6\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "266",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.685887+00:00",
+      "elapsed_seconds": 0.016,
+      "versions": [
+        {
+          "version": "0.52.6",
+          "yanked": false,
+          "checksum": "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec",
+          "lock_checksum": "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "winnow",
+      "url": "https://index.crates.io/wi/nn/winnow",
+      "status": 200,
+      "response_sha256": "8ccdbd515f63aacd0a9d1b841bc5f83a6cd91f3ce4cb8a490d89e9a63bf5d58c",
+      "headers": {
+        "last-modified": "Mon, 13 Jul 2026 14:31:43 GMT",
+        "etag": "\"3beff4e2b9b58d0652baa0f7deecefa5\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "444",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.701174+00:00",
+      "elapsed_seconds": 0.024,
+      "versions": [
+        {
+          "version": "0.7.15",
+          "yanked": false,
+          "checksum": "df79d97927682d2fd8adb29682d1140b343be4ac0f08fd68b7765d9c059d3945",
+          "lock_checksum": "df79d97927682d2fd8adb29682d1140b343be4ac0f08fd68b7765d9c059d3945",
+          "checksum_matches": true
+        },
+        {
+          "version": "1.0.4",
+          "yanked": false,
+          "checksum": "23b97319f7b8343df12cc98938e5c3eb436064524c8d2b4e30a1d3a36eecdf81",
+          "lock_checksum": "23b97319f7b8343df12cc98938e5c3eb436064524c8d2b4e30a1d3a36eecdf81",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "x11rb",
+      "url": "https://index.crates.io/x1/1r/x11rb",
+      "status": 200,
+      "response_sha256": "b5d018bdee495ef0a187d8784020cf018260e9d4b895f02104a3e619f677a24c",
+      "headers": {
+        "last-modified": "Thu, 16 Jul 2026 16:11:45 GMT",
+        "etag": "\"8944c5dffc93899aac544c2838e11886\"",
+        "cache-control": "public,max-age=600",
+        "age": "306",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.694680+00:00",
+      "elapsed_seconds": 0.016,
+      "versions": [
+        {
+          "version": "0.13.2",
+          "yanked": false,
+          "checksum": "9993aa5be5a26815fe2c3eacfc1fde061fc1a1f094bf1ad2a18bf9c495dd7414",
+          "lock_checksum": "9993aa5be5a26815fe2c3eacfc1fde061fc1a1f094bf1ad2a18bf9c495dd7414",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "x11rb-protocol",
+      "url": "https://index.crates.io/x1/1r/x11rb-protocol",
+      "status": 200,
+      "response_sha256": "65d348f38ff57fb6e3c93a551087286f52b833d8dbd3250d7e9448cd5c5c860f",
+      "headers": {
+        "last-modified": "Thu, 16 Jul 2026 16:11:24 GMT",
+        "etag": "\"70274334d7c986408bc127e7003fb175\"",
+        "cache-control": "public,max-age=600",
+        "age": "305",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.696376+00:00",
+      "elapsed_seconds": 0.016,
+      "versions": [
+        {
+          "version": "0.13.2",
+          "yanked": false,
+          "checksum": "ea6fc2961e4ef194dcbfe56bb845534d0dc8098940c7e5c012a258bfec6701bd",
+          "lock_checksum": "ea6fc2961e4ef194dcbfe56bb845534d0dc8098940c7e5c012a258bfec6701bd",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "x509-parser",
+      "url": "https://index.crates.io/x5/09/x509-parser",
+      "status": 200,
+      "response_sha256": "4bbaa72a2a901b45ef6e97d0e161961d193afc136ac983e3081b82ce46ac7e52",
+      "headers": {
+        "last-modified": "Thu, 05 Feb 2026 09:30:34 GMT",
+        "etag": "\"3a62670d32855fb34a51616040e0a981\"",
+        "cache-control": "public,max-age=600",
+        "age": "548",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.702475+00:00",
+      "elapsed_seconds": 0.018,
+      "versions": [
+        {
+          "version": "0.18.1",
+          "yanked": false,
+          "checksum": "d43b0f71ce057da06bc0851b23ee24f3f86190b07203dd8f567d0b706a185202",
+          "lock_checksum": "d43b0f71ce057da06bc0851b23ee24f3f86190b07203dd8f567d0b706a185202",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "yasna",
+      "url": "https://index.crates.io/ya/sn/yasna",
+      "status": 200,
+      "response_sha256": "917d41d3d2522bb4397400f908dbdd1a5a0da8b1dcb885331fb1ad24045f4d27",
+      "headers": {
+        "last-modified": "Sat, 14 Mar 2026 04:29:58 GMT",
+        "etag": "\"df69dd0e128ba8e5fd64cfb29e822b33\"",
+        "cache-control": "public,max-age=600",
+        "age": "547",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.702819+00:00",
+      "elapsed_seconds": 0.017,
+      "versions": [
+        {
+          "version": "0.6.0",
+          "yanked": false,
+          "checksum": "b5f6765e852b9b4dc8e2a76843e4d64d1cea8e79bcde0b6901aea8e7c7f08282",
+          "lock_checksum": "b5f6765e852b9b4dc8e2a76843e4d64d1cea8e79bcde0b6901aea8e7c7f08282",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "zeroize",
+      "url": "https://index.crates.io/ze/ro/zeroize",
+      "status": 200,
+      "response_sha256": "6f9748f20e2993c7f3051f5afe7b638c16df384a7cafe5dbdb286fcf41938f32",
+      "headers": {
+        "last-modified": "Tue, 06 Oct 2026 17:49:22 GMT",
+        "etag": "\"f9171972d5ef281a37a88c8c19be6e39\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "268",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.710267+00:00",
+      "elapsed_seconds": 0.016,
+      "versions": [
+        {
+          "version": "1.9.1",
+          "yanked": false,
+          "checksum": "e13084392c5e4bc371903e2935a5eaeed24905a7511356b883835e18a78f6879",
+          "lock_checksum": "e13084392c5e4bc371903e2935a5eaeed24905a7511356b883835e18a78f6879",
+          "checksum_matches": true
+        }
+      ]
+    },
+    {
+      "name": "zmij",
+      "url": "https://index.crates.io/zm/ij/zmij",
+      "status": 200,
+      "response_sha256": "bf81df6dbb5da354e0b03658806f2ab9e549f8ad331cf567de3ad7b06e048b0e",
+      "headers": {
+        "last-modified": "Mon, 13 Jul 2026 12:58:55 GMT",
+        "etag": "\"0f5848725eb0fd28678f4a7c5c93c833\"",
+        "cache-control": "public,max-age=600",
+        "date": "Fri, 23 Oct 2026 16:43:06 GMT",
+        "via": "1.1 varnish",
+        "age": "129",
+        "x-cache": "HIT"
+      },
+      "observed_at_utc": "2026-10-23T16:43:06.713860+00:00",
+      "elapsed_seconds": 0.017,
+      "versions": [
+        {
+          "version": "1.0.23",
+          "yanked": false,
+          "checksum": "29666d0abbfad1e3dc4dcf6144730dd3a3ab225bbbdac83319345b1b44ccfc1b",
+          "lock_checksum": "29666d0abbfad1e3dc4dcf6144730dd3a3ab225bbbdac83319345b1b44ccfc1b",
+          "checksum_matches": true
+        }
+      ]
+    }
+  ],
+  "source_input_sha256": {
+    "Cargo.toml": "7ea29af11f38ac187df7fb78ecbfb5ba0f5c4d2248211efb857010b91412ea04",
+    "deny.toml": "48165f414b8cf95491ba9489fb711d9151b1250eb142db86d2bb75c020b9e0a8",
+    "Cargo.lock": "6d57d3d84fcef4208a9ce657e511b07099187dcda084cd9decb9ab9a56756800",
+    "THIRD_PARTY_NOTICES.md": "5c0af187328b3935f789e7df284febb6aceec52728a343c73a213da6389d9e43",
+    "rust-toolchain.toml": "f715f440167e20fd8ea9afa0498c3d1ab80174cfcb8cbc895f106a34d907a1e1",
+    "tools/e2e/Cargo.toml": "78bb98248bc0c14ead549803d241fd912b95b068b894b2040d1d36d6ac55b83c",
+    "crates/net/Cargo.toml": "c74312dcc7dc550825d7c247961e2fd44f7ca1dbbdfc7bb6c28e7351ef30637c",
+    "crates/config/Cargo.toml": "2a747685780dabe93f139c609859005c2baad60e6599c4b8442273f5dea79968",
+    "crates/platform-linux/Cargo.toml": "d9f8772dc001e12d2fe9f1489d35918deeeeead9daab8131371ea91cf0b1a4ac",
+    "crates/platform/Cargo.toml": "88ee6e62955081ae5017549067c0055bd3ebd7a7e52b739b4b59455cebcc02ce",
+    "crates/protocol/Cargo.toml": "c91717334a50d2e68057c5e306b685e95a1506fc4d0bd9b08f443b62d6897445",
+    "crates/daemon/Cargo.toml": "4cb03349cb6d9cf4a6f95dce64cd0e3ed5306a7faa7762326fdc00d28a48aefa",
+    "crates/platform-windows/Cargo.toml": "080605b569ed545650abd65a3cc551dbb5c3231f8eb3d8589b5598fc3f6cf460",
+    "crates/ipc/Cargo.toml": "6ba4201f9b8b94fa813fc3699d422165b7db6102e14c2b70292c7cc83f7073d3",
+    "crates/platform-macos/Cargo.toml": "7b2607a96c77a79f3e8f6ab482fc39249e74a0ea8a283e3b6db5cf0cffdb2280",
+    "crates/session/Cargo.toml": "a1c5e86b885cb1cf079c19600bf180fb04fb3847173b9d5324426047865fae18",
+    "docs/verification/public-release-audit-2026-10-21/generate-notices.py": "cdc6330a2266ccbde86ad72f7c3bc0160e06b63c6d9f5fb1930a2556dca31fc4",
+    "docs/verification/public-release-audit-2026-10-21/dependency-licenses.json": "61f6d2cc168b70eeb04a5f44ffa5690f4c3c729369c147b1090c39ebe27e8bb7",
+    "spikes/macos-input/Cargo.toml": "66fa2711dc2075ff1d9b2cfd65e870f7162af4b7644406ab6df956ea440d64eb",
+    "spikes/macos-input/Cargo.lock": "6b2bdaafd2c7cf3442398c0244d8a9ebfe140202aef0b61afd0d4227f6e70d26",
+    "vendor/mdns-sd/Cargo.toml": "0fcc79974fb49f2c670668dc24380e6c43207fa50d79588c1b49550a406a5ae4",
+    "vendor/mdns-sd/OPENERGY.patch": "b240dc9131eac2f1355a1bb595a9c219f26a1c052bd9e4ceaf6f8282d17a9ad3",
+    "vendor/mdns-sd/UPSTREAM.json": "c28cea9cfa076cd5c3cc297a85150575101c7441fff6bb1cdb3cae6b2f204c91"
+  },
+  "notices_unchanged": true,
+  "helper_failure": {
+    "exit_code": 1,
+    "stage": "registry inventory after all seven policy commands, metadata and notices passed",
+    "error": "AttributeError: 'NoneType' object has no attribute 'startswith'",
+    "cause": "Cargo metadata local/path packages have source=null; helper did not normalize null.",
+    "source_sha256": "452cba623e0719a0daf6f86fed0d508ebc3f28c6fd73dee09ee74bcb072fabbf",
+    "product_or_policy_failure": false
+  },
+  "limitations": [
+    "The separately revised IPC candidate is not integrated or validated by this source revision.",
+    "Six graph checks do not establish native platform runtime acceptance.",
+    "Official registry response checksum matches compare metadata to Cargo.lock; every crate archive was not downloaded anew.",
+    "Local mdns-sd vendor is separately verified by archive/patch provenance and source review, not classified as a registry package.",
+    "No native input/clipboard, positive interactive Windows migration, original independent security/provenance acceptance or trusted signed/notarized distribution clearance.",
+    "Provider-stopped expiry/NSEC/orphan-record and original release-provenance review remain unverified and were not rerouted."
+  ]
+}
