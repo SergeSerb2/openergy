@@ -1,0 +1,55 @@
+{
+  "measurement_elapsed_seconds": 9.622764667,
+  "groups": [
+    {
+      "pgid": 70238,
+      "alive": false,
+      "exit": 0
+    },
+    {
+      "pgid": 70244,
+      "alive": false,
+      "exit": 0
+    }
+  ],
+  "socket_paths": [
+    {
+      "path": "/private/tmp/oe-delivery-qxsu9z10/run/peer/ipc.sock",
+      "exists": false
+    },
+    {
+      "path": "/private/tmp/oe-delivery-qxsu9z10/run/flow/app/ipc.sock",
+      "exists": false
+    }
+  ],
+  "assigned_ports": [
+    {
+      "argv": [
+        "/usr/sbin/lsof",
+        "-w",
+        "-nP",
+        "-iTCP:55819"
+      ],
+      "cwd": "/private/tmp/oe-delivery-qxsu9z10/run",
+      "exit": 1,
+      "elapsed_seconds": 0.06720045799999852,
+      "stdout": "",
+      "stderr": "",
+      "fresh_bind_succeeded": true
+    },
+    {
+      "argv": [
+        "/usr/sbin/lsof",
+        "-w",
+        "-nP",
+        "-iTCP:55820"
+      ],
+      "cwd": "/private/tmp/oe-delivery-qxsu9z10/run",
+      "exit": 1,
+      "elapsed_seconds": 0.06214395900000014,
+      "stdout": "",
+      "stderr": "",
+      "fresh_bind_succeeded": true
+    }
+  ]
+}

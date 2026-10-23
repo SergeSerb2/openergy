@@ -1,0 +1,167 @@
+--- a/apps/macos/Sources/Openergy/App/AppEndToEnd.swift
++++ b/apps/macos/Sources/Openergy/App/AppEndToEnd.swift
+@@ -60,6 +60,12 @@
+                 && model.config.server?.listen == "127.0.0.1:\(hostPort)"
+             record("starts from safe off config", safeStart, "role=\(model.role.rawValue) remote=\(model.config.client?.remote ?? "nil")")
+             guard safeStart else { finish(steps, outputDirectory, model: model) ; return }
++
++            if arguments.contains("--measure-delivery") {
++                steps += await measureDelivery(model, outputDirectory, joinAddress)
++                finish(steps, outputDirectory, model: model)
++                return
++            }
+ 
+             render(model, .layout, "01-layout-initial", outputDirectory)
+             render(model, .advanced, "02-advanced", outputDirectory)
+@@ -247,6 +253,151 @@
+         if noRender { CFRunLoopRun() } else { NSApplication.shared.run() }
+     }
+ 
++    // Temporary measurement only. Production AppModel/DaemonClient/IPCSocket are unchanged.
++    private static func measureDelivery(_ model: AppModel, _ directory: URL, _ address: String) async -> [Step] {
++        let path = directory.appendingPathComponent("delivery.jsonl")
++        FileManager.default.createFile(atPath: path.path, contents: nil, attributes: [.posixPermissions: 0o600])
++        let output = try! FileHandle(forWritingTo: path)
++        let start = ContinuousClock.now
++        var phase = "setup"
++        var rows: [Step] = []
++        var peers = 0
++        var logs = Set<String>()
++        var pending = Set<Double>()
++        var heartbeatCount = 0
++        var maximumLateMS = 0.0
++        func elapsedMS(_ since: ContinuousClock.Instant) -> Double {
++            let d = since.duration(to: .now).components
++            return Double(d.seconds) * 1000 + Double(d.attoseconds) / 1e15
++        }
++        func note(_ kind: String, _ fields: [String: JSONValue] = [:]) {
++            var fields = fields
++            fields["kind"] = .string(kind)
++            fields["phase"] = .string(phase)
++            fields["elapsed_ms"] = .number(elapsedMS(start))
++            fields["unix_ms"] = .number(Date().timeIntervalSince1970 * 1000)
++            let data = try! JSONEncoder().encode(JSONValue.object(fields))
++            try! output.write(contentsOf: data + Data([10]))
++        }
++        func check(_ name: String, _ passed: Bool, _ detail: String) {
++            rows.append(Step(name: name, passed: passed, detail: detail))
++            note("check", ["name": .string(name), "passed": .bool(passed), "detail": .string(detail)])
++        }
++        let deadline = Task { @MainActor in
++            try? await Task.sleep(for: .seconds(45))
++            guard !Task.isCancelled else { return }
++            note("measurement_deadline")
++            model.shutdown()
++            exit(2)
++        }
++        let heartbeat = Task { @MainActor in
++            var last = ContinuousClock.now
++            while !Task.isCancelled {
++                do { try await Task.sleep(for: .milliseconds(25)) } catch { break }
++                let interval = elapsedMS(last)
++                last = .now
++                heartbeatCount += 1
++                maximumLateMS = max(maximumLateMS, interval - 25)
++                note("heartbeat", ["interval_ms": .number(interval), "model_logs": .number(Double(model.logLines.count)),
++                                   "pending_trust": .number(Double(model.pendingTrust.count))])
++                for line in model.logLines where logs.insert(line).inserted {
++                    let emitted = line.split(separator: " ").first.flatMap { Double($0) } ?? 0
++                    note("model_log", ["line": .string(line), "emission_to_poll_ms": .number(Date().timeIntervalSince1970 * 1000 - emitted)])
++                }
++                for item in model.pendingTrust {
++                    if let expires = item.expiresUnixMs, pending.insert(expires).inserted {
++                        note("model_pending", ["expires_unix_ms": .number(expires),
++                                               "emission_to_poll_ms": .number(Date().timeIntervalSince1970 * 1000 - (expires - 30_000))])
++                    }
++                }
++            }
++        }
++        let witness = DaemonClient()
++        witness.onEvent = { name, data in
++            if name == "peer.untrusted" {
++                peers += 1
++                note("peer_untrusted", ["ordinal": .number(Double(peers)), "data": data])
++            }
++        }
++        defer {
++            deadline.cancel()
++            heartbeat.cancel()
++            witness.disconnect()
++            try? output.close()
++        }
++        note("begin", ["app_pid": .number(Double(getpid())), "daemon_pid": .number(Double(model.supervisedDaemonPID ?? -1))])
++        do {
++            try await witness.connect(path: DaemonSupervisor.socketPath)
++            try await witness.call("events.subscribe")
++            model.subscribeLogs(true)
++            let tail = await waitUntil(seconds: 2) { !model.logLines.isEmpty }
++            check("real log tail", tail, "model log lines=\(model.logLines.count)")
++            model.patch("tls.enabled", true)
++            let tls = await waitUntil(seconds: 2) { model.config.tls?.enabled == true }
++            check("private TLS enabled", tls, "enabled=\(String(describing: model.config.tls?.enabled))")
++            try? await Task.sleep(for: .milliseconds(250))
++            phase = "initial_join"
++            note("phase")
++            model.join(address)
++            let first = await waitUntil(seconds: 3) { peers > 0 && !model.pendingTrust.isEmpty }
++            check("genuine initial trust witness", first, "events=\(peers) pending=\(model.pendingTrust.count)")
++            guard first else { return rows }
++            try? await Task.sleep(for: .milliseconds(250))
++            phase = "ordinary_delivery"
++            note("phase", ["planned_restarts": 12])
++            print("DELIVERY ordinary_delivery begin")
++            let beforePeers = peers, beforeLogs = logs.count
++            for index in 0..<12 {
++                let before = peers
++                let sent = ContinuousClock.now
++                note("request_begin", ["index": .number(Double(index)), "method": "connection.restart"])
++                try await witness.call("connection.restart", timeout: .seconds(2))
++                note("request_reply", ["index": .number(Double(index)), "latency_ms": .number(elapsedMS(sent))])
++                let seen = await waitUntil(seconds: 1) { peers > before }
++                note("restart_witness", ["index": .number(Double(index)), "seen": .bool(seen),
++                                         "request_to_event_check_ms": .number(elapsedMS(sent))])
++                guard seen else {
++                    check("ordinary delivery event witness", false, "no genuine event for restart \(index)")
++                    return rows
++                }
++                try? await Task.sleep(for: .milliseconds(125))
++            }
++            try? await Task.sleep(for: .milliseconds(250))
++            check("finite trust event delivery", peers - beforePeers == 12, "events=\(peers - beforePeers)")
++            check("finite real log delivery", logs.count > beforeLogs, "new distinct model lines=\(logs.count - beforeLogs)")
++            print("DELIVERY ordinary_delivery end")
++            phase = "recovery"
++            note("phase")
++            let recovery = ContinuousClock.now
++            if let fingerprint = model.pendingTrust.first?.fingerprint {
++                model.approve(fingerprint)
++            }
++            let connected = await waitUntil(seconds: 3) { model.state == .connected && !model.connectedPeers.isEmpty && model.pendingTrust.isEmpty }
++            check("approve and recover real peer", connected, "latency_ms=\(elapsedMS(recovery)) state=\(model.state.rawValue) peers=\(model.connectedPeers.count)")
++            model.disconnect()
++            let disconnected = await waitUntil(seconds: 2) { model.state == .idle && model.connectedPeers.isEmpty && model.pendingTrust.isEmpty }
++            check("real disconnect clears peer", disconnected, "state=\(model.state.rawValue) peers=\(model.connectedPeers.count)")
++            model.join(address)
++            let rejoined = await waitUntil(seconds: 3) { model.state == .connected && !model.connectedPeers.isEmpty }
++            check("real trusted rejoin", rejoined, "state=\(model.state.rawValue) peers=\(model.connectedPeers.count)")
++            model.setRole(.off)
++            let off = await waitUntil(seconds: 2) { model.status.role == .off && model.connectedPeers.isEmpty && model.pendingTrust.isEmpty }
++            check("return to empty off state", off, "role=\(model.role.rawValue) pending=\(model.pendingTrust.count)")
++            await model.refreshAll()
++            phase = "settled"
++            note("phase", ["log_count": .number(Double(model.logLines.count))])
++            try? await Task.sleep(for: .seconds(2))
++            model.subscribeLogs(false)
++            try? await Task.sleep(for: .milliseconds(150))
++            check("finite responsiveness", maximumLateMS < 1000, "25ms heartbeat count=\(heartbeatCount) max_late_ms=\(maximumLateMS)")
++            note("end", ["peer_events": .number(Double(peers)), "distinct_model_logs": .number(Double(logs.count)),
++                         "maximum_heartbeat_late_ms": .number(maximumLateMS)])
++        } catch {
++            check("real delivery operation", false, error.localizedDescription)
++        }
++        return rows
++    }
++
+     private static func validPort(_ port: Int) -> Bool { (1024...65535).contains(port) && port != 24800 }
+ 
+     /// Resolve symlinks before checking containment, so a temp symlink cannot redirect

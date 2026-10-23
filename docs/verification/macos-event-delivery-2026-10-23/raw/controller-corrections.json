@@ -1,0 +1,12 @@
+[
+  {
+    "stage": "successful build finalization",
+    "error": "AssertionError: []",
+    "cause": "Xcode SwiftPM uses out/Products/Release; finalize now follows scratch/release/Openergy. No rebuild."
+  },
+  {
+    "stage": "first launch",
+    "exit": -6,
+    "cause": "Standalone executable did not load Sparkle despite DYLD_FRAMEWORK_PATH. Private copied app bundle now supplies its existing rpath; no model started in failed launch."
+  }
+]

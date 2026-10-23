@@ -1,0 +1,67 @@
+{
+  "root": "/private/tmp/oe-delivery-qxsu9z10",
+  "source_head": "d83807d542a86a99ad83978cc460028d972373e1",
+  "cached_state": {
+    "root": "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei",
+    "swift_scratch": "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/swift",
+    "cargo_target": "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/cargo",
+    "dist": "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/bundle",
+    "source_head": "c1863689fa44a2ef002df1c8fffc4fed0d6b76d4",
+    "commands": [
+      {
+        "name": "resolve",
+        "arguments": [
+          "nice",
+          "-n",
+          "15",
+          "swift",
+          "package",
+          "--package-path",
+          "apps/macos",
+          "--scratch-path",
+          "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/swift",
+          "resolve"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 3.52526925
+      },
+      {
+        "name": "bundle",
+        "arguments": [
+          "bash",
+          "apps/macos/scripts/bundle.sh"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 116.191959625
+      }
+    ],
+    "resolved_lock_unchanged": true,
+    "local_dist": "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/bundle-local"
+  },
+  "cached_daemon": "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/bundle-final/Openergy.app/Contents/Helpers/openergy",
+  "daemon_sha256": "350db4541b95f67b8a295419d71933eb4832d07de37881c781664d212a29d572",
+  "matched_source_inputs": 456,
+  "overlay_sha256": "7a1a27cbc6bcb4a6f3e80804e4ad2d02fd0458651479fa2ced1631b7df770a59",
+  "overlay_apply": {
+    "argv": [
+      "/usr/bin/patch",
+      "-p1",
+      "-i",
+      "/Users/serge/.t3/worktrees/openergy/t3-b042a01c/docs/verification/macos-event-delivery-2026-10-23/harness-overlay.patch"
+    ],
+    "cwd": "/private/tmp/oe-delivery-qxsu9z10/source",
+    "exit": 0,
+    "elapsed_seconds": 0.008944540999999973,
+    "stdout": "patching file 'apps/macos/Sources/Openergy/App/AppEndToEnd.swift'\n",
+    "stderr": ""
+  },
+  "build_environment": {
+    "MACOSX_DEPLOYMENT_TARGET": "15.0",
+    "CLANG_MODULE_CACHE_PATH": "/private/tmp/oe-delivery-qxsu9z10/clang-cache",
+    "SWIFTPM_MODULECACHE_OVERRIDE": "/private/tmp/oe-delivery-qxsu9z10/module-cache"
+  },
+  "compiler_inventory_before_build": [
+    "47262 47245 /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-build",
+    "47878 47262 /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-frontend"
+  ]
+}

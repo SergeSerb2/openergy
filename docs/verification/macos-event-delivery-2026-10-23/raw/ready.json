@@ -1,0 +1,24 @@
+{
+  "app": "/private/tmp/oe-delivery-qxsu9z10/Openergy.app/Contents/MacOS/Openergy",
+  "app_sha256": "2b91f8f0852e00d83a836c55fa6337c5d683667fa04017ae4db0b842c8d95343",
+  "compiled_app": "/private/tmp/oe-delivery-qxsu9z10/swift/out/Products/Release/Openergy",
+  "compiled_app_sha256": "6bd9f3fa56d2a227081b75a975cbb51a816b273ae5174aab342e970a5c95c53d",
+  "bundle_sign": {
+    "argv": [
+      "/usr/bin/codesign",
+      "--force",
+      "--sign",
+      "-",
+      "/private/tmp/oe-delivery-qxsu9z10/Openergy.app"
+    ],
+    "cwd": "/private/tmp/oe-delivery-qxsu9z10",
+    "exit": 0,
+    "elapsed_seconds": 0.019723458999999943,
+    "stdout": "",
+    "stderr": "/private/tmp/oe-delivery-qxsu9z10/Openergy.app: replacing existing signature\n"
+  },
+  "daemon": "/private/tmp/oe-delivery-qxsu9z10/openergy-daemon",
+  "framework": "/private/tmp/oe-delivery-qxsu9z10/swift/artifacts/sparkle/Sparkle/Sparkle.xcframework/macos-arm64_x86_64",
+  "cached_inputs_unchanged_after_build": true,
+  "compiler_inventory_after_build": []
+}

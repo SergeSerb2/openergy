@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "/private/tmp/oe-delivery-qxsu9z10/openergy-daemon",
+    "ctl",
+    "status.get",
+    "--socket",
+    "/private/tmp/oe-delivery-qxsu9z10/run/peer/ipc.sock",
+    "--raw"
+  ],
+  "cwd": "/private/tmp/oe-delivery-qxsu9z10/run",
+  "exit": 0,
+  "elapsed_seconds": 0.005980791999999999,
+  "stdout": "{\"active_screen\":\"peer\",\"client\":{\"attempt\":0,\"next_retry_ms\":null,\"remote\":null},\"clipboard\":{\"enabled\":true,\"last_blocked\":null,\"last_transfer\":null},\"cursor\":{\"screen\":\"peer\",\"x\":0,\"y\":0},\"daemon\":{\"pid\":70238,\"platform\":\"virtual\",\"uptime_s\":0,\"version\":\"0.1.0\"},\"last_error\":null,\"local_screen\":{\"displays\":[{\"h\":1080,\"scale\":1.0,\"w\":1920,\"x\":0,\"y\":0}],\"h\":1080,\"w\":1920},\"name\":\"peer\",\"peers\":[],\"pending_trust\":[],\"permissions\":{\"accessibility\":\"not_required\",\"input_monitoring\":\"not_required\",\"post_events\":\"not_required\"},\"role\":\"server\",\"secure_input\":{\"local_app\":null},\"server\":{\"listen\":\"127.0.0.1:55819\"},\"state\":\"listening\",\"stats\":{\"events_in\":0,\"events_out\":0,\"rss_bytes\":9650176},\"tls\":{\"enabled\":true,\"fingerprint\":\"6F:20:FF:48:20:C0:25:2E:56:97:04:B4:6B:07:A9:E5:69:3D:A5:66:9E:05:D0:2B:35:63:AC:E9:E0:9D:0B:F8\"}}\n",
+  "stderr": ""
+}
