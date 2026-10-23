@@ -6,11 +6,13 @@ whole-daemon memory guarantee. --max-ipc-ms adds an optional control-reply
 latency gate. No platform input or clipboard API is used.
 """
 import argparse
+import contextlib
 import hashlib
 import json
 import os
 from pathlib import Path
 import socket
+import ssl
 import struct
 import subprocess
 import tempfile
@@ -47,11 +49,14 @@ def main():
     parser.add_argument("--source", required=True)
     parser.add_argument("--max-growth-mib", type=int, default=64)
     parser.add_argument("--max-ipc-ms", type=float)
+    parser.add_argument("--tls-version", choices=("1.2", "1.3"))
     args = parser.parse_args()
     if not 26200 <= args.port <= 26219:
         parser.error("requires assigned loopback port 26200..26219")
     if args.max_ipc_ms is not None and not 0 < args.max_ipc_ms < float("inf"):
         parser.error("--max-ipc-ms must be finite and positive")
+    if args.tls_version == "1.3" and not ssl.HAS_TLSv1_3:
+        parser.error("TLS 1.3 requires a Python SSL build with TLS 1.3 support")
     binary = args.openergy.resolve(strict=True)
     root = Path(tempfile.mkdtemp(prefix="oe-r5-queue-", dir="/tmp"))
     root.chmod(0o700)
@@ -63,13 +68,32 @@ role = "client"
 [client]
 remote = "127.0.0.1:{args.port}"
 [tls]
-enabled = false
+enabled = {str(args.tls_version is not None).lower()}
 ''')
     env = dict(os.environ, OPENERGY_CONFIG_DIR=str(root),
                OPENERGY_TLS_DIR=str(root / "tls"), OPENERGY_SOCKET=str(control),
                OPENERGY_DISABLE_DISCOVERY="1", XDG_CONFIG_HOME=str(root),
                XDG_DATA_HOME=str(root), XDG_RUNTIME_DIR=str(root))
     env.pop("OPENERGY_ALLOW_PORT_24800", None)
+    tls_context = None
+    if args.tls_version:
+        def identity(directory):
+            prepared = subprocess.run(
+                [str(binary), "fingerprint", "--dir", str(directory)],
+                env=dict(env, OPENERGY_CONFIG_DIR=str(directory),
+                         OPENERGY_TLS_DIR=str(directory / "tls"), HOSTNAME="openergy-queue-lab"),
+                capture_output=True, text=True, timeout=4, check=True)
+            return prepared.stdout.splitlines()[0]
+        server_dir = root / "server"
+        server_pin = identity(server_dir)
+        identity(root)
+        (root / "tls" / "trusted-servers").write_text(server_pin + "\n")
+        tls_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        version = ssl.TLSVersion.TLSv1_2 if args.tls_version == "1.2" else ssl.TLSVersion.TLSv1_3
+        tls_context.minimum_version = tls_context.maximum_version = version
+        tls_context.load_cert_chain(server_dir / "tls/cert.pem", server_dir / "tls/key.pem")
+        tls_context.load_verify_locations(root / "tls/cert.pem")
+        tls_context.verify_mode = ssl.CERT_REQUIRED
 
     def ctl(method):
         with socket.socket(socket.AF_UNIX) as stream:
@@ -94,8 +118,15 @@ enabled = false
              "--socket", str(control), "--platform", "virtual", "--foreground"],
             env=env, stdout=log, stderr=subprocess.STDOUT)
         try:
-            with listener.accept()[0] as peer:
+            with contextlib.ExitStack() as sockets:
+                raw_peer = sockets.enter_context(listener.accept()[0])
+                raw_peer.settimeout(2)
+                peer = sockets.enter_context(tls_context.wrap_socket(raw_peer, server_side=True)) if tls_context else raw_peer
                 peer.settimeout(1)
+                negotiated_tls_version = peer.version() if tls_context else None
+                if tls_context and (not peer.getpeercert(binary_form=True)
+                                    or negotiated_tls_version != "TLSv" + args.tls_version):
+                    raise RuntimeError("mutual TLS version or client certificate was not verified")
                 peer.sendall(frame(b"Synergy" + struct.pack("!HH", 1, 8)))
                 if not receive(peer).startswith(b"Synergy"):
                     raise RuntimeError("missing real hello reply")
@@ -150,6 +181,7 @@ enabled = false
                 report = {"scenario": "R5-tiny-control-queue-memory", "source": args.source,
                           "binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
                           "platform": os.uname().sysname, "baseline_rss_bytes": baseline,
+                          "tls_version": negotiated_tls_version,
                           "peak_rss_bytes": peak, "growth_bytes": peak - baseline,
                           "growth_limit_bytes": args.max_growth_mib * 1024 * 1024,
                           "max_ipc_ms": max_ipc_ms, "ipc_budget_ms": args.max_ipc_ms,

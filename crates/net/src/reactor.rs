@@ -32,6 +32,10 @@ const WAKE: Token = Token(0);
 const LISTENER: Token = Token(1);
 const TRUST_POLL: Duration = Duration::from_millis(500);
 const CLOSE_TIMEOUT: Duration = Duration::from_millis(250);
+// A byte budget alone admits tens of thousands of tiny messages in one turn.
+// Yield after this many events, finishing the current <=16 KiB read so decoder
+// and TLS state stay intact. Large-frame throughput keeps the existing byte cap.
+const READ_EVENT_BATCH: usize = 1024;
 
 pub struct NetConfig {
     pub tls_enabled: bool,
@@ -560,7 +564,8 @@ impl Connection {
         }
         let mut budget: usize = 256 * 1024;
         let mut buffer = [0u8; 16 * 1024];
-        while budget > 0 {
+        let initial_events = out.len();
+        while budget > 0 && out.len() - initial_events < READ_EVENT_BATCH {
             if self.tls.is_some() {
                 if self.established {
                     loop {
@@ -578,12 +583,12 @@ impl Connection {
                         };
                         self.feed(&buffer[..count], mode, out)?;
                         budget = budget.saturating_sub(count);
-                        if budget == 0 {
+                        if budget == 0 || out.len() - initial_events >= READ_EVENT_BATCH {
                             break;
                         }
                     }
                 }
-                if budget == 0 {
+                if budget == 0 || out.len() - initial_events >= READ_EVENT_BATCH {
                     break;
                 }
                 if self.read_ready {
