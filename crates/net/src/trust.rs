@@ -10,6 +10,25 @@ use std::{
 
 // Approximately 14,000 canonical SHA-256 pins per private or imported list.
 const MAX_TRUST_FILE_LEN: u64 = 1024 * 1024;
+const LINEAR_TRUST_PINS: usize = 32;
+
+/// Keep first-seen order while avoiding one scan of all prior pins per record.
+fn dedup_in_order(values: &mut Vec<Fingerprint>) {
+    let mut order: Vec<_> = (0..values.len()).collect();
+    order.sort_unstable_by_key(|&i| (values[i].0, i));
+    let mut duplicate = vec![false; values.len()];
+    for pair in order.windows(2) {
+        if values[pair[0]] == values[pair[1]] {
+            duplicate[pair[1]] = true;
+        }
+    }
+    let mut index = 0;
+    values.retain(|_| {
+        let keep = !duplicate[index];
+        index += 1;
+        keep
+    });
+}
 
 fn fail(e: impl std::fmt::Display) -> TrustError {
     TrustError::Failed(e.to_string())
@@ -62,12 +81,15 @@ fn read(path: &Path, private: bool) -> Result<Vec<Fingerprint>, TrustError> {
     let mut ignored = 0;
     for line in text.lines().map(str::trim).filter(|line| !line.is_empty()) {
         if let Some(fp) = Fingerprint::parse(line) {
-            if !result.contains(&fp) {
+            if result.len() > LINEAR_TRUST_PINS || !result.contains(&fp) {
                 result.push(fp);
             }
         } else {
             ignored += 1;
         }
+    }
+    if result.len() > LINEAR_TRUST_PINS {
+        dedup_in_order(&mut result);
     }
     // SHA-1 records are read as legacy, non-matching records, never upgraded to SHA-256.
     if ignored > 0 {
@@ -170,6 +192,13 @@ impl TrustStore {
         }
         let mut added = 0;
         for (list, additions) in [(&mut next.servers, add_servers), (&mut next.clients, add_clients)] {
+            if additions.len() > LINEAR_TRUST_PINS {
+                let before = list.len();
+                list.extend_from_slice(additions);
+                dedup_in_order(list);
+                added += list.len() - before;
+                continue;
+            }
             for fp in additions {
                 if !list.contains(fp) {
                     list.push(*fp);
