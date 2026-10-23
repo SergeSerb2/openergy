@@ -1,0 +1,59 @@
+{
+  "schema_version": 2,
+  "status": "DO NOT RUN: execution remains unauthorized",
+  "supersedes": "The helper/cache-only scope in the original results.json and raw/operation-DO-NOT-RUN.json is incomplete. Those files are retained immutable preparation snapshots. This v2 is the current proposed operation scope.",
+  "commands": {
+    "negative": [
+      "/private/tmp/oe-stopped-update-llil939f/driver/sparkle.app/Contents/MacOS/sparkle",
+      "/private/tmp/oe-stopped-update-llil939f/old/Openergy.app",
+      "--check-immediately",
+      "--feed-url",
+      "http://127.0.0.1:25600/signature-negative.xml",
+      "--user-agent-name",
+      "Openergy-private-verification",
+      "--verbose"
+    ],
+    "positive": [
+      "/private/tmp/oe-stopped-update-llil939f/driver/sparkle.app/Contents/MacOS/sparkle",
+      "/private/tmp/oe-stopped-update-llil939f/old/Openergy.app",
+      "--check-immediately",
+      "--feed-url",
+      "http://127.0.0.1:25600/valid.xml",
+      "--user-agent-name",
+      "Openergy-private-verification",
+      "--verbose"
+    ]
+  },
+  "future_environment": {
+    "CFFIXED_USER_HOME": "/private/tmp/oe-stopped-update-llil939f/config",
+    "TMPDIR": "/private/tmp/oe-stopped-update-llil939f/config/"
+  },
+  "scope": "Two stopped-target cases only: complete archive download, signature rejection with unchanged old bundle, then valid replacement. No target launch or relaunch.",
+  "required_host_effects": {
+    "launchd": "Fixture-specific transient updater/progress jobs and their helper processes; normal upstream behavior.",
+    "caches": "Fixture helper/download/installation caches outside the temporary root may use the user cache directory; private parent environment does not prove helper confinement.",
+    "candidate_files": "Download/extract/ownership/group/quarantine and timestamp handling plus replacement of the stopped temporary target. No installed application is a target.",
+    "launchservices": "The installer updates candidate modification/access timestamps to notify LaunchServices and the system, even without relaunch. Further registration/cache processing may occur.",
+    "gatekeeper": "On the prepared ad-hoc app same-volume path, source conditions permit /usr/bin/gktool scan of the candidate on macOS14.4+. This is a Gatekeeper assessment operation, not target execution.",
+    "persistent_state_limit": "Registration/assessment cache or policy state is not proven temporary or fully reversible. Job/cache cleanup alone would not prove all shared host state restored."
+  },
+  "required_preflight": "Fresh non-running fixture ID; exclusive owned loopbackserver; exact file hashes and private target parent; inventory fixture job/cache paths; no installed app or global settings touched; record fixture identities and assessment/registration receipts, keep all normal validation enabled, abort if the target is running",
+  "constraints": [
+    "No Xcode build or repeated upstream shared-ID registration.",
+    "No target application execution or relaunch; no native input/clipboard or live sharing changes.",
+    "No installed app, TCC, login, account, firewall, DNS or global security-setting changes.",
+    "Do not suppress Gatekeeper scanning, timestamp notifications or validation to fit a narrower scope.",
+    "No identity-wide LaunchServices or execution-policy reversal; record effects and limits rather than promise restoration."
+  ],
+  "source_basis": {
+    "sparkle_revision": "eef1a539a373c1f1a320624b1130fc5de7b2e100",
+    "path": "Autoupdate/SUPlainInstaller.m",
+    "sha256": "d5191e8b7684df756383c2122dcfcaaa011d5bae237b2ddbf9fa05986c8f5b55",
+    "timestamp_notification_lines": "82-89",
+    "gatekeeper_scan_lines": "94-115",
+    "same_volume_and_atomic_swap_conditions_lines": "354-383",
+    "evidence_type": "pinned source-derived possible/expected effects, not observed installer runtime"
+  },
+  "installer_executed": false,
+  "approval_received": false
+}
