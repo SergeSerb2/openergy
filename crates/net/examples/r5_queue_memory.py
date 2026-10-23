@@ -2,7 +2,8 @@
 """R5: exercise a real virtual client against a non-reading TCP host.
 
 The 64 MiB RSS-growth gate is a local stress regression threshold, not a
-whole-daemon memory guarantee. No platform input or clipboard API is used.
+whole-daemon memory guarantee. --max-ipc-ms adds an optional control-reply
+latency gate. No platform input or clipboard API is used.
 """
 import argparse
 import hashlib
@@ -45,9 +46,12 @@ def main():
     parser.add_argument("--report", required=True, type=Path)
     parser.add_argument("--source", required=True)
     parser.add_argument("--max-growth-mib", type=int, default=64)
+    parser.add_argument("--max-ipc-ms", type=float)
     args = parser.parse_args()
     if not 26200 <= args.port <= 26219:
         parser.error("requires assigned loopback port 26200..26219")
+    if args.max_ipc_ms is not None and not 0 < args.max_ipc_ms < float("inf"):
+        parser.error("--max-ipc-ms must be finite and positive")
     binary = args.openergy.resolve(strict=True)
     root = Path(tempfile.mkdtemp(prefix="oe-r5-queue-", dir="/tmp"))
     root.chmod(0o700)
@@ -140,11 +144,16 @@ enabled = false
                 stressed = max(s["events_out"] for s in samples) > 100_000 and any(
                     s["error_code"] == "network_queue_full" for s in samples)
                 passed = stressed and peak - baseline <= args.max_growth_mib * 1024 * 1024
+                max_ipc_ms = max(s["ipc_ms"] for s in samples)
+                within_ipc_budget = args.max_ipc_ms is None or max_ipc_ms < args.max_ipc_ms
+                passed = passed and within_ipc_budget
                 report = {"scenario": "R5-tiny-control-queue-memory", "source": args.source,
                           "binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
                           "platform": os.uname().sysname, "baseline_rss_bytes": baseline,
                           "peak_rss_bytes": peak, "growth_bytes": peak - baseline,
                           "growth_limit_bytes": args.max_growth_mib * 1024 * 1024,
+                          "max_ipc_ms": max_ipc_ms, "ipc_budget_ms": args.max_ipc_ms,
+                          "within_ipc_budget": within_ipc_budget,
                           "stressed": stressed, "passed": passed, "samples": samples}
                 args.report.write_text(json.dumps(report, indent=2) + "\n")
                 print(json.dumps({key: value for key, value in report.items() if key != "samples"}), flush=True)
