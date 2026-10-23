@@ -67,6 +67,12 @@ The [bounded virtual idle observation](virtual-idle-resources.md) records two
 30-second phases and the actual stop delay on the checkpoint binary. It does
 not supply native performance or long-term memory acceptance.
 
+The later [combined-binary idle observation](combined-idle-resources.md) measures
+the exact new release artifact. Its role-off idle RSS is 8.265625 MiB and reaches
+8.609375 MiB during 30 status CLI calls. Displayed CPU-counter deltas are 0.00 s
+at 0.01-second resolution; this does not prove zero CPU work or a speedup. Actual
+stop exit takes 1.276 seconds. Config/artifact hashes and cleanup checks pass.
+
 The [source-history scan](source-history-refresh.md) retains raw exit 1 with
 84 findings. All 84 are verified source-file hash records, with none unresolved.
 The parent independently repeated 96 source-blob comparisons. Its patch-history
