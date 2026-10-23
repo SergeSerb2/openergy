@@ -29,7 +29,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         log::set_max_level(log::LevelFilter::Trace);
     }
     let mut args = std::env::args().skip(1);
-    let role = args.next().ok_or("usage: tls_peer server|client --dir D --addr 127.0.0.1:PORT [--pin FP] [--approve-after-ms N] [--seconds N] [--plain] [--messages] [--hello-only] [--hold-ms N]")?;
+    let role = args.next().ok_or("usage: tls_peer server|client --dir D --addr 127.0.0.1:PORT [--pin FP] [--approve-after-ms N] [--seconds N] [--plain] [--messages] [--hello-only] [--hold-ms N] [--echo-control]")?;
     if role != "server" && role != "client" {
         return Err("role must be server or client".into());
     }
@@ -41,6 +41,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let mut plain = false;
     let mut messages = false;
     let mut hello_only = false;
+    let mut echo_control = false;
     let mut hold_ms = 30_000;
     while let Some(flag) = args.next() {
         match flag.as_str() {
@@ -57,8 +58,12 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             "--plain" => plain = true,
             "--messages" => messages = true,
             "--hello-only" => hello_only = true,
+            "--echo-control" => echo_control = true,
             _ => return Err(format!("unknown flag {flag}").into()),
         }
+    }
+    if echo_control && (role != "client" || messages || hello_only) {
+        return Err("--echo-control requires ordinary client frame mode".into());
     }
     let addr = addr.ok_or("--addr required")?;
     if !addr.ip().is_loopback()
@@ -171,6 +176,13 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                             priority: Priority::Control,
                         })?;
                         sent = true;
+                    }
+                    if role == "client" && echo_control && payload == b"CNOP" {
+                        handle.send(NetCommand::SendFrame {
+                            conn,
+                            payload,
+                            priority: Priority::Control,
+                        })?;
                     }
                 }
                 NetEvent::Message { conn, msg } => {
