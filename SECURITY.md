@@ -10,18 +10,10 @@ of a different commit, OS build, peer version, or configuration.
 
 ## Report a vulnerability
 
-The maintainer selected **GitHub private vulnerability reporting** as the
-public-launch route on 2026-10-22. The repository is still private, so this
-route has **not been enabled or verified as available**. Selecting the route
-does not authorize a repository visibility change.
-
-When the repository is made public, a maintainer must enable private
-vulnerability reporting and verify the **Security → Advisories → Report a
-vulnerability** flow before public launch. Once enabled, use the
-[repository's security advisories page](https://github.com/SergeSerb2/openergy/security/advisories)
-to start a private report. Follow the
-[launch checklist](docs/releasing.md#public-launch-acceptance) to verify access
-and maintainer notifications. This remains an open launch requirement.
+The maintainer chose to skip GitHub private vulnerability reporting setup on
+2026-10-22. It is not a prerequisite for the current hardening work. No private
+reporting route has been enabled or verified for this repository. This decision
+does not change repository visibility or establish another contact service.
 
 Until a private route is available, [open a repository issue](https://github.com/SergeSerb2/openergy/issues/new)
 asking the maintainer for a private reporting channel. Include only a general

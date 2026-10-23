@@ -12,6 +12,12 @@ or mocks were added. Native backend probes ran only inside isolated Linux Xvfb.
 
 ## Final hardening follow-up
 
+The [incomplete IPC request follow-up](ipc-read-deadlines.md) records the resumed
+hardening pass, a reproduced client-slot exhaustion failure, absolute request
+read deadlines, and real CLI/socket regressions. It also records the maintainer's
+decision to defer GitHub private reporting setup while keeping native acceptance
+as a release gate. Earlier reporting prerequisites below are historical.
+
 The [Linux x86-64 and Python 3.11 follow-up](linux-amd64-python311.md) records a
 real packaging compatibility failure and fix, the extracted local Linux
 artifact, and 30 focused scenarios plus 15 direct CLI checks under AMD64

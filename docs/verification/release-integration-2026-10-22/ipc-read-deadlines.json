@@ -1,0 +1,1281 @@
+{
+  "date": "2026-10-22",
+  "baseline_source_commit": "b19ff091e84723c65b1f93a4a28cafeebf5e8875",
+  "runtime_fix_commit": "89b79e1433cf32b64df465b89fcd486cc8823949",
+  "environment": {
+    "os": "macOS 27.2",
+    "architecture": "aarch64",
+    "rust": "1.99.1 (58cf8f9c3 2026-10-13)",
+    "macos_deployment_target": "15.0",
+    "cargo_jobs": 2,
+    "process_priority": "reduced"
+  },
+  "baseline": {
+    "binary_sha256": "a24fd9646be235e5e03483cffce72122e390b3acdf34a3bc9f5855b00fc5f4f7",
+    "script_sha256": "a0d88600ff678f825f5b06c7540724ac97f8b7575e26b8048a9ff5bfa0c0b897",
+    "platform": "virtual",
+    "transport": "private Unix socket",
+    "checks": [
+      {
+        "name": "initial public CLI status",
+        "passed": true
+      },
+      {
+        "name": "persistent client initial reply",
+        "passed": true
+      },
+      {
+        "name": "all 63 pending clients initially admitted",
+        "passed": true
+      },
+      {
+        "name": "empty clients expire",
+        "passed": false,
+        "closed": 0,
+        "total": 16
+      },
+      {
+        "name": "partial_header clients expire",
+        "passed": false,
+        "closed": 0,
+        "total": 16
+      },
+      {
+        "name": "partial_body clients expire",
+        "passed": false,
+        "closed": 0,
+        "total": 16
+      },
+      {
+        "name": "drip clients expire",
+        "passed": false,
+        "closed": 0,
+        "total": 15
+      },
+      {
+        "name": "public CLI recovers while incomplete clients stay open",
+        "passed": false,
+        "returncode": 1
+      },
+      {
+        "name": "completed-request idle client remains usable",
+        "passed": true
+      },
+      {
+        "name": "releasing one held client slot restores CLI access",
+        "passed": true
+      },
+      {
+        "name": "fragmented complete request succeeds",
+        "passed": true
+      },
+      {
+        "name": "pipelined complete requests preserve reply order",
+        "passed": true
+      },
+      {
+        "name": "unknown method returns an error",
+        "passed": true
+      },
+      {
+        "name": "valid request after method error succeeds",
+        "passed": true
+      },
+      {
+        "name": "partial frame after a completed request expires",
+        "passed": false
+      },
+      {
+        "name": "oversized header is refused",
+        "passed": true
+      },
+      {
+        "name": "public CLI works after refusal",
+        "passed": true
+      },
+      {
+        "name": "shutdown with a partial client exits cleanly",
+        "passed": true
+      },
+      {
+        "name": "owned IPC socket removed",
+        "passed": true
+      }
+    ],
+    "daemon_exit": 0,
+    "cleanup": true,
+    "passed": false
+  },
+  "fixed": {
+    "binary_sha256": "db35bd0760ff003f7fb287f434933bb97c233cd8d10c1db1ec387afa8aae24e7",
+    "script_sha256": "a0d88600ff678f825f5b06c7540724ac97f8b7575e26b8048a9ff5bfa0c0b897",
+    "platform": "virtual",
+    "transport": "private Unix socket",
+    "checks": [
+      {
+        "name": "initial public CLI status",
+        "passed": true
+      },
+      {
+        "name": "persistent client initial reply",
+        "passed": true
+      },
+      {
+        "name": "all 63 pending clients initially admitted",
+        "passed": true
+      },
+      {
+        "name": "empty clients expire",
+        "passed": true,
+        "closed": 16,
+        "total": 16
+      },
+      {
+        "name": "partial_header clients expire",
+        "passed": true,
+        "closed": 16,
+        "total": 16
+      },
+      {
+        "name": "partial_body clients expire",
+        "passed": true,
+        "closed": 16,
+        "total": 16
+      },
+      {
+        "name": "drip clients expire",
+        "passed": true,
+        "closed": 15,
+        "total": 15
+      },
+      {
+        "name": "public CLI recovers while incomplete clients stay open",
+        "passed": true,
+        "returncode": 0
+      },
+      {
+        "name": "completed-request idle client remains usable",
+        "passed": true
+      },
+      {
+        "name": "releasing one held client slot restores CLI access",
+        "passed": true
+      },
+      {
+        "name": "fragmented complete request succeeds",
+        "passed": true
+      },
+      {
+        "name": "pipelined complete requests preserve reply order",
+        "passed": true
+      },
+      {
+        "name": "unknown method returns an error",
+        "passed": true
+      },
+      {
+        "name": "valid request after method error succeeds",
+        "passed": true
+      },
+      {
+        "name": "partial frame after a completed request expires",
+        "passed": true
+      },
+      {
+        "name": "oversized header is refused",
+        "passed": true
+      },
+      {
+        "name": "public CLI works after refusal",
+        "passed": true
+      },
+      {
+        "name": "shutdown with a partial client exits cleanly",
+        "passed": true
+      },
+      {
+        "name": "owned IPC socket removed",
+        "passed": true
+      }
+    ],
+    "daemon_exit": 0,
+    "cleanup": true,
+    "passed": true
+  },
+  "daemon_cli_audit": [
+    {
+      "check": "preserve_socket_file",
+      "passed": true
+    },
+    {
+      "check": "preserve_socket_symlink",
+      "passed": true
+    },
+    {
+      "check": "relative_paths",
+      "passed": true
+    },
+    {
+      "check": "replaced_socket_shutdown",
+      "passed": true
+    },
+    {
+      "check": "log_symlink",
+      "passed": true
+    },
+    {
+      "check": "log_permissions",
+      "passed": true
+    },
+    {
+      "check": "ipc_framing",
+      "passed": true
+    },
+    {
+      "check": "oversized_response",
+      "passed": true
+    },
+    {
+      "check": "cli_validation",
+      "passed": true
+    },
+    {
+      "check": "pinned_connect_rollback",
+      "passed": true
+    },
+    {
+      "check": "stale_socket_and_single_instance",
+      "passed": true
+    },
+    {
+      "check": "connecting_idempotence",
+      "passed": true
+    },
+    {
+      "check": "cli_connect_host",
+      "passed": true
+    },
+    {
+      "check": "pinned_trust_revoke",
+      "passed": true
+    },
+    {
+      "check": "daemon_argument_validation",
+      "passed": true
+    }
+  ],
+  "binary_sizes": {
+    "baseline_bytes": 3674144,
+    "fixed_bytes": 3674144
+  },
+  "rust_inputs": {
+    "Cargo.lock": "0cc466112ead33a26cb59fce717d83c202bd470e6ba64394ab7c81ac560c6f3f",
+    "Cargo.toml": "1249baacd47b641edbab7350fa10f94d5a08624223c0ef1d7c8e49707c96fb0d",
+    "crates/config/Cargo.toml": "2a747685780dabe93f139c609859005c2baad60e6599c4b8442273f5dea79968",
+    "crates/config/src/cli.rs": "21df1802c13c89bb4569f1e0f3b0290aa212dfdb1a6d2e7ce9aa5e32d0262246",
+    "crates/config/src/layout.rs": "04b27afdd4cb1e05c321845c79370aabeb79d0afd2574a29ee3d357412c46c06",
+    "crates/config/src/lib.rs": "214d8694a6d1b93bffd10b3ccb150da95191b6ce64b83a7a9e347ea9290979a4",
+    "crates/config/src/model.rs": "06eba7851d8a9789a342dc7d374880eedadcfc9a106026b7c3f3e69a4cf7b0b3",
+    "crates/config/src/synergy.rs": "8e1650d35a9a20c87504832e81b1b0fdd0dcb9a289e39d988c9c9f4f4e86f3e0",
+    "crates/config/src/synergy3.rs": "9faca911b846568795c23d01b768d6de3113d90f73e65e24418c79bdc44621fc",
+    "crates/daemon/Cargo.toml": "4cb03349cb6d9cf4a6f95dce64cd0e3ed5306a7faa7762326fdc00d28a48aefa",
+    "crates/daemon/src/adapter.rs": "874a75cebedcc5120306f4dec0d9d326932379fceb6ca072451bc8cf04d6185a",
+    "crates/daemon/src/allocator.rs": "1b0193bd0f658b47d219bb931cb045df7f25ee9f61ba11c4cd2c1f653a006ffd",
+    "crates/daemon/src/clipboard_json.rs": "5ec7fc4e24fd1d8054a60bffa0d7ac671d4357fc73c44abf59c81d9c26343299",
+    "crates/daemon/src/events.rs": "cee67a01d3ef29d5dc6aa300169ec61287c7edd0e492913de7f0fa3bb800dfad",
+    "crates/daemon/src/interfaces.rs": "80e2a11a6eb67be30ce263635c85edcee0d4e6185fc64514add27d3ee96df550",
+    "crates/daemon/src/ipc_server.rs": "4ceb1dc908211fd0b6493c55787f32582b8b248bedff20c99d800fed41a2301e",
+    "crates/daemon/src/lifetime.rs": "922a15a92661fdb6ca5f848852b79cc67e34c9b9b2ad266f7f4d4e7fd6f194e5",
+    "crates/daemon/src/logger.rs": "2faf11b9ec28a1d12ced24b662014e21aa86bae798dec6f4a15a0fd2a728e298",
+    "crates/daemon/src/main.rs": "ba5a5d6ae3817bed2a9fd6955b9fee751983bc6b1f53c0df9f9e12f76519bb61",
+    "crates/daemon/src/runtime.rs": "8f2a4bb49f2f70c70acbd92ef71aca3ca95a8f80af2e15fabfc945bfa919e230",
+    "crates/daemon/src/windows_pipe.rs": "9234c4be2e35e228cd8dba0b6b5c153ff419b1eeb15ad96b9dd6b7a531711a6c",
+    "crates/daemon/src/workers.rs": "5109cd76c0a1911b74512b3d8d2cf4d49df27fed417a55d3ac68a1f1ca8028b2",
+    "crates/ipc/Cargo.toml": "6ba4201f9b8b94fa813fc3699d422165b7db6102e14c2b70292c7cc83f7073d3",
+    "crates/ipc/src/lib.rs": "04d612b9256a8229932d76900b75671f6b66a23e242491077ed73212e16aeaec",
+    "crates/net/Cargo.toml": "c74312dcc7dc550825d7c247961e2fd44f7ca1dbbdfc7bb6c28e7351ef30637c",
+    "crates/net/examples/audit_transport.rs": "5c4e2986ccce3b2fccdb8c71df1d34d15d22292f857c5bc9574d673fa5033c5e",
+    "crates/net/examples/discovery.rs": "685ca4b9e1e4abf6aad00489c957eb1ab813b55609c2f417808455169f19f77b",
+    "crates/net/examples/guardrails.rs": "cd543cf6d051f8b43fa84931572ce5bca6ff1466cdc2f02108743c866e72a742",
+    "crates/net/examples/lifecycle.rs": "f143c2eb29f20fc1f0ed80b17a3b44a8fa6782293b8b88607245e8288c98b9dd",
+    "crates/net/examples/priority_peer.rs": "37f5a97dcf4a37bccc8f13acdc92f9e2bcb16794c410e09352d596fd0c7061df",
+    "crates/net/examples/tls_peer.rs": "44cff4d2e6f435af88a22264f3e7f337d7714efc6ea27f850cc4d0890b731968",
+    "crates/net/src/cli.rs": "b22cef41a524d556c81afb98e7b6d5d57557749ce9ca586145881995b82acb41",
+    "crates/net/src/connect_error.rs": "a3c944fefddc2b4a9e759298b5a4c9d5637503bf88fcbbf5dc0baf7e78929568",
+    "crates/net/src/discovery.rs": "bdbf309bc7f2b63ab72e03c19b20f75a1d397acdd452a288592739fd71fe0897",
+    "crates/net/src/identity.rs": "0b59ecb56739e6c2655d9e957a6c8fef75c87b38a0478c5ac1a21bdc06319ac6",
+    "crates/net/src/lib.rs": "fdd572210834494d152cb62a3d44ba422d8570ad451ce3b2a32e128b9f4b2d2e",
+    "crates/net/src/reactor.rs": "9b924bed6cca51627b92bff1a21b85b99ba12957f1d63661ecc5e9bb150c2fa3",
+    "crates/net/src/tls.rs": "b6c852d4d03ea27549e24eeba5d80ca65432dd6a90ea6f2cf1cf33dda1157abe",
+    "crates/net/src/trust.rs": "827860651eed7105e26f9c90e53600745dd339926c9928a3c217d78441f481db",
+    "crates/net/src/windows_permissions.rs": "2dbca5dc28eb51dc87c89bb2b0a8b7f009037094db45c7085db635ae598090c4",
+    "crates/platform/Cargo.toml": "88ee6e62955081ae5017549067c0055bd3ebd7a7e52b739b4b59455cebcc02ce",
+    "crates/platform/examples/virtual_demo.rs": "a4ab3a3995e1799f233375861ad4512085b8318427d0721a4793475eb32028e0",
+    "crates/platform/src/click.rs": "08801f4736e89a7512bf33a017fa92c66fc3dcb8221e6703ffbbf8321b8feee7",
+    "crates/platform/src/lib.rs": "77cf31c3b30f62eddbe89051702a95d7b529ffaef4eafea5214916b54b5652b5",
+    "crates/platform/src/script.rs": "bbe2991d5f2152f7bb6f3314bec2601b1e58a1318b14ba753f72f3043e5d3c01",
+    "crates/platform/src/virtual_backend.rs": "ae8c8ca58f828b6b106d09079e5b960bb9e4b035567917b5e0da682663d97a18",
+    "crates/platform-linux/Cargo.toml": "d9f8772dc001e12d2fe9f1489d35918deeeeead9daab8131371ea91cf0b1a4ac",
+    "crates/platform-linux/examples/x11_probe.rs": "d61e6bf76b0d7802a0ad124110feb1991239a90b1008b0edad3bb62cdbc0e761",
+    "crates/platform-linux/src/clipboard.rs": "c30058611fc426f3f2b0bc5d4c9f53bf8ef48ea4cb3915098894c22277fdf88c",
+    "crates/platform-linux/src/image.rs": "085b0a326643393ce926234a249d2b9baeb21a62d77ceaab7d2468a0422d1eb8",
+    "crates/platform-linux/src/keymap.rs": "e30286da66b02322186f9c3cdc808a6a347691e0e7c458184517a1507604f42e",
+    "crates/platform-linux/src/lib.rs": "3c34c73f6ab833b843195e5c2a99bee7affc7d46bd7fe7fd3786be3cb033e441",
+    "crates/platform-linux/src/native.rs": "00588627b702216ab2a35ee288d83241cb8705456a101b7e904e8c47107d6579",
+    "crates/platform-linux/src/sink.rs": "0144d18b20dbd1fa55727ff59e4daa9f6e7a89c3f25a7ada027bfb260e791be3",
+    "crates/platform-linux/src/source.rs": "e1429aab6c7549219cdca6a844cd944061909e93ca5d32e6d009e23acd74b5f8",
+    "crates/platform-linux/src/unicode_keysyms.rs": "b632ddb45d402b9045b0d6003a71e1ea5a9448ddfea7780dfc3cb3028571d58f",
+    "crates/platform-macos/Cargo.toml": "7b2607a96c77a79f3e8f6ab482fc39249e74a0ea8a283e3b6db5cf0cffdb2280",
+    "crates/platform-macos/examples/focuslab_inject.rs": "d8ba4769e3c54bb904ab9c54eb4e3d0437f3d84c1d261b0429df59b33f4f60ad",
+    "crates/platform-macos/examples/mac_probe.rs": "93e5dbde8d0a2d7f6c4f6a980baafa60a305b1e6df73272c44e5db0218f92c5c",
+    "crates/platform-macos/src/displays.rs": "1d6860ac0ceb6ebf9234eb7e7bbabeb789584a33b7b85134515d4111ce34ae5e",
+    "crates/platform-macos/src/ffi.rs": "6b106e9e9d2e0b1453f2d846d991182914ce6a4a87acb0e400637b65aeeb6ef8",
+    "crates/platform-macos/src/inject.rs": "2604c4e71c7f7713ef71a0e6c5d558422f97f5eea81307861dcfce144c9bddbc",
+    "crates/platform-macos/src/keymap.rs": "0dc9a9583802b154f87b4dd68a41c87a4b6902024218b2accee47d8d917fe314",
+    "crates/platform-macos/src/lib.rs": "aafa994a8696824968671f1cda6a2f06933bdc2f9e472606d783ae86d8b0801e",
+    "crates/platform-macos/src/pasteboard.rs": "6b53e3063f6a4a015a4761dcc9a9399d5a47d73b87c92947d036cbf7e2f62d39",
+    "crates/platform-macos/src/permissions.rs": "ee6111c35d5985a55b8187c6f573bff7bb372397e32ed3dcbaf87d48e15d3914",
+    "crates/platform-macos/src/screens.rs": "384cc286565139bc0605cc6493222c7c52621f7ace2701a0471242160deb55b0",
+    "crates/platform-macos/src/tap.rs": "fd28e13ff29fa5fe453ad8b4cba3b85c80e013c9971021a088546d491e96a571",
+    "crates/platform-macos/src/types.rs": "71cbea2c52890d808d32412d9b33e095033dfe570e20387d38d4a2df3228284a",
+    "crates/platform-windows/Cargo.toml": "080605b569ed545650abd65a3cc551dbb5c3231f8eb3d8589b5598fc3f6cf460",
+    "crates/platform-windows/src/clipboard.rs": "451bc0555457ce95f7f5d2ba7ae657834925cd708b186e14678686b12ce8dc80",
+    "crates/platform-windows/src/keymap.rs": "a9d531bbe6ed9916a389de4b384aa2321f7f04848c73e378fc61da7aca400aeb",
+    "crates/platform-windows/src/lib.rs": "1ce695c6f22dbd55d4cdded98f147a32812ffae7b1eb7f2ff8ad7f319daaeedb",
+    "crates/platform-windows/src/native.rs": "3aeddda52041991234e601dab0afe7c388b1aa9e858b308004d24bda84810cc1",
+    "crates/platform-windows/src/sink.rs": "1ca075dd2e12e9d383ae29254138573a9ea6bfa190bc94ce233b9f1043f5d7fb",
+    "crates/platform-windows/src/source.rs": "c5726f8d3ba7903903bdfe671252a622ceb3784356583784dd23a20ac76975ab",
+    "crates/protocol/Cargo.toml": "c91717334a50d2e68057c5e306b685e95a1506fc4d0bd9b08f443b62d6897445",
+    "crates/protocol/examples/wire_probe.rs": "f59443a83fef0d835259b5d8a9fd34b22f027d66cbb1049f19c7b9edb5abec68",
+    "crates/protocol/src/clipboard.rs": "4fb846e2fe3812f4136e77b64a509f120f5ba25675a8fcca9392269c672583da",
+    "crates/protocol/src/codec.rs": "9641df927d3391e26279bd138307192b6e04feb785e8f459b27cb57a748b7c0e",
+    "crates/protocol/src/keys.rs": "bdcde8427a2534a8e2e96987da21ca792bdf38d60415d5d32b52f949293fbaff",
+    "crates/protocol/src/lib.rs": "82cccc4173141f0a597431e27179d088007c9d0ada50dc6d0f5716dabe49c103",
+    "crates/session/Cargo.toml": "a1c5e86b885cb1cf079c19600bf180fb04fb3847173b9d5324426047865fae18",
+    "crates/session/src/client.rs": "9905587a134a14c3ac0da9c1efab8c78f2ed0702e53905f9a9ad399f425a0084",
+    "crates/session/src/clipboard.rs": "b65912bcdc8e852d2b03e4955966bf127f3b6f02ad52ae790ff1ba469c37ef18",
+    "crates/session/src/common.rs": "cb5a10b02ea47486643f82c8c8484f952ce2234b27dbe805ef20a49c1cb3f46d",
+    "crates/session/src/hotkey.rs": "709cf340dec0b839bc8a97d3b11fd796a45add44107a35e93db63622991b2c7a",
+    "crates/session/src/layout.rs": "8408d750040ebe5b7357859219ce416888e77fb3ed005894b32f36ad69f94fab",
+    "crates/session/src/lib.rs": "a1acd5fa946c692f758a9eea75f19b73e81eb5c0cabc4b5835ffeb14c0a561a5",
+    "crates/session/src/server.rs": "c7a7f2597c174de865734e2e09c1db7f5e7ff3b0efecfb711cafe507e18357c3",
+    "rust-toolchain.toml": "f715f440167e20fd8ea9afa0498c3d1ab80174cfcb8cbc895f106a34d907a1e1",
+    "tools/e2e/Cargo.toml": "78bb98248bc0c14ead549803d241fd912b95b068b894b2040d1d36d6ac55b83c",
+    "tools/e2e/src/guardian.rs": "8b48c734c7f4f111ff0e9c17461d8a02d2d0e9e6c51317b9d19279cf61c8e00a",
+    "tools/e2e/src/main.rs": "a38b74212fc8ccda9388da68f5a3d4da558ff872df56d0ab3251b2f7c0bd18f3",
+    "tools/e2e/src/model.rs": "f7b7004ad68da192e3e094ed49a554d9d4741fc89ab068cc34fe5e4c661236c4",
+    "tools/e2e/src/process.rs": "10ee9511a9ef68a81f4a4ac9c199a186e62b995d479d2e2e61004e32d89f9f0b",
+    "tools/e2e/src/runner.rs": "cd42127261573a5a6ce0b9d8a31a9d1013aa34b1486db97af0decb871970d564",
+    "tools/e2e/src/steps.rs": "de99717892fa32348af6d24bdb44b84097feb3b4e14c4316ec18219369621184",
+    "tools/e2e/src/util.rs": "c2d962c283abae42984bd310fbab30d286a0664d6f9752aeba3f47cb81b16fc6",
+    "tools/e2e/src/wire.rs": "60593d4a4461ce5f81ddbe94c4f19976cde2c14e46a6d48f0a431a5d5a7ef22c"
+  },
+  "validation": {
+    "locked_release_build": true,
+    "strict_workspace_all_targets_release_clippy": true,
+    "workspace_fmt_check": true
+  },
+  "commands": [
+    "cargo build --locked --release -p openergy-daemon -p openergy-e2e",
+    "cargo clippy --locked --release --workspace --all-targets -- -D warnings",
+    "cargo fmt --all -- --check",
+    "python3 crates/daemon/scripts/verify_ipc_deadlines.py --openergy <binary> --report <report>",
+    "python3 crates/daemon/scripts/verify_daemon_audit.py --openergy target/release/openergy --port-range 26060-26079 --report <report>",
+    "target/release/openergy-e2e run --openergy target/release/openergy --no-docker --port-range 26100-26130 --lab-port-range 26200-26230 --report <report>"
+  ],
+  "owner_choices": {
+    "github_private_reporting_setup": "skipped by owner; no verified private channel claimed",
+    "native_input_clipboard_acceptance": "remains a release gate",
+    "repository_visibility": "unchanged: private"
+  },
+  "limits": [
+    "Real Unix IPC and virtual input/clipboard only",
+    "No Windows pipe runtime or native desktop acceptance",
+    "Docker interoperability excluded from this follow-up",
+    "No security-review clearance, publication, installation or signing claim"
+  ],
+  "virtual_suite": {
+    "passed": 88,
+    "failed": 0,
+    "no_docker": true,
+    "excluded_count": 30,
+    "excluded": [
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I1-barrier-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I1-barrier-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I1-deskflow-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I1-deskflow-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-barrier-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-barrier-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-barrier-wrong-pin"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-deskflow-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-deskflow-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-deskflow-wrong-pin"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I3-barrier-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I3-barrier-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I3-deskflow-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I3-deskflow-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I4-barrier-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I4-barrier-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I4-deskflow-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I4-deskflow-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I5-barrier-export"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I5-deskflow-export"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L1-barrier-hello"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L1-deskflow-hello"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L2-barrier-clipboard"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L2-deskflow-clipboard"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L3-barrier-pair"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L3-deskflow-pair"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L4-barrier-raw-client"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L4-deskflow-raw-client"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "P03-barrier-held-key-repeat"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "P08-deskflow-held-key-repeat"
+      }
+    ],
+    "port_range": [
+      26100,
+      26130
+    ],
+    "lab_port_range": [
+      26200,
+      26230
+    ],
+    "scenarios": [
+      {
+        "scenario": "A1-modifier-and-receiver-wheel",
+        "outcome": "PASS",
+        "elapsed_ms": 684,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "A10-unsupported-hello-close",
+        "outcome": "PASS",
+        "elapsed_ms": 377,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "A11-input-backpressure-release",
+        "outcome": "PASS",
+        "elapsed_ms": 1001,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "A12-restart-connected-roles",
+        "outcome": "PASS",
+        "elapsed_ms": 901,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "A2-client-direction-version-heartbeat-sequence",
+        "outcome": "PASS",
+        "elapsed_ms": 3703,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "A3-heartbeat-close-flush",
+        "outcome": "PASS",
+        "elapsed_ms": 1797,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "A4-config-live-rollback",
+        "outcome": "PASS",
+        "elapsed_ms": 585,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "A5-unavailable-clipboard-readback",
+        "outcome": "PASS",
+        "elapsed_ms": 1863,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "A6-clipboard-backpressure",
+        "outcome": "PASS",
+        "elapsed_ms": 512,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "A7-trust-lock-crash",
+        "outcome": "PASS",
+        "elapsed_ms": 447,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "A8-config-save-rollback",
+        "outcome": "PASS",
+        "elapsed_ms": 594,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "A9-tls-trusted-status",
+        "outcome": "PASS",
+        "elapsed_ms": 1091,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "C1-import-client-port",
+        "outcome": "PASS",
+        "elapsed_ms": 1055,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "C2-import-final-identity",
+        "outcome": "PASS",
+        "elapsed_ms": 655,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "C3-clipboard-supported-cap",
+        "outcome": "PASS",
+        "elapsed_ms": 669,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "D2-restart-disconnected-workers",
+        "outcome": "PASS",
+        "elapsed_ms": 1013,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "E1-repeated-ledger-tail",
+        "outcome": "PASS",
+        "elapsed_ms": 615,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "N2-queued-release-reentry",
+        "outcome": "PASS",
+        "elapsed_ms": 295,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "P01-impossible-hello-prefixes",
+        "outcome": "PASS",
+        "elapsed_ms": 304,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "P02-short-established-frame",
+        "outcome": "PASS",
+        "elapsed_ms": 304,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "P04-legacy-repeat-dialects",
+        "outcome": "PASS",
+        "elapsed_ms": 308,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "P05-modern-repeat-truncated",
+        "outcome": "PASS",
+        "elapsed_ms": 298,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "P06-legacy-repeat-truncated",
+        "outcome": "PASS",
+        "elapsed_ms": 297,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "P07-hostile-field-bounds",
+        "outcome": "PASS",
+        "elapsed_ms": 309,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "P09-clipboard-wire-containers",
+        "outcome": "PASS",
+        "elapsed_ms": 307,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "Q1-primary-screen-name",
+        "outcome": "PASS",
+        "elapsed_ms": 290,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "Q10-clipboard-policy-cancels-chunks",
+        "outcome": "PASS",
+        "elapsed_ms": 529,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "Q11-layout-delay-unmapped-edge",
+        "outcome": "PASS",
+        "elapsed_ms": 1513,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "Q12-client-cannot-disable-heartbeat",
+        "outcome": "PASS",
+        "elapsed_ms": 2046,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "Q13-clipboard-readback-recovery",
+        "outcome": "PASS",
+        "elapsed_ms": 1786,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "Q14-client-duplicate-clipboard-formats",
+        "outcome": "PASS",
+        "elapsed_ms": 516,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "Q15-server-duplicate-clipboard-formats",
+        "outcome": "PASS",
+        "elapsed_ms": 512,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "Q16-lock-hotkey-grammar",
+        "outcome": "PASS",
+        "elapsed_ms": 921,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "Q17-preentry-modifier-mask",
+        "outcome": "PASS",
+        "elapsed_ms": 703,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "Q18-empty-clipboard-clear",
+        "outcome": "PASS",
+        "elapsed_ms": 1386,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "Q19-unavailable-is-not-clear",
+        "outcome": "PASS",
+        "elapsed_ms": 1712,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "Q2-client-setup-clipboard",
+        "outcome": "PASS",
+        "elapsed_ms": 416,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "Q20-client-unsupported-only-clipboard",
+        "outcome": "PASS",
+        "elapsed_ms": 457,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "Q20-server-unsupported-only-clipboard",
+        "outcome": "PASS",
+        "elapsed_ms": 449,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "Q21-client-unsupported-only-local-clipboard",
+        "outcome": "PASS",
+        "elapsed_ms": 1630,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "Q21-server-unsupported-only-local-clipboard",
+        "outcome": "PASS",
+        "elapsed_ms": 1562,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "Q3-server-setup-clipboard",
+        "outcome": "PASS",
+        "elapsed_ms": 399,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "Q4-two-held-shift-keys",
+        "outcome": "PASS",
+        "elapsed_ms": 591,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "Q5-live-layout-peer-geometry",
+        "outcome": "PASS",
+        "elapsed_ms": 605,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "Q6-disabled-clipboard-enter",
+        "outcome": "PASS",
+        "elapsed_ms": 1204,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "Q7-receive-disabled-ownership",
+        "outcome": "PASS",
+        "elapsed_ms": 1731,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "Q8-zero-button-key-release",
+        "outcome": "PASS",
+        "elapsed_ms": 302,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "Q9-reconnect-clipboard-sequence",
+        "outcome": "PASS",
+        "elapsed_ms": 888,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "R1-control-files",
+        "outcome": "PASS",
+        "elapsed_ms": 2079,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": [
+          {
+            "cpu_percent": 0.0,
+            "kind": "resources",
+            "rss_peak_bytes": 9175040,
+            "window_ms": 282
+          }
+        ]
+      },
+      {
+        "scenario": "R2-lifecycle",
+        "outcome": "PASS",
+        "elapsed_ms": 1084,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "R5-client-config-retains-clipboard",
+        "outcome": "PASS",
+        "elapsed_ms": 335,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "R5-dead-corner-negative-origin",
+        "outcome": "PASS",
+        "elapsed_ms": 705,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "R5-dead-corner-positive-origin",
+        "outcome": "PASS",
+        "elapsed_ms": 692,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "R5-double-tap-stationary-timeout",
+        "outcome": "PASS",
+        "elapsed_ms": 1318,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "R5-incoming-clipboard-cancellation",
+        "outcome": "PASS",
+        "elapsed_ms": 1381,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": [
+          {
+            "cpu_percent": 0.0,
+            "kind": "resources",
+            "rss_peak_bytes": 9256960,
+            "window_ms": 1046
+          }
+        ]
+      },
+      {
+        "scenario": "R5-server-live-alias-merge",
+        "outcome": "PASS",
+        "elapsed_ms": 295,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "R5-server-live-alias-rename",
+        "outcome": "PASS",
+        "elapsed_ms": 966,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S0-smoke",
+        "outcome": "PASS",
+        "elapsed_ms": 384,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S1-connect",
+        "outcome": "PASS",
+        "elapsed_ms": 1677,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S10-clipboard-cap",
+        "outcome": "PASS",
+        "elapsed_ms": 1911,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S11-heartbeat",
+        "outcome": "PASS",
+        "elapsed_ms": 2366,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S12-display-change",
+        "outcome": "PASS",
+        "elapsed_ms": 586,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S13-flood",
+        "outcome": "PASS",
+        "elapsed_ms": 7591,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S13-garbage",
+        "outcome": "PASS",
+        "elapsed_ms": 613,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S13-oversized",
+        "outcome": "PASS",
+        "elapsed_ms": 599,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S13-truncated-hello",
+        "outcome": "PASS",
+        "elapsed_ms": 300,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S13-truncated",
+        "outcome": "PASS",
+        "elapsed_ms": 598,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S13-unknown",
+        "outcome": "PASS",
+        "elapsed_ms": 1084,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S14-import-roundtrip",
+        "outcome": "PASS",
+        "elapsed_ms": 688,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S15-resources-latency",
+        "outcome": "PASS",
+        "elapsed_ms": 121570,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": [
+          {
+            "cpu_percent": 0.0499584071971971,
+            "kind": "resources",
+            "rss_peak_bytes": 9355264,
+            "window_ms": 60049
+          },
+          {
+            "cpu_percent": 0.016651424542378522,
+            "kind": "resources",
+            "rss_peak_bytes": 9273344,
+            "window_ms": 60054
+          },
+          {
+            "kind": "capture_to_recorded_upper_bound",
+            "max_ms": 2.737625,
+            "p50_ms": 0.711417,
+            "p95_ms": 0.786666,
+            "p99_ms": 0.85975,
+            "samples": 1000
+          }
+        ]
+      },
+      {
+        "scenario": "S16-permissions",
+        "outcome": "PASS",
+        "elapsed_ms": 605,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S17-healthy",
+        "outcome": "PASS",
+        "elapsed_ms": 905,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S17-same-fingerprint",
+        "outcome": "PASS",
+        "elapsed_ms": 1109,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S17-stale",
+        "outcome": "PASS",
+        "elapsed_ms": 1547,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S18-click-numbering",
+        "outcome": "PASS",
+        "elapsed_ms": 599,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S19-config-patch",
+        "outcome": "PASS",
+        "elapsed_ms": 695,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S2-edge-mapping",
+        "outcome": "PASS",
+        "elapsed_ms": 611,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S2-wire-order",
+        "outcome": "PASS",
+        "elapsed_ms": 302,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S20-parent-exit",
+        "outcome": "PASS",
+        "elapsed_ms": 657,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S20-parent-off",
+        "outcome": "PASS",
+        "elapsed_ms": 389,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S21-fingerprint-import",
+        "outcome": "PASS",
+        "elapsed_ms": 1198,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S3-input-order",
+        "outcome": "PASS",
+        "elapsed_ms": 603,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S4-disconnect-release",
+        "outcome": "PASS",
+        "elapsed_ms": 854,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S5-disconnect-release",
+        "outcome": "PASS",
+        "elapsed_ms": 853,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S6-trust-approval",
+        "outcome": "PASS",
+        "elapsed_ms": 1580,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S7-wrong-pin",
+        "outcome": "PASS",
+        "elapsed_ms": 702,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S8-text-clipboard",
+        "outcome": "PASS",
+        "elapsed_ms": 1183,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      },
+      {
+        "scenario": "S9-large-dib",
+        "outcome": "PASS",
+        "elapsed_ms": 2031,
+        "cleanup_failures": [],
+        "failure": null,
+        "measurements": []
+      }
+    ]
+  },
+  "raw_report_sha256": {
+    "baseline.json": "4b2b989daf08afabd65999d8064eafc6095a7753f6051651bd3f8e98168de6e0",
+    "baseline-control.json": "a03595dbe6113b7c5736463e504eda2d22d9295f15e1db4f81c7e39ce4f48b43",
+    "fixed.json": "945f832658464793730efc963991c68a8efec6c5520a4e0d6b1d6728dfa7ca6a",
+    "daemon-audit.json": "7079602e6c43626c3bde662a4cd1124caeb9d6ef86b485570af9dd570bba6c42",
+    "virtual-suite.json": "a6a52c6cfeab180f16bbc8295c12d94602f75db91ac424ee3191f8f467f915dd"
+  }
+}

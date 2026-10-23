@@ -63,6 +63,11 @@ as a release gate**. Run them only on a separate test account or machine with
 recovery input available. Preserve the current Mac and Windows sharing
 connection. Virtual checks do not close this gate.
 
+The maintainer later chose to skip GitHub private vulnerability reporting setup
+on the same date and resume hardening. Reporting setup is deferred, not a
+verified service or a prerequisite for this work. See [SECURITY.md](../../SECURITY.md)
+for the current reporting instructions.
+
 Maintainers must attach results for the exact commit and artifacts, using
 [docs/releasing.md](../releasing.md). At minimum, distinguish:
 
@@ -78,10 +83,6 @@ Maintainers must attach results for the exact commit and artifacts, using
    and real X11 desktop acceptance before claiming broad Linux support.
 6. Third-party peer versions and roles actually retested, with TLS/trust settings
    and negative pin/unknown-peer cases recorded.
-7. GitHub private vulnerability reporting enabled and verified when the
-   repository is made public, before public launch. The maintainer selected
-   this route on 2026-10-22. The repository is still private; activation and
-   verification remain open. This choice does not authorize a visibility change.
 
 Keep any missing checks explicit in release notes. A draft artifact, an ad-hoc
 signature, a startup result, or a green CI job cannot substitute for the missing
