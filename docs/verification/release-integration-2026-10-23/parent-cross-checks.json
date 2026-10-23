@@ -124,5 +124,21 @@
     "audit_helper_sha256": "6101ab546b95bcb0fe7f78768e729f0bbea2c5b046097a2e393a2c8fe8a1e975",
     "initial_audit_helper_sha256": "a87904640bcb8b92dc6a64edbe6b4799d0d5dbb8601e155e66cc1b4e5df056e6",
     "initial_audit_limit": "Initial helper assumed a dependency basename had one manifest entry. The frozen library and target copies have identical bytes/hashes. Corrected selection uses the exact recorded target path. No runtime case or compiler was repeated."
+  },
+  "windows_observed_startup_e6": {
+    "evidence_commit": "1d46512fb816d43e9fa4691c5bd7ae6a15d377cb",
+    "integrated_as": "6edeb1fe36d2ac01b62f33a4fa7ba241096e3964",
+    "runtime_source": "e6a9125be2fc59fbe92fef6ea351b222298bfc52",
+    "parent_checks": {
+      "runtime_source_matches_reviewed_git_tree": true,
+      "integrated_evidence_matches_reviewed_git_tree": true,
+      "probe_sha256": "eb7460e8e98527f9e2d1ed9e8081cb46c996d7324045da98043ff599db14b100",
+      "source_manifest_sha256": "e1e41e648872e05f1f0a82d86f2bef7f9872db48a174b89f4244881a4dc8e3cb",
+      "copied_artifact_manifest_sha256": "4900d0b6aab78f238f2003eb401e041a68c4d8ba5cb6c58bc97399f168393c84"
+    },
+    "independent_saved_evidence_review": "windows-observed-startup-review-r10.json",
+    "independent_execution": false,
+    "startup_acceptance": false,
+    "cross_run_witness_pooling": false
   }
 }

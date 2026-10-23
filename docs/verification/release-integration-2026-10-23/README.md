@@ -67,9 +67,15 @@ passes normal explicit shutdown and Drop on the frozen `e4f48ba` library. The
 identified mDNS worker and all owned UDP endpoints disappear while each helper
 stays alive and answers a later ping. The parent matched the saved snapshots,
 96 private evidence-file hashes, eight exact helper/workflow copies and frozen
-library/source records. This closes only those two normal cleanup cases. A new
-private Windows task is checking the exact revised `e6a9125` startup verifier;
-the original startup 11/14 failure stays preserved.
+library/source records. This closes only those two normal cleanup cases.
+The [revised native Windows run](windows-observed-startup.md) on `e6a9125`
+records strict startup failures of 105/106 and 113/115 because required failed-send
+witnesses are missing. Retained discovery passes 19/19; missing-observer controls
+fail as required. The [independent R10 audit](windows-observed-startup-review-r10.md)
+supports those saved results and finds no concrete P1/P2 source or evidence
+defect. It does not supply independent runtime execution. Both startup gates
+stay unverified, and witnesses cannot be pooled across runs. The original
+11/14 failure stays preserved.
 
 The [bounded virtual idle observation](virtual-idle-resources.md) records two
 30-second phases and the actual stop delay on the checkpoint binary. It does
@@ -78,8 +84,9 @@ not supply native performance or long-term memory acceptance.
 The [Windows DNS contract review](windows-dns-contract-review-r5.md) found two
 P2 verification defects: a short OS control blocks the actual API cases, and
 the refusal verdict does not enforce the caller deadline independently of the
-observation window. No product P1/P2 was established. A verifier repair must keep
-the original failures and add real deadline coverage before native acceptance.
+observation window. No product P1/P2 was established. An isolated verifier repair
+is in progress. It must keep the original failures and add real deadline
+coverage before native acceptance.
 
 The later [combined-binary idle observation](combined-idle-resources.md) measures
 the exact new release artifact. Its role-off idle RSS is 8.265625 MiB and reaches

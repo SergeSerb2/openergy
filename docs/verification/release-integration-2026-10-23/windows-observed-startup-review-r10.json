@@ -1,0 +1,59 @@
+{
+  "taskId": "node:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-observed-startup-evidence-review-r10-20261023",
+  "status": "completed",
+  "providerInstanceId": "codex",
+  "model": "gpt-6.1-sol",
+  "options": [
+    {
+      "id": "reasoningEffort",
+      "value": "xhigh"
+    },
+    {
+      "id": "serviceTier",
+      "value": "default"
+    }
+  ],
+  "reviewed_evidence": "1d46512fb816d43e9fa4691c5bd7ae6a15d377cb",
+  "reviewed_source": "e6a9125be2fc59fbe92fef6ea351b222298bfc52",
+  "scope": "Independent audit of immutable Git blobs and saved native runtime records; no independent runtime execution.",
+  "product_or_evidence_findings_p1_p2": 0,
+  "windows_startup_accepted": false,
+  "cross_run_witness_pooling_allowed": false,
+  "startup_runs": [
+    {
+      "run": 1,
+      "exit": 1,
+      "passed": 105,
+      "total": 106,
+      "missing_witnesses": [
+        "limited-over-limited"
+      ]
+    },
+    {
+      "run": 2,
+      "exit": 1,
+      "passed": 113,
+      "total": 115,
+      "missing_witnesses": [
+        "standard-over-limited",
+        "limited-over-standard"
+      ]
+    }
+  ],
+  "retained": {
+    "exit": 0,
+    "passed": 19,
+    "total": 19,
+    "burst": 800,
+    "selected_peak": 64
+  },
+  "source_files_checked": 863,
+  "source_files_byte_exact": 862,
+  "declared_cmd_line_ending_conversions": 1,
+  "indexed_private_hashes_checked": 188,
+  "raw_bundle_contents_checked": 121,
+  "copied_outputs_checked": 17,
+  "workflow_copies_checked": 6,
+  "executable_sha256": "3de61efe6aa61f88b89723a015961cfdd8f15bf88078789905d9321fb77e21eb",
+  "summary": "**R10: No concrete P1/P2 found in this source and saved-evidence audit. Both Windows startup gates remain FAIL/unverified.** No product defect follows from the missing race observations.\n\nReviewed Git blobs:\n\n- Evidence: `1d46512fb816d43e9fa4691c5bd7ae6a15d377cb`\n- Exact source: `e6a9125be2fc59fbe92fef6ea351b222298bfc52`\n\nEvidence paths below are relative to `docs/verification/release-integration-2026-10-23/windows-observed-startup/` at the evidence commit.\n\n- **Startup 1:** exit 1, **105/106**, three of four replacement combinations witnessed. Limited-over-limited exhausted eight attempts with **8 Accepted / 0 Disconnected**. The sole failure is at `outputs/startup-1.stdout:157`.\n- **Startup 2:** exit 1, **113/115**, two of four combinations witnessed. Standard-over-limited and limited-over-standard each exhausted eight attempts with **8 Accepted / 0 Disconnected**. Failures are at `outputs/startup-2.stdout:201` and `:307`.\n- **Retained:** exit 0, **19/19**. The saved run records burst 800, peak 64, 12 snapshots, 196 full polls, zero empty polls, and passing update, goodbye, and coalescing checks.\n- **Missing startup observer:** exit 1 before checks, with zero matching initial-send observations. Normal cleanup is recorded.\n- **Missing cleanup observer:** exit 1, **95/124**. Its failures comprise 24 accepted-drop cleanup checks, two mandatory standard-Drop checks, and three separate natural coverage failures. The held-standard setup passed; its removal observation failed with `matched=0 valid=0 states=1`.\n\nThe absent observations are the actual Disconnected replacements—and their consequent preservation, fresh-data, removal, repeat, and successor checks—for those specific missing cases in each run. Cross-run witnesses cannot close either gate.\n\nAll positive-run behavior checks passed. I reconciled every CHECK and serialized trace record. Accepted traces remain initial-send results before commit; the source uses later public metrics barriers and resolution checks. The witnessed old-standard failures have post-barrier drains followed by fresh repeats: two pairs in startup 1 and one in startup 2. Both positive runs also show exactly one completed normal Disconnected removal for the mandatory active standard Drop, followed by its public barrier before any explicit stop.\n\nThe binding and copy checks agree:\n\n- All **863** archived source files match the exact Git tree: **862** byte-exact, plus the declared CMD CRLF conversion, 502→511 bytes, clean blob `9cd6f37ce26dde4edcad6f808492171f8daf3462`.\n- All **188** indexed private-file hashes, **121** raw-bundle file contents, **17** copied outputs, and **six** workflow copies reconcile. Declared path and line-ending transforms match.\n- Freeze, run, library, and postflight records consistently bind all five invocations to executable SHA-256 `3de61efe6aa61f88b89723a015961cfdd8f15bf88078789905d9321fb77e21eb`.\n- Saved build records show pinned MSVC Rust 1.99.1, session 0, BelowNormal, jobs 2, offline/locked release and strict Clippy, both exit 0.\n- Workflow and saved results support child-environment-only observer disables. Recorded invariance covers 2,693 prior-fixture files, 6,300 registry files, 166 compiler files, ACLs, defaults, and live sharing identity. The inspection SyntaxError and wrapper exit 1 remain preserved.\n\nThis audit did **not** independently execute the native binary. Ambiguous/Full/capacity rejection is source-only here. Shutdown acknowledgements and post-exit inventories do not prove worker disappearance while a helper remains alive on e6; old-source OS proof was not transferred. Whole-cache/expiry/timer/query/byte, slow-DNS, native input/clipboard, migration, security/provenance/privilege, and distribution gates remain open.\n\nCheckout stayed clean at `52481804256d7492a6b53a5cba274173887143f0`. No edits or candidate execution occurred."
+}
