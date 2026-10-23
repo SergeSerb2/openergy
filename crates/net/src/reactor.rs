@@ -844,7 +844,7 @@ impl NetDriver {
             return Err(failed("held_timeout must be positive and <=300 seconds"));
         }
         let identity = if config.tls_enabled || config.mdns.as_ref().is_some_and(|m| m.advertise.is_some()) {
-            Some(Identity::load_or_create_in(&config.tls_dir, &config.identity_name)?)
+            Some(Identity::try_load_or_create_in(&config.tls_dir, &config.identity_name)?)
         } else {
             None
         };

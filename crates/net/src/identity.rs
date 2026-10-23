@@ -42,13 +42,27 @@ impl Identity {
     }
     /// Uses exactly `tls_dir`, as required by NetConfig.
     pub fn load_or_create_in(tls_dir: &Path, name: &str) -> Result<Self, NetError> {
+        Self::with_wait(tls_dir, name, true)
+    }
+    /// Nonblocking reader/creator for IO owners. A busy creator lock is an
+    /// error, never permission to read a potentially incomplete key/cert pair.
+    pub fn try_load_or_create_in(tls_dir: &Path, name: &str) -> Result<Self, NetError> {
+        Self::with_wait(tls_dir, name, false)
+    }
+    fn with_wait(tls_dir: &Path, name: &str, wait: bool) -> Result<Self, NetError> {
         let dir = tls_dir.to_owned();
         private_dir(&dir).map_err(failed)?;
         let cert_path = dir.join("cert.pem");
         let key_path = dir.join("key.pem");
         // Readers must share the creator lock: key.pem is renamed before cert.pem.
         // Observing that in-progress pair must not report a corrupt identity.
-        let _lock = DirectoryLock::acquire(&dir.join(".identity-lock")).map_err(failed)?;
+        let lock_path = dir.join(".identity-lock");
+        let _lock = if wait {
+            DirectoryLock::acquire(&lock_path)
+        } else {
+            DirectoryLock::try_acquire(&lock_path)
+        }
+        .map_err(failed)?;
         if !entry_exists(&cert_path).map_err(failed)? && !entry_exists(&key_path).map_err(failed)? {
             let key = rcgen::KeyPair::generate_for(&rcgen::PKCS_ECDSA_P256_SHA256).map_err(failed)?;
             let mut params = rcgen::CertificateParams::default();

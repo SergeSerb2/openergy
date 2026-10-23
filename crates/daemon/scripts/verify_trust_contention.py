@@ -149,6 +149,7 @@ def main():
                 transfer(server, client, 120, call(client, "virtual.recorded")["stats"]["last_sequence"])
             outcome["retry_succeeded"] = True
         except Exception as exc:
+            outcome["passed"] = False
             outcome["error_detail"] = f"{type(exc).__name__}: {exc}"
         finally:
             client.stop()
@@ -206,6 +207,7 @@ def main():
         offline.update({"passed": True, "initial_approvals": 24, "mixed_updates": 24,
                         "identity_creators": 24, "identical_identity": True, "pins_per_role": 24})
     except Exception as exc:
+        offline["passed"] = False
         offline["error_detail"] = f"{type(exc).__name__}: {exc}"
     results.append(offline)
     print(f'{"PASS" if offline["passed"] else "FAIL"} offline_concurrency: {json.dumps(offline)}', flush=True)
