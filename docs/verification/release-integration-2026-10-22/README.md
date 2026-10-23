@@ -12,6 +12,10 @@ or mocks were added. Native backend probes ran only inside isolated Linux Xvfb.
 
 ## Final hardening follow-up
 
+The [trust-refresh cohort follow-up](trust-refresh.md) records repeated reads at
+the connection cap, shared fresh snapshots, and real approval, role, read-failure
+and bypass controls. It distinguishes workload CPU from idle measurements.
+
 The [trust-list scaling follow-up](trust-scaling.md) records slow legal large-list
 operations, preserved first-seen order and file policies, lower-allocation
 fingerprint formatting, and the measured speed, memory and executable-size tradeoff.

@@ -63,6 +63,9 @@ computers and users that should have that access.
 - Certificate and private-key PEM files are limited to 1 MiB (1,048,576 bytes)
   each, including ignored padding. Oversized files are refused without replacing
   the identity. Both generated files are checked before either is saved.
+- Each trust refresh reloads its directory data. A read error closes peers that
+  need stored pins, without falling back to the last good list. Explicit pins
+  and disabled client-pin requirements keep their existing rules.
 - Offline `trust approve` stores a pin in **both** server and client lists.
   Live IPC approval knows the pending connection's role. Use the app or
   `ctl trust.approve` when you need approval for that role only.
