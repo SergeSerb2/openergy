@@ -66,7 +66,11 @@ paths. The new regression uses the off role, virtual backend, discovery disabled
 and production-port opt-in denied. No installed process, live input connection,
 native clipboard, permission setting, service, task or login item was changed.
 The shared client handler also serves Windows pipes, but this run does not
-establish Windows pipe runtime acceptance. Native acceptance remains a release
+establish Windows pipe runtime acceptance. The later
+[Windows pipe follow-up](windows-ipc-deadlines.md) now verifies the same 19
+cases through real named pipes, including absolute drips and idle reuse.
+That is separate evidence and does not change this Unix run's scope.
+Native acceptance remains a release
 gate at the maintainer's request.
 
 On 2026-10-22, the maintainer chose to skip GitHub private vulnerability reporting

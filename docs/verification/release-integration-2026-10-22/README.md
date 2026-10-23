@@ -12,6 +12,10 @@ or mocks were added. Native backend probes ran only inside isolated Linux Xvfb.
 
 ## Final hardening follow-up
 
+The [Windows pipe deadline follow-up](windows-ipc-deadlines.md) verifies all
+19 request/idle/refusal/shutdown checks against real Windows named pipes. The
+retained pre-deadline control fails exactly the six timeout/recovery cases.
+
 The [current Windows transport follow-up](windows-transport-current.md) records
 a fresh pinned native MSVC build and real pipe, ACL, TCP/TLS and virtual
 clipboard/bounds checks. It preserves the failed observation-window probe,
