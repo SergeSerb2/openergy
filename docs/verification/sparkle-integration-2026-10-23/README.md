@@ -75,6 +75,8 @@ found no concrete P1/P2 on `6ab225e`. Packaging/hosting review R2 found a genera
 feed title case mismatch. `d647a01` corrects it before signing; the final archive
 flow and real candidate check passed with that generated feed. These are source
 reviews, not independent runtime reproduction. See [review records](reviews.md).
+The final R3 source/evidence audit found no concrete P1/P2 and closed the title
+finding. It reconciled all source, raw-record and artifact bindings.
 
 ## Evidence and limits
 
