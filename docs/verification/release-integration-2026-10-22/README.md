@@ -12,6 +12,10 @@ or mocks were added. Native backend probes ran only inside isolated Linux Xvfb.
 
 ## Final hardening follow-up
 
+The [receive-fairness follow-up](receive-fairness.md) records delayed control
+replies under a tiny-frame flood, the receive-event yield threshold, paired
+plaintext/mutual-TLS checks and the real 16-peer connection-churn matrix.
+
 The [retained trust-directory follow-up](trust-directory-reconfiguration.md)
 checks direct transport reconfiguration with real mutual-TLS child peers.
 It covers directory-specific revocation, admission, read failures and recovery,
