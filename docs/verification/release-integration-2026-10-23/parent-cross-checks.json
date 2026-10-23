@@ -163,5 +163,24 @@
       "The initial preservation assertion compared the current README, which later accepted documentation changed. Final verification compares every preserved file to the pinned scan source tree. Scanner records were not changed or rerun."
     ],
     "parent_helper_sha256": "728fc37cdfc32b784e50b71fb787b5e8fcc464c0b926aec2968f266fb468142b"
+  },
+  "windows_dns_8333_build_only": {
+    "evidence_commit": "85a50cb224ee19db0b73d1f858bd2ecb41b9f23f",
+    "source_candidate": "8333a48df046bdc7e5f0cfc687ed09f2b75b39f3",
+    "changed_evidence_paths": 32,
+    "parent_git_input_comparisons": 109,
+    "parent_public_copy_hash_checks": 25,
+    "runtime_cases": "NOT RUN; no exits or checks",
+    "native_build_and_clippy_saved_exit_codes": [
+      0,
+      0
+    ],
+    "binary_sha256": "3175491f353dfe1586b1c98e16415ea776030d9d4a90935f6b255595c7e05122",
+    "parent_independent_native_execution": false,
+    "private_originals_rehashed_by_parent": false,
+    "saved_postflight_nonempty_inventories": true,
+    "candidate_accepted": false,
+    "scope": "Parent checked immutable source/copy bindings and saved build-only/cleanup records, not a new native run.",
+    "integrated_commit": "5004872f600285f3de710c4b6ed7bd600176338b"
   }
 }

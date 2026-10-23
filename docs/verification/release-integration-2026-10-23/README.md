@@ -118,6 +118,14 @@ and sent a narrow summary correction request. Raw transcripts stay unchanged.
 Neither run closes the strict negative-control gate, and R9's source defects
 still prevent candidate acceptance.
 
+The [Windows DNS closeout](windows-dns-repaired-8333a48.md) records native
+release and strict Clippy success for unaccepted `8333a48`. Neither runtime
+command started: both are NOT RUN, with no exit or check count. No TLS identity
+or conflict socket was created. Saved cleanup and invariance audits pass.
+The parent matched 109 source-input bindings and 25 public-copy hashes.
+This build-only evidence grants no DNS runtime acceptance. The wrapper's
+session/priority were observed; cargo/rustc child priority was not sampled.
+
 The later [combined-binary idle observation](combined-idle-resources.md) measures
 the exact new release artifact. Its role-off idle RSS is 8.265625 MiB and reaches
 8.609375 MiB during 30 status CLI calls. Displayed CPU-counter deltas are 0.00 s
