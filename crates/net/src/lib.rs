@@ -29,13 +29,26 @@ impl Fingerprint {
         Self(out)
     }
     pub fn to_colon_hex(&self) -> String {
-        self.0.iter().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(":")
+        const HEX: &[u8; 16] = b"0123456789ABCDEF";
+        let mut text = String::with_capacity(95);
+        for (index, &byte) in self.0.iter().enumerate() {
+            if index != 0 {
+                text.push(':');
+            }
+            text.push(HEX[(byte >> 4) as usize] as char);
+            text.push(HEX[(byte & 15) as usize] as char);
+        }
+        text
     }
     pub fn to_synergy_line(&self) -> String {
-        format!(
-            "v2:sha256:{}",
-            self.0.iter().map(|b| format!("{b:02x}")).collect::<String>()
-        )
+        const HEX: &[u8; 16] = b"0123456789abcdef";
+        let mut text = String::with_capacity(74);
+        text.push_str("v2:sha256:");
+        for &byte in &self.0 {
+            text.push(HEX[(byte >> 4) as usize] as char);
+            text.push(HEX[(byte & 15) as usize] as char);
+        }
+        text
     }
     pub fn parse(text: &str) -> Option<Self> {
         let t = text.trim();
