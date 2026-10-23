@@ -12,6 +12,10 @@ or mocks were added. Native backend probes ran only inside isolated Linux Xvfb.
 
 ## Final hardening follow-up
 
+The [trust-list scaling follow-up](trust-scaling.md) records slow legal large-list
+operations, preserved first-seen order and file policies, lower-allocation
+fingerprint formatting, and the measured speed, memory and executable-size tradeoff.
+
 The [identity-file resource follow-up](identity-file-bounds.md) records bounded
 PEM reads, exact-limit controls, generated-output preflight, and real CLI/startup/
 live TLS refusal and recovery. It preserves the original memory measurements.
