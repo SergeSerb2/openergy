@@ -113,3 +113,11 @@ zero findings. The parent independently matched every direct diff and the full
 patch-stream hash. The primary exit 1 and 84 findings remain unchanged. This is
 patch-history evidence, separate from product/provenance review; it does not
 scan stopped sibling refs or establish every-snapshot secret absence.
+
+The [current-parent history snapshot](source-history-current-snapshot.md) repeats
+both scans at pinned `7ad8265`. Its non-merge scan retains raw exit 1 with 95
+findings; all are verified source-file SHA-256 records, with none unresolved.
+The merge scan exits 0 with zero findings. The parent repeated all 95 location
+bindings, 107 source-blob comparisons, 22 merge-parent diff checks and 60 private
+artifact hashes. This snapshot covers 254 reachable commits and excludes later
+work, sibling refs and every-snapshot secret-free claims.

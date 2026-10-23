@@ -140,5 +140,28 @@
     "independent_execution": false,
     "startup_acceptance": false,
     "cross_run_witness_pooling": false
+  },
+  "source_history_current_snapshot": {
+    "evidence_commit": "4a3f4e5d00bb48979b4b40dd93d0488fdd39559c",
+    "pinned_source": "7ad8265f9237aad8d37672095c884f051b5e4c2f",
+    "raw_nonmerge_exit": 1,
+    "raw_nonmerge_findings": 95,
+    "raw_merge_exit": 0,
+    "raw_merge_findings": 0,
+    "parent_checked_findings": 95,
+    "parent_source_blob_comparisons": 107,
+    "parent_checked_private_artifacts": 60,
+    "parent_checked_merge_parent_diffs": 22,
+    "nonempty_merge_parent_diffs": 21,
+    "coverage_sets_recomputed": true,
+    "unresolved": 0,
+    "independent_scanner_execution": false,
+    "scope": "Parent repeated immutable source, location, artifact and coverage bindings; no scanner rerun. Later commits and sibling refs excluded.",
+    "integrated_commit": "8ca47eda31a11ebf907573b9b865fbe301b3a34c",
+    "audit_corrections": [
+      "Initial parent assertion expected integer zero for unresolved_findings; actual schema contains an empty list. Corrected shape check without changing or rerunning scanner records.",
+      "The initial preservation assertion compared the current README, which later accepted documentation changed. Final verification compares every preserved file to the pinned scan source tree. Scanner records were not changed or rerun."
+    ],
+    "parent_helper_sha256": "728fc37cdfc32b784e50b71fb787b5e8fcc464c0b926aec2968f266fb468142b"
   }
 }
