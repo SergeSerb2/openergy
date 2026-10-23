@@ -74,8 +74,13 @@ impl Identity {
             params.not_before = (now - Duration::from_secs(300)).into();
             params.not_after = (now + Duration::from_secs(3650 * 86400)).into();
             let cert = params.self_signed(&key).map_err(failed)?;
-            atomic_write(&key_path, key.serialize_pem().as_bytes(), true).map_err(failed)?;
-            atomic_write(&cert_path, cert.pem().as_bytes(), true).map_err(failed)?;
+            let key_pem = key.serialize_pem();
+            let cert_pem = cert.pem();
+            // Validate both outputs before persisting either half of a new pair.
+            check_identity_size(key_pem.len() as u64)?;
+            check_identity_size(cert_pem.len() as u64)?;
+            atomic_write(&key_path, key_pem.as_bytes(), true).map_err(failed)?;
+            atomic_write(&cert_path, cert_pem.as_bytes(), true).map_err(failed)?;
         }
         let chain: Vec<_> = CertificateDer::pem_slice_iter(&read_identity_file(&cert_path)?)
             .collect::<Result<_, _>>()
@@ -102,19 +107,21 @@ impl Identity {
 
 fn read_identity_file(path: &Path) -> Result<Vec<u8>, NetError> {
     let file = private_file(path).map_err(failed)?;
-    let too_large = || failed("TLS identity file exceeds 1 MiB (1048576 bytes)");
-    if file.metadata().map_err(failed)?.len() > MAX_IDENTITY_FILE_LEN {
-        return Err(too_large());
-    }
+    check_identity_size(file.metadata().map_err(failed)?.len())?;
     let mut bytes = Vec::new();
     file.take(MAX_IDENTITY_FILE_LEN + 1)
         .read_to_end(&mut bytes)
         .map_err(failed)?;
     // Reject growth after metadata, including ignored bytes after the first key.
-    if bytes.len() as u64 > MAX_IDENTITY_FILE_LEN {
-        return Err(too_large());
-    }
+    check_identity_size(bytes.len() as u64)?;
     Ok(bytes)
+}
+
+fn check_identity_size(len: u64) -> Result<(), NetError> {
+    if len > MAX_IDENTITY_FILE_LEN {
+        return Err(failed("TLS identity file exceeds 1 MiB (1048576 bytes)"));
+    }
+    Ok(())
 }
 
 fn entry_exists(path: &Path) -> std::io::Result<bool> {

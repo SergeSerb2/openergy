@@ -153,6 +153,38 @@ def main():
             outcome["passed"] = outcome["passed"] and outcome["cleanup"]
         results.append(outcome)
 
+    node = Node(root, binary, low + 7)
+    config = node.config.read_text().replace("enabled = false", "enabled = true")
+    node.config.write_text(config.replace('name = "audit"', 'name = "' + "A" * CAP + '"'))
+    outcome = {"case": "startup_generated_oversize", "passed": False}
+    try:
+        node.start()
+        try:
+            code = node.proc.wait(timeout=2)
+        except subprocess.TimeoutExpired:
+            code = None
+        no_identity = not any((node.dir / "tls" / name).exists() for name in original)
+        outcome.update({"exit": code, "no_identity_written": no_identity,
+                        "size_refusal": "exceeds 1 MiB" in (node.dir / "stderr.log").read_text()})
+        require(code is not None and code != 0 and no_identity and outcome["size_refusal"],
+                "generated identity was written before size validation")
+        node.stop()
+        node.config.write_text(config)
+        node.start()
+        response = node.ready()
+        require(bool(response["result"]["tls"]["fingerprint"]), "normal name did not recover identity creation")
+        require(all(0 < (node.dir / "tls" / name).stat().st_size <= CAP for name in original),
+                "retry wrote an invalid identity size")
+        outcome.update(passed=True, retry_succeeded=True)
+    except Exception as exc:
+        outcome["passed"] = False
+        outcome["error_detail"] = f"{type(exc).__name__}: {exc}"
+    finally:
+        node.stop()
+        outcome["cleanup"] = node.proc is not None and node.proc.poll() is not None and not node.socket.exists()
+        outcome["passed"] = outcome["passed"] and outcome["cleanup"]
+    results.append(outcome)
+
     def call(node, method, params=None):
         response = node.call(method, params)
         require("result" in response, f"unexpected {method} failure")
