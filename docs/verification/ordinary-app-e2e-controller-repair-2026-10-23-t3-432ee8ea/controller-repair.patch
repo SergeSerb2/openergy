@@ -1,0 +1,2019 @@
+--- a/common.py
++++ b/common.py
+@@ -1 +1,2 @@
+-"""Evidence helpers only; no product callbacks or source changes."""
++"""Private evidence I/O. Importing this module does not inspect or start processes."""
++import contextlib
+@@ -5,0 +7 @@
++import signal
+@@ -11,8 +13,8 @@
+-RAW = HERE / 'raw'
+-ROOT = '059f052f965bb942d104448b064a9d0e68b1fda1'
+-APP_SHA = '95b3891e49e479b7caec9a1e18d0e861d7aae57f1bd178b7455b4bc7920aab0c'
+-DAEMON_SHA = '23e3f9dbee1496b247a5b316811f22c9330b103f979907d1d4fadf2e57399deb'
+-SWIFT = Path('/private/tmp/oe-bootstrap-r2-build-yl3byo9v/swift')
+-OLD_APP = REPO / 'docs/verification/private-update-bootstrap-repair-2026-10-23-t3-54de37ad/raw'
+-OLD_DAEMON = Path('/Users/serge/.t3/worktrees/openergy/t3-b205d42e/docs/verification/daemon-stop-latency-2026-10-23-t3-b205d42e/raw/final-source-build')
+-PORTS = (65371, 65372)
++ORIGINAL = '498190feb00f51039f500ae618ac7de5fb113d86'
++ORIGINAL_DIR = 'docs/verification/ordinary-app-e2e-2026-10-23-t3-79498fe8/'
++SOURCE = '059f052f965bb942d104448b064a9d0e68b1fda1'
++PYTHON = '/opt/homebrew/bin/python3'
++PORTS = (65431, 65432)  # New literals. No fallback or retry.
++LOG_CAP = 8388608
++EVIDENCE_CAP = 33554432
++FLOW_SECONDS, CLEANUP_SECONDS = 120, 60
+@@ -21,2 +23,2 @@
+-def sha(path):
+-    return hashlib.sha256(path.read_bytes()).hexdigest()
++class DeadlineError(RuntimeError):
++    pass
+@@ -25,2 +27,5 @@
+-def now():
+-    return time.clock_gettime_ns(time.CLOCK_MONOTONIC)
++def remaining(deadline):
++    value = deadline - time.monotonic()
++    if value <= 0:
++        raise DeadlineError('absolute deadline expired')
++    return value
+@@ -29,4 +34,139 @@
+-def save(path, value):
+-    with path.open('x') as stream:
+-        json.dump(value, stream, indent=2, sort_keys=True)
+-        stream.write('\n')
++@contextlib.contextmanager
++def io_until(deadline):
++    """Main-thread, nestable absolute deadline, including file and pipe I/O."""
++    duration = remaining(deadline)
++    previous_handler = signal.getsignal(signal.SIGALRM)
++    previous_timer = signal.getitimer(signal.ITIMER_REAL)
++    entered = time.monotonic()
++    def expired(_sig, _frame):
++        raise DeadlineError('I/O absolute deadline expired')
++    signal.signal(signal.SIGALRM, expired)
++    if previous_timer[0]:
++        duration = min(duration, previous_timer[0])
++    signal.setitimer(signal.ITIMER_REAL, duration)
++    try:
++        yield
++        remaining(deadline)
++    finally:
++        signal.setitimer(signal.ITIMER_REAL, 0)
++        signal.signal(signal.SIGALRM, previous_handler)
++        if previous_timer[0]:
++            signal.setitimer(signal.ITIMER_REAL,
++                            max(0.000001, previous_timer[0] - (time.monotonic() - entered)),
++                            previous_timer[1])
++
++
++def read(path, deadline, cap=LOG_CAP):
++    with io_until(deadline):
++        with Path(path).open('rb') as stream:
++            value = stream.read(cap + 1)
++        if len(value) > cap:
++            raise RuntimeError('file byte cap exceeded: ' + str(path))
++        return value
++
++
++def load(path, deadline):
++    return json.loads(read(path, deadline))
++
++
++def exists(path, deadline):
++    with io_until(deadline):
++        return Path(path).exists()
++
++
++def save(path, value, deadline):
++    """Exclusive, atomic publication; a partial write cannot become an identity."""
++    path = Path(path)
++    temporary = path.with_name(path.name + '.writing-' + str(os.getpid()) + '-' + str(time.monotonic_ns()))
++    data = (json.dumps(value, sort_keys=True, separators=(',', ':')) + '\n').encode()
++    with io_until(deadline):
++        if len(data) > LOG_CAP:
++            raise RuntimeError('evidence record byte cap exceeded')
++        if sum(p.stat().st_size for p in HERE.rglob('*') if p.is_file()) + len(data) > EVIDENCE_CAP:
++            raise RuntimeError('aggregate evidence cap exceeded')
++        with temporary.open('xb') as stream:
++            stream.write(data)
++            stream.flush()
++        try:
++            os.link(temporary, path)  # Exclusive. Never replace a first failure/guard.
++        finally:
++            temporary.unlink()
++
++
++def first(path, value, deadline):
++    try:
++        save(path, value, deadline)
++    except FileExistsError:
++        if not exists(path, deadline):
++            raise
++
++
++def append(path, value, deadline):
++    data = (json.dumps(value, sort_keys=True, separators=(',', ':')) + '\n').encode()
++    with io_until(deadline):
++        if Path(path).exists() and Path(path).stat().st_size + len(data) > LOG_CAP:
++            raise RuntimeError('evidence stream byte cap exceeded')
++        if sum(p.stat().st_size for p in HERE.rglob('*') if p.is_file()) + len(data) > EVIDENCE_CAP:
++            raise RuntimeError('aggregate evidence cap exceeded')
++        with Path(path).open('ab', buffering=0) as stream:
++            if stream.write(data) != len(data):
++                raise RuntimeError('short evidence write')
++
++
++def sha(path, deadline):
++    digest = hashlib.sha256()
++    with io_until(deadline):
++        with Path(path).open('rb') as stream:
++            while chunk := stream.read(262144):
++                remaining(deadline)
++                digest.update(chunk)
++    return digest.hexdigest()
++
++
++def tree(root, deadline):
++    records = []
++    with io_until(deadline):
++        root = Path(root).resolve()
++        for path in sorted(root.rglob('*')):
++            remaining(deadline)
++            item = dict(path=str(path.relative_to(root)), mode=oct(path.lstat().st_mode & 0o7777))
++            if path.is_symlink():
++                if not path.resolve().is_relative_to(root):
++                    raise RuntimeError('bundle symlink escape')
++                item['link'] = os.readlink(path)
++            elif path.is_file():
++                item.update(bytes=path.stat().st_size, sha256=sha(path, deadline))
++            elif path.is_dir():
++                item['directory'] = True
++            else:
++                raise RuntimeError('unexpected bundle node')
++            records.append(item)
++    return records
++
++
++def command(argv, deadline, cap=4194304):
++    """Read-only tools/probes only. Products always use exec_owned.py + a Popen ledger."""
++    with io_until(deadline):
++        process = subprocess.Popen(list(map(str, argv)), cwd=REPO,
++                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE)
++        try:
++            stdout, stderr = process.communicate(timeout=remaining(deadline) * 0.8)
++        except BaseException:
++            # An unreaped direct tool child cannot have its PID reused.
++            if process.poll() is None:
++                process.kill()
++            # Reserve part of the same absolute budget for killing/reaping our
++            # unreaped probe/tool child; never borrow from product cleanup.
++            process.communicate(timeout=remaining(deadline))
++            raise
++        if len(stdout) + len(stderr) > cap:
++            raise RuntimeError('tool output byte cap exceeded')
++        if process.returncode != 0:
++            raise RuntimeError(repr(dict(argv=list(map(str, argv)), code=process.returncode,
++                                         stdout=stdout.decode(errors='replace'),
++                                         stderr=stderr.decode(errors='replace'))))
++        return stdout
++
++
++def git_file(path, deadline):
++    return command(['git', 'show', ORIGINAL + ':' + ORIGINAL_DIR + path], deadline)
+@@ -37 +177,2 @@
+-    assert os.getpriority(os.PRIO_PROCESS, 0) == 15
++    if os.getpriority(os.PRIO_PROCESS, 0) != 15:
++        raise RuntimeError('absolute NI15 assignment failed')
+@@ -41,22 +182,2 @@
+-def cmd(argv, env=None, timeout=20):
+-    result = subprocess.run(list(map(str, argv)), cwd=REPO, env=env,
+-                            capture_output=True, text=True, timeout=timeout)
+-    return dict(argv=list(map(str, argv)), code=result.returncode,
+-                stdout=result.stdout, stderr=result.stderr)
+-
+-
+-def tree(root):
+-    records = []
+-    for path in sorted(root.rglob('*')):
+-        item = dict(path=str(path.relative_to(root)), mode=oct(path.lstat().st_mode & 0o7777))
+-        if path.is_symlink():
+-            assert path.resolve().is_relative_to(root.resolve())
+-            item['link'] = os.readlink(path)
+-        elif path.is_file():
+-            item.update(bytes=path.stat().st_size, sha256=sha(path))
+-        elif path.is_dir():
+-            item['directory'] = True
+-        else:
+-            raise AssertionError(path)
+-        records.append(item)
+-    return records
++def pause(deadline, seconds=0.02):
++    time.sleep(min(seconds, remaining(deadline)))
+--- a/controller.py
++++ b/controller.py
+@@ -1 +1,6 @@
+-"""One unchanged packaged AppEndToEnd flow, real peer/daemon, bounded owned cleanup."""
++"""One LATER ordinary AppEndToEnd flow. SOURCE ONLY: never invoked in this repair.
++
++Products are direct children here. A detached watchdog survives any normal
++controller exception. The watchdog uses a separate recovery observer, while
++this process keeps collecting all direct-child OS exit statuses.
++"""
+@@ -3 +8,4 @@
+-import ctypes
++from macproc import api, bsd, detail, key
++from ownership import Inventory, expected
++from prepare import bind_sources
++from watchdog import Recovery
+@@ -5,2 +12,0 @@
+-import shutil
+-import signal
+@@ -8,2 +14 @@
+-import stat
+-import threading
++import subprocess
+@@ -12,157 +17,50 @@
+-PYTHON = '/opt/homebrew/bin/python3'
+-LIBPROC = ctypes.CDLL('/usr/lib/libproc.dylib')
+-LIBPROC.proc_pidpath.argtypes = [ctypes.c_int, ctypes.c_void_p, ctypes.c_uint32]
+-LIBPROC.proc_pidpath.restype = ctypes.c_int
+-prepared = json.loads((RAW / 'prepared.json').read_text())
+-private = Path(prepared['private_root'])
+-bundle = Path(prepared['bundle'])
+-app_binary = bundle / 'Contents/MacOS/Openergy'
+-daemon_binary = bundle / 'Contents/Helpers/openergy'
+-runtime = RAW / 'runtime'
+-processes, identities, samples, reservations, signals = {}, {}, [], {}, []
+-sample_rounds = 0
+-flow_start = None
+-
+-
+-def path_for(pid):
+-    value = ctypes.create_string_buffer(4096)
+-    result = LIBPROC.proc_pidpath(pid, value, len(value))
+-    return value.value.decode() if result > 0 else None
+-
+-
+-def live_rows():
+-    output = subprocess.check_output(['/bin/ps', '-axo', 'pid=,ppid=,pgid=,uid=,ni=,stat='], text=True, timeout=2)
+-    return [dict(zip(['pid', 'ppid', 'pgid', 'uid', 'nice', 'state'],
+-                     [*map(int, parts[:5]), parts[5]]))
+-            for line in output.splitlines() if len(parts := line.split()) == 6]
+-
+-
+-def sample():
+-    global sample_rounds
+-    sample_rounds += 1
+-    assert sample_rounds <= 6000
+-    rows = live_rows()
+-    owned = {p.pid for p in processes.values() if p.poll() is None}
+-    groups = {p.pid for p in processes.values()}
+-    owned |= {i for i in identities}
+-    for _ in range(8):
+-        added = {row['pid'] for row in rows if row['ppid'] in owned or row['pgid'] in groups}
+-        if added <= owned: break
+-        owned |= added
+-    for row in rows:
+-        if row['pid'] not in owned: continue
+-        stamp = now()
+-        executable = path_for(row['pid'])
+-        entry = dict(**row, executable=executable, monotonic_ns=stamp)
+-        samples.append(entry)
+-        assert len(samples) <= 24000
+-        if executable in [str(app_binary), str(daemon_binary)] and row['pid'] not in identities:
+-            detail = cmd(['/bin/ps', '-p', str(row['pid']), '-o', 'pid,ppid,pgid,uid,ni,lstart,command'])
+-            assert detail['code'] == 0
+-            record = dict(**entry, ps=detail, binary_sha256=sha(Path(executable)))
+-            if executable == str(daemon_binary):
+-                is_peer = 'peer' in processes and row['pid'] == processes['peer'].pid
+-                cli_label = next((label for label, p in processes.items()
+-                                  if p.pid == row['pid'] and label not in ['peer', 'app']), None)
+-                if cli_label:
+-                    assert row['ppid'] == os.getpid() and row['pgid'] == row['pid']
+-                    record['cli_label'] = cli_label
+-                elif is_peer:
+-                    assert row['ppid'] == os.getpid() and row['pgid'] == row['pid']
+-                    expected_config = private / 'peer/config.toml'
+-                    expected_socket = private / 'peer/control.sock'
+-                else:
+-                    assert row['ppid'] == processes['app'].pid and row['pgid'] == processes['app'].pid
+-                    expected_config = private / 'app/config/config.toml'
+-                    expected_socket = private / 'app/config/control.sock'
+-                    assert '--parent-pid ' + str(processes['app'].pid) in detail['stdout']
+-                    if not any(i.get('role') == 'initial-supervised-daemon' for i in identities.values()):
+-                        record['role'] = 'initial-supervised-daemon'
+-                        config_bytes = expected_config.read_bytes()
+-                        (runtime / 'app-config-first-daemon.toml').write_bytes(config_bytes)
+-                        record['config_at_first_observation_sha256'] = sha(expected_config)
+-                    else:
+-                        record['role'] = 'recovered-supervised-daemon'
+-                if not cli_label:
+-                    for token in [str(expected_config), str(expected_socket), '--platform virtual']:
+-                        assert token in detail['stdout']
+-                    record['ownership_verified_before_routine_signals'] = True
+-                record['environment_inheritance'] = 'DaemonSupervisor passes the complete app environment; source-bound, no replacement launcher'
+-            identities[row['pid']] = record
+-            save(runtime / f'identity-{row["pid"]}.json', record)
+-        if executable in [str(app_binary), str(daemon_binary)]:
+-            assert row['nice'] == 15 and row['uid'] == os.getuid(), entry
+-
+-
+-def tick(deadline):
+-    assert time.monotonic() < deadline, 'watchdog deadline reached'
+-    sample()
+-    for path in [runtime / 'app.log', runtime / 'peer.log', private / 'app/config/daemon-stderr.log', private / 'app/config/openergy.log']:
+-        if path.exists(): assert path.stat().st_size <= 8388608, str(path)
+-    time.sleep(0.02)
+-
+-
+-def ports_state():
+-    result = cmd(['/usr/sbin/netstat', '-an', '-p', 'tcp'])
+-    scoped = [line for line in result['stdout'].splitlines()
+-              if any(re.search(r'\.' + str(port) + r'\s', line) for port in PORTS)]
+-    return dict(argv=result['argv'], code=result['code'], scoped_rows=scoped, stderr=result['stderr'],
+-                monotonic_ns=now(), filter_ports=list(PORTS))
+-
+-
+-def exclusive_port(port, label, retain):
+-    state = ports_state()
+-    handle = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+-    try:
+-        handle.bind(('127.0.0.1', port))
+-    except OSError as error:
+-        save(runtime / f'port-{port}-{label}.json', dict(state_before_first_bind=state,
+-             success=False, error=repr(error), no_reuse=True, no_retry=True))
+-        handle.close()
+-        raise
+-    save(runtime / f'port-{port}-{label}.json', dict(state_before_first_bind=state,
+-         success=True, bound=handle.getsockname(), no_reuse=True, no_retry=True, held_until_launch=retain))
+-    if retain: reservations[port] = handle
+-    else: handle.close()
+-
+-
+-def launch(label, argv, env):
+-    save(runtime / (label + '-command.json'), dict(argv=list(map(str, argv)), environment_allowlist=env,
+-         exec_helper_sha256=sha(HERE / 'exec_owned.py'), start_monotonic_ns=now(),
+-         priority='absolute setpriority 15 before exec; no relative nice wrapper'))
+-    log = (runtime / (label + '.log')).open('xb')
+-    try:
+-        process = subprocess.Popen([PYTHON, str(HERE / 'exec_owned.py'),
+-            str(runtime / (label + '-exec.json')), *map(str, argv)],
+-            env=env, cwd=private, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+-    finally:
+-        log.close()
+-    processes[label] = process
+-    return process
+-
+-
+-def cli(label, argv, env, deadline):
+-    process = launch(label, argv, env)
+-    limit = min(deadline, time.monotonic() + 5)
+-    while process.poll() is None: tick(limit)
+-    result = dict(code=process.returncode, end_monotonic_ns=now(),
+-                  stdout=(runtime / (label + '.log')).read_text())
+-    save(runtime / (label + '-result.json'), result)
+-    assert result['code'] == 0, result
+-    return result['stdout']
+-
+-
+-def verified_signal(pid, sig):
+-    original = identities[pid]
+-    current = cmd(['/bin/ps', '-p', str(pid), '-o', 'pid,ppid,pgid,uid,ni,lstart,command'])
+-    assert current['code'] == 0 and path_for(pid) == original['executable']
+-    # lstart, UID, group and command must still match the first post-exec observation.
+-    assert current['stdout'] == original['ps']['stdout']
+-    signals.append(dict(pid=pid, signal=sig, verified_identity=current, monotonic_ns=now()))
+-    os.kill(pid, sig)
+-
+-
+-def watchdog_fired():
+-    errors = []
+-    for pid, original in list(identities.items()):
+-        if path_for(pid) != original['executable']: continue
++
++class FlowAbort(RuntimeError):
++    pass
++
++
++class Controller:
++    def __init__(self, prepared):
++        self.prepared = prepared
++        self.runtime = HERE / 'runtime'
++        self.processes, self.exits, self.reservations = {}, {}, {}
++        self.watchdog = None
++        self.spec = None
++        self.inventory = None
++        self.observer_failed = False
++        self.failed = False
++        self.cleanup_deadline = None
++        self.fallback = None
++
++    def collect(self, deadline):
++        """Nonblocking waitpid via Popen.poll, also called after sampler failure."""
++        for label, process in self.processes.items():
++            code = process.poll()
++            if code is not None:
++                value = self.exits.get(label) or dict(label=label, pid=process.pid, code=code,
++                             signal=(-code if code < 0 else None), collected_monotonic=time.monotonic(),
++                             collector_pid=os.getpid(), complete_os_exit_status=True)
++                self.exits[label] = value
++                first(self.runtime / (label + '-exit.json'), value, deadline)
++                if code != 0:
++                    self.failed = True
++                    first(self.runtime / 'first-child-exit-failure.json', value, deadline)
++
++    def abort(self, error, deadline):
++        self.failed = True
++        first(self.runtime / 'first-runtime-failure.json',
++              dict(error=error, monotonic=time.monotonic()), deadline)
++        first(self.runtime / 'abort.json', dict(reason=error, monotonic=time.monotonic()), deadline)
++        self.request_cleanup(False, deadline)
++
++    def request_cleanup(self, normal, io_deadline):
++        if self.cleanup_deadline is None:
++            start = time.monotonic()
++            self.cleanup_deadline = min(start + CLEANUP_SECONDS,
++                                        self.spec['flow_deadline'] + CLEANUP_SECONDS)
++            first(self.runtime / 'cleanup-request.json',
++                  dict(normal=normal, cleanup_start=start, cleanup_deadline=self.cleanup_deadline), io_deadline)
++
++    def observe(self, deadline):
++        if self.observer_failed:
++            return
+@@ -170,3 +68,270 @@
+-            row = next(r for r in live_rows() if r['pid'] == pid)
+-            if 'T' in row['state']: verified_signal(pid, signal.SIGCONT)
+-            verified_signal(pid, signal.SIGTERM)
++            self.inventory.observe(min(deadline, time.monotonic() + 1))
++            paths = [self.runtime / (label + '.log') for label in self.processes]
++            paths += [Path(self.spec['private_root']) / 'app/config' / name
++                      for name in ('daemon-stderr.log', 'openergy.log')]
++            with io_until(deadline):
++                if any(p.exists() and p.stat().st_size > LOG_CAP for p in paths):
++                    raise RuntimeError('log byte limit exceeded')
++                if sum(p.stat().st_size for p in HERE.rglob('*') if p.is_file()) > EVIDENCE_CAP:
++                    raise RuntimeError('evidence byte limit exceeded')
++        except Exception:
++            self.observer_failed = True
++            error = traceback.format_exc()
++            first(self.runtime / 'first-observer-failure.json', dict(error=error, monotonic=time.monotonic()),
++                  time.monotonic() + 0.5)
++            self.abort('observation failed; whole flow aborted: ' + error, time.monotonic() + 0.5)
++
++    def tick(self, deadline):
++        self.collect(min(deadline, time.monotonic() + 1))
++        self.observe(deadline)
++        if self.observer_failed or (self.runtime / 'abort.json').exists():
++            raise FlowAbort('declared abort; peer must remain alive until app/children absent')
++        if self.watchdog is not None and self.watchdog.poll() is not None:
++            raise FlowAbort('independent watchdog exited during flow')
++        pause(deadline)
++
++    def launch(self, label, deadline, cleanup=False):
++        with io_until(deadline):
++            return self._launch(label, deadline, cleanup)
++
++    def _launch(self, label, deadline, cleanup):
++        if label in self.processes:
++            raise RuntimeError('no second launch: ' + label)
++        wanted = expected(self.spec)[label]
++        save(self.runtime / (label + '-command.json'),
++             dict(label=label, argv=wanted, monotonic=time.monotonic(), absolute_deadline=deadline,
++                  environment_allowlist=self.spec['app_environment'] if label == 'app' else self.spec['peer_environment'],
++                  exec_helper_sha256=sha(HERE / 'exec_owned.py', deadline)), deadline)
++        with io_until(deadline):
++            with (self.runtime / (label + '.log')).open('xb') as log:
++                process = subprocess.Popen([PYTHON, str(HERE / 'exec_owned.py'), str(self.runtime), label],
++                    cwd=self.spec['private_root'], env=self.spec['environment'],
++                    stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
++            self.processes[label] = process  # Retain handle before fallible I/O.
++            save(self.runtime / (label + '-spawn.json'), dict(label=label, pid=process.pid), deadline)
++        receipt_path = self.runtime / (label + '-exec.json')
++        receipt_limit = min(deadline, time.monotonic() + 2)
++        while not receipt_path.exists():
++            self.collect(receipt_limit)
++            if process.poll() is not None:
++                raise RuntimeError('helper exited before same-PID receipt: ' + label)
++            if not cleanup:
++                self.tick(receipt_limit)
++            else:
++                pause(receipt_limit)
++        receipt = load(receipt_path, receipt_limit)
++        if (receipt['pid'] != process.pid or receipt['ppid'] != os.getpid() or
++                receipt['uid'] != os.getuid() or receipt['nice'] != 15):
++            raise RuntimeError('exec receipt identity/priority mismatch')
++        # Recovery has its own observer if the main sampler is failed. A wrapper
++        # is safe to release only after a complete current ownership observation.
++        observer = Inventory(self.spec, self.runtime, 'cleanup-launch') if cleanup else self.inventory
++        observer.observe(receipt_limit, validate=True)
++        wrapper = [r for r in observer.records.values() if key(r) == key(receipt) and r['stage'] == 'wrapper']
++        if not wrapper:
++            raise RuntimeError('wrapper identity not verified before exec gate')
++        save(self.runtime / (label + '-registered.json'), wrapper[0], receipt_limit)
++        return process
++
++    def cli(self, label, deadline):
++        limit = min(deadline, time.monotonic() + 5)
++        process = self.launch(label, limit)
++        while process.poll() is None:
++            self.tick(limit)  # Observation remains active for the whole CLI wait.
++        self.collect(limit)
++        output = read(self.runtime / (label + '.log'), limit).decode()
++        save(self.runtime / (label + '-result.json'), dict(code=process.returncode, stdout=output), limit)
++        if process.returncode != 0:
++            raise RuntimeError('CLI failed: ' + label)
++        return output
++
++    def port(self, port, label, retain, deadline):
++        # Only the two declared literal ports. First bind only, no SO_REUSE*.
++        raw = command(['/usr/sbin/netstat', '-an', '-p', 'tcp'], deadline).decode()
++        scoped = [line for line in raw.splitlines() if re.search(r'\.' + str(port) + r'\s', line)]
++        state = dict(filter_port=port, scoped_rows=scoped, monotonic=time.monotonic())
++        handle = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
++        try:
++            with io_until(deadline):
++                handle.settimeout(remaining(deadline))
++                handle.bind(('127.0.0.1', port))
++            save(self.runtime / f'port-{port}-{label}.json',
++                 dict(success=True, state_before_first_bind=state, no_reuse=True, no_retry=True,
++                      held_until_launch=retain, bound=handle.getsockname()), deadline)
++            if retain:
++                self.reservations[port] = handle
++                handle = None
++        except Exception:
++            first(self.runtime / f'port-{port}-{label}.json',
++                  dict(success=False, state_before_first_bind=state, error=traceback.format_exc(),
++                       no_reuse=True, no_retry=True), deadline)
++            raise
++        finally:
++            if handle is not None:
++                handle.close()
++
++    def flow(self):
++        with io_until(self.spec['flow_deadline']):
++            return self._flow()
++
++    def _flow(self):
++        deadline = self.spec['flow_deadline']
++        for port in PORTS:
++            self.port(port, 'pre', True, min(deadline, time.monotonic() + 2))
++        self.reservations.pop(PORTS[0]).close()
++        peer = self.launch('peer', deadline)
++        ready = min(deadline, time.monotonic() + 15)
++        root = Path(self.spec['private_root'])
++        while True:
++            if peer.poll() is not None:
++                raise RuntimeError('peer exited before readiness')
++            text = read(self.runtime / 'peer.log', ready).decode()
++            if (root / 'peer/control.sock').exists() and f'listening on 127.0.0.1:{PORTS[0]}' in text:
++                break
++            self.tick(ready)
++        status = json.loads(self.cli('peer-status', deadline))
++        if status['daemon']['pid'] != peer.pid or status['daemon']['platform'] != 'virtual' or status['state'] != 'listening':
++            raise RuntimeError('peer status/identity mismatch')
++        save(self.runtime / 'peer-ready.json', dict(status=status, before_app_launch=True), deadline)
++        self.reservations.pop(PORTS[1]).close()
++        app = self.launch('app', deadline)
++        while app.poll() is None:
++            if peer.poll() is not None:
++                raise RuntimeError('peer exited during app flow')
++            self.tick(deadline)
++        if peer.poll() is not None:
++            raise RuntimeError('peer exited before app completion was collected')
++        self.collect(deadline)
++        self.observe(deadline)
++        if self.observer_failed:
++            raise FlowAbort('final observation failed')
++        report = load(root / 'app/report.json', deadline)
++        save(self.runtime / 'report.json', report, deadline)
++        save(self.runtime / 'app-result.json', dict(exit=self.exits['app'], checks=len(report),
++             passed=sum(row['passed'] for row in report), failed=[row for row in report if not row['passed']],
++             declared_abort=(self.runtime / 'abort.json').exists()), deadline)
++        daemons = {key(r) for r in self.inventory.records.values() if r['role'].endswith('supervised-daemon')}
++        if app.returncode != 0 or len(report) != 25 or not all(row['passed'] for row in report):
++            raise RuntimeError('ordinary 25-check report/OS exit failed')
++        if len(daemons) != 2:
++            raise RuntimeError('initial and routine-recovered daemon identities not both observed')
++        # Require actual stop coverage rather than inventing a callback or probe
++        # that changes the product routine. Missing a brief state fails evidence.
++        observations = read(self.runtime / 'main-observations.jsonl', deadline, EVIDENCE_CAP).splitlines()
++        if not any(row['status'] == 4 and key(row) in daemons
++                   for line in observations for row in json.loads(line)['rows']):
++            raise RuntimeError('routine SIGSTOP interval not observed')
++        self.request_cleanup(True, deadline)
++
++    def cleanup(self):
++        """Collector stays alive; the separate watchdog owns cleanup observation/signals."""
++        if self.cleanup_deadline is None:
++            try:
++                self.request_cleanup(False, time.monotonic() + 1)
++            except Exception:
++                # The independent watchdog still has the immutable session's
++                # 120+60 deadline, even if a request could not be published.
++                self.failed = True
++                self.cleanup_deadline = self.spec['flow_deadline'] + CLEANUP_SECONDS
++        peer_stop_attempted = False
++        while time.monotonic() < self.cleanup_deadline:
++            limit = min(self.cleanup_deadline, time.monotonic() + 1)
++            try:
++                self.collect(limit)
++                done = self.runtime / 'recovery-done.json'
++                if exists(done, limit):
++                    return load(done, limit)
++                if self.watchdog.poll() is not None and self.fallback is None:
++                    self.failed = True
++                    first(self.runtime / 'first-watchdog-loss.json', dict(code=self.watchdog.returncode), limit)
++                    request = load(self.runtime / 'cleanup-request.json', limit)
++                    request['normal'] = False
++                    self.fallback = Recovery(self.spec, self.runtime, request, 'fallback')
++                if self.fallback is not None:
++                    self.fallback.step()
++                if exists(self.runtime / 'peer-stop-permitted.json', limit) and not peer_stop_attempted:
++                    peer_stop_attempted = True  # An exception can never cause a retry.
++                    peer = self.processes.get('peer')
++                    if peer is not None and peer.poll() is None:
++                        self.launch('peer-stop', min(self.cleanup_deadline, time.monotonic() + 5), cleanup=True)
++                # No normal sample() call here. The recovery process remains
++                # active during this and every public-stop CLI wait.
++            except Exception:
++                self.failed = True
++                try:
++                    first(self.runtime / 'first-cleanup-failure.json',
++                          dict(error=traceback.format_exc()), time.monotonic() + 0.5)
++                except Exception:
++                    # Keep polling/reaping children even if the sink is failed.
++                    pass
++            try:
++                pause(self.cleanup_deadline)
++            except DeadlineError:
++                break
++        if self.fallback is not None:
++            self.fallback.finish()
++        first(self.runtime / 'failed-bounded-recovery.json',
++              dict(monotonic=time.monotonic(), direct_exits=self.exits,
++                   reason='60-second cleanup budget ended; no cleanup PASS'), time.monotonic() + 1)
++        return dict(passed=False, recovered=False)
++
++    def run(self):
++        preflight = time.monotonic() + 120
++        with io_until(preflight):
++            self.runtime.mkdir(mode=0o700)  # Exclusive flow guard, never removed.
++            checked = load(HERE / 'source-checks.json', preflight)
++            for name, record in checked['python_files'].items():
++                if sha(HERE / name, preflight) != record['sha256']:
++                    raise RuntimeError('reviewed controller source changed: ' + name)
++            bindings = bind_sources(preflight)
++            if bindings != self.prepared['source_bindings']:
++                raise RuntimeError('prepared source bindings changed')
++            bundle = Path(self.prepared['bundle'])
++            if tree(bundle, preflight) != self.prepared['bundle_tree']:
++                raise RuntimeError('prepared full signed tree changed')
++            root = Path(self.prepared['private_root'])
++            if (root / 'app/config').exists() or any((root / part).is_symlink() for part in ('app', 'peer', 'home', 'tmp', 'cache')):
++                raise RuntimeError('fixture no longer fresh')
++            for part in ('', 'app', 'peer', 'home', 'tmp', 'cache'):
++                info = (root / part).stat()
++                if info.st_uid != os.getuid() or info.st_mode & 0o077:
++                    raise RuntimeError('fixture ownership/mode changed')
++            config = (f'version=1\nname="e2e-peer"\nrole="server"\n[server]\nlisten="127.0.0.1:{PORTS[0]}"\nport={PORTS[0]}\n[tls]\nenabled=false\n'
++                      '[[screen]]\nname="e2e-peer"\nrect={x=0,y=0,w=1920,h=1080}\n[[screen]]\nname="app"\nrect={x=1920,y=0,w=1920,h=1080}\n')
++            with (root / 'peer/config.toml').open('x') as stream:
++                stream.write(config)
++            common_env = dict(self.prepared['environment'], OPENERGY_DISABLE_DISCOVERY='1',
++                              OPENERGY_ALLOW_PORT_24800='0', OPENERGY_DAEMON_ARGS='--platform virtual')
++            def environment(directory):
++                return dict(common_env, OPENERGY_CONFIG=str(directory / 'config.toml'),
++                            OPENERGY_CONFIG_DIR=str(directory), OPENERGY_TLS_DIR=str(directory / 'tls'),
++                            OPENERGY_SOCKET=str(directory / 'control.sock'))
++            start = time.monotonic()
++            lib = api()
++            owner = detail(lib, bsd(lib, os.getpid()))
++            if owner['uid'] != os.getuid() or owner['ruid'] != os.getuid() or owner['nice'] != 15:
++                raise RuntimeError('controller UID/absolute priority mismatch')
++            self.spec = dict(self.prepared, owner=owner, python_executable=owner['executable'], flow_start=start,
++                             flow_deadline=start + FLOW_SECONDS,
++                             peer_environment=environment(root / 'peer'),
++                             app_environment=dict(environment(root / 'app/config'), OPENERGY_E2E_NO_RENDER='1'))
++            save(self.runtime / 'session.json', self.spec, preflight)
++            self.inventory = Inventory(self.spec, self.runtime, 'main')
++        ready_deadline = min(self.spec['flow_deadline'], time.monotonic() + 2)
++        with io_until(ready_deadline):
++            with (self.runtime / 'watchdog.log').open('xb') as log:
++                self.watchdog = subprocess.Popen([PYTHON, str(HERE / 'watchdog.py'), str(self.runtime)],
++                    cwd=root, env=self.spec['environment'], stdin=subprocess.DEVNULL,
++                    stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
++            while not (self.runtime / 'watchdog-ready.json').exists():
++                if self.watchdog.poll() is not None:
++                    raise RuntimeError('watchdog did not arm; no products launched')
++                pause(ready_deadline)
++            guard = load(self.runtime / 'watchdog-ready.json', ready_deadline)['identity']
++            if (guard['pid'] != self.watchdog.pid or guard['ppid'] != owner['pid'] or
++                    guard['uid'] != owner['uid'] or guard['ruid'] != owner['uid'] or guard['nice'] != 15 or
++                    guard['executable'] != owner['executable'] or
++                    guard['argv'][1:] != [str(HERE / 'watchdog.py'), str(self.runtime)]):
++                raise RuntimeError('watchdog actual identity/NI15 mismatch; no products launched')
++        try:
++            self.flow()
+@@ -174,25 +339,2 @@
+-            errors.append(traceback.format_exc())
+-    save(runtime / 'watchdog-fired.json', dict(monotonic_ns=now(), errors=errors))
+-
+-
+-def cleanup(peer_env):
+-    deadline = time.monotonic() + 60
+-    start = now()
+-    failures = []
+-    # Normal peer cleanup uses its public stop command once, with its private socket.
+-    peer = processes.get('peer')
+-    if peer is not None and peer.poll() is None:
+-        try:
+-            cli('peer-stop', [daemon_binary, 'ctl', 'daemon.stop', '--socket', private / 'peer/control.sock', '--raw'], peer_env, deadline)
+-        except BaseException:
+-            failures.append(traceback.format_exc())
+-    graceful = min(deadline, time.monotonic() + 10)
+-    while time.monotonic() < graceful:
+-        sample()
+-        active = [row for row in live_rows() if row['pid'] in identities and not row['state'].startswith('Z')]
+-        if not active and all(p.poll() is not None for p in processes.values()): break
+-        time.sleep(0.02)
+-    remaining = [pid for pid in identities if path_for(pid) == identities[pid]['executable']]
+-    if remaining:
+-        failures.append('Owned products remained after the 10-second normal cleanup allowance')
+-        for pid in remaining:
++            self.abort(traceback.format_exc(), time.monotonic() + 1)
++        finally:
+@@ -200,33 +342,48 @@
+-                row = next(r for r in live_rows() if r['pid'] == pid)
+-                if 'T' in row['state']: verified_signal(pid, signal.SIGCONT)
+-                verified_signal(pid, signal.SIGTERM)
+-            except ProcessLookupError: pass
+-        limit = min(deadline, time.monotonic() + 5)
+-        while time.monotonic() < limit and any(path_for(p) for p in remaining): time.sleep(0.02)
+-        for pid in remaining:
+-            if path_for(pid) == identities[pid]['executable']: verified_signal(pid, signal.SIGKILL)
+-    for process in processes.values():
+-        if process.poll() is None:
+-            # Wrappers may fail before product exec; require exact parent/group and receipt.
+-            receipt = runtime / (next(k for k, v in processes.items() if v is process) + '-exec.json')
+-            assert receipt.exists() and json.loads(receipt.read_text())['pid'] == process.pid
+-            assert os.getpgid(process.pid) == process.pid
+-            process.terminate()
+-        process.wait(timeout=max(0.1, min(5, deadline - time.monotonic())))
+-    for handle in reservations.values(): handle.close()
+-    reservations.clear()
+-    rows = live_rows()
+-    owned_groups = sorted({p.pid for p in processes.values()})
+-    remaining_rows = [r for r in rows if r['pid'] in identities or r['pgid'] in owned_groups]
+-    sockets = []
+-    for path in [private / 'peer/control.sock', private / 'app/config/control.sock']:
+-        exists = path.exists()
+-        sockets.append(dict(path=str(path), exists=exists,
+-             is_socket=exists and stat.S_ISSOCK(path.lstat().st_mode)))
+-    save(runtime / 'cleanup.json', dict(start_monotonic_ns=start, end_monotonic_ns=now(),
+-         elapsed_seconds=(now()-start)/1e9, failures=failures, signals=signals,
+-         collected_exits={k: p.returncode for k, p in processes.items()}, owned_pids=sorted(identities),
+-         owned_groups=owned_groups, remaining_owned_rows=remaining_rows, sockets=sockets))
+-    assert not remaining_rows and not any(i['exists'] for i in sockets), 'owned PID/group/socket remains'
+-    for port in PORTS: exclusive_port(port, 'post', False)
+-    assert not failures, failures
++                result = self.cleanup()
++            finally:
++                for handle in self.reservations.values():
++                    handle.close()
++                self.reservations.clear()
++                self.collect(time.monotonic() + 1)
++        # Do not cancel or signal the watchdog. It exits only after proven
++        # absence + reaping, or an explicit failed bounded-recovery record.
++        finish_deadline = min(self.spec['flow_deadline'] + CLEANUP_SECONDS + 3, time.monotonic() + 3)
++        while self.watchdog.poll() is None:
++            self.collect(finish_deadline)
++            pause(finish_deadline)
++        save(self.runtime / 'watchdog-exit.json', dict(pid=self.watchdog.pid, code=self.watchdog.returncode), finish_deadline)
++        guard_after = json.loads(command([PYTHON, HERE / 'probe.py', str(finish_deadline), root,
++                                         key(guard)], finish_deadline))
++        guard_absent = (guard_after['absence'].get(str(self.watchdog.pid)) == 'ESRCH' and
++                        not any(row['pid'] == self.watchdog.pid or row['pgid'] == guard['pgid']
++                                for row in guard_after['rows']))
++        save(self.runtime / 'watchdog-absence.json', dict(identity=guard, absent=guard_absent,
++             remaining_group_rows=[r for r in guard_after['rows'] if r['pgid'] == guard['pgid']]), finish_deadline)
++        if not guard_absent:
++            self.failed = True
++            result['recovered'] = False
++        after = time.monotonic() + 20  # Evidence-only archival; all products must be absent first.
++        if not result['recovered']:
++            raise RuntimeError('failed bounded recovery; retain guard/watchdog evidence')
++        for port in PORTS:
++            self.port(port, 'post', False, min(after, time.monotonic() + 2))
++        report_path = root / 'app/report.json'
++        if exists(report_path, after) and not exists(self.runtime / 'report.json', after):
++            with io_until(after):
++                with (self.runtime / 'report.raw.json').open('xb') as stream:
++                    stream.write(read(report_path, after))
++        for name in ('config.toml', 'daemon-stderr.log', 'openergy.log'):
++            path = root / 'app/config' / name
++            if exists(path, after):
++                with io_until(after):
++                    with (self.runtime / ('app-' + name)).open('xb') as stream:
++                        stream.write(read(path, after))
++        unchanged = tree(bundle, after) == self.prepared['bundle_tree']
++        save(self.runtime / 'bundle-after.json', dict(complete_signed_tree_unchanged=unchanged,
++             app_sha256=sha(bundle / 'Contents/MacOS/Openergy', after),
++             daemon_sha256=sha(bundle / 'Contents/Helpers/openergy', after)), after)
++        save(self.runtime / 'outcome.json', dict(passed=not self.failed and result['passed'] and unchanged,
++             direct_exits=self.exits, recovery=result, product_flows=1, retries=0,
++             source_runtime_proof='only this later invocation, never the source-only repair'), after)
++        if self.failed or not result['passed'] or not unchanged:
++            raise RuntimeError('ordinary evidence flow FAILED; no retry')
+@@ -236 +392,0 @@
+-    global flow_start
+@@ -238,79 +394,2 @@
+-    runtime.mkdir(mode=0o700)  # Exclusive: no second flow, even after setup/runtime failure.
+-    assert cmd(['git', 'rev-parse', 'HEAD'])['stdout'].strip() == ROOT
+-    assert tree(bundle) == json.loads((RAW / 'bundle-signed-tree.json').read_text())
+-    assert sha(app_binary) == prepared['app_sha256'] and sha(daemon_binary) == prepared['daemon_sha256']
+-    assert not (private / 'app/config').exists()
+-    save(runtime / 'launch-preflight.json', dict(bundle_tree_unchanged=True,
+-         app_sha256=sha(app_binary), daemon_sha256=sha(daemon_binary), peer_sha256=sha(daemon_binary),
+-         config_directory_absent=True, controller_pid=os.getpid(), controller_nice=15,
+-         flow_count=1, arguments=['--e2e', str(private / 'app'), '--join', '127.0.0.1:65371', '--host-port', '65372', '--require-peer']))
+-    common = {k: prepared['environment'][k] for k in ['PATH', 'LANG', 'HOME', 'CFFIXED_USER_HOME', 'TMPDIR', 'XDG_CONFIG_HOME', 'XDG_CACHE_HOME', 'MACOSX_DEPLOYMENT_TARGET', 'PYTHONDONTWRITEBYTECODE']}
+-    common.update(OPENERGY_DISABLE_DISCOVERY='1', OPENERGY_ALLOW_PORT_24800='0',
+-                  OPENERGY_DAEMON_ARGS='--platform virtual')
+-    def env_for(directory):
+-        return dict(common, OPENERGY_CONFIG=str(directory / 'config.toml'),
+-                    OPENERGY_CONFIG_DIR=str(directory), OPENERGY_TLS_DIR=str(directory / 'tls'),
+-                    OPENERGY_SOCKET=str(directory / 'control.sock'))
+-    peer_env = env_for(private / 'peer')
+-    app_env = dict(env_for(private / 'app/config'), OPENERGY_E2E_NO_RENDER='1')
+-    peer_config = private / 'peer/config.toml'
+-    peer_config.write_text('version=1\nname="e2e-peer"\nrole="server"\n[server]\nlisten="127.0.0.1:65371"\nport=65371\n[tls]\nenabled=false\n[[screen]]\nname="e2e-peer"\nrect={x=0,y=0,w=1920,h=1080}\n[[screen]]\nname="app"\nrect={x=1920,y=0,w=1920,h=1080}\n')
+-    peer_config.chmod(0o600)
+-    shutil.copyfile(peer_config, runtime / 'peer-config-before.toml')
+-    failure = None
+-    watchdog = None
+-    try:
+-        for port in PORTS: exclusive_port(port, 'pre', True)
+-        flow_start = time.monotonic()
+-        deadline = flow_start + 120
+-        watchdog = threading.Timer(120, watchdog_fired)
+-        watchdog.daemon = True
+-        watchdog.start()
+-        reservations.pop(PORTS[0]).close()
+-        peer = launch('peer', [daemon_binary, 'daemon', '--platform', 'virtual', '--config', peer_config,
+-                     '--socket', private / 'peer/control.sock', '--foreground'], peer_env)
+-        ready = min(deadline, time.monotonic() + 15)
+-        while not (private / 'peer/control.sock').exists() or 'listening on 127.0.0.1:65371' not in (runtime / 'peer.log').read_text():
+-            assert peer.poll() is None, 'peer exited before readiness'
+-            tick(ready)
+-        sample()
+-        status_text = cli('peer-status', [daemon_binary, 'status', '--socket', private / 'peer/control.sock'], peer_env, deadline)
+-        status = json.loads(status_text)
+-        assert status['daemon']['pid'] == peer.pid and status['daemon']['platform'] == 'virtual'
+-        assert status['state'] == 'listening' and peer.pid in identities
+-        save(runtime / 'peer-ready.json', dict(status=status, monotonic_ns=now(),
+-             ownership_identity=identities[peer.pid], before_app_launch=True))
+-        reservations.pop(PORTS[1]).close()
+-        app = launch('app', [app_binary, '--e2e', private / 'app', '--join', '127.0.0.1:65371',
+-                     '--host-port', '65372', '--require-peer'], app_env)
+-        app_start = time.monotonic()
+-        while app.poll() is None: tick(deadline)
+-        sample()
+-        report_path = private / 'app/report.json'
+-        report = json.loads(report_path.read_text()) if report_path.exists() else []
+-        if report_path.exists(): shutil.copyfile(report_path, runtime / 'report.json')
+-        save(runtime / 'app-result.json', dict(code=app.returncode, elapsed_seconds=time.monotonic()-app_start,
+-             end_monotonic_ns=now(), checks=len(report), passed=sum(i['passed'] for i in report),
+-             failed=[i for i in report if not i['passed']], partial=len(report) != 25,
+-             app_sha256=sha(app_binary), daemon_sha256=sha(daemon_binary), peer_sha256=sha(daemon_binary)))
+-        assert app.returncode == 0 and len(report) == 25 and all(i['passed'] for i in report)
+-        app_daemons = [i for i in identities.values() if i['executable'] == str(daemon_binary) and i['ppid'] == app.pid]
+-        assert len(app_daemons) == 2, 'must observe initial and recovered real supervised daemon'
+-    except BaseException:
+-        failure = traceback.format_exc()
+-        (runtime / 'first-runtime-failure.txt').write_text(failure)
+-    finally:
+-        if watchdog is not None: watchdog.cancel()
+-        try:
+-            cleanup(peer_env)
+-        except BaseException:
+-            (runtime / 'first-cleanup-failure.txt').write_text(traceback.format_exc())
+-            if failure is None: failure = traceback.format_exc()
+-        save(runtime / 'priority-samples.json', dict(sample_rounds=sample_rounds, samples=samples))
+-        for name in ['config.toml', 'daemon-stderr.log', 'openergy.log']:
+-            source = private / 'app/config' / name
+-            if source.exists(): shutil.copyfile(source, runtime / ('app-' + name))
+-        save(runtime / 'bundle-after.json', dict(unchanged=tree(bundle) == json.loads((RAW / 'bundle-signed-tree.json').read_text()),
+-             app_sha256=sha(app_binary), daemon_sha256=sha(daemon_binary)))
+-        assert sum(p.stat().st_size for p in HERE.rglob('*') if p.is_file()) <= 33554432
+-    if failure: raise RuntimeError(failure)
++    controller = Controller(load(HERE / 'prepared.json', time.monotonic() + 2))
++    controller.run()
+@@ -320,6 +399 @@
+-    try:
+-        main()
+-    except BaseException:
+-        failure_path = RAW / 'first-controller-failure.txt'
+-        if not failure_path.exists(): failure_path.write_text(traceback.format_exc())
+-        raise
++    main()
+--- a/exec_owned.py
++++ b/exec_owned.py
+@@ -1,6 +1,5 @@
+-"""Same-PID exec receipt after absolute priority assignment. Not a fixture launcher."""
+-import hashlib
+-import json
+-import os
+-from pathlib import Path
+-import subprocess
++"""Same-PID NI15 exec with a durable parent gate. No products run on import."""
++from common import *
++from macproc import api, bsd
++from ownership import expected
++import resource
+@@ -8 +6,0 @@
+-import time
+@@ -10,16 +8,38 @@
+-receipt = Path(sys.argv[1])
+-argv = sys.argv[2:]
+-os.setpriority(os.PRIO_PROCESS, 0, 15)
+-assert os.getpriority(os.PRIO_PROCESS, 0) == 15
+-os.umask(0o077)
+-assert Path(argv[0]).is_absolute()
+-value = dict(pid=os.getpid(), ppid=os.getppid(), pgid=os.getpgrp(), uid=os.getuid(), nice=15,
+-             monotonic_ns=time.clock_gettime_ns(time.CLOCK_MONOTONIC), argv=argv,
+-             binary_sha256=hashlib.sha256(Path(argv[0]).read_bytes()).hexdigest(),
+-             environment_allowlist=dict(os.environ),
+-             identity=subprocess.check_output(['/bin/ps', '-p', str(os.getpid()), '-o',
+-                 'pid,ppid,pgid,uid,ni,lstart,command'], text=True))
+-with receipt.open('x') as stream:
+-    json.dump(value, stream, indent=2, sort_keys=True)
+-    stream.write('\n')
+-os.execve(argv[0], argv, dict(os.environ))
++
++def main():
++    nice15()
++    runtime, label = Path(sys.argv[1]), sys.argv[2]
++    spec = load(runtime / 'session.json', time.monotonic() + 2)
++    launch = load(runtime / (label + '-command.json'), time.monotonic() + 1)
++    deadline = min(launch['absolute_deadline'], time.monotonic() + 2)
++    argv = expected(spec)[label]
++    environment = spec['app_environment'] if label == 'app' else spec['peer_environment']
++    with io_until(deadline):
++        row = bsd(api(), os.getpid())
++        if row is None or row['ppid'] != spec['owner']['pid'] or row['uid'] != spec['owner']['uid']:
++            raise RuntimeError('exec helper ownership mismatch')
++        digest = sha(argv[0], deadline)
++        required = spec['app_sha256'] if label == 'app' else spec['daemon_sha256']
++        if digest != required:
++            raise RuntimeError('exec artifact changed')
++        save(runtime / (label + '-exec.json'), dict(row, argv=argv, binary_sha256=digest,
++              environment_allowlist=environment, monotonic=time.monotonic()), deadline)
++        gate = runtime / (label + '-registered.json')
++        while not gate.exists():
++            pause(deadline)
++        registered = load(gate, deadline)
++        if any(registered[k] != row[k] for k in ('pid', 'start_sec', 'start_usec')):
++            raise RuntimeError('wrong exec registration')
++        # Bounds every product stdout/stderr file, including stalled CLI output.
++        resource.setrlimit(resource.RLIMIT_FSIZE, (LOG_CAP, LOG_CAP))
++        remaining(deadline)
++        # ITIMER_REAL survives exec, while caught handlers reset. Do not pass
++        # this helper's I/O alarm into the unchanged ordinary product. The
++        # separate watchdog process retains its independent flow deadline.
++        signal.setitimer(signal.ITIMER_REAL, 0)
++        signal.signal(signal.SIGALRM, signal.SIG_DFL)
++        os.execve(argv[0], argv, environment)
++
++
++if __name__ == '__main__':
++    main()
+--- /dev/null
++++ b/macproc.py
+@@ -0,0 +1,165 @@
++"""macOS read-only process rows. libproc is loaded only by an explicit call."""
++import ctypes as C
++import errno
++import os
++from pathlib import Path
++
++
++class BSD(C.Structure):
++    # Local macOS 15 SDK sys/proc_info.h: proc_bsdinfo / PROC_PIDTBSDINFO=3.
++    _fields_ = [(name, C.c_uint32) for name in
++                ('flags', 'status', 'xstatus', 'pid', 'ppid', 'uid', 'gid', 'ruid',
++                 'rgid', 'svuid', 'svgid', 'reserved')]
++    _fields_ += [('comm', C.c_char * 16), ('name', C.c_char * 32)]
++    _fields_ += [(name, C.c_uint32) for name in ('nfiles', 'pgid', 'jobc', 'tdev', 'tpgid')]
++    _fields_ += [('nice', C.c_int32), ('start_sec', C.c_uint64), ('start_usec', C.c_uint64)]
++
++
++def api():
++    lib = C.CDLL('/usr/lib/libproc.dylib', use_errno=True)
++    lib.proc_pidinfo.argtypes = [C.c_int, C.c_int, C.c_uint64, C.c_void_p, C.c_int]
++    lib.proc_pidinfo.restype = C.c_int
++    lib.proc_pidpath.argtypes = [C.c_int, C.c_void_p, C.c_uint32]
++    lib.proc_pidpath.restype = C.c_int
++    lib.proc_listallpids.argtypes = [C.c_void_p, C.c_int]
++    lib.proc_listallpids.restype = C.c_int
++    return lib
++
++
++def bsd(lib, pid):
++    value = BSD()
++    C.set_errno(0)
++    result = lib.proc_pidinfo(pid, 3, 0, C.byref(value), C.sizeof(value))
++    if result != C.sizeof(value):
++        code = C.get_errno()
++        # Only ESRCH is absence. EPERM, zero errno and short reads are uncertainty.
++        if result == 0 and code == errno.ESRCH:
++            return None
++        raise OSError(code, 'proc_pidinfo short/failed read', str(pid))
++    return {key: getattr(value, key) for key in
++            ('pid', 'ppid', 'pgid', 'uid', 'ruid', 'nice', 'status', 'start_sec', 'start_usec')}
++
++
++def key(row):
++    return f'{row["pid"]}-{row["start_sec"]}-{row["start_usec"]}'
++
++
++def expected_starts(tokens):
++    result = {}
++    for token in tokens:
++        pid, sec, usec = map(int, token.split('-'))
++        result.setdefault(pid, set()).add(f'{pid}-{sec}-{usec}')
++    return result
++
++
++def argv(pid):
++    libc = C.CDLL(None, use_errno=True)
++    libc.sysctl.argtypes = [C.POINTER(C.c_int), C.c_uint, C.c_void_p,
++                           C.POINTER(C.c_size_t), C.c_void_p, C.c_size_t]
++    libc.sysctl.restype = C.c_int
++    mib = (C.c_int * 3)(1, 49, pid)  # CTL_KERN, KERN_PROCARGS2, pid
++    buffer = C.create_string_buffer(1048576)
++    size = C.c_size_t(len(buffer))
++    if libc.sysctl(mib, 3, buffer, C.byref(size), None, 0) != 0:
++        raise OSError(C.get_errno(), 'KERN_PROCARGS2', str(pid))
++    data = buffer.raw[:size.value]
++    count = int.from_bytes(data[:4], 'little', signed=True)
++    if not 1 <= count <= 128:
++        raise RuntimeError('invalid argc')
++    end = data.index(b'\0', 4) + 1  # executable path, then alignment NULs
++    while end < len(data) and data[end] == 0:
++        end += 1
++    values = data[end:].split(b'\0')[:count]
++    if len(values) != count:
++        raise RuntimeError('short argv')
++    return [value.decode('utf-8', errors='strict') for value in values]
++
++
++def detail(lib, row):
++    pid = row['pid']
++    value = C.create_string_buffer(4096)
++    if lib.proc_pidpath(pid, value, len(value)) <= 0:
++        raise OSError(C.get_errno(), 'proc_pidpath', str(pid))
++    row['executable'] = str(Path(value.value.decode()).resolve())
++    row['argv'] = argv(pid)
++    after = bsd(lib, pid)
++    stable = ('pid', 'ppid', 'pgid', 'uid', 'ruid', 'start_sec', 'start_usec')
++    if after is None or any(row[k] != after[k] for k in stable):
++        raise RuntimeError('process changed during detail read')
++    row['nice_after'] = after['nice']
++    return row
++
++
++def snapshot(private, known):
++    lib = api()
++    known = expected_starts(known)
++    pids = (C.c_int * 65536)()
++    count = lib.proc_listallpids(pids, C.sizeof(pids))
++    if count <= 0 or count >= len(pids):
++        raise RuntimeError('PID enumeration failed/truncated')
++    rows, races = [], []
++    for pid in pids[:count]:
++        if pid <= 0:
++            continue
++        try:
++            row = bsd(lib, pid)
++            if row is None:
++                races.append(dict(pid=pid, race='enumerated then ESRCH'))
++                continue
++            if pid in known and key(row) not in known[pid]:
++                row['identity_reused'] = True
++                rows.append(row)  # Never collect a reused stranger's argv.
++                continue
++            # Do not capture strangers' argv. Group values are inventory only.
++            candidate = (row['uid'] == os.getuid() or pid in known)
++            if candidate:
++                value = C.create_string_buffer(4096)
++                size = lib.proc_pidpath(pid, value, len(value))
++                path = str(Path(value.value.decode()).resolve()) if size > 0 else None
++                if pid in known or (path and Path(path).is_relative_to(private)):
++                    try:
++                        detail(lib, row)
++                    except Exception as error:
++                        row['read_race'] = repr(error)
++            rows.append(row)
++        except Exception as error:
++            races.append(dict(pid=pid, error=repr(error), known=pid in known))
++    # Query every missing known PID separately. Enumeration alone is not absence.
++    absence = {}
++    for pid in known:
++        if any(r['pid'] == pid for r in rows):
++            continue
++        try:
++            absent = bsd(lib, pid)
++            if absent is None:
++                absence[str(pid)] = 'ESRCH'
++            else:
++                rows.append(absent)
++        except Exception as error:
++            races.append(dict(pid=pid, error=repr(error), known=True))
++    return dict(rows=rows, races=races, absence=absence)
++
++
++def targeted(known):
++    """Recovery/control verification that does not depend on PID enumeration."""
++    lib = api()
++    known = expected_starts(known)
++    rows, races, absence = [], [], {}
++    for pid in sorted(set(known)):
++        try:
++            row = bsd(lib, pid)
++            if row is None:
++                absence[str(pid)] = 'ESRCH'
++                continue
++            if key(row) not in known[pid]:
++                row['identity_reused'] = True
++                rows.append(row)
++                continue
++            try:
++                detail(lib, row)
++            except Exception as error:
++                row['read_race'] = repr(error)
++            rows.append(row)
++        except Exception as error:
++            races.append(dict(pid=pid, error=repr(error), known=True))
++    return dict(rows=rows, races=races, absence=absence, targeted=True)
+--- /dev/null
++++ b/ownership.py
+@@ -0,0 +1,288 @@
++"""Shared strict ownership policy; normal sampling and recovery have separate callers."""
++from common import *
++from macproc import key
++import fcntl
++
++
++def budget(runtime, deadline, row_count, actor):
++    """One cross-process budget: 6000 rounds, 24000 retained process rows."""
++    with io_until(deadline):
++        with (runtime / 'budget.lock').open('a+b') as lock:
++            while True:
++                try:
++                    fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
++                    break
++                except BlockingIOError:
++                    pause(deadline)
++            path = runtime / 'budget.json'
++            value = load(path, deadline) if path.exists() else dict(rounds=0, rows=0)
++            proposed = dict(rounds=value['rounds'] + 1, rows=value['rows'] + row_count)
++            if proposed['rounds'] > 6000 or proposed['rows'] > 24000:
++                raise RuntimeError('global observation budget exhausted')
++            value = proposed
++            # Reserve cleanup coverage inside the existing total, rather than
++            # consuming the whole budget in the failed main sampler.
++            value['main_budget_exhausted'] = actor == 'main' and (
++                value['rounds'] >= 4976 or value['rows'] >= 19904)
++            temporary = runtime / ('budget-next-' + str(os.getpid()))
++            with temporary.open('w') as stream:
++                json.dump(value, stream)
++            os.replace(temporary, path)
++            return value
++
++
++def expected(spec):
++    root, bundle = Path(spec['private_root']), Path(spec['bundle'])
++    app, daemon = str(bundle / 'Contents/MacOS/Openergy'), str(bundle / 'Contents/Helpers/openergy')
++    return {
++        'peer': [daemon, 'daemon', '--platform', 'virtual', '--config', str(root / 'peer/config.toml'),
++                 '--socket', str(root / 'peer/control.sock'), '--foreground'],
++        'app': [app, '--e2e', str(root / 'app'), '--join', f'127.0.0.1:{PORTS[0]}',
++                '--host-port', str(PORTS[1]), '--require-peer'],
++        'peer-status': [daemon, 'status', '--socket', str(root / 'peer/control.sock')],
++        'peer-stop': [daemon, 'ctl', 'daemon.stop', '--socket', str(root / 'peer/control.sock'), '--raw'],
++    }
++
++
++def wrapper_argv(runtime, label):
++    return [PYTHON, str(HERE / 'exec_owned.py'), str(runtime), label]
++
++
++def exact_argv(actual, wanted):
++    return (len(actual) == len(wanted) and actual[1:] == wanted[1:]
++            and Path(actual[0]).resolve() == Path(wanted[0]).resolve())
++
++
++class Inventory:
++    def __init__(self, spec, runtime, actor):
++        self.spec, self.runtime, self.actor = spec, Path(runtime), actor
++        self.root = Path(spec['private_root'])
++        self.commands = expected(spec)
++        self.records = {}
++        self.pending = {}
++        self.sequence = 0
++        self.last = None
++        self.reload(min(spec['flow_deadline'] + CLEANUP_SECONDS, time.monotonic() + 2))
++
++    def reload(self, deadline):
++        with io_until(deadline):
++            for path in sorted(self.runtime.glob('identity-*.json')):
++                record = load(path, deadline)
++                self.records[record['identity_id']] = record
++
++    def known_pids(self):
++        return {record['pid'] for record in self.records.values()}
++
++    def observe(self, deadline, validate=True):
++        with io_until(deadline):
++            return self._observe(deadline, validate)
++
++    def _observe(self, deadline, validate):
++        """Raw partial rows are published before ownership/NI assertions can fail."""
++        self.reload(deadline)
++        self.sequence += 1
++        groups = {record['pgid'] for record in self.records.values()}
++        pids = self.known_pids()
++        owner = self.spec['owner']
++        direct = {}
++        for label in self.commands:
++            path = self.runtime / (label + '-exec.json')
++            if path.exists():
++                direct[label] = load(path, deadline)
++                pids.add(direct[label]['pid'])
++        data = json.loads(command([PYTHON, HERE / 'probe.py', str(deadline), self.root,
++                                   *sorted({key(r) for r in self.records.values()} |
++                                           {key(r) for r in direct.values()} | {key(owner)})], deadline))
++        selected = [r for r in data['rows'] if r['pid'] in pids or r['ppid'] in pids
++                    or r['pgid'] in groups or (r.get('executable') and
++                        Path(r['executable']).is_relative_to(self.root))]
++        counts = budget(self.runtime, deadline, len(selected), self.actor)
++        packet = dict(monotonic=time.monotonic(), actor=self.actor, sequence=self.sequence,
++                      rows=selected, races=[r for r in data['races'] if r.get('known') or r['pid'] in pids],
++                      absence=data['absence'], counts=counts)
++        append(self.runtime / (self.actor + '-observations.jsonl'), packet, deadline)
++        self.last = data
++        if counts['main_budget_exhausted']:
++            raise RuntimeError('main observation budget ended; cleanup reserve retained')
++        errors, seen_pending = [], set()
++        all_rows = {r['pid']: r for r in data['rows']}
++        direct_pids = {r['pid'] for r in direct.values()}
++        for row in sorted(selected, key=lambda r: r['pid'] not in direct_pids):
++            # Group membership alone never establishes ownership.
++            candidate = (row['pid'] in pids or row['ppid'] in pids or (row.get('executable') and
++                         Path(row['executable']).is_relative_to(self.root)))
++            if not candidate:
++                continue
++            if row.get('identity_reused'):
++                errors.append(dict(row=row, error='known PID reused; no argv read or signal'))
++                continue
++            if row.get('read_race') or 'argv' not in row:
++                # Zombies can lack an executable/argv. A known start remains visible
++                # for absence checks, but it cannot be signalled from a partial row.
++                if row['status'] == 5 and any(key(r) == key(row) for r in self.records.values()):
++                    continue
++                seen_pending.add(row['pid'])
++                started, attempts = self.pending.get(row['pid'], (time.monotonic(), 0))
++                self.pending[row['pid']] = (started, attempts + 1)
++                if attempts + 1 >= 8 or time.monotonic() - started >= 2:
++                    errors.append('finite detail observation budget: ' + str(row['pid']))
++                continue
++            try:
++                record = self.identify(row, all_rows, direct, deadline)
++                if record is None:
++                    raise RuntimeError('private candidate has no exact ownership chain')
++                identity_id = key(row) + '-' + record['stage']
++                record.update(row, identity_id=identity_id, observed_monotonic=time.monotonic())
++                if identity_id not in self.records:
++                    # Save ownership even if NI validation fails next.
++                    first(self.runtime / ('identity-' + identity_id + '.json'), record, deadline)
++                    self.records[identity_id] = record
++                if row['uid'] != owner['uid'] or row['ruid'] != owner['uid']:
++                    raise RuntimeError('UID mismatch')
++                if validate and (row['nice'] != 15 or row['nice_after'] != 15):
++                    raise RuntimeError('observed product/wrapper NI != 15')
++            except Exception as error:
++                errors.append(dict(row=row, error=repr(error)))
++        for race in packet['races']:
++            seen_pending.add(race['pid'])
++            started, attempts = self.pending.get(race['pid'], (time.monotonic(), 0))
++            self.pending[race['pid']] = (started, attempts + 1)
++            if attempts + 1 >= 8 or time.monotonic() - started >= 2:
++                errors.append(dict(race=race, error='finite known-PID read budget'))
++        for pid in list(self.pending):
++            if pid not in seen_pending:
++                del self.pending[pid]
++        if errors:
++            raise RuntimeError(repr(errors))
++        return data
++
++    def identify(self, row, rows, direct, deadline):
++        if row['uid'] != self.spec['owner']['uid'] or row['ruid'] != row['uid']:
++            raise RuntimeError('candidate UID mismatch')
++        existing = [r for r in self.records.values() if key(r) == key(row)
++                    and r['executable'] == row['executable'] and r['argv'] == row['argv']]
++        if existing:
++            record = dict(existing[0])
++            original_ppid = record['ppid']
++            if row['ppid'] != original_ppid:
++                # Only previously verified children may become orphans. Never
++                # establish new ownership from --parent-pid or PGID alone.
++                if row['ppid'] != 1 or original_ppid in rows:
++                    raise RuntimeError('unverified parent transition')
++                record['orphaned_from_verified_parent'] = original_ppid
++            elif row['ppid'] in rows:
++                parent = rows[row['ppid']]
++                if key(parent) != record['parent_identity']:
++                    raise RuntimeError('parent PID was reused')
++            if row['pgid'] != record['pgid']:
++                raise RuntimeError('group changed after identity registration')
++            return record
++        for label, receipt in direct.items():
++            if key(receipt) != key(row):
++                continue
++            parent = rows.get(row['ppid'])
++            if parent is None or key(parent) != key(self.spec['owner']):
++                raise RuntimeError('direct child parent/start mismatch')
++            if (parent.get('executable') != self.spec['owner']['executable'] or
++                    parent.get('argv') != self.spec['owner']['argv'] or
++                    parent['uid'] != self.spec['owner']['uid'] or parent['ruid'] != parent['uid']):
++                raise RuntimeError('direct child parent details changed')
++            if row['ppid'] != self.spec['owner']['pid']:
++                raise RuntimeError('direct child is not this controller child')
++            if (row['executable'] == self.spec['python_executable'] and
++                    exact_argv(row['argv'], wrapper_argv(self.runtime, label))):
++                return dict(role=label, stage='wrapper', parent_identity=key(parent))
++            wanted = self.commands[label]
++            if row['executable'] == str(Path(wanted[0]).resolve()) and exact_argv(row['argv'], wanted):
++                registered = load(self.runtime / (label + '-registered.json'), deadline)
++                if key(registered) != key(row):
++                    raise RuntimeError('same-PID exec registration mismatch')
++                return dict(role=label, stage='product', parent_identity=key(parent))
++        app_records = [r for r in self.records.values() if r['role'] == 'app' and r['stage'] == 'product']
++        for app in app_records:
++            parent = rows.get(app['pid'])
++            if parent is None or key(parent) != key(app) or row['ppid'] != app['pid']:
++                continue
++            if parent.get('executable') != app['executable'] or parent.get('argv') != app['argv']:
++                raise RuntimeError('supervised parent details uncertain')
++            if parent['uid'] != self.spec['owner']['uid'] or parent['ruid'] != parent['uid']:
++                raise RuntimeError('supervised parent UID changed')
++            wanted = [str(Path(self.spec['bundle']) / 'Contents/Helpers/openergy'), 'daemon',
++                      '--parent-pid', str(app['pid']), '--socket', str(self.root / 'app/config/control.sock'),
++                      '--config', str(self.root / 'app/config/config.toml'), '--platform', 'virtual']
++            if row['executable'] != wanted[0] or not exact_argv(row['argv'], wanted):
++                continue
++            if (row['start_sec'], row['start_usec']) < (app['start_sec'], app['start_usec']):
++                raise RuntimeError('child started before matched parent')
++            prior = {key(r) for r in self.records.values() if r['role'].endswith('supervised-daemon')}
++            role = 'initial-supervised-daemon' if not prior else 'recovered-supervised-daemon'
++            return dict(role=role, stage='product', parent_identity=key(app))
++        return None
++
++    def signal(self, identity, sig, deadline):
++        with io_until(deadline):
++            return self._signal(identity, sig, deadline)
++
++    def _signal(self, identity, sig, deadline):
++        # Fresh independent read immediately before each single-PID signal.
++        data = json.loads(command([PYTHON, HERE / 'probe.py', str(deadline), self.root,
++                                   '--targeted', key(identity), identity['parent_identity']], deadline))
++        rows = {r['pid']: r for r in data['rows']}
++        row = rows.get(identity['pid'])
++        if row is None:
++            if data['absence'].get(str(identity['pid'])) == 'ESRCH':
++                return
++            raise RuntimeError('signal target absence uncertain')
++        if (key(row) != key(identity) or row.get('read_race') or
++                row.get('executable') != identity['executable'] or row.get('argv') != identity['argv'] or
++                row['uid'] != self.spec['owner']['uid'] or row['ruid'] != row['uid'] or
++                row['pgid'] != identity['pgid']):
++            raise RuntimeError('refuse changed/reused/uncertain signal target')
++        parent_pid = int(identity['parent_identity'].split('-')[0])
++        parent = rows.get(parent_pid)
++        if row['ppid'] == parent_pid:
++            if parent is None or key(parent) != identity['parent_identity']:
++                raise RuntimeError('refuse uncertain signal parent')
++            parents = [r for r in self.records.values() if key(r) == identity['parent_identity']]
++            parents.sort(key=lambda r: r['stage'] == 'product', reverse=True)
++            expected_parent = self.spec['owner'] if key(self.spec['owner']) == identity['parent_identity'] else (
++                parents[0] if parents else None)
++            if (expected_parent is None or parent.get('read_race') or
++                    parent.get('executable') != expected_parent['executable'] or
++                    parent.get('argv') != expected_parent['argv'] or
++                    parent['uid'] != self.spec['owner']['uid'] or parent['ruid'] != parent['uid']):
++                raise RuntimeError('refuse changed/uncertain signal parent details')
++        elif not (row['ppid'] == 1 and data['absence'].get(str(parent_pid)) == 'ESRCH'):
++            raise RuntimeError('refuse unmatched signal parent')
++        append(self.runtime / (self.actor + '-signals.jsonl'),
++               dict(identity=identity, current=row, signal=int(sig), before_monotonic=time.monotonic()), deadline)
++        # No group signal. macOS has no pidfd-send-signal primitive. This final
++        # read-to-kill interval is recorded, not claimed as an atomic OS lease.
++        try:
++            os.kill(row['pid'], sig)
++        except ProcessLookupError:
++            append(self.runtime / (self.actor + '-signals.jsonl'),
++                   dict(pid=row['pid'], result='ESRCH after verification'), deadline)
++
++    def absent(self, data, roles=None):
++        records = [r for r in self.records.values() if roles is None or roles(r['role'])]
++        rows = {r['pid']: r for r in data['rows']}
++        # PID reuse is a recorded cleanup failure, never treated as disappearance.
++        return (not self.pending and all(r['pid'] not in rows and
++                    data['absence'].get(str(r['pid'])) == 'ESRCH' for r in records))
++
++    def final(self, data, deadline):
++        with io_until(deadline):
++            return self._final(data)
++
++    def _final(self, data):
++        pids = self.known_pids()
++        groups = {r['pgid'] for r in self.records.values()}
++        leftovers = [r for r in data['rows'] if r['pid'] in pids or r['pgid'] in groups
++                     or (r.get('executable') and Path(r['executable']).is_relative_to(self.root))]
++        sockets = []
++        for path in (self.root / 'app/config/control.sock', self.root / 'peer/control.sock'):
++            sockets.append(dict(path=str(path), exists=os.path.lexists(path)))
++        return dict(known_pids=sorted(pids), actual_groups=sorted(groups),
++                    absence=data['absence'], remaining=leftovers, sockets=sockets,
++                    absent=self.absent(data) and not leftovers and not any(s['exists'] for s in sockets))
+--- a/prepare.py
++++ b/prepare.py
+@@ -1 +1,5 @@
+-"""Read exact bindings; assemble one new ordinary bundle. No product execution."""
++"""LATER file-only preparation. Do not execute during the source-only repair task.
++
++Copies the already validated ordinary signed bundle; never builds, signs, launches,
++queries a process/port, uses a credential, or reuses a runtime root.
++"""
+@@ -3 +6,0 @@
+-import platform
+@@ -7 +10,33 @@
+-import traceback
++
++
++def bind_sources(deadline):
++    app = json.loads(git_file('raw/app-input-bindings.json', deadline))
++    declared = {r['path'] for r in app if r['path'].startswith('apps/macos/Sources/')}
++    actual = {str(p.relative_to(REPO)) for p in (REPO / 'apps/macos/Sources').rglob('*.swift')}
++    if declared != actual or len(actual) != 22:
++        raise RuntimeError('target Swift file set changed')
++    inputs = []
++    for record in app:
++        # bundle.sh differed before the original ordinary packaging. It was
++        # neither run nor a Swift compile input. Bind current bytes separately.
++        path = record['path']
++        digest = sha(REPO / path, deadline)
++        if path != 'apps/macos/scripts/bundle.sh' and digest != record['actual_sha256']:
++            raise RuntimeError('app source/input changed: ' + path)
++        inputs.append(dict(path=path, sha256=digest, bytes=(REPO / path).stat().st_size))
++    daemon = json.loads(git_file('raw/daemon-397-input-bindings.json', deadline))
++    scopes = ['crates/daemon', 'crates/net', 'crates/session', 'crates/ipc', 'crates/config',
++              'crates/platform', 'crates/platform-macos', 'crates/protocol', 'vendor/mdns-sd',
++              'Cargo.toml', 'Cargo.lock', 'rust-toolchain.toml']
++    files = command(['git', 'ls-files', '--cached', '--others', '--exclude-standard', '--', *scopes], deadline).decode().splitlines()
++    if len(daemon) != 397 or set(files) != set(daemon):
++        raise RuntimeError('daemon declared input set changed')
++    for path, record in daemon.items():
++        if sha(REPO / path, deadline) != record['sha256'] or (REPO / path).stat().st_size != record['bytes']:
++            raise RuntimeError('daemon source/input changed: ' + path)
++    framework = json.loads(git_file('raw/framework-artifact-bindings.json', deadline))
++    if not framework['match'] or framework['expected'] != framework['actual'] or len(framework['actual']) != 124:
++        raise RuntimeError('inherited framework binding failed')
++    return dict(app=inputs, daemon=daemon, framework=framework,
++                inherited_root=SOURCE, compiled_app='7287e9aa4caf6570fc4116a89908d548a258f302',
++                compiled_daemon='2485c1425e4d2f414eb22742dfd73f355d47390c')
+@@ -12,126 +47,47 @@
+-    RAW.mkdir(mode=0o700)
+-    assert cmd(['git', 'rev-parse', 'HEAD'])['stdout'].strip() == ROOT
+-    assert platform.machine() == 'arm64'
+-    private = Path(tempfile.mkdtemp(prefix='oe-ordinary-79498-', dir='/private/tmp'))
+-    private.chmod(0o700)
+-    for name in ['home', 'tmp', 'peer', 'app', 'cache']:
+-        (private / name).mkdir(mode=0o700)
+-    bundle = private / 'Openergy.app'
+-    env = dict(PATH='/usr/bin:/bin', LANG='C', HOME=str(private / 'home'),
+-               CFFIXED_USER_HOME=str(private / 'home'), TMPDIR=str(private / 'tmp') + '/',
+-               XDG_CONFIG_HOME=str(private / 'home'), XDG_CACHE_HOME=str(private / 'cache'),
+-               MACOSX_DEPLOYMENT_TARGET='15.0', PYTHONDONTWRITEBYTECODE='1',
+-               OPENERGY_SIGN_IDENTITY='-')
+-    save(RAW / 'predeclared.json', dict(root=ROOT, private_root=str(private), bundle=str(bundle),
+-         setup_environment_allowlist=env, controller_pid=os.getpid(), controller_nice=15,
+-         flows=1, routine='unchanged default AppEndToEnd with --require-peer, no optional mode',
+-         ports=list(PORTS), flow_watchdog_seconds=120, owned_cleanup_seconds=60,
+-         peer_readiness_seconds=15, cli_seconds=5, sample_interval_seconds=0.02,
+-         max_process_samples=24000, max_sample_rounds=6000, max_log_bytes=8388608,
+-         max_evidence_bytes=33554432, ipc_max_frame_bytes=16777216,
+-         routine_stalled_padding_bytes=1000000, routine_stalled_request_ms=300,
+-         routine_responsiveness_seconds=1, routine_stalled_bound_seconds=2,
+-         routine_step_wait_seconds=[3, 5, 10, 15], routine_supervisor_stop_seconds=1.5,
+-         exit_contract='No new one-second process-exit bound', no_retry=True,
+-         scope='ordinary packaged model/IPC only; no rendering, fixture launcher, updater, native input or trusted release'))
+-    app_records = json.loads((OLD_APP / 'build-source.json').read_text())
+-    actual_swift = {str(p.relative_to(REPO)) for p in (REPO / 'apps/macos/Sources').rglob('*.swift')}
+-    assert actual_swift == {i['path'] for i in app_records if i['path'].startswith('apps/macos/Sources/')}
+-    app_bindings = []
+-    for item in app_records:
+-        path = REPO / item['path']
+-        app_bindings.append(dict(**item, actual_sha256=sha(path), actual_bytes=path.stat().st_size,
+-                                 matches_root=sha(path) == item['sha256']))
+-    save(RAW / 'app-input-bindings.json', app_bindings)
+-    assert [i['path'] for i in app_bindings if not i['matches_root']] == ['apps/macos/scripts/bundle.sh']
+-    for name in ['apps/macos/Package.swift', 'apps/macos/Package.resolved', 'apps/macos/Support/Info.plist', *sorted(actual_swift)]:
+-        assert next(i for i in app_bindings if i['path'] == name)['matches_root']
+-    scope = ['crates/daemon', 'crates/net', 'crates/session', 'crates/ipc', 'crates/config',
+-             'crates/platform', 'crates/platform-macos', 'crates/protocol', 'vendor/mdns-sd',
+-             'Cargo.toml', 'Cargo.lock', 'rust-toolchain.toml']
+-    source = json.loads((OLD_DAEMON / 'source-bindings.json').read_text())
+-    names = cmd(['git', 'ls-files', '--', *scope])['stdout'].splitlines()
+-    assert len(names) == len(source) == 397 and set(names) == set(source)
+-    bindings = {}
+-    for name, record in source.items():
+-        path = REPO / name
+-        bindings[name] = dict(expected_sha256=record['sha256'], sha256=sha(path),
+-                              bytes=path.stat().st_size, matches_root=sha(path) == record['sha256'])
+-    save(RAW / 'daemon-397-input-bindings.json', bindings)
+-    assert all(i['matches_root'] for i in bindings.values())
+-    # Entire pinned binary artifact input tree, including all helpers and licenses.
+-    cache = json.loads((OLD_APP / 'cache-copy-after.json').read_text())
+-    artifact_records = [i for i in cache if i['path'].startswith('artifacts/')]
+-    current = []
+-    for path in sorted((SWIFT / 'artifacts').rglob('*')):
+-        item = dict(path=str(path.relative_to(SWIFT)))
+-        if path.is_symlink(): item['symlink'] = os.readlink(path)
+-        elif path.is_file(): item.update(bytes=path.stat().st_size, sha256=sha(path))
+-        else: continue
+-        current.append(item)
+-    save(RAW / 'framework-artifact-bindings.json', dict(expected=artifact_records, actual=current,
+-         match=artifact_records == current))
+-    assert artifact_records == current and artifact_records
+-    state = json.loads((SWIFT / 'workspace-state.json').read_text())
+-    resolved = json.loads((REPO / 'apps/macos/Package.resolved').read_text())
+-    pin = resolved['pins'][0]['state']
+-    assert state['object']['dependencies'][0]['state']['checkoutState'] == pin
+-    assert pin == dict(revision='eef1a539a373c1f1a320624b1130fc5de7b2e100', version='2.10.0')
+-    assert state['object']['artifacts'][0]['source']['checksum'] == '17e28312b8e18ab7cdbbe09a6fb28cc55a5479ec6c371dbc07cdecd2a14fd959'
+-    save(RAW / 'framework-resolution.json', dict(workspace_state=state, package_resolved=resolved,
+-         workspace_state_sha256=sha(SWIFT / 'workspace-state.json')))
+-    app_source = SWIFT / 'arm64-apple-macosx/debug/Openergy'
+-    daemon_source = Path(json.loads((OLD_DAEMON / 'binary.json').read_text())['path'])
+-    assert sha(app_source) == APP_SHA and sha(daemon_source) == DAEMON_SHA
+-    for label, path in [('app', app_source), ('daemon', daemon_source)]:
+-        result = cmd(['/usr/bin/lipo', '-archs', path])
+-        save(RAW / (label + '-source-architecture.json'), result)
+-        assert result['code'] == 0 and result['stdout'].strip() == 'arm64'
+-    inherited = [
+-        (OLD_APP / 'app-result.json', 'inherited-app-build-result.json'),
+-        (OLD_APP / 'app-command.json', 'inherited-app-build-command.json'),
+-        (OLD_APP / 'app.stderr', 'inherited-app-build.stderr'),
+-        (OLD_DAEMON / 'result.json', 'inherited-daemon-build-result.json'),
+-        (OLD_DAEMON / 'stderr.txt', 'inherited-daemon-build.stderr'),
+-        (OLD_DAEMON / 'binary.json', 'inherited-daemon-binary.json')]
+-    references = []
+-    for source_path, name in inherited:
+-        shutil.copyfile(source_path, RAW / name)
+-        references.append(dict(source=str(source_path), copy=name, sha256=sha(source_path), transform='none'))
+-    save(RAW / 'inherited-build-records.json', references)
+-    for name in ['MacOS', 'Helpers', 'Resources']:
+-        (bundle / 'Contents' / name).mkdir(mode=0o700, parents=True, exist_ok=True)
+-    shutil.copyfile(app_source, bundle / 'Contents/MacOS/Openergy')
+-    shutil.copyfile(daemon_source, bundle / 'Contents/Helpers/openergy')
+-    for path in [bundle / 'Contents/MacOS/Openergy', bundle / 'Contents/Helpers/openergy']:
+-        path.chmod(0o700)
+-    for name in ['LICENSE-MIT', 'LICENSE-APACHE', 'THIRD_PARTY_NOTICES.md']:
+-        shutil.copyfile(REPO / name, bundle / 'Contents/Resources' / name)
+-    icon = Path('/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/bundle-final/Openergy.app/Contents/Resources/AppIcon.icns')
+-    shutil.copyfile(icon, bundle / 'Contents/Resources/AppIcon.icns')
+-    save(RAW / 'icon-copy.json', dict(source=str(icon), sha256=sha(icon), compiled_here=False))
+-    (bundle / 'Contents/PkgInfo').write_bytes(b'APPL????')
+-    tool = REPO / 'tools/release/sparkle.py'
+-    commands = [
+-        ['configure-plist', '--template', REPO / 'apps/macos/Support/Info.plist', '--output', bundle / 'Contents/Info.plist', '--version', '0.1.0', '--build', '1'],
+-        ['embed', '--app', bundle, '--scratch', SWIFT],
+-        ['sign', '--app', bundle, '--arch', 'arm64']]
+-    save(RAW / 'packaging-tool-binding.json', dict(path=str(tool), sha256=sha(tool),
+-         priority_helper_sha256=sha(REPO / 'tools/release/priority.py'), no_build=True,
+-         input_app_sha256=sha(app_source), input_daemon_sha256=sha(daemon_source)))
+-    for i, args in enumerate(commands):
+-        result = cmd(['/opt/homebrew/bin/python3', tool, *args], env, timeout=90)
+-        save(RAW / f'package-{i}.json', result)
+-        assert result['code'] == 0, result
+-    info = plistlib.loads((bundle / 'Contents/Info.plist').read_bytes())
+-    assert info['CFBundleIdentifier'] == 'dev.openergy.app' and info['CFBundleExecutable'] == 'Openergy'
+-    assert 'OpenergyPrivateUpdateFixture' not in info
+-    assert not (bundle / 'Contents/MacOS/OpenergyPrivateLauncher').exists()
+-    save(RAW / 'ordinary-info.json', info)
+-    save(RAW / 'bundle-signed-tree.json', tree(bundle))
+-    shutil.copyfile(bundle / 'Contents/Info.plist', RAW / 'ordinary-Info.plist')
+-    save(RAW / 'prepared.json', dict(private_root=str(private), bundle=str(bundle), environment=env,
+-         input_app_sha256=APP_SHA, input_daemon_sha256=DAEMON_SHA,
+-         app_sha256=sha(bundle / 'Contents/MacOS/Openergy'),
+-         daemon_sha256=sha(bundle / 'Contents/Helpers/openergy'), arch='arm64', swift_files=23,
+-         daemon_input_count=397, framework_artifact_records=len(current), product_invocations=0))
++    deadline = time.monotonic() + 120  # File I/O budget only; no flow started.
++    with io_until(deadline):
++        output = HERE / 'prepared.json'
++        if output.exists():
++            raise RuntimeError('one file-only fixture already prepared; do not retry')
++        # A separate exclusive guard survives partial preparation failures.
++        save(HERE / 'prepare-guard.json', dict(monotonic=time.monotonic(), runtime_invocations=0), deadline)
++        bindings = bind_sources(deadline)
++        old = json.loads(git_file('raw/prepared.json', deadline))
++        expected_tree = json.loads(git_file('raw/bundle-signed-tree.json', deadline))
++        source_bundle = Path(old['bundle']).resolve()
++        if tree(source_bundle, deadline) != expected_tree:
++            raise RuntimeError('validated source bundle tree changed/missing')
++        private = Path(tempfile.mkdtemp(prefix='oe-ordinary-432ee8-', dir='/private/tmp')).resolve()
++        private.chmod(0o700)
++        for name in ('home', 'tmp', 'app', 'peer', 'cache'):
++            (private / name).mkdir(mode=0o700)
++        bundle = private / 'Openergy.app'
++        shutil.copytree(source_bundle, bundle, symlinks=True, copy_function=shutil.copy2)
++        if tree(bundle, deadline) != expected_tree or tree(source_bundle, deadline) != expected_tree:
++            raise RuntimeError('bundle copy/source tree differs')
++        info = plistlib.loads(read(bundle / 'Contents/Info.plist', deadline))
++        if (info['CFBundleIdentifier'] != 'dev.openergy.app' or info['CFBundleExecutable'] != 'Openergy'
++                or 'OpenergyPrivateUpdateFixture' in info or
++                (bundle / 'Contents/MacOS/OpenergyPrivateLauncher').exists()):
++            raise RuntimeError('not ordinary Info.plist/bundle')
++        app_hash = sha(bundle / 'Contents/MacOS/Openergy', deadline)
++        daemon_hash = sha(bundle / 'Contents/Helpers/openergy', deadline)
++        if app_hash != old['app_sha256'] or daemon_hash != old['daemon_sha256']:
++            raise RuntimeError('copied executable differs')
++        environment = dict(PATH='/usr/bin:/bin', LANG='C', HOME=str(private / 'home'),
++                           CFFIXED_USER_HOME=str(private / 'home'), TMPDIR=str(private / 'tmp') + '/',
++                           XDG_CONFIG_HOME=str(private / 'home'), XDG_CACHE_HOME=str(private / 'cache'),
++                           MACOSX_DEPLOYMENT_TARGET='15.0', PYTHONDONTWRITEBYTECODE='1')
++        inherited_limits = json.loads(git_file('raw/predeclared.json', deadline))
++        limit_names = ('flows', 'routine', 'flow_watchdog_seconds', 'owned_cleanup_seconds',
++                       'peer_readiness_seconds', 'cli_seconds', 'sample_interval_seconds',
++                       'max_process_samples', 'max_sample_rounds', 'max_log_bytes', 'max_evidence_bytes',
++                       'ipc_max_frame_bytes', 'routine_stalled_padding_bytes', 'routine_stalled_request_ms',
++                       'routine_responsiveness_seconds', 'routine_stalled_bound_seconds',
++                       'routine_step_wait_seconds', 'routine_supervisor_stop_seconds', 'exit_contract', 'no_retry', 'scope')
++        value = dict(private_root=str(private), bundle=str(bundle), environment=environment,
++                     bundle_tree=expected_tree, app_sha256=app_hash, daemon_sha256=daemon_hash,
++                     source_bindings=bindings, original_commit=ORIGINAL,
++                     source_bundle=str(source_bundle), product_invocations=0, ports=list(PORTS),
++                     limits={name: inherited_limits[name] for name in limit_names})
++        save(output, value, deadline)
+@@ -141,5 +97 @@
+-    try:
+-        main()
+-    except BaseException:
+-        (RAW / 'first-setup-failure.txt').write_text(traceback.format_exc())
+-        raise
++    main()
+--- /dev/null
++++ b/probe.py
+@@ -0,0 +1,17 @@
++"""One real read-only snapshot, bounded by the caller and its own alarm. Never run in this task."""
++from common import *
++from macproc import snapshot, targeted
++import sys
++
++
++def main():
++    nice15()
++    deadline = float(sys.argv[1])
++    with io_until(deadline):
++        result = (targeted(sys.argv[4:]) if sys.argv[3:4] == ['--targeted'] else
++                  snapshot(Path(sys.argv[2]).resolve(), sys.argv[3:]))
++        print(json.dumps(result, separators=(',', ':')))
++
++
++if __name__ == '__main__':
++    main()
+--- /dev/null
++++ b/watchdog.py
+@@ -0,0 +1,321 @@
++"""Independent bounded recovery process. Never cancels on a controller exception."""
++from common import *
++from ownership import Inventory
++from macproc import api, bsd, detail, key
++import signal
++import sys
++import traceback
++
++
++def app_role(role):
++    return role == 'app' or role.endswith('supervised-daemon')
++
++
++class Recovery:
++    def __init__(self, spec, runtime, request, actor='watchdog'):
++        self.spec, self.runtime, self.request = spec, Path(runtime), request
++        self.actor = actor
++        self.deadline = request['cleanup_deadline']
++        self.inventory = Inventory(spec, runtime, actor)
++        self.phase = 'app-grace' if request['normal'] else 'app-term'
++        self.until = min(self.deadline, time.monotonic() + (10 if request['normal'] else 5))
++        self.sent = set()
++        self.failures = []
++        self.last_good = None
++        self.done = False
++        self.aborting = not request['normal']
++        self.emergency_phase = 'app-term'
++        self.emergency_until = None
++        if self.aborting:
++            first(self.runtime / 'abort.json', dict(reason='declared recovery request',
++                  monotonic=time.monotonic()), min(self.deadline, time.monotonic() + 0.5))
++
++    def fail(self, message):
++        value = dict(monotonic=time.monotonic(), phase=self.phase, error=message)
++        self.failures.append(value)
++        try:
++            first(self.runtime / ('first-' + self.actor + '-failure.json'), value,
++                  min(self.deadline, time.monotonic() + 0.5))
++        except Exception as error:
++            # A failing evidence sink must not throw out of cleanup either.
++            value['evidence_write_error'] = repr(error)
++
++    def move(self, phase, grace):
++        self.phase, self.until = phase, min(self.deadline, time.monotonic() + grace)
++
++    def signals(self, roles, sig):
++        # Prefer the current product stage over the old same-PID wrapper stage.
++        records = sorted(self.inventory.records.values(), key=lambda r: r['stage'] == 'product', reverse=True)
++        attempted = set()
++        current = {r['pid']: r for r in self.last_good['rows']}
++        for record in records:
++            if not roles(record['role']) or record['pid'] in attempted:
++                continue
++            row = current.get(record['pid'])
++            if row is None or row['status'] == 5:
++                continue
++            attempted.add(record['pid'])
++            token = (record['identity_id'], int(sig))
++            if token in self.sent:
++                continue
++            # A failed verification is recorded and retried only within this
++            # finite phase. It never falls through to Popen.terminate/kill.
++            try:
++                limit = min(self.deadline, time.monotonic() + 1)
++                if row['status'] == 4 and sig == signal.SIGTERM:
++                    self.inventory.signal(record, signal.SIGCONT, limit)
++                self.inventory.signal(record, sig, limit)
++                self.sent.add(token)
++            except Exception:
++                self.fail(traceback.format_exc())
++
++    def step(self):
++        try:
++            with io_until(min(self.deadline, time.monotonic() + 2)):
++                self.advance()
++        except Exception:
++            self.fail(traceback.format_exc())
++
++    def emergency(self):
++        """Known-identity recovery survives enumeration or sample-budget failure.
++
++        Targeted reads may stop the verified app/children, but cannot establish
++        whole-tree absence or authorize peer teardown without a full inventory.
++        """
++        limit = min(self.deadline, time.monotonic() + 1)
++        known = {key(r) for r in self.inventory.records.values()} | {key(self.spec['owner'])}
++        known |= {r['parent_identity'] for r in self.inventory.records.values()}
++        direct = {}
++        for label in self.inventory.commands:
++            path = self.runtime / (label + '-exec.json')
++            if path.exists():
++                direct[label] = load(path, limit)
++                known.add(key(direct[label]))
++        data = json.loads(command([PYTHON, HERE / 'probe.py', str(limit), self.spec['private_root'],
++                                   '--targeted', *sorted(known)], limit))
++        first(self.runtime / ('first-' + self.actor + '-targeted-recovery.json'),
++              dict(data=data, monotonic=time.monotonic()), limit)
++        rows = {row['pid']: row for row in data['rows']}
++        for row in data['rows']:
++            if row['pid'] == self.spec['owner']['pid'] or row.get('read_race') or 'argv' not in row:
++                continue
++            try:
++                record = self.inventory.identify(row, rows, direct, limit)
++                if record is not None:
++                    identity_id = key(row) + '-' + record['stage']
++                    record.update(row, identity_id=identity_id, observed_monotonic=time.monotonic())
++                    first(self.runtime / ('identity-' + identity_id + '.json'), record, limit)
++                    self.inventory.records[identity_id] = record
++            except Exception:
++                self.fail(traceback.format_exc())
++        self.last_good = data
++        now = time.monotonic()
++        if self.emergency_until is None:
++            self.emergency_until = min(self.deadline, now + 5)
++        app_records = [r for r in self.inventory.records.values() if r['role'] == 'app']
++        app_absent = all(data['absence'].get(str(r['pid'])) == 'ESRCH' for r in app_records)
++        if self.emergency_phase == 'app-term':
++            self.signals(lambda role: role == 'app', signal.SIGTERM)
++            if app_absent:
++                self.emergency_phase, self.emergency_until = 'children-term', min(self.deadline, now + 5)
++            elif now >= self.emergency_until:
++                self.emergency_phase, self.emergency_until = 'app-kill', min(self.deadline, now + 5)
++        if self.emergency_phase == 'app-kill':
++            self.signals(lambda role: role == 'app', signal.SIGKILL)
++            if app_absent:
++                self.emergency_phase, self.emergency_until = 'children-term', min(self.deadline, now + 5)
++        if self.emergency_phase == 'children-term':
++            self.signals(lambda role: role.endswith('supervised-daemon'), signal.SIGTERM)
++            if now >= self.emergency_until:
++                self.emergency_phase = 'children-kill'
++        if self.emergency_phase == 'children-kill':
++            self.signals(lambda role: role.endswith('supervised-daemon'), signal.SIGKILL)
++
++    def advance(self):
++        """Never lets an observer exception unwind the cleanup state machine."""
++        if self.done:
++            return
++        self.inventory.last = None
++        validated = False
++        try:
++            self.last_good = self.inventory.observe(min(self.deadline, time.monotonic() + 1), validate=True)
++            validated = True
++        except Exception:
++            self.fail(traceback.format_exc())
++            if not self.aborting:
++                first(self.runtime / 'abort.json', dict(reason='cleanup observation failed',
++                      monotonic=time.monotonic()), min(self.deadline, time.monotonic() + 0.5))
++                self.aborting = True
++                self.move('app-term', 5)
++            # Persisted identities remain usable only with an independent fresh
++            # pre-signal read. Never use an old row to declare absence.
++            self.last_good = self.inventory.last
++        if self.last_good is None:
++            # Even enumeration/budget failure must not disable exact owned
++            # recovery. The pre-signal verifier performs a new targeted read.
++            # No whole-tree absence or peer-teardown decision uses this route.
++            self.emergency()
++            return
++        data = self.last_good
++        app_gone = validated and self.inventory.absent(data, lambda role: role == 'app')
++        app_tree_gone = validated and self.inventory.absent(data, app_role)
++        now = time.monotonic()
++        # CLI waits never suspend observation or postpone their five-second
++        # limit until the peer's later grace period. TERM gets its own five
++        # seconds before escalation; every signal rechecks the exact identity.
++        for label in ('peer-status', 'peer-stop'):
++            path = self.runtime / (label + '-command.json')
++            if path.exists():
++                command_row = load(path, min(self.deadline, now + 0.5))
++                if now >= command_row['absolute_deadline']:
++                    active = [r for r in self.inventory.records.values() if r['role'] == label
++                              and any(row['pid'] == r['pid'] for row in data['rows'])]
++                    if active:
++                        self.fail(label + ' exceeded its absolute CLI deadline')
++                        self.signals(lambda role, label=label: role == label,
++                                     signal.SIGKILL if now >= command_row['absolute_deadline'] + 5 else signal.SIGTERM)
++        if self.phase == 'app-grace':
++            if app_tree_gone:
++                self.move('peer-request', 0)
++            elif now >= self.until:
++                self.fail('app/children remained after normal 10-second grace')
++                first(self.runtime / 'abort.json', dict(reason='normal cleanup grace expired', monotonic=now), self.deadline)
++                self.move('app-term', 5)
++        if self.phase == 'app-term':
++            self.signals(lambda role: role == 'app', signal.SIGTERM)
++            if app_gone:
++                self.move('children-term', 5)
++            elif now >= self.until:
++                self.move('app-kill', 5)
++        if self.phase == 'app-kill':
++            self.signals(lambda role: role == 'app', signal.SIGKILL)
++            if app_gone:
++                self.move('children-term', 5)
++            elif now >= self.until:
++                self.fail('owned app absence not established; peer must remain alive')
++                self.move('app-blocked', max(0, self.deadline - now))
++        if self.phase == 'children-term':
++            self.signals(lambda role: role.endswith('supervised-daemon'), signal.SIGTERM)
++            if app_tree_gone:
++                self.move('peer-request', 0)
++            elif now >= self.until:
++                self.move('children-kill', 5)
++        if self.phase == 'children-kill':
++            self.signals(lambda role: role.endswith('supervised-daemon'), signal.SIGKILL)
++            if app_tree_gone:
++                self.move('peer-request', 0)
++            elif now >= self.until:
++                self.fail('owned child absence not established; peer must remain alive')
++                self.move('app-blocked', max(0, self.deadline - now))
++        if self.phase == 'peer-request':
++            # This is the only transition that permits peer teardown. Unknown
++            # private candidates also prevent this transition via observe().
++            first(self.runtime / 'peer-stop-permitted.json',
++                  dict(monotonic=now, app_tree_absent=True,
++                       declared_abort=(self.runtime / 'abort.json').exists()), self.deadline)
++            self.move('peer-grace', 10)
++        if self.phase == 'peer-grace':
++            if validated and self.inventory.absent(data, lambda role: role == 'peer'):
++                self.move('all-exits', 0)
++            elif now >= self.until:
++                self.fail('peer remained after 10-second public-stop allowance')
++                self.move('peer-term', 5)
++        if self.phase == 'peer-term':
++            self.signals(lambda role: role.startswith('peer'), signal.SIGTERM)
++            if validated and self.inventory.absent(data, lambda role: role.startswith('peer')):
++                self.move('all-exits', 0)
++            elif now >= self.until:
++                self.move('peer-kill', 5)
++        if self.phase == 'peer-kill':
++            self.signals(lambda role: role.startswith('peer'), signal.SIGKILL)
++            if validated and self.inventory.absent(data, lambda role: role.startswith('peer')):
++                self.move('all-exits', 0)
++            elif now >= self.until:
++                self.fail('peer/CLI absence not established')
++                self.move('blocked', max(0, self.deadline - now))
++        if self.phase == 'all-exits' and validated:
++            final = self.inventory.final(data, self.deadline)
++            # The controller must reap every direct product/helper child.
++            launches = [load(p, self.deadline) for p in self.runtime.glob('*-spawn.json')]
++            exits = {p.name.removesuffix('-exit.json') for p in self.runtime.glob('*-exit.json')}
++            collected = all(item['label'] in exits for item in launches)
++            for label in ('peer-status', 'peer-stop'):
++                if label in exits:
++                    exit_row = load(self.runtime / (label + '-exit.json'), self.deadline)
++                    if exit_row['code'] != 0:
++                        self.fail(label + ' OS exit was nonzero: ' + str(exit_row['code']))
++            if final['absent'] and collected:
++                self.finish(final, True)
++
++    def finish(self, final=None, collected=False):
++        if self.done:
++            return
++        # A failed bounded recovery is a terminal, explicit failure. It never
++        # writes PASS merely because a deadline or a signal was reached.
++        result = dict(actor=self.actor, normal_request=self.request['normal'], phase=self.phase,
++                      start=self.request['cleanup_start'], end=time.monotonic(),
++                      cleanup_deadline=self.deadline, failures=self.failures,
++                      all_direct_exits_collected=collected, inventory=final,
++                      recovered=bool(final and final['absent'] and collected),
++                      passed=bool(final and final['absent'] and collected and not self.failures))
++        first(self.runtime / 'recovery-done.json', result, time.monotonic() + 1)
++        self.done = True
++
++
++def main():
++    nice15()
++    runtime = Path(sys.argv[1])
++    spec = load(runtime / 'session.json', time.monotonic() + 2)
++    hard_end = spec['flow_deadline'] + CLEANUP_SECONDS
++    with io_until(time.monotonic() + 1):
++        lib = api()
++        identity = detail(lib, bsd(lib, os.getpid()))
++        save(runtime / 'watchdog-ready.json', dict(identity=identity, monotonic=time.monotonic(),
++             flow_deadline=spec['flow_deadline'], hard_end=hard_end), time.monotonic() + 1)
++    request = None
++    while time.monotonic() < spec['flow_deadline']:
++        try:
++            with io_until(min(spec['flow_deadline'], time.monotonic() + 1)):
++                if (runtime / 'cleanup-request.json').exists():
++                    request = load(runtime / 'cleanup-request.json', min(hard_end, time.monotonic() + 1))
++                    break
++                if (runtime / 'abort.json').exists() or os.getppid() != spec['owner']['pid']:
++                    start = time.monotonic()
++                    first(runtime / 'abort.json', dict(reason='controller parent lost', monotonic=start), hard_end)
++                    request = dict(normal=False, cleanup_start=start,
++                                   cleanup_deadline=min(start + CLEANUP_SECONDS, hard_end))
++                    break
++            pause(spec['flow_deadline'])
++        except DeadlineError:
++            break
++    if request is None:
++        start = time.monotonic()
++        first(runtime / 'abort.json', dict(reason='independent flow watchdog expired', monotonic=start), hard_end)
++        request = dict(normal=False, cleanup_start=start, cleanup_deadline=hard_end)
++    # Clamp even a corrupt/late controller request to the predeclared hard end.
++    request['cleanup_deadline'] = min(request['cleanup_deadline'], hard_end)
++    recovery = Recovery(spec, runtime, request)
++    while time.monotonic() < recovery.deadline and not recovery.done:
++        try:
++            recovery.step()
++        except Exception:
++            # Includes evidence-write failures. Keep the watchdog and collector
++            # budget; the outer boundary still produces a failed outcome.
++            recovery.fail(traceback.format_exc())
++        if not recovery.done:
++            try:
++                pause(recovery.deadline)
++            except DeadlineError:
++                break
++    if not recovery.done:
++        recovery.finish()
++    return 0 if recovery.done and load(runtime / 'recovery-done.json', time.monotonic() + 1)['passed'] else 1
++
++
++if __name__ == '__main__':
++    try:
++        sys.exit(main())
++    except BaseException:
++        # Fatal watchdog loss is detected by the parent's direct-child poll.
++        # Parent then enters separate fallback recovery, never cancels products.
++        raise

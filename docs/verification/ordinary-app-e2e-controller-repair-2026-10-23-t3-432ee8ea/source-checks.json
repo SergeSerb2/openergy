@@ -1,0 +1,118 @@
+{
+  "current_source_file_hash_audit": {
+    "app_mismatches": [],
+    "app_records": 29,
+    "complete_daemon_input_set": true,
+    "complete_target_swift_set": true,
+    "daemon_mismatches": [],
+    "daemon_records": 397,
+    "target_swift_count": 22
+  },
+  "fixture_preparation": "NOT RUN; no fixture or bundle copy created",
+  "kind": "SOURCE ONLY; no helper/module import or execution; no runtime/process/port preflight",
+  "patch": {
+    "check": "git apply --check --unidiff-zero passed before materialization",
+    "format": "unified zero-context; requires --unidiff-zero",
+    "materialization": "git apply --unidiff-zero to owned copies of four Git originals; all eight resulting files byte-equal to new sources",
+    "pairs": [
+      {
+        "new_sha256": "15252c66079ab1e352ea0aa49f83e611cbd141848aa51618f5a0efc5be848133",
+        "original_sha256": "746c9e85b74f7a7b15be8ca52e6b8dab6cd5bae20b7b573b53844258cde5e153",
+        "path": "common.py"
+      },
+      {
+        "new_sha256": "4a5f4d49f140b9635618a0e2134ceba93921fca52ffa868cd81ed910605199c0",
+        "original_sha256": "189c27b93daae1cb93bb35f8a30bc739310aa6efcb5511875192a954de5c1cd7",
+        "path": "controller.py"
+      },
+      {
+        "new_sha256": "a3a02e73a865b9f2432b4d10909e3ac4b0d38ae660392442c0279f686bba1070",
+        "original_sha256": "ab15f5e4dddb38ddbf8f6b2b1c8f42d6462ebee2845521cb9c2bc75ca47120e2",
+        "path": "exec_owned.py"
+      },
+      {
+        "new_sha256": "409a1c8d0ffd8d1ce7cc455580762969532f2247e3925b55daec32a5d4e26ae0",
+        "original_sha256": null,
+        "path": "macproc.py"
+      },
+      {
+        "new_sha256": "2108dffea8d7bca460ae6917b37ec548188b2da97fba79b7c9c61eafb68444e9",
+        "original_sha256": null,
+        "path": "ownership.py"
+      },
+      {
+        "new_sha256": "dcbf0f80ddc0c5dbb684df9736eb762a9bbf04f346bff2eb262537e6e563fd74",
+        "original_sha256": "b44c3923eb12c5ea80dc2e6a4661ce3ccc83a54478768990cd8211932a080b68",
+        "path": "prepare.py"
+      },
+      {
+        "new_sha256": "6e09882a4e7c60ec8e04188b536ef4520d089ca4884c709c769a984665642c1a",
+        "original_sha256": null,
+        "path": "probe.py"
+      },
+      {
+        "new_sha256": "e6234dad7cf5ecf4aefdf7779da731e38667e4b7a90229d8f00b7154b2ac9c7f",
+        "original_sha256": null,
+        "path": "watchdog.py"
+      }
+    ],
+    "sha256": "bb3c18243ebcf403069fc4e1ffa3a0cf2db215e935060b58374af6d58efd5f2e"
+  },
+  "python_files": {
+    "common.py": {
+      "ast": "parsed only; no import/exec",
+      "bytes": 6666,
+      "lines": 183,
+      "sha256": "15252c66079ab1e352ea0aa49f83e611cbd141848aa51618f5a0efc5be848133"
+    },
+    "controller.py": {
+      "ast": "parsed only; no import/exec",
+      "bytes": 22481,
+      "lines": 399,
+      "sha256": "4a5f4d49f140b9635618a0e2134ceba93921fca52ffa868cd81ed910605199c0"
+    },
+    "exec_owned.py": {
+      "ast": "parsed only; no import/exec",
+      "bytes": 2117,
+      "lines": 45,
+      "sha256": "a3a02e73a865b9f2432b4d10909e3ac4b0d38ae660392442c0279f686bba1070"
+    },
+    "macproc.py": {
+      "ast": "parsed only; no import/exec",
+      "bytes": 6462,
+      "lines": 165,
+      "sha256": "409a1c8d0ffd8d1ce7cc455580762969532f2247e3925b55daec32a5d4e26ae0"
+    },
+    "ownership.py": {
+      "ast": "parsed only; no import/exec",
+      "bytes": 16456,
+      "lines": 288,
+      "sha256": "2108dffea8d7bca460ae6917b37ec548188b2da97fba79b7c9c61eafb68444e9"
+    },
+    "prepare.py": {
+      "ast": "parsed only; no import/exec",
+      "bytes": 6203,
+      "lines": 97,
+      "sha256": "dcbf0f80ddc0c5dbb684df9736eb762a9bbf04f346bff2eb262537e6e563fd74"
+    },
+    "probe.py": {
+      "ast": "parsed only; no import/exec",
+      "bytes": 510,
+      "lines": 17,
+      "sha256": "6e09882a4e7c60ec8e04188b536ef4520d089ca4884c709c769a984665642c1a"
+    },
+    "watchdog.py": {
+      "ast": "parsed only; no import/exec",
+      "bytes": 16653,
+      "lines": 321,
+      "sha256": "e6234dad7cf5ecf4aefdf7779da731e38667e4b7a90229d8f00b7154b2ac9c7f"
+    }
+  },
+  "runtime_checks": "NOT RUN",
+  "scope": "Only file reads, hashes, AST parsing, and file-only patch materialization; no task helper imported or run",
+  "sdk_headers": {
+    "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/proc_info.h": "e427fa96b348537b21552b9de71e01039410bcad2cedee5584c5e5fddafd70fc",
+    "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/sysctl.h": "d6d627d3353607f4078079051e09ea0e9a3b32a6771934be1ac5d89fbe93b1c7"
+  },
+  "tests": "NONE; no unit tests, mocks, synthetic processes or fake callbacks"
+}
