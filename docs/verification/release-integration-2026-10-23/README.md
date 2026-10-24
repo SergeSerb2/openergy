@@ -283,6 +283,12 @@ found three P2 controller issues: restart accounting, absolute I/O deadlines,
 and normal-quit scope on failure. The operation remains **DO-NOT-RUN** and
 unapproved. A source-only correction is in progress; artifact identity does
 not establish launch, handoff or relaunch acceptance.
+The [source-only correction](../sparkle-running-repair-2026-10-23-t3-bd21f531-r1/README.md)
+adds persistent accounting and bounded recovery. Its [R4 review](../sparkle-running-repair-R4-review-2026-10-23-t3-37c4f272.md)
+closes the earlier I/O-deadline and NEW-only quit defects, but finds two P2s:
+out-of-order ENTRY observations can reject valid exec, and final cleanup can
+miss a late observed helper. The corrected operation is not clear for approval.
+A narrow source-only repair is in progress; no controller or target has run.
 
 The [signing prerequisite check](../macos-signing-prerequisites-2026-10-23/README.md)
 records no Developer ID Application identity and no declared notary profile.
