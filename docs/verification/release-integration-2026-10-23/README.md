@@ -8,6 +8,9 @@ The [22:10 continuation checkpoint](../release-readiness-2026-10-23/continuation
 records current task handles, held source, missing retention prerequisites and
 the closed Sparkle invocation. It is committed so resumption does not depend
 on temporary files. Its completion estimate is subjective, not a gate score.
+The user [closed this round at 22:37](../release-readiness-2026-10-23/round-wrapup-2237.md).
+All three delegated tasks finished. No further repair, review or runtime was
+started; the overall goal remains incomplete.
 
 The [fresh dependency-policy observation](dependency-policy.md) passes all six
 graphs and checks 106 registry versions. Runtime acceptance remains separate.
@@ -214,9 +217,12 @@ supplies repairs and responses for all seven findings. Its
 [R6 review](../ordinary-controller-R6-review-2026-10-23-t3-6bf67e40.md) finds two
 remaining P2s: partial private-child metadata can stop blocking cleanup after
 app exit, and terminal-evidence read failure can prevent fallback recovery
-after watchdog loss. Source-only R7 candidate `d56c65e` supplies both corrections
-and preserves the earlier repairs. It is held for a fresh independent R8
-review. No new ordinary flow has run; retained signed-bundle inputs are absent.
+after watchdog loss. [Source-only R7](../ordinary-controller-repair-r7-2026-10-23-t3-ad9d06e1/README.md)
+candidate `d56c65e` supplies both corrections and preserves the earlier repairs.
+Its [R8 review](../ordinary-controller-R8-review-2026-10-23-t3-f51c60d1.md) finds one
+P2: fresh recovery Inventory objects lose the main observer's detected unresolved
+state, permitting early peer teardown. R7 is not clear for a flow. No new
+ordinary runtime ran; retained signed-bundle inputs remain absent.
 
 The [first connected-idle measurement](../macos-idle-resources-2026-10-23/README.md)
 failed in its launcher before app readiness. Its successful build and completed
@@ -264,8 +270,12 @@ independent runtime reproduction. The [source-only reader repair](windows-stop-c
 has a fresh [R4 review](windows-stop-controller-R4-review-b5580f67.md) with no
 actionable P1/P2 in its source scope. PowerShell/C# syntax and corrected native
 runtime behavior remain unverified. Its transport selector and all six bound
-private inputs are absent, blocking the proposed reuse flow. Preparation of a
-durable new-input path is assigned; no native retry or rebuild has run.
+private inputs were absent at their bound paths, blocking the proposed reuse
+flow. The [R5 data recovery](windows-prerequisite-recovery-r5-86e0bfd1/README.md)
+recovers the exact historical source archive and manifest, with 558 member
+bindings. It prepares a new inert adapter and proposal, pending review. The
+executable, raw build receipt, state/evidence, exact transport selector and
+nine fixture path mappings remain missing. No remote/native retry or rebuild ran.
 
 [Sparkle integration](../sparkle-integration-2026-10-23/README.md) and the signed
 empty Cloudflare feed are implemented and checked. The later
@@ -343,6 +353,10 @@ relaunch started. The controller exited 1; the six selected private hashes
 remain exact. The original approval request and frozen source are unchanged.
 No retry, guard reset or marker renewal occurred. Runtime acceptance stays
 **UNVERIFIED**; this approved one-shot invocation is closed.
+The [scoped LS source repair](../sparkle-scoped-ls-source-repair-2026-10-23-t3-2d3b20d4/README.md)
+prepares a fixed-ID API observer and exact patches. It has no independent
+review or runtime acceptance. The old approval, guards and marker stay unchanged;
+this source is not runnable or clear for approval.
 
 The [signing prerequisite check](../macos-signing-prerequisites-2026-10-23/README.md)
 records no Developer ID Application identity and no declared notary profile.
