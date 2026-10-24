@@ -1,0 +1,46 @@
+{
+  "source_commit": "06b9a139ec855a6f697ded393fa4c2c894110613",
+  "mac_format_clippy_release_pass": true,
+  "steps": [
+    {
+      "name": "rustc",
+      "exit_code": 0
+    },
+    {
+      "name": "cargo",
+      "exit_code": 0
+    },
+    {
+      "name": "host",
+      "exit_code": 0
+    },
+    {
+      "name": "format-check",
+      "exit_code": 0
+    },
+    {
+      "name": "clippy",
+      "exit_code": 0
+    },
+    {
+      "name": "release",
+      "exit_code": 0
+    },
+    {
+      "name": "binary-build",
+      "exit_code": 0
+    }
+  ],
+  "private_build_root": "/private/tmp/oe-idle-tls-r2-build-773e34c7-ft9s8yxw",
+  "shared_inputs_unchanged": true,
+  "original_evidence_preserved": true,
+  "original_runtime_overall": "FAIL / exit 1; immediate EADDRINUSE; cause unresolved",
+  "runtime_attempts_for_fixed_source": 0,
+  "unit_tests": false,
+  "mocks": false,
+  "binary": {
+    "sha256": "c49c6cfc13fd2f3e54e6f41632b39123eda5095011f114992388f41c73c0bb29",
+    "bytes": 2835784
+  },
+  "binary_executed": false
+}

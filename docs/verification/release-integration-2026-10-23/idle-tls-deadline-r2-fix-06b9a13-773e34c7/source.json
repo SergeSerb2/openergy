@@ -1,0 +1,41 @@
+{
+  "original_parent": "a121376fe6c1715fa99d72559336ca3b3a73b439",
+  "candidate_commit": "9f6625c951835295419ed1c53565581a7fa9681a",
+  "cherry_pick_commit": "f238375dd6a2f7b660817511da00a41d47d6ccb9",
+  "source_commit": "06b9a139ec855a6f697ded393fa4c2c894110613",
+  "source_tree": "4aef0f7764638d0d9d02608b5469852935741af4",
+  "fix_patch_sha256": "aa473856d217aeaaf77445b563ebd342aaf46d85fc0e5e305494bf90087a32c1",
+  "inputs": {
+    "crates/net/examples/dns_queue_cancel_c4806a3d.rs": {
+      "sha256": "623f08c01aecec59a5d43ce02a3e11db4e2900f575d6e6012f5e9c8ba37e1111",
+      "git_blob": "367621a2dcf96cbc86b28552b7e517ce0d2752be"
+    },
+    "crates/net/examples/dns_queue_cancel_c4806a3d/idle_tls_deadline.rs": {
+      "sha256": "9cd3475f9c13c8e28ea54e0f344b55ae795267b22ea1676c45e5659a64f1f1d4",
+      "git_blob": "91c84ffada825055e0163a1fd53e7d94f8c5d1ee"
+    },
+    "Cargo.toml": {
+      "sha256": "7ea29af11f38ac187df7fb78ecbfb5ba0f5c4d2248211efb857010b91412ea04",
+      "git_blob": "7b095fa3a68ea66ead22ea884c35527b4827a9f9"
+    },
+    "Cargo.lock": {
+      "sha256": "6d57d3d84fcef4208a9ce657e511b07099187dcda084cd9decb9ab9a56756800",
+      "git_blob": "2c9220ba071d92a001a60a15a7d5ad960fb268cc"
+    },
+    "crates/net/Cargo.toml": {
+      "sha256": "c74312dcc7dc550825d7c247961e2fd44f7ca1dbbdfc7bb6c28e7351ef30637c",
+      "git_blob": "0a0c4ef06ac905419e1b8dacc760de4a3dbddcfb"
+    },
+    "rust-toolchain.toml": {
+      "sha256": "f715f440167e20fd8ea9afa0498c3d1ab80174cfcb8cbc895f106a34d907a1e1",
+      "git_blob": "57ef39fe93d7c441367e8dc3e5d2956d07289a5a"
+    },
+    "rustfmt.toml": {
+      "sha256": "be6b347de980e910a52b008bc0f11daea064fbcd8d5e6acd477bd9c2983a65ec",
+      "git_blob": "b9a537d26c791bc2db9ca4adc34ca3f579121d02"
+    }
+  },
+  "production_library_diff": "",
+  "main_example_unchanged_vs_candidate": true,
+  "runtime_attempts_for_fixed_source": 0
+}

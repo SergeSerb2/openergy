@@ -1,0 +1,26 @@
+{
+  "command": [
+    "/usr/bin/ssh",
+    "-o",
+    "BatchMode=yes",
+    "-o",
+    "ConnectTimeout=8",
+    "-o",
+    "StrictHostKeyChecking=yes",
+    "-o",
+    "UpdateHostKeys=no",
+    "-o",
+    "ControlMaster=no",
+    "sergecode-windows",
+    "powershell.exe",
+    "-NoLogo",
+    "-NoProfile",
+    "-NonInteractive",
+    "-EncodedCommand",
+    "<UTF16LE_BASE64_OF_windows-owned-cleanup.ps1>"
+  ],
+  "recorded_local": "2026-10-23T17:37:15.060010-07:00",
+  "exit_code": 0,
+  "elapsed_ns": 1316118542,
+  "script_sha256": "f297bd6679295d595326d75ea1772e74359c419eab537421dd0d21546970a631"
+}

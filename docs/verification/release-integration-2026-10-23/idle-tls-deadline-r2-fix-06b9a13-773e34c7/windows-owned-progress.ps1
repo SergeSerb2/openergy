@@ -1,0 +1,3 @@
+$ErrorActionPreference='Stop';$ProgressPreference='SilentlyContinue'
+$r=Join-Path $env:TEMP 'oe-idle-tls-r2-build-773e34c7-06b9a13'
+[ordered]@{owned_root_exists=(Test-Path -LiteralPath $r);guard_exists=(Test-Path -LiteralPath (Join-Path $r 'build-once.guard'));shared_inputs_before_exists=(Test-Path -LiteralPath (Join-Path $r 'shared-inputs-before.json'));private_cache_exists=(Test-Path -LiteralPath (Join-Path $r 'cargo-home/registry'));build_start_exists=(Test-Path -LiteralPath (Join-Path $r 'build-start.json'));build_result_exists=(Test-Path -LiteralPath (Join-Path $r 'build-result.json'))}|ConvertTo-Json -Compress

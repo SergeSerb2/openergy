@@ -1,0 +1,43 @@
+{
+  "name": "clippy",
+  "command": [
+    "/Users/serge/.rustup/toolchains/1.99.1-aarch64-apple-darwin/bin/cargo",
+    "clippy",
+    "--offline",
+    "--locked",
+    "--release",
+    "-j",
+    "2",
+    "-p",
+    "openergy-net",
+    "--example",
+    "dns_queue_cancel_c4806a3d",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "cwd": "/Users/serge/.t3/worktrees/openergy/t3-773e34c7",
+  "start_local": "2026-10-23T17:31:11.408168-07:00",
+  "source_commit": "06b9a139ec855a6f697ded393fa4c2c894110613",
+  "inherited_nice": 15,
+  "timeout_seconds": 300,
+  "environment": {
+    "CARGO_HOME": "/private/tmp/oe-idle-tls-r2-build-773e34c7-ft9s8yxw/cargo-home",
+    "CARGO_TARGET_DIR": "/private/tmp/oe-idle-tls-r2-build-773e34c7-ft9s8yxw/target",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_NET_OFFLINE": "true",
+    "MACOSX_DEPLOYMENT_TARGET": "15.0",
+    "RUSTC": "/Users/serge/.rustup/toolchains/1.99.1-aarch64-apple-darwin/bin/rustc",
+    "RUSTDOC": "/Users/serge/.rustup/toolchains/1.99.1-aarch64-apple-darwin/bin/rustdoc",
+    "RUSTUP_TOOLCHAIN": "1.99.1-aarch64-apple-darwin",
+    "RUSTUP_AUTO_INSTALL": "0",
+    "RUSTC_WRAPPER": "",
+    "RUSTC_WORKSPACE_WRAPPER": ""
+  },
+  "exit_code": 0,
+  "timed_out": false,
+  "elapsed_ns": 12922392167,
+  "end_local": "2026-10-23T17:31:24.330687-07:00",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "cf50204568244fff0cf921117f4f6ad9a00032fb6f6be155b71095b41dd8f789"
+}

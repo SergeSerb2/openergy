@@ -1,0 +1,27 @@
+{
+  "started_local": "2026-10-23T17:31:37.288679-07:00",
+  "command": [
+    "/usr/bin/ssh",
+    "-o",
+    "BatchMode=yes",
+    "-o",
+    "ConnectTimeout=8",
+    "-o",
+    "StrictHostKeyChecking=yes",
+    "-o",
+    "UpdateHostKeys=no",
+    "-o",
+    "ControlMaster=no",
+    "sergecode-windows",
+    "powershell.exe",
+    "-NoLogo",
+    "-NoProfile",
+    "-NonInteractive",
+    "-EncodedCommand",
+    "<UTF16LE_BASE64_OF_windows-native-preflight.ps1>"
+  ],
+  "exit_code": 0,
+  "elapsed_ns": 1031105125,
+  "script_sha256": "b6a861c1f3b2e0b762fd9cbe19a18cb5eaa24e7c1f154ecc3d265d9ad9525a13",
+  "read_only": true
+}

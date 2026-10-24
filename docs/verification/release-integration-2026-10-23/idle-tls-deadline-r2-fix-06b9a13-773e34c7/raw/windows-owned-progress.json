@@ -1,0 +1,27 @@
+{
+  "command": [
+    "/usr/bin/ssh",
+    "-o",
+    "BatchMode=yes",
+    "-o",
+    "ConnectTimeout=8",
+    "-o",
+    "StrictHostKeyChecking=yes",
+    "-o",
+    "UpdateHostKeys=no",
+    "-o",
+    "ControlMaster=no",
+    "sergecode-windows",
+    "powershell.exe",
+    "-NoLogo",
+    "-NoProfile",
+    "-NonInteractive",
+    "-EncodedCommand",
+    "<UTF16LE_BASE64_OF_windows-owned-progress.ps1>"
+  ],
+  "start_local": "2026-10-23T17:35:27.712414-07:00",
+  "exit_code": 0,
+  "elapsed_ns": 889017375,
+  "read_only": true,
+  "script_sha256": "a4438ecd0d11cfb219711cc38c51d4d5894c96b820c72f8b694da6e1772d2820"
+}
