@@ -1,0 +1,103 @@
+{
+  "approval_received": false,
+  "controller_sha256": "3d08b11c2dda9256314d6bee0f7da7c7651cd0ea45b3f8dc7f8d3a9b1f0b1066",
+  "files": {
+    "README.md": {
+      "bytes": 7574,
+      "mode": "0o644",
+      "sha256": "a3ac304f7bcf53216c327753a11550a1dd2d244485767cbae066e26de3ba6432"
+    },
+    "check-static-files.py": {
+      "bytes": 8653,
+      "mode": "0o644",
+      "sha256": "6601f971eca1c9e0f315b080dadda7b62e7dbbb3881637db372d5ad3d6eb2cce"
+    },
+    "controller-DO-NOT-RUN.py.txt": {
+      "bytes": 48995,
+      "mode": "0o644",
+      "sha256": "3d08b11c2dda9256314d6bee0f7da7c7651cd0ea45b3f8dc7f8d3a9b1f0b1066"
+    },
+    "controller.diff": {
+      "bytes": 47745,
+      "mode": "0o644",
+      "sha256": "59c4b2ad71d058f164c7bc6f6ba63d8391aec6bca86e976849ac5c292d5eb72c"
+    },
+    "inputs/README.md": {
+      "bytes": 16124,
+      "mode": "0o644",
+      "sha256": "5b0ceefea6b69fa8d924aa764117c9851277c7e6d16df44bbeb226629054c7a2"
+    },
+    "inputs/controller-DO-NOT-RUN.py.txt": {
+      "bytes": 33162,
+      "mode": "0o644",
+      "sha256": "e251cf7477ed9accf7c28e15de4cabfad50306e12c1934c9b37155a1f40b2740"
+    },
+    "inputs/independent-R2-review.md": {
+      "bytes": 22044,
+      "mode": "0o644",
+      "sha256": "87a14f6446ebe11d26fff5b9da9e53ae0ddbc4c1b1e3beff8c102a5003f36cd6"
+    },
+    "inputs/operation-DO-NOT-RUN.json": {
+      "bytes": 79460,
+      "mode": "0o644",
+      "sha256": "2d23db1f735e607d70f92e29a8e0837425c4908bd935a3950ba60f458dc6f2a6"
+    },
+    "operation-DO-NOT-RUN.json": {
+      "bytes": 86206,
+      "mode": "0o644",
+      "sha256": "667c5ef9a362c3319390f0e5e77adc19e7364a34425074edfd08731158774c6b"
+    },
+    "proposal.diff": {
+      "bytes": 17167,
+      "mode": "0o644",
+      "sha256": "c3163f8ba88f5d88a02ef5476e949d717823c24454900056f9bf25bfa100a4c8"
+    },
+    "raw/authored-whitespace-check.json": {
+      "bytes": 350,
+      "mode": "0o644",
+      "sha256": "683f5787a276e24bffff7e6bee3517e95941c9a0e660607687e07403ea1d484c"
+    },
+    "raw/authored-whitespace.stderr": {
+      "bytes": 0,
+      "mode": "0o644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "raw/authored-whitespace.stdout": {
+      "bytes": 0,
+      "mode": "0o644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "raw/first-reader-and-edit-errors.json": {
+      "bytes": 1139,
+      "mode": "0o644",
+      "sha256": "0ba395fd9984875fc5621d397e28ae23e6325f662cc52f1f8ab1061860d7cf47"
+    },
+    "responses.md": {
+      "bytes": 4864,
+      "mode": "0o644",
+      "sha256": "80edc4317f2fd8e6ba5f5db960bf607481b65b3c5d0e653a37a4e4a2cc9a2599"
+    },
+    "static-checks.json": {
+      "bytes": 2882,
+      "mode": "0o644",
+      "sha256": "722a68567c48960eb948ecda3a4daeac2b63d440d42f1b8cee49d0280b48a91d"
+    }
+  },
+  "head_before": "059f052f965bb942d104448b064a9d0e68b1fda1",
+  "independent_R2_commit": "48c41fbaca076fb46a028f3900265ac1a41e11ce",
+  "live_preflight_performed": false,
+  "manifest_rule": "All regular files under this unique folder except freeze.json itself. Git commit binds the manifest.",
+  "new_independent_review_received": false,
+  "original_inputs": {
+    "README.md": "5b0ceefea6b69fa8d924aa764117c9851277c7e6d16df44bbeb226629054c7a2",
+    "controller-DO-NOT-RUN.py.txt": "e251cf7477ed9accf7c28e15de4cabfad50306e12c1934c9b37155a1f40b2740",
+    "independent-R2-review.md": "87a14f6446ebe11d26fff5b9da9e53ae0ddbc4c1b1e3beff8c102a5003f36cd6",
+    "operation-DO-NOT-RUN.json": "2d23db1f735e607d70f92e29a8e0837425c4908bd935a3950ba60f458dc6f2a6"
+  },
+  "original_preparation_commit": "9490a0e46eadf73785901b33d040d873b34e1157",
+  "proposal_sha256": "667c5ef9a362c3319390f0e5e77adc19e7364a34425074edfd08731158774c6b",
+  "runtime_accepted": false,
+  "scope": "Owned new files only. No controller import/execution/simulation/test/mock; no live preflight or private artifact re-audit.",
+  "status": "DO-NOT-RUN",
+  "worktree": "/Users/serge/.t3/worktrees/openergy/t3-bd21f531"
+}

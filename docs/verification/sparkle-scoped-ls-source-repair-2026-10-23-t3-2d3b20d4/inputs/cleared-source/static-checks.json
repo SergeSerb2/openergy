@@ -1,0 +1,110 @@
+{
+  "AST_files_parsed": 6,
+  "JSON_files_parsed": 9,
+  "R4_review_exact": true,
+  "acquisition_and_merge_sites": {
+    "observe": [
+      216
+    ],
+    "raw_identity": [
+      213,
+      280
+    ]
+  },
+  "all_limit_values_unchanged": true,
+  "approval_received": false,
+  "changed_previous_proposal_fields": [
+    "absolute_deadlines",
+    "controller",
+    "identity_ledger",
+    "missing_prerequisites",
+    "owned_cleanup"
+  ],
+  "controller_imported_or_executed": false,
+  "controller_sha256": "a934611e4bef5d4b355ae11279d6b1aaef0dadf665503efcb788df4869453567",
+  "frozen_source_files": 451,
+  "live_preflight_performed": false,
+  "new_independent_review_received": false,
+  "note": "Syntax and frozen-file consistency only. Static guard assertions are not execution, concurrency, cleanup, timing, or independent review proof.",
+  "original_evidence_hashes": {
+    "audit.json": "3313bdd3c81c0da5134eb25ced1f1fe1bab4931f9cefab5cd8365385f5acecc2",
+    "bundle-inventories.json": "1262e183c5f71f3d5288af808fe8b4a297a05a6e5d60469621deda12e2959107",
+    "common-code-identity.json": "430045478268c13f426a1f2cf9f3709929fba20d26f7a374a0c45e0982ba0b9f",
+    "daemon-artifact.json": "a9f521489e5786a34191b0dde54f3cfa9a1a209922726a48817b920d3da59c6f",
+    "driver-inventory.json": "a3825a10cae64b162541462c0d455a85cbf490401e47c32daef5360ad3d5e027",
+    "public-fixtures.json": "452297bfc75a99980db810f675b846d07869cf7a8cb817aeb68887765f68a08d"
+  },
+  "original_evidence_manifest_sha256": "2246f960192284303a240e07c43f48408ba53a72cbc40bdde5a4217d9f17d7f3",
+  "original_inputs_exact": 4,
+  "previous_files_exact": 17,
+  "previous_freeze_entries_verified": 16,
+  "private_artifact_state_reaudited": false,
+  "proposal_sha256": "cb15b124d6c76c77bad90d05bcc4ea1384aa55aaac48c959bb03ff3cfceba41d",
+  "result": "PASS: static file/hash/JSON/AST checks only",
+  "simulation_test_or_mock": false,
+  "source_blob_hash_checks": 902,
+  "static_change_map": {
+    "IdentityLedger": {
+      "end_line": 335,
+      "start_line": 233
+    },
+    "fixture_processes": {
+      "end_line": 395,
+      "start_line": 367
+    },
+    "identity": {
+      "end_line": 221,
+      "start_line": 211
+    },
+    "reconcile_scope": {
+      "end_line": 425,
+      "start_line": 398
+    },
+    "recover": {
+      "end_line": 878,
+      "start_line": 750
+    },
+    "remove_cache": {
+      "end_line": 472,
+      "start_line": 436
+    },
+    "require_cache_quiet": {
+      "end_line": 433,
+      "start_line": 428
+    }
+  },
+  "unchanged_controller_AST_definitions": [
+    "require",
+    "sha",
+    "save",
+    "budget",
+    "remaining",
+    "fault",
+    "exchange_socket",
+    "stop_io",
+    "launch_once",
+    "inventory",
+    "BSD",
+    "raw_identity",
+    "same",
+    "key",
+    "gone",
+    "environment",
+    "ro",
+    "os_evidence",
+    "read_receipt",
+    "exact_read",
+    "ipc",
+    "ready",
+    "normal_quit",
+    "signal_owned",
+    "Feed",
+    "Server",
+    "serve_until_cancelled",
+    "terminal_stop",
+    "hard_deadline",
+    "recover_guarded",
+    "observer_guarded",
+    "main"
+  ]
+}

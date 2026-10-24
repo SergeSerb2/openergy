@@ -1,0 +1,284 @@
+{
+  "headers": [
+    {
+      "bytes": 14621,
+      "excerpts": [
+        {
+          "first": 135,
+          "last": 162,
+          "text": "/*!\n *  @abstract Given a bundle identifier (such as com.apple.finder), find all URLs to the corresponding application.\n *\n *  @discussion\n *    Returns zero or more URLs to applications that have the specified\n *    bundle identifier.\n *  \n *  @param inBundleIdentifier The bundle identifier of interest, such as \"com.apple.finder\". Must\n *    not be NULL.\n *    \n *  @param outError\n *    On failure, set to a CFError describing the problem. If you are\n *    not interested in this information, pass NULL. The caller is\n *    responsible for releasing this object.\n *    \n *  @result\n *    If any applications with the specified bundle identifier are found,\n *    their URLs are returned in a CFArray. If no application could be found,\n *    NULL is returned and outError (if not NULL) is populated with kLSApplicationNotFoundErr.\n *    In macOS 10.15 and later, the returned array is sorted with the first element containing the\n *    best available application with the specified bundle identifier. Prior to macOS 10.15, the\n *    order of elements in the array was undefined.\n *\n */\nextern __nullable CFArrayRef\nLSCopyApplicationURLsForBundleIdentifier(\n  CFStringRef                        inBundleIdentifier,\n  __nullable CFErrorRef *__nullable  outError)                       API_DEPRECATED(\"Use -[NSWorkspace URLsForApplicationsWithBundleIdentifier:] instead.\", macos(10.10, API_TO_BE_DEPRECATED)) API_UNAVAILABLE(ios, tvos, watchos);\n"
+        }
+      ],
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Headers/LSInfo.h",
+      "sha256": "253540e3e0af9ce1225228dcf774976db257fe66404546477f5246a1d2d6e969"
+    },
+    {
+      "bytes": 4036,
+      "excerpts": [
+        {
+          "first": 28,
+          "last": 40,
+          "text": "\tkLSAttributeNotFoundErr       = -10662, //!< An item attribute value could not be found with the specified name\n\tkLSAttributeNotSettableErr    = -10663, //!< The attribute is not settable\n\tkLSIncompatibleApplicationVersionErr = -10664, //!< The app is incompatible with the current OS\n\tkLSNoRosettaEnvironmentErr    = -10665, //!< PowerPC apps are no longer supported\n\tkLSGarbageCollectionUnsupportedErr = -10666, //!< Objective-C garbage collection is no longer supported\n\t// internal-error = -10667\n\tkLSUnknownErr                 = -10810, //!< Unexpected internal error\n\tkLSNotAnApplicationErr        = -10811, //!< Item needs to be an application, but is not\n\tkLSNotInitializedErr          = -10812, //!< Not used in 10.2 and later\n\tkLSDataUnavailableErr         = -10813, //!< E.g. no kind string\n\tkLSApplicationNotFoundErr     = -10814, //!< E.g. no application claims the file\n\tkLSUnknownTypeErr             = -10815, //!< Don't know anything about the type of the item\n\tkLSDataTooOldErr              = -10816, //!< Not used in 10.3 and later\n"
+        }
+      ],
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Headers/LSConstants.h",
+      "sha256": "2e31eed1a9cf3b988f20c7c985690dff36ca07e5ee70d9ac69ce41ab345a7d00"
+    },
+    {
+      "bytes": 30005,
+      "excerpts": [
+        {
+          "first": 121,
+          "last": 131,
+          "text": "#if !defined(__MACTYPES__)\n#if !defined(_OS_OSTYPES_H)\n\n    typedef unsigned char           Boolean;\n\n    typedef unsigned char           UInt8;\n    typedef signed char             SInt8;\n    typedef unsigned short          UInt16;\n    typedef signed short            SInt16;\n    typedef unsigned int            UInt32;\n    typedef signed int              SInt32;\n"
+        },
+        {
+          "first": 556,
+          "last": 573,
+          "text": "#if defined(__LLP64__) && __LLP64__\ntypedef unsigned long long CFTypeID;\ntypedef unsigned long long CFOptionFlags;\ntypedef unsigned long long CFHashCode;\ntypedef signed long long CFIndex;\n#else\ntypedef unsigned long CFTypeID;\ntypedef unsigned long CFOptionFlags;\ntypedef unsigned long CFHashCode;\ntypedef signed long CFIndex;\n#endif\n\n/* Base \"type\" of all \"CF objects\", and polymorphic functions on them */\ntypedef const CF_BRIDGED_TYPE(id) void * CFTypeRef;\n\ntypedef const struct CF_BRIDGED_TYPE(NSString) __CFString * CFStringRef;\ntypedef struct CF_BRIDGED_MUTABLE_TYPE(NSMutableString) __CFString * CFMutableStringRef;\n\n"
+        },
+        {
+          "first": 595,
+          "last": 599,
+          "text": "/* Range type */\ntypedef struct {\n    CFIndex location;\n    CFIndex length;\n} CFRange;\n"
+        },
+        {
+          "first": 769,
+          "last": 781,
+          "text": "CF_IMPLICIT_BRIDGING_ENABLED\n\nCF_EXPORT\nCFTypeID CFGetTypeID(CFTypeRef cf);\n\nCF_EXPORT\nCFStringRef CFCopyTypeIDDescription(CFTypeID type_id);\n\nCF_EXPORT\nCFTypeRef CFRetain(CFTypeRef cf);\n\nCF_EXPORT\nvoid CFRelease(CFTypeRef cf);\n"
+        },
+        {
+          "first": 790,
+          "last": 797,
+          "text": "Boolean CFEqual(CFTypeRef cf1, CFTypeRef cf2);\n\nCF_EXPORT\nCFHashCode CFHash(CFTypeRef cf);\n\nCF_EXPORT\nCFStringRef CFCopyDescription(CFTypeRef cf);\n\n"
+        }
+      ],
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CFBase.h",
+      "sha256": "b4cff7c99779f092e14fa6d3eea151d05c0324f106e1f103b27c5727223f023f"
+    },
+    {
+      "bytes": 31568,
+      "excerpts": [
+        {
+          "first": 269,
+          "last": 279,
+          "text": "CFMutableArrayRef CFArrayCreateMutableCopy(CFAllocatorRef allocator, CFIndex capacity, CFArrayRef theArray);\n\n/*!\n\t@function CFArrayGetCount\n\tReturns the number of values currently in the array.\n\t@param theArray The array to be queried. If this parameter is not a valid\n\t\tCFArray, the behavior is undefined.\n\t@result The number of values in the array.\n*/\nCF_EXPORT\nCFIndex CFArrayGetCount(CFArrayRef theArray);\n"
+        },
+        {
+          "first": 324,
+          "last": 339,
+          "text": "CF_EXPORT\nBoolean CFArrayContainsValue(CFArrayRef theArray, CFRange range, const void *value);\n\n/*!\n\t@function CFArrayGetValueAtIndex\n\tRetrieves the value at the given index.\n\t@param theArray The array to be queried. If this parameter is not a\n\t\tvalid CFArray, the behavior is undefined.\n\t@param idx The index of the value to retrieve. If the index is\n\t\toutside the index space of the array (0 to N-1 inclusive,\n\t\twhere N is the count of the array), the behavior is\n\t\tundefined.\n\t@result The value with the given index in the array.\n*/\nCF_EXPORT\nconst void *CFArrayGetValueAtIndex(CFArrayRef theArray, CFIndex idx);\n"
+        }
+      ],
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CFArray.h",
+      "sha256": "a9a30c78f8d10d18db70175cfb803dd622f3e4cfe74ab7fe5c1bf926d712259e"
+    },
+    {
+      "bytes": 48520,
+      "excerpts": [
+        {
+          "first": 98,
+          "last": 113,
+          "text": "/* Identifier for character encoding; the values are the same as Text Encoding Converter TextEncoding.\n*/\ntypedef UInt32 CFStringEncoding;\n\n/* Platform-independent built-in encodings; always available on all platforms.\n   Call CFStringGetSystemEncoding() to get the default system encoding.\n*/\n#define kCFStringEncodingInvalidId (0xffffffffU)\ntypedef CF_ENUM(CFStringEncoding, CFStringBuiltInEncodings) {\n    kCFStringEncodingMacRoman = 0,\n    kCFStringEncodingWindowsLatin1 = 0x0500, /* ANSI codepage 1252 */\n    kCFStringEncodingISOLatin1 = 0x0201, /* ISO 8859-1 */\n    kCFStringEncodingNextStepLatin = 0x0B01, /* NextStep encoding*/\n    kCFStringEncodingASCII = 0x0600, /* 0..127 (in creating CFString, values greater than 0x7F are treated as corresponding Unicode value) */\n    kCFStringEncodingUnicode = 0x0100, /* kTextEncodingUnicodeDefault  + kTextEncodingDefaultFormat (aka kUnicode16BitFormat) */\n    kCFStringEncodingUTF8 = 0x08000100, /* kTextEncodingUnicodeDefault + kUnicodeUTF8Format */\n"
+        },
+        {
+          "first": 177,
+          "last": 181,
+          "text": "CF_EXPORT\nCFStringRef CFStringCreateWithPascalString(CFAllocatorRef alloc, ConstStr255Param pStr, CFStringEncoding encoding) CF_FORMAT_ARGUMENT(2);\n\nCF_EXPORT\nCFStringRef CFStringCreateWithCString(CFAllocatorRef alloc, const char *cStr, CFStringEncoding encoding) CF_FORMAT_ARGUMENT(2);\n"
+        },
+        {
+          "first": 260,
+          "last": 266,
+          "text": "\n/*** Basic accessors for the contents ***/\n\n/* Number of 16-bit Unicode characters in the string.\n*/\nCF_EXPORT\nCFIndex CFStringGetLength(CFStringRef theString);\n"
+        },
+        {
+          "first": 310,
+          "last": 329,
+          "text": "/* The primitive conversion routine; allows you to convert a string piece at a time\n       into a fixed size buffer. Returns number of characters converted. \n   Characters that cannot be converted to the specified encoding are represented\n       with the byte specified by lossByte; if lossByte is 0, then lossy conversion\n       is not allowed and conversion stops, returning partial results.\n   Pass buffer==NULL if you don't care about the converted string (but just the convertability,\n       or number of bytes required). \n   maxBufLength indicates the maximum number of bytes to generate. It is ignored when buffer==NULL.\n   Does not zero-terminate. If you want to create Pascal or C string, allow one extra byte at start or end. \n   Setting isExternalRepresentation causes any extra bytes that would allow \n       the data to be made persistent to be included; for instance, the Unicode BOM. Note that\n       CFString prepends UTF encoded data with the Unicode BOM <http://www.unicode.org/faq/utf_bom.html> \n       when generating external representation if the target encoding allows. It's important to note that\n       only UTF-8, UTF-16, and UTF-32 define the handling of the byte order mark character, and the \"LE\"\n       and \"BE\" variants of UTF-16 and UTF-32 don't.\n*/\nCF_EXPORT\nCFIndex CFStringGetBytes(CFStringRef theString, CFRange range, CFStringEncoding encoding, UInt8 lossByte, Boolean isExternalRepresentation, UInt8 *buffer, CFIndex maxBufLen, CFIndex *usedBufLen);\n\n/* Convenience functions String <-> Data. These generate \"external\" formats, that is, formats that\n"
+        }
+      ],
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CFString.h",
+      "sha256": "ed49de9f86adc90f53a2f6d5a10666e1e4b865a15adea1311d8104083d9fac31"
+    },
+    {
+      "bytes": 82776,
+      "excerpts": [
+        {
+          "first": 21,
+          "last": 44,
+          "text": "typedef CF_ENUM(CFIndex, CFURLPathStyle) {\n    kCFURLPOSIXPathStyle = 0,\n    kCFURLHFSPathStyle API_DEPRECATED(\"Carbon File Manager is deprecated, use kCFURLPOSIXPathStyle where possible\", macos(10.0,10.9), ios(2.0,7.0), watchos(2.0,2.0), tvos(9.0,9.0)), /* The use of kCFURLHFSPathStyle is deprecated. The Carbon File Manager, which uses HFS style paths, is deprecated. HFS style paths are unreliable because they can arbitrarily refer to multiple volumes if those volumes have identical volume names. You should instead use kCFURLPOSIXPathStyle wherever possible. */\n    kCFURLWindowsPathStyle\n};\n    \ntypedef const struct CF_BRIDGED_TYPE(NSURL) __CFURL * CFURLRef;\n\n/* CFURLs are composed of two fundamental pieces - their string, and a */\n/* (possibly NULL) base URL.  A relative URL is one in which the string */\n/* by itself does not fully specify the URL (for instance \"myDir/image.tiff\"); */\n/* an absolute URL is one in which the string does fully specify the URL */\n/* (\"file://localhost/myDir/image.tiff\").  Absolute URLs always have NULL */\n/* base URLs; however, it is possible for a URL to have a NULL base, and still */\n/* not be absolute.  Such a URL has only a relative string, and cannot be */\n/* resolved.  Two CFURLs are considered equal if and only if their strings */\n/* are equal and their bases are equal.  In other words, */\n/* \"file://localhost/myDir/image.tiff\" is NOT equal to the URL with relative */\n/* string \"myDir/image.tiff\" and base URL \"file://localhost/\".  Clients that */\n/* need these less strict form of equality should convert all URLs to their */\n/* absolute form via CFURLCopyAbsoluteURL(), then compare the absolute forms. */\n\nCF_EXPORT\nCFTypeID CFURLGetTypeID(void);\n"
+        },
+        {
+          "first": 124,
+          "last": 130,
+          "text": "/* Returns the URL's string. Percent-escape sequences are not removed. */\nCF_EXPORT\nCFStringRef CFURLGetString(CFURLRef anURL);\n\n/* Returns the base URL if it exists */\nCF_EXPORT\nCFURLRef CFURLGetBaseURL(CFURLRef anURL);\n"
+        },
+        {
+          "first": 218,
+          "last": 222,
+          "text": "/* CFURLCopyFileSystemPath() returns the URL's path as a file system path for the */\n/* given path style.  All percent-escape sequences are removed.  The URL is not */\n/* resolved against its base before computing the path. */\nCF_EXPORT\nCFStringRef CFURLCopyFileSystemPath(CFURLRef anURL, CFURLPathStyle pathStyle);\n"
+        },
+        {
+          "first": 414,
+          "last": 424,
+          "text": "/*\n    CFURLIsFileReferenceURL\n\n    Returns whether the URL is a file reference URL.\n\n    Parameters\n        url\n            The URL specifying the resource.\n */\nCF_EXPORT\nBoolean CFURLIsFileReferenceURL(CFURLRef url) API_AVAILABLE(macos(10.9), ios(7.0), watchos(2.0), tvos(9.0));\n"
+        }
+      ],
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CFURL.h",
+      "sha256": "4c398dc72317b978a580d622a3ff5c34cf9188c79bbadfb569ece49c4cabd5ce"
+    },
+    {
+      "bytes": 15464,
+      "excerpts": [
+        {
+          "first": 49,
+          "last": 63,
+          "text": "typedef struct CF_BRIDGED_MUTABLE_TYPE(NSError) __CFError * CFErrorRef;\n\n/*!\n\t@function CFErrorGetTypeID\n\t    Returns the type identifier of all CFError instances.\n*/\nCF_EXPORT\nCFTypeID CFErrorGetTypeID(void) API_AVAILABLE(macos(10.5), ios(2.0), watchos(2.0), tvos(9.0));\n\n\n// Predefined domains; value of \"code\" will correspond to preexisting values in these domains.\nCF_EXPORT const CFErrorDomain kCFErrorDomainPOSIX\t\t    API_AVAILABLE(macos(10.5), ios(2.0), watchos(2.0), tvos(9.0));\nCF_EXPORT const CFErrorDomain kCFErrorDomainOSStatus\t    API_AVAILABLE(macos(10.5), ios(2.0), watchos(2.0), tvos(9.0));\nCF_EXPORT const CFErrorDomain kCFErrorDomainMach\t\t    API_AVAILABLE(macos(10.5), ios(2.0), watchos(2.0), tvos(9.0));\nCF_EXPORT const CFErrorDomain kCFErrorDomainCocoa\t\t    API_AVAILABLE(macos(10.5), ios(2.0), watchos(2.0), tvos(9.0));\n"
+        },
+        {
+          "first": 108,
+          "last": 125,
+          "text": "\n/*!\n\t@function CFErrorGetDomain\n\t@abstract Returns the error domain the CFError was created with.\n\t@param err The CFError whose error domain is to be returned. If this reference is not a valid CFError, the behavior is undefined.\n\t@result The error domain of the CFError. Since this is a \"Get\" function, the caller shouldn't CFRelease the return value.\n*/\nCF_EXPORT\nCFErrorDomain CFErrorGetDomain(CFErrorRef err) API_AVAILABLE(macos(10.5), ios(2.0), watchos(2.0), tvos(9.0));\n\n/*!\n\t@function CFErrorGetCode\n\t@abstract Returns the error code the CFError was created with.\n\t@param err The CFError whose error code is to be returned. If this reference is not a valid CFError, the behavior is undefined.\n\t@result The error code of the CFError (not an error return for the current call).\n*/\nCF_EXPORT\nCFIndex CFErrorGetCode(CFErrorRef err) API_AVAILABLE(macos(10.5), ios(2.0), watchos(2.0), tvos(9.0));\n"
+        }
+      ],
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CFError.h",
+      "sha256": "7194ff377a68ffb475e6532e60e23524379c4b71b43660cfd65e908a51621218"
+    }
+  ],
+  "linkage": [
+    {
+      "bytes": 131471,
+      "excerpts": [
+        {
+          "first": 1,
+          "last": 7,
+          "text": "--- !tapi-tbd\ntbd-version:     4\ntargets:         [ x86_64-macos, x86_64-maccatalyst, x86_64h-macos, x86_64h-maccatalyst, \n                   arm64e-macos, arm64e-maccatalyst, arm64e.x1-macos, arm64e.x1-maccatalyst ]\ninstall-name:    '/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation'\ncurrent-version: 5027.0.69\ncompatibility-version: 150\n"
+        },
+        {
+          "first": 35,
+          "last": 35,
+          "text": "                       _CFArrayGetCount, _CFArrayGetCountOfValue, _CFArrayGetFirstIndexOfValue, \n"
+        },
+        {
+          "first": 36,
+          "last": 36,
+          "text": "                       _CFArrayGetLastIndexOfValue, _CFArrayGetTypeID, _CFArrayGetValueAtIndex, \n"
+        },
+        {
+          "first": 167,
+          "last": 167,
+          "text": "                       _CFEqual, _CFErrorCopyCallBackBlockForDomain, _CFErrorCopyDescription, \n"
+        },
+        {
+          "first": 171,
+          "last": 171,
+          "text": "                       _CFErrorGetCode, _CFErrorGetDomain, _CFErrorGetTypeID, _CFErrorSetCallBackBlockForDomain, \n"
+        },
+        {
+          "first": 183,
+          "last": 183,
+          "text": "                       _CFGetSystemUptime, _CFGetTypeID, _CFGetUserName, _CFGregorianDateGetAbsoluteTime, \n"
+        },
+        {
+          "first": 275,
+          "last": 275,
+          "text": "                       _CFReadStreamUnscheduleFromRunLoop, _CFRelease, _CFRetain, \n"
+        },
+        {
+          "first": 331,
+          "last": 331,
+          "text": "                       _CFStringCreateWithCString, _CFStringCreateWithCStringNoCopy, \n"
+        },
+        {
+          "first": 340,
+          "last": 340,
+          "text": "                       _CFStringFold, _CFStringGetBytes, _CFStringGetCString, _CFStringGetCStringPtr, \n"
+        },
+        {
+          "first": 344,
+          "last": 344,
+          "text": "                       _CFStringGetLength, _CFStringGetLineBounds, _CFStringGetListOfAvailableEncodings, \n"
+        },
+        {
+          "first": 350,
+          "last": 350,
+          "text": "                       _CFStringGetTypeID, _CFStringHasPrefix, _CFStringHasSuffix, \n"
+        },
+        {
+          "first": 379,
+          "last": 379,
+          "text": "                       _CFURLCopyFileSystemPath, _CFURLCopyFragment, _CFURLCopyHostName, \n"
+        },
+        {
+          "first": 401,
+          "last": 401,
+          "text": "                       _CFURLGetBaseURL, _CFURLGetByteRangeForComponent, _CFURLGetBytes, \n"
+        },
+        {
+          "first": 403,
+          "last": 403,
+          "text": "                       _CFURLGetPortNumber, _CFURLGetString, _CFURLGetTypeID, _CFURLHasDirectoryPath, \n"
+        },
+        {
+          "first": 1028,
+          "last": 1028,
+          "text": "                       _kCFErrorDomainMach, _kCFErrorDomainOSStatus, _kCFErrorDomainPOSIX, \n"
+        },
+        {
+          "first": 404,
+          "last": 404,
+          "text": "                       _CFURLIsFileReferenceURL, _CFURLResourceIsReachable, _CFURLSetResourcePropertiesForKeys, \n"
+        },
+        {
+          "first": 816,
+          "last": 816,
+          "text": "                       __CFURLGetVolumePropertyFlags, __CFURLIsFileReferenceURL, \n"
+        }
+      ],
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation.tbd",
+      "sha256": "2e4666e400890e3f9285d324d02fdc626cb286e85b077eef4fa41113ca7a24f0",
+      "symbols": [
+        "_CFGetTypeID",
+        "_CFArrayGetTypeID",
+        "_CFStringGetTypeID",
+        "_CFURLGetTypeID",
+        "_CFErrorGetTypeID",
+        "_CFRelease",
+        "_CFEqual",
+        "_CFStringCreateWithCString",
+        "_CFStringGetLength",
+        "_CFStringGetBytes",
+        "_CFArrayGetCount",
+        "_CFArrayGetValueAtIndex",
+        "_CFURLGetString",
+        "_CFURLGetBaseURL",
+        "_CFURLCopyFileSystemPath",
+        "_CFErrorGetDomain",
+        "_CFErrorGetCode",
+        "_kCFErrorDomainOSStatus",
+        "_CFURLIsFileReferenceURL"
+      ]
+    },
+    {
+      "bytes": 51469,
+      "excerpts": [
+        {
+          "first": 1,
+          "last": 7,
+          "text": "--- !tapi-tbd\ntbd-version:     4\ntargets:         [ x86_64-macos, x86_64-maccatalyst, arm64e-macos, arm64e-maccatalyst, \n                   arm64e.x1-macos, arm64e.x1-maccatalyst ]\ninstall-name:    '/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/LaunchServices'\ncurrent-version: 1141.1\nparent-umbrella:\n"
+        },
+        {
+          "first": 439,
+          "last": 439,
+          "text": "                       _LSCopyApplicationURLsForBundleIdentifier, _LSCopyApplicationURLsForURL, \n"
+        }
+      ],
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/LaunchServices.tbd",
+      "sha256": "3289c2122cd5d8d4c723d2f13bbe7c3670dee25ab3221f6e65c8df2a9fbb4ebb",
+      "symbols": [
+        "_LSCopyApplicationURLsForBundleIdentifier"
+      ]
+    }
+  ],
+  "scope": "Local SDK header file data only; no compiler, toolchain query, framework load or native call."
+}

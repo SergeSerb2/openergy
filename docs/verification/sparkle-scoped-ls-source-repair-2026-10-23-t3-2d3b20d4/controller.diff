@@ -1,0 +1,31 @@
+--- a/controller-DO-NOT-RUN.py.txt
++++ b/controller-DO-NOT-RUN.py.txt
+@@ -2,6 +2,8 @@
+ 
+ Future operator: require the exact reviewed proposal hash and a NEW explicit user
+ approval receipt. The 17:16:55 stopped-target approval is invalid for this program.
++The 21:01:00 one-shot is CLOSED; it grants no retry or approval for this repair.
++Private artifact retention is missing. This source is not currently runnable.
+ One initial no-argument entry, one official update, at most one explicit normal
+ app quit. No retries, negative installer case, alternate port, or scope repair.
+ """
+@@ -536,7 +538,18 @@
+     for job in JOBS:
+         ro(label + '-job', ['/bin/launchctl', 'print', f'gui/{UID}/{job}'], allowed=(0, 113))
+     ro(label + '-listener', ['/usr/sbin/lsof', '-nP', '-iTCP:' + str(PORT)], allowed=(0, 1))
+-    ro(label + '-ls', ['/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister', '-dump'], filtered=True)
++    # Same five-second ro() deadline/kill/reap/caps, now two exact-ID metadata queries.
++    helper = HERE / 'launchservices-DO-NOT-RUN.py.txt'
++    capture = json.loads(PLAN.read_text())['launchservices_capture']
++    require(sha(helper) == capture['helper']['sha256'], 'frozen scoped LS observer drift')
++    require(sys.version_info[:2] == (3, 15), 'scoped LS observer requires Python3.15')
++    _, output = ro(label + '-ls', [sys.executable, '-I', '-S', '-B', helper, IDENTIFIER, IDENTIFIER + '.driver'])
++    require(len(output.encode('utf-8')) <= 1024 * 1024, 'scoped LS output limit')
++    report = json.loads(output)
++    require(report.get('schema') == 1 and report.get('api') == 'LSCopyApplicationURLsForBundleIdentifier' and
++            report.get('status') == 'complete' and report.get('queried_ids') == [IDENTIFIER, IDENTIFIER + '.driver'],
++            'incomplete scoped LS metadata; no retry')
++    save(label + '-ls-scoped', report)  # metadata only, never exec/relaunch/restoration proof
+ 
+ 
+ def read_receipt(build, event, seen):
