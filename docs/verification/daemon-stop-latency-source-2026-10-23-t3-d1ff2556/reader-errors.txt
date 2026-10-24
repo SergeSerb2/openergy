@@ -1,0 +1,25 @@
+Exploratory read errors, retained separately from inherited runtime failures.
+All were local source/evidence-reader corrections. No daemon/build/socket call ran.
+
+1. A search used unquoted nonexistent zsh globs docs/adr* docs/architecture*:
+   zsh:1: no matches found: docs/adr*
+   Corrected with rg --files docs and the actual docs/plan/architecture-r2.md.
+
+2. Guessed source paths did not exist:
+   rg: crates/net/src/driver.rs: No such file or directory (os error 2)
+   rg: crates/net/src/poller.rs: No such file or directory (os error 2)
+   Corrected to crates/net/src/reactor.rs after reading the source inventory.
+
+3. A guessed archived controller filename did not exist:
+   fatal: path 'docs/verification/macos-idle-resources-r3-2026-10-23/controller.py' does not exist in 'b75dfa1b543e4bf6b47858581d4d2cf19aa777e6'
+   Corrected from git ls-tree inventory: the controller is measure.py.
+
+4. Additional guessed source paths did not exist:
+   rg: crates/session/src/peer.rs: No such file or directory (os error 2)
+   rg: crates/ipc/src/client.rs: No such file or directory (os error 2)
+   The causal review uses actual server/client/runtime/IPC-server and reactor paths.
+
+5. One combined tool result and one broad worker/source read exceeded the display
+   token limit. Focused follow-up reads recovered the needed source and saved
+   stop/cleanup/log records. collection.json and raw/saved-r3 contain their exact
+   retained bytes; no displayed truncation is used as a complete raw receipt.

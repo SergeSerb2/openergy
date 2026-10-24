@@ -1,0 +1,10 @@
+source=crates/session/src/client.rs
+commit=1fd5144628c0494f1ebf561581e0d84fd7231523
+sha256=9905587a134a14c3ac0da9c1efab8c78f2ed0702e53905f9a9ad399f425a0084
+
+48:     pub fn next_deadline_ms(&self) -> u64 {
+49:         self.peer
+50:             .as_ref()
+51:             .map(|(_, p)| p.next_deadline(self.now, false))
+52:             .unwrap_or(self.now + 1000)
+53:     }

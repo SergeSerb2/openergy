@@ -1,0 +1,90 @@
+source=crates/net/src/reactor.rs
+commit=1fd5144628c0494f1ebf561581e0d84fd7231523
+sha256=2fdfd8783e0d249c2441b1994ad7b67d8926662f6fee8244bbfd9558451e851d
+
+1718:     fn wait_time(&self, requested: Option<Duration>) -> Option<Duration> {
+1719:         let now = Instant::now();
+1720:         let mut wait = requested;
+1721:         let mut cap = |duration: Duration| {
+1722:             wait = Some(wait.map_or(duration, |v| v.min(duration)));
+1723:         };
+1724:         for c in self.conns.values() {
+1725:             if !c.established && c.held.is_none() {
+1726:                 cap(c.deadline.saturating_duration_since(now));
+1727:             }
+1728:             if let Some(d) = c.held {
+1729:                 cap(d.saturating_duration_since(now));
+1730:                 cap(TRUST_POLL.saturating_sub(self.last_trust.elapsed()));
+1731:             }
+1732:             if let Some(d) = c.slow {
+1733:                 cap(d.saturating_duration_since(now));
+1734:             }
+1735:             if let Some(d) = c.close_at {
+1736:                 cap(d.saturating_duration_since(now));
+1737:             }
+1738:             if let Some(d) = c.client_hello_at {
+1739:                 cap(d.saturating_duration_since(now));
+1740:             }
+1741:             if !c.connecting
+1742:                 && c.held.is_none()
+1743:                 && (c.read_ready
+1744:                     || (!c.write_blocked
+1745:                         && ((c.client_hello_at.is_none_or(|d| d <= now)
+1746:                             && c.tls.as_ref().is_some_and(|t| t.wants_write()))
+1747:                             || (c.established && c.queues.can_write(c.handshake_done, c.slow.is_some())))))
+1748:             {
+1749:                 cap(Duration::ZERO);
+1750:             }
+1751:         }
+1752:         for p in self.pending.values() {
+1753:             cap(p.deadline.saturating_duration_since(now));
+1754:         }
+1755:         if self.discovery.is_some() {
+1756:             cap(Duration::from_secs(1));
+1757:         }
+1758:         wait
+1759:     }
+1760:     /// One bounded io iteration. Events append to `out`; the caller owns draining it.
+1761:     pub fn poll(&mut self, timeout: Option<Duration>, out: &mut Vec<NetEvent>) -> Result<(), NetError> {
+1762:         let start = Instant::now();
+1763:         let initial = out.len();
+1764:         for _ in 0..256 {
+1765:             let Ok(command) = self.commands.try_recv() else {
+1766:                 break;
+1767:             };
+1768:             self.command(command, out);
+1769:         }
+1770:         self.maintenance(out);
+1771:         let remaining = timeout.map(|t| t.saturating_sub(start.elapsed()));
+1772:         let wait = if out.len() != initial {
+1773:             Some(Duration::ZERO)
+1774:         } else {
+1775:             self.wait_time(remaining)
+1776:         };
+1777:         match self.poll.poll(&mut self.events, wait) {
+1778:             Ok(()) => {}
+1779:             Err(e) if e.kind() == io::ErrorKind::Interrupted => {}
+1780:             Err(e) => return Err(failed(e)),
+1781:         }
+1782:         let ready: Vec<_> = self
+1783:             .events
+1784:             .iter()
+1785:             .map(|e| {
+1786:                 (
+1787:                     e.token(),
+1788:                     e.is_readable(),
+1789:                     e.is_writable(),
+1790:                     e.is_error() || e.is_read_closed() || e.is_write_closed(),
+1791:                 )
+1792:             })
+1793:             .collect();
+1794:         for (token, readable, writable, closed) in ready {
+1795:             if token == WAKE {
+1796:                 for _ in 0..256 {
+1797:                     let Ok(command) = self.commands.try_recv() else {
+1798:                         break;
+1799:                     };
+1800:                     self.command(command, out);
+1801:                 }
+1802:             } else if token == LISTENER {
+1803:                 self.accept(out);

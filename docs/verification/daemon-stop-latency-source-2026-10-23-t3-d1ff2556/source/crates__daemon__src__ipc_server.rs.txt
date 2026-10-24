@@ -1,0 +1,210 @@
+source=crates/daemon/src/ipc_server.rs
+commit=1fd5144628c0494f1ebf561581e0d84fd7231523
+sha256=4ceb1dc908211fd0b6493c55787f32582b8b248bedff20c99d800fed41a2301e
+
+48: pub struct ServerThread {
+49:     thread: std::thread::JoinHandle<()>,
+50:     shutdown: UnixStream,
+51: }
+52: #[cfg(unix)]
+53: impl ServerThread {
+54:     pub fn join(self) -> std::thread::Result<()> {
+55:         // Closing the private peer wakes poll without a timer or a pathname
+56:         // lookup. No connection can be sent to a replaced control socket.
+57:         drop(self.shutdown);
+58:         self.thread.join()
+59:     }
+60: }
+61: #[cfg(unix)]
+62: impl Drop for SocketLock {
+63:     fn drop(&mut self) {
+64:         if std::fs::symlink_metadata(&self.path)
+65:             .is_ok_and(|m| m.file_type().is_socket() && m.dev() == self.device && m.ino() == self.inode)
+66:         {
+67:             let _ = std::fs::remove_file(&self.path);
+68:         }
+69:     }
+
+159:     let thread = std::thread::spawn(move || {
+160:         let mut clients = Vec::new();
+161:         loop {
+162:             if stop.load(Ordering::Relaxed) {
+163:                 break;
+164:             }
+165:             let mut fds = [
+166:                 libc::pollfd {
+167:                     fd: listener.as_raw_fd(),
+168:                     events: libc::POLLIN,
+169:                     revents: 0,
+170:                 },
+171:                 libc::pollfd {
+172:                     fd: shutdown_read.as_raw_fd(),
+173:                     events: libc::POLLIN,
+174:                     revents: 0,
+175:                 },
+176:             ];
+177:             // Safety: both descriptors remain owned by this thread. Input or
+178:             // closure of the private shutdown peer wakes the blocking poll.
+179:             let ready = unsafe { libc::poll(fds.as_mut_ptr(), fds.len() as _, -1) };
+180:             if ready < 0 && std::io::Error::last_os_error().kind() == std::io::ErrorKind::Interrupted {
+181:                 continue;
+182:             }
+183:             if fds[1].revents != 0 {
+184:                 stop.store(true, Ordering::Relaxed);
+185:                 let _ = waker.wake();
+186:                 break;
+187:             }
+188:             if ready < 0 || fds[0].revents & (libc::POLLERR | libc::POLLHUP | libc::POLLNVAL) != 0 {
+189:                 log::error!("IPC listener failed");
+190:                 stop.store(true, Ordering::Relaxed);
+191:                 let _ = waker.wake();
+
+194:             let stream = match listener.accept() {
+195:                 Ok((stream, _)) => stream,
+196:                 Err(e)
+197:                     if matches!(
+198:                         e.kind(),
+199:                         std::io::ErrorKind::WouldBlock | std::io::ErrorKind::Interrupted
+200:                     ) =>
+201:                 {
+202:                     continue
+203:                 }
+204:                 Err(e) => {
+205:                     log::error!("IPC accept: {e}");
+206:                     stop.store(true, Ordering::Relaxed);
+207:                     let _ = waker.wake();
+208:                     break;
+209:                 }
+210:             };
+211:             if stop.load(Ordering::Relaxed) {
+212:                 break;
+213:             }
+214:             clients.retain(|h: &std::thread::JoinHandle<()>| !h.is_finished());
+215:             if clients.len() >= 64 {
+216:                 continue;
+217:             }
+218:             let tx = tx.clone();
+219:             let waker = waker.clone();
+220:             let bus = bus.clone();
+221:             let stop = stop.clone();
+222:             clients.push(std::thread::spawn(move || client(stream, tx, waker, bus, stop)));
+223:         }
+224:         drop(listener);
+225:         for h in clients {
+226:             let _ = h.join();
+227:         }
+228:     });
+229:     ServerThread {
+230:         thread,
+231:         shutdown: shutdown_write,
+232:     }
+
+267: fn client(
+268:     mut stream: UnixStream,
+269:     tx: SyncSender<IoCommand>,
+270:     waker: Arc<mio::Waker>,
+271:     bus: Arc<EventBus>,
+272:     stop: Arc<AtomicBool>,
+273: ) {
+274:     #[cfg(unix)]
+275:     {
+276:         if stream.set_nonblocking(false).is_err() {
+277:             return;
+278:         }
+279:         let _ = stream.set_read_timeout(Some(Duration::from_millis(50)));
+280:         let _ = stream.set_write_timeout(Some(Duration::from_secs(1)));
+281:     }
+282:     let queue = bus.client();
+283:     let mut buf = Vec::new();
+284:     let mut scratch = [0u8; 8192];
+285:     // Empty first requests and incomplete frames must not hold all 64 client
+286:     // slots forever. Completed requests may idle indefinitely for subscriptions.
+287:     // The deadline is absolute: additional partial bytes do not extend it.
+288:     let mut request_deadline = Some(Instant::now() + REQUEST_READ_TIMEOUT);
+289:     while !stop.load(Ordering::Relaxed) {
+290:         if request_deadline.is_some_and(|deadline| Instant::now() >= deadline) {
+291:             return;
+292:         }
+293:         match stream.read(&mut scratch) {
+294:             Ok(0) => return,
+295:             Ok(n) => {
+296:                 request_deadline.get_or_insert_with(|| Instant::now() + REQUEST_READ_TIMEOUT);
+297:                 buf.extend_from_slice(&scratch[..n]);
+298:             }
+299:             Err(e)
+300:                 if matches!(
+301:                     e.kind(),
+302:                     std::io::ErrorKind::WouldBlock | std::io::ErrorKind::TimedOut | std::io::ErrorKind::Interrupted
+303:                 ) => {}
+304:             Err(_) => return,
+305:         }
+306:         while let Some(h) = buf.get(..4) {
+307:             let Ok(header) = <[u8; 4]>::try_from(h) else { return };
+308:             let n = u32::from_be_bytes(header) as usize;
+309:             if n > MAX_FRAME_LEN {
+310:                 return;
+311:             }
+312:             if buf.len() < n + 4 {
+313:                 break;
+314:             }
+315:             let request = serde_json::from_slice::<Request>(&buf[4..n + 4]);
+316:             buf.drain(..n + 4);
+317:             let Ok(req) = request else { return };
+318:             let (reply, answer) = mpsc::channel::<Response>();
+319:             if tx
+320:                 .try_send(IoCommand::Ipc {
+321:                     req,
+322:                     reply,
+323:                     events: queue.clone(),
+324:                 })
+325:                 .is_err()
+326:             {
+327:                 return;
+328:             }
+329:             let _ = waker.wake();
+330:             let response = {
+331:                 let started = std::time::Instant::now();
+332:                 loop {
+333:                     let result = answer.recv_timeout(Duration::from_millis(50));
+334:                     if !matches!(result, Err(mpsc::RecvTimeoutError::Timeout))
+335:                         || stop.load(Ordering::Relaxed)
+336:                         || started.elapsed() >= Duration::from_secs(10)
+337:                     {
+338:                         break result;
+339:                     }
+340:                 }
+341:             };
+342:             let Ok(response) = response else {
+343:                 return;
+344:             };
+345:             let Ok(value) = serde_json::to_value(&response) else {
+346:                 return;
+347:             };
+348:             if let Err(error) = write_frame(&mut stream, &value) {
+349:                 if error.kind() != std::io::ErrorKind::InvalidData {
+350:                     return;
+351:                 }
+352:                 let error = Response::err(
+353:                     response.id,
+354:                     IpcError::new(
+355:                         "response_too_large",
+356:                         "IPC response exceeds the frame limit; request a smaller result or a summary",
+357:                     ),
+358:                 );
+359:                 let Ok(value) = serde_json::to_value(error) else { return };
+360:                 if write_frame(&mut stream, &value).is_err() {
+361:                     return;
+362:                 }
+363:             }
+364:             // Start the next frame's read budget after the preceding response;
+365:             // time spent handling that request is not charged to its successor.
+366:             request_deadline = (!buf.is_empty()).then(|| Instant::now() + REQUEST_READ_TIMEOUT);
+367:         }
+368:         for ev in queue.drain() {
+369:             let Ok(value) = serde_json::to_value(ev) else { return };
+370:             if write_frame(&mut stream, &value).is_err() {
+371:                 return;
+372:             }
+373:         }
+374:     }
+375: }

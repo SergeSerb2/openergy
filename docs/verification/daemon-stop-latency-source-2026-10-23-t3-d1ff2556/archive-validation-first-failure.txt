@@ -1,0 +1,13 @@
+Command:
+python3 docs/verification/daemon-stop-latency-source-2026-10-23-t3-d1ff2556/validate.py
+Exit: 1
+stdout: empty
+stderr:
+Traceback (most recent call last):
+  File "/Users/serge/.t3/worktrees/openergy/t3-d1ff2556/docs/verification/daemon-stop-latency-source-2026-10-23-t3-d1ff2556/validate.py", line 93, in <module>
+    main()
+  File "/Users/serge/.t3/worktrees/openergy/t3-d1ff2556/docs/verification/daemon-stop-latency-source-2026-10-23-t3-d1ff2556/validate.py", line 54, in main
+    git("diff", "--cached", "--check")
+  File "/Users/serge/.t3/worktrees/openergy/t3-d1ff2556/docs/verification/daemon-stop-latency-source-2026-10-23-t3-d1ff2556/validate.py", line 31, in git
+    raise RuntimeError(commands[-1])
+RuntimeError: {'argv': ['git', 'diff', '--cached', '--check'], 'exit': 2, 'stdout': 'docs/verification/daemon-stop-latency-source-2026-10-23-t3-d1ff2556/source/docs__plan__architecture-r2.md.txt:6: trailing whitespace.\n+588: \n', 'stderr': ''}

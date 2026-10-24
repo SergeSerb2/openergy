@@ -1,0 +1,238 @@
+source=crates/daemon/src/runtime.rs
+commit=1fd5144628c0494f1ebf561581e0d84fd7231523
+sha256=187c2301efa9873791597289a45247abc6221c9cf8538db492d20e4b0d202af9
+
+48: impl Machine {
+49:     fn new(cfg: Arc<Config>) -> Self {
+50:         match cfg.role {
+51:             Role::Off => Self::Off,
+52:             Role::Server => Self::Server(Server::new(cfg)),
+53:             Role::Client => Self::Client(Client::new(cfg.clone(), cfg.name.clone())),
+54:         }
+
+77:     fn tick(&mut self, now: u64, out: &mut Vec<Action>) {
+78:         match self {
+79:             Self::Server(s) => s.handle(ServerEvent::TimerTick { now_ms: now }, out),
+80:             Self::Client(c) => c.handle(ClientEvent::TimerTick { now_ms: now }, out),
+81:             _ => {}
+82:         }
+83:     }
+84:     fn shutdown(&mut self, out: &mut Vec<Action>) {
+85:         match self {
+86:             Self::Server(s) => s.handle(ServerEvent::Shutdown, out),
+87:             Self::Client(c) => c.handle(ClientEvent::Shutdown, out),
+88:             _ => {}
+89:         }
+
+1239:             m::DAEMON_STOP => {
+1240:                 self.stop.store(true, Ordering::Relaxed);
+1241:                 Ok(json!({"stopping":true}))
+1242:             }
+
+1392: pub fn run_daemon(
+1393:     socket_path: PathBuf,
+1394:     mut config: Config,
+1395:     config_path: Option<PathBuf>,
+1396:     platform: String,
+1397:     parent_pid: Option<i64>,
+1398: ) -> Result<i32, String> {
+1399:     normalize(&mut config);
+1400:     config.validate().map_err(|e| format!("config: {e}"))?;
+1401:     if matches!(platform.as_str(), "macos" | "x11" | "windows")
+1402:         && std::env::var_os("OPENERGY_ALLOW_PORT_24800").is_none()
+1403:     {
+1404:         // Startup is still single-threaded. Explicit lab denials and virtual
+1405:         // backends retain the transport's protected-port guard.
+1406:         std::env::set_var("OPENERGY_ALLOW_PORT_24800", "1");
+1407:     }
+1408:     let path = config_path.unwrap_or_else(crate::default_config_path);
+1409:     let dir = path
+1410:         .parent()
+1411:         .filter(|p| !p.as_os_str().is_empty())
+1412:         .unwrap_or(Path::new("."))
+1413:         .to_path_buf();
+1414:     std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+1415:     let (listener, _lock) = ipc_server::bind(&socket_path)?;
+1416:     let bus = Arc::new(EventBus::default());
+1417:     let logger = Logger::new(&dir, bus.clone());
+1418:     logger.install();
+1419:     let parts = adapter::platform(&platform, &config).map_err(|e| e.to_string())?;
+1420:     let (mut backend, control, notices) = (parts.backend, parts.control, parts.notices);
+1421:     let (driver, _net_handle) =
+1422:         NetDriver::new(adapter::net_config(&config, &dir, platform == "virtual")).map_err(|e| e.to_string())?;
+1423:     let waker = driver.waker();
+1424:     let display_changed = Arc::new(AtomicBool::new(false));
+1425:     let flag = display_changed.clone();
+1426:     let display_waker = waker.clone();
+1427:     backend.screens.on_display_changed(Box::new(move || {
+1428:         flag.store(true, Ordering::Release);
+1429:         let _ = display_waker.wake();
+1430:     }));
+1431:     let capture = workers::capture(backend.source, waker.clone());
+1432:     let clipboard = workers::clipboard(backend.clipboard, waker.clone());
+1433:     let stop = Arc::new(AtomicBool::new(false));
+1434:     let (tx, rx) = mpsc::sync_channel(128);
+1435:     let accept = ipc_server::serve(listener, socket_path.clone(), tx, waker, bus.clone(), stop.clone());
+1436:     let displays = backend.screens.screens();
+1437:     let permissions = backend.screens.permissions();
+1438:     let machine = Machine::new(Arc::new(config.clone()));
+1439:     let enabled = config.role != Role::Off && (config.role != Role::Client || config.client.autoconnect);
+1440:     let mut rt = Runtime {
+
+1508:     while !stop.load(Ordering::Relaxed) && !lifetime::SIGNALLED.load(Ordering::Relaxed) && !parent.exited() {
+1509:         for notice in (rt.notices)() {
+1510:             rt.notice(notice);
+1511:         }
+1512:         if rt.close_at.is_some_and(|deadline| rt.now() >= deadline) {
+1513:             rt.close_at = None;
+1514:             rt.execute(NetCommand::Shutdown);
+1515:             rt.process_net();
+1516:         }
+1517:         while let Ok(packet) = rt.capture.events.try_recv() {
+1518:             rt.status_dirty = true;
+1519:             if let Some(movement) = packet.movement {
+1520:                 rt.input(movement);
+1521:             }
+1522:             rt.input(packet.event);
+1523:         }
+1524:         let movement = rt.capture.movement.try_lock().ok().and_then(|mut s| s.take());
+1525:         if let Some(movement) = movement {
+1526:             rt.input(movement);
+1527:         }
+1528:         // Input gets the first turn. A busy IPC observer must not keep a
+1529:         // captured move behind an unbounded request drain.
+1530:         for _ in 0..8 {
+1531:             let Ok(IoCommand::Ipc { req, reply, events }) = rx.try_recv() else {
+1532:                 break;
+1533:             };
+1534:             let response = match rt.dispatch(&req, &events) {
+1535:                 Ok(value) => Response::ok(req.id, value),
+1536:                 Err(error) => Response::err(req.id, error),
+1537:             };
+1538:             rt.apply_actions();
+1539:             rt.process_net();
+1540:             let _ = reply.send(response);
+1541:         }
+1542:         let failed_reads = rt.clipboard.failed_reads.swap(0, Ordering::AcqRel);
+1543:         for id in 0..2 {
+1544:             if failed_reads & (1 << id) != 0 {
+1545:                 rt.machine.clipboard_read_failed(ClipboardId(id), &mut rt.actions);
+1546:                 rt.error("clipboard_busy", "Clipboard result queue is full");
+1547:             }
+1548:         }
+1549:         while let Ok(event) = rt.clipboard.events.try_recv() {
+1550:             match event {
+1551:                 ClipboardEvent::Changed => rt.machine.clipboard_changed(&mut rt.actions),
+1552:                 ClipboardEvent::Payload { id, data } => rt.machine.payload(id, data, &mut rt.actions),
+1553:                 ClipboardEvent::ReadUnavailable { id } => rt.machine.clipboard_read_failed(id, &mut rt.actions),
+1554:                 ClipboardEvent::Failure { read_id, error } => {
+1555:                     if let Some(id) = read_id {
+1556:                         rt.machine.clipboard_read_failed(id, &mut rt.actions);
+1557:                     }
+1558:                     rt.error("clipboard_failed", error);
+1559:                 }
+1560:                 ClipboardEvent::Blocked { id, bytes, limit } => {
+1561:                     rt.machine.clipboard_read_failed(id, &mut rt.actions);
+1562:                     let blocked = ipc::ClipboardBlocked {
+1563:                         bytes: Some(bytes),
+1564:                         limit: Some(limit),
+1565:                         peer: Some("local".into()),
+1566:                         unix_ms: Some(unix_ms()),
+1567:                     };
+1568:                     rt.publish(
+1569:                         "clipboard.blocked",
+1570:                         serde_json::to_value(&blocked).unwrap_or(Value::Null),
+1571:                     );
+1572:                     rt.last_blocked = Some(blocked);
+1573:                 }
+1574:             }
+1575:         }
+1576:         let now = rt.now();
+1577:         rt.machine.tick(now, &mut rt.actions);
+1578:         rt.apply_actions();
+1579:         rt.process_net();
+1580:         let health_interval = if matches!(rt.permissions.accessibility, Grant::Denied | Grant::Unknown)
+1581:             || matches!(rt.permissions.input_monitoring, Grant::Denied | Grant::Unknown)
+1582:             || matches!(rt.permissions.post_events, Grant::Denied | Grant::Unknown)
+1583:         {
+1584:             250
+1585:         } else {
+1586:             2000
+1587:         };
+1588:         if rt.display_changed.swap(false, Ordering::AcqRel) || now.saturating_sub(rt.last_health) >= health_interval {
+1589:             rt.last_health = now;
+1590:             rt.refresh_health();
+1591:             rt.apply_actions();
+1592:         }
+1593:         if rt.cfg.role == Role::Client
+1594:             && rt.state == "reconnecting"
+1595:             && rt.retry.is_some()
+1596:             && now.saturating_sub(rt.last_network_sample) >= 2000
+1597:         {
+1598:             rt.last_network_sample = now;
+1599:             if let Some(addresses) = crate::interfaces::snapshot() {
+1600:                 let changed = rt.network_set.as_ref().is_some_and(|previous| *previous != addresses);
+1601:                 rt.network_set = Some(addresses);
+1602:                 if changed {
+1603:                     log::info!("network interfaces changed; retry configured server");
+1604:                     rt.attempt = 0;
+1605:                     rt.retry = Some(now);
+1606:                 }
+1607:             }
+1608:         }
+1609:         if rt.retry.is_some_and(|t| now >= t) {
+1610:             rt.start_connection();
+1611:         }
+1612:         if rt.status_dirty && now.saturating_sub(rt.last_status_ms) >= 100 {
+1613:             let status = rt.status().to_json();
+1614:             if status != rt.last_status {
+1615:                 rt.last_status = status.clone();
+1616:                 rt.publish("status.changed", status);
+1617:             }
+1618:             rt.last_status_ms = now;
+1619:             rt.status_dirty = false;
+1620:         }
+1621:         let now = rt.now();
+1622:         let session_deadline = match &rt.machine {
+1623:             Machine::Server(s) => s.next_deadline_ms(),
+1624:             Machine::Client(c) => c.next_deadline_ms(),
+1625:             _ => now + 1000,
+1626:         };
+1627:         let mut deadline = session_deadline.min(rt.last_health + health_interval);
+1628:         if rt.status_dirty {
+1629:             deadline = deadline.min(rt.last_status_ms + 100);
+1630:         }
+1631:         if let Some(retry) = rt.retry {
+1632:             deadline = deadline.min(retry);
+1633:         }
+1634:         let timeout = Duration::from_millis(deadline.saturating_sub(now).clamp(1, 2000));
+1635:         if let Err(e) = rt.driver.poll(Some(timeout), &mut rt.net_events) {
+1636:             rt.error("network_failed", e.to_string());
+1637:             break;
+1638:         }
+1639:         rt.process_net();
+1640:     }
+1641:     log::info!("shutdown: leave and goodbye");
+1642:     rt.enabled = false;
+1643:     rt.machine.shutdown(&mut rt.actions);
+1644:     rt.apply_actions();
+1645:     let flush = Instant::now();
+1646:     while flush.elapsed() < Duration::from_millis(250) {
+1647:         let _ = rt.driver.poll(Some(Duration::from_millis(10)), &mut rt.net_events);
+1648:         rt.net_events.clear();
+1649:     }
+1650:     rt.screens.prevent_sleep(false);
+1651:     rt.sink.release_all();
+1652:     rt.sink.set_cursor_visible(true);
+1653:     rt.execute(NetCommand::Shutdown);
+1654:     stop.store(true, Ordering::Relaxed);
+1655:     let _ = rt.capture.commands.send(CaptureCommand::Stop);
+1656:     let _ = rt.clipboard.commands.send(ClipboardCommand::Stop);
+1657:     let _ = accept.join();
+1658:     let _ = rt.capture.thread.join();
+1659:     let _ = rt.clipboard.thread.join();
+1660:     log::info!("daemon stopped");
+1661:     #[cfg(windows)]
+1662:     lifetime::SHUTDOWN_COMPLETE.store(true, Ordering::Release);
+1663:     Ok(0)
+1664: }
