@@ -1,0 +1,240 @@
+{
+  "collector_failure": {
+    "correction": "finish-readonly.py ran only read-only codesign display and lipo metadata; no signing or public CLI rerun",
+    "error": "PermissionError: [Errno 1] Operation not permitted",
+    "exit_code": 1,
+    "missing_command_exit_receipt": "first final metadata command exit not saved; never count it as a recorded exit 0",
+    "phase": "first final signature metadata display; signing, public verify and eight strict checks had already completed",
+    "retention_before_loss": "original collector, results-private.json, preserved-collector-failure.json, collector-tool-receipt.json, failed metadata stdout/stderr kept unchanged in the owned root",
+    "site": "collect.py:136, os.killpg(child.pid,0), after direct metadata-command wait",
+    "tool_chunk": "41f081"
+  },
+  "dictionary_read_before_loss": {
+    "all_seven_output_binaries_architectures": [
+      "x86_64",
+      "arm64"
+    ],
+    "architectures": {
+      "arm64": {
+        "fixture_input_dictionary": {
+          "com.apple.security.app-sandbox": true,
+          "com.apple.security.network.client": true
+        },
+        "flags": "0x2(adhoc)",
+        "full_dictionary_equal": true,
+        "identifier": "org.sparkle-project.DownloaderService",
+        "identifier_equal": true,
+        "original_dictionary": {},
+        "secure_timestamp": false,
+        "signature": "adhoc",
+        "team_identifier_not_set": true,
+        "whole_app_output_dictionary": {
+          "com.apple.security.app-sandbox": true,
+          "com.apple.security.network.client": true
+        }
+      },
+      "x86_64": {
+        "fixture_input_dictionary": {
+          "com.apple.security.app-sandbox": true,
+          "com.apple.security.network.client": true
+        },
+        "flags": "0x2(adhoc)",
+        "full_dictionary_equal": true,
+        "identifier": "org.sparkle-project.DownloaderService",
+        "identifier_equal": true,
+        "original_dictionary": {},
+        "secure_timestamp": false,
+        "signature": "adhoc",
+        "team_identifier_not_set": true,
+        "whole_app_output_dictionary": {
+          "com.apple.security.app-sandbox": true,
+          "com.apple.security.network.client": true
+        }
+      }
+    },
+    "stage_entry_counts": [
+      167,
+      167,
+      167
+    ],
+    "stage_regular_bytes": [
+      15196532,
+      15196724,
+      15196724
+    ],
+    "tool_chunk": "8432ca",
+    "whole_app_tree_stages": {
+      "fixture_input": "b1e02c07f75c4525fe84583bc46b441d9e37a809a993bf4f1657c5be2054b738",
+      "original_copy": "595db0302e64209f999a1a14406a414f8f0646a5f7d5e4df48a7433e5f2d9811",
+      "whole_app_output": "73f6a7c16629b5e80a5a71b7afb209d2f4211f6f84835699c9331b4e8e37ffba"
+    }
+  },
+  "last_observed_cleanup": {
+    "readonly_continuation": "direct Popen handles waited; its successful finalizer removed its recreated empty tmp/cache directories",
+    "recorded_command_group_absence_checks": 44,
+    "removed_only_owned_empty_dirs": [
+      "tmp",
+      "cache"
+    ],
+    "root_disappearance": "No root or old-fixture deletion command was issued by this flow. Cause not established.",
+    "signals_sent": 0,
+    "tool_chunk": "13d17d",
+    "unreceipted_metadata_group_probe": "unknown due to EPERM; do not treat as absence proof"
+  },
+  "main_receipts_read_before_loss": {
+    "prior_bindings_unchanged_at_that_read": true,
+    "production_source_hashes_unchanged_at_that_read": true,
+    "selected_inputs_unchanged_at_that_read": true,
+    "setup-sign-once": {
+      "argv": [
+        "/Users/serge/.local/bin/python3.11",
+        "/Users/serge/.t3/worktrees/openergy/t3-aefa82e2/tools/release/priority.py",
+        "--",
+        "/usr/bin/codesign",
+        "--force",
+        "--options",
+        "0",
+        "--timestamp=none",
+        "--sign",
+        "-",
+        "--identifier",
+        "org.sparkle-project.DownloaderService",
+        "--entitlements",
+        "/private/tmp/oe-nonempty-20261023-t3-aefa82e2-yc0e4rvh/fixture-entitlements.plist",
+        "/private/tmp/oe-nonempty-20261023-t3-aefa82e2-yc0e4rvh/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Downloader.xpc"
+      ],
+      "elapsed_seconds": 0.673608,
+      "exit": 0,
+      "stderr_bytes": 174,
+      "stdout_bytes": 0
+    },
+    "source": "read of saved results-private.json before disappearance",
+    "source_tool_chunk": "13d17d",
+    "strict_deep_elapsed_seconds": 0.356428,
+    "strict_deep_exit": 0,
+    "strict_object_exits": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "whole-app-sign-once": {
+      "argv": [
+        "/Users/serge/.local/bin/python3.11",
+        "/Users/serge/.t3/worktrees/openergy/t3-aefa82e2/tools/release/sparkle.py",
+        "sign",
+        "--app",
+        "/private/tmp/oe-nonempty-20261023-t3-aefa82e2-yc0e4rvh/Openergy.app",
+        "--arch",
+        "arm64",
+        "--arch",
+        "x86_64"
+      ],
+      "elapsed_seconds": 4.496076,
+      "exit": 0,
+      "stderr_bytes": 0,
+      "stdout_bytes": 0
+    },
+    "whole-app-verify-once": {
+      "argv": [
+        "/Users/serge/.local/bin/python3.11",
+        "/Users/serge/.t3/worktrees/openergy/t3-aefa82e2/tools/release/sparkle.py",
+        "verify",
+        "--app",
+        "/private/tmp/oe-nonempty-20261023-t3-aefa82e2-yc0e4rvh/Openergy.app",
+        "--arch",
+        "arm64",
+        "--arch",
+        "x86_64"
+      ],
+      "elapsed_seconds": 5.739117,
+      "exit": 0,
+      "stderr_bytes": 0,
+      "stdout": "PASS: bundle architectures, relocation linkage, nested signatures and framework symlinks\n"
+    }
+  },
+  "original_stream_availability_now": "ABSENT. No complete private ledger, original raw streams, full inventories, or signed output remains accessible. Independent saved-evidence acceptance cannot be completed.",
+  "preflight_tool_receipt": {
+    "app_regular_bytes": 15196532,
+    "chunk_id": "4ef539",
+    "commands": 31,
+    "copy_tree_sha256": "595db0302e64209f999a1a14406a414f8f0646a5f7d5e4df48a7433e5f2d9811",
+    "exit_code": 0,
+    "original_downloader_entitlements": {
+      "arm64": {},
+      "x86_64": {}
+    },
+    "original_downloader_identifier": "org.sparkle-project.DownloaderService",
+    "root": "/private/tmp/oe-nonempty-20261023-t3-aefa82e2-yc0e4rvh",
+    "selected_entries": {
+      "old_positive": 167,
+      "source_app": 167,
+      "source_artifact": 221
+    }
+  },
+  "priority_read_before_loss": {
+    "codesign_samples": [
+      {
+        "comm": "(codesign)",
+        "command_label": "whole-app-verify-once",
+        "nice": 15,
+        "pgid": 1161,
+        "pid": 1283,
+        "ppid": 1161,
+        "start": "Fri Oct 23 21:05:13 2026",
+        "uid": 501
+      }
+    ],
+    "limit": "Actual signing codesign processes were not identified in the samples. No claim about unsampled process priorities.",
+    "sampled_parent": {
+      "nice": 15,
+      "pid": 1161,
+      "ppid": 1005,
+      "start": "Fri Oct 23 21:05:07 2026"
+    },
+    "set_read_controllers": [
+      {
+        "before": 0,
+        "pid": 95958,
+        "read_back": 15,
+        "set_absolute": 15
+      },
+      {
+        "before": 0,
+        "pid": 1005,
+        "read_back": 15,
+        "set_absolute": 15
+      },
+      {
+        "before": 0,
+        "pid": 34422,
+        "read_back": 15,
+        "set_absolute": 15
+      }
+    ],
+    "signing_codesign_sample_count": 0,
+    "tool_chunk": "8432ca"
+  },
+  "provenance": "Bounded transcription of tool results observed in this thread before private paths became absent. These are NOT original private raw command streams, a replacement fixture, or a complete saved-evidence package.",
+  "readonly_finish_tool_receipt": {
+    "chunk_id": "19796a",
+    "downloader_fixture_input_and_output_sha256": "c348da230a8d320c8c1a2c0169ff23005ec74ac7bea99a04b8d6d78819540d38",
+    "downloader_mode": "0755",
+    "downloader_original_sha256": "a2ac3e145291a8f539a2c41b20ea3d7b92a8523105c2802295237b5fd5a1bd0f",
+    "exit_code": 0,
+    "observed_acceptance": "PASS: declared nonempty Downloader fixture dictionary and identifier preserved on arm64 and x86_64 through real whole-app CLI",
+    "output_tree_sha256": "73f6a7c16629b5e80a5a71b7afb209d2f4211f6f84835699c9331b4e8e37ffba",
+    "public_sign_changed_files": [
+      "Contents/Frameworks/Sparkle.framework/Versions/B/Sparkle",
+      "Contents/Frameworks/Sparkle.framework/Versions/B/_CodeSignature/CodeResources",
+      "Contents/MacOS/Openergy",
+      "Contents/_CodeSignature/CodeResources"
+    ],
+    "setup_changed_files": [
+      "Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Downloader.xpc/Contents/MacOS/Downloader"
+    ]
+  }
+}

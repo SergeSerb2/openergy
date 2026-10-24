@@ -1,0 +1,141 @@
+{
+  "controller_original": {
+    "bytes": 24746,
+    "path": "/private/tmp/oe-nonempty-20261023-t3-aefa82e2-yc0e4rvh/collect.py",
+    "sha256": "6630f1d01d97d2f9947aa43d2d5ec50a00039580f513d83dd6ca1a27ea07b1e7"
+  },
+  "frozen_at_local": "2026-10-23T21:05:02.199012-07:00",
+  "plan": {
+    "acceptance": [
+      "Stop on first actual command or acceptance failure; never retry signing.",
+      "Fixture values are deliberate sandbox/network data, not a claim about original Apple production entitlements.",
+      "Require complete Downloader dictionary and established identifier to survive on arm64 and x86_64.",
+      "Require all signatures ad hoc and no added disable-library-validation entitlement.",
+      "Copied-only setup makes outer seal temporarily stale; full public sign must reseal nested, daemon and outer app.",
+      "No launch, install, build, package manager, network, keys, keychain, desktop or delegation."
+    ],
+    "architectures": [
+      "arm64",
+      "x86_64"
+    ],
+    "controller": {
+      "bytes": 24746,
+      "path": "/private/tmp/oe-nonempty-20261023-t3-aefa82e2-yc0e4rvh/collect.py",
+      "sha256": "6630f1d01d97d2f9947aa43d2d5ec50a00039580f513d83dd6ca1a27ea07b1e7"
+    },
+    "copy_tree_sha256": "595db0302e64209f999a1a14406a414f8f0646a5f7d5e4df48a7433e5f2d9811",
+    "environment": {
+      "LC_ALL": "C",
+      "OPENERGY_SIGN_IDENTITY": "-",
+      "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "TMPDIR": "/private/tmp/oe-nonempty-20261023-t3-aefa82e2-yc0e4rvh/tmp",
+      "XDG_CACHE_HOME": "/private/tmp/oe-nonempty-20261023-t3-aefa82e2-yc0e4rvh/cache"
+    },
+    "fixture_entitlement_plist": {
+      "bytes": 295,
+      "path": "/private/tmp/oe-nonempty-20261023-t3-aefa82e2-yc0e4rvh/fixture-entitlements.plist",
+      "sha256": "b043dea477bbd5da1552ef2f436a0cb644b884bb2568a9f831bd4ee362f9e99b"
+    },
+    "fixture_entitlements": {
+      "com.apple.security.app-sandbox": true,
+      "com.apple.security.network.client": true
+    },
+    "guard": "EXECUTE.once and per-command exclusive .once files; raw streams use exclusive create; no retry path.",
+    "limits": {
+      "copy_wall_seconds": 30,
+      "max_commands": 100,
+      "max_owned_root_bytes": 402653184,
+      "max_regular_file_bytes": 134217728,
+      "max_tree_bytes": 268435456,
+      "max_tree_entries": 1024,
+      "metadata_wall_seconds": 10,
+      "output_bytes_per_stream": 1048576,
+      "sign_wall_seconds": 30,
+      "total_wall_seconds": 180,
+      "verify_wall_seconds": 30
+    },
+    "original_downloader_identifier": "org.sparkle-project.DownloaderService",
+    "private_root": "/private/tmp/oe-nonempty-20261023-t3-aefa82e2-yc0e4rvh",
+    "sequence": [
+      "One setup-sign on the copied Downloader bundle; both slices by native default.",
+      "Decode both Downloader slice dictionaries and identifiers; save setup tree; require exact fixture dictionary.",
+      "One unchanged full public sign CLI; no per-function calls or signing replacements.",
+      "One full public verify CLI, then strict all-architecture checks of all seven objects and deep outer seal.",
+      "Read both slice dictionaries/identifiers on all objects; verify Downloader executable too; verify universal binaries.",
+      "Compare non-code bytes, all modes and links, selected original inputs and source hashes; retain originals."
+    ],
+    "setup_sign_once": [
+      "/Users/serge/.local/bin/python3.11",
+      "/Users/serge/.t3/worktrees/openergy/t3-aefa82e2/tools/release/priority.py",
+      "--",
+      "/usr/bin/codesign",
+      "--force",
+      "--options",
+      "0",
+      "--timestamp=none",
+      "--sign",
+      "-",
+      "--identifier",
+      "org.sparkle-project.DownloaderService",
+      "--entitlements",
+      "/private/tmp/oe-nonempty-20261023-t3-aefa82e2-yc0e4rvh/fixture-entitlements.plist",
+      "/private/tmp/oe-nonempty-20261023-t3-aefa82e2-yc0e4rvh/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Downloader.xpc"
+    ],
+    "sign_order": [
+      "Contents/Frameworks/Sparkle.framework/Versions/B/Autoupdate",
+      "Contents/Frameworks/Sparkle.framework/Versions/B/Updater.app",
+      "Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Downloader.xpc",
+      "Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Installer.xpc",
+      "Contents/Frameworks/Sparkle.framework",
+      "Contents/Helpers/openergy",
+      "."
+    ],
+    "source_commit": "dd545e52cdc2e5b29a4e5e1604c76a177f9b0e23",
+    "source_hashes": {
+      "apps/macos/Package.resolved": "c797ae9a0970d8225f66f11736f94a1a8337d68a55f65bb34e5a47d4edc94282",
+      "apps/macos/scripts/bundle.sh": "0882eee11375beb639890908b97d11367a611debbb549930baf67e70b2ebbda7",
+      "docs/macos-updates.md": "dec31694a426df115d9174c5235663cfde498cb0036b2486497f161f45a7fc3b",
+      "docs/releasing.md": "b4ef8f9400a2bec30ee79d93d4404374121083678268c9478d087ff1578ab36b",
+      "tools/release/priority.py": "5bdfd3e8674b4a44e5854c57e55a88a7df9edd8a211700040431d58dde9d3b0c",
+      "tools/release/sparkle.py": "28a7eba2edc3c7676422c50ce904be2383126e6777bc910a881fd281e739fe35"
+    },
+    "whole_app_sign_once": [
+      "/Users/serge/.local/bin/python3.11",
+      "/Users/serge/.t3/worktrees/openergy/t3-aefa82e2/tools/release/sparkle.py",
+      "sign",
+      "--app",
+      "/private/tmp/oe-nonempty-20261023-t3-aefa82e2-yc0e4rvh/Openergy.app",
+      "--arch",
+      "arm64",
+      "--arch",
+      "x86_64"
+    ],
+    "whole_app_verify_once": [
+      "/Users/serge/.local/bin/python3.11",
+      "/Users/serge/.t3/worktrees/openergy/t3-aefa82e2/tools/release/sparkle.py",
+      "verify",
+      "--app",
+      "/private/tmp/oe-nonempty-20261023-t3-aefa82e2-yc0e4rvh/Openergy.app",
+      "--arch",
+      "arm64",
+      "--arch",
+      "x86_64"
+    ]
+  },
+  "plan_original": {
+    "bytes": 5287,
+    "path": "/private/tmp/oe-nonempty-20261023-t3-aefa82e2-yc0e4rvh/frozen-plan.json",
+    "sha256": "d8c718e071bae2663020cde159cce891ed21042ba307408f92812be374c7fdf6"
+  },
+  "source_commit": "dd545e52cdc2e5b29a4e5e1604c76a177f9b0e23",
+  "source_hashes": {
+    "apps/macos/Package.resolved": "c797ae9a0970d8225f66f11736f94a1a8337d68a55f65bb34e5a47d4edc94282",
+    "apps/macos/scripts/bundle.sh": "0882eee11375beb639890908b97d11367a611debbb549930baf67e70b2ebbda7",
+    "docs/macos-updates.md": "dec31694a426df115d9174c5235663cfde498cb0036b2486497f161f45a7fc3b",
+    "docs/releasing.md": "b4ef8f9400a2bec30ee79d93d4404374121083678268c9478d087ff1578ab36b",
+    "tools/release/priority.py": "5bdfd3e8674b4a44e5854c57e55a88a7df9edd8a211700040431d58dde9d3b0c",
+    "tools/release/sparkle.py": "28a7eba2edc3c7676422c50ce904be2383126e6777bc910a881fd281e739fe35"
+  },
+  "status_at_freeze": "preflight passed; no signing yet"
+}
