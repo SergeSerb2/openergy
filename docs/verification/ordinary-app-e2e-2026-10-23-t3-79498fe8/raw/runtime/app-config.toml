@@ -1,0 +1,42 @@
+version = 1
+role = "client"
+name = "app"
+screen = []
+
+[server]
+listen = "127.0.0.1:65372"
+port = 65372
+heartbeat_ms = 3000
+
+[client]
+remote = "127.0.0.1:65371"
+autoconnect = true
+heartbeat_ms = 3000
+
+[tls]
+enabled = false
+require_client_trust = true
+
+[clipboard]
+enabled = true
+send = true
+receive = true
+max_bytes = 67108864
+
+[input]
+relative_mouse = false
+invert_scroll_y = false
+scroll_sensitivity = 1.0
+sync_language = true
+prevent_sleep = false
+
+[switch]
+delay_ms = 0
+double_tap_ms = 0
+dead_corners = []
+corner_size_px = 0
+
+[hotkeys]
+
+[macos]
+click_numbering = "native"

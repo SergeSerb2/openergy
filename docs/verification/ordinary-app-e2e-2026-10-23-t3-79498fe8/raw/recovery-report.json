@@ -1,0 +1,127 @@
+[
+  {
+    "detail" : "link=connected daemon=0.1.0 pid=89180",
+    "name" : "connect",
+    "passed" : true
+  },
+  {
+    "detail" : "role=off remote=",
+    "name" : "starts from safe off config",
+    "passed" : true
+  },
+  {
+    "detail" : "status.role=off config.role=off error=none",
+    "name" : "role off",
+    "passed" : true
+  },
+  {
+    "detail" : "role=client state=connecting remote=127.0.0.1:65371 error=none",
+    "name" : "join 127.0.0.1:65371",
+    "passed" : true
+  },
+  {
+    "detail" : "state=reconnecting peers=0",
+    "name" : "real peer connected",
+    "passed" : false
+  },
+  {
+    "detail" : "state=idle peers=0",
+    "name" : "disconnect peer",
+    "passed" : true
+  },
+  {
+    "detail" : "state=reconnecting peers=0",
+    "name" : "rejoin same address",
+    "passed" : false
+  },
+  {
+    "detail" : "config.clipboard.enabled=Optional(false)",
+    "name" : "clipboard off",
+    "passed" : true
+  },
+  {
+    "detail" : "config.clipboard.enabled=Optional(true)",
+    "name" : "clipboard on",
+    "passed" : true
+  },
+  {
+    "detail" : "server=127.0.0.1:65372",
+    "name" : "test port",
+    "passed" : true
+  },
+  {
+    "detail" : "role=server state=listening listen=127.0.0.1:65372",
+    "name" : "role server",
+    "passed" : true
+  },
+  {
+    "detail" : "screens=[\"app\", \"e2e-pc\"] error=none",
+    "name" : "layout seeded",
+    "passed" : true
+  },
+  {
+    "detail" : "rects=[\"app@1920,49\", \"e2e-pc@0,0\"] error=none",
+    "name" : "layout left of this Mac",
+    "passed" : true
+  },
+  {
+    "detail" : "raw e2e-pc=object([\"name\": Openergy.JSONValue.string(\"e2e-pc\"), \"links\": Openergy.JSONValue.object([\"left\": Openergy.JSONValue.string(\"app\"), \"ranges\": Openergy.JSONValue.array([Openergy.JSONValue.object([\"to\": Openergy.JSONValue.string(\"app\"), \"to_range\": Openergy.JSONValue.array([Openergy.JSONValue.number(50.0), Openergy.JSONValue.number(100.0)]), \"from_range\": Openergy.JSONValue.array([Openergy.JSONValue.number(0.0), Openergy.JSONValue.number(50.0)]), \"edge\": Openergy.JSONValue.string(\"top\")])])]), \"aliases\": Openergy.JSONValue.array([Openergy.JSONValue.string(\"e2e-pc-alias\")]), \"rect\": Openergy.JSONValue.object([\"x\": Openergy.JSONValue.number(1512.0), \"y\": Openergy.JSONValue.number(0.0), \"h\": Openergy.JSONValue.number(1080.0), \"w\": Openergy.JSONValue.number(1920.0)])])",
+    "name" : "layout keeps imported fields",
+    "passed" : true
+  },
+  {
+    "detail" : "links=[\"app.left→e2e-pc\", \"e2e-pc.left→app\", \"e2e-pc.right→app\", \"e2e-pc.top→app\"]",
+    "name" : "derived links arrive",
+    "passed" : true
+  },
+  {
+    "detail" : "name=e2e-mac screens=[\"e2e-mac\", \"e2e-pc\"]",
+    "name" : "rename keeps layout entry",
+    "passed" : true
+  },
+  {
+    "detail" : "direct=e2e-mac ranged=e2e-mac",
+    "name" : "rename keeps explicit links",
+    "passed" : true
+  },
+  {
+    "detail" : "tail=24 now=25 last=7:20:08 PM INFO openergy::runtime: listening on 127.0.0.1:65372",
+    "name" : "live log lines",
+    "passed" : true
+  },
+  {
+    "detail" : "error=invalid config: screen \"e2e-pc\".rect: need nonnegative finite origins and positive sizes within i32 bounds",
+    "name" : "rejected layout rolls back",
+    "passed" : true
+  },
+  {
+    "detail" : "role=off",
+    "name" : "join then off preserves intent",
+    "passed" : true
+  },
+  {
+    "detail" : "responsive=true bounded=true requestFailed=true",
+    "name" : "stalled IPC remains responsive",
+    "passed" : true
+  },
+  {
+    "detail" : "cleared=true recovered=true",
+    "name" : "owned daemon crash recovers",
+    "passed" : true
+  },
+  {
+    "detail" : "role=off",
+    "name" : "role off again",
+    "passed" : true
+  },
+  {
+    "detail" : "notice=Imported with notes: synergy.conf has no local identity: selected its first screen as server; confirm role and name synergy.conf line 6: unsupported option \"e2eUnsupportedSetting\"",
+    "name" : "import warning notice",
+    "passed" : true
+  },
+  {
+    "detail" : "error=I\/O error: no db.json or synergy.conf found in import directory",
+    "name" : "empty import reports error",
+    "passed" : true
+  }
+]

@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/Users/serge/.t3/worktrees/openergy/t3-79498fe8/docs/verification/ordinary-app-e2e-2026-10-23-t3-79498fe8/controller.py", line 305, in main
+    cleanup(peer_env)
+    ~~~~~~~^^^^^^^^^^
+  File "/Users/serge/.t3/worktrees/openergy/t3-79498fe8/docs/verification/ordinary-app-e2e-2026-10-23-t3-79498fe8/controller.py", line 191, in cleanup
+    sample()
+    ~~~~~~^^
+  File "/Users/serge/.t3/worktrees/openergy/t3-79498fe8/docs/verification/ordinary-app-e2e-2026-10-23-t3-79498fe8/controller.py", line 75, in sample
+    assert row['ppid'] == processes['app'].pid and row['pgid'] == processes['app'].pid
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

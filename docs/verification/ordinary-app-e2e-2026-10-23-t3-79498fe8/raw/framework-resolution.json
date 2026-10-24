@@ -1,0 +1,63 @@
+{
+  "package_resolved": {
+    "originHash": "ce093f04ed71f2f7fb806ac19633c9c41a6d7d1aaf245341c9ed6b367788e505",
+    "pins": [
+      {
+        "identity": "sparkle",
+        "kind": "remoteSourceControl",
+        "location": "https://github.com/sparkle-project/Sparkle",
+        "state": {
+          "revision": "eef1a539a373c1f1a320624b1130fc5de7b2e100",
+          "version": "2.10.0"
+        }
+      }
+    ],
+    "version": 3
+  },
+  "workspace_state": {
+    "object": {
+      "artifacts": [
+        {
+          "kind": {
+            "xcframework": {}
+          },
+          "packageRef": {
+            "identity": "sparkle",
+            "kind": "remoteSourceControl",
+            "location": "https://github.com/sparkle-project/Sparkle",
+            "name": "Sparkle"
+          },
+          "path": "/private/tmp/oe-bootstrap-r2-build-yl3byo9v/swift/artifacts/sparkle/Sparkle/Sparkle.xcframework",
+          "source": {
+            "checksum": "17e28312b8e18ab7cdbbe09a6fb28cc55a5479ec6c371dbc07cdecd2a14fd959",
+            "type": "remote",
+            "url": "https://github.com/sparkle-project/Sparkle/releases/download/2.10.0/Sparkle-for-Swift-Package-Manager.zip"
+          },
+          "targetName": "Sparkle"
+        }
+      ],
+      "dependencies": [
+        {
+          "basedOn": null,
+          "packageRef": {
+            "identity": "sparkle",
+            "kind": "remoteSourceControl",
+            "location": "https://github.com/sparkle-project/Sparkle",
+            "name": "Sparkle"
+          },
+          "state": {
+            "checkoutState": {
+              "revision": "eef1a539a373c1f1a320624b1130fc5de7b2e100",
+              "version": "2.10.0"
+            },
+            "name": "sourceControlCheckout"
+          },
+          "subpath": "Sparkle"
+        }
+      ],
+      "prebuilts": []
+    },
+    "version": 7
+  },
+  "workspace_state_sha256": "f7dbaca242e19cbc322f7a9ca321779f4a8e456202c57b716d7868ad8807376d"
+}

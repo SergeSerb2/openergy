@@ -1,0 +1,41 @@
+{
+  "argv": [
+    "/private/tmp/oe-ordinary-79498-l7aurhai/Openergy.app/Contents/MacOS/Openergy",
+    "--e2e",
+    "/private/tmp/oe-ordinary-79498-l7aurhai/app",
+    "--join",
+    "127.0.0.1:65371",
+    "--host-port",
+    "65372",
+    "--require-peer"
+  ],
+  "binary_sha256": "53ba6f431811eb1178c39b8b7ad7cdb425b0088e7c893b8dcab8e601ad338c23",
+  "environment_allowlist": {
+    "CFFIXED_USER_HOME": "/private/tmp/oe-ordinary-79498-l7aurhai/home",
+    "HOME": "/private/tmp/oe-ordinary-79498-l7aurhai/home",
+    "LANG": "C",
+    "LC_CTYPE": "C.UTF-8",
+    "MACOSX_DEPLOYMENT_TARGET": "15.0",
+    "OPENERGY_ALLOW_PORT_24800": "0",
+    "OPENERGY_CONFIG": "/private/tmp/oe-ordinary-79498-l7aurhai/app/config/config.toml",
+    "OPENERGY_CONFIG_DIR": "/private/tmp/oe-ordinary-79498-l7aurhai/app/config",
+    "OPENERGY_DAEMON_ARGS": "--platform virtual",
+    "OPENERGY_DISABLE_DISCOVERY": "1",
+    "OPENERGY_E2E_NO_RENDER": "1",
+    "OPENERGY_SOCKET": "/private/tmp/oe-ordinary-79498-l7aurhai/app/config/control.sock",
+    "OPENERGY_TLS_DIR": "/private/tmp/oe-ordinary-79498-l7aurhai/app/config/tls",
+    "PATH": "/usr/bin:/bin",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "TMPDIR": "/private/tmp/oe-ordinary-79498-l7aurhai/tmp/",
+    "XDG_CACHE_HOME": "/private/tmp/oe-ordinary-79498-l7aurhai/cache",
+    "XDG_CONFIG_HOME": "/private/tmp/oe-ordinary-79498-l7aurhai/home",
+    "__CF_USER_TEXT_ENCODING": "0x1F5:0:0"
+  },
+  "identity": "  PID  PPID  PGID   UID NI STARTED                      COMMAND\n89176 89119 89176   501 15 Fri Oct 23 19:19:46 2026     /opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/Resources/Python.app/Contents/MacOS/Python /Users/serge/.t3/worktrees/openergy/t3-79498fe8/docs/verification/ordinary-app-e2e-2026-10-23-t3-79498fe8/exec_owned.py /Users/serge/.t3/worktrees/openergy/t3-79498fe8/docs/verification/ordinary-app-e2e-2026-10-23-t3-79498fe8/raw/runtime/app-exec.json /private/tmp/oe-ordinary-79498-l7aurhai/Openergy.app/Contents/MacOS/Openergy --e2e /private/tmp/oe-ordinary-79498-l7aurhai/app --join 127.0.0.1:65371 --host-port 65372 --require-peer\n",
+  "monotonic_ns": 96712092345000,
+  "nice": 15,
+  "pgid": 89176,
+  "pid": 89176,
+  "ppid": 89119,
+  "uid": 501
+}
