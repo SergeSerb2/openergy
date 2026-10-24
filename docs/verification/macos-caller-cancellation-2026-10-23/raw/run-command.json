@@ -1,0 +1,38 @@
+{
+  "argv": [
+    "nice",
+    "-n",
+    "15",
+    "/private/tmp/oe-caller-pbgh33w0/Openergy.app/Contents/MacOS/Openergy",
+    "--e2e",
+    "/private/tmp/oe-caller-pbgh33w0/flow",
+    "--join",
+    "127.0.0.1:59699",
+    "--host-port",
+    "59698",
+    "--caller-cancellation"
+  ],
+  "explicit_environment": {
+    "OPENERGY_CONFIG": "/private/tmp/oe-caller-pbgh33w0/flow/config/config.toml",
+    "OPENERGY_CONFIG_DIR": "/private/tmp/oe-caller-pbgh33w0/flow/config",
+    "OPENERGY_TLS_DIR": "/private/tmp/oe-caller-pbgh33w0/flow/config/tls",
+    "OPENERGY_SOCKET": "/private/tmp/oe-caller-pbgh33w0/flow/config/ipc.sock",
+    "OPENERGY_DAEMON": "/private/tmp/oe-caller-pbgh33w0/Openergy.app/Contents/Helpers/openergy",
+    "OPENERGY_DAEMON_ARGS": "--platform virtual",
+    "OPENERGY_DISABLE_DISCOVERY": "1",
+    "OPENERGY_ALLOW_PORT_24800": "0",
+    "OPENERGY_E2E_NO_RENDER": "1",
+    "OPENERGY_IPC_TRACE": "1",
+    "CFFIXED_USER_HOME": "/private/tmp/oe-caller-pbgh33w0/private-home",
+    "XDG_CONFIG_HOME": "/private/tmp/oe-caller-pbgh33w0/private-home",
+    "XDG_RUNTIME_DIR": "/private/tmp/oe-caller-pbgh33w0/private-home",
+    "XDG_DATA_HOME": "/private/tmp/oe-caller-pbgh33w0/private-home",
+    "XDG_CACHE_HOME": "/private/tmp/oe-caller-pbgh33w0/private-home"
+  },
+  "wall_limit_seconds": 15,
+  "ports": [
+    59698,
+    59699
+  ],
+  "join_is_unused_in_this_mode": true
+}

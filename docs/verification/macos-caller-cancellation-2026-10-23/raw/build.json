@@ -1,0 +1,30 @@
+{
+  "argv": [
+    "nice",
+    "-n",
+    "15",
+    "swift",
+    "build",
+    "--package-path",
+    "/private/tmp/oe-caller-pbgh33w0/source/apps/macos",
+    "--scratch-path",
+    "/private/tmp/oe-caller-pbgh33w0/swift",
+    "--cache-path",
+    "/private/tmp/oe-caller-pbgh33w0/cache",
+    "--config-path",
+    "/private/tmp/oe-caller-pbgh33w0/config",
+    "--security-path",
+    "/private/tmp/oe-caller-pbgh33w0/security",
+    "--manifest-cache",
+    "local",
+    "-c",
+    "release",
+    "--jobs",
+    "2",
+    "--disable-automatic-resolution",
+    "--skip-update"
+  ],
+  "timeout_seconds": 180,
+  "exit": 0,
+  "elapsed_seconds": 30.569371875
+}
