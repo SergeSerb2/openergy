@@ -310,8 +310,14 @@ preserves the old caches and prior records but fails during Swift manifest
 evaluation, before signing, ZIP creation or product IPC. Its
 [saved-evidence audit](../release-priority-isolated-failure-review-2026-10-23-t3-60b539d2.md)
 finds no new concrete P1/P2 and keeps the insufficient preflight open.
-The failed command remains failed. A corrected Swift recipe is being qualified
-before any new package command.
+The failed command remains failed. The [next held-source attempt](../release-swift-isolation-2026-10-23-t3-bc17f311/README.md)
+passes real manifest evaluation but fails native Swift planning on output-file-map
+I/O. Its [review](../release-swift-isolation-review-2026-10-23-t3-73b2eeaf.md)
+finds a separate P2: the isolated mode must reject universal builds that can
+override the requested native backend. That build-option source is not integrated.
+A narrow rejection and one app-only arm64 release qualification are in progress;
+the I/O cause remains unresolved and no further package command is authorized
+by that qualification task.
 
 The [slow-DNS prerequisite note](../slow-dns-fixture-prerequisites-2026-10-23-a3f15192.md)
 identifies a possible Windows application-DNS API. The [settings-only helper](../windows-app-dns-qualification-prep-2026-10-23/report.md)
