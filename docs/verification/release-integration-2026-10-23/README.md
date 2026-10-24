@@ -200,8 +200,11 @@ The later ordinary flow at `498190f` is **not accepted**: it reports 23/25
 after a controller assumed that the supervised child shared the app's process
 group. Cleanup then stopped the peer before the app finished. App exit-status
 and late priority evidence are incomplete; this interference establishes no
-product regression. A source-only ownership/watchdog/cleanup repair at
-`8324371` is under independent static review before any new ordinary flow.
+product regression. The [independent review](../ordinary-app-e2e-controller-repair-review-2026-10-23-t3-f92a997d.md)
+of source-only repair `8324371` finds seven P2 controller issues: interpreter
+identity, coherent exec observations, recovery after evidence failure, missing
+spawn records, controller-loss transitions, TERM grace and aggregate evidence
+limits. A source-only repair is assigned. No new ordinary flow has run.
 
 The [first connected-idle measurement](../macos-idle-resources-2026-10-23/README.md)
 failed in its launcher before app readiness. Its successful build and completed
@@ -287,15 +290,19 @@ The [frozen file-only preparation](../sparkle-running-prep-2026-10-23-t3-aa79bac
 contains both private bundles, copied driver, signed ZIP/feed and a text-only
 operation. The disposable key is deleted. Its [operation review](../sparkle-running-prep-review-2026-10-23-t3-2c45371a.md)
 found three P2 controller issues: restart accounting, absolute I/O deadlines,
-and normal-quit scope on failure. The operation remains **DO-NOT-RUN** and
-unapproved. A source-only correction is in progress; artifact identity does
-not establish launch, handoff or relaunch acceptance.
+and normal-quit scope on failure. Those original records remain unchanged;
+artifact identity does not establish launch, handoff or relaunch acceptance.
 The [source-only correction](../sparkle-running-repair-2026-10-23-t3-bd21f531-r1/README.md)
 adds persistent accounting and bounded recovery. Its [R4 review](../sparkle-running-repair-R4-review-2026-10-23-t3-37c4f272.md)
 closes the earlier I/O-deadline and NEW-only quit defects, but finds two P2s:
 out-of-order ENTRY observations can reject valid exec, and final cleanup can
-miss a late observed helper. The corrected operation is not clear for approval.
-A narrow source-only repair is in progress; no controller or target has run.
+miss a late observed helper. The [next source-only repair](../sparkle-running-repair-2026-10-23-t3-6133e534-r2/README.md)
+addresses both. The [independent R6 review](../sparkle-running-repair-R6-review-2026-10-23-t3-bbbc0189.md)
+reports no actionable P1/P2 and closes all five prior findings in source.
+The [exact approval record](../sparkle-running-approval-2026-10-23/README.md)
+includes a separate hashed review receipt and a passing file-only binding
+refresh. Execution remains **DO-NOT-RUN** pending new running/relaunch approval
+and live preflight. No controller or target has run.
 
 The [signing prerequisite check](../macos-signing-prerequisites-2026-10-23/README.md)
 records no Developer ID Application identity and no declared notary profile.
