@@ -337,7 +337,10 @@ finds a separate P2: the isolated mode must reject universal builds that can
 override the requested native backend. That build-option source is not integrated.
 The narrow rejection and app-only qualification at held `6badf95` are complete:
 early universal-rejection checks pass, but the release build fails before app
-compilation. The source remains unmerged and the I/O cause remains unresolved. The
+compilation. The [independent guard review](../release-swift-universal-guard-review-2026-10-23-t3-773d4be3.md)
+closes the universal-mode P2 in source and checks both saved invalid CLI cases.
+Ordinary defaults have source comparison only. The source remains unmerged
+and the I/O cause remains unresolved. The
 [causal research](../release-swiftpm-atomic-write-research-2026-10-23-t3-57d3a189.md)
 narrows a possible Foundation atomic-write/replacement-directory path, but
 proves no cause or supported private configuration. Further build attempts
