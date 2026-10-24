@@ -11,8 +11,9 @@ export PATH="$HOME/.cargo/bin:$PATH"
 export CARGO_BUILD_JOBS=2
 PYTHON="${PYTHON:-python3}"
 [[ "$(uname -s)" == "Darwin" ]] || { echo "bundle.sh requires macOS" >&2; exit 1; }
-# Validate the public update configuration before any builds or destination changes.
+# Validate signing intent and public updates before any builds or destination changes.
 SPARKLE_TOOL="$ROOT/tools/release/sparkle.py"
+"$PYTHON" "$SPARKLE_TOOL" signing-policy
 "$PYTHON" "$SPARKLE_TOOL" config
 VERSION="$("$PYTHON" "$ROOT/tools/release/release.py" version)"
 MACOS_MIN="$("$PYTHON" -c 'import plistlib,sys; print(plistlib.load(open(sys.argv[1], "rb"))["LSMinimumSystemVersion"])' "$APP_SRC/Support/Info.plist")"
@@ -21,10 +22,6 @@ BUILD_NUMBER="${OPENERGY_BUILD:-1}"
 [[ "$BUILD_NUMBER" =~ ^[1-9][0-9]{0,8}$ ]] || { echo "OPENERGY_BUILD must be a positive integer (at most 9 digits)" >&2; exit 1; }
 [[ "${UNIVERSAL:-0}" =~ ^[01]$ ]] || { echo "UNIVERSAL must be 0 or 1" >&2; exit 1; }
 IDENTITY="${OPENERGY_SIGN_IDENTITY:--}"
-if [[ "$IDENTITY" != "-" && "${OPENERGY_ALLOW_SIGNING:-0}" != "1" ]]; then
-  echo "Named signing requires OPENERGY_ALLOW_SIGNING=1; default builds are ad-hoc and unnotarized" >&2
-  exit 1
-fi
 
 DIST="${DIST:-$ROOT/dist}"
 mkdir -p "$DIST"

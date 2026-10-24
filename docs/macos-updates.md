@@ -34,7 +34,7 @@ env -u OPENERGY_UPDATE_FEED_URL -u OPENERGY_UPDATE_PUBLIC_KEY \
 # Validate the configured source defaults before a build.
 OPENERGY_REQUIRE_UPDATES=1 python3.11 tools/release/sparkle.py config
 
-# Distribution candidate: the source public feed/key defaults are used.
+# Universal ad-hoc candidate: the source public feed/key defaults are used.
 # Both Rust macOS targets must already be installed for the universal build.
 OPENERGY_REQUIRE_UPDATES=1 \
 UNIVERSAL=1 OPENERGY_BUILD=2 PYTHON=python3.11 DIST=dist/update-candidate \
@@ -82,10 +82,52 @@ Default local signing is ad-hoc without Hardened Runtime, with no timestamp or
 trust claim. An ad-hoc app has no Team ID and cannot load Sparkle through
 Hardened Runtime's library validation. A named identity retains Hardened Runtime
 and requires the existing explicit `OPENERGY_ALLOW_SIGNING=1`
-and `OPENERGY_SIGN_IDENTITY` selection. The script does not discover identities,
+and `OPENERGY_SIGN_IDENTITY` selection. Both the bundler preflight and direct
+`sparkle.py sign` command use this signing-purpose policy:
+
+- With the identity unset or `-`, leave `OPENERGY_SIGN_PURPOSE` unset. Signing
+  uses `--options 0 --timestamp=none` and stays offline.
+- A full name starting with `Developer ID Application:` defaults to
+  `distribution`. A full name starting with `Apple Development:` defaults to
+  local `development`. Each prefix must have a nonempty name after it.
+- For a certificate hash, an existing identity preference, or another common-name
+  substring, explicitly set `OPENERGY_SIGN_PURPOSE=distribution` or
+  `OPENERGY_SIGN_PURPOSE=development`. The selector passes unchanged to `codesign`.
+- Distribution always uses `--options runtime --timestamp`, whatever selector
+  form you choose. It needs the secure timestamp service and network access.
+  A service failure fails signing; there is no retry without a timestamp.
+- Development uses `--options runtime --timestamp=none` and stays offline.
+  This includes explicitly chosen ambiguous local development selectors.
+
+An absent purpose for an ambiguous selector, an empty or unknown purpose, a
+purpose with ad-hoc signing, or a purpose that conflicts with a known certificate
+prefix fails before compilation, signing or bundle changes. Empty selectors,
+surrounding whitespace and control characters also fail. This validates the
+operator's intent; it does not prove which certificate a selector resolves to,
+private-key access, timestamp availability or distribution trust.
+
+Check this policy without building, signing, querying identities or making a
+timestamp request. `RELEASE_SIGN_SELECTOR` and `LOCAL_SIGN_SELECTOR` below mean
+operator-supplied selectors for separately authorized identities; no identity
+value is supplied by this example:
+
+```sh
+# Distribution: secure timestamp required, including when the selector is a hash.
+OPENERGY_ALLOW_SIGNING=1 OPENERGY_SIGN_IDENTITY="$RELEASE_SIGN_SELECTOR" \
+  OPENERGY_SIGN_PURPOSE=distribution python3.11 tools/release/sparkle.py signing-policy
+# Local development: no network timestamp.
+OPENERGY_ALLOW_SIGNING=1 OPENERGY_SIGN_IDENTITY="$LOCAL_SIGN_SELECTOR" \
+  OPENERGY_SIGN_PURPOSE=development python3.11 tools/release/sparkle.py signing-policy
+```
+
+Use the same environment with `apps/macos/scripts/bundle.sh`, or with
+`python3.11 tools/release/sparkle.py sign --app "$OWNED_APP" --arch arm64 --arch x86_64`
+for an already assembled universal private bundle. Those commands perform real
+signing with the selected key. Distribution also contacts the timestamp service.
+The script does not discover identities,
 change Keychain state, add a library-validation exception, or notarize anything.
 It signs Sparkle's inner code first, then the framework, daemon and outer app.
-Downloader's upstream sandbox/network entitlements are retained. Signature,
+Existing nested entitlement metadata is retained. Signature,
 architecture, runpath and framework-linkage checks run before the final move.
 The original downloaded framework signature is checked before it is re-signed.
 No build receives a library-validation exception entitlement. Packaged runtime,

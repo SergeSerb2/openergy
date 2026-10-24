@@ -1,0 +1,797 @@
+{
+  "actual_codesign_nice": [
+    15
+  ],
+  "ad_hoc_positive_after_tree_sha256": "595db0302e64209f999a1a14406a414f8f0646a5f7d5e4df48a7433e5f2d9811",
+  "ad_hoc_positive_before_tree_sha256": "595db0302e64209f999a1a14406a414f8f0646a5f7d5e4df48a7433e5f2d9811",
+  "ad_hoc_sign": {
+    "argv": [
+      "/Users/serge/.local/bin/python3.11",
+      "/Users/serge/.t3/worktrees/openergy/t3-b2a9d6dd/tools/release/sparkle.py",
+      "sign",
+      "--app",
+      "/private/tmp/oe-sign-purpose-v2-20261023-jf_s2gyj/positive/Openergy.app",
+      "--arch",
+      "arm64",
+      "--arch",
+      "x86_64"
+    ],
+    "elapsed_seconds": 1.1854,
+    "environment_overrides": {},
+    "exit": 0,
+    "label": "real-adhoc-sign",
+    "observed_processes": [
+      {
+        "executable": "(codesign)",
+        "nice": 15,
+        "pid": 97627,
+        "ppid": 97625
+      },
+      {
+        "executable": "(codesign)",
+        "nice": 15,
+        "pid": 97630,
+        "ppid": 97625
+      },
+      {
+        "executable": "(codesign)",
+        "nice": 15,
+        "pid": 97633,
+        "ppid": 97625
+      },
+      {
+        "executable": "(codesign)",
+        "nice": 15,
+        "pid": 97636,
+        "ppid": 97625
+      },
+      {
+        "executable": "(codesign)",
+        "nice": 15,
+        "pid": 97703,
+        "ppid": 97625
+      }
+    ],
+    "stderr": "/private/tmp/oe-sign-purpose-v2-20261023-jf_s2gyj/raw/real-adhoc-sign.stderr",
+    "stdout": "/private/tmp/oe-sign-purpose-v2-20261023-jf_s2gyj/raw/real-adhoc-sign.stdout"
+  },
+  "cached_inputs_unchanged": true,
+  "collected_local_date": "2026-10-23 America/Vancouver",
+  "collection_source_sha256": {
+    "apps/macos/scripts/bundle.sh": "19a1f2b58b6c59c1103a9bd3424d4a8cf0feb37edb678b5001a21ab6b4692aa2",
+    "docs/macos-updates.md": "5a6a2510420ea13f1eb6d507d3caa31d8c9c8e69ddf7eeb8916085f6f8a584ad",
+    "docs/releasing.md": "3cb29daaf804ff49e55d9d16a6ee52e1da0f2b422b695ed4e0d52f0bb04480de",
+    "tools/release/sparkle.py": "86b6470a7ea6fda264fdd35977ba85070dba48199e22f2aa1e6ad840c0444b9b"
+  },
+  "configuration_failure_fixtures": {
+    "bundler": {
+      "after_manifest": {
+        "bytes": 26459,
+        "path": "/private/tmp/oe-sign-purpose-v2-20261023-jf_s2gyj/bundler-fixture-after.json",
+        "sha256": "093389e98bf3f225699be25371e90a613c46f8bbbaebf6cda4c5921872fd2711"
+      },
+      "after_tree_sha256": "57c8e1b9b6692dec1eb1e341e733e87da5adf53c1986982de589071ad1a30c12",
+      "before_manifest": {
+        "bytes": 26459,
+        "path": "/private/tmp/oe-sign-purpose-v2-20261023-jf_s2gyj/bundler-fixture-before.json",
+        "sha256": "093389e98bf3f225699be25371e90a613c46f8bbbaebf6cda4c5921872fd2711"
+      },
+      "before_tree_sha256": "57c8e1b9b6692dec1eb1e341e733e87da5adf53c1986982de589071ad1a30c12"
+    },
+    "direct": {
+      "after_manifest": {
+        "bytes": 26459,
+        "path": "/private/tmp/oe-sign-purpose-v2-20261023-jf_s2gyj/direct-fixture-after.json",
+        "sha256": "093389e98bf3f225699be25371e90a613c46f8bbbaebf6cda4c5921872fd2711"
+      },
+      "after_tree_sha256": "57c8e1b9b6692dec1eb1e341e733e87da5adf53c1986982de589071ad1a30c12",
+      "before_manifest": {
+        "bytes": 26459,
+        "path": "/private/tmp/oe-sign-purpose-v2-20261023-jf_s2gyj/direct-fixture-before.json",
+        "sha256": "093389e98bf3f225699be25371e90a613c46f8bbbaebf6cda4c5921872fd2711"
+      },
+      "before_tree_sha256": "57c8e1b9b6692dec1eb1e341e733e87da5adf53c1986982de589071ad1a30c12"
+    }
+  },
+  "configuration_rejections": [
+    {
+      "both_fixture_trees_unchanged": true,
+      "bundler_exit": 1,
+      "bundler_trace_stops_at_first_signing_policy_preflight": true,
+      "case": "ambiguous-hash",
+      "direct_diagnostic": "sparkle: ambiguous named selector requires OPENERGY_SIGN_PURPOSE=distribution or development",
+      "direct_exit": 1,
+      "direct_trace_no_subprocess_helper_body": true,
+      "explicit_synthetic_policy_settings": {
+        "OPENERGY_ALLOW_SIGNING": "1",
+        "OPENERGY_SIGN_IDENTITY": "0000000000000000000000000000000000000000"
+      },
+      "private_command_labels": [
+        "direct-ambiguous-hash",
+        "direct-trace-ambiguous-hash",
+        "bundler-ambiguous-hash"
+      ]
+    },
+    {
+      "both_fixture_trees_unchanged": true,
+      "bundler_exit": 1,
+      "bundler_trace_stops_at_first_signing_policy_preflight": true,
+      "case": "ambiguous-preference",
+      "direct_diagnostic": "sparkle: ambiguous named selector requires OPENERGY_SIGN_PURPOSE=distribution or development",
+      "direct_exit": 1,
+      "direct_trace_no_subprocess_helper_body": true,
+      "explicit_synthetic_policy_settings": {
+        "OPENERGY_ALLOW_SIGNING": "1",
+        "OPENERGY_SIGN_IDENTITY": "policy-only-preference"
+      },
+      "private_command_labels": [
+        "direct-ambiguous-preference",
+        "direct-trace-ambiguous-preference",
+        "bundler-ambiguous-preference"
+      ]
+    },
+    {
+      "both_fixture_trees_unchanged": true,
+      "bundler_exit": 1,
+      "bundler_trace_stops_at_first_signing_policy_preflight": true,
+      "case": "ambiguous-substring",
+      "direct_diagnostic": "sparkle: ambiguous named selector requires OPENERGY_SIGN_PURPOSE=distribution or development",
+      "direct_exit": 1,
+      "direct_trace_no_subprocess_helper_body": true,
+      "explicit_synthetic_policy_settings": {
+        "OPENERGY_ALLOW_SIGNING": "1",
+        "OPENERGY_SIGN_IDENTITY": "policy-only-substring"
+      },
+      "private_command_labels": [
+        "direct-ambiguous-substring",
+        "direct-trace-ambiguous-substring",
+        "bundler-ambiguous-substring"
+      ]
+    },
+    {
+      "both_fixture_trees_unchanged": true,
+      "bundler_exit": 1,
+      "bundler_trace_stops_at_first_signing_policy_preflight": true,
+      "case": "empty-purpose",
+      "direct_diagnostic": "sparkle: OPENERGY_SIGN_PURPOSE must be distribution or development (or unset)",
+      "direct_exit": 1,
+      "direct_trace_no_subprocess_helper_body": true,
+      "explicit_synthetic_policy_settings": {
+        "OPENERGY_ALLOW_SIGNING": "1",
+        "OPENERGY_SIGN_IDENTITY": "policy-only",
+        "OPENERGY_SIGN_PURPOSE": ""
+      },
+      "private_command_labels": [
+        "direct-empty-purpose",
+        "direct-trace-empty-purpose",
+        "bundler-empty-purpose"
+      ]
+    },
+    {
+      "both_fixture_trees_unchanged": true,
+      "bundler_exit": 1,
+      "bundler_trace_stops_at_first_signing_policy_preflight": true,
+      "case": "unknown-purpose",
+      "direct_diagnostic": "sparkle: OPENERGY_SIGN_PURPOSE must be distribution or development (or unset)",
+      "direct_exit": 1,
+      "direct_trace_no_subprocess_helper_body": true,
+      "explicit_synthetic_policy_settings": {
+        "OPENERGY_ALLOW_SIGNING": "1",
+        "OPENERGY_SIGN_IDENTITY": "policy-only",
+        "OPENERGY_SIGN_PURPOSE": "release"
+      },
+      "private_command_labels": [
+        "direct-unknown-purpose",
+        "direct-trace-unknown-purpose",
+        "bundler-unknown-purpose"
+      ]
+    },
+    {
+      "both_fixture_trees_unchanged": true,
+      "bundler_exit": 1,
+      "bundler_trace_stops_at_first_signing_policy_preflight": true,
+      "case": "purpose-whitespace",
+      "direct_diagnostic": "sparkle: OPENERGY_SIGN_PURPOSE must be distribution or development (or unset)",
+      "direct_exit": 1,
+      "direct_trace_no_subprocess_helper_body": true,
+      "explicit_synthetic_policy_settings": {
+        "OPENERGY_ALLOW_SIGNING": "1",
+        "OPENERGY_SIGN_IDENTITY": "policy-only",
+        "OPENERGY_SIGN_PURPOSE": "distribution "
+      },
+      "private_command_labels": [
+        "direct-purpose-whitespace",
+        "direct-trace-purpose-whitespace",
+        "bundler-purpose-whitespace"
+      ]
+    },
+    {
+      "both_fixture_trees_unchanged": true,
+      "bundler_exit": 1,
+      "bundler_trace_stops_at_first_signing_policy_preflight": true,
+      "case": "devid-conflict",
+      "direct_diagnostic": "sparkle: OPENERGY_SIGN_PURPOSE conflicts with the named certificate prefix",
+      "direct_exit": 1,
+      "direct_trace_no_subprocess_helper_body": true,
+      "explicit_synthetic_policy_settings": {
+        "OPENERGY_ALLOW_SIGNING": "1",
+        "OPENERGY_SIGN_IDENTITY": "Developer ID Application: policy-only placeholder",
+        "OPENERGY_SIGN_PURPOSE": "development"
+      },
+      "private_command_labels": [
+        "direct-devid-conflict",
+        "direct-trace-devid-conflict",
+        "bundler-devid-conflict"
+      ]
+    },
+    {
+      "both_fixture_trees_unchanged": true,
+      "bundler_exit": 1,
+      "bundler_trace_stops_at_first_signing_policy_preflight": true,
+      "case": "appledev-conflict",
+      "direct_diagnostic": "sparkle: OPENERGY_SIGN_PURPOSE conflicts with the named certificate prefix",
+      "direct_exit": 1,
+      "direct_trace_no_subprocess_helper_body": true,
+      "explicit_synthetic_policy_settings": {
+        "OPENERGY_ALLOW_SIGNING": "1",
+        "OPENERGY_SIGN_IDENTITY": "Apple Development: policy-only placeholder",
+        "OPENERGY_SIGN_PURPOSE": "distribution"
+      },
+      "private_command_labels": [
+        "direct-appledev-conflict",
+        "direct-trace-appledev-conflict",
+        "bundler-appledev-conflict"
+      ]
+    },
+    {
+      "both_fixture_trees_unchanged": true,
+      "bundler_exit": 1,
+      "bundler_trace_stops_at_first_signing_policy_preflight": true,
+      "case": "adhoc-distribution",
+      "direct_diagnostic": "sparkle: OPENERGY_SIGN_PURPOSE requires a named identity; unset it for ad-hoc signing",
+      "direct_exit": 1,
+      "direct_trace_no_subprocess_helper_body": true,
+      "explicit_synthetic_policy_settings": {
+        "OPENERGY_ALLOW_SIGNING": "1",
+        "OPENERGY_SIGN_IDENTITY": "-",
+        "OPENERGY_SIGN_PURPOSE": "distribution"
+      },
+      "private_command_labels": [
+        "direct-adhoc-distribution",
+        "direct-trace-adhoc-distribution",
+        "bundler-adhoc-distribution"
+      ]
+    },
+    {
+      "both_fixture_trees_unchanged": true,
+      "bundler_exit": 1,
+      "bundler_trace_stops_at_first_signing_policy_preflight": true,
+      "case": "adhoc-development",
+      "direct_diagnostic": "sparkle: OPENERGY_SIGN_PURPOSE requires a named identity; unset it for ad-hoc signing",
+      "direct_exit": 1,
+      "direct_trace_no_subprocess_helper_body": true,
+      "explicit_synthetic_policy_settings": {
+        "OPENERGY_ALLOW_SIGNING": "1",
+        "OPENERGY_SIGN_IDENTITY": "-",
+        "OPENERGY_SIGN_PURPOSE": "development"
+      },
+      "private_command_labels": [
+        "direct-adhoc-development",
+        "direct-trace-adhoc-development",
+        "bundler-adhoc-development"
+      ]
+    },
+    {
+      "both_fixture_trees_unchanged": true,
+      "bundler_exit": 1,
+      "bundler_trace_stops_at_first_signing_policy_preflight": true,
+      "case": "no-optin",
+      "direct_diagnostic": "sparkle: named signing requires OPENERGY_ALLOW_SIGNING=1",
+      "direct_exit": 1,
+      "direct_trace_no_subprocess_helper_body": true,
+      "explicit_synthetic_policy_settings": {
+        "OPENERGY_ALLOW_SIGNING": "0",
+        "OPENERGY_SIGN_IDENTITY": "policy-only",
+        "OPENERGY_SIGN_PURPOSE": "distribution"
+      },
+      "private_command_labels": [
+        "direct-no-optin",
+        "direct-trace-no-optin",
+        "bundler-no-optin"
+      ]
+    },
+    {
+      "both_fixture_trees_unchanged": true,
+      "bundler_exit": 1,
+      "bundler_trace_stops_at_first_signing_policy_preflight": true,
+      "case": "empty-selector",
+      "direct_diagnostic": "sparkle: OPENERGY_SIGN_IDENTITY must be nonempty with no surrounding whitespace or controls",
+      "direct_exit": 1,
+      "direct_trace_no_subprocess_helper_body": true,
+      "explicit_synthetic_policy_settings": {
+        "OPENERGY_ALLOW_SIGNING": "1",
+        "OPENERGY_SIGN_IDENTITY": ""
+      },
+      "private_command_labels": [
+        "direct-empty-selector",
+        "direct-trace-empty-selector",
+        "bundler-empty-selector"
+      ]
+    },
+    {
+      "both_fixture_trees_unchanged": true,
+      "bundler_exit": 1,
+      "bundler_trace_stops_at_first_signing_policy_preflight": true,
+      "case": "selector-whitespace",
+      "direct_diagnostic": "sparkle: OPENERGY_SIGN_IDENTITY must be nonempty with no surrounding whitespace or controls",
+      "direct_exit": 1,
+      "direct_trace_no_subprocess_helper_body": true,
+      "explicit_synthetic_policy_settings": {
+        "OPENERGY_ALLOW_SIGNING": "1",
+        "OPENERGY_SIGN_IDENTITY": " policy-only"
+      },
+      "private_command_labels": [
+        "direct-selector-whitespace",
+        "direct-trace-selector-whitespace",
+        "bundler-selector-whitespace"
+      ]
+    },
+    {
+      "both_fixture_trees_unchanged": true,
+      "bundler_exit": 1,
+      "bundler_trace_stops_at_first_signing_policy_preflight": true,
+      "case": "selector-control",
+      "direct_diagnostic": "sparkle: OPENERGY_SIGN_IDENTITY must be nonempty with no surrounding whitespace or controls",
+      "direct_exit": 1,
+      "direct_trace_no_subprocess_helper_body": true,
+      "explicit_synthetic_policy_settings": {
+        "OPENERGY_ALLOW_SIGNING": "1",
+        "OPENERGY_SIGN_IDENTITY": "policy\nonly"
+      },
+      "private_command_labels": [
+        "direct-selector-control",
+        "direct-trace-selector-control",
+        "bundler-selector-control"
+      ]
+    },
+    {
+      "both_fixture_trees_unchanged": true,
+      "bundler_exit": 1,
+      "bundler_trace_stops_at_first_signing_policy_preflight": true,
+      "case": "empty-devid-name",
+      "direct_diagnostic": "sparkle: named signing identity is missing the name after its certificate prefix",
+      "direct_exit": 1,
+      "direct_trace_no_subprocess_helper_body": true,
+      "explicit_synthetic_policy_settings": {
+        "OPENERGY_ALLOW_SIGNING": "1",
+        "OPENERGY_SIGN_IDENTITY": "Developer ID Application:"
+      },
+      "private_command_labels": [
+        "direct-empty-devid-name",
+        "direct-trace-empty-devid-name",
+        "bundler-empty-devid-name"
+      ]
+    },
+    {
+      "both_fixture_trees_unchanged": true,
+      "bundler_exit": 1,
+      "bundler_trace_stops_at_first_signing_policy_preflight": true,
+      "case": "empty-appledev-name",
+      "direct_diagnostic": "sparkle: named signing identity is missing the name after its certificate prefix",
+      "direct_exit": 1,
+      "direct_trace_no_subprocess_helper_body": true,
+      "explicit_synthetic_policy_settings": {
+        "OPENERGY_ALLOW_SIGNING": "1",
+        "OPENERGY_SIGN_IDENTITY": "Apple Development:"
+      },
+      "private_command_labels": [
+        "direct-empty-appledev-name",
+        "direct-trace-empty-appledev-name",
+        "bundler-empty-appledev-name"
+      ]
+    }
+  ],
+  "current_source_sha256": {
+    "apps/macos/scripts/bundle.sh": "19a1f2b58b6c59c1103a9bd3424d4a8cf0feb37edb678b5001a21ab6b4692aa2",
+    "docs/macos-updates.md": "dec31694a426df115d9174c5235663cfde498cb0036b2486497f161f45a7fc3b",
+    "docs/releasing.md": "3cb29daaf804ff49e55d9d16a6ee52e1da0f2b422b695ed4e0d52f0bb04480de",
+    "tools/release/sparkle.py": "86b6470a7ea6fda264fdd35977ba85070dba48199e22f2aa1e6ad840c0444b9b"
+  },
+  "entitlement_baseline_records": [
+    {
+      "bytes": 2837,
+      "path": "/private/tmp/oe-sign-purpose-v2-20261023-jf_s2gyj/entitlement-baseline-check.json",
+      "sha256": "3fca86ba2357c759cdd933ebf497e33d6c97a80c753a3a5dd87273ffb28cb1db"
+    },
+    {
+      "bytes": 4261,
+      "path": "/private/tmp/oe-sign-purpose-v2-20261023-jf_s2gyj/entitlement-xml-check.json",
+      "sha256": "96b8cf58c9221b432ccd44a305ce1eb62cdb1e9b23e70638d403a6d4991a0474"
+    }
+  ],
+  "entitlement_input_limit": "Downloader entitlement dictionaries are empty in the original cached app, cached Sparkle artifact, and new ad-hoc app on both architectures. Nonempty entitlement preservation is not demonstrated.",
+  "execution_policy": "No units, mocks, substituted tools, named signing, identity queries, private keys, timestamp network, builds, installer/app/daemon execution, host changes, delegation or publication.",
+  "finalizer": {
+    "bytes": 9712,
+    "path": "/private/tmp/oe-sign-purpose-v2-20261023-jf_s2gyj/finalize.py",
+    "sha256": "e02ed7e339b7a0325349e9dfe9d4814bbc1f276be7790b689c81bfd800436922"
+  },
+  "finding_review": "b7cabba67219f553e307c3d62128816c0298d0b0",
+  "full_private_ledger": {
+    "bytes": 162906,
+    "path": "/private/tmp/oe-sign-purpose-v2-20261023-jf_s2gyj/results.json",
+    "sha256": "4fc233c59ea627f2106770e898fd14112cadec6850200b79f965a2cd63c647a2"
+  },
+  "inputs": {
+    "app": "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/bundle-final/Openergy.app",
+    "app_tree_sha256": "595db0302e64209f999a1a14406a414f8f0646a5f7d5e4df48a7433e5f2d9811",
+    "artifact": "/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-sparkle-combined-20261023-a_es9dei/swift/artifacts/sparkle/Sparkle",
+    "artifact_tree_sha256": "e6514b979561752fe2dca8547a833a2561502f95315644643f0cc17e38636e88",
+    "controller_sha256": "cc6c3430d1f0a46ff70256aa21e2a49ef386de4a66c2ba89f4fa9d4ff5ff9390",
+    "package_resolved_sha256": "c797ae9a0970d8225f66f11736f94a1a8337d68a55f65bb34e5a47d4edc94282",
+    "source_files": {
+      "apps/macos/scripts/bundle.sh": "19a1f2b58b6c59c1103a9bd3424d4a8cf0feb37edb678b5001a21ab6b4692aa2",
+      "docs/macos-updates.md": "5a6a2510420ea13f1eb6d507d3caa31d8c9c8e69ddf7eeb8916085f6f8a584ad",
+      "docs/releasing.md": "3cb29daaf804ff49e55d9d16a6ee52e1da0f2b422b695ed4e0d52f0bb04480de",
+      "tools/release/sparkle.py": "86b6470a7ea6fda264fdd35977ba85070dba48199e22f2aa1e6ad840c0444b9b"
+    },
+    "sparkle_version": "2.10.0"
+  },
+  "parent": "4d9de8985a844ffed316631fc1c9939d335014b8",
+  "post_collection_change": "Documentation only: clarify real key/timestamp use and retain existing entitlement metadata without asserting nonempty Downloader entitlements.",
+  "post_sign_verify": {
+    "real-deep-verify": {
+      "argv": [
+        "/usr/bin/nice",
+        "-n",
+        "15",
+        "/usr/bin/codesign",
+        "--verify",
+        "--all-architectures",
+        "--deep",
+        "--strict",
+        "/private/tmp/oe-sign-purpose-v2-20261023-jf_s2gyj/positive/Openergy.app"
+      ],
+      "exit": 0,
+      "stdout": ""
+    },
+    "real-verify-cli": {
+      "argv": [
+        "/Users/serge/.local/bin/python3.11",
+        "/Users/serge/.t3/worktrees/openergy/t3-b2a9d6dd/tools/release/sparkle.py",
+        "verify",
+        "--app",
+        "/private/tmp/oe-sign-purpose-v2-20261023-jf_s2gyj/positive/Openergy.app",
+        "--arch",
+        "arm64",
+        "--arch",
+        "x86_64"
+      ],
+      "exit": 0,
+      "stdout": "PASS: bundle architectures, relocation linkage, nested signatures and framework symlinks"
+    }
+  },
+  "prerequisite_report_historical": "9b857c4b6b557320e8bb7a1e969466ab404e4a4f",
+  "preserved_collection_failures": [
+    {
+      "controller": {
+        "bytes": 15466,
+        "path": "/private/tmp/oe-sign-purpose-20261023-zrbwjygj/validate.py",
+        "sha256": "6ae4b94123551dedd01fb03774501c042989fcb97ae943e18cb02c15bae113b9"
+      },
+      "correction": "Use plain real CLI for exits/diagnostics; supplementary trace only proves execution boundary",
+      "reason": "Python trace module swallows SystemExit: expected CLI exit 1, wrapper exit 0",
+      "record": {
+        "bytes": 3922,
+        "path": "/private/tmp/oe-sign-purpose-20261023-zrbwjygj/results.json",
+        "sha256": "1f25020d469c09f709c21794c38322ca6180cdf2e45f0e77f6d87e11e4f3c503"
+      }
+    },
+    {
+      "controller": {
+        "bytes": 15872,
+        "path": "/private/tmp/oe-sign-purpose-v2-20261023-jf_s2gyj/validate.py",
+        "sha256": "cc6c3430d1f0a46ff70256aa21e2a49ef386de4a66c2ba89f4fa9d4ff5ff9390"
+      },
+      "correction": "Normalize parentheses in existing observations; continue verification only, no signing rerun",
+      "reason": "macOS ps reports comm as (codesign); collector compared it to codesign",
+      "record": {
+        "bytes": 79254,
+        "path": "/private/tmp/oe-sign-purpose-v2-20261023-jf_s2gyj/preserved-priority-label-failure.json",
+        "sha256": "2c0213b147563c46c8f8c4b6468317d7d66ad2da54a0c8c7427fccac7bf48950"
+      }
+    },
+    {
+      "controller": {
+        "bytes": 8894,
+        "path": "/private/tmp/oe-sign-purpose-v2-20261023-jf_s2gyj/continue.py",
+        "sha256": "2699d020fa3eece5fe5d59e1b1cbebba3a8f2aa4bb0278e2aa864aece8ce4e9b"
+      },
+      "correction": "Compare every actual input/output entitlement set; retain missing nonempty entitlement proof as a limit; do not sign again",
+      "reason": "Collector expected nonempty Downloader sandbox/network entitlements; both cached app and artifact actually contain empty entitlements on both architectures",
+      "record": {
+        "bytes": 91120,
+        "path": "/private/tmp/oe-sign-purpose-v2-20261023-jf_s2gyj/preserved-entitlement-assumption-failure.json",
+        "sha256": "13e80043937d8316bbf6ee1ad631c3271ec2f23a1b7737e58c761b320f49e575"
+      }
+    }
+  ],
+  "read_only_policy_results": [
+    {
+      "case": "default-adhoc",
+      "exit": 0,
+      "output": "Signing policy: adhoc; --options 0 --timestamp=none; no identity lookup or signing"
+    },
+    {
+      "case": "explicit-adhoc",
+      "exit": 0,
+      "output": "Signing policy: adhoc; --options 0 --timestamp=none; no identity lookup or signing"
+    },
+    {
+      "case": "full-devid-default",
+      "exit": 0,
+      "output": "Signing policy: distribution; --options runtime --timestamp; no identity lookup or signing"
+    },
+    {
+      "case": "full-appledev-default",
+      "exit": 0,
+      "output": "Signing policy: development; --options runtime --timestamp=none; no identity lookup or signing"
+    },
+    {
+      "case": "hash-distribution",
+      "exit": 0,
+      "output": "Signing policy: distribution; --options runtime --timestamp; no identity lookup or signing"
+    },
+    {
+      "case": "hash-development",
+      "exit": 0,
+      "output": "Signing policy: development; --options runtime --timestamp=none; no identity lookup or signing"
+    },
+    {
+      "case": "preference-distribution",
+      "exit": 0,
+      "output": "Signing policy: distribution; --options runtime --timestamp; no identity lookup or signing"
+    },
+    {
+      "case": "preference-development",
+      "exit": 0,
+      "output": "Signing policy: development; --options runtime --timestamp=none; no identity lookup or signing"
+    },
+    {
+      "case": "substring-distribution",
+      "exit": 0,
+      "output": "Signing policy: distribution; --options runtime --timestamp; no identity lookup or signing"
+    },
+    {
+      "case": "substring-development",
+      "exit": 0,
+      "output": "Signing policy: development; --options runtime --timestamp=none; no identity lookup or signing"
+    }
+  ],
+  "review_status": "Parent fresh R2 pending; implementation and retained evidence only",
+  "signatures": [
+    {
+      "architectures": [
+        {
+          "architecture": "arm64",
+          "entitlements": {
+            "com.apple.application-identifier": "org.sparkle-project.Sparkle.Autoupdate"
+          },
+          "entitlements_equal_cached_input": true,
+          "flags": "0x2(adhoc)",
+          "identifier": "Autoupdate-55554944f723d84042cd352fbb0485760ff7597a",
+          "secure_timestamp": false,
+          "signature": "adhoc",
+          "team_identifier": null
+        },
+        {
+          "architecture": "x86_64",
+          "entitlements": {
+            "com.apple.application-identifier": "org.sparkle-project.Sparkle.Autoupdate"
+          },
+          "entitlements_equal_cached_input": true,
+          "flags": "0x2(adhoc)",
+          "identifier": "Autoupdate-55554944f723d84042cd352fbb0485760ff7597a",
+          "secure_timestamp": false,
+          "signature": "adhoc",
+          "team_identifier": null
+        }
+      ],
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Autoupdate",
+      "strict_all_architectures_verify_exit": 0
+    },
+    {
+      "architectures": [
+        {
+          "architecture": "arm64",
+          "entitlements": {},
+          "entitlements_equal_cached_input": true,
+          "flags": "0x2(adhoc)",
+          "identifier": "org.sparkle-project.Sparkle.Updater",
+          "secure_timestamp": false,
+          "signature": "adhoc",
+          "team_identifier": null
+        },
+        {
+          "architecture": "x86_64",
+          "entitlements": {},
+          "entitlements_equal_cached_input": true,
+          "flags": "0x2(adhoc)",
+          "identifier": "org.sparkle-project.Sparkle.Updater",
+          "secure_timestamp": false,
+          "signature": "adhoc",
+          "team_identifier": null
+        }
+      ],
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Updater.app",
+      "strict_all_architectures_verify_exit": 0
+    },
+    {
+      "architectures": [
+        {
+          "architecture": "arm64",
+          "entitlements": {},
+          "entitlements_equal_cached_input": true,
+          "flags": "0x2(adhoc)",
+          "identifier": "org.sparkle-project.DownloaderService",
+          "secure_timestamp": false,
+          "signature": "adhoc",
+          "team_identifier": null
+        },
+        {
+          "architecture": "x86_64",
+          "entitlements": {},
+          "entitlements_equal_cached_input": true,
+          "flags": "0x2(adhoc)",
+          "identifier": "org.sparkle-project.DownloaderService",
+          "secure_timestamp": false,
+          "signature": "adhoc",
+          "team_identifier": null
+        }
+      ],
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Downloader.xpc",
+      "strict_all_architectures_verify_exit": 0
+    },
+    {
+      "architectures": [
+        {
+          "architecture": "arm64",
+          "entitlements": {},
+          "entitlements_equal_cached_input": true,
+          "flags": "0x2(adhoc)",
+          "identifier": "org.sparkle-project.InstallerLauncher",
+          "secure_timestamp": false,
+          "signature": "adhoc",
+          "team_identifier": null
+        },
+        {
+          "architecture": "x86_64",
+          "entitlements": {},
+          "entitlements_equal_cached_input": true,
+          "flags": "0x2(adhoc)",
+          "identifier": "org.sparkle-project.InstallerLauncher",
+          "secure_timestamp": false,
+          "signature": "adhoc",
+          "team_identifier": null
+        }
+      ],
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Installer.xpc",
+      "strict_all_architectures_verify_exit": 0
+    },
+    {
+      "architectures": [
+        {
+          "architecture": "arm64",
+          "entitlements": {},
+          "entitlements_equal_cached_input": true,
+          "flags": "0x2(adhoc)",
+          "identifier": "org.sparkle-project.Sparkle",
+          "secure_timestamp": false,
+          "signature": "adhoc",
+          "team_identifier": null
+        },
+        {
+          "architecture": "x86_64",
+          "entitlements": {},
+          "entitlements_equal_cached_input": true,
+          "flags": "0x2(adhoc)",
+          "identifier": "org.sparkle-project.Sparkle",
+          "secure_timestamp": false,
+          "signature": "adhoc",
+          "team_identifier": null
+        }
+      ],
+      "path": "Contents/Frameworks/Sparkle.framework",
+      "strict_all_architectures_verify_exit": 0
+    },
+    {
+      "architectures": [
+        {
+          "architecture": "arm64",
+          "entitlements": {},
+          "entitlements_equal_cached_input": true,
+          "flags": "0x2(adhoc)",
+          "identifier": "dev.openergy.daemon",
+          "secure_timestamp": false,
+          "signature": "adhoc",
+          "team_identifier": null
+        },
+        {
+          "architecture": "x86_64",
+          "entitlements": {},
+          "entitlements_equal_cached_input": true,
+          "flags": "0x2(adhoc)",
+          "identifier": "dev.openergy.daemon",
+          "secure_timestamp": false,
+          "signature": "adhoc",
+          "team_identifier": null
+        }
+      ],
+      "path": "Contents/Helpers/openergy",
+      "strict_all_architectures_verify_exit": 0
+    },
+    {
+      "architectures": [
+        {
+          "architecture": "arm64",
+          "entitlements": {},
+          "entitlements_equal_cached_input": true,
+          "flags": "0x2(adhoc)",
+          "identifier": "dev.openergy.app",
+          "secure_timestamp": false,
+          "signature": "adhoc",
+          "team_identifier": null
+        },
+        {
+          "architecture": "x86_64",
+          "entitlements": {},
+          "entitlements_equal_cached_input": true,
+          "flags": "0x2(adhoc)",
+          "identifier": "dev.openergy.app",
+          "secure_timestamp": false,
+          "signature": "adhoc",
+          "team_identifier": null
+        }
+      ],
+      "path": ".",
+      "strict_all_architectures_verify_exit": 0
+    }
+  ],
+  "syntax": {
+    "python-syntax": {
+      "argv": [
+        "/usr/bin/nice",
+        "-n",
+        "15",
+        "/Users/serge/.local/bin/python3.11",
+        "-c",
+        "import sys; p=sys.argv[1]; compile(open(p).read(),p,\"exec\"); print(\"PASS: Python syntax\")",
+        "/Users/serge/.t3/worktrees/openergy/t3-b2a9d6dd/tools/release/sparkle.py"
+      ],
+      "exit": 0
+    },
+    "shell-syntax": {
+      "argv": [
+        "/usr/bin/nice",
+        "-n",
+        "15",
+        "/bin/bash",
+        "-n",
+        "/Users/serge/.t3/worktrees/openergy/t3-b2a9d6dd/apps/macos/scripts/bundle.sh"
+      ],
+      "exit": 0
+    }
+  },
+  "tree_identity_definition": "SHA-256 of sorted JSON mapping relative paths to symlink targets, directory modes, or file modes and file SHA-256; no app execution.",
+  "unverified": [
+    "named private-key use",
+    "positive Developer ID or Apple Development signatures",
+    "secure timestamps or service failure",
+    "notarization",
+    "Gatekeeper",
+    "installed update",
+    "application/daemon runtime",
+    "current-source compilation",
+    "preservation of nonempty Downloader entitlements"
+  ]
+}

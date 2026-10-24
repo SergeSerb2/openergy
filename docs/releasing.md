@@ -144,7 +144,16 @@ identity. `OPENERGY_VERSION`, if set, must equal the workspace version.
 
 An operator who already has a suitable signing identity can explicitly set
 `OPENERGY_ALLOW_SIGNING=1` and `OPENERGY_SIGN_IDENTITY` for a separate bundle
-build. These scripts do not import/export certificates, unlock a keychain, or
+build. Hash, preference and ambiguous substring selectors also require
+`OPENERGY_SIGN_PURPOSE=distribution` (secure network timestamp required) or
+`OPENERGY_SIGN_PURPOSE=development` (offline). Full `Developer ID Application:`
+names default to distribution; full `Apple Development:` names default to local
+development. Conflicting or malformed purpose settings fail before compilation
+or bundle changes. Leave the purpose unset for default ad-hoc builds.
+`python3.11 tools/release/sparkle.py signing-policy` checks the shared policy
+without identity lookup or signing. See the complete
+[signing-purpose contract](macos-updates.md#bundle-configuration).
+These scripts do not import/export certificates, unlock a keychain, or
 create notarization credentials. The automated package and draft workflow
 always forces ad-hoc macOS signing and performs no notarization or Windows
 Authenticode signing. Optional signing secrets are not required for these checks.

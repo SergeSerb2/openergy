@@ -198,15 +198,41 @@ def embed(args):
     run("codesign", "--verify", "--all-architectures", "--deep", "--strict", destination)
 
 
-def sign(args):
-    identity = os.environ.get("OPENERGY_SIGN_IDENTITY") or "-"
-    if identity != "-" and os.environ.get("OPENERGY_ALLOW_SIGNING") != "1":
+def signing_policy():
+    """Resolve intent without discovering identities or accessing signing keys."""
+    identity = os.environ.get("OPENERGY_SIGN_IDENTITY", "-")
+    purpose = os.environ.get("OPENERGY_SIGN_PURPOSE")
+    if purpose is not None and purpose not in ("distribution", "development"):
+        raise ValueError("OPENERGY_SIGN_PURPOSE must be distribution or development (or unset)")
+    if not identity or identity != identity.strip() or any(ord(c) < 32 or ord(c) == 127 for c in identity):
+        raise ValueError("OPENERGY_SIGN_IDENTITY must be nonempty with no surrounding whitespace or controls")
+    if identity == "-":
+        if purpose is not None:
+            raise ValueError("OPENERGY_SIGN_PURPOSE requires a named identity; unset it for ad-hoc signing")
+        return identity, "adhoc", "0", "--timestamp=none"
+    if os.environ.get("OPENERGY_ALLOW_SIGNING") != "1":
         raise ValueError("named signing requires OPENERGY_ALLOW_SIGNING=1")
-    timestamp = "--timestamp" if identity.startswith("Developer ID Application:") else "--timestamp=none"
+    known_purpose = None
+    for prefix, inferred in (("Developer ID Application:", "distribution"),
+                             ("Apple Development:", "development")):
+        if identity.startswith(prefix):
+            if not identity[len(prefix):].strip():
+                raise ValueError("named signing identity is missing the name after its certificate prefix")
+            known_purpose = inferred
+    if known_purpose is not None and purpose is not None and purpose != known_purpose:
+        raise ValueError("OPENERGY_SIGN_PURPOSE conflicts with the named certificate prefix")
+    purpose = purpose or known_purpose
+    if purpose is None:
+        raise ValueError("ambiguous named selector requires OPENERGY_SIGN_PURPOSE=distribution or development")
+    return identity, purpose, "runtime", "--timestamp" if purpose == "distribution" else "--timestamp=none"
+
+
+def sign(args):
+    identity, _, options, timestamp = signing_policy()
     # An ad-hoc app has no Team ID, so Hardened Runtime library validation
     # cannot load its non-platform framework. Local builds remain explicitly
     # untrusted; named distribution/development identities retain the runtime.
-    flags = ["--force", "--options", "0" if identity == "-" else "runtime", timestamp, "--sign", identity]
+    flags = ["--force", "--options", options, timestamp, "--sign", identity]
     for path in nested_code(args.app):
         # Downloader's sandbox/network entitlements must survive re-signing.
         run("codesign", *flags, "--preserve-metadata=identifier,entitlements", path)
@@ -355,6 +381,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("config")
+    commands.add_parser("signing-policy", help="validate signing intent without signing or querying identities")
     command = commands.add_parser("configure-plist")
     for name in ("template", "output"):
         command.add_argument("--" + name, type=Path, required=True)
@@ -378,6 +405,9 @@ def main():
     args = parser.parse_args()
     if args.command == "config":
         print("Sparkle: configured" if configuration() else "Sparkle: disabled (unconfigured local build)")
+    elif args.command == "signing-policy":
+        _, purpose, options, timestamp = signing_policy()
+        print(f"Signing policy: {purpose}; --options {options} {timestamp}; no identity lookup or signing")
     elif args.command == "verify":
         verify_app(args.app, args.arch)
         print("PASS: bundle architectures, relocation linkage, nested signatures and framework symlinks")
