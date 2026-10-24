@@ -1,0 +1,554 @@
+{
+  "matching_historical_refusal_gate": "UNVERIFIED",
+  "historical_fault_witness": false,
+  "raw_stdout_sha256": "84e1b1670af175bf341db812b7760bc4c983b131e9e10f569d90235112cbc880",
+  "exit": 0,
+  "elapsed_ms": 70420,
+  "timed_out": false,
+  "forced_cleanup": false,
+  "fixture_qualification": {
+    "25117": true,
+    "25119": true
+  },
+  "refusal_matrix_counts": {
+    "PASS": 10
+  },
+  "false_connected_count": 0,
+  "false_connected_witnesses": [],
+  "literal_result": [
+    "RESULT scope=refusal_only refusal_matrix=PASS full_acceptance=NOT_REQUESTED"
+  ],
+  "os_controls": [
+    "OS_CONTROL label=strict_short_observation addr=127.0.0.1:25117 budget_ms=500 elapsed_ns=501118300 result=Err(Error { kind: TimedOut, message: \"connection timed out\" }) actual_refusal=false within_budget=false",
+    "OS_CONTROL label=bounded_fixture_reference addr=127.0.0.1:25117 budget_ms=6000 elapsed_ns=2050352300 result=Err(Os { code: 10061, kind: ConnectionRefused, message: \"No connection could be made because the target machine actively refused it.\" }) actual_refusal=true within_budget=true",
+    "OS_CONTROL label=strict_short_observation addr=[::1]:25117 budget_ms=500 elapsed_ns=508635800 result=Err(Error { kind: TimedOut, message: \"connection timed out\" }) actual_refusal=false within_budget=false",
+    "OS_CONTROL label=bounded_fixture_reference addr=[::1]:25117 budget_ms=6000 elapsed_ns=2042709900 result=Err(Os { code: 10061, kind: ConnectionRefused, message: \"No connection could be made because the target machine actively refused it.\" }) actual_refusal=true within_budget=true",
+    "OS_CONTROL label=strict_short_observation addr=127.0.0.1:25119 budget_ms=500 elapsed_ns=510204600 result=Err(Error { kind: TimedOut, message: \"connection timed out\" }) actual_refusal=false within_budget=false",
+    "OS_CONTROL label=bounded_fixture_reference addr=127.0.0.1:25119 budget_ms=6000 elapsed_ns=2047413500 result=Err(Os { code: 10061, kind: ConnectionRefused, message: \"No connection could be made because the target machine actively refused it.\" }) actual_refusal=true within_budget=true",
+    "OS_CONTROL label=strict_short_observation addr=[::1]:25119 budget_ms=500 elapsed_ns=508999500 result=Err(Error { kind: TimedOut, message: \"connection timed out\" }) actual_refusal=false within_budget=false",
+    "OS_CONTROL label=bounded_fixture_reference addr=[::1]:25119 budget_ms=6000 elapsed_ns=2040919000 result=Err(Os { code: 10061, kind: ConnectionRefused, message: \"No connection could be made because the target machine actively refused it.\" }) actual_refusal=true within_budget=true"
+  ],
+  "exclusive_owners": [
+    "EXCLUSIVE_BIND addr=127.0.0.1:25117 ownership=RETAINED listening=false ipv6_only=false duplicate_kind=AddrInUse duplicate_errno=Some(10048) result=PASS",
+    "EXCLUSIVE_BIND addr=[::1]:25117 ownership=RETAINED listening=false ipv6_only=true duplicate_kind=AddrInUse duplicate_errno=Some(10048) result=PASS",
+    "EXCLUSIVE_BIND addr=127.0.0.1:25119 ownership=RETAINED listening=false ipv6_only=false duplicate_kind=AddrInUse duplicate_errno=Some(10048) result=PASS",
+    "EXCLUSIVE_BIND addr=[::1]:25119 ownership=RETAINED listening=false ipv6_only=true duplicate_kind=AddrInUse duplicate_errno=Some(10048) result=PASS"
+  ],
+  "observation_count": 10,
+  "full_six_second_observations": 10,
+  "product_trace_count": 0,
+  "missing_trace_is_fault_witness": false,
+  "observations": {
+    "refusal_25117_0": {
+      "events": [
+        {
+          "call": 133,
+          "value": "ConnectFailed { host: \"127.0.0.1\", port: 25117, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }",
+          "receipt_call": {
+            "index": 133,
+            "op": "poll",
+            "enter_ns": 2050155200,
+            "return_ns": 2050433900
+          }
+        }
+      ],
+      "traces": [],
+      "timing": {
+        "clock": "monotonic_ns",
+        "lower_deadline_ns": "5000000000",
+        "upper_deadline_ns": "5001033900",
+        "observation_ns": "6000000000",
+        "trace_overflow": "false",
+        "accepted_ns": "None",
+        "peer_bytes": "0"
+      },
+      "literal_refusal": {
+        "case": "refusal_25117_0",
+        "host": "127.0.0.1",
+        "port": "25117",
+        "caller_ms": "5000",
+        "qualified": "true",
+        "exact_refusal_predicate": "PASS",
+        "independent_caller_deadline": "PASS",
+        "verdict": "PASS"
+      },
+      "full_six_second_window": true,
+      "call_count": 389,
+      "event_count": 1,
+      "trace_count": 0,
+      "first_call": {
+        "index": 0,
+        "op": "execute_checked",
+        "enter_ns": 0,
+        "return_ns": 1033900
+      },
+      "last_call": {
+        "index": 388,
+        "op": "poll",
+        "enter_ns": 5992731800,
+        "return_ns": 6008366500
+      },
+      "full_call_transcript": "outputs/historical-refusal.stdout"
+    },
+    "refusal_25117_1": {
+      "events": [
+        {
+          "call": 133,
+          "value": "ConnectFailed { host: \"::1\", port: 25117, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }",
+          "receipt_call": {
+            "index": 133,
+            "op": "poll",
+            "enter_ns": 2048567600,
+            "return_ns": 2064358600
+          }
+        }
+      ],
+      "traces": [],
+      "timing": {
+        "clock": "monotonic_ns",
+        "lower_deadline_ns": "5000000000",
+        "upper_deadline_ns": "5001491800",
+        "observation_ns": "6000000000",
+        "trace_overflow": "false",
+        "accepted_ns": "None",
+        "peer_bytes": "0"
+      },
+      "literal_refusal": {
+        "case": "refusal_25117_1",
+        "host": "::1",
+        "port": "25117",
+        "caller_ms": "5000",
+        "qualified": "true",
+        "exact_refusal_predicate": "PASS",
+        "independent_caller_deadline": "PASS",
+        "verdict": "PASS"
+      },
+      "full_six_second_window": true,
+      "call_count": 387,
+      "event_count": 1,
+      "trace_count": 0,
+      "first_call": {
+        "index": 0,
+        "op": "execute_checked",
+        "enter_ns": 0,
+        "return_ns": 1491800
+      },
+      "last_call": {
+        "index": 386,
+        "op": "poll",
+        "enter_ns": 5989125000,
+        "return_ns": 6004114600
+      },
+      "full_call_transcript": "outputs/historical-refusal.stdout"
+    },
+    "refusal_25117_2": {
+      "events": [
+        {
+          "call": 264,
+          "value": "ConnectFailed { host: \"localhost\", port: 25117, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }",
+          "receipt_call": {
+            "index": 264,
+            "op": "poll",
+            "enter_ns": 4063710700,
+            "return_ns": 4064022800
+          }
+        }
+      ],
+      "traces": [],
+      "timing": {
+        "clock": "monotonic_ns",
+        "lower_deadline_ns": "5000000000",
+        "upper_deadline_ns": "5000207300",
+        "observation_ns": "6000000000",
+        "trace_overflow": "false",
+        "accepted_ns": "None",
+        "peer_bytes": "0"
+      },
+      "literal_refusal": {
+        "case": "refusal_25117_2",
+        "host": "localhost",
+        "port": "25117",
+        "caller_ms": "5000",
+        "qualified": "true",
+        "exact_refusal_predicate": "PASS",
+        "independent_caller_deadline": "PASS",
+        "verdict": "PASS"
+      },
+      "full_six_second_window": true,
+      "call_count": 390,
+      "event_count": 1,
+      "trace_count": 0,
+      "first_call": {
+        "index": 0,
+        "op": "execute_checked",
+        "enter_ns": 0,
+        "return_ns": 207300
+      },
+      "last_call": {
+        "index": 389,
+        "op": "poll",
+        "enter_ns": 5992554300,
+        "return_ns": 6007988800
+      },
+      "full_call_transcript": "outputs/historical-refusal.stdout"
+    },
+    "refusal_25117_3": {
+      "events": [
+        {
+          "call": 266,
+          "value": "ConnectFailed { host: \"localhost\", port: 25117, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }",
+          "receipt_call": {
+            "index": 266,
+            "op": "poll",
+            "enter_ns": 4090492400,
+            "return_ns": 4106628300
+          }
+        }
+      ],
+      "traces": [],
+      "timing": {
+        "clock": "monotonic_ns",
+        "lower_deadline_ns": "5000000000",
+        "upper_deadline_ns": "5000021400",
+        "observation_ns": "6000000000",
+        "trace_overflow": "false",
+        "accepted_ns": "None",
+        "peer_bytes": "0"
+      },
+      "literal_refusal": {
+        "case": "refusal_25117_3",
+        "host": "localhost",
+        "port": "25117",
+        "caller_ms": "5000",
+        "qualified": "true",
+        "exact_refusal_predicate": "PASS",
+        "independent_caller_deadline": "PASS",
+        "verdict": "PASS"
+      },
+      "full_six_second_window": true,
+      "call_count": 390,
+      "event_count": 1,
+      "trace_count": 0,
+      "first_call": {
+        "index": 0,
+        "op": "execute_checked",
+        "enter_ns": 0,
+        "return_ns": 21400
+      },
+      "last_call": {
+        "index": 389,
+        "op": "poll",
+        "enter_ns": 5989042600,
+        "return_ns": 6004874400
+      },
+      "full_call_transcript": "outputs/historical-refusal.stdout"
+    },
+    "refusal_25117_4": {
+      "events": [
+        {
+          "call": 266,
+          "value": "ConnectFailed { host: \"localhost\", port: 25117, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }",
+          "receipt_call": {
+            "index": 266,
+            "op": "poll",
+            "enter_ns": 4086863600,
+            "return_ns": 4087272800
+          }
+        }
+      ],
+      "traces": [],
+      "timing": {
+        "clock": "monotonic_ns",
+        "lower_deadline_ns": "5000000000",
+        "upper_deadline_ns": "5000007400",
+        "observation_ns": "6000000000",
+        "trace_overflow": "false",
+        "accepted_ns": "None",
+        "peer_bytes": "0"
+      },
+      "literal_refusal": {
+        "case": "refusal_25117_4",
+        "host": "localhost",
+        "port": "25117",
+        "caller_ms": "5000",
+        "qualified": "true",
+        "exact_refusal_predicate": "PASS",
+        "independent_caller_deadline": "PASS",
+        "verdict": "PASS"
+      },
+      "full_six_second_window": true,
+      "call_count": 391,
+      "event_count": 1,
+      "trace_count": 0,
+      "first_call": {
+        "index": 0,
+        "op": "execute_checked",
+        "enter_ns": 0,
+        "return_ns": 7400
+      },
+      "last_call": {
+        "index": 390,
+        "op": "poll",
+        "enter_ns": 5996733500,
+        "return_ns": 6012326800
+      },
+      "full_call_transcript": "outputs/historical-refusal.stdout"
+    },
+    "refusal_25119_0": {
+      "events": [
+        {
+          "call": 131,
+          "value": "ConnectFailed { host: \"127.0.0.1\", port: 25119, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }",
+          "receipt_call": {
+            "index": 131,
+            "op": "poll",
+            "enter_ns": 2027151400,
+            "return_ns": 2027566000
+          }
+        }
+      ],
+      "traces": [],
+      "timing": {
+        "clock": "monotonic_ns",
+        "lower_deadline_ns": "5000000000",
+        "upper_deadline_ns": "5000915800",
+        "observation_ns": "6000000000",
+        "trace_overflow": "false",
+        "accepted_ns": "None",
+        "peer_bytes": "0"
+      },
+      "literal_refusal": {
+        "case": "refusal_25119_0",
+        "host": "127.0.0.1",
+        "port": "25119",
+        "caller_ms": "5000",
+        "qualified": "true",
+        "exact_refusal_predicate": "PASS",
+        "independent_caller_deadline": "PASS",
+        "verdict": "PASS"
+      },
+      "full_six_second_window": true,
+      "call_count": 388,
+      "event_count": 1,
+      "trace_count": 0,
+      "first_call": {
+        "index": 0,
+        "op": "execute_checked",
+        "enter_ns": 0,
+        "return_ns": 915800
+      },
+      "last_call": {
+        "index": 387,
+        "op": "poll",
+        "enter_ns": 5991718300,
+        "return_ns": 6007594700
+      },
+      "full_call_transcript": "outputs/historical-refusal.stdout"
+    },
+    "refusal_25119_1": {
+      "events": [
+        {
+          "call": 133,
+          "value": "ConnectFailed { host: \"::1\", port: 25119, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }",
+          "receipt_call": {
+            "index": 133,
+            "op": "poll",
+            "enter_ns": 2042537300,
+            "return_ns": 2042704100
+          }
+        }
+      ],
+      "traces": [],
+      "timing": {
+        "clock": "monotonic_ns",
+        "lower_deadline_ns": "5000000000",
+        "upper_deadline_ns": "5001200000",
+        "observation_ns": "6000000000",
+        "trace_overflow": "false",
+        "accepted_ns": "None",
+        "peer_bytes": "0"
+      },
+      "literal_refusal": {
+        "case": "refusal_25119_1",
+        "host": "::1",
+        "port": "25119",
+        "caller_ms": "5000",
+        "qualified": "true",
+        "exact_refusal_predicate": "PASS",
+        "independent_caller_deadline": "PASS",
+        "verdict": "PASS"
+      },
+      "full_six_second_window": true,
+      "call_count": 390,
+      "event_count": 1,
+      "trace_count": 0,
+      "first_call": {
+        "index": 0,
+        "op": "execute_checked",
+        "enter_ns": 0,
+        "return_ns": 1200000
+      },
+      "last_call": {
+        "index": 389,
+        "op": "poll",
+        "enter_ns": 5996454300,
+        "return_ns": 6011937700
+      },
+      "full_call_transcript": "outputs/historical-refusal.stdout"
+    },
+    "refusal_25119_2": {
+      "events": [
+        {
+          "call": 265,
+          "value": "ConnectFailed { host: \"localhost\", port: 25119, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }",
+          "receipt_call": {
+            "index": 265,
+            "op": "poll",
+            "enter_ns": 4066973000,
+            "return_ns": 4067106800
+          }
+        }
+      ],
+      "traces": [],
+      "timing": {
+        "clock": "monotonic_ns",
+        "lower_deadline_ns": "5000000000",
+        "upper_deadline_ns": "5000009000",
+        "observation_ns": "6000000000",
+        "trace_overflow": "false",
+        "accepted_ns": "None",
+        "peer_bytes": "0"
+      },
+      "literal_refusal": {
+        "case": "refusal_25119_2",
+        "host": "localhost",
+        "port": "25119",
+        "caller_ms": "5000",
+        "qualified": "true",
+        "exact_refusal_predicate": "PASS",
+        "independent_caller_deadline": "PASS",
+        "verdict": "PASS"
+      },
+      "full_six_second_window": true,
+      "call_count": 391,
+      "event_count": 1,
+      "trace_count": 0,
+      "first_call": {
+        "index": 0,
+        "op": "execute_checked",
+        "enter_ns": 0,
+        "return_ns": 9000
+      },
+      "last_call": {
+        "index": 390,
+        "op": "poll",
+        "enter_ns": 5991039300,
+        "return_ns": 6006661500
+      },
+      "full_call_transcript": "outputs/historical-refusal.stdout"
+    },
+    "refusal_25119_3": {
+      "events": [
+        {
+          "call": 267,
+          "value": "ConnectFailed { host: \"localhost\", port: 25119, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }",
+          "receipt_call": {
+            "index": 267,
+            "op": "poll",
+            "enter_ns": 4081217200,
+            "return_ns": 4081535400
+          }
+        }
+      ],
+      "traces": [],
+      "timing": {
+        "clock": "monotonic_ns",
+        "lower_deadline_ns": "5000000000",
+        "upper_deadline_ns": "5000007200",
+        "observation_ns": "6000000000",
+        "trace_overflow": "false",
+        "accepted_ns": "None",
+        "peer_bytes": "0"
+      },
+      "literal_refusal": {
+        "case": "refusal_25119_3",
+        "host": "localhost",
+        "port": "25119",
+        "caller_ms": "5000",
+        "qualified": "true",
+        "exact_refusal_predicate": "PASS",
+        "independent_caller_deadline": "PASS",
+        "verdict": "PASS"
+      },
+      "full_six_second_window": true,
+      "call_count": 392,
+      "event_count": 1,
+      "trace_count": 0,
+      "first_call": {
+        "index": 0,
+        "op": "execute_checked",
+        "enter_ns": 0,
+        "return_ns": 7200
+      },
+      "last_call": {
+        "index": 391,
+        "op": "poll",
+        "enter_ns": 5987458300,
+        "return_ns": 6003169000
+      },
+      "full_call_transcript": "outputs/historical-refusal.stdout"
+    },
+    "refusal_25119_4": {
+      "events": [
+        {
+          "call": 267,
+          "value": "ConnectFailed { host: \"localhost\", port: 25119, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }",
+          "receipt_call": {
+            "index": 267,
+            "op": "poll",
+            "enter_ns": 4105722200,
+            "return_ns": 4105817500
+          }
+        }
+      ],
+      "traces": [],
+      "timing": {
+        "clock": "monotonic_ns",
+        "lower_deadline_ns": "5000000000",
+        "upper_deadline_ns": "5000007000",
+        "observation_ns": "6000000000",
+        "trace_overflow": "false",
+        "accepted_ns": "None",
+        "peer_bytes": "0"
+      },
+      "literal_refusal": {
+        "case": "refusal_25119_4",
+        "host": "localhost",
+        "port": "25119",
+        "caller_ms": "5000",
+        "qualified": "true",
+        "exact_refusal_predicate": "PASS",
+        "independent_caller_deadline": "PASS",
+        "verdict": "PASS"
+      },
+      "full_six_second_window": true,
+      "call_count": 391,
+      "event_count": 1,
+      "trace_count": 0,
+      "first_call": {
+        "index": 0,
+        "op": "execute_checked",
+        "enter_ns": 0,
+        "return_ns": 7000
+      },
+      "last_call": {
+        "index": 390,
+        "op": "poll",
+        "enter_ns": 5993277900,
+        "return_ns": 6009368300
+      },
+      "full_call_transcript": "outputs/historical-refusal.stdout"
+    }
+  },
+  "scope": "Historical refusal controls only. No strict TCP/fallback/TLS timing or full acceptance."
+}

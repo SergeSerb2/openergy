@@ -1,0 +1,112 @@
+{
+  "passed": true,
+  "recorded_utc": "2026-10-23T23:59:14.6411390Z",
+  "immutable_input_comparisons": [
+    {
+      "label": "e4f48ba-original",
+      "files": 2579,
+      "items": 2986,
+      "bytes_hashes_readonly_acls_unchanged": true
+    },
+    {
+      "label": "startup-diagnosis",
+      "files": 73,
+      "items": 82,
+      "bytes_hashes_readonly_acls_unchanged": true
+    },
+    {
+      "label": "owned-cleanup-dfa405c",
+      "files": 41,
+      "items": 48,
+      "bytes_hashes_readonly_acls_unchanged": true
+    },
+    {
+      "label": "observed-startup-e6a9125",
+      "files": 8312,
+      "items": 10435,
+      "bytes_hashes_readonly_acls_unchanged": true
+    },
+    {
+      "label": "historical-dns-remote",
+      "files": 2354,
+      "items": 2746,
+      "bytes_hashes_readonly_acls_unchanged": true
+    },
+    {
+      "label": "historical-dns-diag_remote",
+      "files": 42,
+      "items": 51,
+      "bytes_hashes_readonly_acls_unchanged": true
+    },
+    {
+      "label": "stopped-dns-8333a48",
+      "files": 8429,
+      "items": 10561,
+      "bytes_hashes_readonly_acls_unchanged": true
+    },
+    {
+      "label": "prior-exact-r12-8281eb7",
+      "files": 8590,
+      "items": 10747,
+      "bytes_hashes_readonly_acls_unchanged": true
+    },
+    {
+      "label": "original-offline-registry",
+      "files": 6300,
+      "items": 8109,
+      "bytes_hashes_readonly_acls_unchanged": true
+    },
+    {
+      "label": "pinned-rust-1.99.1-toolchain",
+      "files": 166,
+      "items": 189,
+      "bytes_hashes_readonly_acls_unchanged": true
+    }
+  ],
+  "original_global_files_unchanged": 8,
+  "private_registry_source_files_unchanged": 4094,
+  "historical_source": {
+    "files": 600,
+    "all_hashes_match": true,
+    "all_readonly": true,
+    "archive_sha256": "78fba27230308399375d3ebcf3d7fb76979d706a8f669dae7c7fd186f220e158",
+    "manifest_sha256": "e1c862ef4816c504f2e3afdd3634b8bdab774ebd348df099d11968011c774f73"
+  },
+  "frozen_artifact_files_unchanged": 1018,
+  "workflow_inputs_unchanged": 12,
+  "native_tools_bytes_flags_acls_unchanged": 14,
+  "tool_defaults_unchanged": true,
+  "live_sharing_process_identity_unchanged": true,
+  "acl": {
+    "root_protected": true,
+    "current_user_only_items": 10062,
+    "reparse_points": 0
+  },
+  "temp_entries": [],
+  "tls_identity_files_remaining": 0,
+  "case_count": 1,
+  "case_exits": [
+    {
+      "name": "historical-refusal",
+      "exit": 0,
+      "timed_out": false,
+      "forced_cleanup": false
+    }
+  ],
+  "inventory_summary": {
+    "recorded_utc": "2026-10-23T23:58:57.9968444Z",
+    "endpoint_query": [
+      "netstat.exe",
+      "-ano"
+    ],
+    "endpoint_exit": 0,
+    "tcp_rows": 498,
+    "udp_rows": 114,
+    "process_inventory_count": 436
+  },
+  "fixture_processes_remaining": 0,
+  "prior_fixture_processes_remaining": 0,
+  "assigned_tcp_non_timewait_remaining": [],
+  "assigned_tcp_timewait_remaining": [],
+  "assigned_udp_endpoints_remaining": []
+}

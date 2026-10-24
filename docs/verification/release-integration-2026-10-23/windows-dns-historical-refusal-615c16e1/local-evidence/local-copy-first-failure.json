@@ -1,0 +1,9 @@
+{
+  "exit": 1,
+  "phase": "public evidence copying",
+  "error": "FileNotFoundError for raw/private-identities-removed.json",
+  "reason": "The PowerShell empty-array pipeline emitted no separate identity-removal inventory file. The successful postflight directly reports zero runtime identity files.",
+  "original_script_sha256": "920d1a7f2770b185fbd51c9dc07b51585ddd47a57e74a906bb3b0350ff4034f4",
+  "runtime_retried": false,
+  "recovery": "Retain absence explicitly, copy existing raw files, and cite postflight for cleanup."
+}
