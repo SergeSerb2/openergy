@@ -181,7 +181,7 @@ P1/P2 and verifies every classification and location. It adds no scanner run.
 This frozen patch-history scope excludes later commits and does not establish
 security clearance or secret-free historical snapshots.
 
-The [current packaged macOS app flow](../macos-app-current-flow-2026-10-23/README.md)
+The [earlier packaged macOS app flow](../macos-app-current-flow-2026-10-23/README.md)
 passes 25/25 model/IPC checks with private virtual daemons. The separate
 [bounded event measurement](../macos-event-delivery-2026-10-23/README.md) passes
 12/12 paced checks and has a clean saved-evidence audit. It establishes neither
@@ -195,6 +195,13 @@ finds no concrete P1/P2 and matches all 17 artifact hashes and 421 source hashes
 It adds no runtime execution. Exact nice 15, private waiter/queue counts and an
 independent per-PID cleanup check remain unverified. The default 25-step flow
 was not rerun by this command.
+
+The later ordinary flow at `498190f` is **not accepted**: it reports 23/25
+after a controller assumed that the supervised child shared the app's process
+group. Cleanup then stopped the peer before the app finished. App exit-status
+and late priority evidence are incomplete; this interference establishes no
+product regression. A source-only ownership/watchdog/cleanup repair at
+`8324371` is under independent static review before any new ordinary flow.
 
 The [first connected-idle measurement](../macos-idle-resources-2026-10-23/README.md)
 failed in its launcher before app readiness. Its successful build and completed
