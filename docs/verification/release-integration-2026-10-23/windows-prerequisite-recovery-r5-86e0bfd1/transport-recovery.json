@@ -1,0 +1,49 @@
+{
+  "schema": "openergy.windows-transport-recovery.v1",
+  "execution": false,
+  "status": "EXACT_SELECTOR_NOT_ESTABLISHED",
+  "items_read": 80,
+  "item_text_characters_read": 176240,
+  "limits": {
+    "items": 80,
+    "characters": 500000
+  },
+  "pages": [
+    {
+      "workflow": "native-stop",
+      "positions": [
+        0,
+        39
+      ],
+      "items": 40,
+      "item_text_characters": 98849
+    },
+    {
+      "workflow": "installed-pinned-build-r6",
+      "positions": [
+        0,
+        39
+      ],
+      "items": 40,
+      "item_text_characters": 77391
+    }
+  ],
+  "all_four_pages_have_more": true,
+  "no_more_items_fetched": true,
+  "historical_match_record": {
+    "workflow": "native-stop",
+    "position": 17,
+    "configured_variants_reported": 54,
+    "exact_matches_reported": 1,
+    "selected_value_present_in_retrieved_text": false
+  },
+  "missing_fact": "exact already-used transport selector and durable historical binding",
+  "selector_file_created": false,
+  "ssh_config_read": false,
+  "credentials_or_private_keys_read": false,
+  "known_host_keys_read": false,
+  "raw_history_saved_or_printed": false,
+  "remote_contact": false,
+  "branch_stopped": true,
+  "permission_request_needed": false
+}

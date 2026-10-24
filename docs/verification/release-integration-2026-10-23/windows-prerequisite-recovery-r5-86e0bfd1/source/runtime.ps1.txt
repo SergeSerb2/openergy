@@ -1,0 +1,225 @@
+. (Join-Path $PSScriptRoot 'common.ps1')
+$stageStart=[Diagnostics.Stopwatch]::GetTimestamp();$stageDeadline=$stageStart+150L*[Diagnostics.Stopwatch]::Frequency
+if(Test-Path -LiteralPath (Join-Path $root 'runtime-once.guard')){throw 'runtime already attempted; no retry'}
+$guard=[IO.File]::Open((Join-Path $root 'runtime-once.guard'),[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None);$guard.Dispose()
+$build=Get-Content -Raw -LiteralPath (Join-Path $root 'build-result.json')|ConvertFrom-Json
+if(-not $build.passed -or $build.schema -ne 'openergy.fresh-release-build.v1' -or $build.source_commit -ne 'e1ef1243988d072cb9afc33fd2f5a56ca70e2f5a' -or $build.source_manifest_sha256 -ne (Hash (Join-Path $root 'source-manifest.json')) -or $build.archive_sha256 -ne (Hash (Join-Path $root 'source.tar')) -or $build.steps.Count -ne 1 -or $build.steps[0].name -ne 'release' -or $build.steps[0].exit_code -ne 0 -or $build.steps[0].timed_out -or $build.jobs -ne 2 -or -not $build.artifact.amd64_pe32plus -or $build.artifact.bytes -le 0){throw 'fresh pinned release build receipt required'}
+$binary=Join-Path $root 'openergy.exe'
+if((Hash $binary) -ne $build.artifact.sha256 -or (Get-Item -LiteralPath $binary).Length -ne $build.artifact.bytes){throw 'runtime artifact binding failed'}
+$run=Join-Path $root 'runtime';New-Item -ItemType Directory -Path $run|Out-Null
+$originalProfile=$env:USERPROFILE
+foreach($n in @('profile','appdata','localappdata','config','data','cache','ipc','temp')){New-Item -ItemType Directory -Path (Join-Path $run $n)|Out-Null}
+$daemonPipeName='oe-stop-c8a3489c-daemon-__NONCE__'
+$relayPipeName='oe-stop-c8a3489c-observer-__NONCE__'
+$daemonPipe='\\.\pipe\'+$daemonPipeName;$relayPipe='\\.\pipe\'+$relayPipeName
+$config=Join-Path $run 'config/config.toml'
+$env:USERPROFILE=Join-Path $run 'profile';$env:APPDATA=Join-Path $run 'appdata';$env:LOCALAPPDATA=Join-Path $run 'localappdata'
+$env:XDG_CONFIG_HOME=Join-Path $run 'config';$env:XDG_DATA_HOME=Join-Path $run 'data';$env:XDG_CACHE_HOME=Join-Path $run 'cache';$env:XDG_RUNTIME_DIR=Join-Path $run 'ipc'
+$env:TEMP=Join-Path $run 'temp';$env:TMP=$env:TEMP
+$env:OPENERGY_CONFIG=$config;$env:OPENERGY_SOCKET=$daemonPipe;$env:OPENERGY_DISABLE_DISCOVERY='1';$env:OPENERGY_ALLOW_PORT_24800='0';$env:OPENERGY_LOG='info'
+$configText=@'
+version = 1
+role = "off"
+name = "native-stop-c8a3489c"
+[server]
+listen = "127.0.0.1:59367"
+port = 59367
+[client]
+remote = ""
+autoconnect = false
+[tls]
+enabled = false
+[clipboard]
+enabled = false
+send = false
+receive = false
+'@
+[IO.File]::WriteAllText($config,$configText,[Text.UTF8Encoding]::new($false))
+Add-Type -Path (Join-Path $root 'observer.cs')
+$controller=Get-Process -Id $PID;$controllerIdentity=Identity $controller
+if($controllerIdentity.priority -ne 'BelowNormal' -or $controllerIdentity.session -ne 0){throw 'controller priority/session mismatch'}
+Save 'runtime-controller.json' (Ancestors $controller)
+$script:children=[Collections.Generic.List[object]]::new();$script:exchanges=[Collections.Generic.List[object]]::new();$script:daemon=$null
+$script:stopDeadline=0L;$script:daemonExitTicks=0L;$script:stopCalls=0;$script:stopExchange=$null
+$result=[ordered]@{passed=$false;source_commit=$build.source_commit;artifact=[ordered]@{path=$binary;bytes=$build.artifact.bytes;sha256=$build.artifact.sha256;fresh_release_binary=$true};fresh_build_receipt_sha256=(Hash (Join-Path $root 'build-result.json'));controller=$controllerIdentity;bounds=[ordered]@{readiness_seconds=15;cli_seconds=15;normal_exit_seconds=10;runtime_stage_seconds=150;owned_recovery_seconds=15};frequency=[Diagnostics.Stopwatch]::Frequency;clock='Windows QPC / Stopwatch.GetTimestamp in the same native PowerShell controller and observer';timing_limit='Includes transparent pipe observer and scheduling. Request forwarding is bounded by before/after ticks. Response read is controller receipt, not daemon send. OS exit is first retained-handle observation, not kernel exit timestamp. No cross-platform or speedup claim.';daemon_pipe=$daemonPipe;observer_pipe=$relayPipe;config_sha256=(Hash $config);environment=[ordered]@{USERPROFILE=$env:USERPROFILE;APPDATA=$env:APPDATA;LOCALAPPDATA=$env:LOCALAPPDATA;XDG_CONFIG_HOME=$env:XDG_CONFIG_HOME;XDG_DATA_HOME=$env:XDG_DATA_HOME;XDG_CACHE_HOME=$env:XDG_CACHE_HOME;XDG_RUNTIME_DIR=$env:XDG_RUNTIME_DIR;TEMP=$env:TEMP;TMP=$env:TMP;OPENERGY_CONFIG=$env:OPENERGY_CONFIG;OPENERGY_SOCKET=$env:OPENERGY_SOCKET;OPENERGY_DISABLE_DISCOVERY=$env:OPENERGY_DISABLE_DISCOVERY;OPENERGY_ALLOW_PORT_24800=$env:OPENERGY_ALLOW_PORT_24800};requests=@();stops_sent=0;recovery=@();jobs_created=0;process_groups_created=0;desktop_or_windowstation_changed=$false}
+Save 'runtime-start.json' $result
+function Pipe-Exists($name){@([IO.Directory]::EnumerateFiles('\\.\pipe\')|Where-Object {[IO.Path]::GetFileName($_) -eq $name}).Count -gt 0}
+function Port-State($phase){
+ $sockets=[Collections.Generic.List[object]]::new()
+ try{
+  foreach($family in @([Net.Sockets.AddressFamily]::InterNetwork,[Net.Sockets.AddressFamily]::InterNetworkV6)){
+   $s=[Net.Sockets.Socket]::new($family,[Net.Sockets.SocketType]::Stream,[Net.Sockets.ProtocolType]::Tcp);$sockets.Add($s);$s.ExclusiveAddressUse=$true
+   if($family -eq [Net.Sockets.AddressFamily]::InterNetworkV6){$s.DualMode=$false;$address=[Net.IPAddress]::IPv6Loopback}else{$address=[Net.IPAddress]::Loopback}
+   $s.Bind([Net.IPEndPoint]::new($address,59367))
+  }
+  $value=[ordered]@{phase=$phase;port=59367;ipv4_and_ipv6_exclusive_bind_passed=$true;listen_called=$false;connect_called=$false;recorded_utc=[DateTime]::UtcNow.ToString('o')}
+  Save ('runtime-port-'+$phase+'.json') $value
+ }finally{foreach($s in $sockets){$s.Dispose()}}
+}
+function New-Child($label,[string[]]$arguments){
+ $child=[WinOwned]::Start($binary,$arguments,$run,(Join-Path $root ($label+'.stdout')),(Join-Path $root ($label+'.stderr')),$script:children)
+ $id=Identity $child.Process
+ $id.native_process_handle_retained=$true;$id.primary_thread_suspended=$true;$id.in_job=$child.InJob;$id.below_normal_at_creation=$true;$id.explicit_inherited_handles=@('private stdout','private stderr','NUL stdin');$id.command=$arguments
+ Save ($label+'-identity.json') $id
+ if($id.priority -ne 'BelowNormal' -or $id.session -ne 0 -or $id.parent_pid -ne $PID -or $id.path -ine $binary -or [Math]::Abs(([DateTime]$id.creation_utc-[DateTime]$id.start_utc).TotalMilliseconds) -ge 2){throw ('owned product identity/priority/session mismatch '+$label)}
+ return $child
+}
+function Invoke-Cli($label,[string[]]$arguments,$expected,$method){
+ $isStop=$method -eq 'daemon.stop'
+ if($isStop -and $script:stopCalls -ne 0){throw 'one stop attempt only; no retry'}
+ $startTicks=[Diagnostics.Stopwatch]::GetTimestamp()
+ # The CLI and observer share this one deadline, including creation and identity work.
+ $cliDeadline=[Math]::Min($startTicks+15L*[Diagnostics.Stopwatch]::Frequency,$stageDeadline-15L*[Diagnostics.Stopwatch]::Frequency)
+ if($isStop -and $startTicks+40L*[Diagnostics.Stopwatch]::Frequency -ge $stageDeadline){throw 'insufficient stage time for CLI(15), stop allowance(10), and recovery(15)'}
+ [WinOwned]::Before($cliDeadline)
+ $exchange=$null
+ if($method){$exchange=[WinOwned+Exchange]::new($relayPipeName,$daemonPipeName,$cliDeadline);$script:exchanges.Add($exchange)}
+ if($isStop){$script:stopCalls++;$script:stopExchange=$exchange}
+ $child=New-Child $label $arguments
+ [WinOwned]::Before($cliDeadline);$child.Resume()
+ $cliExitTicks=0L;$timedOut=$false
+ while($true){
+  $now=[Diagnostics.Stopwatch]::GetTimestamp()
+  if($child.Process.WaitForExit(0) -and $cliExitTicks -eq 0){$cliExitTicks=[Diagnostics.Stopwatch]::GetTimestamp()}
+  if($isStop){
+   if($exchange.ForwardBeforeTicks -gt 0){$script:stopDeadline=$exchange.ForwardBeforeTicks+10L*[Diagnostics.Stopwatch]::Frequency}
+   if($script:daemon.Process.WaitForExit(0) -and $script:daemonExitTicks -eq 0){$script:daemonExitTicks=[Diagnostics.Stopwatch]::GetTimestamp()}
+  }
+  $now=[Diagnostics.Stopwatch]::GetTimestamp()
+  if($now -ge $cliDeadline -or ($isStop -and $script:stopDeadline -gt 0 -and $now -ge $script:stopDeadline -and ($script:daemonExitTicks -eq 0 -or $script:daemonExitTicks -ge $script:stopDeadline))){$timedOut=$true;break}
+  if($cliExitTicks -gt 0 -and (-not $isStop -or $script:daemonExitTicks -gt 0)){break}
+  Start-Sleep -Milliseconds 20
+ }
+ $record=[ordered]@{label=$label;arguments=$arguments;expected_exit_code=$expected;exit_code=$(if($cliExitTicks){$child.Process.ExitCode}else{$null});timed_out=$timedOut;absolute_cli_deadline_ticks=$cliDeadline;before_create_ticks=$child.BeforeCreateTicks;after_create_ticks=$child.AfterCreateTicks;resume_ticks=$child.ResumeTicks;cli_exit_observed_ticks=$cliExitTicks;stdin='NUL';retained_process_handles=$true;stdout_sha256=$(if($cliExitTicks){Hash (Join-Path $root ($label+'.stdout'))}else{$null});stderr_sha256=$(if($cliExitTicks){Hash (Join-Path $root ($label+'.stderr'))}else{$null})}
+ Save ($label+'-result.json') $record
+ if($exchange){
+  try{
+   if(-not $timedOut){
+    if(-not $exchange.Work.Wait([WinOwned]::RemainingMs($cliDeadline))){throw 'observer did not finish inside shared CLI deadline'}
+    $exchange.Work.GetAwaiter().GetResult();[WinOwned]::Before($cliDeadline)
+   }
+  }catch{$record.observer_error=($_|Out-String);Save ($label+'-result.json') $record;throw}
+  $record.observer=[ordered]@{request_json=$exchange.Request;response_json=$exchange.Response;client_pid=$exchange.ClientPid;daemon_pid=$exchange.ServerPid;request_read_ticks=$exchange.RequestReadTicks;forward_before_ticks=$exchange.ForwardBeforeTicks;forward_after_ticks=$exchange.ForwardAfterTicks;response_read_ticks=$exchange.ResponseReadTicks;client_write_ticks=$exchange.ClientWriteTicks;completed=$exchange.Work.IsCompletedSuccessfully}
+ }
+ Save ($label+'-result.json') $record
+ if($timedOut){throw ('finite CLI/normal-exit bound failed: '+$label)}
+ if($record.exit_code -ne $expected){throw ('unexpected CLI exit: '+$label)}
+ if($exchange){
+  $req=$exchange.Request|ConvertFrom-Json;$resp=$exchange.Response|ConvertFrom-Json
+  $requestId=ConvertTo-Json -InputObject $req.id -Compress -Depth 10;$responseId=ConvertTo-Json -InputObject $resp.id -Compress -Depth 10
+  if($exchange.ClientPid -ne $child.Process.Id -or $exchange.ServerPid -ne $script:daemon.Process.Id -or $req.method -cne $method -or $null -eq $req.id -or $requestId -cne $responseId){throw 'request/response/process identity mismatch'}
+  $result.requests+=@([ordered]@{label=$label;request=$req;response=$resp;wire_id_json=$requestId;cli_pid=$child.Process.Id;daemon_pid=$exchange.ServerPid})
+  $exchange.Dispose()
+ }else{$resp=$null}
+ return [ordered]@{record=$record;response=$resp;stdout=[IO.File]::ReadAllText((Join-Path $root ($label+'.stdout')));stderr=[IO.File]::ReadAllText((Join-Path $root ($label+'.stderr')))}
+}
+try{
+ if((Pipe-Exists $daemonPipeName) -or (Pipe-Exists $relayPipeName)){throw 'fresh private pipe name already exists'}
+ Port-State 'before'
+ $v=Invoke-Cli 'runtime-version' @('version') 0 $null
+ if($v.stdout.Trim() -ne 'openergy 0.1.0'){throw 'version mismatch'}
+ $absent=Invoke-Cli 'runtime-absent' @('status','--socket',$daemonPipe) 1 $null
+ if($absent.stderr -notmatch 'is the daemon running\?' -or $absent.stdout.Length -ne 0){throw 'absent daemon failure mismatch'}
+ $script:daemon=New-Child 'runtime-daemon' @('daemon','--config',$config,'--platform','virtual','--socket',$daemonPipe,'--parent-pid',[string]$PID,'--foreground')
+ # The original readiness window starts once, immediately before daemon resume.
+ $readyStart=[Diagnostics.Stopwatch]::GetTimestamp();$readyDeadline=$readyStart+15L*[Diagnostics.Stopwatch]::Frequency
+ [WinOwned]::Before($stageDeadline-30L*[Diagnostics.Stopwatch]::Frequency);$daemon.Resume()
+ $log=Join-Path $run 'config/openergy.log'
+ $reader=[WinOwned+LogMarkerReader]::new($log,('daemon listening on '+$daemonPipe))
+ try{
+  while($true){
+   [WinOwned]::Before($readyDeadline)
+   if($daemon.Process.HasExited){throw 'daemon exited before readiness'}
+   $found=$reader.PollAsync($readyDeadline).GetAwaiter().GetResult()
+   [WinOwned]::Before($readyDeadline)
+   if($found){break}
+   Start-Sleep -Milliseconds 50
+  }
+  Save 'runtime-readiness.json' ([ordered]@{start_ticks=$readyStart;deadline_ticks=$readyDeadline;elapsed_ms=1000.0*([Diagnostics.Stopwatch]::GetTimestamp()-$readyStart)/[Diagnostics.Stopwatch]::Frequency;marker='daemon listening on private named pipe';bytes_read=$reader.Offset;missing_file_opens=$reader.MissingOpens;max_bytes=[WinOwned+LogMarkerReader]::MaxBytes;read_only=$true;share='ReadWrite|Delete';healthy_acceptance=$false;controller_alive=(-not $controller.HasExited);daemon_identity=(Identity $daemon.Process);pipe_present=(Pipe-Exists $daemonPipeName)})
+ }finally{$reader.Dispose()}
+ $status=Invoke-Cli 'runtime-status' @('status','--socket',$relayPipe) 0 'status.get'
+ $s=$status.response.result
+ if($s.daemon.pid -ne $daemon.Process.Id -or $s.daemon.platform -ne 'virtual' -or $s.daemon.version -ne '0.1.0' -or $s.role -ne 'off' -or $s.state -ne 'idle' -or $null -ne $s.last_error -or $s.peers.Count -ne 0){throw 'healthy virtual Off status mismatch'}
+ $cfg=Invoke-Cli 'runtime-config' @('ctl','config.get','--socket',$relayPipe,'--raw') 0 'config.get'
+ $c=$cfg.response.result.config
+ if($c.role -ne 'off' -or $c.server.listen -ne '127.0.0.1:59367' -or $c.server.port -ne 59367 -or $c.client.autoconnect -or $c.tls.enabled -or $c.clipboard.enabled){throw 'private Off config mismatch'}
+ $bad=Invoke-Cli 'runtime-invalid' @('ctl','fixture.invalid.c8a3489c','--socket',$relayPipe,'--raw') 1 'fixture.invalid.c8a3489c'
+ if($bad.response.error.code -ne 'unknown_method' -or $bad.response.error.message -ne 'unknown method fixture.invalid.c8a3489c'){throw 'invalid method error mismatch'}
+ Port-State 'while-off'
+ # Read the native tables once, filter the exact owned PID, and preserve query faults.
+ $tcp=@(Get-NetTCPConnection -ErrorAction Stop|Where-Object {$_.OwningProcess -eq $daemon.Process.Id})
+ $udp=@(Get-NetUDPEndpoint -ErrorAction Stop|Where-Object {$_.OwningProcess -eq $daemon.Process.Id})
+ Save 'runtime-owned-network.json' ([ordered]@{daemon_pid=$daemon.Process.Id;tcp=$tcp;udp=$udp;sampled_utc=[DateTime]::UtcNow.ToString('o');network_inventory_queries_only=$true})
+ if($tcp.Count -or $udp.Count){throw 'Off daemon unexpectedly owns a network socket'}
+ $stop=Invoke-Cli 'runtime-stop' @('ctl','daemon.stop','--socket',$relayPipe,'--raw') 0 'daemon.stop'
+ if($stop.stdout.Trim() -ne '{"stopping":true}' -or $stop.stderr.Length -ne 0 -or -not $stop.response.result.stopping){throw 'exact daemon.stop acknowledgement mismatch'}
+ $liveDaemon=Get-CimInstance Win32_Process -Filter ('ProcessId='+$daemon.Process.Id)
+ $result.daemon_exit=[ordered]@{exit_code=$daemon.Process.ExitCode;independent_retained_os_handle_signalled=$daemon.Process.WaitForExit(0);exit_first_observed_ticks=$script:daemonExitTicks;deadline_ticks=$script:stopDeadline;controller_alive=(-not $controller.HasExited);controller_start_unchanged=($controller.StartTime.ToUniversalTime().ToString('o') -eq $controllerIdentity.start_utc);daemon_identity_gone=($null -eq $liveDaemon -or [Math]::Abs(($liveDaemon.CreationDate.ToUniversalTime()-$daemon.Process.StartTime.ToUniversalTime()).TotalMilliseconds) -ge 2);stop_to_exit_observation_ms=1000.0*($script:daemonExitTicks-$stop.record.observer.forward_before_ticks)/[Diagnostics.Stopwatch]::Frequency;response_receipt_to_exit_observation_ms=1000.0*($script:daemonExitTicks-$stop.record.observer.response_read_ticks)/[Diagnostics.Stopwatch]::Frequency}
+ if($daemon.Process.ExitCode -ne 0 -or -not $result.daemon_exit.daemon_identity_gone -or -not $result.daemon_exit.controller_alive -or $script:stopCalls -ne 1 -or $script:stopDeadline -eq 0 -or $script:daemonExitTicks -ge $script:stopDeadline){throw 'normal daemon OS exit mismatch'}
+ Port-State 'after'
+ $result.pipe_cleanup=[ordered]@{daemon_pipe_absent=(-not (Pipe-Exists $daemonPipeName));observer_pipe_absent=(-not (Pipe-Exists $relayPipeName))}
+ if(-not $result.pipe_cleanup.daemon_pipe_absent -or -not $result.pipe_cleanup.observer_pipe_absent){throw 'private pipe remains'}
+ $result.passed=$true
+}catch{
+ $result.failure=$_.Exception.Message;$result.error_record=($_|Out-String)
+ [IO.File]::WriteAllText((Join-Path $root 'runtime-first-failure.stderr'),($_|Out-String))
+}finally{
+ $recoveryStart=[Diagnostics.Stopwatch]::GetTimestamp();$recoveryDeadline=[Math]::Min($stageDeadline,$recoveryStart+15L*[Diagnostics.Stopwatch]::Frequency)
+ $result.owned_final_exits=@()
+ $result.stop_attempts=$script:stopCalls
+ $result.stops_sent=$(if($script:stopExchange -and $script:stopExchange.ForwardBeforeTicks -gt 0){1}else{0})
+ $result.stop_count_limit='stops_sent means one forwarding attempt began; raw observer receipt proves completion or failure'
+ # Cancel and settle first: ForwardBeforeTicks must not change after this snapshot.
+ $observerQuiesced=$true
+ foreach($exchange in $script:exchanges){
+  try{
+   $exchange.Dispose()
+   if(-not $exchange.Work.IsCompleted){
+    try{$null=$exchange.Work.Wait([WinOwned]::RemainingMs($recoveryDeadline))}catch{if(-not $exchange.Work.IsCompleted){throw}}
+   }
+   if(-not $exchange.Work.IsCompleted){throw 'observer cancellation did not settle within recovery deadline'}
+  }catch{$observerQuiesced=$false;$result.passed=$false;$result.recovery+=@([ordered]@{observer_cleanup_error=($_|Out-String);task_completed=$exchange.Work.IsCompleted})}
+ }
+ if($script:stopExchange -and $script:stopExchange.ForwardBeforeTicks -gt 0){$script:stopDeadline=$script:stopExchange.ForwardBeforeTicks+10L*[Diagnostics.Stopwatch]::Frequency}
+ $result.stops_sent=$(if($script:stopDeadline -gt 0){1}else{0})
+ Save 'runtime-observer-final.json' @($script:exchanges|ForEach-Object {[ordered]@{request_json=$_.Request;response_json=$_.Response;client_pid=$_.ClientPid;daemon_pid=$_.ServerPid;forward_before_ticks=$_.ForwardBeforeTicks;forward_after_ticks=$_.ForwardAfterTicks;response_read_ticks=$_.ResponseReadTicks;completed=$_.Work.IsCompleted;successful=$_.Work.IsCompletedSuccessfully}})
+ if($script:stopDeadline -gt 0 -and $daemon -and -not $daemon.Process.HasExited){
+  $remaining=[Math]::Max(0,[Math]::Ceiling(1000.0*($script:stopDeadline-[Diagnostics.Stopwatch]::GetTimestamp())/[Diagnostics.Stopwatch]::Frequency))
+  if($remaining -gt 0){$null=$daemon.Process.WaitForExit([int]$remaining)}
+ }
+ foreach($child in $script:children){
+  try{
+   if($child.ResumeTicks -eq 0){
+    $child.RecoverUnresumed($recoveryDeadline)
+    $result.recovery+=@([ordered]@{native_pid=$child.NativePid;owned_unresumed_child=$true;kill_called=$child.RecoveryKilled;retained_handle_signalled=$child.RecoverySignalled;exit_code=$child.RecoveryCode;normal_exit_acceptance=$false})
+    $result.owned_final_exits+=@([ordered]@{pid=$child.NativePid;retained_handle_signalled=$child.RecoverySignalled;exit_code=$child.RecoveryCode;acceptance_separate=$true})
+    $child.Dispose();continue
+   }
+   if(-not $child.Process.HasExited){
+    if(-not $observerQuiesced){throw 'observer is still active: retain child, no kill before a stable stop deadline'}
+    [WinOwned]::Before($recoveryDeadline)
+    $cim=Get-CimInstance Win32_Process -Filter ('ProcessId='+$child.Process.Id)
+    if(-not $cim -or $cim.ExecutablePath -ine $binary -or [Math]::Abs(($cim.CreationDate.ToUniversalTime()-$child.Process.StartTime.ToUniversalTime()).TotalMilliseconds) -ge 2 -or $cim.ParentProcessId -ne $PID){throw 'identity mismatch: no kill'}
+    $recovery=[ordered]@{identity=(Identity $child.Process);kill_ticks=[Diagnostics.Stopwatch]::GetTimestamp();reason=$(if($script:stopDeadline -gt 0){'failed flow after full 10-second stop allowance'}else{'failed flow before any stop forwarding'});normal_stop_deadline_ticks=$script:stopDeadline;exit_code=$null;retained_handle_signalled=$false;normal_exit_acceptance=$false}
+    $result.recovery+=@($recovery)
+    $child.Process.Kill();$recovery.retained_handle_signalled=$child.Process.WaitForExit([Math]::Min(10000,[WinOwned]::RemainingMs($recoveryDeadline)))
+    if(-not $recovery.retained_handle_signalled){throw 'owned recovery did not signal inside bound'}
+    $recovery.exit_code=$child.Process.ExitCode
+   }
+   if($child.Process.HasExited){$result.owned_final_exits+=@([ordered]@{pid=$child.NativePid;retained_handle_signalled=$child.Process.WaitForExit(0);exit_code=$child.Process.ExitCode;acceptance_separate=$true});$child.Dispose()}
+  }catch{$result.passed=$false;$result.recovery+=@([ordered]@{native_pid=$child.NativePid;recovery_error=($_|Out-String);handles_closed=$child.Closed})}
+ }
+ $result.product_handles_closed=@($script:children|Where-Object {-not $_.Closed}).Count -eq 0
+ $result.controller_alive_at_finally=(-not $controller.HasExited)
+ $result.remaining_owned_processes=Owned-Processes
+ $result.artifact_sha256_after=Hash $binary
+ $result.config_sha256_after=Hash $config
+ $result.stage_deadline_ticks=$stageDeadline
+ $result.stage_finished_ticks=[Diagnostics.Stopwatch]::GetTimestamp()
+ $result.finished_utc=[DateTime]::UtcNow.ToString('o')
+ $result.passed=($result.passed -and $result.stage_finished_ticks -lt $stageDeadline -and $result.product_handles_closed -and $result.remaining_owned_processes.Count -eq 0 -and $result.artifact_sha256_after -eq $build.artifact.sha256 -and $result.config_sha256_after -eq $result.config_sha256)
+ Save 'runtime-result.json' $result
+ $env:USERPROFILE=$originalProfile
+}
+if(-not $result.passed){exit 1}
+Write-Output 'ONE_NATIVE_VIRTUAL_OFF_FLOW_PASS'

@@ -1,0 +1,38 @@
+{
+  "schema": "openergy.fresh-selected-baseline-contract.v1",
+  "execution": false,
+  "state_materialized": false,
+  "baseline_materialized": false,
+  "kind": "fresh-current-host-selected-state",
+  "fixture_labels": [
+    "e4f48ba-original",
+    "startup-diagnosis",
+    "owned-cleanup-dfa405c",
+    "observed-startup-e6a9125",
+    "historical-dns-remote",
+    "historical-dns-diag_remote",
+    "stopped-dns-8333a48",
+    "prior-exact-r12-8281eb7",
+    "historical-refusal-615c16e1"
+  ],
+  "fixture_root_bindings_status": "NOT_ESTABLISHED_IN_THIS_PREPARATION",
+  "future_private_selection": "baseline-selection.json",
+  "future_selection_entries": {
+    "label": "one exact published fixture label in listed order",
+    "temp_relative": "exact historically established relative path under current task TEMP; no guesses"
+  },
+  "required_selection_count": 9,
+  "selection_hash_bound_privately": true,
+  "current_before_fields": [
+    "fixture tree relative entries, bytes, hashes, readonly and ACL hashes",
+    "original registry",
+    "pinned Rust toolchain",
+    "eight selected default-file states",
+    "sixteen selected tools",
+    "current live-sharing process identities",
+    "old failed root absence"
+  ],
+  "after_target": "same NEW before snapshot; historical entries are not a current baseline",
+  "missing_path_or_reparse": "refuse before build; no empty selection or invented old state",
+  "old_state_sha256_not_recreated": "48ac89d19da2804c742365c3ac2fbb393684dfb37c54f451ff8dceb7ce7aa571"
+}

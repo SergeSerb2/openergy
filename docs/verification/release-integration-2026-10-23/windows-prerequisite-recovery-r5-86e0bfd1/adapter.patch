@@ -1,0 +1,362 @@
+--- a/docs/verification/release-integration-2026-10-23/windows-stop-controller-repair-r2-dbcc0160/source/controller.py.txt
++++ b/docs/verification/release-integration-2026-10-23/windows-prerequisite-recovery-r5-86e0bfd1/source/controller.py.txt
+@@ -1,6 +1,7 @@
+-"""SOURCE-ONLY future one-shot binary-reuse controller. Not run during this repair.
+-Materialize reviewed .txt sources before a later real run. No compiler stage.
+-Old native roots and guards are immutable; this revision has one new guard/root.
++"""INERT SOURCE PROPOSAL: fresh release build plus one R2 virtual Off flow.
++No old missing-input fallback. This file has not been materialized or run.
++Future location: the owned data root's run-source/controller.py, after source review.
++All raw and binary outputs stay below that same durable root.
+ """
+ import base64
+ import datetime
+@@ -8,19 +9,23 @@
+ import io
+ import json
+ import os
+-from pathlib import Path, PurePosixPath
++from pathlib import Path, PurePosixPath, PureWindowsPath
+ import subprocess
+ import tarfile
+-import tempfile
+ import time
+ import traceback
+ 
+ HERE = Path(__file__).resolve().parent
+-REPO = Path(subprocess.check_output(['git','-C',str(HERE),'rev-parse','--show-toplevel']).decode().strip())
++DATA = HERE.parent
++PREPARATION = json.loads((DATA/'preparation.json').read_text())
++REPO = Path(PREPARATION['repo'])
+ SOURCE = 'e1ef1243988d072cb9afc33fd2f5a56ca70e2f5a'
+-ORIGINAL = Path('/Users/serge/.t3/worktrees/openergy/t3-c8a3489c/docs/verification/release-integration-2026-10-23/daemon-stop-native-windows-c8a3489c')
+-ARTIFACT_SHA256 = '4984ef1222bbcd551dbebdda9db2fc623ff42a3560c5261806f09ad8f3dbda2f'
+-BUNDLE_SHA256 = '3247d9f23cd5fb078c7c048de7f5ae48e4d71614ab4cd5dcc5a39658d7ea6908'
++ORIGINAL = REPO/'docs/verification/release-integration-2026-10-23/daemon-stop-native-windows-c8a3489c'
++ARCHIVE_SHA256 = '775e04301b1f3816ccf39fd088e1100da4344be5b171df7330b0049a7f589adf'
++MANIFEST_SHA256 = 'a208cbb73d29b4939fcd4a43eae67769d1763823fc6a77979bb7abe96ef243dc'
++FIXTURE_LABELS = ('e4f48ba-original','startup-diagnosis','owned-cleanup-dfa405c',
++    'observed-startup-e6a9125','historical-dns-remote','historical-dns-diag_remote',
++    'stopped-dns-8333a48','prior-exact-r12-8281eb7','historical-refusal-615c16e1')
+ OPTIONS = ['-o','BatchMode=yes','-o','ConnectTimeout=8','-o','StrictHostKeyChecking=yes','-o','UpdateHostKeys=no','-o','ControlMaster=no','-o','ServerAliveInterval=10','-o','ServerAliveCountMax=2','-o','ForwardAgent=no']
+ def sha(data): return hashlib.sha256(data).hexdigest()
+ def save(path,obj): path.write_text(json.dumps(obj,indent=2)+'\n')
+@@ -41,18 +46,35 @@
+ 
+ class Controller:
+     def __init__(self):
+-        with (HERE/'reuse-controller-r2-once.guard').open('x') as f:f.write(now()+'\n')
+         self.started=time.monotonic();self.deadline=self.started+2400
++        self.private=DATA/'new-run';self.private.mkdir(mode=0o700)
++        with (self.private/'fresh-build-and-flow-once.guard').open('x') as f:f.write(now()+'\n')
++        self.raw=self.private/'raw';self.raw.mkdir(mode=0o700)
++        self.root=None;self.state=None;self.prior=[]
++        self.result={'execution_scope':'NEW_BUILD_AND_NEW_FLOW','source_commit':SOURCE,
++            'started_local':now(),'passed':False,'compiler_stage_attempts':0,
++            'runtime_stage_attempts':0,'retained_binary_reuse':False,
++            'total_workflow_bound_seconds':2400,'owned_recovery_bound_seconds':30,
++            'old_missing_input_path_terminal':True,'historical_runtime_status':'FAILED_UNVERIFIED'}
++        if not __debug__:raise RuntimeError('Python optimization refused')
+         assert os.getpriority(os.PRIO_PROCESS,0)==15
+         assert os.environ.get('MACOSX_DEPLOYMENT_TARGET')=='15.0'
+-        transport=json.loads(Path('/tmp/oe-stop-c8a3489c-transport-selection.json').read_text())
+-        self.alias=transport['ssh_alias'];self.retained=Path(json.loads((ORIGINAL/'private-evidence-location.json').read_text())['private_root'])
+-        self.private=Path(tempfile.mkdtemp(prefix='oe-stop-native-win-repair-r2-dbcc0160-'));os.chmod(self.private,0o700)
+-        self.raw=self.private/'raw';self.raw.mkdir(mode=0o700)
+-        self.root=None;self.state=None
+-        self.nonce=os.urandom(4).hex();self.remote_name='oe-stop-win-r2-dbcc0160-e1ef124-'+self.nonce
+-        self.result={'previous_runtime_failure_preserved':str(ORIGINAL), 'overall_workflow_started_local':now(), 'source_commit':SOURCE,'started_local':now(),'controller_nice':os.getpriority(os.PRIO_PROCESS,0),'macos_deployment_target':'15.0','total_workflow_bound_seconds':2400,'owned_recovery_bound_seconds':30,'passed':False,'source_overlays':[],'compiler_stage_attempts':0,'runtime_stage_attempts':0,'retained_binary_reuse':True,'remote_fixture':self.remote_name,'transport':'Existing R6 transport; OpenSSH immediate control stdin EOF; fixed-file scp -O; strict known-host checking; no credential read/copy'}
+-        save(HERE/'private-evidence-location.json',{'private_root':str(self.private)})
++        assert DATA.is_dir() and not DATA.is_symlink() and DATA.stat().st_mode & 0o777==0o700
++        # These factual bindings are absent from this preparation. No target guessing.
++        transport_data=(DATA/'transport/selector.json').read_bytes()
++        assert sha(transport_data)==PREPARATION['selector_sha256']
++        transport=json.loads(transport_data)
++        assert transport['exact_historical_selector'] is True
++        self.alias=transport['ssh_alias'];assert isinstance(self.alias,str) and self.alias
++        selection_data=(DATA/'baseline-selection.json').read_bytes()
++        assert sha(selection_data)==PREPARATION['baseline_selection_sha256']
++        self.selection=json.loads(selection_data)['fixtures']
++        assert tuple(e['label'] for e in self.selection)==FIXTURE_LABELS
++        for e in self.selection:
++            p=PureWindowsPath(e['temp_relative'])
++            assert not p.is_absolute() and not p.drive and '..' not in p.parts and p.parts
++        assert len({e['temp_relative'].casefold() for e in self.selection})==9
++        self.nonce=os.urandom(4).hex();self.remote_name='oe-stop-win-r5-86e0bfd1-e1ef124-'+self.nonce
+         self.prior=local_prior();save(self.private/'local-prior-before.json',self.prior)
+ 
+     def command(self,label,argv,timeout,script=None):
+@@ -112,39 +134,27 @@
+         assert rec['exit_code']==0,'bounded owned transport recovery unverified'
+ 
+     def stage(self,name,timeout):
+-        assert name in ('qualify','runtime','postflight')
++        assert name in ('qualify','build','runtime','postflight')
+         inner="try { & '"+self.root+'\\'+name+".ps1' } catch { [IO.File]::WriteAllText('"+self.root+'\\'+name+"-first-stage-failure.stderr', ($_|Out-String)); exit 1 }"
+         inner64=base64.b64encode(inner.encode('utf-16le')).decode()
+         script="$ErrorActionPreference='Stop';(Get-Process -Id $PID).PriorityClass='BelowNormal'; & 'C:\\Program Files\\PowerShell\\7\\pwsh.exe' -NoLogo -NoProfile -NonInteractive -EncodedCommand "+inner64+"; exit $LASTEXITCODE"
+         return self.remote(name,script,timeout)
+ 
+-    def bind_retained(self):
+-        # Immutable saved bytes only. No build or product execution.
+-        build_data=(self.retained/'downloaded/build-result.json').read_bytes()
+-        assert sha(build_data)=='f52b45d2cbea71c19cc1b6d43eee6b6ce99b2072b852a5cd29f688f677213eca'
+-        build=json.loads(build_data.decode('utf-8-sig'))
+-        assert build['passed'] and build['source_commit']==SOURCE
+-        artifact=build['artifact']
+-        assert artifact['bytes']==4139520 and artifact['sha256']==ARTIFACT_SHA256 and artifact['amd64_pe32plus']
+-        binary=self.retained/'downloaded/target/x86_64-pc-windows-msvc/release/openergy.exe'
+-        data=binary.read_bytes();assert len(data)==4139520 and sha(data)==ARTIFACT_SHA256,'retained verified bytes required; no rebuild fallback'
+-        bundle=(self.retained/'evidence.tar').read_bytes()
+-        assert len(bundle)==46836736 and sha(bundle)==BUNDLE_SHA256
+-        (self.private/'openergy.exe').write_bytes(data)
+-        (self.private/'retained-build-result.json').write_bytes(build_data)
+-        manifest_data=(ORIGINAL/'source-manifest.json').read_bytes();manifest=json.loads(manifest_data)
++    def bind_source(self):
++        # Recovered historical source bytes only. No binary or build receipt exists yet.
++        for name,expected in (('source.tar',ARCHIVE_SHA256),('source-manifest.json',MANIFEST_SHA256)):
++            data=(DATA/'source-inputs'/name).read_bytes();assert sha(data)==expected
++            (self.private/name).write_bytes(data)
++        manifest=json.loads((self.private/'source-manifest.json').read_bytes())
+         assert manifest['source_commit']==SOURCE and len(manifest['files'])==558
+-        archive=(self.retained/'source.tar').read_bytes()
+-        assert len(archive)==manifest['archive_bytes'] and sha(archive)==manifest['archive_sha256']
+-        (self.private/'source.tar').write_bytes(archive);(self.private/'source-manifest.json').write_bytes(manifest_data)
+-        assert not git('diff','--name-only',SOURCE,'--','Cargo.toml','Cargo.lock','rust-toolchain.toml','rustfmt.toml','crates','tools/e2e','vendor')
+-        self.result.update({'artifact':artifact,'archive_sha256':sha(archive),'source_files':558,'retained_build_receipt_sha256':sha(build_data)})
++        self.result.update({'archive_sha256':ARCHIVE_SHA256,'source_manifest_sha256':MANIFEST_SHA256,
++                            'source_files':558,'source_overlays':[]})
+ 
+     def setup(self):
+         script=r'''$ErrorActionPreference='Stop';$ProgressPreference='SilentlyContinue'
+ (Get-Process -Id $PID).PriorityClass='BelowNormal'
+ if((Get-Process -Id $PID).SessionId -ne 0){throw 'session 0 required'}
+-foreach($p in @('C:\Program Files\PowerShell\7\pwsh.exe',(Join-Path $env:WINDIR 'System32/tar.exe'))){if(-not (Test-Path -LiteralPath $p -PathType Leaf)){throw 'installed prerequisite absent'}}
++foreach($p in @('C:\Program Files\PowerShell\7\pwsh.exe',(Join-Path $env:WINDIR 'System32/tar.exe'),(Join-Path $env:USERPROFILE '.rustup/toolchains/1.99.1-x86_64-pc-windows-msvc/bin/cargo.exe'),(Join-Path $env:USERPROFILE '.rustup/toolchains/1.99.1-x86_64-pc-windows-msvc/bin/rustc.exe'),'C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64\link.exe','C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x64\kernel32.lib')){if(-not (Test-Path -LiteralPath $p -PathType Leaf)){throw 'installed prerequisite absent'}}
+ $root=Join-Path $env:TEMP '__NAME__'
+ if(Test-Path -LiteralPath $root){throw 'fresh owned root exists; no retry'}
+ New-Item -ItemType Directory -Path $root|Out-Null
+@@ -158,15 +168,17 @@
+ '''.replace('__NAME__',self.remote_name)
+         rec,out=self.remote('setup',script);assert rec['exit_code']==0,'fresh setup failed'
+         self.state=json.loads(out.decode('utf-8-sig'));self.root=self.state['root']
+-        old_data=(self.retained/'state.json').read_bytes();assert sha(old_data)=='48ac89d19da2804c742365c3ac2fbb393684dfb37c54f451ff8dceb7ce7aa571'
+-        old=json.loads(old_data);self.state['prior_fixtures']=old['prior_fixtures']
++        # New current-host metadata. No old state payload or snapshot is synthesized.
++        self.state['baseline_kind']='fresh-current-host-selected-state'
++        self.state['prior_fixtures']=[{'label':e['label'],'root':str(PureWindowsPath(self.state['original_temp'])/e['temp_relative'])} for e in self.selection]
+         save(self.private/'state.json',self.state)
+-        for name in ('common.ps1','qualify.ps1','observer.cs','runtime.ps1','postflight.ps1'):
++        for name in ('common.ps1','qualify.ps1','build.ps1','observer.cs','runtime.ps1','postflight.ps1'):
+             data=(HERE/name).read_text().replace('__NONCE__',self.nonce).encode()
+             (self.private/name).write_bytes(data)
+-        files=['source.tar','source-manifest.json','state.json','common.ps1','qualify.ps1','observer.cs','runtime.ps1','postflight.ps1','retained-build-result.json','openergy.exe']
++        files=['source.tar','source-manifest.json','state.json','common.ps1','qualify.ps1','build.ps1','observer.cs','runtime.ps1','postflight.ps1']
+         manifest={'files':[{'path':n,'bytes':(self.private/n).stat().st_size,'sha256':sha((self.private/n).read_bytes())} for n in files]}
+-        save(self.private/'transfer-manifest.json',manifest);save(HERE/'workflow-bindings.json',{'nonce':self.nonce,'files':[e for e in manifest['files'] if e['path'] not in ('source.tar','state.json')]})
++        save(self.private/'transfer-manifest.json',manifest)
++        save(self.private/'workflow-bindings.json',{'nonce':self.nonce,'files':manifest['files']})
+         rec,_=self.command('upload',['/usr/bin/scp','-O','-q',*OPTIONS,*[str(self.private/n) for n in files+['transfer-manifest.json']],self.alias+':'+self.root.replace('\\','/')+'/'],90)
+         assert rec['exit_code']==0,'fixed-file upload failed; no blind retry'
+ 
+@@ -183,10 +195,21 @@
+                 dest=self.private/'downloaded'/item.name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(tar.extractfile(item).read())
+         for e in json.loads((self.private/'downloaded/evidence-manifest.json').read_text()):
+             data=(self.private/'downloaded'/e['path']).read_bytes();assert len(data)==e['bytes'] and sha(data)==e['sha256']
+-        build_data=(self.private/'downloaded/retained-build-result.json').read_bytes()
+-        assert sha(build_data)==self.result['retained_build_receipt_sha256']
++        build_data=(self.private/'downloaded/build-result.json').read_bytes()
++        build=json.loads(build_data.decode('utf-8-sig'))
++        assert build['passed'] and build['schema']=='openergy.fresh-release-build.v1'
++        assert build['source_commit']==SOURCE and build['source_manifest_sha256']==MANIFEST_SHA256
++        assert build['archive_sha256']==ARCHIVE_SHA256 and build['jobs']==2
++        assert len(build['steps'])==1 and build['steps'][0]['name']=='release'
++        assert build['steps'][0]['exit_code']==0 and not build['steps'][0]['timed_out']
++        artifact=build['artifact'];assert artifact['amd64_pe32plus'] and artifact['bytes']>0
+         data=(self.private/'downloaded/openergy.exe').read_bytes()
+-        assert len(data)==4139520 and sha(data)==ARTIFACT_SHA256
++        assert len(data)==artifact['bytes'] and sha(data)==artifact['sha256']
++        runtime=json.loads((self.private/'downloaded/runtime-result.json').read_text())
++        assert runtime['fresh_build_receipt_sha256']==sha(build_data)
++        assert runtime['artifact']['sha256']==artifact['sha256']
++        assert runtime['artifact_sha256_after']==artifact['sha256']
++        self.result.update({'fresh_build_receipt_sha256':sha(build_data),'artifact':artifact})
+         # Removal is permitted only after independently verifying the private archive.
+         script=r'''$ErrorActionPreference='Stop';(Get-Process -Id $PID).PriorityClass='BelowNormal'
+ $root='__ROOT__'
+@@ -201,45 +224,30 @@
+         self.result['cleanup']=json.loads(out.decode('utf-8-sig'))
+ 
+     def export(self):
++        # Raw records stay private. No automatic raw-to-Git export.
+         current=local_prior();save(self.private/'local-prior-after.json',current)
+         self.result['local_prior_evidence_equal']=current==self.prior
+         self.result['passed']=self.result['passed'] and current==self.prior
+-        first_private=json.loads((ORIGINAL/'setup-failure-01/private-evidence-location.json').read_text())['private_root']
+-        replacements=[(first_private,'<FIRST_SETUP_PRIVATE>'),(self.alias,'<SSH_TRANSPORT>'),(str(self.private),'<LOCAL_PRIVATE>'),(str(self.retained),'<RETAINED_PRIVATE>')]
+-        if self.state:
+-            p=self.state['profile'];replacements += [(p.replace('\\','\\\\'),'<PROFILE_JSON>'),(p,'<PROFILE>'),(p.replace('\\','/'),'<PROFILE_FORWARD_SLASH>')]
+-        def mask(s):
+-            for old,new in replacements:s=s.replace(old,new)
+-            return s
+-        ledger=[]
+-        for folder in (self.raw,self.private/'downloaded'):
+-            if not folder.exists():continue
+-            for p in sorted(folder.rglob('*')):
+-                if not p.is_file() or p.suffix not in ('.json','.ps1','.cs','.stdout','.stderr','.guard','.toml','.log'):continue
+-                original=p.read_bytes();rel=Path(folder.name)/p.relative_to(folder)
+-                omit=p.name in ('shared-before.json','shared-after.json','source-manifest.json')
+-                copied=mask(original.decode('utf-8-sig')).encode()
+-                if not omit:
+-                    dest=HERE/'evidence'/rel;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(copied)
+-                ledger.append({'path':str(rel),'original_bytes':len(original),'original_sha256':sha(original),'committed_copy':not omit,'copy_bytes':len(copied),'copy_sha256':sha(copied),'byte_equal':original==copied})
+-        save(HERE/'copy-ledger.json',{'method':'Exact raw originals retained privately. Derived UTF-8 copies remove BOM and replace known transport/profile/private-root prefixes only; preserve line endings. Full shared snapshots and duplicate source manifest omitted.','files':ledger})
+-        for name in ('shared-before.json','shared-after.json'):
+-            path=self.private/'downloaded'/name
+-            if path.exists():
+-                data=path.read_bytes();value=json.loads(data.decode('utf-8-sig'))
+-                save(HERE/(name.replace('.json','-summary.json')),{'bytes':len(data),'sha256':sha(data),'trees':[{'label':x['label'],'files':x['files'],'items':x['items'],'entries_sha256':sha(json.dumps(x['entries'],sort_keys=True).encode())} for x in value['trees']],'default_fields':len(value['defaults']),'tool_fields':len(value['tools']),'sharing_identity_count':len(value['sharing']),'old_failed_root_absent':value['old_failed_root_absent']})
+-        save(HERE/'local-prior-preservation.json',json.loads(mask(json.dumps({'equal':current==self.prior,'before_sha256':sha(json.dumps(self.prior,sort_keys=True).encode()),'after_sha256':sha(json.dumps(current,sort_keys=True).encode()),'original_inventory_files':len(self.prior),'full_manifests_retained_privately':True}))))
+         self.result['controller_exit']=0 if self.result['passed'] else 1
+-        save(self.private/'result.json',self.result);save(HERE/'result.json',json.loads(mask(json.dumps(self.result))))
++        save(self.private/'result.json',self.result)
++        files=[]
++        for p in sorted(self.private.rglob('*')):
++            if p.is_file():
++                data=p.read_bytes();files.append({'path':str(p.relative_to(self.private)),
++                    'bytes':len(data),'sha256':sha(data)})
++        save(self.private/'data-receipts.json',{'files':files,'raw_records_remain_private':True})
+ 
+     def run(self):
+-        self.bind_retained();self.setup()
++        self.bind_source();self.setup()
+         rec,_=self.stage('qualify',600);self.result['qualification_exit']=rec['exit_code']
+         if rec['exit_code']==0:
+-            self.result['runtime_stage_attempts']+=1
+-            rec,_=self.stage('runtime',150+30);self.result['runtime_exit']=rec['exit_code']
++            self.result['compiler_stage_attempts']+=1
++            rec,_=self.stage('build',660);self.result['build_exit']=rec['exit_code']
++            if rec['exit_code']==0:
++                self.result['runtime_stage_attempts']+=1
++                rec,_=self.stage('runtime',150+30);self.result['runtime_exit']=rec['exit_code']
+         self.collect()
+-        self.result['passed']=all(self.result.get(x)==0 for x in ('qualification_exit','runtime_exit','postflight_exit','cleanup_exit')) and self.result['cleanup']['owned_root_removed']
++        self.result['passed']=all(self.result.get(x)==0 for x in ('qualification_exit','build_exit','runtime_exit','postflight_exit','cleanup_exit')) and self.result['cleanup']['owned_root_removed']
+ 
+ if __name__=='__main__':
+     workflow=Controller();code=0
+--- a/docs/verification/release-integration-2026-10-23/windows-stop-controller-repair-r2-dbcc0160/source/qualify.ps1.txt
++++ b/docs/verification/release-integration-2026-10-23/windows-prerequisite-recovery-r5-86e0bfd1/source/qualify.ps1.txt
+@@ -4,7 +4,7 @@
+ $inputs=Get-Content -Raw -LiteralPath (Join-Path $root 'transfer-manifest.json')|ConvertFrom-Json
+ $transferred=@(foreach($e in $inputs.files){$f=Get-Item -LiteralPath (Join-Path $root $e.path);$h=Hash $f.FullName;if($f.Length -ne $e.bytes -or $h -ne $e.sha256){throw ('transfer size/hash mismatch: '+$e.path)};[ordered]@{path=$e.path;bytes=$f.Length;sha256=$h}})
+ Save 'transfer-confirmed.json' ([ordered]@{files=$transferred;all_match=$true;scp_completed_before_control=$true;control_stdin_payload=$false;recorded_utc=[DateTime]::UtcNow.ToString('o')})
+-foreach($n in @('common.ps1','qualify.ps1','runtime.ps1','postflight.ps1')){$tokens=$null;$errors=$null;$null=[Management.Automation.Language.Parser]::ParseFile((Join-Path $root $n),[ref]$tokens,[ref]$errors);if($errors.Count){throw ($errors|Out-String)}}
++foreach($n in @('common.ps1','qualify.ps1','build.ps1','runtime.ps1','postflight.ps1')){$tokens=$null;$errors=$null;$null=[Management.Automation.Language.Parser]::ParseFile((Join-Path $root $n),[ref]$tokens,[ref]$errors);if($errors.Count){throw ($errors|Out-String)}}
+ $manifest=Get-Content -Raw -LiteralPath (Join-Path $root 'source-manifest.json')|ConvertFrom-Json
+ if($manifest.schema -ne 'openergy.windows-build-source.v1' -or $manifest.source_commit -ne 'e1ef1243988d072cb9afc33fd2f5a56ca70e2f5a' -or $manifest.module_sha256 -ne '9cd3475f9c13c8e28ea54e0f344b55ae795267b22ea1676c45e5659a64f1f1d4'){throw 'source schema/commit/module mismatch'}
+ if($manifest.files.Count -ne 558){throw 'incomplete relevant source export'}
+@@ -18,11 +18,19 @@
+ $before=Shared
+ if(-not $before.old_failed_root_absent){throw 'old failed root unexpectedly exists'}
+ Save 'shared-before.json' $before
+-# Reuse the exact saved binary; no registry copy or compiler/version command.
+-$build=Get-Content -Raw -LiteralPath (Join-Path $root 'retained-build-result.json')|ConvertFrom-Json
+-$binary=Join-Path $root 'openergy.exe'
+-if(-not $build.passed -or $build.source_commit -ne $manifest.source_commit -or $build.artifact.bytes -ne 4139520 -or $build.artifact.sha256 -ne '4984ef1222bbcd551dbebdda9db2fc623ff42a3560c5261806f09ad8f3dbda2f' -or (Get-Item -LiteralPath $binary).Length -ne 4139520 -or (Hash $binary) -ne $build.artifact.sha256){throw 'retained verified binary prerequisite failed; no rebuild'}
++if(@(Get-Process -Name cargo,rustc,cargo-clippy,clippy-driver -ErrorAction SilentlyContinue).Count){throw 'another build is active'}
++$cargoHome=Join-Path $root 'cargo-home';New-Item -ItemType Directory -Path $cargoHome|Out-Null
++Copy-Item -LiteralPath $registry -Destination (Join-Path $cargoHome 'registry') -Recurse -Force
++$original=@($before.trees|Where-Object {$_.label -eq 'original-registry'})[0]
++$copy=Snapshot 'private-registry-copy' (Join-Path $cargoHome 'registry')
++if($copy.entries.Count -ne $original.entries.Count){throw 'cache copy count mismatch'}
++$byPath=@{};foreach($e in $copy.entries){$byPath[$e.path]=$e}
++foreach($e in $original.entries){$a=$byPath[$e.path];if(-not $a -or $a.directory -ne $e.directory -or (-not $e.directory -and ($a.bytes -ne $e.bytes -or $a.sha256 -ne $e.sha256))){throw 'cache copy bytes mismatch'}}
++Get-ChildItem -LiteralPath (Join-Path $cargoHome 'registry/src') -File -Recurse -Force|ForEach-Object {$_.IsReadOnly=$true}
+ New-Item -ItemType Directory -Path (Join-Path $root 'temp')|Out-Null
+-Save 'qualification.json' ([ordered]@{passed=$true;source_commit=$manifest.source_commit;archive_sha256=$manifest.archive_sha256;module_sha256=$manifest.module_sha256;source_files=$manifest.files.Count;artifact_sha256=(Hash $binary);reused_binary=$true;compiler_invocations=0;credentials_or_global_config_copied=$false;session=(Get-Process -Id $PID).SessionId;priority=(Get-Process -Id $PID).PriorityClass.ToString();runtime_invocations=0})
++$env:TEMP=Join-Path $root 'temp';$env:TMP=$env:TEMP
++$rustc=@(& (Join-Path $toolRoot 'rustc.exe') -vV);if($LASTEXITCODE -ne 0 -or $rustc[0] -notmatch '^rustc 1\.99\.1 '){throw 'native rustc version mismatch'}
++$cargo=@(& (Join-Path $toolRoot 'cargo.exe') -V);if($LASTEXITCODE -ne 0 -or $cargo[0] -notmatch '^cargo 1\.99\.1 '){throw 'cargo identity unavailable or wrong version'}
++Save 'qualification.json' ([ordered]@{passed=$true;source_commit=$manifest.source_commit;archive_sha256=$manifest.archive_sha256;module_sha256=$manifest.module_sha256;source_files=$manifest.files.Count;private_cache_files=$copy.files;credentials_or_global_config_copied=$false;rustc=$rustc;cargo=$cargo;session=(Get-Process -Id $PID).SessionId;priority=(Get-Process -Id $PID).PriorityClass.ToString();runtime_invocations=0})
+ Save 'qualification-controller.json' (Ancestors (Get-Process -Id $PID))
+-Write-Output 'QUALIFIED_RETAINED_BINARY_NO_BUILD'
++Write-Output 'QUALIFIED_CURRENT_SOURCE_AND_NATIVE_ENVIRONMENT'
+--- a/docs/verification/release-integration-2026-10-23/windows-stop-controller-repair-r2-dbcc0160/source/runtime.ps1.txt
++++ b/docs/verification/release-integration-2026-10-23/windows-prerequisite-recovery-r5-86e0bfd1/source/runtime.ps1.txt
+@@ -2,8 +2,8 @@
+ $stageStart=[Diagnostics.Stopwatch]::GetTimestamp();$stageDeadline=$stageStart+150L*[Diagnostics.Stopwatch]::Frequency
+ if(Test-Path -LiteralPath (Join-Path $root 'runtime-once.guard')){throw 'runtime already attempted; no retry'}
+ $guard=[IO.File]::Open((Join-Path $root 'runtime-once.guard'),[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None);$guard.Dispose()
+-$build=Get-Content -Raw -LiteralPath (Join-Path $root 'retained-build-result.json')|ConvertFrom-Json
+-if(-not $build.passed -or $build.source_commit -ne 'e1ef1243988d072cb9afc33fd2f5a56ca70e2f5a' -or $build.artifact.bytes -ne 4139520 -or $build.artifact.sha256 -ne '4984ef1222bbcd551dbebdda9db2fc623ff42a3560c5261806f09ad8f3dbda2f'){throw 'exact retained build receipt required'}
++$build=Get-Content -Raw -LiteralPath (Join-Path $root 'build-result.json')|ConvertFrom-Json
++if(-not $build.passed -or $build.schema -ne 'openergy.fresh-release-build.v1' -or $build.source_commit -ne 'e1ef1243988d072cb9afc33fd2f5a56ca70e2f5a' -or $build.source_manifest_sha256 -ne (Hash (Join-Path $root 'source-manifest.json')) -or $build.archive_sha256 -ne (Hash (Join-Path $root 'source.tar')) -or $build.steps.Count -ne 1 -or $build.steps[0].name -ne 'release' -or $build.steps[0].exit_code -ne 0 -or $build.steps[0].timed_out -or $build.jobs -ne 2 -or -not $build.artifact.amd64_pe32plus -or $build.artifact.bytes -le 0){throw 'fresh pinned release build receipt required'}
+ $binary=Join-Path $root 'openergy.exe'
+ if((Hash $binary) -ne $build.artifact.sha256 -or (Get-Item -LiteralPath $binary).Length -ne $build.artifact.bytes){throw 'runtime artifact binding failed'}
+ $run=Join-Path $root 'runtime';New-Item -ItemType Directory -Path $run|Out-Null
+@@ -41,7 +41,7 @@
+ Save 'runtime-controller.json' (Ancestors $controller)
+ $script:children=[Collections.Generic.List[object]]::new();$script:exchanges=[Collections.Generic.List[object]]::new();$script:daemon=$null
+ $script:stopDeadline=0L;$script:daemonExitTicks=0L;$script:stopCalls=0;$script:stopExchange=$null
+-$result=[ordered]@{passed=$false;source_commit=$build.source_commit;artifact=[ordered]@{path=$binary;bytes=$build.artifact.bytes;sha256=$build.artifact.sha256;reused_verified_binary=$true};original_build_receipt_sha256=(Hash (Join-Path $root 'retained-build-result.json'));controller=$controllerIdentity;bounds=[ordered]@{readiness_seconds=15;cli_seconds=15;normal_exit_seconds=10;runtime_stage_seconds=150;owned_recovery_seconds=15};frequency=[Diagnostics.Stopwatch]::Frequency;clock='Windows QPC / Stopwatch.GetTimestamp in the same native PowerShell controller and observer';timing_limit='Includes transparent pipe observer and scheduling. Request forwarding is bounded by before/after ticks. Response read is controller receipt, not daemon send. OS exit is first retained-handle observation, not kernel exit timestamp. No cross-platform or speedup claim.';daemon_pipe=$daemonPipe;observer_pipe=$relayPipe;config_sha256=(Hash $config);environment=[ordered]@{USERPROFILE=$env:USERPROFILE;APPDATA=$env:APPDATA;LOCALAPPDATA=$env:LOCALAPPDATA;XDG_CONFIG_HOME=$env:XDG_CONFIG_HOME;XDG_DATA_HOME=$env:XDG_DATA_HOME;XDG_CACHE_HOME=$env:XDG_CACHE_HOME;XDG_RUNTIME_DIR=$env:XDG_RUNTIME_DIR;TEMP=$env:TEMP;TMP=$env:TMP;OPENERGY_CONFIG=$env:OPENERGY_CONFIG;OPENERGY_SOCKET=$env:OPENERGY_SOCKET;OPENERGY_DISABLE_DISCOVERY=$env:OPENERGY_DISABLE_DISCOVERY;OPENERGY_ALLOW_PORT_24800=$env:OPENERGY_ALLOW_PORT_24800};requests=@();stops_sent=0;recovery=@();jobs_created=0;process_groups_created=0;desktop_or_windowstation_changed=$false}
++$result=[ordered]@{passed=$false;source_commit=$build.source_commit;artifact=[ordered]@{path=$binary;bytes=$build.artifact.bytes;sha256=$build.artifact.sha256;fresh_release_binary=$true};fresh_build_receipt_sha256=(Hash (Join-Path $root 'build-result.json'));controller=$controllerIdentity;bounds=[ordered]@{readiness_seconds=15;cli_seconds=15;normal_exit_seconds=10;runtime_stage_seconds=150;owned_recovery_seconds=15};frequency=[Diagnostics.Stopwatch]::Frequency;clock='Windows QPC / Stopwatch.GetTimestamp in the same native PowerShell controller and observer';timing_limit='Includes transparent pipe observer and scheduling. Request forwarding is bounded by before/after ticks. Response read is controller receipt, not daemon send. OS exit is first retained-handle observation, not kernel exit timestamp. No cross-platform or speedup claim.';daemon_pipe=$daemonPipe;observer_pipe=$relayPipe;config_sha256=(Hash $config);environment=[ordered]@{USERPROFILE=$env:USERPROFILE;APPDATA=$env:APPDATA;LOCALAPPDATA=$env:LOCALAPPDATA;XDG_CONFIG_HOME=$env:XDG_CONFIG_HOME;XDG_DATA_HOME=$env:XDG_DATA_HOME;XDG_CACHE_HOME=$env:XDG_CACHE_HOME;XDG_RUNTIME_DIR=$env:XDG_RUNTIME_DIR;TEMP=$env:TEMP;TMP=$env:TMP;OPENERGY_CONFIG=$env:OPENERGY_CONFIG;OPENERGY_SOCKET=$env:OPENERGY_SOCKET;OPENERGY_DISABLE_DISCOVERY=$env:OPENERGY_DISABLE_DISCOVERY;OPENERGY_ALLOW_PORT_24800=$env:OPENERGY_ALLOW_PORT_24800};requests=@();stops_sent=0;recovery=@();jobs_created=0;process_groups_created=0;desktop_or_windowstation_changed=$false}
+ Save 'runtime-start.json' $result
+ function Pipe-Exists($name){@([IO.Directory]::EnumerateFiles('\\.\pipe\')|Where-Object {[IO.Path]::GetFileName($_) -eq $name}).Count -gt 0}
+ function Port-State($phase){
+--- a/docs/verification/release-integration-2026-10-23/windows-stop-controller-repair-r2-dbcc0160/source/postflight.ps1.txt
++++ b/docs/verification/release-integration-2026-10-23/windows-prerequisite-recovery-r5-86e0bfd1/source/postflight.ps1.txt
+@@ -7,7 +7,7 @@
+ $items=@((Get-Item -LiteralPath $root))+@(Get-ChildItem -LiteralPath $root -Recurse -Force)
+ $bad=@(foreach($i in $items){$acl=Get-Acl -LiteralPath $i.FullName;$rules=@($acl.Access);if(($i.Attributes -band [IO.FileAttributes]::ReparsePoint) -or $rules.Count -ne 1 -or $rules[0].AccessControlType -ne 'Allow' -or $rules[0].IdentityReference.Translate([Security.Principal.SecurityIdentifier]).Value -ne $sid){$i.FullName}})
+ $owned=Owned-Processes
+-$samples=@(foreach($n in @('clippy','release')){$p=Join-Path $root ($n+'-processes.json');if(Test-Path -LiteralPath $p){Get-Content -Raw -LiteralPath $p|ConvertFrom-Json}})
++$samples=@(foreach($n in @('release')){$p=Join-Path $root ($n+'-processes.json');if(Test-Path -LiteralPath $p){Get-Content -Raw -LiteralPath $p|ConvertFrom-Json}})
+ $names=@($samples|Select-Object -ExpandProperty name -Unique)
+ $priorityBad=@($samples|Where-Object {$_.priority -ne 'BelowNormal' -or $_.session -ne 0})
+ $actualProof=@(foreach($n in @('cargo.exe','rustc.exe','link.exe')){[ordered]@{name=$n;observed=($n -in $names);samples=@($samples|Where-Object {$_.name -eq $n}).Count}})
+@@ -24,7 +24,7 @@
+ Save 'postflight.json' $record
+ if(Test-Path -LiteralPath (Join-Path $root 'runtime/config/openergy.log')){Copy-Item -LiteralPath (Join-Path $root 'runtime/config/openergy.log') -Destination (Join-Path $root 'runtime-daemon.log')}
+ if(Test-Path -LiteralPath (Join-Path $root 'runtime/config/config.toml')){Copy-Item -LiteralPath (Join-Path $root 'runtime/config/config.toml') -Destination (Join-Path $root 'runtime-config.toml')}
+-$files=@(Get-ChildItem -LiteralPath $root -File|Where-Object {$_.Extension -in @('.json','.stdout','.stderr','.guard','.log','.toml') -and $_.Name -notin @('state.json','transfer-manifest.json')})
++$files=@(Get-ChildItem -LiteralPath $root -File|Where-Object {$_.Extension -in @('.json','.stdout','.stderr','.guard','.log','.toml','.ps1','.cs')})
+ $manifest=@($files|ForEach-Object {[ordered]@{path=$_.Name;bytes=$_.Length;sha256=(Hash $_.FullName)}})
+ Save 'evidence-manifest.json' $manifest
+ $names=@($files.Name)+@('evidence-manifest.json')
+--- a/docs/verification/release-integration-2026-10-23/daemon-stop-native-windows-c8a3489c/build.ps1
++++ b/docs/verification/release-integration-2026-10-23/windows-prerequisite-recovery-r5-86e0bfd1/source/build.ps1.txt
+@@ -1,7 +1,7 @@
+ . (Join-Path $PSScriptRoot 'common.ps1')
+ if(-not (Get-Content -Raw -LiteralPath (Join-Path $root 'qualification.json')|ConvertFrom-Json).passed){throw 'source qualification required'}
+ if(Test-Path -LiteralPath (Join-Path $root 'build-once.guard')){throw 'build already attempted; no retry'}
+-[IO.File]::WriteAllText((Join-Path $root 'build-once.guard'),[DateTime]::UtcNow.ToString('o'))
++$guard=[IO.File]::Open((Join-Path $root 'build-once.guard'),[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None);$guard.Dispose()
+ $env:CARGO_HOME=Join-Path $root 'cargo-home'
+ $env:CARGO_TARGET_DIR=Join-Path $root 'target'
+ $env:CARGO_BUILD_JOBS='2';$env:CARGO_NET_OFFLINE='true'
+@@ -22,9 +22,9 @@
+ $env:AR_x86_64_pc_windows_msvc=Join-Path $msvcBin 'lib.exe'
+ $env:OPENERGY_DISABLE_DISCOVERY='1';$env:OPENERGY_ALLOW_PORT_24800='0'
+ $base=@('--locked','--offline','--release','--target','x86_64-pc-windows-msvc','--jobs','2','-p','openergy-daemon','--bin','openergy')
+-$steps=@(@{name='clippy';arguments=(@('clippy')+$base+@('--','-D','warnings'))},@{name='release';arguments=(@('build')+$base)})
++$steps=@(@{name='release';arguments=(@('build')+$base)})
+ function Same-Time($a,$b){[Math]::Abs(($a.ToUniversalTime()-$b.ToUniversalTime()).TotalMilliseconds) -lt 2}
+-$result=[ordered]@{source_commit='e1ef1243988d072cb9afc33fd2f5a56ca70e2f5a';started_utc=[DateTime]::UtcNow.ToString('o');session=(Get-Process -Id $PID).SessionId;priority=(Get-Process -Id $PID).PriorityClass.ToString();jobs=2;native_target='x86_64-pc-windows-msvc';msvc=$msvc;sdk_version=$sdkVersion;child_only_environment=[ordered]@{CARGO_HOME=$env:CARGO_HOME;CARGO_TARGET_DIR=$env:CARGO_TARGET_DIR;RUSTC=$env:RUSTC;INCLUDE=$env:INCLUDE;LIB=$env:LIB;LIBPATH=$env:LIBPATH;linker=$env:CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_LINKER;cc=$env:CC_x86_64_pc_windows_msvc;ar=$env:AR_x86_64_pc_windows_msvc;TEMP=$env:TEMP};steps=@();runtime_invocations=0;binary_executed=$false;passed=$false}
++$result=[ordered]@{schema='openergy.fresh-release-build.v1';source_manifest_sha256=(Hash (Join-Path $root 'source-manifest.json'));archive_sha256=(Hash (Join-Path $root 'source.tar'));source_commit='e1ef1243988d072cb9afc33fd2f5a56ca70e2f5a';started_utc=[DateTime]::UtcNow.ToString('o');session=(Get-Process -Id $PID).SessionId;priority=(Get-Process -Id $PID).PriorityClass.ToString();jobs=2;native_target='x86_64-pc-windows-msvc';msvc=$msvc;sdk_version=$sdkVersion;child_only_environment=[ordered]@{CARGO_HOME=$env:CARGO_HOME;CARGO_TARGET_DIR=$env:CARGO_TARGET_DIR;RUSTC=$env:RUSTC;INCLUDE=$env:INCLUDE;LIB=$env:LIB;LIBPATH=$env:LIBPATH;linker=$env:CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_LINKER;cc=$env:CC_x86_64_pc_windows_msvc;ar=$env:AR_x86_64_pc_windows_msvc;TEMP=$env:TEMP};steps=@();runtime_invocations=0;binary_executed=$false;passed=$false}
+ Save 'build-start.json' $result
+ Save 'build-controller.json' (Ancestors (Get-Process -Id $PID))
+ foreach($step in $steps){
+@@ -79,7 +79,11 @@
+ $f=Get-Item -LiteralPath $binary
+ $result.artifact=[ordered]@{path=$binary;bytes=$f.Length;sha256=(Hash $binary);executed=$false}
+ $pe=[IO.File]::ReadAllBytes($binary);$peOffset=[BitConverter]::ToInt32($pe,60);if($pe[0] -ne 77 -or $pe[1] -ne 90 -or [BitConverter]::ToUInt32($pe,$peOffset) -ne 17744 -or [BitConverter]::ToUInt16($pe,$peOffset+4) -ne 34404 -or [BitConverter]::ToUInt16($pe,$peOffset+24) -ne 523){throw 'not AMD64 PE32+'};$result.artifact.amd64_pe32plus=$true
++Copy-Item -LiteralPath $binary -Destination (Join-Path $root 'openergy.exe')
++$runtimeBinary=Join-Path $root 'openergy.exe'
++if((Hash $runtimeBinary) -ne $result.artifact.sha256 -or (Get-Item -LiteralPath $runtimeBinary).Length -ne $result.artifact.bytes){throw 'fresh runtime copy differs'}
++$result.artifact.path=$runtimeBinary
+ Save 'source-after-build.json' (Assert-Source)
+ $result.passed=$true;$result.ended_utc=[DateTime]::UtcNow.ToString('o')
+ Save 'build-result.json' $result
+-Write-Output 'NATIVE_WINDOWS_CLIPPY_AND_BUILD_PASS_NO_RUNTIME'
++Write-Output 'ONE_FRESH_NATIVE_RELEASE_BUILD_PASS_NO_RUNTIME'
