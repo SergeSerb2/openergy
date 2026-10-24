@@ -1,0 +1,220 @@
+{
+  "started_utc": "2026-10-24T01:11:25.6207805Z",
+  "root": "C:\\Users\\serge\\AppData\\Local\\Temp\\oe-appdns-prep-20261023-1ac50255-a447cb28",
+  "parent_pid": 4816,
+  "parent_priority": "BelowNormal",
+  "session": 0,
+  "sdk": "10.0.26100.0",
+  "msvc": "14.44.35207",
+  "jobs": 1,
+  "jobs_limit": 2,
+  "offline": true,
+  "package_managers_used": false,
+  "generated_executable_runs": 0,
+  "settings_api_calls": 0,
+  "query_api_calls": 0,
+  "socket_binds": 0,
+  "unit_tests": 0,
+  "mocks": 0,
+  "max_tool_seconds": 8,
+  "total_build_budget_seconds": 40,
+  "inputs_before": [
+    {
+      "path": "C:\\Users\\serge\\AppData\\Local\\Temp\\oe-appdns-prep-20261023-1ac50255-a447cb28\\qualify.c",
+      "sha256": "9d99aba050cec623cd0cf15be4d23b1ca093f4e0d7da21408cee67b8ed8c9845"
+    },
+    {
+      "path": "C:\\Users\\serge\\AppData\\Local\\Temp\\oe-appdns-prep-20261023-1ac50255-a447cb28\\qualify.manifest",
+      "sha256": "39e14d73beaa1cf85e4f7752cff6833f1dfe4f301ee12239b46743969025833b"
+    },
+    {
+      "path": "C:\\Users\\serge\\AppData\\Local\\Temp\\oe-appdns-prep-20261023-1ac50255-a447cb28\\native-build.ps1",
+      "sha256": "2dde1269515ca57148f4f9f83a6ea1b70fdb21677b7a9f56d08e1659ccf56645"
+    },
+    {
+      "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+      "sha256": "88c8344236a27a6e727e0a8edc49aaa2690bdc7a9464b9d18cc7abe70a9f1c0d"
+    },
+    {
+      "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\c1.dll",
+      "sha256": "48bb561939cfd8fbf194bb73b111b2083912da4fb81af2c181cbe8f4b89e5ad1"
+    },
+    {
+      "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\c2.dll",
+      "sha256": "98050f97d60f7e95fcaf3525a7103e4818fba498a43563922476819ce88ed162"
+    },
+    {
+      "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\link.exe",
+      "sha256": "ca11e6c45debd34bf652dfe984c5360a531a005ed78bf72852330c9c2590cf0d"
+    },
+    {
+      "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\dumpbin.exe",
+      "sha256": "12a1cd87238bd66dfdb788b4fcdcb91ce4b3f81236aab12a7a29e5ae1d85af50"
+    },
+    {
+      "path": "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\um\\WinDNS.h",
+      "sha256": "b1586ec874ee2892216035b819f5a88c4c8f5e967590c7510213791b96f2666e"
+    },
+    {
+      "path": "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\shared\\windnsdef.h",
+      "sha256": "905489cca8b6b1b3a796bd715fdbafa2eef251aa651b848e88427e62e75ffa7a"
+    },
+    {
+      "path": "C:\\Program Files (x86)\\Windows Kits\\10\\Lib\\10.0.26100.0\\um\\x64\\dnsapi.lib",
+      "sha256": "d87c742af0ce8ca568ba7a9de2da62cc095b489ff57c37246dafe82f8ec2488f"
+    },
+    {
+      "path": "C:\\WINDOWS\\System32\\dnsapi.dll",
+      "sha256": "04b89bc0167449976af65b7fa04c0d513f7d86e1ffcd9fe490f0aafc5addc4c9"
+    }
+  ],
+  "passed": true,
+  "installed_dll_export_lines": "         93   52 00052790 DnsFreeCustomServers\r\n        110   63 00064370 DnsGetApplicationSettings\r\n        217   CF 00084920 DnsSetApplicationSettings\r",
+  "artifact": {
+    "path": "C:\\Users\\serge\\AppData\\Local\\Temp\\oe-appdns-prep-20261023-1ac50255-a447cb28\\qualify.exe",
+    "bytes": 506880,
+    "sha256": "7f27ee5675ee3b3fe4cbd6579c5efff86a55ca55a9afe60bbc4dec91627b2459",
+    "executed": false
+  },
+  "object": {
+    "bytes": 71859,
+    "sha256": "c742bc5c2d7e6a132df1274a9a49c8b5608148a8a12c7b068df993e221e22cc4"
+  },
+  "inputs_after": [
+    {
+      "path": "C:\\Users\\serge\\AppData\\Local\\Temp\\oe-appdns-prep-20261023-1ac50255-a447cb28\\qualify.c",
+      "sha256": "9d99aba050cec623cd0cf15be4d23b1ca093f4e0d7da21408cee67b8ed8c9845"
+    },
+    {
+      "path": "C:\\Users\\serge\\AppData\\Local\\Temp\\oe-appdns-prep-20261023-1ac50255-a447cb28\\qualify.manifest",
+      "sha256": "39e14d73beaa1cf85e4f7752cff6833f1dfe4f301ee12239b46743969025833b"
+    },
+    {
+      "path": "C:\\Users\\serge\\AppData\\Local\\Temp\\oe-appdns-prep-20261023-1ac50255-a447cb28\\native-build.ps1",
+      "sha256": "2dde1269515ca57148f4f9f83a6ea1b70fdb21677b7a9f56d08e1659ccf56645"
+    },
+    {
+      "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+      "sha256": "88c8344236a27a6e727e0a8edc49aaa2690bdc7a9464b9d18cc7abe70a9f1c0d"
+    },
+    {
+      "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\c1.dll",
+      "sha256": "48bb561939cfd8fbf194bb73b111b2083912da4fb81af2c181cbe8f4b89e5ad1"
+    },
+    {
+      "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\c2.dll",
+      "sha256": "98050f97d60f7e95fcaf3525a7103e4818fba498a43563922476819ce88ed162"
+    },
+    {
+      "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\link.exe",
+      "sha256": "ca11e6c45debd34bf652dfe984c5360a531a005ed78bf72852330c9c2590cf0d"
+    },
+    {
+      "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\dumpbin.exe",
+      "sha256": "12a1cd87238bd66dfdb788b4fcdcb91ce4b3f81236aab12a7a29e5ae1d85af50"
+    },
+    {
+      "path": "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\um\\WinDNS.h",
+      "sha256": "b1586ec874ee2892216035b819f5a88c4c8f5e967590c7510213791b96f2666e"
+    },
+    {
+      "path": "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\shared\\windnsdef.h",
+      "sha256": "905489cca8b6b1b3a796bd715fdbafa2eef251aa651b848e88427e62e75ffa7a"
+    },
+    {
+      "path": "C:\\Program Files (x86)\\Windows Kits\\10\\Lib\\10.0.26100.0\\um\\x64\\dnsapi.lib",
+      "sha256": "d87c742af0ce8ca568ba7a9de2da62cc095b489ff57c37246dafe82f8ec2488f"
+    },
+    {
+      "path": "C:\\WINDOWS\\System32\\dnsapi.dll",
+      "sha256": "04b89bc0167449976af65b7fa04c0d513f7d86e1ffcd9fe490f0aafc5addc4c9"
+    }
+  ],
+  "inputs_unchanged": true,
+  "processes": [
+    {
+      "label": "compile",
+      "pid": 47404,
+      "executable": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+      "arguments": [
+        "/nologo",
+        "/std:c17",
+        "/W4",
+        "/WX",
+        "/Od",
+        "/Z7",
+        "/MT",
+        "/guard:cf",
+        "/c",
+        "/FoC:\\Users\\serge\\AppData\\Local\\Temp\\oe-appdns-prep-20261023-1ac50255-a447cb28\\qualify.obj",
+        "/FdC:\\Users\\serge\\AppData\\Local\\Temp\\oe-appdns-prep-20261023-1ac50255-a447cb28\\qualify.pdb",
+        "C:\\Users\\serge\\AppData\\Local\\Temp\\oe-appdns-prep-20261023-1ac50255-a447cb28\\qualify.c"
+      ],
+      "timed_out": false,
+      "start_utc": "2026-10-24T01:11:25.6599949Z",
+      "observed_priority": "BelowNormal",
+      "exit_code": 0,
+      "exited": true
+    },
+    {
+      "label": "link",
+      "pid": 8248,
+      "executable": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\link.exe",
+      "arguments": [
+        "/nologo",
+        "/machine:x64",
+        "/subsystem:console",
+        "/incremental:no",
+        "/opt:noref",
+        "/dynamicbase",
+        "/nxcompat",
+        "/guard:cf",
+        "/manifest:embed",
+        "/manifestinput:C:\\Users\\serge\\AppData\\Local\\Temp\\oe-appdns-prep-20261023-1ac50255-a447cb28\\qualify.manifest",
+        "/out:C:\\Users\\serge\\AppData\\Local\\Temp\\oe-appdns-prep-20261023-1ac50255-a447cb28\\qualify.exe",
+        "C:\\Users\\serge\\AppData\\Local\\Temp\\oe-appdns-prep-20261023-1ac50255-a447cb28\\qualify.obj",
+        "kernel32.lib",
+        "ws2_32.lib",
+        "iphlpapi.lib"
+      ],
+      "timed_out": false,
+      "start_utc": "2026-10-24T01:11:26.1847793Z",
+      "observed_priority": "BelowNormal",
+      "exit_code": 0,
+      "exited": true
+    },
+    {
+      "label": "imports",
+      "pid": 5724,
+      "executable": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\dumpbin.exe",
+      "arguments": [
+        "/nologo",
+        "/imports",
+        "C:\\Users\\serge\\AppData\\Local\\Temp\\oe-appdns-prep-20261023-1ac50255-a447cb28\\qualify.exe"
+      ],
+      "timed_out": false,
+      "start_utc": "2026-10-24T01:11:26.4217260Z",
+      "observed_priority": "BelowNormal",
+      "exit_code": 0,
+      "exited": true
+    },
+    {
+      "label": "exports",
+      "pid": 35100,
+      "executable": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\dumpbin.exe",
+      "arguments": [
+        "/nologo",
+        "/exports",
+        "C:\\WINDOWS\\System32\\dnsapi.dll"
+      ],
+      "timed_out": false,
+      "start_utc": "2026-10-24T01:11:26.4702563Z",
+      "observed_priority": "BelowNormal",
+      "exit_code": 0,
+      "exited": true
+    }
+  ],
+  "elapsed_ms": 951,
+  "all_owned_tool_handles_observed_exited": true,
+  "finished_utc": "2026-10-24T01:11:26.5762910Z"
+}

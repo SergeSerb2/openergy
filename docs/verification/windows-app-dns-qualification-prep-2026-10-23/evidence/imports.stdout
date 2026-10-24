@@ -1,0 +1,147 @@
+
+Dump of file C:\Users\serge\AppData\Local\Temp\oe-appdns-prep-20261023-1ac50255-a447cb28\qualify.exe
+
+File Type: EXECUTABLE IMAGE
+
+  Section contains the following imports:
+
+    KERNEL32.dll
+             140063010 Import Address Table
+             140075668 Import Name Table
+                     0 time date stamp
+                     0 Index of first forwarder reference
+
+                         28D GetLastError
+                         37C HeapAlloc
+                         380 HeapFree
+                         2E4 GetProcessHeap
+                         241 GetCurrentProcess
+                         242 GetCurrentProcessId
+                         582 SetPriorityClass
+                         2D2 GetPriorityClass
+                         33D GetTickCount64
+                         1D4 FreeLibrary
+                         2A5 GetModuleHandleW
+                         2DD GetProcAddress
+                         3F6 LoadLibraryExW
+                         573 SetHandleInformation
+                          E6 CreateFileW
+                          9D CloseHandle
+                         383 HeapReAlloc
+                         385 HeapSize
+                         278 GetFileSizeEx
+                         4A6 ReadConsoleW
+                         4A9 ReadFile
+                         569 SetFilePointerEx
+                         52F SetConsoleCtrlHandler
+                         308 GetStringTypeW
+                         593 SetStdHandle
+                         55A SetEnvironmentVariableW
+                         1D3 FreeEnvironmentStringsW
+                         65F WriteConsoleW
+                         60F VerSetConditionMask
+                         509 RtlCaptureContext
+                         511 RtlLookupFunctionEntry
+                         518 RtlVirtualUnwind
+                         5FB UnhandledExceptionFilter
+                         5B8 SetUnhandledExceptionFilter
+                         5D8 TerminateProcess
+                         3B8 IsProcessorFeaturePresent
+                         481 QueryPerformanceCounter
+                         246 GetCurrentThreadId
+                         31A GetSystemTimeAsFileTime
+                         39A InitializeSListHead
+                         3B0 IsDebuggerPresent
+                         301 GetStartupInfoW
+                         517 RtlUnwindEx
+                         3A0 InterlockedPushEntrySList
+                         39E InterlockedFlushSList
+                         578 SetLastError
+                         157 EnterCriticalSection
+                         3F0 LeaveCriticalSection
+                         12F DeleteCriticalSection
+                         396 InitializeCriticalSectionAndSpinCount
+                         5EA TlsAlloc
+                         5EC TlsGetValue
+                         5EE TlsSetValue
+                         5EB TlsFree
+                         153 EncodePointer
+                         498 RaiseException
+                         513 RtlPcToFileHeader
+                         303 GetStdHandle
+                         660 WriteFile
+                         2A1 GetModuleFileNameW
+                         186 ExitProcess
+                         2A4 GetModuleHandleExW
+                         1FF GetCommandLineA
+                         200 GetCommandLineW
+                         329 GetTempPathW
+                         1C2 FlsAlloc
+                         1C4 FlsGetValue
+                         1C6 FlsSetValue
+                         1C3 FlsFree
+                         3BA IsThreadAFiber
+                         397 InitializeCriticalSectionEx
+                         61A VirtualProtect
+                         24C GetDateFormatW
+                         341 GetTimeFormatW
+                          B3 CompareStringW
+                         3E4 LCMapStringW
+                         291 GetLocaleInfoW
+                         3C0 IsValidLocale
+                         349 GetUserDefaultLCID
+                         17B EnumSystemLocalesW
+                         27A GetFileType
+                         1C8 FlushFileBuffers
+                         229 GetConsoleOutputCP
+                         225 GetConsoleMode
+                         245 GetCurrentThread
+                         44B OutputDebugStringW
+                         19D FindClose
+                         1A3 FindFirstFileExW
+                         1B4 FindNextFileW
+                         3BE IsValidCodePage
+                         1DB GetACP
+                         2C6 GetOEMCP
+                         1EA GetCPInfo
+                         423 MultiByteToWideChar
+                         64C WideCharToMultiByte
+                         262 GetEnvironmentStringsW
+                         516 RtlUnwind
+
+    WS2_32.dll
+             140063320 Import Address Table
+             140075978 Import Name Table
+                     0 time date stamp
+                     0 Index of first forwarder reference
+
+                             Ordinal   116
+                             Ordinal   115
+                             Ordinal    23
+                             Ordinal    21
+                             Ordinal    14
+                             Ordinal   111
+                             Ordinal     8
+                             Ordinal     7
+                             Ordinal     6
+                             Ordinal     3
+                             Ordinal     2
+                             Ordinal     9
+
+    IPHLPAPI.DLL
+             140063000 Import Address Table
+             140075658 Import Name Table
+                     0 time date stamp
+                     0 Index of first forwarder reference
+
+                          45 GetAdaptersAddresses
+
+  Summary
+
+        3000 .data
+        1000 .fptable
+        5000 .pdata
+       14000 .rdata
+        1000 .reloc
+        1000 .rsrc
+       62000 .text
