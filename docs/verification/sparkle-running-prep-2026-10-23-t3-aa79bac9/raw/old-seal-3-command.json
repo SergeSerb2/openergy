@@ -1,0 +1,34 @@
+{
+  "absolute_nice": 15,
+  "argv": [
+    "/usr/bin/codesign",
+    "--verify",
+    "--all-architectures",
+    "--strict",
+    "/private/tmp/oe-updater-fixture-915c0654-e982-43e4-be3e-a44fa05799eb/target/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Installer.xpc"
+  ],
+  "controller_sha256": "591a90166a877ef5694f913e2e8e3128f4dd56830649e928014038652e72a0d9",
+  "env": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_HOME": "/private/tmp/oe-updater-fixture-915c0654-e982-43e4-be3e-a44fa05799eb/build/cargo-home",
+    "CARGO_NET_OFFLINE": "true",
+    "CARGO_TARGET_DIR": "/private/tmp/oe-updater-fixture-915c0654-e982-43e4-be3e-a44fa05799eb/build/target",
+    "CFFIXED_USER_HOME": "/private/tmp/oe-updater-fixture-915c0654-e982-43e4-be3e-a44fa05799eb/build/home",
+    "CLANG_MODULE_CACHE_PATH": "/private/tmp/oe-updater-fixture-915c0654-e982-43e4-be3e-a44fa05799eb/build/modules",
+    "GIT_CONFIG_GLOBAL": "/dev/null",
+    "GIT_CONFIG_NOSYSTEM": "1",
+    "GIT_OPTIONAL_LOCKS": "0",
+    "HOME": "/private/tmp/oe-updater-fixture-915c0654-e982-43e4-be3e-a44fa05799eb/build/home",
+    "LANG": "C",
+    "MACOSX_DEPLOYMENT_TARGET": "15.0",
+    "PATH": "/Users/serge/.rustup/toolchains/1.99.1-aarch64-apple-darwin/bin:/Applications/Xcode.app/Contents/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "RUSTC": "/Users/serge/.rustup/toolchains/1.99.1-aarch64-apple-darwin/bin/rustc",
+    "SWIFT_MODULECACHE_PATH": "/private/tmp/oe-updater-fixture-915c0654-e982-43e4-be3e-a44fa05799eb/build/modules",
+    "TMPDIR": "/private/tmp/oe-updater-fixture-915c0654-e982-43e4-be3e-a44fa05799eb/build/tmp/",
+    "XDG_CACHE_HOME": "/private/tmp/oe-updater-fixture-915c0654-e982-43e4-be3e-a44fa05799eb/build/xdg",
+    "XDG_CONFIG_HOME": "/private/tmp/oe-updater-fixture-915c0654-e982-43e4-be3e-a44fa05799eb/build/xdg"
+  },
+  "scope": "file-only",
+  "timeout_seconds": 120
+}

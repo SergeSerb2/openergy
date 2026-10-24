@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/Users/serge/.t3/worktrees/openergy/t3-aa79bac9/docs/verification/sparkle-running-prep-2026-10-23-t3-aa79bac9/prepare-files.py", line 398, in <module>
+    main()
+  File "/Users/serge/.t3/worktrees/openergy/t3-aa79bac9/docs/verification/sparkle-running-prep-2026-10-23-t3-aa79bac9/prepare-files.py", line 195, in main
+    assert {str(p.relative_to(REPO)) for p in (REPO / 'apps/macos/Sources').rglob('*.swift')} == {
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

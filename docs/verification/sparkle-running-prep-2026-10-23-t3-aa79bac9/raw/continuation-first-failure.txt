@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/Users/serge/.t3/worktrees/openergy/t3-aa79bac9/docs/verification/sparkle-running-prep-2026-10-23-t3-aa79bac9/prepare-files.py", line 395, in <module>
+    main()
+  File "/Users/serge/.t3/worktrees/openergy/t3-aa79bac9/docs/verification/sparkle-running-prep-2026-10-23-t3-aa79bac9/prepare-files.py", line 180, in main
+    save(RAW / 'sandbox.json', {'profile': profile})
+  File "/Users/serge/.t3/worktrees/openergy/t3-aa79bac9/docs/verification/sparkle-running-prep-2026-10-23-t3-aa79bac9/prepare-files.py", line 46, in save
+    with p.open('x') as f:
+         ^^^^^^^^^^^
+  File "/Users/serge/.local/share/uv/python/cpython-3.11.15-macos-aarch64-none/lib/python3.11/pathlib.py", line 1044, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileExistsError: [Errno 17] File exists: '/Users/serge/.t3/worktrees/openergy/t3-aa79bac9/docs/verification/sparkle-running-prep-2026-10-23-t3-aa79bac9/raw/sandbox.json'

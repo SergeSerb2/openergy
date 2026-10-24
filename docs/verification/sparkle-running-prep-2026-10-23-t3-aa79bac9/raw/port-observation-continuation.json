@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "/usr/sbin/lsof",
+    "-nP",
+    "-iTCP:56327"
+  ],
+  "exit": 1,
+  "limit": "read-only absence observation; no reservation or future ownership proof",
+  "port": 56327,
+  "stderr": "lsof: WARNING: can't stat() smbfs file system /Volumes/.timemachine/192.168.1.70/BDF0E07C-80B3-4AB9-9F32-2C89F4F363B9/serge\n      Output information may be incomplete.\n      assuming \"dev=3600001a\" from mount table\n",
+  "stdout": ""
+}
