@@ -276,6 +276,13 @@ The launcher and whole arm64 app compile; the failed controller cache assertion
 and audit-output failures remain preserved. No fixture packaging, launch,
 running-target update or relaunch has run for this helper. Concrete file-only
 fixture preparation remains separate from execution approval.
+The [frozen file-only preparation](../sparkle-running-prep-2026-10-23-t3-aa79bac9/README.md)
+contains both private bundles, copied driver, signed ZIP/feed and a text-only
+operation. The disposable key is deleted. Its [operation review](../sparkle-running-prep-review-2026-10-23-t3-2c45371a.md)
+found three P2 controller issues: restart accounting, absolute I/O deadlines,
+and normal-quit scope on failure. The operation remains **DO-NOT-RUN** and
+unapproved. A source-only correction is in progress; artifact identity does
+not establish launch, handoff or relaunch acceptance.
 
 The [signing prerequisite check](../macos-signing-prerequisites-2026-10-23/README.md)
 records no Developer ID Application identity and no declared notary profile.
