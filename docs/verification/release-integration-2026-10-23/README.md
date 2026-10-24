@@ -175,9 +175,11 @@ The later [Sparkle-era history snapshot](source-history-sparkle-snapshot.md)
 covers pinned `8c9f0ab`, including Sparkle integration. Its non-merge scan retains
 exit 1 with 105 findings: 104 source-file SHA-256 records and one public
 verification key, with none unresolved. The merge-parent scan exits 0 with zero
-findings and accounts for all 22 parent pairs. Independent evidence audit is
-pending. This frozen patch-history scope excludes later commits and does not
-establish security clearance or secret-free historical snapshots.
+findings and accounts for all 22 parent pairs. The
+[independent audit](source-history-sparkle-saved-audit-c7c772c.md) finds no concrete
+P1/P2 and verifies every classification and location. It adds no scanner run.
+This frozen patch-history scope excludes later commits and does not establish
+security clearance or secret-free historical snapshots.
 
 The [current packaged macOS app flow](../macos-app-current-flow-2026-10-23/README.md)
 passes 25/25 model/IPC checks with private virtual daemons. The separate
@@ -221,10 +223,21 @@ shared-OS-state restoration.
 
 The [idle-TLS R2 audit](idle-tls-deadline-review-r2.md) found a Windows compilation
 defect in the new opt-in probe at `9f6625c`: it selects the Unix listener wrapper
-without a platform guard. A separate repair is in progress; that source is not
-integrated here. Its saved first-eligible-poll timeout and same-caller recovery
-checks pass, but the command remains **FAIL / exit 1** at immediate cleanup
-rebind. Later TIME_WAIT records do not identify that failure's cause.
+without a platform guard. The three-line fix in `06b9a13` is integrated here as
+`2c31b26`. The [R4 audit](idle-tls-deadline-review-r4-364663a9.md) finds no
+actionable P1/P2 and closes that defect in source. Fresh macOS release Clippy,
+build and format checks pass; the first Windows transfer stopped before any
+compiler ran. A separate corrected-transport build task remains in progress.
+The saved first-eligible-poll timeout and same-caller recovery checks pass, but
+the original command remains **FAIL / exit 1** at immediate cleanup rebind.
+Later TIME_WAIT records do not identify that failure's cause. The fixed source
+has no new runtime result.
+
+The [normal update-lifecycle source review](../macos-normal-update-lifecycle-source-review-2026-10-23-t3-ba2ba798.md)
+finds no concrete P1/P2. It requires independent observation of old-child exit
+and new private-config readiness before handoff acceptance. A supervisor stop
+log or cleared PID alone proves neither. No-argument fixture isolation remains
+under source/build preparation; no running-target update or relaunch has run.
 
 The [Windows witness design](windows-failed-replacement-workflow-design.md)
 establishes a public-API ordering limit: the worker may send before the caller
