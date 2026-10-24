@@ -199,7 +199,17 @@ was not rerun by this command.
 The [first connected-idle measurement](../macos-idle-resources-2026-10-23/README.md)
 failed in its launcher before app readiness. Its successful build and completed
 cleanup do not supply a resource baseline. The unchanged failure and scheduling
-deviation are preserved; a separate controller repair is in progress.
+deviation are preserved. The [second attempt](../macos-idle-resources-r2-2026-10-23/README.md)
+fixed launch identity and priority, but failed trusted readiness and strict port
+cleanup. The [third attempt](../macos-idle-resources-r3-2026-10-23/README.md)
+corrected the private peer-name verifier and passed all twelve app checks,
+including 31.519 seconds connected, disconnect and rejoin. Across 33 steady
+samples, app RSS was 12.75–12.828125 MiB and its daemon RSS was
+10.09375–10.140625 MiB. This headless model flow does not measure rendered UI.
+The overall result remains **FAILED**: peer stop exceeded the private one-second
+wait and the first exclusive port rebind failed. The [R4 audit](../macos-idle-resources-r3-source-evidence-review-2026-10-23-t3-4021ec78.md)
+found no concrete P1/P2. CPU conversion remains conditional; compiler interference,
+finite sampling and failed cleanup prevent performance or release acceptance.
 
 [Sparkle integration](../sparkle-integration-2026-10-23/README.md) and the signed
 empty Cloudflare feed are implemented and checked. The later
@@ -237,7 +247,30 @@ The [normal update-lifecycle source review](../macos-normal-update-lifecycle-sou
 finds no concrete P1/P2. It requires independent observation of old-child exit
 and new private-config readiness before handoff acceptance. A supervisor stop
 log or cleared PID alone proves neither. No-argument fixture isolation remains
-under source/build preparation; no running-target update or relaunch has run.
+under source/build preparation. Its [R2 review](../private-update-bootstrap-review-2026-10-23-t3-0a934f43.md)
+found two P2 defects: unreadable bundle metadata can reach normal startup, and
+the first app image enters Foundation before private-home setup. That candidate
+is not integrated. A separate source/build repair is in progress; no running-target
+update or relaunch has run.
+
+The [signing prerequisite check](../macos-signing-prerequisites-2026-10-23/README.md)
+records no Developer ID Application identity and no declared notary profile.
+The [selector review](../macos-signing-timestamp-source-review-2026-10-23-t3-fe292237.md)
+found that ambiguous Developer ID selectors could silently omit secure timestamps.
+The [signing-purpose repair](../macos-signing-purpose-2026-10-23/README.md)
+now requires explicit intent for ambiguous selectors and timestamps for distribution.
+Its [independent review](../macos-signing-purpose-source-evidence-review-r2-2026-10-23-t3-b1cef944.md)
+closes that P2 in source. Saved real ad-hoc signing and rejection flows pass;
+named signing, timestamp service, notarization and nonempty Downloader entitlement
+preservation remain unverified. No signing credential was used.
+
+The [slow-DNS prerequisite note](../slow-dns-fixture-prerequisites-2026-10-23-a3f15192.md)
+identifies a possible Windows application-DNS API. The [settings-only helper](../windows-app-dns-qualification-prep-2026-10-23/report.md)
+passed a native build and ABI checks, but all four execution proof gates remain
+closed. Its [source/saved-build review](../windows-app-dns-review-2a7756f-2026-10-23-f9e74c74.md)
+found no concrete P1/P2 and grants no runtime qualification. No helper execution,
+DNS API call, DNS bind or query ran. Resolver confinement and reset lifetime
+remain unverified.
 
 The [Windows witness design](windows-failed-replacement-workflow-design.md)
 establishes a public-API ordering limit: the worker may send before the caller
