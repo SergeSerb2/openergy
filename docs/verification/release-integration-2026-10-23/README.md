@@ -237,7 +237,12 @@ without a platform guard. The three-line fix in `06b9a13` is integrated here as
 `2c31b26`. The [R4 audit](idle-tls-deadline-review-r4-364663a9.md) finds no
 actionable P1/P2 and closes that defect in source. Fresh macOS release Clippy,
 build and format checks pass; the first Windows transfer stopped before any
-compiler ran. A separate corrected-transport build task remains in progress.
+compiler ran. A later [R5 local setup failure](idle-tls-windows-build-r5/README.md)
+also precedes remote work and remains preserved. The corrected
+[R6 native Windows workflow](idle-tls-windows-build-r6/README.md) passes strict
+release Clippy and release build on the exact fixed source. Its
+[independent audit](idle-tls-windows-build-r6-review-f7a7f33b.md) finds no actionable
+P1/P2 and adds no compiler or runtime execution.
 The saved first-eligible-poll timeout and same-caller recovery checks pass, but
 the original command remains **FAIL / exit 1** at immediate cleanup rebind.
 Later TIME_WAIT records do not identify that failure's cause. The fixed source
@@ -263,6 +268,14 @@ Its [independent review](../macos-signing-purpose-source-evidence-review-r2-2026
 closes that P2 in source. Saved real ad-hoc signing and rejection flows pass;
 named signing, timestamp service, notarization and nonempty Downloader entitlement
 preservation remain unverified. No signing credential was used.
+
+The later [absolute-priority repair and package run](../release-priority-2026-10-23/README.md)
+builds the combined arm64 app/daemon, packages and extracts it, verifies signatures,
+and passes both real virtual-IPC smoke flows. All 205 observed child processes
+have nice 15. The overall verification remains **FAILED**: copied Swift build
+state removed 114 old scratch-cache output entries. Their bytes and symlinks were
+restored from exact retained copies, and the first failure remains preserved.
+Full metadata restoration is unverified. No packaging retry or GUI launch ran.
 
 The [slow-DNS prerequisite note](../slow-dns-fixture-prerequisites-2026-10-23-a3f15192.md)
 identifies a possible Windows application-DNS API. The [settings-only helper](../windows-app-dns-qualification-prep-2026-10-23/report.md)
