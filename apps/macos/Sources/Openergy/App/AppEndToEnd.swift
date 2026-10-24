@@ -26,6 +26,14 @@ enum AppEndToEnd {
         func value(_ flag: String) -> String? {
             arguments.firstIndex(of: flag).flatMap { arguments.indices.contains($0 + 1) ? arguments[$0 + 1] : nil }
         }
+        let callerCancellation = arguments.contains("--caller-cancellation")
+        if callerCancellation {
+            guard ProcessInfo.processInfo.environment["OPENERGY_E2E_NO_RENDER"] == "1",
+                  ProcessInfo.processInfo.environment["OPENERGY_DISABLE_DISCOVERY"] == "1" else {
+                FileHandle.standardError.write(Data("Caller cancellation requires no rendering and discovery disabled.\n".utf8))
+                exit(64)
+            }
+        }
         guard let joinAddress = value("--join"), let hostPort = value("--host-port").flatMap(Int.init),
               validPort(hostPort), let remotePort = joinAddress.split(separator: ":").last.flatMap({ Int($0) }),
               joinAddress == "127.0.0.1:\(remotePort)", validPort(remotePort),
@@ -60,6 +68,12 @@ enum AppEndToEnd {
                 && model.config.server?.listen == "127.0.0.1:\(hostPort)"
             record("starts from safe off config", safeStart, "role=\(model.role.rawValue) remote=\(model.config.client?.remote ?? "nil")")
             guard safeStart else { finish(steps, outputDirectory, model: model) ; return }
+
+            if callerCancellation {
+                steps += await checkCallerCancellation(model)
+                finish(steps, outputDirectory, model: model)
+                return
+            }
 
             render(model, .layout, "01-layout-initial", outputDirectory)
             render(model, .advanced, "02-advanced", outputDirectory)
@@ -245,6 +259,132 @@ enum AppEndToEnd {
             finish(steps, outputDirectory, model: model)
         }
         if noRender { CFRunLoopRun() } else { NSApplication.shared.run() }
+    }
+
+    /// A finite real caller flow. No production client internals are inspected.
+    private static func checkCallerCancellation(_ model: AppModel) async -> [Step] {
+        var steps: [Step] = []
+        func record(_ name: String, _ passed: Bool, _ detail: String) {
+            steps.append(Step(name: name, passed: passed, detail: detail))
+            print("\(passed ? "PASS" : "FAIL")  \(name) — \(detail)")
+        }
+        guard let pid = model.supervisedDaemonPID, model.status.daemon?.pid == pid else {
+            record("caller owns daemon", false, "no matching supervised child")
+            return steps
+        }
+        let clock = ContinuousClock()
+        let begin = clock.now
+        let client = DaemonClient()
+        var stopped = false
+        // Each caller is explicitly cancelled; the outer controller also has a wall limit.
+        var callers: [Task<Void, Never>] = []
+        defer {
+            for caller in callers { caller.cancel() }
+            if stopped { _ = kill(pid, SIGCONT) }
+            client.disconnect()
+        }
+        var completions: [Int: Int] = [:]
+        var outcomes: [Int: String] = [:]
+        var events: [String] = []
+        var disconnects = 0
+        client.onDisconnect = { _ in disconnects += 1 }
+        client.onEvent = { name, data in
+            if name == "config.changed", let marker = data["config"]?["name"]?.stringValue {
+                events.append(marker)
+            }
+        }
+        do {
+            // This instance connects exactly once and survives every cancellation.
+            try await client.connect(path: DaemonSupervisor.socketPath)
+            let subscribed = try await client.call("events.subscribe", timeout: .seconds(2))
+            record("caller subscribes", subscribed["subscribed"] == true, "pid=\(pid) connected=\(client.isConnected)")
+            var expectedEvents: [String] = []
+            for cycle in 1...3 {
+                guard kill(pid, SIGSTOP) == 0 else {
+                    record("caller stop \(cycle)", false, "could not stop owned child")
+                    return steps
+                }
+                stopped = true
+                let acknowledged = await waitUntil(seconds: 0.5) { ownedChildIsStopped(pid) }
+                record("caller stop \(cycle)", acknowledged, "pid=\(pid) stopped=\(acknowledged)")
+                guard acknowledged else { return steps }
+                let cancelledMarker = "caller-cancelled-\(cycle)"
+                let healthyMarker = "caller-healthy-\(cycle)"
+                var entered = false
+                let caller = Task { @MainActor in
+                    entered = true
+                    do {
+                        try await client.call("config.patch", ["patch": ["name": .string(cancelledMarker)]], timeout: .seconds(2))
+                        outcomes[cycle] = "success"
+                    } catch is CancellationError {
+                        outcomes[cycle] = "CancellationError"
+                    } catch {
+                        outcomes[cycle] = error.localizedDescription
+                    }
+                    completions[cycle, default: 0] += 1
+                }
+                callers.append(caller)
+                try await Task.sleep(for: .milliseconds(125))
+                let held = entered && completions[cycle] == nil && ownedChildIsStopped(pid)
+                record("caller pending \(cycle)", held, "entered=\(entered) completed=\(completions[cycle, default: 0]) childStopped=\(ownedChildIsStopped(pid))")
+                guard held else { return steps }
+                let cancelledAt = clock.now
+                caller.cancel()
+                let returned = await waitUntil(seconds: 0.5) { completions[cycle] != nil }
+                let delay = clock.now - cancelledAt
+                let cancelled = returned && outcomes[cycle] == "CancellationError" && completions[cycle] == 1
+                    && delay < .milliseconds(500) && ownedChildIsStopped(pid) && client.isConnected && disconnects == 0
+                record("caller cancelled \(cycle)", cancelled,
+                       "outcome=\(outcomes[cycle] ?? "pending") completions=\(completions[cycle, default: 0]) delay=\(delay) childStopped=\(ownedChildIsStopped(pid)) disconnects=\(disconnects)")
+                guard cancelled else { return steps }
+                guard kill(pid, SIGCONT) == 0 else {
+                    record("caller resume \(cycle)", false, "could not resume owned child")
+                    return steps
+                }
+                stopped = false
+                // Cancellation ends the caller's wait, not a mutation already sent to the daemon.
+                let late = try await client.call("config.get", timeout: .seconds(2))
+                let applied = await waitUntil(seconds: 0.5) { model.config.name == cancelledMarker && events.last == cancelledMarker }
+                record("cancelled mutation observed \(cycle)", late["config"]?["name"]?.stringValue == cancelledMarker && applied,
+                       "reply=\(late["config"]?["name"]?.stringValue ?? "nil") model=\(model.config.name ?? "nil") events=\(events)")
+                let healthy = try await client.call("config.patch", ["patch": ["name": .string(healthyMarker)]], timeout: .seconds(2))
+                let config = try await client.call("config.get", timeout: .seconds(2))
+                let status = try await client.call("status.get", timeout: .seconds(2)).decode(DaemonStatus.self)
+                expectedEvents += [cancelledMarker, healthyMarker]
+                let delivered = await waitUntil(seconds: 0.5) { events.count >= expectedEvents.count && model.config.name == healthyMarker }
+                let exact = delivered && events == expectedEvents && healthy["config"]?["name"]?.stringValue == healthyMarker
+                    && config["config"]?["name"]?.stringValue == healthyMarker && config["derived_links"] != nil
+                    && status.name == healthyMarker && status.role == .off && status.daemon?.pid == pid
+                    && status.daemon?.platform == "virtual" && completions[cycle] == 1 && disconnects == 0 && client.isConnected
+                record("same caller healthy \(cycle)", exact,
+                       "name=\(status.name ?? "nil") pid=\(status.daemon?.pid ?? -1) events=\(events) completions=\(completions[cycle, default: 0]) disconnects=\(disconnects)")
+                guard exact, applied, late["config"]?["name"]?.stringValue == cancelledMarker else { return steps }
+            }
+            // Cross every original two-second timeout, then require new exact replies.
+            try await Task.sleep(for: .milliseconds(2200))
+            let final = try await client.call("config.get", timeout: .seconds(2))
+            let status = try await client.call("status.get", timeout: .seconds(2)).decode(DaemonStatus.self)
+            let discovery = try await client.call("discovery.list", timeout: .seconds(2))
+            let elapsed = clock.now - begin
+            record("caller settled after deadlines", completions.count == 3 && completions.values.allSatisfy { $0 == 1 }
+                   && outcomes.values.allSatisfy { $0 == "CancellationError" } && events == expectedEvents
+                   && final["config"]?["name"] == "caller-healthy-3" && status.name == "caller-healthy-3"
+                   && status.daemon?.pid == pid && model.supervisedDaemonPID == pid && model.isReady
+                   && discovery == .array([]) && disconnects == 0 && client.isConnected && elapsed < .seconds(15),
+                   "elapsed=\(elapsed) completions=\(completions) outcomes=\(outcomes) events=\(events) disconnects=\(disconnects) discovery=\(discovery)")
+        } catch {
+            record("caller flow error", false, error.localizedDescription)
+        }
+        return steps
+    }
+
+    /// Read the OS stop acknowledgement and parent identity without reaping Process's child.
+    private static func ownedChildIsStopped(_ pid: Int32) -> Bool {
+        var info = kinfo_proc()
+        var size = MemoryLayout<kinfo_proc>.stride
+        var mib = [CTL_KERN, KERN_PROC, KERN_PROC_PID, pid]
+        return sysctl(&mib, u_int(mib.count), &info, &size, nil, 0) == 0 && size > 0
+            && info.kp_eproc.e_ppid == getpid() && info.kp_proc.p_stat == SSTOP
     }
 
     private static func validPort(_ port: Int) -> Bool { (1024...65535).contains(port) && port != 24800 }
