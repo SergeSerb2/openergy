@@ -213,8 +213,13 @@ finite sampling and failed cleanup prevent performance or release acceptance.
 The [shutdown source diagnosis](../daemon-stop-latency-source-2026-10-23-t3-d1ff2556/README.md)
 establishes an avoidable poll after public stop acknowledgement. Saved timings
 do not prove its sole contribution to the historical timeout. A narrow repair
-and bounded real-command verification are in progress; the 250 ms shutdown
-flush and joins must remain intact.
+in candidate `2485c14` leaves the loop after sending the response and preserves
+the 250 ms shutdown flush and joins. One real role-Off sample per revision
+records request-to-observed-exit at 1254.038 ms before and 252.767 ms after.
+Both exact acknowledgements, unsignalled exit-0 observations and cleanup pass.
+These are single samples with a declared CLI trace overlay; the final source
+also builds without it. Independent source/evidence review is in progress, and
+the candidate is not yet integrated. Connected-session and release gates stay open.
 
 [Sparkle integration](../sparkle-integration-2026-10-23/README.md) and the signed
 empty Cloudflare feed are implemented and checked. The later
