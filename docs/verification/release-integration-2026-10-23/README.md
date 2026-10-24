@@ -204,7 +204,9 @@ product regression. The [independent review](../ordinary-app-e2e-controller-repa
 of source-only repair `8324371` finds seven P2 controller issues: interpreter
 identity, coherent exec observations, recovery after evidence failure, missing
 spawn records, controller-loss transitions, TERM grace and aggregate evidence
-limits. A source-only repair is assigned. No new ordinary flow has run.
+limits. Source-only candidate `ec723d8` supplies repairs and responses for all
+seven findings. It remains held under a fresh independent static review.
+No new ordinary flow has run.
 
 The [first connected-idle measurement](../macos-idle-resources-2026-10-23/README.md)
 failed in its launcher before app readiness. Its successful build and completed
