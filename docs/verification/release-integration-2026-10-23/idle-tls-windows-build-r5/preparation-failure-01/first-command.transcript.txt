@@ -1,0 +1,3 @@
+fatal: pathspec 'Cargo.toml' did not match any files
+subprocess.CalledProcessError: Command '['git', 'archive', '--format=tar', '06b9a139ec855a6f697ded393fa4c2c894110613', '--', 'Cargo.toml', 'Cargo.lock', 'rust-toolchain.toml', 'rustfmt.toml', 'crates', 'tools/e2e', 'vendor']' returned non-zero exit status 128.
+BUILD_ONLY_RESULT UNVERIFIED_OR_FAIL

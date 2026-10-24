@@ -1,0 +1,438 @@
+{
+  "source_commit": "06b9a139ec855a6f697ded393fa4c2c894110613",
+  "source_tree": "4aef0f7764638d0d9d02608b5469852935741af4",
+  "module": {
+    "path": "crates/net/examples/dns_queue_cancel_c4806a3d/idle_tls_deadline.rs",
+    "git_blob": "91c84ffada825055e0163a1fd53e7d94f8c5d1ee",
+    "bytes": 20225,
+    "sha256": "9cd3475f9c13c8e28ea54e0f344b55ae795267b22ea1676c45e5659a64f1f1d4"
+  },
+  "fresh_archive_produced": false,
+  "fresh_all_file_manifest_produced": false,
+  "remote_source_binding": "UNVERIFIED",
+  "prior_evidence_commit": "52cbf8c3c41b15789500ce7be620d203006630a9",
+  "prior_evidence_files": [
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/.gitattributes",
+      "git_blob": "180b3975c85bd3bff87902bf1dd35bef9175efc4",
+      "bytes": 19,
+      "sha256": "de649f498d42f6721e54ec550c5c1583fa0cb41ccc31af24b54ddf35ce97318d"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/README.md",
+      "git_blob": "38d518456ac5f8bfd0f7e880577ec7d10bcfd5ca",
+      "bytes": 6972,
+      "sha256": "63e01e8f5e013b7f625c35b6d900e2f17e66da67606c924a51fcdbd91b228153"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/artifacts.json",
+      "git_blob": "980baf24a8d7ffa4c1f59cd24e9d7f9517a38ae3",
+      "bytes": 11054,
+      "sha256": "07b2c5c8a7baf0612be92a8b15f4b33a64540742a831481ecece025718d54802"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/handoff.json",
+      "git_blob": "757ed8b427075ec2f62fbb0f13b837b28379b5e3",
+      "bytes": 2260,
+      "sha256": "2dbfbc062058c8ad6935fc41e913d2b337d3da77445b46dc7ae464e7fe0788f6"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/original-evidence-preservation.json",
+      "git_blob": "b569cdd517dc0f89e113a692b073b9ccfc4f69b4",
+      "bytes": 8520,
+      "sha256": "958903301f7d07d9851653a04d57cebc2b46cd8b647585e21d0f4108a8972f94"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/private-cache-copy.json",
+      "git_blob": "bc453f3282cb310c748e9cfac6bb6cd67d604986",
+      "bytes": 367,
+      "sha256": "705d5f213c896eb196a2b69335e9fcdd4711ffd0f8b6eee4d034587ca3df021b"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/binary-build.json",
+      "git_blob": "9f2e23cd29c03071d1d0380061f903ac0b15e7da",
+      "bytes": 1346,
+      "sha256": "affb35e22e76ccada30830aaad42fa7fded47ddb7ee4c6fbb82deef1cc03c070"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/binary-build.stderr",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/binary-build.stdout",
+      "git_blob": "a3334bb565413e8deeaa920410b83a561863a8a2",
+      "bytes": 248,
+      "sha256": "1a91e2799e5d7b9b7f3c9fe13a4655fad99e5fcf2a5718231ddd3c663332f3c1"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/build-once.guard",
+      "git_blob": "7b4bc91664e5906a7bab73f906e672299b068519",
+      "bytes": 33,
+      "sha256": "d4f1178ea9fe921b4e952da23c3f9a5458d28d4524ddb5a0659fdd417d6fe44a"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/cargo.json",
+      "git_blob": "c4706b0609a499f9d041146ecf75e24134745998",
+      "bytes": 1263,
+      "sha256": "e7d37bfc769f9f5ab5afa1585fdda8ee5b7a1bdffab415ccdd0ffb32f9110e0b"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/cargo.stderr",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/cargo.stdout",
+      "git_blob": "3ff4de68044faea55854caa49c60dfdec3495216",
+      "bytes": 36,
+      "sha256": "c35608815f43d0b8788a9b826fad2bb17384f49fb328dc4fe64da9db5f5ef4d6"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/clippy.json",
+      "git_blob": "0a34c336eb2808c9690a1be4f34df0a32d6d2950",
+      "bytes": 1456,
+      "sha256": "68109e422ea1a164fe316ebef08e9ecdd7dae744242eacac37b978c8a9a7a507"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/clippy.stderr",
+      "git_blob": "f32ea653cbbe55a0d765d3ac1a279e79977208de",
+      "bytes": 2607,
+      "sha256": "cf50204568244fff0cf921117f4f6ad9a00032fb6f6be155b71095b41dd8f789"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/clippy.stdout",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/first-packaging-failure.txt",
+      "git_blob": "d227eecc5e905922f0556777663f84c7937caebb",
+      "bytes": 1030,
+      "sha256": "614506c7db23493fce52a58886e8ed69e6b76adef986e49d2d41ee1a3334ea81"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/format-check.json",
+      "git_blob": "3a5a1e8f0987794aa102efbb632e8ebf75bf8237",
+      "bytes": 1362,
+      "sha256": "52ecaa283837f5e6eaac36abb927e9077d5e292af49b29d379154c87c24a878f"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/format-check.stderr",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/format-check.stdout",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/host.json",
+      "git_blob": "a87909c485dfbd09ac78c56df00619104a36d144",
+      "bytes": 1199,
+      "sha256": "4739b47cc29bb6d543ea38c0666f3e3b9131f09d168d5f7a90ebbc2e982c640b"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/host.stderr",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/host.stdout",
+      "git_blob": "15422306b722f47de90b7aa4b7302db393ace1f9",
+      "bytes": 66,
+      "sha256": "c57ab3d857bdebc1ae792a33d835702f92eeec48e822f6f56a87309c4256c9b9"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/private-build-root.txt",
+      "git_blob": "3d380e2773ac954967cf4e2dc20e3946886034ee",
+      "bytes": 52,
+      "sha256": "c07e9802058a1f89b74e6be066b2cf0aaeae183cb6e54c0982e970f8dce73540"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/release.json",
+      "git_blob": "7b4aec987434b37af3f47e05124a0f0dc5081cfa",
+      "bytes": 1420,
+      "sha256": "e960b57beca15eef8af7a2d15c0ad42bcb6e930f3adf67b7eba7df02447ac24f"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/release.stderr",
+      "git_blob": "b4b9030a32a9e319ef1ef985c29f4bd6b5f572f7",
+      "bytes": 3342,
+      "sha256": "de90483b014890cea1ff8023d04848bf6762a87d4d74672a4be4f7544c170471"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/release.stdout",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/rustc.json",
+      "git_blob": "375d0d897d2f15b6a35d6cc089989b158d1cb460",
+      "bytes": 1265,
+      "sha256": "5d999e120ce71f1e06ce18d47136e7437e6ec864a9fb0253f291a403bc8a020b"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/rustc.stderr",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/rustc.stdout",
+      "git_blob": "230c69660d17fbd2b9f534ed28a21c84291975ae",
+      "bytes": 192,
+      "sha256": "e003fd3d385fcd0de16bc6b049124efb20207831dd810fd4ab39ff079bbb12a5"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/windows-controller-first-failure.txt",
+      "git_blob": "3e976a4e7a7d696ab1076925bae79bc1a86cf894",
+      "bytes": 555,
+      "sha256": "da48c9786e6343e1bb5ab46120051b9612c321c655394fdb9c5917cb47e406fb"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/windows-controller-once.guard",
+      "git_blob": "a463f4b81153e76f3e5bae944499aa428efe14f4",
+      "bytes": 33,
+      "sha256": "b3bff9c0348af3c301cdc6d01afc31124c223cfd4756d01e5c0a2972b4fd8151"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/windows-fetch-build-evidence.json",
+      "git_blob": "c91d06bf3297d87341c8f902a56a1cfc18b9e5ef",
+      "bytes": 815,
+      "sha256": "c9fe830abac9b48ec6e561a1bb10748b997f7d0c6964b433a79080c40fecad17"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/windows-fetch-build-evidence.stderr",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/windows-fetch-build-evidence.stdout",
+      "git_blob": "441548dbd8dde16c536a114122d36d29bfed09af",
+      "bytes": 541,
+      "sha256": "be2a04a3f2b0990f5baba4e2eac86c345a872ac587415cd5908787ab1b253726"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/windows-native-preflight.json",
+      "git_blob": "f87c58de0391991f424580b3124b2d14ecc5d533",
+      "bytes": 610,
+      "sha256": "2d567419f5b691b7cf359ca8838b8591aa18b607ebfe8ae7886803c726ea5a9c"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/windows-native-preflight.stderr",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/windows-native-preflight.stdout",
+      "git_blob": "6705d84baaf1dcd788d39f5bdca3de0342479f2a",
+      "bytes": 759,
+      "sha256": "45751bb60f39ce128177bdef8dbb3f7bff974c94896edcba1a0ca5c05457331f"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/windows-owned-cleanup.json",
+      "git_blob": "e0e0052d3901f0e6134a5f4b9406793eff6d560b",
+      "bytes": 587,
+      "sha256": "7d35b3ef20050f31d718ac33b7c28384d67c1b45358cd24d209f8e48f5599b49"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/windows-owned-cleanup.stderr",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/windows-owned-cleanup.stdout",
+      "git_blob": "094b18c000182357e0fef3de986a01cef427ff06",
+      "bytes": 272,
+      "sha256": "493fb6e92f48b26f99c4f0902016bf1073d86a7668cce612df204b2eaa0ddbf2"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/windows-owned-progress.json",
+      "git_blob": "241d6fac520a4a871aaac09b110a53cf41979087",
+      "bytes": 605,
+      "sha256": "11d7e5a60f82bed5b436c93efe975a0f470b06454147fac4327011211e18a07d"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/windows-owned-progress.stderr",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/windows-owned-progress.stdout",
+      "git_blob": "f042ca63462c2220c01ad1500f6423a9daf76a80",
+      "bytes": 169,
+      "sha256": "5c0f06fb68522cdf75dc6ef0bf754d818cf25408e9f90c52ed8e40cd54aa075d"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/windows-owned-setup-stop.json",
+      "git_blob": "b688e1aa8e4de5efb9e81d79f1ddf91286763880",
+      "bytes": 686,
+      "sha256": "5b138aae5d185574afd101c17d27cbc8de7da75e53e9da3dc3654c3a645249e9"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/windows-owned-setup-stop.stderr",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/windows-owned-setup-stop.stdout",
+      "git_blob": "ec01a74a31dbbc9f0d23f9b065e8381ab5a28f27",
+      "bytes": 577,
+      "sha256": "b85fe938a8530d7d42b64d5165215f8ed167c706aba9ee3042c1230ac342fb18"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/windows-preflight.json",
+      "git_blob": "10ce5bf622d39e6c60bdcb86cbf0ac80bdd3d242",
+      "bytes": 628,
+      "sha256": "038da4efb5ddf2e1efae54a75e6df8e1fe001adfb24fd13e5d89e1de2830068b"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/windows-preflight.stderr",
+      "git_blob": "f5ffc1d7214d0e59f5629934750dc8cbe1dcdc0b",
+      "bytes": 2408,
+      "sha256": "e478da2eb12a58dcc51e1255c425643608938535ebeaeb819109d1684e542123"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/windows-preflight.stdout",
+      "git_blob": "eeb9a5557444f604f80e4e4efd9f011aef867adb",
+      "bytes": 771,
+      "sha256": "760c76a3ca665984ebc3913809d2d9af5dcf4b5d5fdc343bbf7e8b5cda2e5acd"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/windows-setup-and-build.json",
+      "git_blob": "0ca1276cfca7b27c5c8d70f5db4875a05e3feecb",
+      "bytes": 876,
+      "sha256": "6a23c5ad61a39211965abe123e13c57cbfbd1412adcc8f5cec5c117318b4d061"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/windows-setup-and-build.stderr",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/raw/windows-setup-and-build.stdout",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/result.json",
+      "git_blob": "94ae92e9340467c6ad8be4eef7472aae65e119f7",
+      "bytes": 1013,
+      "sha256": "ae053df6813a48c282c35426739be7d55f0bd55c8b85c32e94314c7334d9ec55"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/shared-inputs-after.json",
+      "git_blob": "fa3d27552218aaadfb3864684e50fc2efc4789f2",
+      "bytes": 1079,
+      "sha256": "2768c5b4d82de7cc4b0280ee15d0783ce0ad4266303e1705bd95ea06a5570ce3"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/shared-inputs-before.json",
+      "git_blob": "fa3d27552218aaadfb3864684e50fc2efc4789f2",
+      "bytes": 1079,
+      "sha256": "2768c5b4d82de7cc4b0280ee15d0783ce0ad4266303e1705bd95ea06a5570ce3"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/source-fix.patch",
+      "git_blob": "bda9b83e64c459bb869193ff59932b94f3ba71c5",
+      "bytes": 807,
+      "sha256": "aa473856d217aeaaf77445b563ebd342aaf46d85fc0e5e305494bf90087a32c1"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/source.json",
+      "git_blob": "d6e1d4b313a2835f775f3eef2a1457ae7d86567b",
+      "bytes": 1876,
+      "sha256": "75d07964cd9cfdf20c9a842034d2be1b4363ef0f4d8ced49a0ba7e0667773990"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/verify-build-only.py",
+      "git_blob": "4b1d754d3fe0ac396770edcec515c2b13514be8b",
+      "bytes": 8836,
+      "sha256": "3e4be41a71966e413d87b3120e38aee9426e3ecc36b3012b3b329d50d189ad2c"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/verify-windows-build-only.py",
+      "git_blob": "f416a542cb415fd517ed0bd95ded2e74bfd37c58",
+      "bytes": 6735,
+      "sha256": "75d04d8f65046d6786ad65bd2004e29e3360b1361e00d1657437af1d2a1bb8c6"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/windows-build-acl.json",
+      "git_blob": "658cdd8489004e5a207191fd0010fb6765443001",
+      "bytes": 138,
+      "sha256": "c3090b86a3f1aff0f5eaaeb48621a97373f57822b531b461f11ae811fb65c2bf"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/windows-build.ps1",
+      "git_blob": "c70304a1c1898bda5836b844c5d52e4742db8f39",
+      "bytes": 7491,
+      "sha256": "52119086f6c09d8001aad6bceef90b81a88ffa335a628c17878ae312eb24b6d2"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/windows-fetch-build-evidence.ps1",
+      "git_blob": "bbfb2257b82dbce9034e4e8ade42a0f3abd65c5d",
+      "bytes": 956,
+      "sha256": "573461781e00365799742a9c0dd8a1355fa7b6f638696e385b9112888e72aaf8"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/windows-native-preflight.ps1",
+      "git_blob": "7f32d0e7219447b298df4d1cd59dc41494ab385b",
+      "bytes": 1128,
+      "sha256": "b6a861c1f3b2e0b762fd9cbe19a18cb5eaa24e7c1f154ecc3d265d9ad9525a13"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/windows-owned-cleanup.ps1",
+      "git_blob": "a474886a094874eee862edf174140dcb69971b3e",
+      "bytes": 4368,
+      "sha256": "f297bd6679295d595326d75ea1772e74359c419eab537421dd0d21546970a631"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/windows-owned-progress.ps1",
+      "git_blob": "4859c414383346a8fedde2234ab5a03c841f2d82",
+      "bytes": 624,
+      "sha256": "a4438ecd0d11cfb219711cc38c51d4d5894c96b820c72f8b694da6e1772d2820"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/windows-owned-setup-stop.ps1",
+      "git_blob": "e1bfbeb671e7491b7025086fa09d766e6a654554",
+      "bytes": 5039,
+      "sha256": "bcf95872559357e97f670930a9fe5a7f5a166bf3673a7e01e91e0d7df0207ec7"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/windows-preflight.ps1",
+      "git_blob": "9700138297878edbee9721f203e2a81fbbfb62f7",
+      "bytes": 1236,
+      "sha256": "5a186fb73e17dd23c8ee0e2f7e0c8e32d4a19528665563e977c7fb5b6cee42ab"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/windows-setup-and-build.ps1",
+      "git_blob": "f2375845f2c03e5e8e76f6038a7741ab67c294ca",
+      "bytes": 1326,
+      "sha256": "2d47199d9a17b7be2fda06960567228cb684e793bc730927182587eefe271d11"
+    },
+    {
+      "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-fix-06b9a13-773e34c7/windows-source-manifest.json",
+      "git_blob": "60c0b6a6428f1348a079b7dbe97aba5f9c08bfc0",
+      "bytes": 106566,
+      "sha256": "70638bdc1e287803fde9f58e9057f8fc9df2c7ee29587777837cef00d1b0deb3"
+    }
+  ],
+  "prior_files_read_only_git_objects": true,
+  "prior_controller_executed": false
+}
