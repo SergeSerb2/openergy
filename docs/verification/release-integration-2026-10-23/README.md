@@ -184,4 +184,31 @@ host limits through Xcode registration/assessment tasks; its original artifact
 remains unaccepted and persistent state is unknown. A
 [prepared private stopped-target fixture](../sparkle-stopped-fixtures-2026-10-23/README.md)
 has a separate file-only resource-seal repair and a clean corrected-scope review.
-Its actual installer execution is still gated on the pending scope decision.
+The user approved that scope at 17:16:55 PDT. The later
+[stopped-target runtime](../sparkle-stopped-runtime-2026-10-23/README.md) downloaded
+the full archive in both cases: the altered signature failed with error 4005 and
+left build 1 unchanged; the valid signature installed the exact build 2 tree and
+passed nested signature checks. The parent matched all 139 copied raw-record
+hashes. Independent evidence review is pending. The first preflight failure,
+negative-case nice-20 deviation, XProtect diagnostics, and process-sampling
+limits remain recorded. No target launch/relaunch was observed. This does not
+close running-target handoff, native UI, Developer ID, notarization, or full
+shared-OS-state restoration.
+
+The [idle-TLS R2 audit](idle-tls-deadline-review-r2.md) found a Windows compilation
+defect in the new opt-in probe at `9f6625c`: it selects the Unix listener wrapper
+without a platform guard. A separate repair is in progress; that source is not
+integrated here. Its saved first-eligible-poll timeout and same-caller recovery
+checks pass, but the command remains **FAIL / exit 1** at immediate cleanup
+rebind. Later TIME_WAIT records do not identify that failure's cause.
+
+The [Windows witness design](windows-failed-replacement-workflow-design.md)
+establishes a public-API ordering limit: the worker may send before the caller
+receives its new browse handle. More finite retries cannot guarantee a failed
+initial send. Both saved Windows startup gates remain failed/unverified; the
+conditional preparation/submission API design is not implemented.
+
+The [finite release checklist](../release-readiness-2026-10-23/goal-status-1720.md)
+separates implementation, saved real flows, native behavior, OS trust and
+publication. Its roughly 70% planning estimate is explicitly unmeasured; the
+checklist is not a numerical completion score.
