@@ -1,0 +1,291 @@
+{
+  "byte_unchanged_sources": [
+    "common.py",
+    "exec_owned.py",
+    "macproc.py",
+    "prepare.py",
+    "probe.py"
+  ],
+  "changed_sources": [
+    "controller.py",
+    "ownership.py",
+    "watchdog.py"
+  ],
+  "date": "2026-10-24 America/Vancouver",
+  "exact_unchanged_functions_from_R7": {
+    "common.py": [
+      "remaining",
+      "io_until",
+      "read",
+      "load",
+      "exists",
+      "initialize_bytes",
+      "byte_lock",
+      "charge",
+      "write_bytes",
+      "encoded",
+      "save",
+      "first",
+      "append",
+      "Evidence.__init__",
+      "Evidence.attempt",
+      "archive_reserved",
+      "sha",
+      "tree",
+      "command",
+      "git_file",
+      "nice15",
+      "pause"
+    ],
+    "controller.py": [
+      "Controller.__init__",
+      "Controller.drain",
+      "Controller.collect",
+      "Controller.abort",
+      "Controller.request_cleanup",
+      "Controller.observe",
+      "Controller.tick",
+      "Controller.launch",
+      "Controller.cli",
+      "Controller.port",
+      "Controller.flow",
+      "Controller._flow",
+      "Controller.cleanup",
+      "main"
+    ],
+    "exec_owned.py": [
+      "main"
+    ],
+    "macproc.py": [
+      "api",
+      "bsd",
+      "key",
+      "expected_starts",
+      "argv",
+      "executable",
+      "detail",
+      "snapshot",
+      "targeted"
+    ],
+    "ownership.py": [
+      "budget",
+      "expected",
+      "wrapper_argv",
+      "exact_argv",
+      "Inventory.reload",
+      "Inventory.known_pids",
+      "Inventory.identify",
+      "Inventory.signal",
+      "Inventory._signal"
+    ],
+    "prepare.py": [
+      "bind_sources",
+      "main"
+    ],
+    "probe.py": [
+      "main"
+    ],
+    "watchdog.py": [
+      "app_role",
+      "Recovery.__init__",
+      "Recovery.publish",
+      "Recovery.fail",
+      "Recovery.once",
+      "Recovery.declare_abort",
+      "Recovery.move",
+      "Recovery.stop",
+      "Recovery.targeted",
+      "Recovery.cli_deadlines",
+      "Recovery.terminal",
+      "Recovery.step",
+      "Recovery.finish",
+      "main"
+    ]
+  },
+  "inherited_R5_protected_functions": {
+    "R7_baseline_rechecked": 31,
+    "R9_verbatim": 29,
+    "two_intentional_changes": "Controller._launch and Controller.run are AST-identical after removing only the new cleanup absence guard and prelaunch journal initialization"
+  },
+  "input_checks": {
+    "R3": 14,
+    "R4": 1,
+    "R5": 18,
+    "R6": 1,
+    "R7": 16,
+    "R7_manifest_exact": true,
+    "R8": 1,
+    "all_bound_inputs_git_blob_size_sha256_and_local_disk_exact": true,
+    "current_runtime_payload_paths_checked": false,
+    "original_files": 87,
+    "original_index_byte_exact": true,
+    "other_worktrees_checked": false,
+    "saved_app_os_exit": null,
+    "saved_report_passed": 23,
+    "saved_report_steps": 25
+  },
+  "kind": "SOURCE ONLY",
+  "limits": {
+    "TERM_grace_after_delivery_seconds": 5,
+    "accounting_reserved_bytes": 65536,
+    "aggregate_bytes": 33554432,
+    "cleanup_reserved_bytes": 4194304,
+    "cleanup_seconds": 60,
+    "control_request_bytes": 512,
+    "detail_observations": 8,
+    "detail_seconds": 2,
+    "flow_seconds": 120,
+    "global_rounds": 6000,
+    "global_rows": 24000,
+    "ipc_frame_bytes": 16777216,
+    "main_rounds": 4976,
+    "main_rows": 19904,
+    "per_file_bytes": 8388608,
+    "pipe_chunk_bytes": 65536,
+    "pipe_chunks_per_handle_per_collect": 4,
+    "product_reserved_bytes": 16777216,
+    "product_slot_bytes": 2097152,
+    "product_slots": 8,
+    "stalled_request_ms": 300,
+    "stalled_write_bytes": 1000000,
+    "terminal_share_inside_cleanup": 1048576
+  },
+  "method": "New inline standard-library data reader; only bytes/text/JSON/AST/Git/patch data. No supplied AST or code import, evaluation or execution.",
+  "modified_existing_functions": {
+    "common.py": [],
+    "controller.py": [
+      "Controller._launch",
+      "Controller.run"
+    ],
+    "exec_owned.py": [],
+    "macproc.py": [],
+    "ownership.py": [
+      "Inventory.__init__",
+      "Inventory.observe",
+      "Inventory._observe",
+      "Inventory.absent",
+      "Inventory.final",
+      "Inventory._final"
+    ],
+    "prepare.py": [],
+    "probe.py": [],
+    "watchdog.py": [
+      "Recovery.advance"
+    ]
+  },
+  "not_run": [
+    "all supplied code/modules/helpers/validators/controllers",
+    "task AST evaluation",
+    "fixture preparation",
+    "product/build/signing/preflight",
+    "unit tests/mocks/simulations/fake callbacks or processes",
+    "process/port/live-OS queries",
+    "delegation",
+    "desktop driving",
+    "network operations/push/publication"
+  ],
+  "patch": {
+    "base_commit": "d56c65eb8da5f3d8b4fd58fc0e933360754ba6d6",
+    "bytes": 14350,
+    "changed_files": [
+      "controller.py",
+      "ownership.py",
+      "watchdog.py"
+    ],
+    "format": "minimal zero-context unified source delta; source-folder-relative paths",
+    "hunks": 17,
+    "independent_in_memory_materialization": "All removed ranges, hunk counts and old/new positions checked against exact R7 Git blobs; all three changed outputs byte-exact; five other outputs unchanged; no source executed",
+    "lines": 251,
+    "path": "repair-r7-to-r9.patch",
+    "sha256": "0eea14306d58dc427abf44a525da328c0ff92c34349e8c90bfb0d947dbf82184"
+  },
+  "python_files": {
+    "common.py": {
+      "ast": "parsed as data only",
+      "bytes": 11610,
+      "lines": 298,
+      "sha256": "85a5c5aac6f582ca3b4b6525602c672cafda920e820e6e8dc14c092a125d9b6c"
+    },
+    "controller.py": {
+      "ast": "parsed as data only",
+      "bytes": 29944,
+      "lines": 518,
+      "sha256": "eed1d018cf0e963c41d40a11e148b8b4c4d3a395b140581e8782a5333ef54b39"
+    },
+    "exec_owned.py": {
+      "ast": "parsed as data only",
+      "bytes": 2219,
+      "lines": 46,
+      "sha256": "e7d9a755eed1fadfd04b43b3b96dbd0663cabdf07cc5aa7808ce006183859af2"
+    },
+    "macproc.py": {
+      "ast": "parsed as data only",
+      "bytes": 8075,
+      "lines": 190,
+      "sha256": "d4f6fe358bd9af786fc4c2cba61f1a47f3f4015c918aae85cf8e6aa1c6d3e6c7"
+    },
+    "ownership.py": {
+      "ast": "parsed as data only",
+      "bytes": 31900,
+      "lines": 533,
+      "sha256": "ef5400c711fc80f24a9cbf0d8cf0bc31ff2f237b6820a3ea7d0f8aba4d9a1a4a"
+    },
+    "prepare.py": {
+      "ast": "parsed as data only",
+      "bytes": 6393,
+      "lines": 100,
+      "sha256": "0f617962d60c513d7572edbe086943a3148322dcff6e553165898547030d2e2f"
+    },
+    "probe.py": {
+      "ast": "parsed as data only",
+      "bytes": 699,
+      "lines": 21,
+      "sha256": "d65d17246bbd9057576e32454014b00afed6988dfead7899251435302a651efd"
+    },
+    "watchdog.py": {
+      "ast": "parsed as data only",
+      "bytes": 18563,
+      "lines": 353,
+      "sha256": "b8ee8f6c7a9036f0e263301858996a62aece617bbcc11146540cf08c867b0e8f"
+    }
+  },
+  "reader_first_error": {
+    "correction": "Use Inventory. prefix in own AST-data method index; no task source/predicate/limit changed for this correction",
+    "error": "KeyError: 'restore_uncertainty'",
+    "path": "static-reader-first-error.txt"
+  },
+  "runtime_acceptance": "NOT ESTABLISHED; exact revision awaits fresh independent source review; exact retained signed inputs missing; original FAILED / NOT ACCEPTED 23/25",
+  "source_review_limit": "Concurrent observer guards were added during final manual reading. Static structure only; fresh independent review remains required.",
+  "structural_checks": {
+    "R6_cleanup_function_AST_exact_to_R7": true,
+    "absence_requires_ready_and_not_lost_AST_checked": true,
+    "caveat": "Source/AST structure only; no behavior/timing/ABI/process/runtime proof",
+    "existing_budget_file_required_after_sequence_zero": true,
+    "final_uses_same_revision_guard_AST_checked": true,
+    "guard_errors_including_lock_and_outer_deadline_leave_absence_unavailable_AST_checked": true,
+    "incomplete_transaction_sets_lost_before_checkpoint_AST_checked": true,
+    "metadata_helpers_have_no_ownership_or_signal_calls_AST_checked": true,
+    "metadata_helpers_have_no_spawn_signal_or_exec_call_AST_checked": true,
+    "metadata_restore_has_no_identify_or_signal_call_AST_checked": true,
+    "permission_guard_lock_sequence_and_yield_AST_checked": true,
+    "permission_guard_reload_before_revision_check_AST_checked": true,
+    "product_and_signal_authority_functions_AST_exact": true,
+    "registered_start_index_is_negative_only": true,
+    "shared_lock_reload_restore_begin_probe_checkpoint_order_AST_checked": true,
+    "static_probe_call_site_count_unchanged": true,
+    "two_controller_functions_normalized_AST_exact": true,
+    "watchdog_advance_normalized_AST_exact": true,
+    "watchdog_functions_except_advance_AST_exact": true
+  },
+  "uncertainty_handoff_limits": {
+    "combined_checkpoint_PID_union": 24000,
+    "full_transactions": 6000,
+    "journal_bytes": 8388608,
+    "journal_lines": 12001,
+    "original_pending_time_and_attempt_count_transferred": true,
+    "registered_metadata_starts": 24000,
+    "retained_pending_and_unresolved_PID_union": 24000,
+    "sticky_overflow": true,
+    "writer": "existing accounted append; main regular, recovery nonterminal cleanup; no new reserve"
+  }
+}

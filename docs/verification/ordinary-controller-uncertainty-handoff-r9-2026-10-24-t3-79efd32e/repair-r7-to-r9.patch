@@ -1,0 +1,251 @@
+--- a/controller.py
++++ b/controller.py
+@@ -11 +11 @@
+-from watchdog import Recovery
++from watchdog import Recovery, app_role
+@@ -219 +219 @@
+-        observer.observe(receipt_limit, validate=True)
++        data = observer.observe(receipt_limit, validate=True)
+@@ -225 +225,4 @@
+-        save(self.runtime / (label + '-registered.json'), wrapper[0], receipt_limit, critical=True)
++        with (observer.absence_guard(receipt_limit) if cleanup else contextlib.nullcontext()):
++            if cleanup and not observer.absent(data, app_role):
++                raise FlowAbort('cleanup launch requires complete inherited app-tree absence')
++            save(self.runtime / (label + '-registered.json'), wrapper[0], receipt_limit, critical=True)
+@@ -427,0 +431 @@
++            self.inventory.initialize_uncertainty(preflight)
+--- a/ownership.py
++++ b/ownership.py
+@@ -66,0 +67,3 @@
++        self.handoff_ready = self.handoff_lost = False
++        self.uncertainty_complete = False
++        self.checkpoint_sequence = None
+@@ -83,0 +87,142 @@
++    def uncertainty_state(self, sequence):
++        registered = {key(row): {field: row[field] for field in ('pid', 'start_sec', 'start_usec')}
++                      for row in self.records.values()}
++        return dict(sequence=sequence, unresolved_private=list(self.unresolved_private.values()),
++                    registered_starts=list(registered.values()),
++                    pending=[dict(pid=pid, started=value[0], attempts=value[1])
++                             for pid, value in self.pending.items()],
++                    private_overflow=self.private_overflow, handoff_lost=self.handoff_lost)
++
++    def initialize_uncertainty(self, deadline):
++        # Controller only, before the watchdog or any product. Never recreate loss.
++        write_bytes(self.runtime / 'uncertainty.lock', b'', deadline)
++        self.uncertainty_append(self.uncertainty_state(0), deadline)
++
++    def uncertainty_append(self, value, deadline):
++        # Payload uses the unchanged byte ledger, file cap and cleanup allocation.
++        append(self.runtime / 'uncertainty.jsonl', value, deadline, critical=self.actor != 'main')
++        with (self.runtime / 'uncertainty.jsonl').open('rb') as stream:
++            os.fsync(stream.fileno())  # A begin must complete before any probe.
++
++    @contextlib.contextmanager
++    def absence_guard(self, deadline):
++        # Bind permission/final decisions to their full snapshot. A newer or
++        # active observer must not be skipped between observation and publication.
++        self.handoff_ready = False
++        try:
++            with io_until(deadline):
++                with self.uncertainty_lock(deadline):
++                    self.reload(deadline)
++                    sequence = self.restore_uncertainty(deadline)
++                    if sequence != self.checkpoint_sequence:
++                        raise RuntimeError('newer observer state; stale absence decision prohibited')
++                    yield
++        except BaseException:
++            self.handoff_ready = False
++            raise
++
++    @contextlib.contextmanager
++    def uncertainty_lock(self, deadline):
++        # r+b must not create an empty replacement after evidence loss.
++        with (self.runtime / 'uncertainty.lock').open('r+b') as lock:
++            while True:
++                try:
++                    fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
++                    break
++                except BlockingIOError:
++                    pause(deadline)
++            yield
++
++    def restore_uncertainty(self, deadline):
++        raw = read(self.runtime / 'uncertainty.jsonl', deadline)
++        lines = raw.splitlines()
++        if not raw.endswith(b'\n') or not 1 <= len(lines) <= 12001:
++            raise RuntimeError('missing/truncated/oversized uncertainty handoff')
++        sequence, waiting, state = 0, False, None
++        for line in lines:
++            value = json.loads(line)
++            if set(value) == {'begin'}:
++                if (state is None or waiting or type(value['begin']) is not int or
++                        value['begin'] != sequence + 1):
++                    raise RuntimeError('uncertainty transaction sequence mismatch')
++                waiting = True
++                continue
++            if (set(value) != {'sequence', 'unresolved_private', 'registered_starts', 'pending', 'private_overflow', 'handoff_lost'} or
++                    type(value['sequence']) is not int or
++                    value['sequence'] != sequence + int(waiting) or
++                    (state is not None and not waiting) or not 0 <= value['sequence'] <= 6000 or
++                    type(value['unresolved_private']) is not list or len(value['unresolved_private']) > 24000 or
++                    type(value['registered_starts']) is not list or len(value['registered_starts']) > 24000 or
++                    type(value['pending']) is not list or len(value['pending']) > 24000 or
++                    type(value['private_overflow']) is not bool or type(value['handoff_lost']) is not bool):
++                raise RuntimeError('invalid uncertainty checkpoint')
++            unresolved, pending = {}, {}
++            registered = {}
++            for row in value['unresolved_private'] + value['registered_starts']:
++                if (set(row) != {'pid', 'start_sec', 'start_usec'} or
++                        any(type(row[k]) is not int for k in row) or row['pid'] <= 0 or
++                        row['start_sec'] < 0 or not 0 <= row['start_usec'] < 1000000):
++                    raise RuntimeError('invalid metadata-only uncertainty token')
++            for row in value['unresolved_private']:
++                if row['pid'] in unresolved:
++                    raise RuntimeError('duplicate unresolved PID')
++                unresolved[row['pid']] = row
++            for row in value['registered_starts']:
++                if key(row) in registered:
++                    raise RuntimeError('duplicate registered start')
++                registered[key(row)] = row
++            for row in value['pending']:
++                if (set(row) != {'pid', 'started', 'attempts'} or type(row['pid']) is not int or row['pid'] <= 0 or
++                        type(row['started']) not in (int, float) or not 0 <= row['started'] <= time.monotonic() or
++                        type(row['attempts']) is not int or not 0 <= row['attempts'] <= 24000 or row['pid'] in pending):
++                    raise RuntimeError('invalid original uncertainty allowance')
++                pending[row['pid']] = (row['started'], row['attempts'])
++            if len(unresolved.keys() | pending.keys() | {r['pid'] for r in registered.values()}) > 24000:
++                raise RuntimeError('uncertainty metadata cap exceeded')
++            sequence, waiting = value['sequence'], False
++            state = (unresolved, pending, value['private_overflow'], value['handoff_lost'], registered)
++        if state is None:
++            raise RuntimeError('uncertainty checkpoint unavailable')
++        self.unresolved_private, self.pending = state[:2]
++        self.private_overflow |= state[2]
++        self.handoff_lost |= state[3] or waiting
++        # This negative index cannot adopt a start. If its ownership receipt/cache
++        # is unavailable, do not turn that lost evidence into app-tree absence.
++        self.handoff_lost |= not set(state[4]).issubset({key(row) for row in self.records.values()})
++        if sequence:
++            # Only sequence zero may precede the first budget file. Loss later
++            # cannot invoke budget()'s initial zero counters in a new observer.
++            counts = load(self.runtime / 'budget.json', deadline)
++            if (set(counts) != {'rounds', 'rows', 'main_budget_exhausted'} or
++                    type(counts['rounds']) is not int or not 1 <= counts['rounds'] <= 6000 or
++                    type(counts['rows']) is not int or not 0 <= counts['rows'] <= 24000 or
++                    type(counts['main_budget_exhausted']) is not bool):
++                raise RuntimeError('observation counters unavailable; no allowance reset')
++        self.handoff_ready = not self.handoff_lost
++        if not self.handoff_ready:
++            raise RuntimeError('interrupted/lost uncertainty handoff; absence prohibited')
++        return sequence
++
++    def retain_uncertainty(self, row):
++        pid = row['pid']
++        if pid not in self.unresolved_private:
++            if pid not in self.pending and len(self.unresolved_private.keys() | self.pending.keys()) >= 24000:
++                self.private_overflow = True
++            else:
++                self.unresolved_private[pid] = {field: row[field] for field in ('pid', 'start_sec', 'start_usec')}
++
++    def note_pending(self, pid):
++        # Pending owned starts also need metadata queries if their identity receipt
++        # is lost. These tokens still confer no detail, adoption or signal authority.
++        for row in list(self.records.values()) + list(self.direct.values()):
++            if row['pid'] == pid:
++                self.retain_uncertainty(row)
++                break
++        if pid not in self.pending and pid not in self.unresolved_private and len(
++                self.unresolved_private.keys() | self.pending.keys()) >= 24000:
++            self.private_overflow = True
++            return time.monotonic(), 8  # Exhaustion blocks; never evict an entry.
++        started, attempts = self.pending.get(pid, (time.monotonic(), 0))
++        self.pending[pid] = (started, attempts + 1)
++        return started, attempts + 1
++
+@@ -85,2 +230,24 @@
+-        with io_until(deadline):
+-            return self._observe(deadline, validate)
++        self.handoff_ready = False
++        try:
++            with io_until(deadline):
++                with self.uncertainty_lock(deadline):
++                    self.reload(deadline)
++                    sequence = self.restore_uncertainty(deadline) + 1
++                    if sequence > 6000:
++                        raise RuntimeError('uncertainty observation ceiling exhausted')
++                    self.handoff_ready = self.uncertainty_complete = False
++                    self.uncertainty_append(dict(begin=sequence), deadline)
++                    try:
++                        return self._observe(deadline, validate)
++                    finally:
++                        self.handoff_lost |= not self.uncertainty_complete
++                        self.uncertainty_append(self.uncertainty_state(sequence), deadline)
++                        self.checkpoint_sequence = sequence
++                        self.handoff_ready = not self.handoff_lost
++        except BaseException:
++            # A completed validation error preserves its checkpoint and allowance.
++            # Any incomplete transaction/read/write leaves absence blocked locally
++            # and a missing, dirty or lost checkpoint blocks every successor.
++            if not self.handoff_ready:
++                self.handoff_lost = True
++            raise
+@@ -90 +256,0 @@
+-        self.reload(deadline)
+@@ -119,7 +285,2 @@
+-            if (detected and row['pid'] not in self.unresolved_private and
+-                    not any(key(r) == key(row) for r in self.records.values())):
+-                if len(self.unresolved_private) >= 24000:
+-                    self.private_overflow = True  # No eviction can manufacture absence.
+-                else:
+-                    self.unresolved_private[row['pid']] = {
+-                        field: row[field] for field in ('pid', 'start_sec', 'start_usec')}
++            if detected and not any(key(r) == key(row) for r in self.records.values()):
++                self.retain_uncertainty(row)
+@@ -157,3 +318,2 @@
+-                started, attempts = self.pending.get(row['pid'], (time.monotonic(), 0))
+-                self.pending[row['pid']] = (started, attempts + 1)
+-                if attempts + 1 >= 8 or time.monotonic() - started >= 2:
++                started, attempts = self.note_pending(row['pid'])
++                if attempts >= 8 or time.monotonic() - started >= 2:
+@@ -184,3 +344,2 @@
+-            started, attempts = self.pending.get(race['pid'], (time.monotonic(), 0))
+-            self.pending[race['pid']] = (started, attempts + 1)
+-            if attempts + 1 >= 8 or time.monotonic() - started >= 2:
++            started, attempts = self.note_pending(race['pid'])
++            if attempts >= 8 or time.monotonic() - started >= 2:
+@@ -194,3 +353,2 @@
+-                started, attempts = self.pending.get(pid, (time.monotonic(), 0))
+-                self.pending[pid] = (started, attempts + 1)
+-                if attempts + 1 >= 8 or time.monotonic() - started >= 2:
++                started, attempts = self.note_pending(pid)
++                if attempts >= 8 or time.monotonic() - started >= 2:
+@@ -206,0 +365 @@
++        self.uncertainty_complete = True  # Includes expected finite validation failures.
+@@ -352 +511,2 @@
+-        return (not self.private_overflow and not self.unresolved_private and not self.pending and
++        return (self.handoff_ready and not self.handoff_lost and
++                not self.private_overflow and not self.unresolved_private and not self.pending and
+@@ -356 +516 @@
+-        with io_until(deadline):
++        with self.absence_guard(deadline):
+@@ -370,0 +531 @@
++                    handoff_ready=self.handoff_ready, handoff_lost=self.handoff_lost,
+--- a/watchdog.py
++++ b/watchdog.py
+@@ -244,7 +244,8 @@
+-            if tree_gone:
+-                self.peer_permitted = True
+-                self.move('peer-grace', 10)
+-                self.publish('peer-stop-permitted.json', dict(monotonic=now, app_tree_absent=True,
+-                                                             declared_abort=self.aborting))
+-            else:
+-                self.move('app-stop')
++            with self.inventory.absence_guard(self.deadline):
++                if tree_gone:
++                    self.peer_permitted = True
++                    self.move('peer-grace', 10)
++                    self.publish('peer-stop-permitted.json', dict(monotonic=now, app_tree_absent=True,
++                                                                 declared_abort=self.aborting))
++                else:
++                    self.move('app-stop')
