@@ -5,6 +5,7 @@ import SwiftUI
 @main
 enum Main {
     static func main() {
+        PrivateUpdateFixture.dispatchIfPresent()
         let arguments = ProcessInfo.processInfo.arguments
         let modes = ["--snapshot", "--e2e", "--updater-e2e", "--open-at-login"].filter(arguments.contains)
         guard modes.count <= 1 else {

@@ -1,0 +1,28 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/otool",
+        "-l",
+        "/private/tmp/oe-update-bootstrap-build-_444l3th/swift/arm64-apple-macosx/debug/Openergy"
+      ],
+      "exit": 0,
+      "name": "macho",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "0ca250a54fe28a6818fb1a986e9ce0702517d013ea664c020865e3bc74dd1fb5"
+    },
+    {
+      "argv": [
+        "/usr/bin/file",
+        "/private/tmp/oe-update-bootstrap-build-_444l3th/swift/arm64-apple-macosx/debug/Openergy"
+      ],
+      "exit": 0,
+      "name": "file",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6a19442bfcb8a36fdda4e0fad87baeea54088f90c2f4e3941432c90596f8a2fb"
+    }
+  ],
+  "kind": "file and Mach-O reads only; executable never invoked",
+  "macho_minimum_os_15": true,
+  "product_sha256": "08c99b78519f942944ee80554f87a1d11b8f8d8413d81bfa9f19cb68dec33b9a"
+}
