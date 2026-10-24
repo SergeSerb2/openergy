@@ -171,11 +171,33 @@ bindings, 107 source-blob comparisons, 22 merge-parent diff checks and 60 privat
 artifact hashes. This snapshot covers 254 reachable commits and excludes later
 work, sibling refs and every-snapshot secret-free claims.
 
+The later [Sparkle-era history snapshot](source-history-sparkle-snapshot.md)
+covers pinned `8c9f0ab`, including Sparkle integration. Its non-merge scan retains
+exit 1 with 105 findings: 104 source-file SHA-256 records and one public
+verification key, with none unresolved. The merge-parent scan exits 0 with zero
+findings and accounts for all 22 parent pairs. Independent evidence audit is
+pending. This frozen patch-history scope excludes later commits and does not
+establish security clearance or secret-free historical snapshots.
+
 The [current packaged macOS app flow](../macos-app-current-flow-2026-10-23/README.md)
 passes 25/25 model/IPC checks with private virtual daemons. The separate
 [bounded event measurement](../macos-event-delivery-2026-10-23/README.md) passes
 12/12 paced checks and has a clean saved-evidence audit. It establishes neither
 a queue bound nor a speedup. Native UI/input/clipboard acceptance stays separate.
+
+The separate [caller cancellation flow](../macos-caller-cancellation-2026-10-23/README.md)
+passes 19/19 checks: three pending callers return cancellation before daemon
+resume, and the same client receives later healthy replies after the original
+deadlines. The [independent audit](../macos-caller-cancellation-review-2026-10-23-24ad7903.md)
+finds no concrete P1/P2 and matches all 17 artifact hashes and 421 source hashes.
+It adds no runtime execution. Exact nice 15, private waiter/queue counts and an
+independent per-PID cleanup check remain unverified. The default 25-step flow
+was not rerun by this command.
+
+The [first connected-idle measurement](../macos-idle-resources-2026-10-23/README.md)
+failed in its launcher before app readiness. Its successful build and completed
+cleanup do not supply a resource baseline. The unchanged failure and scheduling
+deviation are preserved; a separate controller repair is in progress.
 
 [Sparkle integration](../sparkle-integration-2026-10-23/README.md) and the signed
 empty Cloudflare feed are implemented and checked. The later
@@ -189,7 +211,9 @@ The user approved that scope at 17:16:55 PDT. The later
 the full archive in both cases: the altered signature failed with error 4005 and
 left build 1 unchanged; the valid signature installed the exact build 2 tree and
 passed nested signature checks. The parent matched all 139 copied raw-record
-hashes. Independent evidence review is pending. The first preflight failure,
+hashes. The [independent audit](../sparkle-stopped-runtime-review-2026-10-23-t3-0760a73d.md)
+also matches all 139 private originals and finds no actionable P1/P2. It adds no
+runtime execution. The first preflight failure,
 negative-case nice-20 deviation, XProtect diagnostics, and process-sampling
 limits remain recorded. No target launch/relaunch was observed. This does not
 close running-target handoff, native UI, Developer ID, notarization, or full
