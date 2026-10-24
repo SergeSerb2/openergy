@@ -1,50 +1,66 @@
-# Active hardening round — 2026-10-24
+# Hardening round blocked — 2026-10-24
 
-The user resumed work at 09:53:14 PDT. The goal remains incomplete.
-One independent source review remains active. No new runtime has started.
+The resumed round has reached critical runtime prerequisites that remain
+unavailable. All delegated work is complete. The goal remains **INCOMPLETE**.
+The user directed the agent to block and stop when a critical prerequisite is
+not working, without asking for inputs. The same missing-input condition has
+persisted through resumption and multiple recovery/review turns. No further
+safe work can close the required real-flow gates without those inputs or an
+external environment change.
 
-| Work | Current supported result | Remaining gate |
+## Completed in this round
+
+- **Ordinary controller source:** R9 `e34401c` passed independent R10 review
+  `8a97e3b`. The uncertainty handoff defect and previous findings are addressed
+  in source. [Exact review](../ordinary-controller-R9-review-2026-10-24-t3-3f0af888.md).
+- **Windows controller/build source:** containment and failure recovery repairs
+  remain preserved. R9 `762240a` corrects the later missing-PID observation
+  defect with a one-line direct API lookup. Independent R10 review `fd8db89`
+  found no actionable P1/P2. [Exact review](../windows-missing-pid-R10-review-2026-10-24-5a857a17/REVIEW.md).
+- **Scoped LaunchServices query:** independent review found no actionable
+  source P1/P2; all five previous repairs remain preserved. This does not reopen
+  the expired running-update operation.
+- **Durable ordinary data:** matching compiled daemon, six build receipts and
+  bindings retained as 21 private data files, 4,850,035 bytes.
+- **Exact dependency data:** all 124 historical Sparkle records recovered and
+  matched: 115 files, 27,348,967 bytes, and nine symlinks. The official archive
+  checksum matches both pinned checksums. [Recovery proof](../sparkle-pinned-input-recovery-2026-10-24-bdfbf824/README.md).
+- **Exact Windows transport:** privately recovered through one unique historical
+  command-signature match; no connection or credential read.
+
+## Critical blockers
+
+| Required validation | Exact missing prerequisite | Verified limit |
 | --- | --- | --- |
-| Ordinary controller | R9 passed independent R10 review: no actionable P1/P2; prior repairs preserved. | Compiled app, signed ordinary bundle, icon and raw workspace state remain unavailable at checked named paths. |
-| Windows adapter | Both earlier containment/recovery findings are addressed. The later missing-PID observation defect has a one-line direct API repair in `762240a`. | Fresh independent R10 review is running. |
-| Ordinary retained data | Matching daemon, six receipts and bindings: 21 private data files, 4,850,035 bytes. | Complete ordinary input set remains INCOMPLETE. |
-| Pinned Sparkle data | All 124 historical records match: 115 files, 27,348,967 bytes, and 9 symlinks; exact official archive checksum matches both pins. | Data identity only; no architecture, signing, loading, build or runtime acceptance. |
-| Windows fixture facts | Bounded search exhausted 160 retrievals across six threads. Zero of nine bindings qualified. | No runnable baseline selection exists. Exact historical paths remain critical missing facts. |
-| Isolated Mac | Connected local/direct/cloud sandbox inventory each returned zero rows. | No suitable existing isolated build-diagnosis environment was established. |
-| Running Sparkle operation | Scoped LS source review clear; earlier one-shot failed before product launch. | Expired marker, closed consent and missing artifacts keep that old operation closed. |
+| Ordinary Mac app flow | Compiled app, signed ordinary bundle, original icon and raw Swift workspace state | Missing at checked named paths; the qualified input set remains incomplete. |
+| Native Windows Off stop | Nine exact historical fixture path bindings and a valid baseline selection | 0/9 qualified after 160 charged retrievals across six threads. No baseline-selection.json was created. |
+| Isolated Swift build diagnosis | Qualified disposable Mac with the bound toolchain and process-scoped Foundation/filesystem instrumentation | Connected local, direct and cloud sandbox inventory each returned zero rows. No machine was created or started. |
 
-[Ordinary source review](../ordinary-controller-R9-review-2026-10-24-t3-3f0af888.md)
-records the bounded source result. The
-[Windows R8 review](../windows-adapter-p2-review-2026-10-24-81ddd0c1/REVIEW.md)
-explains the cmdlet exception mismatch; the
-[new repair](../windows-missing-pid-repair-r9-2026-10-24/README.md) preserves all
-other source bytes and budgets. Its one-hunk change awaits independent review.
-Own data-reader count and staging-whitespace errors are preserved; neither was
-a native attempt. The 178 published inventory members and all 179 historical
-folder files remain exact.
+The [ordinary retention audit](../ordinary-input-retention-2026-10-24-eb2370f8/README.md)
+and [Windows fact-recovery report](../windows-fixture-fact-recovery-2026-10-24-a25e3605/README.md)
+record the bounded searches. Partial roots, historical hashes or newly guessed
+paths do not establish the missing facts. The
+[Swift causal research](../release-swiftpm-atomic-write-research-2026-10-23-t3-57d3a189.md)
+records the isolated instrumentation prerequisite. Inventory absence is limited
+to the connected service; it is not a claim about every possible host.
 
-[Pinned dependency recovery](../sparkle-pinned-input-recovery-2026-10-24-bdfbf824/README.md)
-retains exact public bytes in the durable private state parent. The archive is
-10,193,895 bytes, SHA-256
-`17e28312b8e18ab7cdbbe09a6fb28cc55a5479ec6c371dbc07cdecd2a14fd959`.
-The private receipt SHA-256 is
-`7dce50e63988399ba6b062383286b6d74c7b8a501bb3defdb06b023ee1ce6c8a`.
-Actual own-worker NI15 was recorded. One metadata fetch and one archive request
-completed retention in 95.50 seconds. This restores data, not a historical
-workspace file or compiled app.
+## Acceptance remains open
 
-[Windows fact recovery](../windows-fixture-fact-recovery-2026-10-24-a25e3605/README.md)
-keeps partial facts distinct from a valid selection. It created no
-baseline-selection.json and made no host connection. No guessed path, reduced
-selection or current scan substitutes for the missing historical bindings.
+No new build, signing, native command, product launch or runtime ran in this
+round. Source review and data identity do not establish runtime acceptance.
+Ordinary app acceptance remains **FAILED / NOT ACCEPTED, 23/25**. Native Windows
+Off stop remains **FAILED / UNVERIFIED**. The historical cleanup-bind failures
+remain failures. Original evidence and spent guards remain unchanged.
 
-All old runtime failures remain unchanged: ordinary acceptance FAILED / NOT
-ACCEPTED, 23/25; native Windows Off stop UNVERIFIED. Source review and data
-retention do not establish runtime acceptance. No new build, signing, native
-command, product launch or runtime occurred. No machine was created or started.
-The stopped experiments, build/trace gates and expired one-shot stay stopped.
-No push or publication occurred.
+The original running Sparkle one-shot failed before product launch and remains
+closed with its expired marker. No retry, renewal, reset or approval reuse ran.
+The stopped experiments, isolated build/trace gates, native/hardware, DNS,
+signing and current release/security gates remain open under their existing
+limits. No release acceptance, publication or full host-restoration claim is made.
 
-[Durable continuation state](continuation.json) retains exact task IDs, commits,
-private data directory labels and hashes without transport values or raw logs.
+All source, review and recovery handoffs are local. PR2 stays linked and
+unwatched. Nothing was pushed or newly published. The working tree is clean
+at the final checkpoint commit. [Durable continuation state](continuation.json)
+retains exact commits, terminal task IDs, private data directory labels and
+hashes. No active agent, watcher, timer or retry remains.
 
