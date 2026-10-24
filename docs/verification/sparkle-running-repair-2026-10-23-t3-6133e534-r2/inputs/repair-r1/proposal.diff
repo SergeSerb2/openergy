@@ -1,0 +1,163 @@
+--- 9490a0e/operation-DO-NOT-RUN.json
++++ repair-r1/operation-DO-NOT-RUN.json
+@@ -1,5 +1,13 @@
+ {
+   "R4_root": "616b1ad",
++  "absolute_deadlines": {
++    "HTTP": "One monotonic two-second connection deadline clamped to control and whole deadlines; recompute before every recv, header send and body send. Same routes, byte limits and at most four method/route combinations.",
++    "IPC": "Each of the four status.get/config.get exchanges has a monotonic two-second deadline. First exchange includes connect. Clamp to control and whole deadlines; recompute before connect, send and every header/body recv and check after decode. No retry or extra request.",
++    "independent_recovery": "Separate recovery thread waits on first fault/control completion or absolute 180s cutoff, cancels control, closes registered sockets and kills/reaps direct read-only command children. Product launch and native quit share a cancellation gate. Unquiesced action after1s causes terminal retained-state report and controller self-exit. No late control mutation/cache removal after cleanup.",
++    "reader_bounds": "No extra background output-reader threads. communicate is time bounded, timeout drains/reaping bounded; OS output limits remain checked after capture.",
++    "review_status": "Source text and AST only. No runtime timing proof.",
++    "whole_deadline": "Separate 240s timer records a fixed terminal error without taking main/ledger/evidence locks, then os._exit(1) stops every controller thread. Errors are failed/retained state, never successful cleanup. This is application scheduling/timeout logic, not a hard real-time/kernel scheduling guarantee."
++  },
+   "allowed_helper_sha256": [
+     "2fb1b5709111825801670b0553f7d3af918a4fcea5f4e7a558602b0ecd86d437",
+     "3566cf061983c184e00c5ec0a779bbec86bb0214004ad63e46b42133f27d908c",
+@@ -11,12 +19,12 @@
+     "fc87a756d391f1955c9ecc0ee8eb8af4b8fa5e550bb4db3e9cd6204d33cc5bcc"
+   ],
+   "approval_received": false,
+-  "approval_scope": "One initial no-argument running private target launch; real private AppModel and virtual Off daemon startup; one pinned external Sparkle CLI download/validation/Apple quit/replacement and NSWorkspace no-argument bundle relaunch; new private model/daemon readiness; one normal final quit; exact owned helper/job/cache/endpoint cleanup; normal Nice=0 external Sparkle helpers, LaunchServices registration/timestamp notifications and normal Gatekeeper/gktool/XProtect assessment. Persistent shared registration/assessment state is unknown; no full restoration promise. All explicit fixture network requests use only literal 127.0.0.1:56327. No bypass or suppression of normal OS security checks, native input/clipboard/live sharing, installed-app or production config/TLS/default IPC changes, Xcode registration build, shared identity unregister, or publication.",
++  "approval_scope": "One initial no-argument running private target launch; real private AppModel and virtual Off daemon startup; one pinned external Sparkle CLI download/validation/Apple quit/replacement and NSWorkspace no-argument bundle relaunch; new private model/daemon readiness; one controller normal final quit of the independently validated NEW build-2 app/launch identity only; exact owned helper/job/cache/endpoint cleanup; normal Nice=0 external Sparkle helpers, LaunchServices registration/timestamp notifications and normal Gatekeeper/gktool/XProtect assessment. Persistent shared registration/assessment state is unknown; no full restoration promise. All explicit fixture network requests use only literal 127.0.0.1:56327. No bypass or suppression of normal OS security checks, native input/clipboard/live sharing, installed-app or production config/TLS/default IPC changes, Xcode registration build, shared identity unregister, or publication. The source controller has one persistent observer and independent bounded recovery: a 180s control cutoff reserves 60s inside the existing 240s whole ceiling. It closes owned I/O, refuses late launches/quits, preserves 10s/15s recovery delays, and stops its own threads with retained-state evidence if control cannot quiesce. Failure before validated-new never normal-quits the old app.",
+   "archive_signature": "WzuOHpaKhO8ABVklsKRrI2u+9YCfGxEFES1l+y19R7+leRthV6i4eaRU7c+6wbCund6k197e8WRgLZ4wcKarDQ==",
+   "controller": {
+-    "path": "/Users/serge/.t3/worktrees/openergy/t3-aa79bac9/docs/verification/sparkle-running-prep-2026-10-23-t3-aa79bac9/controller-DO-NOT-RUN.py.txt",
++    "path": "/Users/serge/.t3/worktrees/openergy/t3-bd21f531/docs/verification/sparkle-running-repair-2026-10-23-t3-bd21f531-r1/controller-DO-NOT-RUN.py.txt",
+     "preparation": "text and AST parse only; no import, execution, simulation, unit test or mock",
+-    "sha256": "e251cf7477ed9accf7c28e15de4cabfad50306e12c1934c9b37155a1f40b2740"
++    "sha256": "3d08b11c2dda9256314d6bee0f7da7c7651cd0ea45b3f8dc7f8d3a9b1f0b1066"
+   },
+   "daemon_source_root": "ad280644a96905d9831825bb4f87d1388dbdca73",
+   "download_url": "http://127.0.0.1:56327/openergy-fixture.zip",
+@@ -39,7 +47,7 @@
+     "--verbose"
+   ],
+   "feed_url": "http://127.0.0.1:56327/appcast.xml",
+-  "final_quit": "NSRunningApplication.runningApplication(withProcessIdentifier:).terminate() for independently matched new PID/start/UID/executable only; no native input or AppleScript.",
++  "final_quit": "At most one NSRunningApplication.runningApplication(withProcessIdentifier:).terminate() call, only for explicit VALIDATED_NEW app PID/start/UID/path + build2 + distinct launchID after independent readiness, old app/all observed old-child ESRCH, exact candidate tree and seal checks. Recovery never calls this API. Failure before validated-new uses only delayed owned recovery or reports retained state; old-app controller normal quit is not authorized.",
+   "fixture": {
+     "approval_received": false,
+     "config": "version = 1\nrole = \"off\"\nname = \"updater-fixture-a2fbc1a6-e2b2-4bf4-9e1f-7f5577527b34\"\n[server]\nlisten = \"127.0.0.1:56327\"\nport = 56327\n[client]\nremote = \"\"\nautoconnect = false\n[tls]\nenabled = false\n[clipboard]\nenabled = false\n",
+@@ -81,7 +89,32 @@
+       "sha256": "9dd967f30ffcba5388e1d093e84243e1db9feb4ed6c7f66299609112cc6dbf69"
+     }
+   },
++  "identity_ledger": {
++    "coverage": "Nominal 50ms wait plus scan time, not complete kernel coverage. Brief processes may be missed. First observer/ledger errors persist and prevent clean acceptance/cache cleanup.",
++    "daemon_parent": "Each daemon is associated with an independently observed app PID/start/UID/path. Initial launched PID is old; an independently ready build2 app is new. A second child identity of the old parent fails immediately and cannot use the candidate allowance. Missing/ambiguous parent binding fails closed.",
++    "exit_proof": "Independent libproc absence plus ESRCH for old app and each observed old child; report each outcome even after recovery failure. Receipts/nil PID/CLI exit/shutdown return do not replace observations.",
++    "identity_key": [
++      "pid",
++      "uid",
++      "start_sec",
++      "start_usec"
++    ],
++    "lifetime": "Created before the initial launch; same ledger through readiness, blocking IPC/OS calls, update, final exit, full five-second quiet interval and cleanup. Main-path identity reads join the same ledger. ENTRY to IMAGE exec counts once. Initial and all later actually observed identities count."
++  },
+   "independent_R4": "f190240318f4e2fca68a869ad0bb78225dbb4e7b",
++  "independent_review_receipt_contract": {
++    "approval_binding": "New explicit approval must include independent_review_receipt_path and independent_review_receipt_sha256; exact corrected proposal and controller SHA256 also required",
++    "prior_R2_is_clearance": false,
++    "receipt_created": false,
++    "receipt_path": "Missing; later independent review provides a separate JSON receipt",
++    "required_review_fields": {
++      "controller_sha256": "exact corrected controller SHA256",
++      "independent_review_complete": true,
++      "proposal_sha256": "exact corrected proposal SHA256",
++      "result": "clear_for_approval",
++      "unresolved_findings": []
++    }
++  },
+   "independent_runtime_reproduction": false,
+   "initial_command": [
+     "/private/tmp/oe-updater-fixture-915c0654-e982-43e4-be3e-a44fa05799eb/target/Openergy.app/Contents/MacOS/OpenergyPrivateLauncher"
+@@ -105,6 +138,7 @@
+     ],
+     "HTTP_per_method_route_max": 1,
+     "HTTP_sent_body_bytes_max": 4650507,
++    "HTTP_thread_join_seconds_max": 2.5,
+     "HTTP_total_requests_max": 4,
+     "IPC_methods": [
+       "status.get",
+@@ -117,6 +151,9 @@
+     "bootstrap_internal_readiness_seconds": 15,
+     "cleanup_SIGKILL_or_job_bootout_not_before_seconds": 15,
+     "cleanup_SIGTERM_not_before_seconds": 10,
++    "control_action_quiescence_seconds": 1,
++    "control_cutoff_seconds": 180,
++    "controller_background_threads_max": 4,
+     "daemon_PIDs_max": 2,
+     "explicit_normal_quits_at_most": 1,
+     "fallback_ports": 0,
+@@ -133,6 +170,7 @@
+     "process_sample_period_seconds": 0.05,
+     "readonly_OS_capture_bytes_max": 33554432,
+     "readonly_OS_command_seconds_max": 5,
++    "recovery_reserved_within_whole_seconds": 60,
+     "reuse_address": false,
+     "socket_binds": 1,
+     "target_app_PIDs_max": 2,
+@@ -154,10 +192,11 @@
+     "schema": 1
+   },
+   "missing_prerequisites": [
+-    "Independent review of this exact frozen controller, proposal and fixture bindings",
+-    "New explicit user approval of approval_scope bound to proposal/controller SHA256",
+-    "At execution preflight: live marker with at least240s remaining; all immutable hashes/modes unchanged; no fixture process/job/cache/socket/receipt and exclusive ownership of the exact loopback port"
++    "New independent review of these exact corrected controller/proposal hashes and fixture bindings, with a separately hashed independent review receipt; R2 had three unresolved P2 findings",
++    "New explicit user running/relaunch approval of the exact corrected proposal/controller and approval_scope plus independent review receipt; 17:16:55 stopped-case approval is invalid",
++    "Live preflight remains missing: unchanged frozen marker with at least240s remaining, immutable source/artifact/mode/ownership bindings, absent fixture processes/jobs/caches/receipts/socket and one exclusive bind to127.0.0.1:56327. No renewal, fallback or repeat launch."
+   ],
++  "new_independent_review_received": false,
+   "official_sparkle": {
+     "binary_artifact_checksum": "17e28312b8e18ab7cdbbe09a6fb28cc55a5479ec6c371dbc07cdecd2a14fd959",
+     "driver": "/private/tmp/oe-updater-fixture-915c0654-e982-43e4-be3e-a44fa05799eb/driver/sparkle.app",
+@@ -169,6 +208,12 @@
+     "source_review": "raw/driver-source-binding.json; exact 602-entry official source export and complete retained tree",
+     "version": "2.10.0"
+   },
++  "original_inputs": {
++    "README.md": "5b0ceefea6b69fa8d924aa764117c9851277c7e6d16df44bbeb226629054c7a2",
++    "controller-DO-NOT-RUN.py.txt": "e251cf7477ed9accf7c28e15de4cabfad50306e12c1934c9b37155a1f40b2740",
++    "independent-R2-review.md": "87a14f6446ebe11d26fff5b9da9e53ae0ddbc4c1b1e3beff8c102a5003f36cd6",
++    "operation-DO-NOT-RUN.json": "2d23db1f735e607d70f92e29a8e0837425c4908bd935a3950ba60f458dc6f2a6"
++  },
+   "owned_cache_roots": [
+     "/Users/serge/Library/Caches/dev.openergy.updater-fixture.915c0654-e982-43e4-be3e-a44fa05799eb",
+     "/Users/serge/Library/Caches/dev.openergy.updater-fixture.915c0654-e982-43e4-be3e-a44fa05799eb.driver",
+@@ -179,7 +224,7 @@
+     "/private/tmp/oe-updater-fixture-915c0654-e982-43e4-be3e-a44fa05799eb/driver-home/Library/Caches/dev.openergy.updater-fixture.915c0654-e982-43e4-be3e-a44fa05799eb",
+     "/private/tmp/oe-updater-fixture-915c0654-e982-43e4-be3e-a44fa05799eb/driver-home/Library/Caches/dev.openergy.updater-fixture.915c0654-e982-43e4-be3e-a44fa05799eb.driver"
+   ],
+-  "owned_cleanup": "After normal app quit and independent app/daemon/helper exit, remove only initially absent exact cache roots with unchanged observed device/inode/currentUID, no symlink, bounded inventory. If exact expected launchd job remains after15s, require unique program path inside owned root/cache and exact frozen helper hash before one bootout of gui/UID/exactlabel. No identity-wide unregister, no shared gktool/lsregister signal, no unknown process adoption, no stale socket unlink, no automatic retry. Unexpected ownership, remaining process/job or unknown cache path is a failed cleanup with retained evidence. Keep fixture bundles/config/preferences/build state/evidence for review; these are declared retained files, not leaks claimed removed.",
++  "owned_cleanup": "Recovery issues no normal quit. If validated-new does not exist, only delayed owned recovery or retained state is allowed. After normal app quit and independent app/daemon/helper exit, remove only initially absent exact cache roots with unchanged observed device/inode/currentUID, no symlink, bounded inventory. If exact expected launchd job remains after15s, require unique program path inside owned root/cache and exact frozen helper hash before one bootout of gui/UID/exactlabel. No identity-wide unregister, no shared gktool/lsregister signal, no unknown process adoption, no stale socket unlink, no automatic retry. Unexpected ownership, remaining process/job or unknown cache path is a failed cleanup with retained evidence. Keep fixture bundles/config/preferences/build state/evidence for review; these are declared retained files, not leaks claimed removed. Signals additionally require the canonical UID-owned executable path and an allowed frozen old/candidate/driver executable hash, with PID/start/UID/path rechecked after hashing. The same observer remains active; cache removal requires stopped control/HTTP paths, full quiet interval and no observer/ledger errors. Deadline or quiescence failure retains unconfirmed state and stops controller threads.",
+   "owned_jobs": [
+     "dev.openergy.updater-fixture.915c0654-e982-43e4-be3e-a44fa05799eb-sparkle-updater",
+     "dev.openergy.updater-fixture.915c0654-e982-43e4-be3e-a44fa05799eb-sparkle-progress"
+@@ -214,6 +259,16 @@
+     "per-request exact route/content-length/fileSHA/sent body count and first full CLI streams; no requests during preparation"
+   ],
+   "relaunch": "Only pinned external Sparkle progress agent may call NSWorkspace.openURL on the exact target bundle, with no argument/environment repair. Controller never launches a second target.",
++  "repair_of": {
++    "independent_R2_commit": "48c41fbaca076fb46a028f3900265ac1a41e11ce",
++    "original_controller_sha256": "e251cf7477ed9accf7c28e15de4cabfad50306e12c1934c9b37155a1f40b2740",
++    "original_evidence_manifest_sha256": "2246f960192284303a240e07c43f48408ba53a72cbc40bdde5a4217d9f17d7f3",
++    "original_preparation_path": "/Users/serge/.t3/worktrees/openergy/t3-aa79bac9/docs/verification/sparkle-running-prep-2026-10-23-t3-aa79bac9",
++    "original_proposal_sha256": "2d23db1f735e607d70f92e29a8e0837425c4908bd935a3950ba60f458dc6f2a6",
++    "preparation_commit": "9490a0e46eadf73785901b33d040d873b34e1157",
++    "repair_scope": "R2 P2 R1, R2 and R3 only; file-only controller/proposal; no fixture mutation or execution"
++  },
++  "repair_static_validation": "AST parse and static file/JSON checks only; no import, execution, simulation, unit test, mock, live preflight, network, build, signing or key access. See static-checks.json and freeze.json for exact new hashes.",
+   "reviewed_bootstrap_candidate": "7287e9aa4caf6570fc4116a89908d548a258f302",
+   "reviewed_bootstrap_root": "c62bfdb",
+   "runtime_accepted": false,
+@@ -690,7 +745,7 @@
+   "starting_root": "ad280644a96905d9831825bb4f87d1388dbdca73",
+   "static_validation": "Both package-entry invocations and all59 preparation commands passed after retained pre-command preflight failures. Additional static metadata audit passed. Daemon compile46.44s exited0 with preserved rust-objcopy SIGABRT/libLLVM stripping warning; no rebuild/fix for numbers. Compiled/packaged Swift is reviewed arm64DEBUG; final fixture is not a final release candidate.",
+   "status": "DO-NOT-RUN",
+-  "supervisor_stop_limit": "Unchanged Swift DaemonSupervisor sends SIGTERM, waits up to1.5s, then can sendSIGKILL without a join. Nil PID, exit receipt, shutdown return or CLI success is not child-exit proof. Independently observe old daemon PID/start/UID/path absence and ESRCH, and reject late restarts.",
++  "supervisor_stop_limit": "Unchanged Swift DaemonSupervisor sends SIGTERM, waits up to1.5s, then can sendSIGKILL without a join. Nil PID, exit receipt, shutdown return or CLI success is not child-exit proof. Independently observe old daemon PID/start/UID/path absence and ESRCH, and reject late restarts. Persistent ledger rejects observed old-parent replacement children and independently checks every observed old child; 50ms sampling supplies no complete kernel coverage.",
+   "target_environment": {
+     "CFFIXED_USER_HOME": "/private/tmp/oe-updater-fixture-915c0654-e982-43e4-be3e-a44fa05799eb/home",
+     "HOME": "/private/tmp/oe-updater-fixture-915c0654-e982-43e4-be3e-a44fa05799eb/home",
