@@ -214,8 +214,9 @@ supplies repairs and responses for all seven findings. Its
 [R6 review](../ordinary-controller-R6-review-2026-10-23-t3-6bf67e40.md) finds two
 remaining P2s: partial private-child metadata can stop blocking cleanup after
 app exit, and terminal-evidence read failure can prevent fallback recovery
-after watchdog loss. A narrow source-only R7 repair is assigned. No new
-ordinary flow has run; R5 is not accepted for execution.
+after watchdog loss. Source-only R7 candidate `d56c65e` supplies both corrections
+and preserves the earlier repairs. It is held for a fresh independent R8
+review. No new ordinary flow has run; retained signed-bundle inputs are absent.
 
 The [first connected-idle measurement](../macos-idle-resources-2026-10-23/README.md)
 failed in its launcher before app readiness. Its successful build and completed
