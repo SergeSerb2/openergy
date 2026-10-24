@@ -4,6 +4,11 @@ Work resumed from clean checkpoint `e4f48ba` with GPT-6.1-sol agents using xhigh
 reasoning and standard service mode. The [October 22 handoff](../release-integration-2026-10-22/pause-handoff.md)
 retains its historical checkpoint scope.
 
+The [22:10 continuation checkpoint](../release-readiness-2026-10-23/continuation-2210.json)
+records current task handles, held source, missing retention prerequisites and
+the closed Sparkle invocation. It is committed so resumption does not depend
+on temporary files. Its completion estimate is subjective, not a gate score.
+
 The [fresh dependency-policy observation](dependency-policy.md) passes all six
 graphs and checks 106 registry versions. Runtime acceptance remains separate.
 
@@ -204,9 +209,13 @@ product regression. The [independent review](../ordinary-app-e2e-controller-repa
 of source-only repair `8324371` finds seven P2 controller issues: interpreter
 identity, coherent exec observations, recovery after evidence failure, missing
 spawn records, controller-loss transitions, TERM grace and aggregate evidence
-limits. Source-only candidate `ec723d8` supplies repairs and responses for all
-seven findings. It remains held under a fresh independent static review.
-No new ordinary flow has run.
+limits. [Source-only candidate `ec723d8`](../ordinary-app-e2e-controller-repair-r5-2026-10-23-t3-e9c64d62/README.md)
+supplies repairs and responses for all seven findings. Its
+[R6 review](../ordinary-controller-R6-review-2026-10-23-t3-6bf67e40.md) finds two
+remaining P2s: partial private-child metadata can stop blocking cleanup after
+app exit, and terminal-evidence read failure can prevent fallback recovery
+after watchdog loss. A narrow source-only R7 repair is assigned. No new
+ordinary flow has run; R5 is not accepted for execution.
 
 The [first connected-idle measurement](../macos-idle-resources-2026-10-23/README.md)
 failed in its launcher before app readiness. Its successful build and completed
@@ -339,6 +348,13 @@ Its [independent review](../macos-signing-purpose-source-evidence-review-r2-2026
 closes that P2 in source. Saved real ad-hoc signing and rejection flows pass;
 named signing, timestamp service, notarization and nonempty Downloader entitlement
 preservation remain unverified. No signing credential was used.
+The [later nonempty-entitlement file flow](../macos-nonempty-entitlements-2026-10-23-t3-aefa82e2/README.md)
+records successful one-shot setup-sign, whole-app signing and verification,
+with both architectures preserving its explicit fixture dictionary. Its
+private raw records, output and prior bound inputs became absent before
+export. Surviving transcribed observations cannot supply the required saved-
+evidence acceptance. The cause of that retention loss is unknown. No signing
+retry occurred; nonempty-preservation acceptance remains incomplete.
 
 The later [absolute-priority repair and package run](../release-priority-2026-10-23/README.md)
 builds the combined arm64 app/daemon, packages and extracts it, verifies signatures,
