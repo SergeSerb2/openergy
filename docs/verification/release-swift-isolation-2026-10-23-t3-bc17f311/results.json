@@ -1,0 +1,66 @@
+{
+  "artifact_bindings": {},
+  "artifacts": [],
+  "cleanup": {
+    "actions": [],
+    "budget_seconds": 60,
+    "elapsed_seconds": 0.00033233300200663507,
+    "remaining": []
+  },
+  "final_source_unchanged": true,
+  "limits": [
+    "Old failed runs remain FAILED and immutable; original metadata restoration remains UNVERIFIED.",
+    "No App UI, public nil-plist entry runtime, private fixture/launcher, updater, installed target or release clearance proof.",
+    "New opt-in requires independent source review before general use; normal defaults unchanged.",
+    "Rust objcopy and other toolchain warnings retained verbatim; no toolchain substitution.",
+    "Read-only xcrun metadata query may emit denied cache-write diagnostics; no outer policy widening.",
+    "No GUI, native input/clipboard, production config/TLS/default IPC, live sharing, 24800/5353, service, Keychain identity, keys, notarization/GK/LS, Docker, push/publication or external network fixture.",
+    "New metadata baseline includes modes, owner/group, kind, nlink, flags, mtime, ctime, birthtime and symlink targets; read atime excluded. ACLs/xattrs and original prebreach restoration not verified.",
+    "No unit tests, mocks, computer use or delegation. Provider-stopped tasks untouched."
+  ],
+  "manifest_budget": 3,
+  "manifest_invocations": 1,
+  "max_sample_gap_seconds": 0.4397474580036942,
+  "observation_count": 4271,
+  "observed_nice_values": [
+    15
+  ],
+  "observed_pids": 85,
+  "oldcache_entries": {
+    "cargo": 1159,
+    "swift": 1309
+  },
+  "overall": "FAILED: one package; no retry",
+  "package": {
+    "controller_error": null,
+    "elapsed_seconds": 84.6972178750002,
+    "exit": 1,
+    "remaining": [],
+    "root_identity": {
+      "executable": "sandbox-exec",
+      "nice": 15,
+      "pgid": 38737,
+      "pid": 38737,
+      "ppid": 38549,
+      "start_sec": 1792807920,
+      "start_usec": 645829
+    },
+    "stderr_sha256": "680dd308613f0313306dc2c52858529645ea485b0e0723ac22d039875b3320f6",
+    "stdout_sha256": "0d5e8577b95e789eaf90fbdb145167a1213fc68f2a40ade482a67acaea242be6",
+    "timeout": false
+  },
+  "package_invocations": 1,
+  "preservation_all_equal": true,
+  "prior_folders": 2,
+  "prior_private_records": 89,
+  "private_root": "/private/tmp/oe-swift-qualified-t3-bc17f311-lkmax1kz",
+  "sample_count": 845,
+  "selected_metadata_entries": {
+    "cargo": 1378,
+    "swift": 1725
+  },
+  "smoke_completions": 0,
+  "smoke_daemon_exits": [],
+  "source_commit": "fc33bdc0cbb261d0a096ec459b5ba0dce25ae9ec",
+  "source_inputs": 718
+}
