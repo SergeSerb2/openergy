@@ -1,9 +1,9 @@
 {
   "active_tasks": {
     "ordinary": {
-      "childNodeId": "node:delegated-task:command%3Amcp%3A5026303b-54bb-4510-ae8f-b80a1f3b1ea7%3Adelegate-task%3Aoe-ordinary-controller-two-p2-repair-r7-4eaa964-20261023",
-      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A5026303b-54bb-4510-ae8f-b80a1f3b1ea7%253Adelegate-task%253Aoe-ordinary-controller-two-p2-repair-r7-4eaa964-20261023:ordinal:1",
-      "childThreadId": "thread:delegated-task:command%3Amcp%3A5026303b-54bb-4510-ae8f-b80a1f3b1ea7%3Adelegate-task%3Aoe-ordinary-controller-two-p2-repair-r7-4eaa964-20261023",
+      "childNodeId": "node:delegated-task:command%3Amcp%3A5026303b-54bb-4510-ae8f-b80a1f3b1ea7%3Adelegate-task%3Aoe-ordinary-controller-independent-review-r8-d56c65e-20261023",
+      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A5026303b-54bb-4510-ae8f-b80a1f3b1ea7%253Adelegate-task%253Aoe-ordinary-controller-independent-review-r8-d56c65e-20261023:ordinal:1",
+      "childThreadId": "thread:delegated-task:command%3Amcp%3A5026303b-54bb-4510-ae8f-b80a1f3b1ea7%3Adelegate-task%3Aoe-ordinary-controller-independent-review-r8-d56c65e-20261023",
       "hasPendingChildRuns": false,
       "hasPendingQuestion": false,
       "latestTerminalResultContextTransferId": null,
@@ -26,7 +26,7 @@
       "resultContextTransferId": null,
       "status": "running",
       "summary": null,
-      "taskId": "node:delegated-task:command%3Amcp%3A5026303b-54bb-4510-ae8f-b80a1f3b1ea7%3Adelegate-task%3Aoe-ordinary-controller-two-p2-repair-r7-4eaa964-20261023",
+      "taskId": "node:delegated-task:command%3Amcp%3A5026303b-54bb-4510-ae8f-b80a1f3b1ea7%3Adelegate-task%3Aoe-ordinary-controller-independent-review-r8-d56c65e-20261023",
       "waitTimedOut": false,
       "workState": "working"
     },
@@ -100,6 +100,7 @@
     "No push/publication. PR2 remains linked; no watch requested",
     "Keep first failures and raw originals immutable; source/saved-evidence audits are not independent runtime reproduction"
   ],
+  "checkpoint_maintenance_note": "Initial22:26 updater omitted importsys and raisedNameError after three hashchecks but before writing this file. Corrected metadata update only; no supplied program/runtime or fixture action.",
   "delegation": {
     "maximum_active_children": 3,
     "method": "T3 delegate_task with isolated worktrees; distinct task per review round; no top-level threads",
@@ -117,13 +118,23 @@
     "state": "Agent observed real file-only setup-sign/full-app sign/verify preserving nonempty fixture dictionaries on both architectures. Raw evidence/output/prior inputs disappeared before export; only six surviving transcribed/report files. Saved-evidence acceptance INCOMPLETE. No signing retry. Unsampled signing priorities unverified."
   },
   "goal_complete": false,
-  "head_before_checkpoint": "39c36b51211c7032a0e28f367a96b0d0155749f1",
+  "head_before_checkpoint": "e026d3a185f32db650aeabe96311cdb784138044",
   "ordinary": {
+    "held_r7": {
+      "folder": "/Users/serge/.t3/worktrees/openergy/t3-ad9d06e1/docs/verification/ordinary-controller-repair-r7-2026-10-23-t3-ad9d06e1",
+      "hashes": {
+        "controller.py": "a204f8e87ba35c990c3e6eb96d9ed2ffde1bf28c3f8acbfa31b22a3248faf66f",
+        "manifest.json": "3e433c05c352b245ad46c3988f31d481fa04993c1c60981e6ace7cf11d048b77",
+        "repair-r5-to-r7.patch": "fde7c0c0c9c2c32755cc13823fab95242ddc0e2badbb240a7d54a8855b37db1e"
+      },
+      "source": "d56c65eb8da5f3d8b4fd58fc0e933360754ba6d6",
+      "state": "Parent checked three handoff hashes. Author reports8ASTs/26hunks/31protectedfunctions unchanged and87originalfiles exact. Fresh independent R8 active. Held source only, no runtime acceptance. Retained signed app/daemon/peer inputs absent."
+    },
     "review_cherry_pick": "0e89d52",
     "review_r6": "4eaa964eab6f74b2fc5704a1925520866c7d9f9c",
     "source_archive_cherry_pick": "1b3e4fa",
     "source_r5": "ec723d8fde7c65e955c015653f89d24f7cc7f091",
-    "state": "R5 not accepted: two P2s remain (detected uncertain private child lost after parent exit; terminal-read failure blocks watchdog fallback creation). Narrow source-only R7 active. Original23/25 FAILED/NOT ACCEPTED unchanged. No new runtime or new human permission gate."
+    "state": "Original23/25 remainsFAILED/NOTACCEPTED. R5 rejected for2P2s; R7 source correction held under R8 review. No new runtime or humanpermission gate; signedinputs stillmissing."
   },
   "planning_estimate": {
     "current_repairs_active_hours_range": [
@@ -134,7 +145,7 @@
     "measured": false,
     "percent": 70
   },
-  "recorded_at": "2026-10-23T22:25:48.416794-07:00",
+  "recorded_at": "2026-10-23T22:30:14.365098-07:00",
   "retention": "Previous /tmp checkpoint was absent on resume. Cause not established. Use this committed checkpoint and Git evidence, not missing transient files. Do not infer raw evidence from transcribed observations.",
   "root": "/Users/serge/.t3/worktrees/openergy/t3-52422617",
   "sparkle": {
