@@ -1,0 +1,974 @@
+"""REVIEW TEXT ONLY. Never executed, imported, or behavior-tested in preparation.
+
+Future operator: require the exact reviewed proposal hash and a NEW explicit user
+approval receipt. The 17:16:55 stopped-target approval is invalid for this program.
+One initial no-argument entry, one official update, at most one explicit normal
+app quit. No retries, negative installer case, alternate port, or scope repair.
+"""
+import ctypes as C
+import errno
+import hashlib
+import json
+import os
+import plistlib
+import re
+from contextlib import contextmanager
+from pathlib import Path
+import signal
+import socket
+import socketserver
+import stat
+import struct
+import subprocess
+import sys
+import threading
+import time
+
+HERE = Path(__file__).resolve().parent
+PLAN = HERE / 'operation-DO-NOT-RUN.json'
+PREP = Path('/Users/serge/.t3/worktrees/openergy/t3-aa79bac9/docs/verification/sparkle-running-prep-2026-10-23-t3-aa79bac9')
+ROOT = Path('/private/tmp/oe-updater-fixture-915c0654-e982-43e4-be3e-a44fa05799eb')
+IDENTIFIER = 'dev.openergy.updater-fixture.915c0654-e982-43e4-be3e-a44fa05799eb'
+NONCE = 'a2fbc1a6-e2b2-4bf4-9e1f-7f5577527b34'
+APP = ROOT / 'target/Openergy.app'
+ENTRY = APP / 'Contents/MacOS/OpenergyPrivateLauncher'
+IMAGE = APP / 'Contents/MacOS/Openergy'
+DAEMON = APP / 'Contents/Helpers/openergy'
+SOCKET = ROOT / 'state/control.sock'
+PORT = 56327
+UID = os.getuid()
+JOBS = [IDENTIFIER + '-sparkle-updater', IDENTIFIER + '-sparkle-progress']
+RAW = ROOT / 'runtime-evidence'
+ENV = dict(PATH='/usr/bin:/bin:/usr/sbin:/sbin', LANG='C', HOME=str(ROOT / 'driver-home'),
+           CFFIXED_USER_HOME=str(ROOT / 'driver-home'), TMPDIR=str(ROOT / 'driver-tmp') + '/',
+           XDG_CONFIG_HOME=str(ROOT / 'driver-home'), XDG_CACHE_HOME=str(ROOT / 'driver-home'))
+START = None
+SEQUENCE = 0
+SIGNALS = []
+SAVE_LOCK = threading.Lock()
+ACTION_LOCK = threading.RLock()
+IO_LOCK = threading.Lock()
+ERROR_LOCK = threading.Lock()
+CANCEL = threading.Event()
+CLEANUP = threading.Event()
+CONTROL_DONE = threading.Event()
+RECOVERY_DONE = threading.Event()
+STOP_OBSERVER = threading.Event()
+STOP_HARD_TIMER = threading.Event()
+SOCKETS = set()
+READERS = set()
+PRODUCTS = []
+ERRORS = []
+LEDGER = None
+WORK_DEADLINE = WHOLE_DEADLINE = None
+RECOVERY_IDENT = None
+VALIDATED_NEW = None
+QUIT_SENT = False
+EXECUTABLE_HASHES = {}
+
+
+def require(value, message):
+    if not value:
+        raise RuntimeError(message)
+
+
+def sha(p):
+    with p.open('rb') as f:
+        return hashlib.file_digest(f, 'sha256').hexdigest()
+
+
+def save(name, value):
+    global SEQUENCE
+    with SAVE_LOCK:
+        SEQUENCE += 1
+        p = RAW / (f'{SEQUENCE:04d}-' + name + '.json')
+        with p.open('x') as f:
+            json.dump(dict(monotonic=time.monotonic(), unix=time.time(), data=value), f, indent=2, sort_keys=True)
+            f.write('\n')
+
+
+def budget():
+    if START is not None:
+        recovery = threading.get_ident() == RECOVERY_IDENT
+        require(recovery or (not CANCEL.is_set() and not CLEANUP.is_set()), 'control path cancelled; no retry')
+        require(time.monotonic() < (WHOLE_DEADLINE if recovery else WORK_DEADLINE), 'absolute operation deadline')
+
+
+def remaining(deadline):
+    budget()
+    cap = WHOLE_DEADLINE if threading.get_ident() == RECOVERY_IDENT else WORK_DEADLINE
+    value = min(deadline, cap) - time.monotonic() if cap is not None else deadline - time.monotonic()
+    require(value > 0, 'absolute exchange deadline')
+    return value
+
+
+def fault(source, error):
+    # One first error per source, with a single serialized order. Never lose a thread error.
+    CLEANUP.set()
+    with ERROR_LOCK:
+        if not any(row['source'] == source for row in ERRORS):
+            row = dict(order=len(ERRORS) + 1, source=source, error=str(error), at=time.monotonic())
+            ERRORS.append(row)
+        else:
+            row = None
+    if row is not None:
+        save('first-' + source + '-failure', row)
+
+
+@contextmanager
+def exchange_socket(s):
+    try:
+        with ACTION_LOCK:
+            budget()
+            with IO_LOCK:
+                SOCKETS.add(s)
+        yield s
+    finally:
+        with IO_LOCK:
+            SOCKETS.discard(s)
+        s.close()
+
+
+def stop_io():
+    with IO_LOCK:
+        sockets, readers = list(SOCKETS), list(READERS)
+    for s in sockets:
+        try:
+            s.shutdown(socket.SHUT_RDWR)
+        except OSError:
+            pass  # close also interrupts connect/recv/send; no request is retried
+        s.close()
+    for p in readers:
+        # These are direct read-only command children, never product or shared processes.
+        if p.poll() is None:
+            p.kill()
+
+
+def launch_once(command, prefix, initial=False):
+    with ACTION_LOCK:
+        budget()
+        with (RAW / (prefix + '.stdout')).open('xb') as out, (RAW / (prefix + '.stderr')).open('xb') as err:
+            p = subprocess.Popen(command, cwd=ROOT, env=ENV, stdin=subprocess.DEVNULL, stdout=out, stderr=err)
+        PRODUCTS.append(p)
+        if initial:
+            LEDGER.bind_initial(p.pid)
+        current = identity(p.pid)
+        require(current and current['nice'] == 15, 'launched process identity/absolute nice15')
+        return p
+
+
+def inventory(root):
+    result = {}
+    total = 0
+    for p in sorted(root.rglob('*')):
+        require(len(result) < 8192, 'inventory entry limit')
+        s = p.lstat()
+        require(s.st_uid == UID, 'foreign owner')
+        n = p.relative_to(root).as_posix()
+        if p.is_symlink():
+            require(p.resolve(strict=True).is_relative_to(root.resolve()), 'escaping link')
+            result[n] = dict(symlink=os.readlink(p))
+        elif stat.S_ISREG(s.st_mode):
+            require(s.st_nlink == 1, 'hard link')
+            total += s.st_size
+            require(total <= 256 * 1024 * 1024, 'inventory byte limit')
+            result[n] = dict(bytes=s.st_size, sha256=sha(p), mode=oct(stat.S_IMODE(s.st_mode)))
+        elif stat.S_ISDIR(s.st_mode):
+            result[n] = dict(directory=True, mode=oct(stat.S_IMODE(s.st_mode)))
+        else:
+            raise RuntimeError('special file in immutable inventory')
+    return result
+
+
+# Layout from the locally inspected macOS SDK sys/proc_info.h, not a ps time string.
+class BSD(C.Structure):
+    _fields_ = [(n, C.c_uint32) for n in ['flags', 'status', 'xstatus', 'pid', 'ppid', 'uid',
+                  'gid', 'ruid', 'rgid', 'svuid', 'svgid', 'reserved']] + [
+                  ('comm', C.c_char * 16), ('name', C.c_char * 32)] + [
+                  (n, C.c_uint32) for n in ['nfiles', 'pgid', 'pjobc', 'tdev', 'tpgid']] + [
+                  ('nice', C.c_int32), ('start_sec', C.c_uint64), ('start_usec', C.c_uint64)]
+
+
+LIBPROC = None
+
+
+def raw_identity(pid):
+    info = BSD()
+    C.set_errno(0)
+    n = LIBPROC.proc_pidinfo(pid, 3, 0, C.byref(info), C.sizeof(info))
+    if n == 0 and C.get_errno() in (errno.ESRCH, errno.ENOENT):
+        return None
+    require(n == C.sizeof(info), 'independent process identity unavailable')
+    buf = C.create_string_buffer(4096)
+    n = LIBPROC.proc_pidpath(pid, buf, len(buf))
+    require(n > 0, 'process executable path unavailable; no exit inference')
+    return dict(pid=pid, ppid=info.ppid, uid=info.uid, start_sec=info.start_sec,
+                start_usec=info.start_usec, nice=info.nice, executable=os.fsdecode(buf.value), status=info.status)
+
+
+def identity(pid):
+    current = raw_identity(pid)
+    if current and LEDGER is not None and (str(ROOT) in current['executable'] or IDENTIFIER in current['executable']):
+        try:
+            LEDGER.observe([current])
+        except BaseException as error:
+            fault('ledger', error)
+            if threading.get_ident() != RECOVERY_IDENT:
+                raise
+    return current
+
+
+def same(now, prior):
+    return now is not None and all(now[k] == prior[k] for k in ['pid', 'uid', 'start_sec', 'start_usec', 'executable'])
+
+
+def key(p):
+    # execve is one PID/start identity, even when ENTRY becomes IMAGE.
+    return tuple(p[n] for n in ['pid', 'uid', 'start_sec', 'start_usec'])
+
+
+class IdentityLedger:
+    def __init__(self):
+        self.lock = threading.RLock()
+        self.rows, self.parents = {}, {}
+        self.initial_pid = self.old_key = None
+        self.last_sample = None
+
+    def bind_initial(self, pid):
+        with self.lock:
+            require(self.initial_pid is None, 'no repeated launch')
+            self.initial_pid = pid
+            self.validate()
+
+    def add(self, p):
+        require(p['uid'] == UID, 'fixture UID mismatch')
+        k = key(p)
+        previous = self.rows.get(k)
+        if previous:
+            require(previous['executable'] == p['executable'] or
+                    (previous['executable'] == str(ENTRY) and p['executable'] == str(IMAGE)), 'unexpected exec')
+        else:
+            # Preserve the first overflow row, then fail closed without an unbounded in-memory ledger.
+            save('identity-first-observed', p)
+            require(len(self.rows) < 32, 'total process identity bound; retain overflow evidence')
+        self.rows[k] = dict(p)
+        if p['executable'] in [str(ENTRY), str(IMAGE), str(DAEMON)]:
+            require(p['nice'] == 15, 'observed target/daemon must be absolute nice15')
+
+    def observe(self, rows):
+        with self.lock:
+            # Record every supplied identity before checking role limits.
+            for p in rows:
+                self.add(p)
+            for p in rows:
+                if p['executable'] != str(DAEMON):
+                    continue
+                child_key = key(p)
+                parent = raw_identity(p['ppid'])
+                if parent and parent['uid'] == UID and parent['executable'] in [str(ENTRY), str(IMAGE)]:
+                    self.add(parent)
+                    parent_key = key(parent)
+                    require(child_key not in self.parents or self.parents[child_key] == parent_key, 'daemon parent changed')
+                    self.parents[child_key] = parent_key
+                elif child_key not in self.parents:
+                    prior = [k for k, row in self.rows.items() if row['pid'] == p['ppid'] and
+                             row['executable'] in [str(ENTRY), str(IMAGE)]]
+                    require(parent is None and len(prior) == 1, 'daemon has no independently matched parent')
+                    self.parents[child_key] = prior[0]
+                # An already associated child may be reparented when its app exits.
+            self.validate()
+
+    def validate(self):
+        apps = {k: p for k, p in self.rows.items() if p['executable'] in [str(ENTRY), str(IMAGE)]}
+        daemons = {k: p for k, p in self.rows.items() if p['executable'] == str(DAEMON)}
+        if self.initial_pid is not None:
+            old = [k for k, p in apps.items() if p['pid'] == self.initial_pid]
+            require(len(old) <= 1, 'initial app PID reused')
+            if old:
+                require(self.old_key is None or self.old_key == old[0], 'old parent identity changed')
+                self.old_key = old[0]
+        if self.old_key is not None:
+            old_children = [k for k, parent in self.parents.items() if parent == self.old_key]
+            require(len(old_children) <= 1, 'old-parent replacement daemon; candidate allowance cannot be used')
+            require(all((p['start_sec'], p['start_usec']) >= self.old_key[2:] for p in apps.values()), 'preexisting app appeared')
+        require(len(apps) <= 2 and len(daemons) <= 2, 'unexpected app/daemon restart identity')
+        for parent in set(self.parents.values()):
+            require(sum(value == parent for value in self.parents.values()) <= 1, 'replacement daemon for matched parent')
+
+    def match_ready(self, build, app, child):
+        self.observe([app, child])
+        with self.lock:
+            require(self.old_key is not None and self.parents[key(child)] == key(app), 'independent parent binding')
+            require((key(app) == self.old_key) == (build == '1'), 'old/new readiness role mismatch')
+            save('ledger-parent-role', dict(build=build, app=app, daemon=child))
+
+    def owned(self):
+        with self.lock:
+            return [dict(p) for p in self.rows.values() if p['executable'] in EXECUTABLE_HASHES]
+
+    def old_children(self):
+        with self.lock:
+            return [dict(self.rows[k]) for k, parent in self.parents.items() if parent == self.old_key]
+
+    def old_members(self):
+        with self.lock:
+            return ([dict(self.rows[self.old_key])] if self.old_key in self.rows else []) + self.old_children()
+
+
+def observe_until_stopped():
+    while not STOP_OBSERVER.is_set():
+        try:
+            rows = fixture_processes()
+            LEDGER.observe(rows)
+            LEDGER.last_sample = time.monotonic()
+            save('process-sample', rows)
+            require(len(rows) <= 12, 'active fixture process bound exceeded')
+            for name, limit in [('cli.stdout', 8 * 1024 * 1024), ('cli.stderr', 8 * 1024 * 1024),
+                                ('initial.stdout', 1024 * 1024), ('initial.stderr', 1024 * 1024)]:
+                p = RAW / name
+                require(not p.exists() or p.stat().st_size <= limit, 'sampled product log byte bound')
+        except BaseException as error:
+            fault('observer', error)
+        STOP_OBSERVER.wait(.05)
+
+
+def gone(prior):
+    # A nil supervisor PID or an app receipt is never used as an exit observation.
+    current = identity(prior['pid'])
+    if current is not None:
+        require(same(current, prior), 'PID reuse: stop; never signal new owner')
+        return False
+    try:
+        os.kill(prior['pid'], 0)
+    except ProcessLookupError:
+        return True
+    raise RuntimeError('libproc absence is not corroborated by ESRCH')
+
+
+def fixture_processes():
+    buf = (C.c_int * 16384)()
+    n = LIBPROC.proc_listpids(1, 0, C.byref(buf), C.sizeof(buf))
+    require(0 < n < C.sizeof(buf), 'process list unavailable or truncated')
+    result = []
+    for pid in buf[:n // C.sizeof(C.c_int)]:
+        if pid <= 0:
+            continue
+        # First filter by path, then get full UID/start identity only for fixture matches.
+        path = C.create_string_buffer(4096)
+        if LIBPROC.proc_pidpath(pid, path, len(path)) <= 0:
+            continue
+        text = os.fsdecode(path.value)
+        if str(ROOT) in text or IDENTIFIER in text:
+            item = raw_identity(pid)
+            require(item is not None and item['uid'] == UID, 'fixture process ownership')
+            result.append(item)
+            if LEDGER is not None:
+                try:
+                    LEDGER.observe([item])  # keep collecting after a recorded role failure
+                except BaseException as error:
+                    fault('ledger', error)
+    if LEDGER is not None:
+        try:
+            LEDGER.observe(result)
+        except BaseException as error:
+            fault('ledger', error)
+    return result
+
+
+def environment(pid):
+    # KERN_PROCARGS2 only for independently owned target/daemon PIDs. Never host-wide.
+    p = identity(pid)
+    require(p and p['uid'] == UID and p['executable'] in [str(IMAGE), str(DAEMON)], 'environment PID gate')
+    libc = C.CDLL('/usr/lib/libSystem.B.dylib', use_errno=True)
+    mib = (C.c_int * 3)(1, 49, pid)
+    data = C.create_string_buffer(256 * 1024)
+    size = C.c_size_t(len(data))
+    require(libc.sysctl(mib, 3, data, C.byref(size), None, 0) == 0, 'owned environment unavailable')
+    raw = data.raw[:size.value]
+    argc = struct.unpack_from('i', raw)[0]
+    require(0 < argc < 32, 'argument count')
+    offset = raw.index(b'\0', 4) + 1
+    while offset < len(raw) and raw[offset] == 0:
+        offset += 1
+    args = []
+    for _ in range(argc):
+        end = raw.index(b'\0', offset)
+        args.append(os.fsdecode(raw[offset:end])); offset = end + 1
+    values = {}
+    for value in raw[offset:].split(b'\0'):
+        if b'=' in value:
+            k, v = value.split(b'=', 1)
+            values[os.fsdecode(k)] = os.fsdecode(v)
+    return dict(arguments=args, values=values)
+
+
+def ro(label, args, allowed=(0,), filtered=False):
+    # Read-only metadata/OS evidence commands, each once, bounded output and time.
+    deadline = time.monotonic() + 5
+    with ACTION_LOCK:
+        budget()
+        p = subprocess.Popen(list(map(str, args)), stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=ENV)
+        with IO_LOCK:
+            READERS.add(p)
+    try:
+        stdout, stderr = p.communicate(timeout=remaining(deadline))
+        budget()
+    except BaseException as error:
+        if p.poll() is None:
+            p.kill()
+        try:
+            p.communicate(timeout=.5)  # bounded drain/reap; no reader thread or unlimited wait
+        except subprocess.TimeoutExpired:
+            pass  # hard timer ends the controller; retain state, never claim reader cleanup
+        save(label + '-first-error', dict(error=str(error), argv=list(map(str, args))))
+        raise
+    finally:
+        with IO_LOCK:
+            if p.poll() is not None:
+                READERS.discard(p)
+    require(len(stdout) + len(stderr) <= 32 * 1024 * 1024, 'post-capture OS evidence byte limit')
+    out = stdout.decode(errors='replace')
+    if filtered:
+        out = '\n'.join(line for line in out.splitlines() if IDENTIFIER in line or str(ROOT) in line)
+    save(label, dict(argv=list(map(str, args)), exit=p.returncode, stdout=out, stderr=stderr.decode(errors='replace')))
+    require(p.returncode in allowed, 'OS command failed: ' + label)
+    return p.returncode, out
+
+
+def os_evidence(label):
+    for job in JOBS:
+        ro(label + '-job', ['/bin/launchctl', 'print', f'gui/{UID}/{job}'], allowed=(0, 113))
+    ro(label + '-listener', ['/usr/sbin/lsof', '-nP', '-iTCP:' + str(PORT)], allowed=(0, 1))
+    ro(label + '-ls', ['/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister', '-dump'], filtered=True)
+
+
+def read_receipt(build, event, seen):
+    found = []
+    for p in sorted((ROOT / 'receipts').glob(build + '-*-' + event + '.json')):
+        if str(p) in seen:
+            continue
+        s = p.lstat()
+        require(stat.S_ISREG(s.st_mode) and s.st_uid == UID and s.st_nlink == 1 and
+                stat.S_IMODE(s.st_mode) == 0o600 and 0 < s.st_size <= 4096, 'receipt safety')
+        r = json.loads(p.read_text())
+        require(r['fixtureID'] == IDENTIFIER and r['nonce'] == NONCE and r['bundleBuild'] == build and
+                r['event'] == event and r['bundlePath'] == str(APP) and r['executablePath'] == str(IMAGE) and
+                r['daemonPath'] == str(DAEMON) and r['configPath'] == str(ROOT / 'state/config.toml') and
+                r['tlsPath'] == str(ROOT / 'state/tls') and r['socketPath'] == str(SOCKET), 'receipt binding')
+        found.append((str(p), r))
+    require(len(found) <= 1, 'duplicate lifecycle entry')
+    if not found:
+        return None
+    name, r = found[0]
+    seen.add(name)
+    save('receipt', dict(path=name, receipt=r))
+    return r
+
+
+def exact_read(s, count, deadline):
+    data = b''
+    while len(data) < count:
+        s.settimeout(remaining(deadline))
+        chunk = s.recv(count - len(data))
+        require(chunk, 'IPC EOF')
+        data += chunk
+    return data
+
+
+def ipc():
+    result = {}
+    # Two requests per launch. No subscriptions or mutation methods. At most four total.
+    with exchange_socket(socket.socket(socket.AF_UNIX)) as s:
+        # Each exchange has one monotonic deadline. The first includes connect.
+        deadline = min(time.monotonic() + 2, WORK_DEADLINE, WHOLE_DEADLINE)
+        s.settimeout(remaining(deadline))
+        s.connect(str(SOCKET))
+        for request_id, method in [(1, 'status.get'), (2, 'config.get')]:
+            if request_id == 2:
+                deadline = min(time.monotonic() + 2, WORK_DEADLINE, WHOLE_DEADLINE)
+            data = json.dumps(dict(id=request_id, method=method, params=None), separators=(',', ':')).encode()
+            require(len(data) <= 256, 'IPC request bound')
+            s.settimeout(remaining(deadline))
+            s.sendall(struct.pack('!I', len(data)) + data)
+            length = struct.unpack('!I', exact_read(s, 4, deadline))[0]
+            require(0 < length <= 65536, 'IPC response bound')
+            value = json.loads(exact_read(s, length, deadline))
+            remaining(deadline)
+            require(value.get('id') == request_id and 'error' not in value and 'result' in value, 'IPC response')
+            result[method] = value['result']
+    return result
+
+
+def ready(build, receipt, expected_pid=None):
+    require(receipt['privateIPCReady'] and receipt['appNice'] == 15 and not receipt['shutdownReturned'], 'readiness receipt')
+    app = identity(receipt['appPID'])
+    child = identity(receipt['ownedDaemonPID'])
+    require(app and child and app['uid'] == child['uid'] == UID and app['nice'] == child['nice'] == 15 and
+            app['executable'] == str(IMAGE) and child['executable'] == str(DAEMON) and
+            child['ppid'] == app['pid'], 'independent app/daemon identity or priority')
+    require(expected_pid is None or app['pid'] == expected_pid, 'initial entry did not exec same PID')
+    LEDGER.match_ready(build, app, child)
+    for pid in [app['pid'], child['pid']]:
+        e = environment(pid)
+        for k, v in json.loads(PLAN.read_text())['target_environment'].items():
+            require(e['values'].get(k) == v, 'private process environment')
+        require(not any(k.startswith('DYLD_') for k in e['values']), 'injection override')
+        save('private-process-environment', dict(pid=pid, environment=e))
+    require(environment(app['pid'])['arguments'][1:] == ['--private-update-fixture', '--e2e'], 'protected arguments')
+    s = SOCKET.lstat()
+    require(stat.S_ISSOCK(s.st_mode) and s.st_uid == UID, 'private socket identity')
+    _, sockets = ro('socket-owner', ['/usr/sbin/lsof', '-nP', '-a', '-p', str(child['pid']), '-U'])
+    require(str(SOCKET) in sockets, 'independent socket-owner path absent')
+    state = ipc()
+    status, config = state['status.get'], state['config.get']['config']
+    require(status['daemon']['pid'] == child['pid'] and status['daemon']['platform'] == 'virtual' and
+            status['role'] == config['role'] == 'off' and status['name'] == config['name'] == 'updater-fixture-' + NONCE,
+            'private virtual off-role status')
+    require(config['server']['listen'] == f'127.0.0.1:{PORT}' and config['server']['port'] == PORT and
+            config['client']['remote'] == '' and config['client']['autoconnect'] is False and
+            config['tls']['enabled'] is False and config['clipboard']['enabled'] is False, 'private configuration')
+    save('independent-ready-' + build, dict(app=app, daemon=child, socket=dict(device=s.st_dev, inode=s.st_ino), ipc=state))
+    return app, child
+
+
+def normal_quit(prior):
+    # Native process-addressed normal termination API; no desktop/input/AppleScript.
+    global QUIT_SENT
+    budget()
+    require(VALIDATED_NEW is not None and VALIDATED_NEW['build'] == '2' and
+            VALIDATED_NEW['launchID'] != VALIDATED_NEW['old_launchID'] and
+            same(prior, VALIDATED_NEW['app']) and not QUIT_SENT, 'only validated new build/launch may receive one normal quit')
+    require(same(identity(prior['pid']), prior) and prior['uid'] == UID and prior['executable'] == str(IMAGE), 'quit ownership')
+    require(plistlib.loads((APP / 'Contents/Info.plist').read_bytes())['CFBundleVersion'] == '2' and
+            sha(IMAGE) == VALIDATED_NEW['image_sha256'], 'validated candidate build drift')
+    QUIT_SENT = True  # consume once before the first native call; no retry after any failure
+    C.CDLL('/System/Library/Frameworks/AppKit.framework/AppKit')
+    objc = C.CDLL('/usr/lib/libobjc.A.dylib')
+    objc.objc_getClass.restype = C.c_void_p
+    objc.sel_registerName.restype = C.c_void_p
+    klass = objc.objc_getClass(b'NSRunningApplication')
+    sel = objc.sel_registerName(b'runningApplicationWithProcessIdentifier:')
+    app = C.CFUNCTYPE(C.c_void_p, C.c_void_p, C.c_void_p, C.c_int)(('objc_msgSend', objc))(klass, sel, prior['pid'])
+    require(app, 'native running application lookup')
+    terminate = objc.sel_registerName(b'terminate')
+    accepted = C.CFUNCTYPE(C.c_bool, C.c_void_p, C.c_void_p)(('objc_msgSend', objc))(app, terminate)
+    save('normal-quit', dict(identity=prior, API='NSRunningApplication.terminate', accepted=accepted))
+    require(accepted, 'normal quit refused')
+
+
+def signal_owned(prior, sig):
+    budget()
+    require(prior['uid'] == UID and same(identity(prior['pid']), prior), 'signal ownership/start/path changed')
+    p = Path(prior['executable'])
+    require(p.is_file() and not p.is_symlink() and p.resolve(strict=True) == p and p.lstat().st_uid == UID and
+            sha(p) in EXECUTABLE_HASHES.get(str(p), set()), 'signal canonical path/frozen executable hash')
+    require(same(identity(prior['pid']), prior), 'signal identity changed during hash read')
+    os.kill(prior['pid'], sig)
+    SIGNALS.append(dict(identity=prior, signal=sig, at=time.monotonic()))
+    save('owned-signal', SIGNALS[-1])
+
+
+class Feed(socketserver.BaseRequestHandler):
+    def handle(self):
+        with exchange_socket(self.request):
+            self.exchange()
+
+    def exchange(self):
+        budget()
+        server = self.server
+        connection_deadline = min(time.monotonic() + 2, WORK_DEADLINE, WHOLE_DEADLINE)
+        raw = b''
+        while b'\r\n\r\n' not in raw:
+            self.request.settimeout(remaining(connection_deadline))
+            part = self.request.recv(1024)
+            require(part and len(raw) + len(part) <= 8192, 'HTTP header bound')
+            raw += part
+        head, body = raw.split(b'\r\n\r\n', 1)
+        require(not body, 'HTTP request body refused')
+        lines = head.split(b'\r\n')
+        method, path, version = lines[0].decode('ascii').split(' ')
+        require(method in ['GET', 'HEAD'] and version in ['HTTP/1.0', 'HTTP/1.1'], 'HTTP protocol')
+        require(path in ['/appcast.xml', '/openergy-fixture.zip'], 'HTTP route refused')
+        require(not any(line.lower().startswith((b'range:', b'transfer-encoding:', b'content-length:')) for line in lines[1:]), 'HTTP body/range refused')
+        key = method + ' ' + path
+        require(key not in server.requests and len(server.requests) < 4, 'duplicate/request budget')
+        server.requests.add(key)
+        p = ROOT / 'public' / path[1:]
+        data = p.read_bytes()
+        response = (f'HTTP/1.1 200 OK\r\nContent-Length: {len(data)}\r\n'
+                    'Content-Type: application/octet-stream\r\nConnection: close\r\n\r\n').encode()
+        self.request.settimeout(remaining(connection_deadline))
+        self.request.sendall(response)
+        if method == 'GET':
+            self.request.settimeout(remaining(connection_deadline))
+            self.request.sendall(data)
+            remaining(connection_deadline)
+            server.sent[path] = len(data)
+        save('HTTP-complete', dict(method=method, path=path, length=len(data), content_sha256=sha(p),
+             peer=self.client_address[0], sent_body=method == 'GET'))
+
+
+class Server(socketserver.TCPServer):
+    allow_reuse_address = False
+    request_queue_size = 2
+    def handle_error(self, request, client_address):
+        self.failure = True
+        fault('HTTP', sys.exc_info()[1])
+
+
+def serve_until_cancelled(server):
+    try:
+        server.timeout = .1
+        while not CANCEL.is_set():
+            server.handle_request()
+    except BaseException as error:
+        fault('HTTP-thread', error)
+    finally:
+        server.server_close()
+
+
+def terminal_stop(source, message):
+    # Independent of the main thread and all Python evidence/ledger locks.
+    # One fixed terminal record, then process exit kills all controller threads.
+    try:
+        data = json.dumps(dict(source=source, error=message, at=time.monotonic(),
+                               retained_state=True, runtime_accepted=False)).encode() + b'\n'
+        fd = os.open(RAW / 'terminal-deadline-or-quiescence.json', os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        try:
+            os.write(fd, data)
+        finally:
+            os.close(fd)
+    finally:
+        os._exit(1)
+
+
+def hard_deadline():
+    try:
+        if not STOP_HARD_TIMER.wait(max(0, WHOLE_DEADLINE - time.monotonic())):
+            terminal_stop('whole-deadline', '240s expired; controller stopped; unconfirmed state retained')
+    except BaseException as error:
+        terminal_stop('hard-timer', str(error))
+
+
+def recover(plan, caches, server_thread, observer):
+    global RECOVERY_IDENT
+    RECOVERY_IDENT = threading.get_ident()
+    cleanup_failure = None
+    try:
+        # Reserve the final 60s of the existing 240s ceiling for bounded recovery.
+        if not CLEANUP.wait(max(0, WORK_DEADLINE - time.monotonic())):
+            fault('work-deadline', '180s control cutoff; enter owned recovery within the 240s whole deadline')
+        CANCEL.set()
+        if not ACTION_LOCK.acquire(timeout=1):
+            terminal_stop('control-quiescence', 'active launch/quit could not quiesce; retain state; no late cleanup')
+        ACTION_LOCK.release()  # CANCEL prevents any later control mutation under this gate.
+        cleanup_start = time.monotonic()
+        stop_io()
+        server_thread.join(timeout=remaining(time.monotonic() + 2.5))
+        require(not server_thread.is_alive(), 'HTTP thread not stopped; retain caches')
+        # No normal quit here: before validated-new, only delayed recovery is authorized.
+        term_seen = set()
+        while time.monotonic() - cleanup_start < 15:
+            budget()
+            for p in PRODUCTS:
+                p.poll()  # reap owned direct children before independent ESRCH checks
+            for p in LEDGER.owned():
+                if gone(p):
+                    continue
+                if time.monotonic() - cleanup_start >= 10 and key(p) not in term_seen:
+                    signal_owned(p, signal.SIGTERM)
+                    term_seen.add(key(p))
+            time.sleep(.05)
+        for p in LEDGER.owned():
+            if not gone(p):
+                require(time.monotonic() - cleanup_start >= 15, 'forcekill deadline')
+                signal_owned(p, signal.SIGKILL)
+        os_evidence('postflight')
+        for job in JOBS:
+            code, output = ro('cleanup-job-state', ['/bin/launchctl', 'print', f'gui/{UID}/{job}'], allowed=(0, 113))
+            if code == 0:
+                require(time.monotonic() - cleanup_start >= 15, 'job bootout deadline')
+                programs = re.findall(r'^\s*program = (.+)$', output, re.M)
+                require(len(programs) == 1, 'job program not independently identified')
+                program = Path(programs[0])
+                require(program.is_file() and not program.is_symlink() and program.lstat().st_uid == UID and
+                        program.resolve(strict=True) == program and
+                        (program.is_relative_to(ROOT) or any(program.is_relative_to(p) for p in caches)) and
+                        sha(program) in plan['allowed_helper_sha256'], 'job program ownership/hash mismatch')
+                ro('cleanup-exact-job-bootout', ['/bin/launchctl', 'bootout', f'gui/{UID}/{job}'])
+                ro('cleanup-exact-job-absent', ['/bin/launchctl', 'print', f'gui/{UID}/{job}'], allowed=(113,))
+        # Always observe the full quiet interval, including when the first sample is empty.
+        quiet_deadline = time.monotonic() + 5
+        while time.monotonic() < quiet_deadline:
+            budget()
+            for p in PRODUCTS:
+                p.poll()
+            residual = fixture_processes()
+            save('quiet-process-sample', residual)
+            require(not residual, 'owned helper/process remnants; retain caches and report')
+            time.sleep(.05)
+        require(all(gone(p) for p in LEDGER.owned()), 'independent final process exits missing')
+        old_children = LEDGER.old_children()
+        require(all(gone(p) for p in old_children), 'independent exit missing for an observed old child')
+        save('independent-all-old-child-exits', dict(children=old_children, each_ESRCH=True))
+        predicate = 'eventMessage CONTAINS "' + IDENTIFIER + '" OR eventMessage CONTAINS "' + str(ROOT) + '"'
+        ro('fixture-LS-Gatekeeper-XProtect-log', ['/usr/bin/log', 'show', '--last', '4m', '--style', 'ndjson',
+            '--predicate', predicate], filtered=True)
+        require(CONTROL_DONE.is_set(), 'control path still blocked; retain caches and stop controller')
+        with IO_LOCK:
+            require(all(p.poll() is not None for p in READERS), 'OS reader still live; retain caches')
+        require(not any(e['source'] in ['observer', 'ledger'] for e in ERRORS), 'observer incomplete; retain caches')
+        for p in caches:
+            budget()
+            require(not fixture_processes(), 'late fixture process; retain cache')
+            if p.exists() or p.is_symlink():
+                s = p.lstat()
+                require(stat.S_ISDIR(s.st_mode) and s.st_uid == UID and p.resolve() == p, 'cache cleanup ownership')
+                before = dict(device=s.st_dev, inode=s.st_ino, inventory=inventory(p))
+                save('owned-cache-before-removal', dict(path=str(p), **before))
+                current = p.lstat()
+                require((current.st_dev, current.st_ino) == (s.st_dev, s.st_ino), 'cache identity changed')
+                budget()
+                import shutil
+                shutil.rmtree(p)
+                require(not p.exists(), 'cache removal incomplete')
+        require(not SOCKET.exists(), 'socket remains; never unlink an unproven endpoint')
+    except BaseException as error:
+        cleanup_failure = str(error)
+        fault('recovery', error)
+    finally:
+        CANCEL.set()
+        stop_io()
+        # Preserve each old identity's independent exit outcome, even on recovery failure.
+        for p in LEDGER.old_members():
+            try:
+                exited = gone(p)
+                save('old-identity-exit-outcome', dict(identity=p, ESRCH=exited))
+            except BaseException as error:
+                save('old-identity-exit-outcome', dict(identity=p, ESRCH=False, error=str(error)))
+        with IO_LOCK:
+            readers = list(READERS)
+        for p in readers:
+            try:
+                p.wait(timeout=.5)
+            except subprocess.TimeoutExpired:
+                terminal_stop('reader-quiescence', 'read-only command remains; retain state')
+        require(CONTROL_DONE.is_set(), 'control path did not quiesce; retain all unconfirmed state')
+        STOP_OBSERVER.set()
+        observer.join(timeout=1)
+        if observer.is_alive() or server_thread.is_alive():
+            terminal_stop('background-quiescence', 'observer/HTTP thread remains; retain state; no late mutation')
+        save('result', dict(errors=ERRORS, cleanup_failure=cleanup_failure, runtime_accepted=False,
+             independent_result_review_required=True, total_elapsed=time.monotonic() - START,
+             signals=SIGNALS, validated_new=VALIDATED_NEW, quit_sent=QUIT_SENT,
+             observed_identities=list(LEDGER.rows.values()), daemon_parent_identities=list(LEDGER.parents.items()),
+             persistent_LS_assessment_state='unknown; no full restoration promise', normal_checks_enabled=True,
+             controller_launches=len(PRODUCTS[:1]), controller_updates=max(0, len(PRODUCTS) - 1),
+             explicit_quit_at_most_one=True,
+             proof_limit='50ms sampled identities only; no complete kernel process/exec coverage. Sampled logs and post-capture limits are not strict peak-resource bounds. Missing independent LS/NSWorkspace/exec evidence remains UNVERIFIED.'))
+        if not CONTROL_DONE.is_set():
+            terminal_stop('blocked-control', 'recovery finished with control still blocked; retained state; stop all threads')
+        budget()
+        RECOVERY_DONE.set()
+
+
+def recover_guarded(*args):
+    try:
+        recover(*args)
+    except BaseException as error:
+        fault('recovery-thread', error)
+        terminal_stop('recovery-thread', str(error))
+
+
+def observer_guarded():
+    try:
+        observe_until_stopped()
+    except BaseException as error:
+        terminal_stop('observer-thread', str(error))
+
+
+def main():
+    global START, LIBPROC, LEDGER, WORK_DEADLINE, WHOLE_DEADLINE, VALIDATED_NEW
+    # Approval is a separate later human event, never synthesized by this controller.
+    require(len(sys.argv) == 3, 'DO-NOT-RUN: require reviewed proposal SHA256 and new approval receipt path')
+    require(sha(PLAN) == sys.argv[1], 'proposal identity')
+    plan = json.loads(PLAN.read_text())
+    approval = json.loads(Path(sys.argv[2]).read_text())
+    require(approval.get('approval_received') is True and approval.get('proposal_sha256') == sha(PLAN) and
+            approval.get('controller_sha256') == sha(Path(__file__)) and
+            approval.get('explicit_running_target_and_relaunch') is True and
+            approval.get('independent_review_complete') is True and
+            approval.get('scope') == plan['approval_scope'], 'NEW explicit approval and exact independent review required')
+    require(approval.get('stopped_case_171655_reused') is False, 'stopped-only approval is not applicable')
+    review_path = Path(approval['independent_review_receipt_path'])
+    require(sha(review_path) == approval['independent_review_receipt_sha256'], 'independent review receipt hash')
+    review = json.loads(review_path.read_text())
+    require(review.get('proposal_sha256') == sha(PLAN) and review.get('controller_sha256') == sha(Path(__file__)) and
+            review.get('result') == 'clear_for_approval' and review.get('unresolved_findings') == [] and
+            review.get('independent_review_complete') is True, 'new independent review of exact corrected files missing')
+    for name, digest in plan['original_inputs'].items():
+        require(sha(HERE / 'inputs' / name) == digest, 'original input snapshot drift')
+    for name in ['controller-DO-NOT-RUN.py.txt', 'operation-DO-NOT-RUN.json', 'README.md']:
+        require(sha(PREP / name) == plan['original_inputs'][name], 'original preparation changed')
+    require(not plan['packaging_blockers'], 'blocked packaging preflight')
+    os.umask(0o077)
+    require(os.getpriority(os.PRIO_PROCESS, 0) <= 15, 'cannot raise to nice15')
+    os.setpriority(os.PRIO_PROCESS, 0, 15)
+    require(os.getpriority(os.PRIO_PROCESS, 0) == 15, 'absolute nice15')
+    require(not any(RAW.iterdir()), 'one-shot evidence directory not empty')
+    require(ROOT.resolve() == ROOT and ROOT.lstat().st_uid == UID and stat.S_IMODE(ROOT.stat().st_mode) == 0o700, 'root')
+    require(not (ROOT / 'runtime-once.lock').exists(), 'operation already attempted')
+    marker = json.loads((ROOT / 'fixture.json').read_text())
+    require(marker == plan['marker'] and marker['createdAt'] <= time.time() < marker['expiresAt'] - 240 and
+            marker['expiresAt'] - marker['createdAt'] <= 21600, 'missing/stale/mutated marker; never refresh')
+    for relative in ['fixture.json', 'launch.lock', 'state/config.toml']:
+        p = ROOT / relative
+        s = p.lstat()
+        require(p.resolve(strict=True) == p and stat.S_ISREG(s.st_mode) and s.st_uid == UID and
+                s.st_nlink == 1 and stat.S_IMODE(s.st_mode) == 0o600, 'private file safety')
+    require((ROOT / 'launch.lock').stat().st_size == 0, 'precreated empty lock required')
+    for relative in ['target', 'state', 'state/tls', 'home', 'tmp', 'receipts']:
+        p = ROOT / relative
+        require(p.resolve(strict=True) == p and p.lstat().st_uid == UID and
+                stat.S_IMODE(p.stat().st_mode) == 0o700, 'private directory safety')
+    for relative in ['target/Openergy.app', 'candidate/Openergy.app', 'driver/sparkle.app']:
+        p = ROOT / relative
+        require(p.resolve(strict=True) == p, 'bundle path canonicality')
+    for path, digest in plan['source_hashes'].items():
+        require(sha(PREP.parents[2] / path) == digest, 'source/artifact approval drift')
+    for name, digest in plan['evidence_hashes'].items():
+        directory = 'static' if name == 'audit.json' else 'raw'
+        require(sha(PREP / directory / name) == digest, 'frozen inventory/evidence drift')
+    require(sha(Path(__file__)) == plan['controller']['sha256'], 'frozen controller drift')
+    for path, digest in plan['private_file_hashes'].items():
+        require(sha(Path(path)) == digest, 'private fixture drift')
+    require(not SOCKET.exists() and not SOCKET.is_symlink() and not any((ROOT / 'receipts').iterdir()), 'stale endpoint/receipt')
+    for path in ['home', 'tmp', 'receipts', 'driver-home', 'driver-tmp']:
+        require(not any((ROOT / path).iterdir()) and stat.S_IMODE((ROOT / path).stat().st_mode) == 0o700, 'private writable-tree preflight')
+    inventories = json.loads((PREP / 'raw/bundle-inventories.json').read_text())
+    for tree in [inventories['old'], inventories['candidate']]:
+        for relative in ['Contents/MacOS/OpenergyPrivateLauncher', 'Contents/MacOS/Openergy', 'Contents/Helpers/openergy']:
+            EXECUTABLE_HASHES.setdefault(str(APP / relative), set()).add(tree[relative]['sha256'])
+    EXECUTABLE_HASHES[str(ROOT / 'driver/sparkle.app/Contents/MacOS/sparkle')] = {plan['official_sparkle']['driver_executable_sha256']}
+    require(inventory(APP) == inventories['old'], 'exact old bundle')
+    require(inventory(ROOT / 'candidate/Openergy.app') == inventories['candidate'], 'exact candidate bundle')
+    require(inventory(ROOT / 'driver/sparkle.app') == json.loads((PREP / 'raw/driver-inventory.json').read_text()), 'exact driver')
+    LIBPROC = C.CDLL('/usr/lib/libproc.dylib', use_errno=True)
+    LIBPROC.proc_pidinfo.argtypes = [C.c_int, C.c_int, C.c_uint64, C.c_void_p, C.c_int]
+    LIBPROC.proc_pidpath.argtypes = [C.c_int, C.c_void_p, C.c_uint32]
+    require(not fixture_processes(), 'fixture already running')
+    caches = [Path(p) for p in plan['owned_cache_roots']]
+    require(all(not p.exists() and not p.is_symlink() for p in caches), 'preexisting cache; never adopt')
+    save('cache-preflight', [dict(path=str(p), exists=False, symlink=False) for p in caches])
+    for job in JOBS:
+        code, _ = ro('preflight-job', ['/bin/launchctl', 'print', f'gui/{UID}/{job}'], allowed=(0, 113))
+        require(code == 113, 'preexisting job; never adopt')
+    os_evidence('preflight')
+    for p in [APP, ROOT / 'candidate/Openergy.app', ROOT / 'driver/sparkle.app']:
+        ro('preflight-seal', ['/usr/bin/codesign', '--verify', '--all-architectures', '--deep', '--strict', p])
+    # One exact bind, no reuse/fallback. Start the ledger before the only launch.
+    START = time.monotonic()
+    WHOLE_DEADLINE, WORK_DEADLINE = START + 240, START + 180
+    server = Server(('127.0.0.1', PORT), Feed)
+    server.requests, server.sent, server.failure = set(), {}, False
+    (ROOT / 'runtime-once.lock').open('xb').close()
+    LEDGER = IdentityLedger()
+    observer = threading.Thread(target=observer_guarded, name='persistent-identity-ledger', daemon=True)
+    server_thread = threading.Thread(target=serve_until_cancelled, args=(server,), name='bounded-HTTP', daemon=True)
+    timer = threading.Thread(target=hard_deadline, name='absolute-whole-deadline', daemon=True)
+    recovery = threading.Thread(target=recover_guarded, args=(plan, caches, server_thread, observer), name='independent-owned-recovery', daemon=True)
+    try:
+        timer.start()
+        observer.start()
+        server_thread.start()
+        recovery.start()
+    except BaseException as error:
+        fault('thread-start', error)
+        terminal_stop('thread-start', str(error))
+    seen = set()
+    launched = cli = None
+    try:
+        # ONLY initial target launch. Resolve CFBundleExecutable from frozen plist in review.
+        # No inherited OPENERGY/DYLD override; launcher supplies the protected environment.
+        launched = launch_once([str(ENTRY)], 'initial', initial=True)
+        save('initial-noarg-entry', dict(argv=[str(ENTRY)], pid=launched.pid, CFBundleExecutable='OpenergyPrivateLauncher'))
+        deadline = START + 20
+        old_receipt = None
+        while time.monotonic() < deadline:
+            budget()
+            old_receipt = read_receipt('1', 'ready', seen)
+            if old_receipt:
+                break
+            require(launched.poll() is None, 'old app exited before ready')
+            time.sleep(.05)
+        require(old_receipt, 'old readiness deadline; no retry')
+        old_app, old_child = ready('1', old_receipt, launched.pid)
+        require(sha(ROOT / 'state/config.toml') == plan['private_file_hashes'][str(ROOT / 'state/config.toml')], 'config changed')
+        os_evidence('old-ready')
+        # ONLY updater invocation; normal signature, assessment, notification and relaunch behavior.
+        cli = launch_once(plan['external_cli_command'], 'cli')
+        save('external-cli', dict(argv=plan['external_cli_command'], pid=cli.pid, environment=ENV))
+        cli_identity = identity(cli.pid)
+        require(cli_identity and cli_identity['nice'] == 15, 'CLI process identity')
+        update_deadline = time.monotonic() + 90
+        new_receipt = None
+        old_app_gone = old_child_gone = False
+        while time.monotonic() < update_deadline:
+            budget()
+            launched.poll()  # reap direct child before independently checking ESRCH
+            old_app_gone |= gone(old_app)
+            old_child_gone = gone(old_child) and all(gone(p) for p in LEDGER.old_children())
+            require(not server.failure, 'HTTP bounded server failure')
+            if new_receipt is None:
+                new_receipt = read_receipt('2', 'ready', seen)
+            if new_receipt and cli.poll() is not None and old_app_gone and old_child_gone:
+                break
+            time.sleep(.05)
+        require(new_receipt and cli.poll() == 0 and old_app_gone and old_child_gone, 'handoff/independent exit deadline')
+        save('independent-old-exits', dict(app=old_app, daemon=old_child, all_observed_old_children=LEDGER.old_children(), both_ESRCH=True,
+             limit='1.5s supervisor SIGKILL fallback exists; no signal outcome inferred from receipt'))
+        require(inventory(APP) == inventories['candidate'], 'exact replacement tree')
+        require(server.sent == {name: row['bytes'] for name, row in plan['http_files'].items()}, 'complete exact download')
+        new_app, new_child = ready('2', new_receipt)
+        require(new_receipt['launchID'] != old_receipt['launchID'] and new_app['pid'] != old_app['pid'] and
+                new_child['pid'] != old_child['pid'], 'new process/lifecycle identities')
+        require(sha(ROOT / 'state/config.toml') == plan['private_file_hashes'][str(ROOT / 'state/config.toml')], 'config persistence')
+        ro('replacement-seal', ['/usr/bin/codesign', '--verify', '--all-architectures', '--deep', '--strict', APP])
+        os_evidence('new-ready')
+        # Validation is separate from the receipt. Only this build/launch/identity may be quit.
+        with ACTION_LOCK:
+            budget()
+            require(inventory(APP) == inventories['candidate'], 'candidate changed before new validation')
+            require(gone(old_app) and all(gone(p) for p in LEDGER.old_children()), 'old identity still present')
+            LEDGER.match_ready('2', new_app, new_child)
+            VALIDATED_NEW = dict(app=dict(new_app), daemon=dict(new_child), build='2',
+                                 launchID=new_receipt['launchID'], old_launchID=old_receipt['launchID'],
+                                 image_sha256=inventories['candidate']['Contents/MacOS/Openergy']['sha256'])
+            save('validated-new-identity', VALIDATED_NEW)
+            normal_quit(new_app)
+        end = time.monotonic() + 10
+        while time.monotonic() < end and not (gone(new_app) and gone(new_child)):
+            budget()
+            time.sleep(.05)
+        require(gone(new_app) and gone(new_child), 'final app/daemon exit deadline')
+        require(read_receipt('1', 'exit', seen) and read_receipt('2', 'exit', seen), 'termination receipts absent')
+        require(not SOCKET.exists(), 'owned socket remains')
+    except BaseException as error:
+        fault('control', error)
+    finally:
+        # No product mutation follows this handoff. Recovery owns all delayed cleanup.
+        CONTROL_DONE.set()
+        CLEANUP.set()
+        while not RECOVERY_DONE.wait(.05):
+            for p in PRODUCTS:
+                p.poll()
+        recovery.join(timeout=min(1, max(0, WHOLE_DEADLINE - time.monotonic())))
+        require(not recovery.is_alive() and time.monotonic() < WHOLE_DEADLINE, 'whole deadline/recovery join')
+        STOP_HARD_TIMER.set()
+        timer.join(timeout=min(1, max(0, WHOLE_DEADLINE - time.monotonic())))
+        require(not timer.is_alive() and time.monotonic() <= WHOLE_DEADLINE, 'whole deadline/timer join')
+    require(not ERRORS, 'operation failed; first failures retained; no retry')
+
+
+if __name__ == '__main__':
+    main()
