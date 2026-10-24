@@ -281,6 +281,9 @@ have nice 15. The overall verification remains **FAILED**: copied Swift build
 state removed 114 old scratch-cache output entries. Their bytes and symlinks were
 restored from exact retained copies, and the first failure remains preserved.
 Full metadata restoration is unverified. No packaging retry or GUI launch ran.
+The [independent priority review](../release-priority-2026-10-23/independent-review-t3-ab89755e.md)
+finds no new source P1/P2 and corroborates recovery. The controller's cache
+preservation P2 remains open; a fresh-build-state verification is being prepared.
 
 The [slow-DNS prerequisite note](../slow-dns-fixture-prerequisites-2026-10-23-a3f15192.md)
 identifies a possible Windows application-DNS API. The [settings-only helper](../windows-app-dns-qualification-prep-2026-10-23/report.md)
