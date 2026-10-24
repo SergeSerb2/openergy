@@ -61,9 +61,9 @@
       "workState": "working"
     },
     "windows": {
-      "childNodeId": "node:delegated-task:command%3Amcp%3A5026303b-54bb-4510-ae8f-b80a1f3b1ea7%3Adelegate-task%3Aoe-windows-stop-controller-independent-review-r4-7d92633-20261023",
-      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A5026303b-54bb-4510-ae8f-b80a1f3b1ea7%253Adelegate-task%253Aoe-windows-stop-controller-independent-review-r4-7d92633-20261023:ordinal:1",
-      "childThreadId": "thread:delegated-task:command%3Amcp%3A5026303b-54bb-4510-ae8f-b80a1f3b1ea7%3Adelegate-task%3Aoe-windows-stop-controller-independent-review-r4-7d92633-20261023",
+      "childNodeId": "node:delegated-task:command%3Amcp%3A5026303b-54bb-4510-ae8f-b80a1f3b1ea7%3Adelegate-task%3Aoe-windows-durable-prerequisite-recovery-r5-6b0e4f1-20261023",
+      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A5026303b-54bb-4510-ae8f-b80a1f3b1ea7%253Adelegate-task%253Aoe-windows-durable-prerequisite-recovery-r5-6b0e4f1-20261023:ordinal:1",
+      "childThreadId": "thread:delegated-task:command%3Amcp%3A5026303b-54bb-4510-ae8f-b80a1f3b1ea7%3Adelegate-task%3Aoe-windows-durable-prerequisite-recovery-r5-6b0e4f1-20261023",
       "hasPendingChildRuns": false,
       "hasPendingQuestion": false,
       "latestTerminalResultContextTransferId": null,
@@ -86,7 +86,7 @@
       "resultContextTransferId": null,
       "status": "running",
       "summary": null,
-      "taskId": "node:delegated-task:command%3Amcp%3A5026303b-54bb-4510-ae8f-b80a1f3b1ea7%3Adelegate-task%3Aoe-windows-stop-controller-independent-review-r4-7d92633-20261023",
+      "taskId": "node:delegated-task:command%3Amcp%3A5026303b-54bb-4510-ae8f-b80a1f3b1ea7%3Adelegate-task%3Aoe-windows-durable-prerequisite-recovery-r5-6b0e4f1-20261023",
       "waitTimedOut": false,
       "workState": "working"
     }
@@ -117,7 +117,7 @@
     "state": "Agent observed real file-only setup-sign/full-app sign/verify preserving nonempty fixture dictionaries on both architectures. Raw evidence/output/prior inputs disappeared before export; only six surviving transcribed/report files. Saved-evidence acceptance INCOMPLETE. No signing retry. Unsampled signing priorities unverified."
   },
   "goal_complete": false,
-  "head_before_checkpoint": "37318797f6625d59f160b79c605d6becb3456968",
+  "head_before_checkpoint": "39c36b51211c7032a0e28f367a96b0d0155749f1",
   "ordinary": {
     "review_cherry_pick": "0e89d52",
     "review_r6": "4eaa964eab6f74b2fc5704a1925520866c7d9f9c",
@@ -134,7 +134,7 @@
     "measured": false,
     "percent": 70
   },
-  "recorded_at": "2026-10-23T22:18:40.079678-07:00",
+  "recorded_at": "2026-10-23T22:25:48.416794-07:00",
   "retention": "Previous /tmp checkpoint was absent on resume. Cause not established. Use this committed checkpoint and Git evidence, not missing transient files. Do not infer raw evidence from transcribed observations.",
   "root": "/Users/serge/.t3/worktrees/openergy/t3-52422617",
   "sparkle": {
@@ -156,8 +156,12 @@
   "thread_id": "2d863197-a54d-4f3f-96fa-6ed045f9e4a3",
   "user_resumed_at": "2026-10-23T22:10:22-07:00",
   "windows": {
+    "review_cherry_pick": "39c36b5",
+    "review_r4": "6b0e4f12469a28f89badbd6bb3dc80ee0de45f40",
+    "review_sha256": "71a1a7c51b4bc867ecc15c090047882b629a9ff77406a5fd8db3246a3c818366",
+    "source_archive_cherry_pick": "9a1d730",
     "source_folder": "/Users/serge/.t3/worktrees/openergy/t3-dbcc0160/docs/verification/release-integration-2026-10-23/windows-stop-controller-repair-r2-dbcc0160",
     "source_repair": "7d92633149204f834b4da55e352e7d05fd2abe4a",
-    "state": "Source held; prior R3 independent review interrupted without verdict; fresh R4 active. Native Clippy/build passed exact e1ef124, sole runtime failed before stop due active-log sharing. Retained executable availability must be freshly established before future flow. No rebuild or old guard reset."
+    "state": "R4 no actionable P1/P2 in source scope. Native/PS/C# syntax/runtime acceptance remains FAILED/UNVERIFIED. All six retained inputs and old transport selector are absent. New R5 file-only preparation active: immutable Git source recovery, narrowly scoped durable transport-record lookup, and a new bounded source-build/CLI proposal. No remote command, rebuild, runtime, old-guard reset or substitution yet."
   }
 }

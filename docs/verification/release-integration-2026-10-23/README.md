@@ -259,7 +259,12 @@ The stop path remains **UNVERIFIED**. Known owned processes, pipes and fresh
 roots are removed; selected prior-state checks pass. The
 [parent file-binding check](daemon-stop-native-windows-parent-bindings-2026-10-23.json)
 matches all 178 exported evidence entries and 558 source blobs. It adds no
-independent runtime reproduction. A source-only controller correction is assigned.
+independent runtime reproduction. The [source-only reader repair](windows-stop-controller-repair-r2-dbcc0160/README.md)
+has a fresh [R4 review](windows-stop-controller-R4-review-b5580f67.md) with no
+actionable P1/P2 in its source scope. PowerShell/C# syntax and corrected native
+runtime behavior remain unverified. Its transport selector and all six bound
+private inputs are absent, blocking the proposed reuse flow. Preparation of a
+durable new-input path is assigned; no native retry or rebuild has run.
 
 [Sparkle integration](../sparkle-integration-2026-10-23/README.md) and the signed
 empty Cloudflare feed are implemented and checked. The later
