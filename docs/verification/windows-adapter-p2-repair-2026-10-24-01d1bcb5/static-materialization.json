@@ -1,0 +1,100 @@
+{
+  "execution": false,
+  "method": "own unified-patch data reader; immutable Git bytes in memory; no supplied helper or source evaluation",
+  "program_files_materialized": 0,
+  "records": [
+    {
+      "patch": "R2 repair.patch",
+      "path": "controller.py.txt",
+      "hunks": 10,
+      "exact": true,
+      "sha256": "2bcb95f50e5ce621ebdc74d6c09f4f9ddb0b402370b910600bd8f3632025d54b"
+    },
+    {
+      "patch": "R2 repair.patch",
+      "path": "observer.cs.txt",
+      "hunks": 4,
+      "exact": true,
+      "sha256": "8559ecbca18de3b896407df1048c278633c927134858cc99124ae883e816f5e2"
+    },
+    {
+      "patch": "R2 repair.patch",
+      "path": "postflight.ps1.txt",
+      "hunks": 2,
+      "exact": true,
+      "sha256": "122a3dd486f23e437c23403f6e3eada637282643dfa10040d66cdcb7e2064874"
+    },
+    {
+      "patch": "R2 repair.patch",
+      "path": "qualify.ps1.txt",
+      "hunks": 2,
+      "exact": true,
+      "sha256": "67ff4f480344ca1cde38ba49679d124ba0b9528cb1499d150f109ce00c79f379"
+    },
+    {
+      "patch": "R2 repair.patch",
+      "path": "runtime.ps1.txt",
+      "hunks": 8,
+      "exact": true,
+      "sha256": "d60991664908e4e332dc70b71a99c851779a368bd0541c6734ce8f522c0ff964"
+    },
+    {
+      "patch": "R5 adapter.patch",
+      "path": "controller.py.txt",
+      "hunks": 7,
+      "exact": true,
+      "sha256": "880333ebb6039261033eae04b22e8df2f6b87f30fa1ec4fe7c377213bd3910fb"
+    },
+    {
+      "patch": "R5 adapter.patch",
+      "path": "qualify.ps1.txt",
+      "hunks": 2,
+      "exact": true,
+      "sha256": "3d9f926395adbdeee29518a9fdaa164ddb7545db67747f3f2ec9023ac2729d22"
+    },
+    {
+      "patch": "R5 adapter.patch",
+      "path": "runtime.ps1.txt",
+      "hunks": 2,
+      "exact": true,
+      "sha256": "986b6246e79f8ecb9ddefa32bcfa23ca0aec6c31af44b97915c45bc481f9e615"
+    },
+    {
+      "patch": "R5 adapter.patch",
+      "path": "postflight.ps1.txt",
+      "hunks": 2,
+      "exact": true,
+      "sha256": "77456c370740da9ef7e86a4bbb9046342a239c7b9d9b72b9da34c43eb9bdbd2a"
+    },
+    {
+      "patch": "R5 adapter.patch",
+      "path": "build.ps1.txt",
+      "hunks": 3,
+      "exact": true,
+      "sha256": "d4978e13b1e20b70f4aaf06e097d98666c224e67c48e36598147da5113c648d8"
+    },
+    {
+      "patch": "repair-from-r5.patch",
+      "path": "source/build.ps1.txt",
+      "hunks": 2,
+      "exact": true,
+      "sha256": "f8559887d542227a204e79a554377736fdd61dc5d1a00386ae48214fbbf69df2"
+    },
+    {
+      "patch": "repair-from-r5.patch",
+      "path": "source/controller.py.txt",
+      "hunks": 5,
+      "exact": true,
+      "sha256": "10431430e9a218418addc4cc47d31521b42aabaed6dced439e25ba4a89da334e"
+    }
+  ],
+  "unchanged_candidate_files": [
+    "source/common.ps1.txt",
+    "source/observer.cs.txt",
+    "source/postflight.ps1.txt",
+    "source/qualify.ps1.txt",
+    "source/runtime.ps1.txt"
+  ],
+  "candidate_controller_AST": "parsed only as data; no import, compile, eval or execution",
+  "PowerShell_CSharp_parsing_compilation": "NOT_RUN"
+}

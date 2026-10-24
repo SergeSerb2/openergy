@@ -1,0 +1,135 @@
+{
+  "schema": "openergy.windows-adapter-p2-repair-proposal.v1",
+  "execution": false,
+  "materialized_workflow": false,
+  "approval_receipt_created": false,
+  "independent_source_review": "PENDING for this NEW whole seven-source candidate; required next",
+  "new_human_approval_gate": false,
+  "old_missing_inputs": "TERMINAL",
+  "historical_runtime": "FAILED_UNVERIFIED",
+  "source_commit": "e1ef1243988d072cb9afc33fd2f5a56ca70e2f5a",
+  "source_data": "hash-recovered; not a new or substituted historical archive",
+  "private_outputs_root_task_id": "windows-prerequisite-recovery-r5-86e0bfd1-a78f650e050c4f6bb1d7fe276c67215a",
+  "future_source_directory": "run-source/",
+  "future_run_directory": "new-run/",
+  "missing_factual_bindings": [
+    "exact nine-fixture historical host-relative selection paths and private hash binding"
+  ],
+  "budgets_seconds": {
+    "overall": 2400,
+    "transport_recovery_reserve": 30,
+    "qualification_outer": 600,
+    "build_native_step": 600,
+    "build_outer": 660,
+    "runtime_native": 150,
+    "runtime_outer": 180,
+    "readiness": 15,
+    "each_cli_and_observer": 15,
+    "normal_stop_from_pre_forward": 10,
+    "runtime_recovery": 15,
+    "collection_outer": 600,
+    "upload": 90,
+    "download": 90,
+    "fresh_root_removal": 90,
+    "build_owned_settlement": 30,
+    "build_native_receipt_ceiling": 630
+  },
+  "budget_semantics": "every external operation capped by remaining single overall budget; ordinary stages cannot spend final 30-second transport reserve; maxima are ceilings, not additive extensions",
+  "one_shot": {
+    "release_builds": 1,
+    "clippy": 0,
+    "full_product_flows": 1,
+    "stop_forward_attempts_max": 1,
+    "flow_retries": 0,
+    "transport_retries": 0,
+    "old_guard_resets": 0
+  },
+  "pinned": {
+    "rust_cargo": "1.99.1",
+    "target": "x86_64-pc-windows-msvc",
+    "msvc": "14.44.35207",
+    "sdk": "10.0.26100.0",
+    "jobs": 2,
+    "offline": true,
+    "locked": true,
+    "actual_local_nice": 15,
+    "local_deployment_target": "15.0",
+    "actual_windows_priority": "BelowNormal",
+    "windows_session": 0,
+    "install_or_default_change": false,
+    "seeds": "verified registry-only private copy"
+  },
+  "flow": [
+    "version",
+    "absent-daemon status negative case",
+    "private foreground virtual Off daemon",
+    "bounded R2 shared log readiness",
+    "actual status.get",
+    "actual config.get",
+    "actual invalid method",
+    "one actual daemon.stop",
+    "independent retained-handle normal exit 0 within 10 seconds",
+    "bounded current ownership cleanup and raw receipt collection"
+  ],
+  "preserved_r2": [
+    "common.ps1 and observer.cs byte-identical to R2 and R5",
+    "qualification, runtime, postflight byte-identical to R5",
+    "runtime binary/config pre-result block and Pipe-Exists through final exit byte-identical to R2",
+    "controller command, remote, recover_transport_owner byte-identical to R2/R5",
+    "all original readiness, wire, stop, exit, ownership, cleanup and selected preservation gates"
+  ],
+  "collection_before_removal": [
+    "archive bytes and SHA256",
+    "safe unique regular members",
+    "every evidence member hash",
+    "new build receipt and source archive/manifest hashes",
+    "new actual executable bytes and SHA256",
+    "runtime build-receipt and binary hashes",
+    "new baseline/state/transfer/native-source receipts"
+  ],
+  "failure": "terminal; preserve failed receipts; skip later product stages; retain new Windows root on missing collection bindings; never install or substitute",
+  "source_bindings": [
+    {
+      "path": "source/build.ps1.txt",
+      "bytes": 18271,
+      "sha256": "f8559887d542227a204e79a554377736fdd61dc5d1a00386ae48214fbbf69df2"
+    },
+    {
+      "path": "source/common.ps1.txt",
+      "bytes": 6364,
+      "sha256": "c09ce6f29820bd3805fec5398f49de9fe797d71e57a0e3e4f233f56f51043ce0"
+    },
+    {
+      "path": "source/controller.py.txt",
+      "bytes": 21578,
+      "sha256": "10431430e9a218418addc4cc47d31521b42aabaed6dced439e25ba4a89da334e"
+    },
+    {
+      "path": "source/observer.cs.txt",
+      "bytes": 12054,
+      "sha256": "8559ecbca18de3b896407df1048c278633c927134858cc99124ae883e816f5e2"
+    },
+    {
+      "path": "source/postflight.ps1.txt",
+      "bytes": 4749,
+      "sha256": "77456c370740da9ef7e86a4bbb9046342a239c7b9d9b72b9da34c43eb9bdbd2a"
+    },
+    {
+      "path": "source/qualify.ps1.txt",
+      "bytes": 4272,
+      "sha256": "3d9f926395adbdeee29518a9fdaa164ddb7545db67747f3f2ec9023ac2729d22"
+    },
+    {
+      "path": "source/runtime.ps1.txt",
+      "bytes": 21487,
+      "sha256": "986b6246e79f8ecb9ddefa32bcfa23ca0aec6c31af44b97915c45bc481f9e615"
+    }
+  ],
+  "base_candidate_commit": "6b7a029ffbd8e41b411408bbcaf9b219e1f6592c",
+  "R6_review_commit": "7ce44f6a02890b89cffca407a78497e0ba9bbddb",
+  "R6_review_sha256": "e19ebf2089afffda0d874e84c81962f865bf9d9ceffa309d34162910f0fd71b5",
+  "private_selector_status": "PARENT_REPORTS_EXACT_EXISTING_SELECTOR_RECOVERED; not inspected or copied here",
+  "build_admission": "full 660-second outer allowance must fit before overall transport reserve",
+  "build_owned_settlement": "all failure paths; creation-associated root and retained verified descendant handles only; one shared deadline; actual signal/exit/closure; no new CIM query or PID lookup in recovery",
+  "postflight_on_error": "one finally path whenever setup returned a root; first flow exception preserved if collection fails"
+}
