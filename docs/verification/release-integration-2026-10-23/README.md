@@ -232,6 +232,16 @@ also builds without it. The [independent review](../daemon-stop-latency-review-2
 finds no concrete P1/P2. The [reviewed fix and measurements](../daemon-stop-latency-2026-10-23-t3-b205d42e/README.md)
 are integrated locally. These are single samples, with no general speedup or
 stronger exit-bound claim. Connected-session and release gates stay open.
+The [current native Windows attempt](daemon-stop-native-windows-c8a3489c/README.md)
+passes strict release Clippy and the release build for source `e1ef124`, with
+Rust 1.99.1, locked/offline resolution and jobs 2. Version and absent-daemon
+status pass. The sole Off runtime attempt then fails in its active-log readiness
+reader before healthy IPC or `daemon.stop`. No stop request or retry occurred.
+The stop path remains **UNVERIFIED**. Known owned processes, pipes and fresh
+roots are removed; selected prior-state checks pass. The
+[parent file-binding check](daemon-stop-native-windows-parent-bindings-2026-10-23.json)
+matches all 178 exported evidence entries and 558 source blobs. It adds no
+independent runtime reproduction. A source-only controller correction is assigned.
 
 [Sparkle integration](../sparkle-integration-2026-10-23/README.md) and the signed
 empty Cloudflare feed are implemented and checked. The later
