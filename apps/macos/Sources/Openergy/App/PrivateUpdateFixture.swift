@@ -5,7 +5,8 @@ import MachO
 
 /// A bundle-carried, fail-closed entry point for an explicitly prepared private
 /// running-target fixture. This never checks for, downloads, or installs updates.
-/// See docs/verification/private-update-bootstrap-2026-10-23/README.md.
+/// Public private-bundle entry is the libSystem-only OpenergyPrivateLauncher.
+/// See docs/verification/private-update-bootstrap-repair-2026-10-23-t3-54de37ad/README.md.
 enum PrivateUpdateFixture {
     private static let metadataKey = "OpenergyPrivateUpdateFixture"
     private static let idPrefix = "dev.openergy.updater-fixture."
@@ -18,7 +19,8 @@ enum PrivateUpdateFixture {
 
     /// Called before all argument dispatch, singletons, and SwiftUI scenes.
     static func dispatchIfPresent() {
-        let info = Bundle.main.infoDictionary ?? [:]
+        // An unreadable whole plist is not an ordinary metadata-absent bundle.
+        guard let info = Bundle.main.infoDictionary else { refuse("Info.plist unavailable") }
         let identifier = info["CFBundleIdentifier"] as? String ?? ""
         guard let raw = info[metadataKey] else {
             // Removing the metadata from a fixture must not enable normal startup.
@@ -28,18 +30,10 @@ enum PrivateUpdateFixture {
         do {
             let context = try Context(raw: raw, info: info, identifier: identifier)
             let arguments = Array(ProcessInfo.processInfo.arguments.dropFirst())
-            try require(arguments.isEmpty || arguments == internalArguments, "unexpected arguments")
-            try context.installEnvironment()
-            if arguments.isEmpty {
-                // AppModel's existing --e2e guard skips all login integration.
-                // Re-exec also puts the private home in place before CF/AppKit load.
-                // Activation still requires metadata; these arguments cannot enable it.
-                let strings = ([context.executable] + internalArguments).map { strdup($0) }
-                var argv = strings + [nil]
-                _ = argv.withUnsafeMutableBufferPointer { execv(context.executable, $0.baseAddress!) }
-                strings.forEach { free($0) }
-                throw Refusal(reason: "private re-exec failed")
-            }
+            try require(arguments == internalArguments, "private launcher entry required")
+            // The launcher establishes these before this Mach-O image is loaded.
+            // A repair here would conceal a broken entry boundary.
+            try context.verifyEnvironment()
             let lock = try context.lockLaunch()
             defer { Darwin.close(lock) }
             MainActor.assumeIsolated { run(context) }
@@ -75,6 +69,7 @@ enum PrivateUpdateFixture {
         let build: String
         let bundle: String
         let executable: String
+        let launcher: String
         let daemon: String
         var state: String { root + "/state" }
         var config: String { state + "/config.toml" }
@@ -123,6 +118,7 @@ enum PrivateUpdateFixture {
             self.build = build
             self.bundle = root + "/target/Openergy.app"
             self.executable = bundle + "/Contents/MacOS/Openergy"
+            self.launcher = bundle + "/Contents/MacOS/OpenergyPrivateLauncher"
             self.daemon = bundle + "/Contents/Helpers/openergy"
 
             let markerPath = root + "/fixture.json"
@@ -141,8 +137,9 @@ enum PrivateUpdateFixture {
                 try Self.directory(path)
             }
             try require(try Self.realPath(Bundle.main.bundleURL.path) == bundle, "unexpected bundle path")
-            try require(info["CFBundleExecutable"] as? String == "Openergy", "unexpected executable name")
-            try require(try Self.realPath(Bundle.main.executableURL?.path ?? "") == executable,
+            try require(info["CFBundleExecutable"] as? String == "OpenergyPrivateLauncher",
+                        "private launcher must be bundle entry")
+            try require(try Self.realPath(Bundle.main.executableURL?.path ?? "") == launcher,
                         "bundle executable mismatch")
             var binaryPath = [CChar](repeating: 0, count: Int(PATH_MAX))
             var size = UInt32(binaryPath.count)
@@ -150,6 +147,7 @@ enum PrivateUpdateFixture {
             try require(try Self.realPath(String(cString: binaryPath)) == executable,
                         "process executable mismatch")
             try Self.executableFile(executable)
+            try Self.executableFile(launcher)
             try Self.executableFile(daemon)
             try Self.bundleTree(bundle)
             // No old daemon may be attached, even if its socket is private.
@@ -291,11 +289,7 @@ enum PrivateUpdateFixture {
             """
         }
 
-        func installEnvironment() throws {
-            // Remove inherited development overrides. None of these can activate a fixture.
-            for name in ProcessInfo.processInfo.environment.keys where name.hasPrefix("OPENERGY_") {
-                try require(unsetenv(name) == 0, "could not clear inherited override")
-            }
+        func verifyEnvironment() throws {
             let values = [
                 "OPENERGY_CONFIG": config, "OPENERGY_CONFIG_DIR": state, "OPENERGY_TLS_DIR": tls,
                 "OPENERGY_SOCKET": socket, "OPENERGY_DAEMON": daemon,
@@ -304,14 +298,17 @@ enum PrivateUpdateFixture {
                 "CFFIXED_USER_HOME": root + "/home", "TMPDIR": root + "/tmp/",
                 "XDG_CONFIG_HOME": state, "XDG_CACHE_HOME": root + "/home",
             ]
-            for (name, value) in values { try require(setenv(name, value, 1) == 0, "could not set private environment") }
-            umask(0o077)
-            try require(chdir(root) == 0, "could not enter private root")
+            let environment = ProcessInfo.processInfo.environment
+            for (name, value) in values {
+                try require(environment[name] == value, "private entry environment mismatch")
+            }
+            try require(environment.keys.filter { $0.hasPrefix("OPENERGY_") }.allSatisfy { values[$0] != nil }
+                        && !environment.keys.contains { $0.hasPrefix("DYLD_") }, "inherited override forbidden")
+            try require(umask(0o077) == 0o077, "private entry umask mismatch")
+            try require(FileManager.default.currentDirectoryPath == root, "private entry directory mismatch")
             errno = 0
-            let originalNice = getpriority(PRIO_PROCESS, 0)
-            try require(errno == 0 && originalNice <= 15, "nice 15 would require raising priority")
-            try require(setpriority(PRIO_PROCESS, 0, 15) == 0 && getpriority(PRIO_PROCESS, 0) == 15,
-                        "could not set absolute nice 15")
+            let entryNice = getpriority(PRIO_PROCESS, 0)
+            try require(errno == 0 && entryNice == 15, "private entry nice mismatch")
         }
 
         func lockLaunch() throws -> Int32 {

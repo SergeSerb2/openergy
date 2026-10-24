@@ -1,0 +1,13 @@
+First build controller, session 44717. No rerun.
+
+launcher: {"compiler_samples": 4, "elapsed_seconds": 0.414777, "exit": 0, "sampled_nice_values": [15], "sampled_pids": [72001, 72003, 72009], "stderr_sha256": "aa1f3fa8c27cd6843ac74504c6e41d13a2d14d8ae48301db22d93e5d3d1feb56", "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "timed_out": false}
+app: {"compiler_samples": 358, "elapsed_seconds": 25.784859, "exit": 0, "sampled_nice_values": [15], "sampled_pids": [72011, 72013, 72014, 72019, 72027, 72034, 72036, 72043, 72044, 72053, 72056, 72196, 72199, 72204, 72207, 72209, 72210, 72561, 72639, 72641, 72650, 72652, 72868, 72870, 72871, 72874], "stderr_sha256": "2944cfffb45b8b17541b285fe725b30d28b5a32a8002db73ab93dc8de00eaaa2", "stdout_sha256": "84f1bdc08cb770d954ad643ffbd4b5e49bf71ab1d36d5ba29bb148541d9de8ad", "timed_out": false}
+Traceback (most recent call last):
+  File "/Users/serge/.t3/worktrees/openergy/t3-54de37ad/docs/verification/private-update-bootstrap-repair-2026-10-23-t3-54de37ad/raw/build-once.py", line 193, in <module>
+    main()
+  File "/Users/serge/.t3/worktrees/openergy/t3-54de37ad/docs/verification/private-update-bootstrap-repair-2026-10-23-t3-54de37ad/raw/build-once.py", line 166, in main
+    assert original == after == copied == used and original_state_hash == sha(CACHE / 'workspace-state.json')
+AssertionError
+
+Controller exit: 1. Both compiler child exits: 0. No compiler retry.
+Tool completion above was transcribed from the first tool result; compiler stdout/stderr are original direct streams.

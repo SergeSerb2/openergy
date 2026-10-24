@@ -1,0 +1,10 @@
+First read-only postbuild-audit.py invocation. No compiler or product ran.
+Traceback (most recent call last):
+  File "/Users/serge/.t3/worktrees/openergy/t3-54de37ad/docs/verification/private-update-bootstrap-repair-2026-10-23-t3-54de37ad/raw/postbuild-audit.py", line 126, in <module>
+    main()
+  File "/Users/serge/.t3/worktrees/openergy/t3-54de37ad/docs/verification/private-update-bootstrap-repair-2026-10-23-t3-54de37ad/raw/postbuild-audit.py", line 81, in main
+    assert 'minos 15.0' in macho and 'LC_RPATH' not in macho and 'LC_DYLD_ENVIRONMENT' not in macho
+AssertionError
+Exit: 1.
+
+Cause: output names produced from -l and -L differed only by case. On this case-insensitive filesystem the -L dylib listing overwrote the -l load-command listing. The surviving first filenames remain untouched; their content is the -L listing. The first -l bytes are unavailable. This is an audit-output naming failure, not an observed load-command, compiler, runtime or product failure. The next read-only audit uses distinct load_commands/dylibs suffixes. No compilation or product is repeated.

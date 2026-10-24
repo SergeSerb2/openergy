@@ -1,0 +1,38 @@
+{
+  "argv": [
+    "sandbox-exec",
+    "-p",
+    "(version 1)(allow default)(deny network*)",
+    "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+    "-std=c11",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-target",
+    "arm64-apple-macosx15.0",
+    "-isysroot",
+    "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk",
+    "-I",
+    "/private/tmp/oe-bootstrap-r2-build-yl3byo9v/launcher",
+    "/Users/serge/.t3/worktrees/openergy/t3-54de37ad/apps/macos/PrivateUpdateBootstrap/launcher.c",
+    "-o",
+    "/private/tmp/oe-bootstrap-r2-build-yl3byo9v/launcher/OpenergyPrivateLauncher",
+    "-v"
+  ],
+  "controller_nice": 15,
+  "environment": {
+    "CFFIXED_USER_HOME": "/private/tmp/oe-bootstrap-r2-build-yl3byo9v/home",
+    "CLANG_MODULE_CACHE_PATH": "/private/tmp/oe-bootstrap-r2-build-yl3byo9v/module-cache",
+    "HOME": "/private/tmp/oe-bootstrap-r2-build-yl3byo9v/home",
+    "LANG": "C",
+    "MACOSX_DEPLOYMENT_TARGET": "15.0",
+    "PATH": "/usr/bin:/bin",
+    "SDKROOT": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk",
+    "SWIFTPM_MODULECACHE_OVERRIDE": "/private/tmp/oe-bootstrap-r2-build-yl3byo9v/module-cache",
+    "TMPDIR": "/private/tmp/oe-bootstrap-r2-build-yl3byo9v/tmp/",
+    "XDG_CACHE_HOME": "/private/tmp/oe-bootstrap-r2-build-yl3byo9v/swift-cache",
+    "XDG_CONFIG_HOME": "/private/tmp/oe-bootstrap-r2-build-yl3byo9v/swift-config"
+  },
+  "preexec": "setpriority(PRIO_PROCESS,0,15); verify 15; umask(077)"
+}
