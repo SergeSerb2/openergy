@@ -1,0 +1,49 @@
+{
+  "diagnosis": {
+    "argv": [
+      "git",
+      "show",
+      "--format=fuller",
+      "--stat",
+      "a64b33dd53a9ba11f2a887086b2615ef949c80fc"
+    ],
+    "code": 0,
+    "stderr": "",
+    "stdout": "commit a64b33dd53a9ba11f2a887086b2615ef949c80fc\nAuthor:     Serge Alex Serbinenko <129629680+SergeSerb2@users.noreply.github.com>\nAuthorDate: Fri Oct 23 18:38:21 2026 -0700\nCommit:     Serge Alex Serbinenko <129629680+SergeSerb2@users.noreply.github.com>\nCommitDate: Fri Oct 23 18:40:18 2026 -0700\n\n    docs: diagnose public daemon stop poll latency from source\n\n .../README.md                                      |  217 +++\n .../analysis.json                                  |  206 ++\n .../archive-validation-first-failure.txt           |   13 +\n .../collect.py                                     |  181 ++\n .../collection.json                                |  420 +++++\n .../collection.stderr                              |    0\n .../collection.stdout                              |   29 +\n .../commit-completeness-first-failure.txt          |   18 +\n .../evidence-manifest.json                         |  197 ++\n .../excerpt-presentation-correction.json           |    8 +\n .../origins.json                                   |  122 ++\n .../raw/saved-r3/README.md                         |  159 ++\n .../raw/saved-r3/evidence-manifest.json            |  312 ++++\n .../raw/saved-r3/measure.py                        |  711 +++++++\n .../raw/saved-r3/raw/cleanup-first-failure.txt     |    1 +\n .../raw/cleanup-ports-first-observation.json       |   56 +\n .../raw/saved-r3/raw/cleanup.json                  |  119 ++\n .../raw/saved-r3/raw/exec-barriers.json            |  201 ++\n .../raw/saved-r3/raw/public-cli.json               |  325 ++++\n .../raw/saved-r3/raw/ready.json                    |   28 +\n .../raw/saved-r3/raw/run-command.json              |   81 +\n .../raw/saved-r3/raw/run/peer.log                  |    7 +\n .../raw/saved-r3/raw/run/peer/openergy.log         |    7 +\n .../raw/saved-r3/raw/runtime-entry.json            |    9 +\n .../raw/saved-r3/raw/runtime-first-failure.txt     |    8 +\n .../raw/saved-review.md                            |  263 +++\n .../reader-errors.txt                              |   25 +\n .../scope.json                                     |   23 +\n .../source-bindings.json                           | 1972 ++++++++++++++++++++\n .../source/crates__daemon__src__ipc_server.rs.txt  |  210 +++\n .../source/crates__daemon__src__lifetime.rs.txt    |   18 +\n .../source/crates__daemon__src__logger.rs.txt      |   20 +\n .../source/crates__daemon__src__main.rs.txt        |   28 +\n .../source/crates__daemon__src__runtime.rs.txt     |  238 +++\n .../source/crates__net__src__reactor.rs.txt        |   90 +\n .../source/crates__session__src__client.rs.txt     |   10 +\n .../source/crates__session__src__server.rs.txt     |   12 +\n .../source/docs__plan__architecture-r2.md.txt      |   18 +\n .../validate.py                                    |   93 +\n .../validation.json                                |   66 +\n 40 files changed, 6521 insertions(+)\n"
+  },
+  "diagnosis_readme_sha256": "211cae8a33e65b5d73480698415eaf179a2fba184601fdced7e8b3ddd1461d5b",
+  "root": {
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "code": 0,
+    "stderr": "",
+    "stdout": "d2ab17d4e053437d9f7568b0f6dbf96727bfd6c9\n"
+  },
+  "through_1fd5144": {
+    "argv": [
+      "git",
+      "diff",
+      "1fd5144",
+      "d2ab17d4e053437d9f7568b0f6dbf96727bfd6c9",
+      "--",
+      "crates/daemon",
+      "crates/net",
+      "crates/session",
+      "crates/ipc",
+      "crates/config",
+      "crates/platform",
+      "crates/platform-macos",
+      "crates/protocol",
+      "vendor/mdns-sd",
+      "Cargo.toml",
+      "Cargo.lock",
+      "rust-toolchain.toml"
+    ],
+    "code": 0,
+    "stderr": "",
+    "stdout": ""
+  }
+}

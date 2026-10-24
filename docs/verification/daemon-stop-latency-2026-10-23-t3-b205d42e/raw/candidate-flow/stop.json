@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "/Users/serge/.t3/worktrees/openergy/t3-b205d42e/target/sb/openergy-candidate",
+    "ctl",
+    "daemon.stop",
+    "--socket",
+    "/Users/serge/.t3/worktrees/openergy/t3-b205d42e/target/sb/c/i.sock",
+    "--raw"
+  ],
+  "code": 0,
+  "end_ns": 94856086427000,
+  "name": "stop",
+  "pid": 60375,
+  "start_ns": 94856036577000,
+  "stderr": "STOP_EVIDENCE {\"event\":\"request_start\",\"monotonic_ns\":94856085675000,\"nice\":15,\"pid\":60375,\"value\":{\"id\":1792806530720,\"method\":\"daemon.stop\",\"params\":{}}}\nSTOP_EVIDENCE {\"event\":\"reply\",\"monotonic_ns\":94856085795000,\"nice\":15,\"pid\":60375,\"value\":{\"id\":1792806530720,\"result\":{\"stopping\":true}}}\n",
+  "stdout": "{\"stopping\":true}\n"
+}

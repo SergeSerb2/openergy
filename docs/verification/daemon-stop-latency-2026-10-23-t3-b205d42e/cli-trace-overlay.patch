@@ -1,0 +1,31 @@
+--- a/crates/daemon/src/main.rs
++++ b/crates/daemon/src/main.rs
+@@ -345,6 +345,17 @@
+     }
+ }
+ 
++fn stop_evidence_trace(event: &str, value: &serde_json::Value) {
++    if std::env::var_os("OPENERGY_STOP_EVIDENCE").is_none() {
++        return;
++    }
++    let mut now: libc::timespec = unsafe { std::mem::zeroed() };
++    assert_eq!(unsafe { libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut now) }, 0);
++    let monotonic_ns = now.tv_sec as u64 * 1_000_000_000 + now.tv_nsec as u64;
++    eprintln!("STOP_EVIDENCE {}", serde_json::json!({"event":event,"monotonic_ns":monotonic_ns,
++        "pid":std::process::id(),"nice":unsafe { libc::getpriority(libc::PRIO_PROCESS, 0) },"value":value}));
++}
++
+ fn ipc_request(socket: &Path, method: &str, params: serde_json::Value) -> Result<Response, String> {
+     #[cfg(unix)]
+     let mut stream = UnixStream::connect(socket)
+@@ -371,8 +382,10 @@
+         params,
+     };
+     let v = serde_json::to_value(&req).map_err(|e| e.to_string())?;
++    stop_evidence_trace("request_start", &v);
+     write_frame(&mut stream, &v).map_err(|e| e.to_string())?;
+     let resp_v = read_frame(&mut stream).map_err(|e| e.to_string())?;
++    stop_evidence_trace("reply", &resp_v);
+     let response: Response = serde_json::from_value(resp_v).map_err(|e| format!("bad IPC response: {e}"))?;
+     if response.id != id {
+         return Err("bad IPC response: request ID does not match".into());

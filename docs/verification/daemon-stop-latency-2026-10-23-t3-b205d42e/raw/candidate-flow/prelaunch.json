@@ -1,0 +1,43 @@
+{
+  "binary_sha256": "4ac294f7be9a1512c10537944f2ce1ffc257a62c9c34fb5c69c9cdf75b74a2ab",
+  "config_sha256": "1835d52d81219f3062f91c4813545999347cd2261c64c76969a196c98326fdec",
+  "controller": {
+    "monotonic_ns": 94855566104000,
+    "nice": 15,
+    "pid": 60352,
+    "ps": {
+      "argv": [
+        "/bin/ps",
+        "-p",
+        "60352",
+        "-o",
+        "pid,ppid,pgid,uid,ni,lstart,command"
+      ],
+      "code": 0,
+      "stderr": "",
+      "stdout": "  PID  PPID  PGID   UID NI STARTED                      COMMAND\n60352 64647 60352   501 15 Fri Oct 23 18:48:49 2026     /Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/Resources/Python.app/Contents/MacOS/Python docs/verification/daemon-stop-latency-2026-10-23-t3-b205d42e/collect.py flow candidate\n"
+    }
+  },
+  "environment": {
+    "OPENERGY_CONFIG": "/Users/serge/.t3/worktrees/openergy/t3-b205d42e/target/sb/c/config.toml",
+    "OPENERGY_CONFIG_DIR": "/Users/serge/.t3/worktrees/openergy/t3-b205d42e/target/sb/c",
+    "OPENERGY_DENY_PORT_24800": "1",
+    "OPENERGY_DISABLE_DISCOVERY": "1",
+    "OPENERGY_LOG": "info",
+    "OPENERGY_SOCKET": "/Users/serge/.t3/worktrees/openergy/t3-b205d42e/target/sb/c/i.sock",
+    "OPENERGY_TLS_DIR": "/Users/serge/.t3/worktrees/openergy/t3-b205d42e/target/sb/c/tls"
+  },
+  "socket": "/Users/serge/.t3/worktrees/openergy/t3-b205d42e/target/sb/c/i.sock",
+  "socket_absent": true,
+  "tls": {
+    "cert_sha256": "30d04eb14ec02079af016abc73a3372c7f84f2a7e97c73bc6cd8fe5a7aac6a13",
+    "directory": "/Users/serge/.t3/worktrees/openergy/t3-b205d42e/target/sb/c/tls",
+    "key_mode": "0o600"
+  },
+  "trace_overlay_sha256": "781d09f468edc7158b4e985201c9e960d7604965c1f7dbef5402ea88a6a8dfb2",
+  "workflow_sha256": {
+    "collect.py": "94a93782eaef4d48a9ac60f9dfff453510265908b83c6dcbdb2b479d479db03a",
+    "exec_owned.py": "e7d1b5826ec57765cf96000e3d77e2b33db8840a9ac8854e78d9d95747af9e45",
+    "rustc_owned.py": "49c2419a8817d59160c71f45b07f65281dba7290ead600539255531e5c42e1d5"
+  }
+}

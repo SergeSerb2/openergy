@@ -1,0 +1,44 @@
+{
+  "argv": [
+    "/Users/serge/.rustup/toolchains/1.99.1-aarch64-apple-darwin/bin/cargo",
+    "build",
+    "--release",
+    "--locked",
+    "--offline",
+    "--jobs",
+    "2",
+    "--target",
+    "aarch64-apple-darwin",
+    "-p",
+    "openergy-daemon",
+    "--bin",
+    "openergy"
+  ],
+  "code": 0,
+  "end_ns": 62376239750,
+  "env": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_HOME": "/Users/serge/.t3/worktrees/openergy/t3-b205d42e/target/sb/cargo-home",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_NET_OFFLINE": "true",
+    "CARGO_TARGET_DIR": "/Users/serge/.t3/worktrees/openergy/t3-b205d42e/target/sb/cargo-target",
+    "MACOSX_DEPLOYMENT_TARGET": "15.0",
+    "RUSTC": "/Users/serge/.rustup/toolchains/1.99.1-aarch64-apple-darwin/bin/rustc",
+    "RUSTC_WRAPPER": "/Users/serge/.t3/worktrees/openergy/t3-b205d42e/docs/verification/daemon-stop-latency-2026-10-23-t3-b205d42e/rustc_owned.py",
+    "RUSTDOC": "/Users/serge/.rustup/toolchains/1.99.1-aarch64-apple-darwin/bin/rustdoc",
+    "RUSTUP_TOOLCHAIN": "1.99.1"
+  },
+  "source_diff": {
+    "argv": [
+      "git",
+      "diff",
+      "--",
+      "crates/daemon/src/main.rs",
+      "crates/daemon/src/runtime.rs"
+    ],
+    "code": 0,
+    "stderr": "",
+    "stdout": "diff --git a/crates/daemon/src/main.rs b/crates/daemon/src/main.rs\nindex 9063604..7ab7e90 100644\n--- a/crates/daemon/src/main.rs\n+++ b/crates/daemon/src/main.rs\n@@ -345,6 +345,17 @@ fn print_response(resp: &Response, raw: bool) {\n     }\n }\n \n+fn stop_evidence_trace(event: &str, value: &serde_json::Value) {\n+    if std::env::var_os(\"OPENERGY_STOP_EVIDENCE\").is_none() {\n+        return;\n+    }\n+    let mut now: libc::timespec = unsafe { std::mem::zeroed() };\n+    assert_eq!(unsafe { libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut now) }, 0);\n+    let monotonic_ns = now.tv_sec as u64 * 1_000_000_000 + now.tv_nsec as u64;\n+    eprintln!(\"STOP_EVIDENCE {}\", serde_json::json!({\"event\":event,\"monotonic_ns\":monotonic_ns,\n+        \"pid\":std::process::id(),\"nice\":unsafe { libc::getpriority(libc::PRIO_PROCESS, 0) },\"value\":value}));\n+}\n+\n fn ipc_request(socket: &Path, method: &str, params: serde_json::Value) -> Result<Response, String> {\n     #[cfg(unix)]\n     let mut stream = UnixStream::connect(socket)\n@@ -371,8 +382,10 @@ fn ipc_request(socket: &Path, method: &str, params: serde_json::Value) -> Result\n         params,\n     };\n     let v = serde_json::to_value(&req).map_err(|e| e.to_string())?;\n+    stop_evidence_trace(\"request_start\", &v);\n     write_frame(&mut stream, &v).map_err(|e| e.to_string())?;\n     let resp_v = read_frame(&mut stream).map_err(|e| e.to_string())?;\n+    stop_evidence_trace(\"reply\", &resp_v);\n     let response: Response = serde_json::from_value(resp_v).map_err(|e| format!(\"bad IPC response: {e}\"))?;\n     if response.id != id {\n         return Err(\"bad IPC response: request ID does not match\".into());\n"
+  },
+  "start_ns": 6738846583
+}

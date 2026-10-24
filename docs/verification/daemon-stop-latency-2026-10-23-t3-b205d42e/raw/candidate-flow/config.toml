@@ -1,0 +1,12 @@
+version = 1
+role = "off"
+name = "stop-b205-private"
+[server]
+listen = "127.0.0.1:65182"
+port = 65182
+[client]
+remote = "127.0.0.1:65182"
+autoconnect = false
+[tls]
+enabled = true
+require_client_trust = true

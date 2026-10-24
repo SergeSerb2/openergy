@@ -1,0 +1,9 @@
+Read-only preflight path errors; no product flow or build was retried:
+
+ls: .cargo: No such file or directory
+sed: crates/platform-macos/build.rs: No such file or directory
+cat: docs/verification/daemon-stop-latency-2026-10-23-t3-b205d42e/raw/preparation.json: No such file or directory
+
+The workspace has no .cargo directory and the macOS crate has no build.rs.
+The preparation.json read occurred while the one preparation command was
+still running. Its completed receipt was read after that command exited 0.

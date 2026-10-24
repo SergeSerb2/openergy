@@ -1,0 +1,17 @@
+{
+  "monotonic_ns": 94855682063000,
+  "nice": 15,
+  "pid": 60363,
+  "ps": {
+    "argv": [
+      "/bin/ps",
+      "-p",
+      "60363",
+      "-o",
+      "pid,ppid,pgid,uid,ni,lstart,command"
+    ],
+    "code": 0,
+    "stderr": "",
+    "stdout": "  PID  PPID  PGID   UID NI STARTED                      COMMAND\n60363 60352 60363   501 15 Fri Oct 23 18:48:50 2026     /Users/serge/.t3/worktrees/openergy/t3-b205d42e/target/sb/openergy-candidate daemon --platform virtual --foreground --config /Users/serge/.t3/worktrees/openergy/t3-b205d42e/target/sb/c/config.toml --socket /Users/serge/.t3/worktrees/openergy/t3-b205d42e/target/sb/c/i.sock --parent-pid 60352\n"
+  }
+}

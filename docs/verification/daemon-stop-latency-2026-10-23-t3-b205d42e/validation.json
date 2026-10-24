@@ -1,0 +1,76 @@
+{
+  "builds": {
+    "baseline": {
+      "actual_rustc_ni15": true,
+      "actual_rustc_samples": 571,
+      "binary_sha256": "1e4ea648bcada9fafc2a4ac0a59d723d04dbb6c9ee4cb71898d9b7b04a1e2f02",
+      "code": 0,
+      "group_absent": true,
+      "source_differences_from_root": [
+        "crates/daemon/src/main.rs"
+      ],
+      "stripping_warning_preserved": true
+    },
+    "candidate": {
+      "actual_rustc_ni15": true,
+      "actual_rustc_samples": 165,
+      "binary_sha256": "4ac294f7be9a1512c10537944f2ce1ffc257a62c9c34fb5c69c9cdf75b74a2ab",
+      "code": 0,
+      "group_absent": true,
+      "source_differences_from_root": [
+        "crates/daemon/src/main.rs",
+        "crates/daemon/src/runtime.rs"
+      ],
+      "stripping_warning_preserved": true
+    },
+    "final-source": {
+      "actual_rustc_ni15": true,
+      "actual_rustc_samples": 151,
+      "binary_sha256": "23e3f9dbee1496b247a5b316811f22c9330b103f979907d1d4fadf2e57399deb",
+      "code": 0,
+      "group_absent": true,
+      "source_differences_from_root": [
+        "crates/daemon/src/runtime.rs"
+      ],
+      "stripping_warning_preserved": true
+    }
+  },
+  "cli_overlay_removed_exactly": true,
+  "controller_nice": 15,
+  "controller_pid": 95342,
+  "diagnosis_readme_matches_commit": true,
+  "final_runtime_sha256": "afaee53963705065e5bd6ca10927b905ac4a36380cf647f5544587e79be4b2d9",
+  "flows": {
+    "baseline": {
+      "cleanup": true,
+      "code": 0,
+      "exclusive_binds": 2,
+      "normal_exit": true,
+      "pid": 52629,
+      "request_to_exit_ms": 1254.038,
+      "request_to_reply_ms": 0.199,
+      "signals": [],
+      "stop_requests": 1
+    },
+    "candidate": {
+      "cleanup": true,
+      "code": 0,
+      "exclusive_binds": 2,
+      "normal_exit": true,
+      "pid": 60363,
+      "request_to_exit_ms": 252.767,
+      "request_to_reply_ms": 0.12,
+      "signals": [],
+      "stop_requests": 1
+    }
+  },
+  "monotonic_ns": 95122487885000,
+  "registry_source_and_copy_bytes_unchanged": true,
+  "root": "d2ab17d4e053437d9f7568b0f6dbf96727bfd6c9",
+  "rustfmt": {
+    "code": 0,
+    "stderr": "",
+    "stdout": ""
+  },
+  "shutdown_tail_byte_identical": true
+}

@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "/Users/serge/.t3/worktrees/openergy/t3-b205d42e/target/sb/openergy-candidate",
+    "ctl",
+    "status.get",
+    "--socket",
+    "/Users/serge/.t3/worktrees/openergy/t3-b205d42e/target/sb/c/i.sock",
+    "--raw"
+  ],
+  "code": 0,
+  "end_ns": 94855681488000,
+  "name": "status",
+  "pid": 60365,
+  "start_ns": 94855626360000,
+  "stderr": "",
+  "stdout": "{\"active_screen\":null,\"client\":{\"attempt\":0,\"next_retry_ms\":null,\"remote\":\"127.0.0.1:65182\"},\"clipboard\":{\"enabled\":true,\"last_blocked\":null,\"last_transfer\":null},\"cursor\":{\"screen\":null,\"x\":null,\"y\":null},\"daemon\":{\"pid\":60363,\"platform\":\"virtual\",\"uptime_s\":0,\"version\":\"0.1.0\"},\"last_error\":null,\"local_screen\":{\"displays\":[{\"h\":1080,\"scale\":1.0,\"w\":1920,\"x\":0,\"y\":0}],\"h\":1080,\"w\":1920},\"name\":\"stop-b205-private\",\"peers\":[],\"pending_trust\":[],\"permissions\":{\"accessibility\":\"not_required\",\"input_monitoring\":\"not_required\",\"post_events\":\"not_required\"},\"role\":\"off\",\"secure_input\":{\"local_app\":null},\"server\":{\"listen\":null},\"state\":\"idle\",\"stats\":{\"events_in\":0,\"events_out\":0,\"rss_bytes\":9437184},\"tls\":{\"enabled\":true,\"fingerprint\":\"54:FD:37:A9:0D:FB:ED:B3:71:A2:86:29:0B:55:61:D9:AC:2A:95:96:76:49:A0:F7:15:34:AE:FE:0C:CA:4F:A1\"}}\n"
+}

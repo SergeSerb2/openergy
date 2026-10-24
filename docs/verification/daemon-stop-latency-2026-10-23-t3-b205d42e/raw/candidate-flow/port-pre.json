@@ -1,0 +1,27 @@
+{
+  "address": "127.0.0.1",
+  "first_exclusive_bind": "passed",
+  "lsof": {
+    "argv": [
+      "/usr/sbin/lsof",
+      "-nP",
+      "-iTCP:65182"
+    ],
+    "code": 1,
+    "stderr": "lsof: WARNING: cannot stat an unrelated mounted filesystem; output information may be incomplete.\n<unrelated private mount path redacted; original retained privately>\n",
+    "stdout": ""
+  },
+  "monotonic_ns": 94855240985000,
+  "netstat": {
+    "argv": [
+      "/usr/sbin/netstat",
+      "-anv",
+      "-p",
+      "tcp"
+    ],
+    "code": 0,
+    "stderr": "",
+    "stdout": ""
+  },
+  "port": 65182
+}

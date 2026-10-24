@@ -1,0 +1,79 @@
+   Compiling libc v0.2.191
+   Compiling serde_core v1.0.229
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.27
+   Compiling shlex v2.0.1
+   Compiling find-msvc-tools v0.1.15
+   Compiling zmij v1.0.23
+   Compiling cc v1.9.0
+   Compiling syn v3.0.9
+   Compiling serde_json v1.0.154
+   Compiling serde v1.0.229
+   Compiling log v0.4.34
+   Compiling serde_derive v1.0.229
+   Compiling ring v0.17.14
+   Compiling cfg-if v1.0.5
+   Compiling memchr v2.8.3
+   Compiling itoa v1.0.18
+   Compiling typenum v1.20.1
+   Compiling hybrid-array v0.4.15
+   Compiling getrandom v0.2.17
+   Compiling scopeguard v1.2.0
+   Compiling zeroize v1.9.1
+   Compiling winnow v1.0.4
+   Compiling untrusted v0.9.0
+   Compiling toml_parser v1.1.5+spec-1.1.0
+   Compiling rustls-pki-types v1.15.1
+   Compiling lock_api v0.4.14
+   Compiling toml_datetime v0.7.5+spec-1.1.0
+   Compiling serde_spanned v1.1.2
+   Compiling time-core v0.1.9
+   Compiling powerfmt v0.2.1
+   Compiling num-conv v0.2.2
+   Compiling deranged v0.5.9
+   Compiling winnow v0.7.15
+   Compiling toml_writer v1.1.3+spec-1.1.0
+   Compiling time v0.3.55
+   Compiling toml v0.9.12+spec-1.1.0
+   Compiling spin v0.9.9
+   Compiling crypto-common v0.2.2
+   Compiling block-buffer v0.12.1
+   Compiling openergy-platform v0.1.0 (/Users/serge/.t3/worktrees/openergy/t3-b205d42e/crates/platform)
+   Compiling socket2 v0.6.5
+   Compiling base64 v0.23.1
+   Compiling openergy-protocol v0.1.0 (/Users/serge/.t3/worktrees/openergy/t3-b205d42e/crates/protocol)
+   Compiling const-oid v0.10.2
+   Compiling rustls v0.23.46
+   Compiling futures-sink v0.3.34
+   Compiling futures-core v0.3.34
+   Compiling flume v0.12.0
+   Compiling digest v0.11.3
+   Compiling pem v4.0.0
+   Compiling socket-pktinfo v0.4.1
+   Compiling openergy-config v0.1.0 (/Users/serge/.t3/worktrees/openergy/t3-b205d42e/crates/config)
+   Compiling yasna v0.6.0
+   Compiling rustls-webpki v0.103.16
+   Compiling openergy-ipc v0.1.0 (/Users/serge/.t3/worktrees/openergy/t3-b205d42e/crates/ipc)
+   Compiling mio v1.2.4
+   Compiling if-addrs v0.15.0
+   Compiling cpufeatures v0.3.1
+   Compiling subtle v2.6.1
+   Compiling once_cell v1.21.4
+   Compiling fastrand v2.5.0
+   Compiling mdns-sd v0.21.6 (/Users/serge/.t3/worktrees/openergy/t3-b205d42e/vendor/mdns-sd)
+   Compiling sha2 v0.11.1
+   Compiling openergy-session v0.1.0 (/Users/serge/.t3/worktrees/openergy/t3-b205d42e/crates/session)
+   Compiling rcgen v0.14.10
+   Compiling openergy-net v0.1.0 (/Users/serge/.t3/worktrees/openergy/t3-b205d42e/crates/net)
+   Compiling openergy-platform-macos v0.1.0 (/Users/serge/.t3/worktrees/openergy/t3-b205d42e/crates/platform-macos)
+   Compiling openergy-daemon v0.1.0 (/Users/serge/.t3/worktrees/openergy/t3-b205d42e/crates/daemon)
+warning: stripping debug info with `rust-objcopy` failed: signal: 6 (SIGABRT)
+  |
+  = note: dyld[51698]: Library not loaded: @rpath/libLLVM.dylib
+            Referenced from: <D6B3C499-A2AF-3E42-8F77-C42BD658AAB5> /Users/serge/.rustup/toolchains/1.99.1-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/bin/rust-objcopy
+            Reason: tried: '/Users/serge/.rustup/toolchains/1.99.1-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/bin/../lib/libLLVM.dylib' (no such file), '/Users/serge/.rustup/toolchains/1.99.1-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/bin/../lib/libLLVM.dylib' (no such file)
+          
+
+warning: `openergy-daemon` (bin "openergy") generated 1 warning
+    Finished `release` profile [optimized] target(s) in 55.51s

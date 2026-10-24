@@ -1,0 +1,28 @@
+{
+  "calls": 7,
+  "exit": {
+    "code": 0,
+    "observed_exit_ns": 94786322235000
+  },
+  "group_absent": true,
+  "ipc_socket_absent": true,
+  "pid_absent": {
+    "argv": [
+      "/bin/ps",
+      "-p",
+      "52629",
+      "-o",
+      "pid="
+    ],
+    "code": 1,
+    "stderr": "",
+    "stdout": ""
+  },
+  "signals": [],
+  "tls_directory_absent": true,
+  "tls_files_removed": [
+    "key.pem",
+    "cert.pem",
+    ".identity-lock"
+  ]
+}
