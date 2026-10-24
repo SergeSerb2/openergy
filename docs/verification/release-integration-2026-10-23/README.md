@@ -127,6 +127,20 @@ The parent matched 109 source-input bindings and 25 public-copy hashes.
 This build-only evidence grants no DNS runtime acceptance. The wrapper's
 session/priority were observed; cargo/rustc child priority was not sampled.
 
+The later [native final verifier run](windows-dns-final-8281eb7.md) uses the
+R11-reviewed source. Both full commands exit 2. Each passes 10/10 qualified
+refusal cases and three same-caller recoveries. Normal queue/lifecycle coverage
+passes; the conflict run skips eight unsafe batches. Strict timing and full
+acceptance remain unverified. The [R13 audit](windows-dns-final-review-r13.md)
+finds no concrete P1/P2 in those saved records and adds no runtime reproduction.
+
+The [matching historical Windows control](windows-dns-historical-refusal-615c16e1.md)
+also passes all ten refusal cases and exits 0. It captures no historical fault,
+so it does not close the negative-control gate. The new
+[macOS fixture qualification](macos-owned-refusal-qualification.md) rules out
+listener shutdown as an owned-refusal method; its successful TCP connections
+are ordinary OS behavior, not false-Connected product events.
+
 The later [combined-binary idle observation](combined-idle-resources.md) measures
 the exact new release artifact. Its role-off idle RSS is 8.265625 MiB and reaches
 8.609375 MiB during 30 status CLI calls. Displayed CPU-counter deltas are 0.00 s
@@ -154,3 +168,18 @@ The merge scan exits 0 with zero findings. The parent repeated all 95 location
 bindings, 107 source-blob comparisons, 22 merge-parent diff checks and 60 private
 artifact hashes. This snapshot covers 254 reachable commits and excludes later
 work, sibling refs and every-snapshot secret-free claims.
+
+The [current packaged macOS app flow](../macos-app-current-flow-2026-10-23/README.md)
+passes 25/25 model/IPC checks with private virtual daemons. The separate
+[bounded event measurement](../macos-event-delivery-2026-10-23/README.md) passes
+12/12 paced checks and has a clean saved-evidence audit. It establishes neither
+a queue bound nor a speedup. Native UI/input/clipboard acceptance stays separate.
+
+[Sparkle integration](../sparkle-integration-2026-10-23/README.md) and the signed
+empty Cloudflare feed are implemented and checked. The later
+[CLI build attempt](../sparkle-cli-build-preparation-2026-10-23/README.md) exceeded
+host limits through Xcode registration/assessment tasks; its original artifact
+remains unaccepted and persistent state is unknown. A
+[prepared private stopped-target fixture](../sparkle-stopped-fixtures-2026-10-23/README.md)
+has a separate file-only resource-seal repair and a clean corrected-scope review.
+Its actual installer execution is still gated on the pending scope decision.
