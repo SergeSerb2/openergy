@@ -260,8 +260,15 @@ log or cleared PID alone proves neither. No-argument fixture isolation remains
 under source/build preparation. Its [R2 review](../private-update-bootstrap-review-2026-10-23-t3-0a934f43.md)
 found two P2 defects: unreadable bundle metadata can reach normal startup, and
 the first app image enters Foundation before private-home setup. That candidate
-is not integrated. A separate source/build repair is in progress; no running-target
-update or relaunch has run.
+was superseded by the [source/build repair](../private-update-bootstrap-repair-2026-10-23-t3-54de37ad/README.md).
+It refuses failed plist loads and adds a fixture-only POSIX launcher that sets
+the private environment before loading the Swift image. The
+[independent R4 review](../private-update-bootstrap-r4-review-2026-10-23-t3-3eaee08d.md)
+closes both P2 findings in source. The reviewed changes are integrated locally.
+The launcher and whole arm64 app compile; the failed controller cache assertion
+and audit-output failures remain preserved. No fixture packaging, launch,
+running-target update or relaunch has run for this helper. Concrete file-only
+fixture preparation remains separate from execution approval.
 
 The [signing prerequisite check](../macos-signing-prerequisites-2026-10-23/README.md)
 records no Developer ID Application identity and no declared notary profile.
