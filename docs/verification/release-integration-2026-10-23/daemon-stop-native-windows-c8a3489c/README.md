@@ -129,6 +129,9 @@ Preserved errors and corrections:
 [copy-ledger.json](copy-ledger.json) binds the private originals and every derived
 copy. Known transport/profile/private-root prefixes and nested EncodedCommand
 wrappers are masked in derived copies, with BOM removal and preserved line endings.
+A final [attribution check](derived-copy-attribution.json) removed nine stale duplicate
+derived copies from the main export after checking their exact preserved copies
+under setup-failure-01. The main export now matches its own copy ledger exactly.
 No raw original was edited. Full shared snapshots, the duplicate source manifest,
 archives, and executable remain private. [packaging-verification.json](packaging-verification.json)
 and [artifacts.json](artifacts.json) bind the final local package.

@@ -1,0 +1,73 @@
+{
+  "previous_evidence_commit": "e1fb690eadfd75f1f84d87b1128b3244ef5d9e43",
+  "cause": "The main controller export overwrote matching names but left nine derived copies from the initial setup when the new attempt reused the local output directory. They were not entries in the current attempt copy ledger.",
+  "correction": "Remove only these duplicate derived copies from the main attempt export after exact comparison with the preserved first setup folder. No raw original or first setup file is changed.",
+  "removed_duplicates": [
+    {
+      "removed_stale_derived_path": "evidence/downloaded/qualify-first-stage-failure.stderr",
+      "preserved_exact_copy": "setup-failure-01/evidence/downloaded/qualify-first-stage-failure.stderr",
+      "bytes": 334,
+      "sha256": "3000e1d4b1ace5c76d1eb01ef68abf7ab22ab836472e8d569c7650aaae5e02c2",
+      "raw_original_retained_privately": true
+    },
+    {
+      "removed_stale_derived_path": "evidence/raw/qualification-first-error-read.json",
+      "preserved_exact_copy": "setup-failure-01/evidence/raw/qualification-first-error-read.json",
+      "bytes": 1195,
+      "sha256": "8b1f845c161706827d7491564314c25ce0703ddcfbecbf92fdcbf0785e6840b5",
+      "raw_original_retained_privately": true
+    },
+    {
+      "removed_stale_derived_path": "evidence/raw/qualification-first-error-read.ps1",
+      "preserved_exact_copy": "setup-failure-01/evidence/raw/qualification-first-error-read.ps1",
+      "bytes": 215,
+      "sha256": "60c20d574efe654e3820fd573011751ffc9cdca7d57e9ecf553e893d354c07d0",
+      "raw_original_retained_privately": true
+    },
+    {
+      "removed_stale_derived_path": "evidence/raw/qualification-first-error-read.stderr",
+      "preserved_exact_copy": "setup-failure-01/evidence/raw/qualification-first-error-read.stderr",
+      "bytes": 392,
+      "sha256": "a3639af5e23464fc391dae127fd5493f02c8178068a35866d9c7fdd35dcd623f",
+      "raw_original_retained_privately": true
+    },
+    {
+      "removed_stale_derived_path": "evidence/raw/qualification-first-error-read.stdout",
+      "preserved_exact_copy": "setup-failure-01/evidence/raw/qualification-first-error-read.stdout",
+      "bytes": 334,
+      "sha256": "60b2a79fcad9d288d1c3b62621144534eb639988784b2ee257894e65bf231dc8",
+      "raw_original_retained_privately": true
+    },
+    {
+      "removed_stale_derived_path": "evidence/raw/qualification-progress.json",
+      "preserved_exact_copy": "setup-failure-01/evidence/raw/qualification-progress.json",
+      "bytes": 1187,
+      "sha256": "b601907bbe465c00f6154281776295b955c94d94bede38122e193a6417ece1ff",
+      "raw_original_retained_privately": true
+    },
+    {
+      "removed_stale_derived_path": "evidence/raw/qualification-progress.ps1",
+      "preserved_exact_copy": "setup-failure-01/evidence/raw/qualification-progress.ps1",
+      "bytes": 459,
+      "sha256": "5abee732d3f223bb61a03467e4e7035277816c546dc2c6cecc4b61766c9f6616",
+      "raw_original_retained_privately": true
+    },
+    {
+      "removed_stale_derived_path": "evidence/raw/qualification-progress.stderr",
+      "preserved_exact_copy": "setup-failure-01/evidence/raw/qualification-progress.stderr",
+      "bytes": 616,
+      "sha256": "2ce70d6c8c9ad6726c794690c8b14a2b83673648cac88edf4ff1acc50ec46348",
+      "raw_original_retained_privately": true
+    },
+    {
+      "removed_stale_derived_path": "evidence/raw/qualification-progress.stdout",
+      "preserved_exact_copy": "setup-failure-01/evidence/raw/qualification-progress.stdout",
+      "bytes": 333,
+      "sha256": "603124019a305ec25f18e69c2a582bd45d074f33a779feab7810d4762255ab8d",
+      "raw_original_retained_privately": true
+    }
+  ],
+  "remote_commands": 0,
+  "compiler_commands": 0,
+  "runtime_commands": 0
+}

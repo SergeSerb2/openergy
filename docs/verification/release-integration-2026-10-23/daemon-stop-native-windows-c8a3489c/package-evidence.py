@@ -53,6 +53,9 @@ for e in ledger['files']:
   e.update(copy_bytes=len(copied),copy_sha256=sha(copied),byte_equal=original==copied)
 ledger['method']='Exact raw originals retained privately. Derived UTF-8 copies remove BOM and replace known transport/profile/private-root prefixes only; line endings are preserved. Nested EncodedCommand tokens are recursively decoded, masked with the same prefixes, and re-encoded. Full shared snapshots and duplicate source manifest are omitted. No original is changed.'
 save(HERE/'copy-ledger.json',ledger)
+expected_derived={HERE/'evidence'/e['path'] for e in ledger['files'] if e['committed_copy']}
+actual_derived={p for p in (HERE/'evidence').rglob('*') if p.is_file()}
+assert actual_derived==expected_derived,'unattributed or missing derived evidence copy'
 
 source=read(HERE/'source-manifest.json')
 source_proofs=[]
