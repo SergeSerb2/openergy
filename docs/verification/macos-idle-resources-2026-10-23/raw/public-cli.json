@@ -1,0 +1,18 @@
+[
+  {
+    "label": "peer-before-app",
+    "argv": [
+      "/private/tmp/oe-idle-9df59d98-gw9bek1k/openergy-daemon",
+      "ctl",
+      "status.get",
+      "--socket",
+      "/private/tmp/oe-idle-9df59d98-gw9bek1k/run/peer/ipc.sock",
+      "--raw"
+    ],
+    "cwd": "/private/tmp/oe-idle-9df59d98-gw9bek1k/run",
+    "exit": 0,
+    "elapsed_seconds": 0.007884999999999975,
+    "stdout": "{\"active_screen\":\"idle-peer-9df59d98\",\"client\":{\"attempt\":0,\"next_retry_ms\":null,\"remote\":null},\"clipboard\":{\"enabled\":true,\"last_blocked\":null,\"last_transfer\":null},\"cursor\":{\"screen\":\"idle-peer-9df59d98\",\"x\":0,\"y\":0},\"daemon\":{\"pid\":75667,\"platform\":\"virtual\",\"uptime_s\":0,\"version\":\"0.1.0\"},\"last_error\":null,\"local_screen\":{\"displays\":[{\"h\":1080,\"scale\":1.0,\"w\":1920,\"x\":0,\"y\":0}],\"h\":1080,\"w\":1920},\"name\":\"idle-peer-9df59d98\",\"peers\":[],\"pending_trust\":[],\"permissions\":{\"accessibility\":\"not_required\",\"input_monitoring\":\"not_required\",\"post_events\":\"not_required\"},\"role\":\"server\",\"secure_input\":{\"local_app\":null},\"server\":{\"listen\":\"127.0.0.1:62643\"},\"state\":\"listening\",\"stats\":{\"events_in\":0,\"events_out\":0,\"rss_bytes\":9633792},\"tls\":{\"enabled\":true,\"fingerprint\":\"D5:0A:E0:E5:95:65:1C:E7:7D:B3:01:7B:F7:39:50:B9:FD:73:25:78:C9:54:1F:69:6D:BC:3B:97:DB:54:76:43\"}}\n",
+    "stderr": ""
+  }
+]

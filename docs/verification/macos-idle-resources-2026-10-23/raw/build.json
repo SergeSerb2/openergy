@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "nice",
+    "-n",
+    "15",
+    "swift",
+    "build",
+    "--package-path",
+    "/private/tmp/oe-idle-9df59d98-gw9bek1k/source/apps/macos",
+    "--scratch-path",
+    "/private/tmp/oe-idle-9df59d98-gw9bek1k/swift",
+    "--cache-path",
+    "/private/tmp/oe-idle-9df59d98-gw9bek1k/cache",
+    "--config-path",
+    "/private/tmp/oe-idle-9df59d98-gw9bek1k/config",
+    "--security-path",
+    "/private/tmp/oe-idle-9df59d98-gw9bek1k/security",
+    "--manifest-cache",
+    "local",
+    "-c",
+    "release",
+    "--jobs",
+    "2",
+    "--disable-automatic-resolution",
+    "--skip-update"
+  ],
+  "cwd": "/private/tmp/oe-idle-9df59d98-gw9bek1k",
+  "exit": 0,
+  "elapsed_seconds": 25.934472833999997,
+  "stdout": "Building for production...\n[Planning deferred tasks]\n[13\u2009/\u200922]\n[17\u2009/\u200922]\n[18\u2009/\u200923] Openergy-product\n[25\u2009/\u200996]\n[29\u2009/\u200996]\n[35\u2009/\u200996]\n[39\u2009/\u200996]\n[42\u2009/\u200996]\n[43\u2009/\u200996]\n[46\u2009/\u200996]\n[49\u2009/\u200996]\n[52\u2009/\u200996]\n[57\u2009/\u200996]\n[59\u2009/\u200996]\n[64\u2009/\u200996]\n[66\u2009/\u200996]\n[67\u2009/\u200996]\n[73\u2009/\u200996]\n[77\u2009/\u200996]\n[79\u2009/\u200996]\n[81\u2009/\u200996]\n[85\u2009/\u200996]\n[87\u2009/\u200996]\n[88\u2009/\u200996]\n[89\u2009/\u200996]\n[90\u2009/\u200996]\n[91\u2009/\u200996]\n[92\u2009/\u200996] Openergy-product\n[94\u2009/\u200996] Openergy-product\n[95\u2009/\u200996] Openergy-product\nBuild complete! (23.46 secs.)\n",
+  "stderr": "warning: '--skip-update' option is deprecated and will be removed in a future release\n"
+}
