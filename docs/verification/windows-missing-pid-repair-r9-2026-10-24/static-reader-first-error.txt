@@ -1,0 +1,13 @@
+First own data-reader attempt, before any runtime or supplied-code execution:
+Traceback (most recent call last):
+  File "<stdin>", line 35, in <module>
+AssertionError
+
+The reader equated the 178 published inventory members with the whole historical
+folder. That folder has 179 files. Every folder byte comparison had passed before
+the count assertion. The corrected reader separately validates the exact bound
+178-member inventory and all 179 folder files. Hash predicates stay unchanged.
+
+The final staging whitespace check also found one extra blank line at README
+EOF. It was removed before the final manifest was regenerated. No source text
+or evidence predicate changed.
