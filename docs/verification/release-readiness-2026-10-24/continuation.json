@@ -1,0 +1,136 @@
+{
+  "schema": "openergy.hardening-continuation.v2",
+  "recorded_at": "2026-10-24T09:55:17-07:00",
+  "user_resumed_at": "2026-10-24T09:53:14-07:00",
+  "root": "/Users/serge/.t3/worktrees/openergy/t3-52422617",
+  "base_commit": "133a44cbdfec90fec0ad9f34eab0923b588c454c",
+  "status": "ACTIVE_WORK_RESUMED_BY_USER",
+  "goal_complete": false,
+  "previous_checkpoint": "../release-readiness-2026-10-23/continuation-2210.json",
+  "delegation": {
+    "providerInstanceId": "codex",
+    "model": "gpt-6.1-sol",
+    "options": {
+      "reasoningEffort": "xhigh",
+      "serviceTier": "default"
+    },
+    "maximum_active_children": 3,
+    "note": "User requests broad parallelism up to 15; active harness capacity is four slots including parent."
+  },
+  "active_tasks": {
+    "ordinary_r9": {
+      "taskId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-ordinary-uncertainty-handoff-repair-r9-172ee85-20261024",
+      "childThreadId": "thread:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-ordinary-uncertainty-handoff-repair-r9-172ee85-20261024",
+      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A20cecdea-d6e2-42ef-ae29-4fd434da6da6%253Adelegate-task%253Aoe-ordinary-uncertainty-handoff-repair-r9-172ee85-20261024:ordinal:1",
+      "childNodeId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-ordinary-uncertainty-handoff-repair-r9-172ee85-20261024",
+      "status": "running",
+      "workState": "working",
+      "hasPendingChildRuns": false,
+      "latestTerminalRunId": null,
+      "latestTerminalStatus": null,
+      "latestTerminalSummary": null,
+      "latestTerminalResultContextTransferId": null,
+      "providerInstanceId": "codex",
+      "model": "gpt-6.1-sol",
+      "options": [
+        {
+          "id": "reasoningEffort",
+          "value": "xhigh"
+        },
+        {
+          "id": "serviceTier",
+          "value": "default"
+        }
+      ],
+      "summary": null,
+      "resultContextTransferId": null,
+      "hasPendingQuestion": false,
+      "pendingApproval": null,
+      "waitTimedOut": false
+    },
+    "sparkle_ls_r8": {
+      "taskId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-scoped-ls-independent-source-review-r8-a7492bc-20261024",
+      "childThreadId": "thread:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-scoped-ls-independent-source-review-r8-a7492bc-20261024",
+      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A20cecdea-d6e2-42ef-ae29-4fd434da6da6%253Adelegate-task%253Aoe-scoped-ls-independent-source-review-r8-a7492bc-20261024:ordinal:1",
+      "childNodeId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-scoped-ls-independent-source-review-r8-a7492bc-20261024",
+      "status": "running",
+      "workState": "working",
+      "hasPendingChildRuns": false,
+      "latestTerminalRunId": null,
+      "latestTerminalStatus": null,
+      "latestTerminalSummary": null,
+      "latestTerminalResultContextTransferId": null,
+      "providerInstanceId": "codex",
+      "model": "gpt-6.1-sol",
+      "options": [
+        {
+          "id": "reasoningEffort",
+          "value": "xhigh"
+        },
+        {
+          "id": "serviceTier",
+          "value": "default"
+        }
+      ],
+      "summary": null,
+      "resultContextTransferId": null,
+      "hasPendingQuestion": false,
+      "pendingApproval": null,
+      "waitTimedOut": false
+    },
+    "windows_adapter_r6": {
+      "taskId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-windows-adapter-independent-source-review-r6-6b7a029-20261024",
+      "childThreadId": "thread:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-windows-adapter-independent-source-review-r6-6b7a029-20261024",
+      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A20cecdea-d6e2-42ef-ae29-4fd434da6da6%253Adelegate-task%253Aoe-windows-adapter-independent-source-review-r6-6b7a029-20261024:ordinal:1",
+      "childNodeId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-windows-adapter-independent-source-review-r6-6b7a029-20261024",
+      "status": "running",
+      "workState": "working",
+      "hasPendingChildRuns": false,
+      "latestTerminalRunId": null,
+      "latestTerminalStatus": null,
+      "latestTerminalSummary": null,
+      "latestTerminalResultContextTransferId": null,
+      "providerInstanceId": "codex",
+      "model": "gpt-6.1-sol",
+      "options": [
+        {
+          "id": "reasoningEffort",
+          "value": "xhigh"
+        },
+        {
+          "id": "serviceTier",
+          "value": "default"
+        }
+      ],
+      "summary": null,
+      "resultContextTransferId": null,
+      "hasPendingQuestion": false,
+      "pendingApproval": null,
+      "waitTimedOut": false
+    }
+  },
+  "closed_operations": [
+    "Original Sparkle running update invocation failed at preflight; expired marker and one-shot guards remain closed; no retry or renewal."
+  ],
+  "stopped_gates": [
+    "crafted mDNS experiment",
+    "original release provenance/security review",
+    "IPC/Synergy3 import budget",
+    "isolated Swift build/package attempts pending qualified isolated instrumentation",
+    "causal bind runtime diagnostics pending qualified trace"
+  ],
+  "work_remaining": [
+    "Carry bounded ordinary uncertainty across recovery lifetimes, obtain fresh review",
+    "Review scoped LaunchServices helper and Windows adapter",
+    "Recover exact existing transport and fixture path facts from durable prior evidence; no guesses or remote contacts",
+    "Qualify retained app/build/real-flow prerequisites without treating transcribed observations as raw proof"
+  ],
+  "boundaries": [
+    "No unit tests/mocks/simulations or computer use for testing",
+    "No push/publication, credentials, existing private key or production seed access",
+    "Preserve prior failures/guards/evidence exactly",
+    "No live sharing, installed app, production config/TLS/default IPC, TCC/login/service/task/account/firewall/globalDNS/toolchain-default change",
+    "No TCP24800/UDP5353 or Docker",
+    "Actual owned Mac NI15; native Windows BelowNormal/session0; Rust1.99.1/jobs2/deployment15 where applicable"
+  ]
+}
