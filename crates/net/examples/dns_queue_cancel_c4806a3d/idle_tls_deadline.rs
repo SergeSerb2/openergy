@@ -129,7 +129,10 @@ fn case(root: &Path) -> Result<Verdict> {
     let mut owned_addrs = Vec::new();
     let mut qualified = false;
     let result = (|| -> Result<()> {
+        #[cfg(unix)]
         let owned = bound_socket::listen(bound_socket::bind(stalled_addr)?)?;
+        #[cfg(windows)]
+        let owned = bound_socket::listen_owned(bound_socket::bind(stalled_addr)?)?;
         owned_addrs.push(stalled_addr);
         owned.set_nonblocking(true)?;
         println!(
