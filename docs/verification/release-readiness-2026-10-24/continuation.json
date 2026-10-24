@@ -1,10 +1,10 @@
 {
   "schema": "openergy.hardening-continuation.v2",
-  "recorded_at": "2026-10-24 17:55:56 UTC",
+  "recorded_at": "2026-10-24 18:07:24 UTC",
   "user_resumed_at": "2026-10-24T09:53:14-07:00",
   "root": "/Users/serge/.t3/worktrees/openergy/t3-52422617",
   "base_commit": "133a44cbdfec90fec0ad9f34eab0923b588c454c",
-  "status": "ACTIVE_WORK_RESUMED_BY_USER",
+  "status": "ACTIVE_LAST_SOURCE_REVIEW",
   "goal_complete": false,
   "previous_checkpoint": "../release-readiness-2026-10-23/continuation-2210.json",
   "delegation": {
@@ -18,71 +18,11 @@
     "note": "User requests broad parallelism up to 15; active harness capacity is four slots including parent."
   },
   "active_tasks": {
-    "windows_r8_review": {
-      "taskId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-windows-adapter-independent-review-r8-1d01d67-20261024",
-      "childThreadId": "thread:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-windows-adapter-independent-review-r8-1d01d67-20261024",
-      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%253Adelegate-task%253Aoe-windows-adapter-independent-review-r8-1d01d67-20261024:ordinal:1",
-      "childNodeId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-windows-adapter-independent-review-r8-1d01d67-20261024",
-      "status": "running",
-      "workState": "working",
-      "hasPendingChildRuns": false,
-      "latestTerminalRunId": null,
-      "latestTerminalStatus": null,
-      "latestTerminalSummary": null,
-      "latestTerminalResultContextTransferId": null,
-      "providerInstanceId": "codex",
-      "model": "gpt-6.1-sol",
-      "options": [
-        {
-          "id": "reasoningEffort",
-          "value": "xhigh"
-        },
-        {
-          "id": "serviceTier",
-          "value": "default"
-        }
-      ],
-      "summary": null,
-      "resultContextTransferId": null,
-      "hasPendingQuestion": false,
-      "pendingApproval": null,
-      "waitTimedOut": false
-    },
-    "windows_fixture_facts_r1": {
-      "taskId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-windows-fixture-path-fact-recovery-r1-17a059f-20261024",
-      "childThreadId": "thread:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-windows-fixture-path-fact-recovery-r1-17a059f-20261024",
-      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%253Adelegate-task%253Aoe-windows-fixture-path-fact-recovery-r1-17a059f-20261024:ordinal:1",
-      "childNodeId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-windows-fixture-path-fact-recovery-r1-17a059f-20261024",
-      "status": "running",
-      "workState": "working",
-      "hasPendingChildRuns": false,
-      "latestTerminalRunId": null,
-      "latestTerminalStatus": null,
-      "latestTerminalSummary": null,
-      "latestTerminalResultContextTransferId": null,
-      "providerInstanceId": "codex",
-      "model": "gpt-6.1-sol",
-      "options": [
-        {
-          "id": "reasoningEffort",
-          "value": "xhigh"
-        },
-        {
-          "id": "serviceTier",
-          "value": "default"
-        }
-      ],
-      "summary": null,
-      "resultContextTransferId": null,
-      "hasPendingQuestion": false,
-      "pendingApproval": null,
-      "waitTimedOut": false
-    },
-    "sparkle_pinned_inputs_r1": {
-      "taskId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-sparkle-pinned-artifact-data-recovery-r1-1ea63e5-20261024",
-      "childThreadId": "thread:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-sparkle-pinned-artifact-data-recovery-r1-1ea63e5-20261024",
-      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%253Adelegate-task%253Aoe-sparkle-pinned-artifact-data-recovery-r1-1ea63e5-20261024:ordinal:1",
-      "childNodeId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-sparkle-pinned-artifact-data-recovery-r1-1ea63e5-20261024",
+    "windows_r10_review": {
+      "taskId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-windows-missing-pid-independent-review-r10-762240a-20261024",
+      "childThreadId": "thread:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-windows-missing-pid-independent-review-r10-762240a-20261024",
+      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%253Adelegate-task%253Aoe-windows-missing-pid-independent-review-r10-762240a-20261024:ordinal:1",
+      "childNodeId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-windows-missing-pid-independent-review-r10-762240a-20261024",
       "status": "running",
       "workState": "working",
       "hasPendingChildRuns": false,
@@ -120,11 +60,11 @@
     "causal bind runtime diagnostics pending qualified trace"
   ],
   "work_remaining": [
-    "Independent Windows adapter R8 review and nine exact Windows fixture facts",
-    "Recover exact pinned public Sparkle artifact bytes as data; no build",
-    "Ordinary source review closed, but compiled app/icon/raw workspace inputs and complete signed bundle remain unqualified or missing",
-    "No existing isolated Mac returned by connected inventory; blocked Swift build diagnosis still requires a qualified environment",
-    "Bounded runtime acceptance must wait for actual prerequisites; old failures and closed Sparkle one-shot stay unchanged"
+    "Finish independent R10 source review of Windows one-line missing-PID repair",
+    "Critical Windows runtime prerequisite unresolved: 0/9 exact historical fixture bindings; bounded recovery exhausted",
+    "Critical ordinary runtime prerequisite unresolved: compiled app, signed bundle, icon and raw workspace state absent at named locations",
+    "Critical isolated Swift prerequisite unresolved: no suitable existing Mac in connected inventories; build diagnosis gate stays stopped",
+    "Keep original runtime failures, closed one-shot and stopped experiments unchanged; do not substitute new state for missing historical proof"
   ],
   "boundaries": [
     "No unit tests/mocks/simulations or computer use for testing",
@@ -314,6 +254,96 @@
       "hasPendingQuestion": false,
       "pendingApproval": null,
       "waitTimedOut": false
+    },
+    "windows_r8_review": {
+      "taskId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-windows-adapter-independent-review-r8-1d01d67-20261024",
+      "childThreadId": "thread:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-windows-adapter-independent-review-r8-1d01d67-20261024",
+      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%253Adelegate-task%253Aoe-windows-adapter-independent-review-r8-1d01d67-20261024:ordinal:1",
+      "childNodeId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-windows-adapter-independent-review-r8-1d01d67-20261024",
+      "status": "completed",
+      "workState": "result_available",
+      "hasPendingChildRuns": false,
+      "latestTerminalRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%253Adelegate-task%253Aoe-windows-adapter-independent-review-r8-1d01d67-20261024:ordinal:1",
+      "latestTerminalStatus": "completed",
+      "latestTerminalSummary": null,
+      "latestTerminalResultContextTransferId": null,
+      "providerInstanceId": "codex",
+      "model": "gpt-6.1-sol",
+      "options": [
+        {
+          "id": "reasoningEffort",
+          "value": "xhigh"
+        },
+        {
+          "id": "serviceTier",
+          "value": "default"
+        }
+      ],
+      "summary": "Recorded **one P2 finding, no P1**. Both prior R6 findings are addressed in source. Runtime remains **UNVERIFIED**.\n\n[Full review report](/Users/serge/.t3/worktrees/openergy/t3-81ddd0c1/docs/verification/windows-adapter-p2-review-2026-10-24-81ddd0c1/REVIEW.md)\n\nCommit: `fe22c54d890ab7ecbfd58845040aba3ce87d47bc`\n\nReport SHA-256: `0d591ef0c84aa23b70be8f2f776912fddf6981fb24751f253a40323c0810012d`\n\nClean tree. Only the new report was committed. No native acceptance or approval receipt.\n\n",
+      "resultContextTransferId": "context-transfer:type:subagent_result:source-thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%253Adelegate-task%253Aoe-windows-adapter-independent-review-r8-1d01d67-20261024:target-thread:2d863197-a54d-4f3f-96fa-6ed045f9e4a3:f5bdad4c-6482-419e-a87e-cc02a011f465",
+      "hasPendingQuestion": false,
+      "pendingApproval": null,
+      "waitTimedOut": false
+    },
+    "windows_fixture_facts_r1": {
+      "taskId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-windows-fixture-path-fact-recovery-r1-17a059f-20261024",
+      "childThreadId": "thread:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-windows-fixture-path-fact-recovery-r1-17a059f-20261024",
+      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%253Adelegate-task%253Aoe-windows-fixture-path-fact-recovery-r1-17a059f-20261024:ordinal:1",
+      "childNodeId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-windows-fixture-path-fact-recovery-r1-17a059f-20261024",
+      "status": "completed",
+      "workState": "result_available",
+      "hasPendingChildRuns": false,
+      "latestTerminalRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%253Adelegate-task%253Aoe-windows-fixture-path-fact-recovery-r1-17a059f-20261024:ordinal:1",
+      "latestTerminalStatus": "completed",
+      "latestTerminalSummary": null,
+      "latestTerminalResultContextTransferId": null,
+      "providerInstanceId": "codex",
+      "model": "gpt-6.1-sol",
+      "options": [
+        {
+          "id": "reasoningEffort",
+          "value": "xhigh"
+        },
+        {
+          "id": "serviceTier",
+          "value": "default"
+        }
+      ],
+      "summary": "Bounded recovery exhausted: **0/9 qualified bindings** after 160 retrievals across six threads. One exact historical root remains unqualified.\n\n[Report and missing labels](/Users/serge/.t3/worktrees/openergy/t3-a25e3605/docs/verification/windows-fixture-fact-recovery-2026-10-24-a25e3605/README.md) · [Exact hashes](/Users/serge/.t3/worktrees/openergy/t3-a25e3605/docs/verification/windows-fixture-fact-recovery-2026-10-24-a25e3605/SHA256SUMS)\n\nPrivate partial data is saved with 0700/0600 modes. No `baseline-selection.json` was created. Prior evidence and guards remain unchanged. No host execution occurred; runtime remains **UNVERIFIED**.\n\nCommit: `d3cd115dd64ccd5fbf94a9ed9723d446ac198c36`  \nClean tree; only five new report files committed. Hooks and signing disabled.\n\n",
+      "resultContextTransferId": "context-transfer:type:subagent_result:source-thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%253Adelegate-task%253Aoe-windows-fixture-path-fact-recovery-r1-17a059f-20261024:target-thread:2d863197-a54d-4f3f-96fa-6ed045f9e4a3:fc869f85-2b1e-4eed-bfa1-aada916d99ed",
+      "hasPendingQuestion": false,
+      "pendingApproval": null,
+      "waitTimedOut": false
+    },
+    "sparkle_pinned_inputs_r1": {
+      "taskId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-sparkle-pinned-artifact-data-recovery-r1-1ea63e5-20261024",
+      "childThreadId": "thread:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-sparkle-pinned-artifact-data-recovery-r1-1ea63e5-20261024",
+      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%253Adelegate-task%253Aoe-sparkle-pinned-artifact-data-recovery-r1-1ea63e5-20261024:ordinal:1",
+      "childNodeId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-sparkle-pinned-artifact-data-recovery-r1-1ea63e5-20261024",
+      "status": "completed",
+      "workState": "result_available",
+      "hasPendingChildRuns": false,
+      "latestTerminalRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%253Adelegate-task%253Aoe-sparkle-pinned-artifact-data-recovery-r1-1ea63e5-20261024:ordinal:1",
+      "latestTerminalStatus": "completed",
+      "latestTerminalSummary": null,
+      "latestTerminalResultContextTransferId": null,
+      "providerInstanceId": "codex",
+      "model": "gpt-6.1-sol",
+      "options": [
+        {
+          "id": "reasoningEffort",
+          "value": "xhigh"
+        },
+        {
+          "id": "serviceTier",
+          "value": "default"
+        }
+      ],
+      "summary": "Recovered all **124 historical records**: 115 files (27,348,967 bytes) and 9 symlinks. No missing, extra, or differing records.\n\nThe [official Sparkle 2.10.0 archive](https://github.com/sparkle-project/Sparkle/releases/download/2.10.0/Sparkle-for-Swift-Package-Manager.zip) is 10,193,895 bytes. Its SHA-256 matches both pinned checksums:\n`17e28312b8e18ab7cdbbe09a6fb28cc55a5479ec6c371dbc07cdecd2a14fd959`\n\nDurable data pointer, relative to the authorized state parent:\n`sparkle-pinned-input-recovery-2026-10-24-bdfbf824/data`\n\nReceipt SHA-256:\n`7dce50e63988399ba6b062383286b6d74c7b8a501bb3defdb06b023ee1ce6c8a`\n\nOwn-worker NI was verified at 15. Retrieval used one metadata fetch and one archive request, including its official redirect. Retention finished in 95.50 seconds. Private directories are `0700`; regular files are nonexecutable `0600`.\n\n[Full report and bindings](/Users/serge/.t3/worktrees/openergy/t3-bdfbf824/docs/verification/sparkle-pinned-input-recovery-2026-10-24-bdfbf824/README.md)\n\nCommitted only three documentation files, with hooks and signing disabled:\n`4ac33f2a74303b39ab247b16f193d662fdc60700`\n\n**Working tree clean.** Ordinary inputs remain **INCOMPLETE**. No build, signing, loading, or runtime acceptance is claimed. The expired Sparkle operation remains closed.\n\n",
+      "resultContextTransferId": "context-transfer:type:subagent_result:source-thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%253Adelegate-task%253Aoe-sparkle-pinned-artifact-data-recovery-r1-1ea63e5-20261024:target-thread:2d863197-a54d-4f3f-96fa-6ed045f9e4a3:137c2454-e8cc-4c37-a267-007d3ee302b0",
+      "hasPendingQuestion": false,
+      "pendingApproval": null,
+      "waitTimedOut": false
     }
   },
   "integrated_reviews": [
@@ -376,12 +406,29 @@
       }
     },
     "windows": {
-      "source": "1d01d672c93b03d089d6d902f5bc7f15c10ffd05",
-      "root_import": "a2a8319",
-      "folder": "docs/verification/windows-adapter-p2-repair-2026-10-24-01d1bcb5",
+      "source": "762240ac041a835707b7ae3867b4e15b1e06b8c0",
+      "root_import": "762240a",
+      "folder": "docs/verification/windows-missing-pid-repair-r9-2026-10-24",
       "sha256sums_sha256": "fba9cdb6f9e9aba32565e6e4a13d78a690437b1e3a98a4ffa456ef4c5a6dae58",
       "parent_21_files_match_held_git": true,
-      "state": "Independent R8 review running; native acceptance UNVERIFIED"
+      "state": "R8 found one missing-PID cmdlet-error P2. Root implemented one-line direct .NET lookup repair; independent R10 review running. Runtime still blocked on nine fixture facts.",
+      "previous_r7": {
+        "source": "1d01d672c93b03d089d6d902f5bc7f15c10ffd05",
+        "root_import": "a2a8319",
+        "folder": "docs/verification/windows-adapter-p2-repair-2026-10-24-01d1bcb5",
+        "sha256sums_sha256": "fba9cdb6f9e9aba32565e6e4a13d78a690437b1e3a98a4ffa456ef4c5a6dae58",
+        "parent_21_files_match_held_git": true,
+        "state": "Independent R8 review running; native acceptance UNVERIFIED"
+      },
+      "build_sha256": "bc42365d060d9cda6d86642f7282970bebf3892c9681bd71e937376b76bb18b8",
+      "manifest_sha256": "031f15d74056fcc1b4b750603dc4ae81d6aaa0e2d8ae3cf8b3444b9e1b784c80",
+      "r8_review": {
+        "source": "fe22c54d890ab7ecbfd58845040aba3ce87d47bc",
+        "root_import": "a2d6668",
+        "report_sha256": "0d591ef0c84aa23b70be8f2f776912fddf6981fb24751f253a40323c0810012d",
+        "prior_two_r6_findings": "Addressed in source",
+        "remaining_at_review": "One P2 missing-PID cmdlet exception mismatch"
+      }
     }
   },
   "ordinary_retention": {
@@ -395,12 +442,12 @@
     "missing": [
       "signed ordinary bundle",
       "compiled app",
-      "complete pinned Sparkle tree",
       "original icon",
       "raw workspace state"
     ],
     "whole_app_acceptance": "UNVERIFIED",
-    "original_verdict": "FAILED / NOT ACCEPTED 23/25"
+    "original_verdict": "FAILED / NOT ACCEPTED 23/25",
+    "pinned_dependency_status": "Recovered as data by separate exact public archive task; complete ordinary input set remains INCOMPLETE"
   },
   "orchestration_incident": {
     "status": "RECOVERED",
@@ -418,5 +465,41 @@
     "host_or_guest_commands_run": false,
     "statement": "No existing sandbox was returned by the three connected inventory locations; this is not an inventory of all possible hosts.",
     "qualification": "No approved disposable macOS environment established for the stopped process-scoped Foundation/filesystem diagnostic"
+  },
+  "windows_fixture_facts": {
+    "source": "d3cd115dd64ccd5fbf94a9ed9723d446ac198c36",
+    "root_import": "ba8d894",
+    "folder": "docs/verification/windows-fixture-fact-recovery-2026-10-24-a25e3605",
+    "status": "BOUNDED_RECOVERY_EXHAUSTED",
+    "qualified": 0,
+    "required": 9,
+    "retrievals": 160,
+    "unique_items": 155,
+    "threads": 6,
+    "text_utf8_bytes": 446627,
+    "baseline_selection_created": false,
+    "one_exact_root_unqualified": true,
+    "native_contacts": 0
+  },
+  "pinned_sparkle_data": {
+    "source": "4ac33f2a74303b39ab247b16f193d662fdc60700",
+    "root_import": "1e5e42c",
+    "folder": "docs/verification/sparkle-pinned-input-recovery-2026-10-24-bdfbf824",
+    "private_data_relative": "sparkle-pinned-input-recovery-2026-10-24-bdfbf824/data",
+    "private_receipt_relative": "sparkle-pinned-input-recovery-2026-10-24-bdfbf824/qualified-retention-receipt.json",
+    "receipt_sha256": "7dce50e63988399ba6b062383286b6d74c7b8a501bb3defdb06b023ee1ce6c8a",
+    "archive_bytes": 10193895,
+    "archive_sha256": "17e28312b8e18ab7cdbbe09a6fb28cc55a5479ec6c371dbc07cdecd2a14fd959",
+    "historical_records_matched": 124,
+    "files": 115,
+    "symlinks": 9,
+    "file_bytes": 27348967,
+    "mismatches": 0,
+    "metadata_gets": 1,
+    "archive_gets": 1,
+    "no_archive_retry": true,
+    "retention_seconds": 95.496668,
+    "actual_own_nice": 15,
+    "state": "Dependency bytes qualified as nonexecutable private data only; no ABI/signing/load/build/runtime proof"
   }
 }
