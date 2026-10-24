@@ -1,0 +1,57 @@
+{
+  "passed": false,
+  "source_commit": "e1ef1243988d072cb9afc33fd2f5a56ca70e2f5a",
+  "artifact": {
+    "path": "<PROFILE_JSON>\\AppData\\Local\\Temp\\oe-stop-win-c8a3489c-e1ef124-24ce90f8\\target\\x86_64-pc-windows-msvc\\release\\openergy.exe",
+    "bytes": 4139520,
+    "sha256": "4984ef1222bbcd551dbebdda9db2fc623ff42a3560c5261806f09ad8f3dbda2f",
+    "executed": false,
+    "amd64_pe32plus": true
+  },
+  "controller": {
+    "pid": 25084,
+    "start_utc": "2026-10-24T03:30:56.4880813Z",
+    "creation_utc": "2026-10-24T03:30:56.4880810Z",
+    "parent_pid": 31704,
+    "path": "C:\\Program Files\\PowerShell\\7\\pwsh.exe",
+    "command_line": "\"C:\\Program Files\\PowerShell\\7\\pwsh.exe\" -NoLogo -NoProfile -NonInteractive -EncodedCommand dAByAHkAIAB7ACAAJgAgACcAPABQAFIATwBGAEkATABFAD4AXABBAHAAcABEAGEAdABhAFwATABvAGMAYQBsAFwAVABlAG0AcABcAG8AZQAtAHMAdABvAHAALQB3AGkAbgAtAGMAOABhADMANAA4ADkAYwAtAGUAMQBlAGYAMQAyADQALQAyADQAYwBlADkAMABmADgAXAByAHUAbgB0AGkAbQBlAC4AcABzADEAJwAgAH0AIABjAGEAdABjAGgAIAB7ACAAWwBJAE8ALgBGAGkAbABlAF0AOgA6AFcAcgBpAHQAZQBBAGwAbABUAGUAeAB0ACgAJwA8AFAAUgBPAEYASQBMAEUAPgBcAEEAcABwAEQAYQB0AGEAXABMAG8AYwBhAGwAXABUAGUAbQBwAFwAbwBlAC0AcwB0AG8AcAAtAHcAaQBuAC0AYwA4AGEAMwA0ADgAOQBjAC0AZQAxAGUAZgAxADIANAAtADIANABjAGUAOQAwAGYAOABcAHIAdQBuAHQAaQBtAGUALQBmAGkAcgBzAHQALQBzAHQAYQBnAGUALQBmAGEAaQBsAHUAcgBlAC4AcwB0AGQAZQByAHIAJwAsACAAKAAkAF8AfABPAHUAdAAtAFMAdAByAGkAbgBnACkAKQA7ACAAZQB4AGkAdAAgADEAIAB9AA==",
+    "session": 0,
+    "priority": "BelowNormal",
+    "retained_handle": true,
+    "recorded_utc": "2026-10-24T03:30:57.7480465Z"
+  },
+  "bounds": {
+    "readiness_seconds": 15,
+    "cli_seconds": 15,
+    "normal_exit_seconds": 10,
+    "runtime_stage_seconds": 150,
+    "owned_recovery_seconds": 15
+  },
+  "frequency": 10000000,
+  "clock": "Windows QPC / Stopwatch.GetTimestamp in the same native PowerShell controller and observer",
+  "timing_limit": "Includes transparent pipe observer and scheduling. Request forwarding is bounded by before/after ticks. Response read is controller receipt, not daemon send. OS exit is first retained-handle observation, not kernel exit timestamp. No cross-platform or speedup claim.",
+  "daemon_pipe": "\\\\.\\pipe\\oe-stop-c8a3489c-daemon-24ce90f8",
+  "observer_pipe": "\\\\.\\pipe\\oe-stop-c8a3489c-observer-24ce90f8",
+  "config_sha256": "3947c3ee41995f9020247d72ee3b7b9ce87b0ab3c751f9a6927676a79a27ab97",
+  "environment": {
+    "USERPROFILE": "<PROFILE_JSON>\\AppData\\Local\\Temp\\oe-stop-win-c8a3489c-e1ef124-24ce90f8\\runtime\\profile",
+    "APPDATA": "<PROFILE_JSON>\\AppData\\Local\\Temp\\oe-stop-win-c8a3489c-e1ef124-24ce90f8\\runtime\\appdata",
+    "LOCALAPPDATA": "<PROFILE_JSON>\\AppData\\Local\\Temp\\oe-stop-win-c8a3489c-e1ef124-24ce90f8\\runtime\\localappdata",
+    "XDG_CONFIG_HOME": "<PROFILE_JSON>\\AppData\\Local\\Temp\\oe-stop-win-c8a3489c-e1ef124-24ce90f8\\runtime\\config",
+    "XDG_DATA_HOME": "<PROFILE_JSON>\\AppData\\Local\\Temp\\oe-stop-win-c8a3489c-e1ef124-24ce90f8\\runtime\\data",
+    "XDG_CACHE_HOME": "<PROFILE_JSON>\\AppData\\Local\\Temp\\oe-stop-win-c8a3489c-e1ef124-24ce90f8\\runtime\\cache",
+    "XDG_RUNTIME_DIR": "<PROFILE_JSON>\\AppData\\Local\\Temp\\oe-stop-win-c8a3489c-e1ef124-24ce90f8\\runtime\\ipc",
+    "TEMP": "<PROFILE_JSON>\\AppData\\Local\\Temp\\oe-stop-win-c8a3489c-e1ef124-24ce90f8\\runtime\\temp",
+    "TMP": "<PROFILE_JSON>\\AppData\\Local\\Temp\\oe-stop-win-c8a3489c-e1ef124-24ce90f8\\runtime\\temp",
+    "OPENERGY_CONFIG": "<PROFILE_JSON>\\AppData\\Local\\Temp\\oe-stop-win-c8a3489c-e1ef124-24ce90f8\\runtime\\config\\config.toml",
+    "OPENERGY_SOCKET": "\\\\.\\pipe\\oe-stop-c8a3489c-daemon-24ce90f8",
+    "OPENERGY_DISABLE_DISCOVERY": "1",
+    "OPENERGY_ALLOW_PORT_24800": "0"
+  },
+  "requests": [],
+  "stops_sent": 0,
+  "recovery": [],
+  "jobs_created": 0,
+  "process_groups_created": 0,
+  "desktop_or_windowstation_changed": false
+}

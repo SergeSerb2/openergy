@@ -1,0 +1,36 @@
+{
+  "name": "release",
+  "command": [
+    "<PROFILE_JSON>\\.rustup\\toolchains\\1.99.1-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+    "build",
+    "--locked",
+    "--offline",
+    "--release",
+    "--target",
+    "x86_64-pc-windows-msvc",
+    "--jobs",
+    "2",
+    "-p",
+    "openergy-daemon",
+    "--bin",
+    "openergy"
+  ],
+  "started_utc": "2026-10-24T03:29:31.3933078Z",
+  "cargo_pid": 3588,
+  "root_identity": {
+    "pid": 3588,
+    "start_utc": "2026-10-24T03:29:31.3947634Z",
+    "creation_utc": "2026-10-24T03:29:31.3947630Z",
+    "parent_pid": 17968,
+    "path": "<PROFILE_JSON>\\.rustup\\toolchains\\1.99.1-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+    "command_line": "\"<PROFILE_JSON>\\.rustup\\toolchains\\1.99.1-x86_64-pc-windows-msvc\\bin\\cargo.exe\" build --locked --offline --release --target x86_64-pc-windows-msvc --jobs 2 -p openergy-daemon --bin openergy",
+    "session": 0,
+    "priority": "BelowNormal",
+    "retained_handle": true,
+    "recorded_utc": "2026-10-24T03:29:31.5168757Z"
+  },
+  "timeout_seconds": 600,
+  "stdin_closed": true,
+  "timed_out": false,
+  "stopped": []
+}

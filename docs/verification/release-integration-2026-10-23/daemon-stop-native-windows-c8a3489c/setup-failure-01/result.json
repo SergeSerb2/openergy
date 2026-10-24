@@ -1,0 +1,35 @@
+{
+  "source_commit": "e1ef1243988d072cb9afc33fd2f5a56ca70e2f5a",
+  "started_local": "2026-10-23T20:17:41.550705-07:00",
+  "controller_nice": 15,
+  "macos_deployment_target": "15.0",
+  "total_workflow_bound_seconds": 2400,
+  "owned_recovery_bound_seconds": 30,
+  "passed": false,
+  "source_overlays": [],
+  "compiler_stage_attempts": 0,
+  "runtime_stage_attempts": 0,
+  "remote_fixture": "oe-stop-win-c8a3489c-e1ef124-11fa8bad",
+  "transport": "Existing R6 transport; OpenSSH immediate control stdin EOF; fixed-file scp -O; strict known-host checking; no credential read/copy",
+  "archive_sha256": "775e04301b1f3816ccf39fd088e1100da4344be5b171df7330b0049a7f589adf",
+  "source_files": 558,
+  "qualification_exit": 1,
+  "postflight_exit": 0,
+  "bundle": {
+    "bytes": 42172416,
+    "sha256": "f56ff7e88c3ad9843c244b2eaa7e4ccd1de81914a15eba8143c1870fbae987c3",
+    "postflight_passed": true
+  },
+  "cleanup_exit": 0,
+  "cleanup": {
+    "recorded_utc": "2026-10-24T03:25:24.7776194Z",
+    "owned_processes_before_removal": [],
+    "owned_root_removed": true,
+    "removed_only_fresh_owned_root": true,
+    "artifact_and_raw_evidence_verified_and_retained_privately_before_removal": true
+  },
+  "ended_local": "2026-10-23T20:25:27.366100-07:00",
+  "elapsed_seconds": 465.81259966700003,
+  "controller_exit": 0,
+  "local_prior_evidence_equal": true
+}

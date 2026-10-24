@@ -1,0 +1,21 @@
+{
+  "remote_actions_at_errors": 0,
+  "compiler_actions_at_errors": 0,
+  "errors": [
+    {
+      "operation": "source search",
+      "error": "zsh:3: no matches found: crates/core/src/config*",
+      "correction": "Used existing crates/config/src paths without unmatched globs."
+    },
+    {
+      "operation": "transport signature lookup restricted to Windows-like Host labels",
+      "error": "AssertionError: transport signature does not uniquely match",
+      "correction": "Expanded lookup to all configured Host labels."
+    },
+    {
+      "operation": "transport signature lookup of Host labels only",
+      "error": "AssertionError: saved transport signature does not match configured host labels",
+      "correction": "Matched exact saved signature using configured HostName/User variants; no connection attempted during lookups."
+    }
+  ]
+}

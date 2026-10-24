@@ -1,0 +1,19 @@
+{
+  "label": "runtime-absent",
+  "arguments": [
+    "status",
+    "--socket",
+    "\\\\.\\pipe\\oe-stop-c8a3489c-daemon-24ce90f8"
+  ],
+  "expected_exit_code": 1,
+  "exit_code": 1,
+  "timed_out": false,
+  "before_create_ticks": 16559150387,
+  "after_create_ticks": 16559304480,
+  "resume_ticks": 16568247328,
+  "cli_exit_observed_ticks": 16569121570,
+  "stdin": "NUL",
+  "retained_process_handles": true,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "ffe28db63ed962b541d596d8b1114f91ecb58650c09f47f4ef90014e0fd9c63d"
+}

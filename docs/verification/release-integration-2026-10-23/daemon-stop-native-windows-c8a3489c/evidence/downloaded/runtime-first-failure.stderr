@@ -1,0 +1,8 @@
+MethodInvocationException: <PROFILE>\AppData\Local\Temp\oe-stop-win-c8a3489c-e1ef124-24ce90f8\runtime.ps1:115
+Line |
+ 115 |    if((Test-Path -LiteralPath $log) -and ([IO.File]::ReadAllText($log) …
+     |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Exception calling "ReadAllText" with "1" argument(s): "The process cannot access the file
+     | '<PROFILE>\AppData\Local\Temp\oe-stop-win-c8a3489c-e1ef124-24ce90f8\runtime\config\openergy.log' because it
+     | is being used by another process."
+

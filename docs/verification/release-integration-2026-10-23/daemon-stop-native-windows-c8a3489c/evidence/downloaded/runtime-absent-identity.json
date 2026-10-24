@@ -1,0 +1,26 @@
+{
+  "pid": 30180,
+  "start_utc": "2026-10-24T03:30:59.6734229Z",
+  "creation_utc": "2026-10-24T03:30:59.6734220Z",
+  "parent_pid": 25084,
+  "path": null,
+  "command_line": "\"<PROFILE_JSON>\\AppData\\Local\\Temp\\oe-stop-win-c8a3489c-e1ef124-24ce90f8\\target\\x86_64-pc-windows-msvc\\release\\openergy.exe\" \"status\" \"--socket\" \"\\\\.\\pipe\\oe-stop-c8a3489c-daemon-24ce90f8\"",
+  "session": 0,
+  "priority": "BelowNormal",
+  "retained_handle": true,
+  "recorded_utc": "2026-10-24T03:31:00.5798347Z",
+  "native_process_handle_retained": true,
+  "primary_thread_suspended": true,
+  "in_job": true,
+  "below_normal_at_creation": true,
+  "explicit_inherited_handles": [
+    "private stdout",
+    "private stderr",
+    "NUL stdin"
+  ],
+  "command": [
+    "status",
+    "--socket",
+    "\\\\.\\pipe\\oe-stop-c8a3489c-daemon-24ce90f8"
+  ]
+}
