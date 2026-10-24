@@ -136,7 +136,9 @@ finds no concrete P1/P2 in those saved records and adds no runtime reproduction.
 
 The [matching historical Windows control](windows-dns-historical-refusal-615c16e1.md)
 also passes all ten refusal cases and exits 0. It captures no historical fault,
-so it does not close the negative-control gate. The new
+so it does not close the negative-control gate. The
+[R15 saved-evidence audit](windows-dns-historical-review-r15.md) found no concrete
+P1/P2 and confirms that limit. The new
 [macOS fixture qualification](macos-owned-refusal-qualification.md) rules out
 listener shutdown as an owned-refusal method; its successful TCP connections
 are ordinary OS behavior, not false-Connected product events.
