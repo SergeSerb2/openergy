@@ -210,6 +210,11 @@ The overall result remains **FAILED**: peer stop exceeded the private one-second
 wait and the first exclusive port rebind failed. The [R4 audit](../macos-idle-resources-r3-source-evidence-review-2026-10-23-t3-4021ec78.md)
 found no concrete P1/P2. CPU conversion remains conditional; compiler interference,
 finite sampling and failed cleanup prevent performance or release acceptance.
+The [shutdown source diagnosis](../daemon-stop-latency-source-2026-10-23-t3-d1ff2556/README.md)
+establishes an avoidable poll after public stop acknowledgement. Saved timings
+do not prove its sole contribution to the historical timeout. A narrow repair
+and bounded real-command verification are in progress; the 250 ms shutdown
+flush and joins must remain intact.
 
 [Sparkle integration](../sparkle-integration-2026-10-23/README.md) and the signed
 empty Cloudflare feed are implemented and checked. The later
