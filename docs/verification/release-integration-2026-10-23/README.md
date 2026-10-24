@@ -315,9 +315,14 @@ passes real manifest evaluation but fails native Swift planning on output-file-m
 I/O. Its [review](../release-swift-isolation-review-2026-10-23-t3-73b2eeaf.md)
 finds a separate P2: the isolated mode must reject universal builds that can
 override the requested native backend. That build-option source is not integrated.
-A narrow rejection and one app-only arm64 release qualification are in progress;
-the I/O cause remains unresolved and no further package command is authorized
-by that qualification task.
+The narrow rejection and app-only qualification at held `6badf95` are complete:
+early universal-rejection checks pass, but the release build fails before app
+compilation. The source remains unmerged and the I/O cause remains unresolved. The
+[causal research](../release-swiftpm-atomic-write-research-2026-10-23-t3-57d3a189.md)
+narrows a possible Foundation atomic-write/replacement-directory path, but
+proves no cause or supported private configuration. Further build attempts
+are stopped pending suitable process-scoped instrumentation in an isolated
+macOS environment. No policy relaxation or new runtime qualification is supplied.
 
 The [slow-DNS prerequisite note](../slow-dns-fixture-prerequisites-2026-10-23-a3f15192.md)
 identifies a possible Windows application-DNS API. The [settings-only helper](../windows-app-dns-qualification-prep-2026-10-23/report.md)
