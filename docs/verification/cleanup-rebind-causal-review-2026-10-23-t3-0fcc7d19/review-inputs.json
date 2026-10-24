@@ -1,0 +1,22 @@
+{
+  "R2": {
+    "logical_path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-r2-9f6625c-58c8956e/review.md",
+    "read_from": "other isolated T3 worktree; no private absolute path reproduced",
+    "sha256": "7d9e93668da49f370b380f83cbc5ff622ca9557395db1bdac9d3136be200b4df",
+    "bytes": 6125,
+    "git_commit_binding": "not established; file is absent from this checkout and git log in owning worktree returned no committed path",
+    "candidate_reviewed": "9f6625c951835295419ed1c53565581a7fa9681a"
+  },
+  "R4": {
+    "revision": "ce22c1f37618563dea522c4a04b2248b7fc56e11",
+    "logical_path": "docs/verification/macos-idle-resources-r3-source-evidence-review-2026-10-23-t3-4021ec78.md",
+    "sha256": "ddc580f96d66b5724db2ef35c452e707062eab6a7cd07ebfadecbfc74197d9cd"
+  },
+  "reader_corrections": [
+    "Initial R2 path read failed in this checkout; unique saved review was then read from its owning isolated worktree. Worktree suffix 58c8956e was not a Git revision.",
+    "Initial app source lookup omitted App/; corrected to the exact tracked path.",
+    "A copy-ledger and B raw-records are both lists. A schema display attempted dict.values on B; the first archive audit attempted a files key on A. Each failed read was corrected. No evidence writes or runtime calls occurred.",
+    "Public Rust tag/path request returned 404; corrected to the exact saved compiler commit and socket/mod.rs. GitHub tag API URLs were unavailable; version-tag source was read through web tools.",
+    "The first staged-scope audit expected 9 new files; the report contains 8. The count-only assertion was corrected before commit. No archive file changed."
+  ]
+}

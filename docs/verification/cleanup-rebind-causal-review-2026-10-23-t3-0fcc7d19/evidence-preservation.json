@@ -1,0 +1,624 @@
+{
+  "method": "Own read-only Git/blob and file hash audit; no supplied helper imported or executed. Only committed, already-redacted records read.",
+  "review_base_head": "9c1788819751c6806bd4595a9b830efd1b4c6692",
+  "archives": [
+    {
+      "case": "A",
+      "revision": "9f6625c951835295419ed1c53565581a7fa9681a",
+      "original_file_count": 37,
+      "manifest_entries_checked": 36,
+      "copy_or_raw_ledger_entries_checked": 31,
+      "files": [
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/README.md",
+          "bytes": 4348,
+          "sha256": "b52153b570c8f38b52d7eb934fab0c0c6af42cc4389c09fc4886d5b218e9f97d",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/artifacts.json",
+          "bytes": 3431,
+          "sha256": "506be962d70b541348139b7959eb351f1ac3dd3e6c8b7aca1df8ee8d6cdc87b3",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/copy-ledger.json",
+          "bytes": 8219,
+          "sha256": "1b3ebbb54f924b4802de79c29d73a5af2c847d337fc34f101444be6255f98aae",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/derived.json",
+          "bytes": 3078,
+          "sha256": "6ea4b88fe91f69a921035fb75b21539cfa8e49744662a0f7a50467301a06bff3",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/binary-build.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/binary-build.stdout",
+          "bytes": 239,
+          "sha256": "cea9ac1900ae85af40cbdc9d6833bfdf4d5cd0d57330b417fd74620998d64c55",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/cargo.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/cargo.stdout",
+          "bytes": 36,
+          "sha256": "c35608815f43d0b8788a9b826fad2bb17384f49fb328dc4fe64da9db5f5ef4d6",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/clippy.json",
+          "bytes": 636,
+          "sha256": "a7cfdbbf6712fd805a8b2c740164fb8e2287a97fe8183bbe1c052a4ccea5ee35",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/clippy.stderr",
+          "bytes": 2607,
+          "sha256": "44d4165ad5f11aa3a43db63faebbe9486603223f92c146374bc8f6253193128e",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/clippy.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/format-check.json",
+          "bytes": 542,
+          "sha256": "1c225b26e0d88ead9af1ea65e9013bec30726f4959b51012e2874bd5753e6091",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/format-check.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/format-check.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/format.json",
+          "bytes": 521,
+          "sha256": "9c689608bb1e2d4c9f7d0b12b101415dbf195b413f41a30f8fa1193e64c626ee",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/format.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/format.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/host.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/host.stdout",
+          "bytes": 66,
+          "sha256": "c57ab3d857bdebc1ae792a33d835702f92eeec48e822f6f56a87309c4256c9b9",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/initial-tool-failures.txt",
+          "bytes": 277,
+          "sha256": "e4e95295ea7c02c4c965c2fa08fdae45c5f4d85a3d43dfdc3b9525a97ec0984f",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/postflight-lsof.stderr",
+          "bytes": 150,
+          "sha256": "edcd07c1f203fa368d42dfd8466259b34141281bd52a1e1f3686ecaaa6c3a366",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/postflight-lsof.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/postflight-netstat.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/postflight-netstat.stdout",
+          "bytes": 432,
+          "sha256": "3846e478c954b8322dab69ce6b56e5c2a967ed8feb7f8f56ea4eab4f3c91c398",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/postflight.json",
+          "bytes": 490,
+          "sha256": "2dd016787bea5d0d2b0a01540f118fdeaeff832176d84e1e9de316903bb7fee5",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/release.json",
+          "bytes": 600,
+          "sha256": "ae113dd3fc90192b80a5f213b914b2036cca8ce48eb27b3abbb8d36a67f8940c",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/release.stderr",
+          "bytes": 2366,
+          "sha256": "9e7e7737043227e90c8757a13fa8facca959919d527c198549aa18a828b11d5d",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/release.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/runtime-once.guard",
+          "bytes": 33,
+          "sha256": "3c026c8245ee4fb5cdac211ec8ba38e01839a3535a962818bb9ef03d68073980",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/runtime-process.stdout",
+          "bytes": 189,
+          "sha256": "a2bdd9f932c9c2205055127a02bcd046470e7b3db90617b707d5ee28e7afaea1",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/runtime.json",
+          "bytes": 2374,
+          "sha256": "cf1ba8e5aae8629287286b46c189ee91f24914aa0c2d2b0c211150e5488400eb",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/runtime.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/runtime.stdout",
+          "bytes": 58472,
+          "sha256": "759fa0cec0df9fb7689cc38571cd4e04a836589bfb45286b7676baeb2dc05200",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/rustc.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/raw/rustc.stdout",
+          "bytes": 192,
+          "sha256": "e003fd3d385fcd0de16bc6b049124efb20207831dd810fd4ab39ff079bbb12a5",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/run-once.py",
+          "bytes": 3760,
+          "sha256": "e9bede4db22a7734ffb7c3f6ff59211903060af860910f3f163c6c104eb727d4",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/release-integration-2026-10-23/idle-tls-deadline-2701060/source.json",
+          "bytes": 2237,
+          "sha256": "595bb443cb54be69f87c43703f8fcae1e19163805e137173b0ad5473aad0452c",
+          "worktree_equals_original": true
+        }
+      ]
+    },
+    {
+      "case": "B",
+      "revision": "b75dfa1b543e4bf6b47858581d4d2cf19aa777e6",
+      "original_file_count": 63,
+      "manifest_entries_checked": 62,
+      "copy_or_raw_ledger_entries_checked": 43,
+      "files": [
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/README.md",
+          "bytes": 10067,
+          "sha256": "8c2a8e87186a954bcddba974b2cdc63b55d78571489f006b3db7a362af981488",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/archive-validation-first-failure.json",
+          "bytes": 557,
+          "sha256": "0f955e2350e8579c0807bfef5912df2ff73a7e53612979a47643e000c37bbb7d",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/archive-validation.json",
+          "bytes": 524,
+          "sha256": "04a854370595e6673897092569e0bb01ff166f05b1482636ed8b6426926877ab",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/build-once.guard",
+          "bytes": 6,
+          "sha256": "c13e6fe591ff5b84d7b688e6af4be459f09c5d6e0a5a9c7df61f40ebdfc24f47",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/command-results.json",
+          "bytes": 954,
+          "sha256": "d0c41396984e8168c50f7011e2696a9ed33ba0b9f9c8470679e66508c5add1d2",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/commit-validation.json",
+          "bytes": 442,
+          "sha256": "9991f4d5875fa11706656c5e3a6f05e6ea41d1d21faf8b51eb58436456db0bce",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/controller-repair.patch",
+          "bytes": 11283,
+          "sha256": "b15862d80e36ea79d90f2c6b7db70ea1ff5dee54d0465fc91ce481e1bad715f2",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/counter-unit-annotation.json",
+          "bytes": 871,
+          "sha256": "561c3f0ebc524231a077eb06c72507dc42984b8392689f0aec56bd7ddcc188c8",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/evidence-manifest.json",
+          "bytes": 9098,
+          "sha256": "6488de7956a5de0dfb40ffe6b0e81549d81eda42a95a61590d0444611885c9a0",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/harness-overlay.patch",
+          "bytes": 10193,
+          "sha256": "d2db3e4f7ae6a0c41d7d5d03cf30b1be13d6f8af9bc0931a3d4a21fcc9e55cb2",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/measure.py",
+          "bytes": 41275,
+          "sha256": "170e07ed165606e07b9823677a1cdadea59fe25b33e146d8d01685d0c50150c6",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/pre-runtime-gates.json",
+          "bytes": 1392,
+          "sha256": "7cdd788c8459b7f72c1e75a146f0fd5f5c2fcfb106f9c7f3be9ba970a9f69790",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/prepare.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/prepare.stdout",
+          "bytes": 42,
+          "sha256": "3e242c627f8b82aa9e5e3c89ac4b7e1c8fa3dc4d621a7bdab199b5861367c4b6",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw-records.json",
+          "bytes": 10981,
+          "sha256": "482c41b370fe7674c1075a7b455f3e464ad392af976514108a8439b96d56a680",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/build-compiler-samples.json",
+          "bytes": 33299,
+          "sha256": "21eaf50cc656644449b8a788147e7ffc0921c840eec88c093d861283972517df",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/build.json",
+          "bytes": 1651,
+          "sha256": "70d8a6d8b80e9f21e24b6ff84301eb45d69d55193a7423d12a7cd63c0681da12",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/build.stderr",
+          "bytes": 86,
+          "sha256": "0ee832500c29ac51013fa44722972295c4052d5c64d9f6ef016ddf81abe9afaf",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/build.stdout",
+          "bytes": 557,
+          "sha256": "b9d059a2d007dc1576a47f18980ba98748141aecc692b74c1fcddfdf1a680e68",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/cached-input-hashes.json",
+          "bytes": 108388,
+          "sha256": "1bf4b78f3943637d7907281cad99ae462678c8cada71200d575aaf31d7ccc94f",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/cleanup-first-failure.txt",
+          "bytes": 68,
+          "sha256": "b021f204827374f2c29221de099b99edb17128aadf03ebf3ce5c85794e3efa84",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/cleanup-ports-first-observation.json",
+          "bytes": 3037,
+          "sha256": "fadc44276568f122143dc294dd1e5635f4b5568b587386e67e532585df7f1e3f",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/cleanup.json",
+          "bytes": 5248,
+          "sha256": "8152e9c12dcf8463d6110cab50d86eefc32e4c599e5fe0248781d6ffae2dea9f",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/exec-barriers.json",
+          "bytes": 6021,
+          "sha256": "d582d68c8488c14f22ca9c7c7d1354d29fe9911b62baa1500f5e63358031bba7",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/failure-readbacks.json",
+          "bytes": 5926,
+          "sha256": "9bfb728f31bd1c96b5dbb123f4928f244d5270ffa1e2c6cdad5588e7c7c3f27c",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/flow-report.json",
+          "bytes": 1450,
+          "sha256": "5adf1c1687b3a6c40fc332dc3bd0b80b7b73cac5039da29dd196cee17904ea76",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/lsof-ready.json",
+          "bytes": 659,
+          "sha256": "53b50223faf4c02767f2dd2fc875a49c8b992d5621c13291c3077d5a83b4d849",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/os-samples.json",
+          "bytes": 315933,
+          "sha256": "7c14cc5893de458ddd0a1b8daaa7b5c52ff08e30e002b16692f76d715a2f61d4",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/peer-before-app.json",
+          "bytes": 2669,
+          "sha256": "4afa1d301afe9588be76f0fe7622f9147331c611f2dda4ec71c79f4ac2930fa7",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/peer-connected-after-rejoin.json",
+          "bytes": 11742,
+          "sha256": "6a553208490c65f0d1b32a665f49abc97936e07bbd7c4f84e49f58b9432aa14f",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/peer-connected-before-idle.json",
+          "bytes": 11725,
+          "sha256": "f94b9d6104682b16a36f91908255db84c5e2252fde2965de479d06590b4b7123",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/postflight.json",
+          "bytes": 708,
+          "sha256": "26e9054cf1e508deb3db9a6cc0736636314c9c4dc6cb51b674a530004111993b",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/preparation.json",
+          "bytes": 68262,
+          "sha256": "4b0ef07d8d0515f50e571f1eb0a70a4c5db29645733c7159ffcf2d7dd23a518a",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/priority-prepare.json",
+          "bytes": 594,
+          "sha256": "f0db724edf275cfed68279bc0dea7b2725bf7bcf8d4305ea259ad509ffd2fbee",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/priority-runtime.json",
+          "bytes": 594,
+          "sha256": "6ab0e0f07609730a42153e18199201021f84d867fa2e21466dd759ff665a2a9e",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/public-cli.json",
+          "bytes": 20736,
+          "sha256": "53656a690376e382445b2262992673ab14e69fc3d21be1c66f2adbf20970d3ea",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/ready.json",
+          "bytes": 1401,
+          "sha256": "52b69d07b985e107f8a52b5a064c09ffea66823971743b2f612a6b27153c284a",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/request-accounting.json",
+          "bytes": 394,
+          "sha256": "9ff534cf857c0efde556063b3f503c0ec92c167f587488529af90f9ed344ddd5",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/run-command.json",
+          "bytes": 3572,
+          "sha256": "e47b7aa6aeaed7dce6b0d2cfdce1d05997c86e0de705834ff7a1b8ca16bdca0b",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/run/app.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/run/app.stdout",
+          "bytes": 3074,
+          "sha256": "591ba35fb4114316727ae1463e4bea23466fe39125e0c8136eb6c03b01a0db79",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/run/flow/app/config.toml",
+          "bytes": 574,
+          "sha256": "454f32f6fc2dc9b58f9f31022c5d7bb5cca544bb51728c4bc5a32ed6c5e7c12b",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/run/flow/app/daemon-stderr.log",
+          "bytes": 600,
+          "sha256": "3f579e4cb487bc3e409327e56159bb35f39ff9f72da7fe4bf825e12a22adb74e",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/run/flow/app/ipc.sock.lock",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/run/flow/app/openergy.log",
+          "bytes": 600,
+          "sha256": "3f579e4cb487bc3e409327e56159bb35f39ff9f72da7fe4bf825e12a22adb74e",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/run/flow/idle-sampled",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/run/flow/idle.jsonl",
+          "bytes": 37180,
+          "sha256": "246bf962c6747c80fd57ecc48a8ef5c0b81ebb75dba4a5ccdc17e0a9d2155027",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/run/flow/peer-ready",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/run/flow/rejoin-readback",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/run/flow/report.json",
+          "bytes": 1485,
+          "sha256": "cd927367d90d1b680306c7c0a8bf2b6024ed0e17e1b49530d5770488005ee8f8",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/run/peer.log",
+          "bytes": 635,
+          "sha256": "ae9905be9c32771f3b66c259080b72d2bf0fef6460aed2edda055b1a308532de",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/run/peer/config.toml",
+          "bytes": 356,
+          "sha256": "6c4eeafe323cdf932ea2ee1ea324bf345010b8048bba7cccc61bc211af7fa92d",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/run/peer/ipc.sock.lock",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/run/peer/openergy.log",
+          "bytes": 635,
+          "sha256": "ae9905be9c32771f3b66c259080b72d2bf0fef6460aed2edda055b1a308532de",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/runtime-entry.json",
+          "bytes": 342,
+          "sha256": "34fa6bda0b98900cfdb938a024929f0a0f877486d6ddaec7043fd85132d077c7",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/runtime-first-failure.txt",
+          "bytes": 954,
+          "sha256": "c5e65695da37920f6d82fd85dffc0cf4176dd02f7ebf5f1f75edc5c473e9b267",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/tls-removal-pending.json",
+          "bytes": 1093,
+          "sha256": "af934b84dd33202b4a7deddcb6f305ae4aba439ee044591d5cdba9bfd14f4de5",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/raw/tls-removal.json",
+          "bytes": 1114,
+          "sha256": "d0ec5f657921cafe4d85648f7d8a35f5583cd9ba72870589e0030b43455f78fb",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/reconciliation.json",
+          "bytes": 399758,
+          "sha256": "0e15bd6c8a958c6a8278fbb7828927dc074378a4b0c7e28627bbba38ced5b676",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/results.json",
+          "bytes": 17575,
+          "sha256": "da5200615f1dd3973412c2eadf81e94ac668b869e0c5724c4b8c8369b17c8ef6",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/runtime-once.guard",
+          "bytes": 6,
+          "sha256": "d68daf1f28537465e1b3463ec37408f2c7d0e99310c641bd529073e86d9c3793",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/runtime.stderr",
+          "bytes": 6005,
+          "sha256": "94f1e7b060d5f6aa59f7e886afb0843d909c953d7ca8377202b2497d87a84907",
+          "worktree_equals_original": true
+        },
+        {
+          "path": "docs/verification/macos-idle-resources-r3-2026-10-23/runtime.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "worktree_equals_original": true
+        }
+      ]
+    }
+  ]
+}
