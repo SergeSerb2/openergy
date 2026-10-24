@@ -298,6 +298,13 @@ Full metadata restoration is unverified. No packaging retry or GUI launch ran.
 The [independent priority review](../release-priority-2026-10-23/independent-review-t3-ab89755e.md)
 finds no new source P1/P2 and corroborates recovery. The controller's cache
 preservation P2 remains open; a fresh-build-state verification is being prepared.
+The [separate isolated attempt](../release-priority-isolated-2026-10-23-t3-8c51bae6/README.md)
+preserves the old caches and prior records but fails during Swift manifest
+evaluation, before signing, ZIP creation or product IPC. Its
+[saved-evidence audit](../release-priority-isolated-failure-review-2026-10-23-t3-60b539d2.md)
+finds no new concrete P1/P2 and keeps the insufficient preflight open.
+The failed command remains failed. A corrected Swift recipe is being qualified
+before any new package command.
 
 The [slow-DNS prerequisite note](../slow-dns-fixture-prerequisites-2026-10-23-a3f15192.md)
 identifies a possible Windows application-DNS API. The [settings-only helper](../windows-app-dns-qualification-prep-2026-10-23/report.md)
