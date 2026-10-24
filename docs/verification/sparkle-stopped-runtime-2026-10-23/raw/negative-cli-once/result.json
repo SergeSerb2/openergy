@@ -1,0 +1,71 @@
+{
+  "case": "negative",
+  "controller_started": "2026-10-23T17:26:18.611584-07:00",
+  "cli_executed": true,
+  "arguments": [
+    "/private/tmp/oe-stopped-update-llil939f/driver/sparkle.app/Contents/MacOS/sparkle",
+    "/private/tmp/oe-stopped-update-llil939f/old/Openergy.app",
+    "--check-immediately",
+    "--feed-url",
+    "http://127.0.0.1:25600/signature-negative.xml",
+    "--user-agent-name",
+    "Openergy-private-verification",
+    "--verbose"
+  ],
+  "wrapper": [
+    "/usr/bin/nice",
+    "-n",
+    "15"
+  ],
+  "cli_pid": 21634,
+  "process_group": 21634,
+  "cli_started_at": "2026-10-23T17:26:22.792898-07:00",
+  "timeout_seconds": 120,
+  "raw_exit": 1,
+  "cli_ended_at": "2026-10-23T17:26:23.316522-07:00",
+  "seconds": 0.5286811250000003,
+  "termination_reason": null,
+  "target_breach": false,
+  "observer_errors": [],
+  "process_sampling": "ps nominal 100ms plus command time; short-lived processes can be missed",
+  "old_tree_unchanged": true,
+  "oldpath_exact_candidate_tree": false,
+  "old_after": {
+    "path": "/private/tmp/oe-stopped-update-llil939f/old/Openergy.app",
+    "id": "dev.openergy.updater-fixture.5b4a5cb7d61d444eaf4a3d673e1df4a5",
+    "build": "1",
+    "executable_sha256": "36243ed8c67e31fe261f699d10d439e0d22d32cb34b60ed51d90253b558ba5e6",
+    "uid": 501,
+    "gid": 20,
+    "mode": "0o755",
+    "inode": 1006842795,
+    "device": 16777233,
+    "mtime_ns": 1792792686061272505,
+    "atime_ns": 1792792687228232265,
+    "xattrs": {
+      "not_collected": "Apple /usr/bin/python3 has no os.listxattr; prepared tree identity covers content, modes, and symlinks, not xattrs"
+    }
+  },
+  "archive_complete_gets": [
+    {
+      "at": "2026-10-23T17:26:23.018011-07:00",
+      "client": [
+        "127.0.0.1",
+        58802
+      ],
+      "method": "GET",
+      "path": "/openergy-fixture.zip",
+      "range": null,
+      "sent_bytes": 7492869,
+      "status": 200,
+      "expected_bytes": 7492869,
+      "sha256": "a4bf7a1386fd870fed820a169a005fd6deb99adfa4546c836a3550b6b7308183",
+      "complete": true,
+      "finished_at": "2026-10-23T17:26:23.025243-07:00"
+    }
+  ],
+  "owned_cli_group_final_cleanup": "already absent",
+  "log_raw_exit": -15,
+  "server_closed_at": "2026-10-23T17:26:29.530327-07:00",
+  "controller_ended": "2026-10-23T17:26:29.530351-07:00"
+}

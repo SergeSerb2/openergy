@@ -1,0 +1,127 @@
+{
+  "at": "2026-10-23T17:29:37.715873-07:00",
+  "original_preparation_directory_unchanged": true,
+  "original_preparation_files": {
+    "README.md": "9b8f5cd1e64cb9fd815dd9a4aaf48a9374685ad7e54ec101ba771acdaedec5a2",
+    "finalize.py": "cc841ff9db1615fb3c44c83bec6275b9e5b15bf18b47c3b88349fdabecfcdec3",
+    "operation-v2-DO-NOT-RUN.json": "2846f3adafe9b1f39092bb0e98e672dd66c9ff7f89715c110c282723d89d3cef",
+    "prepare-corrected.py": "8b4f45ebe6203d7b416365a2b7560e5179e69795f72ebaf53045cb66e8cde1e4",
+    "raw/bundle-trees.json.gz": "e9f4bb633bb488b3277cd4f9754c338537e3b5a5235c9e6259593bb0d5a288f2",
+    "raw/commands.json": "cd775db85a59bb26ebbe2f562b7c17a4a93ab1b12d9e1b108667bdb6b738cd1a",
+    "raw/driver-preparation-commands.json": "2505bdd66f7ac7a7e6a0f780a0d82a9785cfdc5ad4d02a3e686a7fc86e466619",
+    "raw/driver-preparation.json": "99dccd01200d30e28eacb49aa1f8e26394894360182f1321152a9173d3b9c6ed",
+    "raw/key-cleanup.json": "27248a8e85d8485b35c4556e802e770f7de1d75995bfd4af7bd3efb4cf5d0663",
+    "raw/operation-DO-NOT-RUN.json": "f87557156aad0e55925822132ce2894410ccbeb55a934b7eb197694140cf026b",
+    "raw/preparation.json": "233dbeb4757b9fdfb9dec7bc626161b83c8282874e7200bb87319370e1e9c1db",
+    "raw/prepared-driver-tree.json.gz": "890685c742b5c78aac072e437b081a21d96f359a2bfdaa712f0a79a595fb4327",
+    "raw/public/signature-negative.xml": "5596abb836ece3afe959a1ec00996a16120898e8165f41fbb10a932db9627eda",
+    "raw/public/valid.xml": "7bbca8672ae296f224c39747402a28bd7d2968380c189a6cd539c70f6fb44fe5",
+    "results.json": "a85de644d49563be3c72b9a27034eeb9e4fa42386998f9f01b8aec37432b0767",
+    "review-r1.md": "f999b93fc8d132be3ca77c3d87f8e71a38f57b13f64a83ea3bbd019ed0d3b687",
+    "review-r2.md": "f488870d93c1161cbde075f9f076231da2cba5c31369181c4eb55ad81c77dfb0",
+    "scope-r2-binding.json": "75fd6fe2f3fd9bb8cfda787e8d148a9343c251f48911f5963646c589a1f5071e"
+  },
+  "exact_owned_pid_and_port_readbacks": [
+    {
+      "arguments": [
+        "/bin/ps",
+        "-p",
+        "21634,21638,21639,26921,26922,26923",
+        "-o",
+        "pid=,comm="
+      ],
+      "raw_exit": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "/usr/sbin/lsof",
+        "-nP",
+        "-iTCP:25600",
+        "-sTCP:LISTEN"
+      ],
+      "raw_exit": 1,
+      "stdout": "",
+      "stderr": "lsof: WARNING: can't stat() smbfs file system /Volumes/.timemachine/192.168.1.70/BDF0E07C-80B3-4AB9-9F32-2C89F4F363B9/serge\n      Output information may be incomplete.\n      assuming \"dev=3600001a\" from mount table\n"
+    },
+    {
+      "arguments": [
+        "/usr/bin/sw_vers"
+      ],
+      "raw_exit": 0,
+      "stdout": "ProductName:\t\tmacOS\nProductVersion:\t\t27.2\nBuildVersion:\t\t26B5112a\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "/usr/bin/python3",
+        "--version"
+      ],
+      "raw_exit": 0,
+      "stdout": "Python 3.9.6\n",
+      "stderr": ""
+    }
+  ],
+  "additional_exact_fixture_locations": [
+    {
+      "path": "/Users/serge/Library/HTTPStorages/dev.openergy.updater-fixture.5b4a5cb7d61d444eaf4a3d673e1df4a5",
+      "exists": false,
+      "symlink": false
+    },
+    {
+      "path": "/Users/serge/Library/HTTPStorages/dev.openergy.updater-fixture.5b4a5cb7d61d444eaf4a3d673e1df4a5.driver",
+      "exists": false,
+      "symlink": false
+    },
+    {
+      "path": "/Users/serge/Library/Application Support/dev.openergy.updater-fixture.5b4a5cb7d61d444eaf4a3d673e1df4a5",
+      "exists": false,
+      "symlink": false
+    },
+    {
+      "path": "/Users/serge/Library/Application Support/dev.openergy.updater-fixture.5b4a5cb7d61d444eaf4a3d673e1df4a5.driver",
+      "exists": false,
+      "symlink": false
+    },
+    {
+      "path": "/Users/serge/Library/Preferences/dev.openergy.updater-fixture.5b4a5cb7d61d444eaf4a3d673e1df4a5.plist",
+      "exists": false,
+      "symlink": false
+    },
+    {
+      "path": "/Users/serge/Library/Preferences/dev.openergy.updater-fixture.5b4a5cb7d61d444eaf4a3d673e1df4a5.driver.plist",
+      "exists": false,
+      "symlink": false
+    }
+  ],
+  "retained_private_config_files": [
+    {
+      "path": "/private/tmp/oe-stopped-update-llil939f/config/Library/HTTPStorages/dev.openergy.updater-fixture.5b4a5cb7d61d444eaf4a3d673e1df4a5.driver/httpstorages.sqlite",
+      "bytes": 4096,
+      "sha256": "7752827a20be9384dda4d93c5a4eae3c49e773cdff43a679ab219d6309536a45"
+    },
+    {
+      "path": "/private/tmp/oe-stopped-update-llil939f/config/Library/HTTPStorages/dev.openergy.updater-fixture.5b4a5cb7d61d444eaf4a3d673e1df4a5.driver/httpstorages.sqlite-shm",
+      "bytes": 32768,
+      "sha256": "e87bfe3d29ff126191b748424d084ab27fa7be0be980651db3467a8912ec3a2b"
+    },
+    {
+      "path": "/private/tmp/oe-stopped-update-llil939f/config/Library/HTTPStorages/dev.openergy.updater-fixture.5b4a5cb7d61d444eaf4a3d673e1df4a5.driver/httpstorages.sqlite-wal",
+      "bytes": 16512,
+      "sha256": "d54f728e15d752a4eeeddbcaf75704063bb4ffd65d81f28fb813f8970562106e"
+    },
+    {
+      "path": "/private/tmp/oe-stopped-update-llil939f/config/sparkle-preferences.plist",
+      "bytes": 73,
+      "sha256": "248650761fac18ab17114d0b2e277a771412df263dabac1ceb51e2f6fa2faa32"
+    }
+  ],
+  "retained_private_config_reason": "Keep fixture preferences and HTTP storage as evidence; no production configuration used. Exact Library/Caches roots removed separately.",
+  "installed_openergy_process_lines": [
+    " 1040     1 /Applications/Openergy.app/Contents/MacOS/Openergy",
+    " 1060  1040 /Applications/Openergy.app/Contents/Helpers/openergy"
+  ],
+  "shared_launchservices_and_gatekeeper_restoration_claimed": false,
+  "no_identity_wide_unregister_or_policy_reversal": true
+}

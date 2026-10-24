@@ -1,0 +1,24 @@
+{
+  "case": "negative",
+  "controller_started": "2026-10-23T17:26:18.611584-07:00",
+  "cli_executed": true,
+  "arguments": [
+    "/private/tmp/oe-stopped-update-llil939f/driver/sparkle.app/Contents/MacOS/sparkle",
+    "/private/tmp/oe-stopped-update-llil939f/old/Openergy.app",
+    "--check-immediately",
+    "--feed-url",
+    "http://127.0.0.1:25600/signature-negative.xml",
+    "--user-agent-name",
+    "Openergy-private-verification",
+    "--verbose"
+  ],
+  "wrapper": [
+    "/usr/bin/nice",
+    "-n",
+    "15"
+  ],
+  "cli_pid": 21634,
+  "process_group": 21634,
+  "cli_started_at": "2026-10-23T17:26:22.792898-07:00",
+  "timeout_seconds": 120
+}

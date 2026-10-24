@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "source_parent": "a121376fe6c1715fa99d72559336ca3b3a73b439",
+  "fixture_source_base": "b93fc8c688d11bb057b6b6f0041966d8cd0168fc",
+  "sparkle_revision": "eef1a539a373c1f1a320624b1130fc5de7b2e100",
+  "approved_operation_sha256": "2846f3adafe9b1f39092bb0e98e672dd66c9ff7f89715c110c282723d89d3cef",
+  "approval_at": "2026-10-23T17:16:55-07:00",
+  "approval_answer": "Allow the reviewed fixture effects (Recommended)",
+  "private_log_root": "/private/tmp/oe-stopped-runtime-20261023-wXymLm",
+  "fixture_root": "/private/tmp/oe-stopped-update-llil939f",
+  "fixture_identifier": "dev.openergy.updater-fixture.5b4a5cb7d61d444eaf4a3d673e1df4a5",
+  "evidence_id_sha256": "d8001bf18a06eae043e04a76ac0ca899ebe3fce975a1f89b835b0a65b2e57ccb",
+  "evidence_id_definition": "SHA256 of UTF-8 JSON array of manifest file/bytes/sha256 entries in recorded order, sort_keys=True, separators=(comma,colon)",
+  "manifest_sha256": "15a5cf8a943e7a31d881a7a1b9af75d0fcfa14a83ae1c114aba039f0c5427b54",
+  "evidence_file_count": 139,
+  "first_failure": {
+    "file": "raw/negative/result.json",
+    "cli_executed": false,
+    "server_bound": false,
+    "error": "Apple /usr/bin/python3 lacks os.listxattr",
+    "preserved_controller": "raw/controller-before-negative.py",
+    "correction_record": "raw/controller-correction.json"
+  },
+  "negative": {
+    "cli_attempts": 1,
+    "started_at": "2026-10-23T17:26:22.792898-07:00",
+    "seconds": 0.5286811250000003,
+    "raw_exit": 1,
+    "result_sha256": "cefd1e0d939ef7a29fee1084acccee998d179e9cc48e24a0f55795bd54ac003e",
+    "complete_archive_gets": 1,
+    "archive_bytes": 7492869,
+    "error": "4005 (SUSparkleErrorDomain): The update is improperly signed and could not be validated.",
+    "old_build": "1",
+    "old_tree_content_modes_symlinks_unchanged": true,
+    "old_executable_sha256": "36243ed8c67e31fe261f699d10d439e0d22d32cb34b60ed51d90253b558ba5e6",
+    "observed_cli_nice": 20
+  },
+  "positive": {
+    "cli_attempts": 1,
+    "started_at": "2026-10-23T17:27:49.290392-07:00",
+    "seconds": 0.5274249580000001,
+    "raw_exit": 0,
+    "result_sha256": "ba32573fa3e83d1e24b56b8d5f3967de58ee0bd8bf0eedfa9111d064f6cc925e",
+    "complete_archive_gets": 1,
+    "archive_bytes": 7492869,
+    "installed_build_at_old_path": "2",
+    "old_path_exact_candidate_content_modes_symlinks": true,
+    "installed_executable_sha256": "7250e62280f864ba58888a3924b89296cdf6204a96146b6783cfd52827c50d5e",
+    "nested_all_architecture_and_deep_seals_pass": true,
+    "observed_cli_nice": 15
+  },
+  "archive_sha256": "a4bf7a1386fd870fed820a169a005fd6deb99adfa4546c836a3550b6b7308183",
+  "target_execution": {
+    "controller_launched_target": false,
+    "launch_or_relaunch_observed": false,
+    "target_breach_observed": false,
+    "limit": "Process sampling nominal100ms plus ps time; very short processes can be missed. Source stopped-target condition is separate corroboration, not a kernel execution audit."
+  },
+  "host_effects": {
+    "fixture_helpers_observed_via_unified_logs": {
+      "negative_pids": [
+        21638,
+        21639
+      ],
+      "positive_pids": [
+        26922,
+        26923
+      ]
+    },
+    "expected_job_labels": [
+      "dev.openergy.updater-fixture.5b4a5cb7d61d444eaf4a3d673e1df4a5-sparkle-updater",
+      "dev.openergy.updater-fixture.5b4a5cb7d61d444eaf4a3d673e1df4a5-sparkle-progress"
+    ],
+    "sampled_job_labels": [],
+    "job_limit": "Transient labels were not caught in the periodic snapshots; helper log emitters are direct runtime evidence. Final exact emitter PIDs and fixture jobs absent.",
+    "new_exact_Library_Caches_roots_removed_per_case": 3,
+    "job_removal_commands_run": false,
+    "launchservices": "No fixture matches before negative; after negative and positive the private driver and nested Updater.app paths appear in filtered read-only dump. Positive installed target was not present in that immediate filtered readback. Timestamp changed at replacement.",
+    "gatekeeper": "Positive syspolicyd receipts identify the staged candidate and report scan finished / GK evaluateScanResult:2. XProtectError2 and an unresolved Xcode Swift6.2 Sparkle rpath are preserved. No standalone gktool PID/exit was sampled. No trust outcome inferred.",
+    "shared_state_fully_restored_claimed": false,
+    "identity_wide_unregister_or_policy_reversal": false,
+    "retained_private_config_files": 4,
+    "final_owned_helper_pids_and_port25600_absent": true
+  },
+  "limits": [
+    "Initial controller preflight failed before any CLI/server operation; original bytes, traceback and result preserved. CLI cases each ran once.",
+    "Negative CLI was nice20 due nested nice15 wrappers; lower priority than requested. Positive CLI was nice15. No retry to change this result.",
+    "Bundle identity covers file content, modes and symlink targets. Python extended-attribute API was unavailable; xattrs were not compared. Root timestamps and ownership were recorded separately.",
+    "Process/job polling can miss short-lived activity; no absolute kernel-level no-launch proof.",
+    "Fixture LaunchServices and Gatekeeper state may persist. Cleanup proves only exact owned paths and jobs/process/port snapshots, not shared-state restoration.",
+    "No Developer ID, notarization, target relaunch, running-target update, daemon handoff or production updater acceptance.",
+    "Original unaccepted CLI build and its earlier shared-ID registration breach remain unchanged and unaccepted.",
+    "Original fixture-preparation failure preservation limit remains as documented; these new runtime records do not reconstruct its missing original transcript."
+  ],
+  "validation_scope": "Real CLI/download/helper/replacement path only. No unit tests, mocks, GUI, Rust, Xcode, TypeScript, installs, pushes or publishing.",
+  "prepared_records_unchanged": true,
+  "recorded_at": "2026-10-23T17:30:37.420761-07:00"
+}

@@ -1,0 +1,67 @@
+{
+  "fixture_log_emitters": [
+    {
+      "pid": 26921,
+      "path": "/private/tmp/oe-stopped-update-llil939f/driver/sparkle.app/Contents/MacOS/sparkle",
+      "first_line": 2,
+      "last_line": 5
+    },
+    {
+      "pid": 26922,
+      "path": "/private/tmp/oe-stopped-update-llil939f/driver/sparkle.app/Contents/Frameworks/Sparkle.framework/Versions/B/Autoupdate",
+      "first_line": 6,
+      "last_line": 50
+    },
+    {
+      "pid": 26923,
+      "path": "/private/tmp/oe-stopped-update-llil939f/driver/sparkle.app/Contents/Frameworks/Sparkle.framework/Versions/B/Updater.app/Contents/MacOS/Updater",
+      "first_line": 44,
+      "last_line": 46
+    }
+  ],
+  "selected_messages": [
+    {
+      "line": 48,
+      "timestamp": "2026-10-23 17:27:49.528097-0700",
+      "processID": 0,
+      "processImagePath": "/kernel",
+      "message": "System Policy: mds(369) deny(2) file-read-metadata /Users/serge/Library/Caches/dev.openergy.updater-fixture.5b4a5cb7d61d444eaf4a3d673e1df4a5/org.sparkle-project.Sparkle/Installation/GALRTiqbo/CimcP2O36/__MACOSX/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/B/_CodeSignature"
+    },
+    {
+      "line": 51,
+      "timestamp": "2026-10-23 17:27:49.676306-0700",
+      "processID": 5845,
+      "processImagePath": "/System/Library/PrivateFrameworks/XprotectFramework.framework/Versions/A/XPCServices/XprotectService.xpc/Contents/MacOS/XprotectService",
+      "message": "Creating an NSError, with domain: XProtectError, error code: 2, userInfo: {\n    XPUserInfoLoadPath = \"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-6.2/macosx/Sparkle.framework/Versions/B/Sparkle\";\n    XPUserInfoLoadPathResolved = \"(path not found)\";\n    XPUserInfoLoadingBinary = \"/Users/serge/Library/Caches/dev.openergy.updater-fixture.5b4a5cb7d61d444eaf4a3d673e1df4a5/org.sparkle-project.Sparkle/Installation/GALRTiqbo/CimcP2O36/Openergy.app/Contents/MacOS/Openergy\";\n}"
+    },
+    {
+      "line": 53,
+      "timestamp": "2026-10-23 17:27:49.729161-0700",
+      "processID": 488,
+      "processImagePath": "/usr/libexec/syspolicyd",
+      "message": "GK Xprotect results: PST: (path: 25573bad5f3c2e36), (team: (null)), (id: (null)), (bundle_id: (null)), XPScan: 5,4700360306302799431,2026-10-24 00:27:49 +0000,(null),(null),file:///Users/serge/Library/Caches/dev.openergy.updater-fixture.5b4a5cb7d61d444eaf4a3d673e1df4a5/org.sparkle-project.Sparkle/Installation/GALRTiqbo/CimcP2O36/Openergy.app/"
+    },
+    {
+      "line": 54,
+      "timestamp": "2026-10-23 17:27:49.729457-0700",
+      "processID": 488,
+      "processImagePath": "/usr/libexec/syspolicyd",
+      "message": "scan finished, waking up any waiters: PST: (path: 25573bad5f3c2e36), (team: (null)), (id: dev.openergy.updater-fixture.5b4a5cb7d61d444eaf4a3d673e1df4a5), (bundle_id: dev.openergy.updater-fixture.5b4a5cb7d61d444eaf4a3d673e1df4a5)"
+    },
+    {
+      "line": 55,
+      "timestamp": "2026-10-23 17:27:49.729522-0700",
+      "processID": 488,
+      "processImagePath": "/usr/libexec/syspolicyd",
+      "message": "GK evaluateScanResult: 2, PST: (path: 25573bad5f3c2e36), (team: (null)), (id: dev.openergy.updater-fixture.5b4a5cb7d61d444eaf4a3d673e1df4a5), (bundle_id: dev.openergy.updater-fixture.5b4a5cb7d61d444eaf4a3d673e1df4a5), 0, 0, 1, 0, 0, 0, 5"
+    },
+    {
+      "line": 56,
+      "timestamp": "2026-10-23 17:27:49.729580-0700",
+      "processID": 488,
+      "processImagePath": "/usr/libexec/syspolicyd",
+      "message": "Unregistering bundle for protection after scan: PST: (path: 25573bad5f3c2e36), (team: (null)), (id: dev.openergy.updater-fixture.5b4a5cb7d61d444eaf4a3d673e1df4a5), (bundle_id: dev.openergy.updater-fixture.5b4a5cb7d61d444eaf4a3d673e1df4a5)"
+    }
+  ],
+  "raw_log_sha256": "37b5a1750f0fbf5fd246fd83f32b00cdbdaa90f5998cf75c5cb117f32919bdfd"
+}

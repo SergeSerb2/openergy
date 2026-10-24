@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-23T17:27:45.437404-07:00",
+  "negative_archive_get_complete": true,
+  "negative_validation_error": "4005 (SUSparkleErrorDomain): The update is improperly signed and could not be validated.",
+  "negative_old_tree_exactly_unchanged": true,
+  "negative_target_launch_observed": false,
+  "negative_fixture_processes_jobs_remaining": false,
+  "negative_owned_cache_roots_removed": 3,
+  "positive_cli_has_not_run": true,
+  "next": "Run the reviewed positive command once only after the complete fresh preflight passes and exclusive port bind succeeds.",
+  "priority_deviation": "Negative outer controller nice15 plus CLI nice15 produced observed nice20. This lowers priority further. Preserve it; do not rerun. Invoke positive controller without extra outer nice so its CLI wrapper requests nice15 once."
+}
