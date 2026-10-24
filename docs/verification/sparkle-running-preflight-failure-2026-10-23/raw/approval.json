@@ -1,0 +1,18 @@
+{
+  "approval_received": true,
+  "controller_sha256": "a934611e4bef5d4b355ae11279d6b1aaef0dadf665503efcb788df4869453567",
+  "explicit_running_target_and_relaunch": true,
+  "independent_review_complete": true,
+  "independent_review_receipt_path": "/Users/serge/.t3/worktrees/openergy/t3-52422617/docs/verification/sparkle-running-approval-2026-10-23/independent-review-receipt.json",
+  "independent_review_receipt_sha256": "6af6a1df11c504917b8631e502491135f723b19c6bdcd956c5e78dc56f5adfc4",
+  "marker_expires_at": "2026-10-24T00:56:25.164527-07:00",
+  "no_retry": true,
+  "proposal_sha256": "cb15b124d6c76c77bad90d05bcc4ea1384aa55aaac48c959bb03ff3cfceba41d",
+  "recorded_at": "2026-10-23T21:02:43.327064-07:00",
+  "schema": 1,
+  "scope": "One initial no-argument running private target launch; real private AppModel and virtual Off daemon startup; one pinned external Sparkle CLI download/validation/Apple quit/replacement and NSWorkspace no-argument bundle relaunch; new private model/daemon readiness; one controller normal final quit of the independently validated NEW build-2 app/launch identity only; exact owned helper/job/cache/endpoint cleanup; normal Nice=0 external Sparkle helpers, LaunchServices registration/timestamp notifications and normal Gatekeeper/gktool/XProtect assessment. Persistent shared registration/assessment state is unknown; no full restoration promise. All explicit fixture network requests use only literal 127.0.0.1:56327. No bypass or suppression of normal OS security checks, native input/clipboard/live sharing, installed-app or production config/TLS/default IPC changes, Xcode registration build, shared identity unregister, or publication. The source controller has one persistent observer and independent bounded recovery: a 180s control cutoff reserves 60s inside the existing 240s whole ceiling. It closes owned I/O, refuses late launches/quits, preserves 10s/15s recovery delays, and stops its own threads with retained-state evidence if control cannot quiesce. Failure before validated-new never normal-quits the old app.",
+  "stopped_case_171655_reused": false,
+  "subject_to_unchanged_live_preflight": true,
+  "user_approval_at": "2026-10-23T21:01:00-07:00",
+  "user_selection": "Approve this exact one-shot run"
+}

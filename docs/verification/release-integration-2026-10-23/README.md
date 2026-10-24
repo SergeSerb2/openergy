@@ -320,8 +320,14 @@ addresses both. The [independent R6 review](../sparkle-running-repair-R6-review-
 reports no actionable P1/P2 and closes all five prior findings in source.
 The [exact approval record](../sparkle-running-approval-2026-10-23/README.md)
 includes a separate hashed review receipt and a passing file-only binding
-refresh. Execution remains **DO-NOT-RUN** pending new running/relaunch approval
-and live preflight. No controller or target has run.
+refresh. The user approved that exact operation at 21:01:00 PDT. Its
+[single controller invocation](../sparkle-running-preflight-failure-2026-10-23/README.md)
+then **failed live preflight**: the read-only LaunchServices dump exceeded the
+unchanged five-second command limit. No target, daemon, updater, installer or
+relaunch started. The controller exited 1; the six selected private hashes
+remain exact. The original approval request and frozen source are unchanged.
+No retry, guard reset or marker renewal occurred. Runtime acceptance stays
+**UNVERIFIED**; this approved one-shot invocation is closed.
 
 The [signing prerequisite check](../macos-signing-prerequisites-2026-10-23/README.md)
 records no Developer ID Application identity and no declared notary profile.
