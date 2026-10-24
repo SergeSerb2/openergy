@@ -218,8 +218,10 @@ the 250 ms shutdown flush and joins. One real role-Off sample per revision
 records request-to-observed-exit at 1254.038 ms before and 252.767 ms after.
 Both exact acknowledgements, unsignalled exit-0 observations and cleanup pass.
 These are single samples with a declared CLI trace overlay; the final source
-also builds without it. Independent source/evidence review is in progress, and
-the candidate is not yet integrated. Connected-session and release gates stay open.
+also builds without it. The [independent review](../daemon-stop-latency-review-2026-10-23-t3-d6fd8854.md)
+finds no concrete P1/P2. The [reviewed fix and measurements](../daemon-stop-latency-2026-10-23-t3-b205d42e/README.md)
+are integrated locally. These are single samples, with no general speedup or
+stronger exit-bound claim. Connected-session and release gates stay open.
 
 [Sparkle integration](../sparkle-integration-2026-10-23/README.md) and the signed
 empty Cloudflare feed are implemented and checked. The later
