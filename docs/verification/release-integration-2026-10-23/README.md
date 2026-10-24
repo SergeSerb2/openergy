@@ -222,6 +222,13 @@ The overall result remains **FAILED**: peer stop exceeded the private one-second
 wait and the first exclusive port rebind failed. The [R4 audit](../macos-idle-resources-r3-source-evidence-review-2026-10-23-t3-4021ec78.md)
 found no concrete P1/P2. CPU conversion remains conditional; compiler interference,
 finite sampling and failed cleanup prevent performance or release acceptance.
+The [rebind causal review](../cleanup-rebind-causal-review-2026-10-23-t3-0fcc7d19/README.md)
+finds no specific cause or new P1/P2 for either historical bind failure. All
+100 original evidence files remain exact. A strict non-reusing bind also
+depends on kernel endpoint state; it is not equivalent to a product descriptor
+ownership check. Both original verdicts remain **FAIL**. Its text-only diagnostic
+requires qualified isolated lifecycle and bind-decision observations. That
+trace capability is not established; no diagnostic runtime is scheduled.
 The [shutdown source diagnosis](../daemon-stop-latency-source-2026-10-23-t3-d1ff2556/README.md)
 establishes an avoidable poll after public stop acknowledgement. Saved timings
 do not prove its sole contribution to the historical timeout. A narrow repair
