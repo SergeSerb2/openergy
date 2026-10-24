@@ -1,0 +1,31 @@
+{
+  "name": "release",
+  "command": [
+    "<PROFILE_JSON>\\.rustup\\toolchains\\1.99.1-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+    "build",
+    "--locked",
+    "--offline",
+    "--release",
+    "--target",
+    "x86_64-pc-windows-msvc",
+    "--jobs",
+    "2",
+    "-p",
+    "openergy-net",
+    "--lib",
+    "--example",
+    "dns_queue_cancel_c4806a3d"
+  ],
+  "started_utc": "2026-10-24T01:20:28.6160640Z",
+  "cargo_pid": 36460,
+  "timeout_seconds": 600,
+  "stdin_closed": true,
+  "timed_out": false,
+  "stopped": [],
+  "exit_code": 0,
+  "elapsed_ms": 47248,
+  "ended_utc": "2026-10-24T01:21:15.8883817Z",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "7a7e44770409b3e6d4ea84c9e3d365a1583952f320dd1c967daa99cd813b396a",
+  "process_samples_sha256": "fa732a2e58e524e180dfeb3954f35a6a811094f4d040540cb485b9ecdd2a84b7"
+}

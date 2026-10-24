@@ -1,0 +1,28 @@
+{
+  "name": "clippy",
+  "command": [
+    "<PROFILE_JSON>\\.rustup\\toolchains\\1.99.1-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+    "clippy",
+    "--locked",
+    "--offline",
+    "--release",
+    "--target",
+    "x86_64-pc-windows-msvc",
+    "--jobs",
+    "2",
+    "-p",
+    "openergy-net",
+    "--lib",
+    "--example",
+    "dns_queue_cancel_c4806a3d",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "started_utc": "2026-10-24T01:20:09.8737768Z",
+  "cargo_pid": 36004,
+  "timeout_seconds": 600,
+  "stdin_closed": true,
+  "timed_out": false,
+  "stopped": []
+}
