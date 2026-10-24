@@ -1,6 +1,6 @@
 {
   "schema": "openergy.hardening-continuation.v2",
-  "recorded_at": "2026-10-24T10:04:00-07:00",
+  "recorded_at": "2026-10-24T10:44:03-07:00",
   "user_resumed_at": "2026-10-24T09:53:14-07:00",
   "root": "/Users/serge/.t3/worktrees/openergy/t3-52422617",
   "base_commit": "133a44cbdfec90fec0ad9f34eab0923b588c454c",
@@ -18,11 +18,11 @@
     "note": "User requests broad parallelism up to 15; active harness capacity is four slots including parent."
   },
   "active_tasks": {
-    "ordinary_r9": {
-      "taskId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-ordinary-uncertainty-handoff-repair-r9-172ee85-20261024",
-      "childThreadId": "thread:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-ordinary-uncertainty-handoff-repair-r9-172ee85-20261024",
-      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A20cecdea-d6e2-42ef-ae29-4fd434da6da6%253Adelegate-task%253Aoe-ordinary-uncertainty-handoff-repair-r9-172ee85-20261024:ordinal:1",
-      "childNodeId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-ordinary-uncertainty-handoff-repair-r9-172ee85-20261024",
+    "ordinary_r10_review": {
+      "taskId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-ordinary-journal-independent-review-r10-e34401c-20261024",
+      "childThreadId": "thread:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-ordinary-journal-independent-review-r10-e34401c-20261024",
+      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%253Adelegate-task%253Aoe-ordinary-journal-independent-review-r10-e34401c-20261024:ordinal:1",
+      "childNodeId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-ordinary-journal-independent-review-r10-e34401c-20261024",
       "status": "running",
       "workState": "working",
       "hasPendingChildRuns": false,
@@ -48,11 +48,11 @@
       "pendingApproval": null,
       "waitTimedOut": false
     },
-    "windows_adapter_r7": {
-      "taskId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-windows-adapter-two-p2-repair-r7-7ce44f6-20261024",
-      "childThreadId": "thread:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-windows-adapter-two-p2-repair-r7-7ce44f6-20261024",
-      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A20cecdea-d6e2-42ef-ae29-4fd434da6da6%253Adelegate-task%253Aoe-windows-adapter-two-p2-repair-r7-7ce44f6-20261024:ordinal:1",
-      "childNodeId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-windows-adapter-two-p2-repair-r7-7ce44f6-20261024",
+    "windows_r8_review": {
+      "taskId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-windows-adapter-independent-review-r8-1d01d67-20261024",
+      "childThreadId": "thread:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-windows-adapter-independent-review-r8-1d01d67-20261024",
+      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%253Adelegate-task%253Aoe-windows-adapter-independent-review-r8-1d01d67-20261024:ordinal:1",
+      "childNodeId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-windows-adapter-independent-review-r8-1d01d67-20261024",
       "status": "running",
       "workState": "working",
       "hasPendingChildRuns": false,
@@ -78,11 +78,11 @@
       "pendingApproval": null,
       "waitTimedOut": false
     },
-    "ordinary_inputs_r1": {
-      "taskId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-ordinary-retained-input-recovery-r1-133a44c-20261024",
-      "childThreadId": "thread:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-ordinary-retained-input-recovery-r1-133a44c-20261024",
-      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A20cecdea-d6e2-42ef-ae29-4fd434da6da6%253Adelegate-task%253Aoe-ordinary-retained-input-recovery-r1-133a44c-20261024:ordinal:1",
-      "childNodeId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-ordinary-retained-input-recovery-r1-133a44c-20261024",
+    "windows_fixture_facts_r1": {
+      "taskId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-windows-fixture-path-fact-recovery-r1-17a059f-20261024",
+      "childThreadId": "thread:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-windows-fixture-path-fact-recovery-r1-17a059f-20261024",
+      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%253Adelegate-task%253Aoe-windows-fixture-path-fact-recovery-r1-17a059f-20261024:ordinal:1",
+      "childNodeId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-windows-fixture-path-fact-recovery-r1-17a059f-20261024",
       "status": "running",
       "workState": "working",
       "hasPendingChildRuns": false,
@@ -120,10 +120,10 @@
     "causal bind runtime diagnostics pending qualified trace"
   ],
   "work_remaining": [
-    "Carry bounded ordinary uncertainty across recovery lifetimes, obtain fresh review",
-    "Review scoped LaunchServices helper and Windows adapter",
-    "Recover exact existing transport and fixture path facts from durable prior evidence; no guesses or remote contacts",
-    "Qualify retained app/build/real-flow prerequisites without treating transcribed observations as raw proof"
+    "Independently review exact held ordinary R9 and Windows R7 repairs",
+    "Recover nine exact Windows fixture path facts within the new bounded data-only task",
+    "Ordinary compiled app/Sparkle/icon/raw workspace input prerequisites remain missing; no reassembly/build/runtime authorized by source handoffs",
+    "Run qualified flows only after actual prerequisites and unchanged authority gates are satisfied"
   ],
   "boundaries": [
     "No unit tests/mocks/simulations or computer use for testing",
@@ -193,6 +193,96 @@
       "hasPendingQuestion": false,
       "pendingApproval": null,
       "waitTimedOut": false
+    },
+    "ordinary_r9": {
+      "taskId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-ordinary-uncertainty-handoff-repair-r9-172ee85-20261024",
+      "childThreadId": "thread:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-ordinary-uncertainty-handoff-repair-r9-172ee85-20261024",
+      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A20cecdea-d6e2-42ef-ae29-4fd434da6da6%253Adelegate-task%253Aoe-ordinary-uncertainty-handoff-repair-r9-172ee85-20261024:ordinal:1",
+      "childNodeId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-ordinary-uncertainty-handoff-repair-r9-172ee85-20261024",
+      "status": "completed",
+      "workState": "result_available",
+      "hasPendingChildRuns": false,
+      "latestTerminalRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A20cecdea-d6e2-42ef-ae29-4fd434da6da6%253Adelegate-task%253Aoe-ordinary-uncertainty-handoff-repair-r9-172ee85-20261024:ordinal:1",
+      "latestTerminalStatus": "completed",
+      "latestTerminalSummary": null,
+      "latestTerminalResultContextTransferId": null,
+      "providerInstanceId": "codex",
+      "model": "gpt-6.1-sol",
+      "options": [
+        {
+          "id": "reasoningEffort",
+          "value": "xhigh"
+        },
+        {
+          "id": "serviceTier",
+          "value": "default"
+        }
+      ],
+      "summary": "Committed [R9 source package](/Users/serge/.t3/worktrees/openergy/t3-79efd32e/docs/verification/ordinary-controller-uncertainty-handoff-r9-2026-10-24-t3-79efd32e/README.md) as `e34401c8842c2a93b5c355f4c515a79ee05cfa72`. Checkout is clean. Hooks and signing were disabled.\n\nThe repair carries uncertainty across all observer lifetimes and guards peer permission against stale state. R6 fallback and all seven R4 repairs remain intact.\n\nStatic checks passed: eight ASTs, 17 patch hunks, exact materialization, manifest hashes, and all 87 original files.\n\nSHA-256:\n\n```text\ncontroller eed1d018cf0e963c41d40a11e148b8b4c4d3a395b140581e8782a5333ef54b39\nownership  ef5400c711fc80f24a9cbf0d8cf0bc31ff2f237b6820a3ea7d0f8aba4d9a1a4a\nwatchdog   b8ee8f6c7a9036f0e263301858996a62aece617bbcc11146540cf08c867b0e8f\npatch      0eea14306d58dc427abf44a525da328c0ff92c34349e8c90bfb0d947dbf82184\nmanifest   b92e0285a6f4e9a9d6a8bfc26248febba2023cd8c12221738729e595d7f161a8\n```\n\nFresh independent source review is required. No supplied code or runtime ran. Exact signed inputs remain missing; the original remains **FAILED / NOT ACCEPTED, 23/25**.\n\n",
+      "resultContextTransferId": "context-transfer:type:subagent_result:source-thread:thread%3Adelegated-task%3Acommand%253Amcp%253A20cecdea-d6e2-42ef-ae29-4fd434da6da6%253Adelegate-task%253Aoe-ordinary-uncertainty-handoff-repair-r9-172ee85-20261024:target-thread:2d863197-a54d-4f3f-96fa-6ed045f9e4a3:cb80eb2a-d007-4f13-a0ca-5be6ac7d93f2",
+      "hasPendingQuestion": false,
+      "pendingApproval": null,
+      "waitTimedOut": false
+    },
+    "windows_adapter_r7": {
+      "taskId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-windows-adapter-two-p2-repair-r7-7ce44f6-20261024",
+      "childThreadId": "thread:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-windows-adapter-two-p2-repair-r7-7ce44f6-20261024",
+      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A20cecdea-d6e2-42ef-ae29-4fd434da6da6%253Adelegate-task%253Aoe-windows-adapter-two-p2-repair-r7-7ce44f6-20261024:ordinal:1",
+      "childNodeId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-windows-adapter-two-p2-repair-r7-7ce44f6-20261024",
+      "status": "completed",
+      "workState": "result_available",
+      "hasPendingChildRuns": false,
+      "latestTerminalRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A20cecdea-d6e2-42ef-ae29-4fd434da6da6%253Adelegate-task%253Aoe-windows-adapter-two-p2-repair-r7-7ce44f6-20261024:ordinal:1",
+      "latestTerminalStatus": "completed",
+      "latestTerminalSummary": null,
+      "latestTerminalResultContextTransferId": null,
+      "providerInstanceId": "codex",
+      "model": "gpt-6.1-sol",
+      "options": [
+        {
+          "id": "reasoningEffort",
+          "value": "xhigh"
+        },
+        {
+          "id": "serviceTier",
+          "value": "default"
+        }
+      ],
+      "summary": "Both P2s are repaired in the [complete inert package](/Users/serge/.t3/worktrees/openergy/t3-01d1bcb5/docs/verification/windows-adapter-p2-repair-2026-10-24-01d1bcb5/README.md): strict TEMP containment and bounded compiler lifecycle recovery.\n\nCommit: `1d01d672c93b03d089d6d902f5bc7f15c10ffd05`\n\nOnly the new folder was committed. Tree is clean. Hooks and signing were disabled. All 178 historical members remain unchanged; static data checks pass.\n\nSHA256SUMS SHA-256:\n`fba9cdb6f9e9aba32565e6e4a13d78a690437b1e3a98a4ffa456ef4c5a6dae58`\n\n`execution=false`. Native acceptance remains UNVERIFIED. Nine path facts still block runtime. Fresh independent whole-candidate review is required next.",
+      "resultContextTransferId": "context-transfer:type:subagent_result:source-thread:thread%3Adelegated-task%3Acommand%253Amcp%253A20cecdea-d6e2-42ef-ae29-4fd434da6da6%253Adelegate-task%253Aoe-windows-adapter-two-p2-repair-r7-7ce44f6-20261024:target-thread:2d863197-a54d-4f3f-96fa-6ed045f9e4a3:c2bf8698-263e-48f5-85e9-0b0d61371758",
+      "hasPendingQuestion": false,
+      "pendingApproval": null,
+      "waitTimedOut": false
+    },
+    "ordinary_inputs_r1": {
+      "taskId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-ordinary-retained-input-recovery-r1-133a44c-20261024",
+      "childThreadId": "thread:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-ordinary-retained-input-recovery-r1-133a44c-20261024",
+      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A20cecdea-d6e2-42ef-ae29-4fd434da6da6%253Adelegate-task%253Aoe-ordinary-retained-input-recovery-r1-133a44c-20261024:ordinal:1",
+      "childNodeId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-ordinary-retained-input-recovery-r1-133a44c-20261024",
+      "status": "completed",
+      "workState": "result_available",
+      "hasPendingChildRuns": false,
+      "latestTerminalRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A20cecdea-d6e2-42ef-ae29-4fd434da6da6%253Adelegate-task%253Aoe-ordinary-retained-input-recovery-r1-133a44c-20261024:ordinal:1",
+      "latestTerminalStatus": "completed",
+      "latestTerminalSummary": null,
+      "latestTerminalResultContextTransferId": null,
+      "providerInstanceId": "codex",
+      "model": "gpt-6.1-sol",
+      "options": [
+        {
+          "id": "reasoningEffort",
+          "value": "xhigh"
+        },
+        {
+          "id": "serviceTier",
+          "value": "default"
+        }
+      ],
+      "summary": "Committed the [retention report](/Users/serge/.t3/worktrees/openergy/t3-eb2370f8/docs/verification/ordinary-input-retention-2026-10-24-eb2370f8/README.md).\n\n- Signed ordinary bundle: absent at the checked named paths.\n- Retained: matching compiled daemon, six build receipts, and binding data—21 private data files, 4,850,035 bytes.\n- Still missing: compiled app, complete pinned Sparkle tree, original icon, and raw workspace state. Reassembly inputs remain incomplete.\n- All 87 original evidence files, 16 R7 files, and the full R8 review remain byte-exact.\n- Bounds: 21/64 source locations, 2,000-entry tree cap, conservative read total **122,447,635/536,870,912 bytes**.\n\nPrivate copy receipt SHA-256:\n`a5867924194b31b03013ec1312d97573f6e9825330d034818a46229fa2f897ef`\n\nCommit: `1ea63e55719d1310b6d6a18f65c4736983f4af7e`. Clean tree. Hooks and commit signing were disabled.\n\nNo reassembly, build, signing, runtime, or publication occurred. Whole-app acceptance remains **UNVERIFIED**; the original result remains **FAILED / NOT ACCEPTED, 23/25**.",
+      "resultContextTransferId": "context-transfer:type:subagent_result:source-thread:thread%3Adelegated-task%3Acommand%253Amcp%253A20cecdea-d6e2-42ef-ae29-4fd434da6da6%253Adelegate-task%253Aoe-ordinary-retained-input-recovery-r1-133a44c-20261024:target-thread:2d863197-a54d-4f3f-96fa-6ed045f9e4a3:1e4bf20f-22a6-4c7a-baec-88358153319f",
+      "hasPendingQuestion": false,
+      "pendingApproval": null,
+      "waitTimedOut": false
     }
   },
   "integrated_reviews": [
@@ -238,5 +328,49 @@
       39
     ],
     "no_supplied_command_replayed": true
-  }
+  },
+  "held_repairs": {
+    "ordinary": {
+      "source": "e34401c8842c2a93b5c355f4c515a79ee05cfa72",
+      "root_import": "6e7b595",
+      "folder": "docs/verification/ordinary-controller-uncertainty-handoff-r9-2026-10-24-t3-79efd32e",
+      "controller_sha256": "eed1d018cf0e963c41d40a11e148b8b4c4d3a395b140581e8782a5333ef54b39",
+      "manifest_sha256": "b92e0285a6f4e9a9d6a8bfc26248febba2023cd8c12221738729e595d7f161a8",
+      "parent_19_files_match_held_git": true,
+      "state": "Independent R10 review running; no runtime/source approval claim"
+    },
+    "windows": {
+      "source": "1d01d672c93b03d089d6d902f5bc7f15c10ffd05",
+      "root_import": "a2a8319",
+      "folder": "docs/verification/windows-adapter-p2-repair-2026-10-24-01d1bcb5",
+      "sha256sums_sha256": "fba9cdb6f9e9aba32565e6e4a13d78a690437b1e3a98a4ffa456ef4c5a6dae58",
+      "parent_21_files_match_held_git": true,
+      "state": "Independent R8 review running; native acceptance UNVERIFIED"
+    }
+  },
+  "ordinary_retention": {
+    "source": "1ea63e55719d1310b6d6a18f65c4736983f4af7e",
+    "root_import": "2c8389c",
+    "folder": "docs/verification/ordinary-input-retention-2026-10-24-eb2370f8",
+    "private_root_relative": "ordinary-input-retention-2026-10-24-eb2370f8",
+    "copy_receipt_sha256": "a5867924194b31b03013ec1312d97573f6e9825330d034818a46229fa2f897ef",
+    "retained_data_files": 21,
+    "retained_bytes": 4850035,
+    "missing": [
+      "signed ordinary bundle",
+      "compiled app",
+      "complete pinned Sparkle tree",
+      "original icon",
+      "raw workspace state"
+    ],
+    "whole_app_acceptance": "UNVERIFIED",
+    "original_verdict": "FAILED / NOT ACCEPTED 23/25"
+  },
+  "orchestration_incident": {
+    "status": "RECOVERED",
+    "description": "Previous task_status requests did not return before the waiting JS cell was terminated. A subsequent capabilities read did not return within a 15-second client budget. No mutating delegation was attempted during that outage. ACP fallback environment variables were absent. Fresh capabilities and all three terminal task reads succeeded on the next turn.",
+    "duplicate_child_work_created": false,
+    "pending_old_status_reads_were_read_only": true
+  },
+  "delegation_preparation_note": "An initial JS prompt construction had an unescaped backtick syntax error before evaluation; no delegate call ran. Corrected requests succeeded once each with stable distinct clientRequestIds."
 }
