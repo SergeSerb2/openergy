@@ -1,0 +1,10 @@
+{
+  "phase": "read-only archive validation",
+  "exit": 1,
+  "exception": "ValueError: '/private/tmp/oe-idle-r3-f553ae64-nnze4977/source/apps/macos/Package.resolved' is not in the subpath of '/Users/serge/.t3/worktrees/openergy/t3-f553ae64' OR one path is relative and the other is absolute.",
+  "cause": "Unused dict comprehension applied repo.relative_to to a private copied source path.",
+  "correction": "Remove the unused comprehension; verify inputs through preparation.json relative input names.",
+  "builds": 0,
+  "runtimes": 0,
+  "port_probes": 0
+}

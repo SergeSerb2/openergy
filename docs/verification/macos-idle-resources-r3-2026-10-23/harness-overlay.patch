@@ -1,0 +1,175 @@
+--- a/apps/macos/Sources/Openergy/App/AppEndToEnd.swift
++++ b/apps/macos/Sources/Openergy/App/AppEndToEnd.swift
+@@ -70,0 +71,6 @@
++
++            if arguments.contains("--measure-idle") {
++                steps += await measureIdle(model, outputDirectory, joinAddress)
++                finish(steps, outputDirectory, model: model)
++                return
++            }
+@@ -389,0 +396,165 @@
++    // Private, finite whole-app baseline. Production classes remain byte-exact.
++    private static func measureIdle(_ model: AppModel, _ directory: URL, _ address: String) async -> [Step] {
++        let arguments = ProcessInfo.processInfo.arguments
++        func argument(_ flag: String) -> String? {
++            arguments.firstIndex(of: flag).flatMap { arguments.indices.contains($0 + 1) ? arguments[$0 + 1] : nil }
++        }
++        guard let fingerprint = argument("--expected-peer-fingerprint"),
++              let peerName = argument("--expected-peer-name"),
++              let peerSocket = argument("--owned-peer-socket"),
++              let peerPID = argument("--owned-peer-pid").flatMap(Int32.init) else {
++            return [Step(name: "owned peer identity arguments", passed: false, detail: "missing public identity")]
++        }
++        let path = directory.appendingPathComponent("idle.jsonl")
++        FileManager.default.createFile(atPath: path.path, contents: nil, attributes: [.posixPermissions: 0o600])
++        let output = try! FileHandle(forWritingTo: path)
++        let start = ContinuousClock.now
++        var rows: [Step] = []
++        var phase = "startup"
++        func elapsedMS() -> Double {
++            let d = start.duration(to: .now).components
++            return Double(d.seconds) * 1000 + Double(d.attoseconds) / 1e15
++        }
++        func snapshot() -> [String: JSONValue] {
++            ["status": try! JSONDecoder().decode(JSONValue.self, from: JSONEncoder().encode(model.status)),
++             "config": try! JSONDecoder().decode(JSONValue.self, from: JSONEncoder().encode(model.config)),
++             "trusted": try! JSONDecoder().decode(JSONValue.self, from: JSONEncoder().encode(model.trusted)),
++             "app_pid": .number(Double(getpid())),
++             "daemon_pid": .number(Double(model.supervisedDaemonPID ?? -1)),
++             "is_ready": .bool(model.isReady),
++             "action_error": model.lastActionError.map(JSONValue.string) ?? .null]
++        }
++        func note(_ kind: String, _ fields: [String: JSONValue] = [:]) {
++            var fields = fields
++            fields["kind"] = .string(kind)
++            fields["phase"] = .string(phase)
++            fields["elapsed_ms"] = .number(elapsedMS())
++            fields["unix_ms"] = .number(Date().timeIntervalSince1970 * 1000)
++            print("IDLE \(kind) \(elapsedMS())")
++            try! output.write(contentsOf: JSONEncoder().encode(JSONValue.object(fields)) + Data([10]))
++        }
++        // Client Peer.name is the protocol role label. The controller independently
++        // binds the configured server name to its private IPC, PID, address and TLS.
++        func healthyConditions() -> [String: Bool] {
++            let peer = model.connectedPeers.first
++            return [
++                "ipc_ready": model.isReady,
++                "connected": model.state == .connected,
++                "client_role": model.role == .client,
++                "pending_empty": model.pendingTrust.isEmpty,
++                "action_error_empty": model.lastActionError == nil,
++                "daemon_error_empty": model.status.lastError == nil,
++                "virtual_platform": model.status.daemon?.platform == "virtual",
++                "supervised_pid_present": model.supervisedDaemonPID != nil,
++                "supervised_pid_matches": model.status.daemon?.pid == model.supervisedDaemonPID,
++                "config_remote_exact": model.config.client?.remote == address,
++                "status_remote_exact": model.status.client?.remote == address,
++                "config_tls_enabled": model.config.tls?.enabled == true,
++                "status_tls_enabled": model.status.tls?.enabled == true,
++                "trust_list_membership": model.trusted.servers?.contains(fingerprint) == true,
++                "one_connected_peer": model.connectedPeers.count == 1,
++                "client_peer_role_label": peer?.name == "server",
++                "peer_remote_exact": peer?.address == address,
++                "peer_tls_enabled": peer?.tls?.enabled == true,
++                "peer_tls_trusted": peer?.tls?.trusted == true,
++                "peer_fingerprint_exact": peer?.tls?.fingerprint == fingerprint,
++            ]
++        }
++        func healthy() -> Bool { healthyConditions().values.allSatisfy { $0 } }
++        func diagnosticReadback(_ socket: String) async -> JSONValue {
++            let client = DaemonClient()
++            defer { client.disconnect() }
++            var result: [String: JSONValue] = ["socket": .string(socket)]
++            do {
++                try await client.connect(path: socket)
++                for method in ["status.get", "config.get", "trust.list"] {
++                    do { result[method] = try await client.call(method, timeout: .milliseconds(400)) }
++                    catch { result[method] = ["read_error": .string(String(describing: error))] }
++                }
++            } catch { result["connect_error"] = .string(String(describing: error)) }
++            return .object(result)
++        }
++        func check(_ name: String, _ passed: Bool) async -> Bool {
++            rows.append(Step(name: name, passed: passed, detail: "state=\(model.state.rawValue) peers=\(model.connectedPeers.count)"))
++            var fields = snapshot()
++            fields["name"] = .string(name)
++            fields["passed"] = .bool(passed)
++            fields["healthy_conditions"] = .object(healthyConditions().mapValues(JSONValue.bool))
++            fields["expected_peer_name"] = .string(peerName)
++            fields["expected_peer_pid"] = .number(Double(peerPID))
++            fields["expected_peer_fingerprint"] = .string(fingerprint)
++            fields["expected_remote"] = .string(address)
++            if !passed {
++                // Bounded real IPC diagnostics, only after a failed check; never in steady idle.
++                fields["app_raw_readback"] = await diagnosticReadback(DaemonSupervisor.socketPath)
++                fields["peer_raw_readback"] = await diagnosticReadback(peerSocket)
++            }
++            note("check", fields)
++            return passed
++        }
++        let deadline = Task { @MainActor in
++            try? await Task.sleep(for: .seconds(48))
++            guard !Task.isCancelled else { return }
++            _ = await check("48s private deadline", false)
++            model.shutdown()
++            exit(2)
++        }
++        defer { deadline.cancel(); try? output.close() }
++        note("begin", snapshot())
++        model.patch("tls.enabled", true)
++        let tls = await waitUntil(seconds: 2) { model.config.tls?.enabled == true }
++        guard await check("private TLS enabled", tls) else { return rows }
++        model.join(address)
++        let pending = await waitUntil(seconds: 3) {
++            model.pendingTrust.count == 1 && model.pendingTrust.first?.fingerprint == fingerprint
++        }
++        guard await check("owned peer public fingerprint matches pending trust", pending) else { return rows }
++        model.approve(fingerprint)
++        let connected = await waitUntil(seconds: 3) { healthy() }
++        guard await check("real trusted peer and supervised virtual daemon ready", connected) else { return rows }
++        note("ready", snapshot())
++        let preflight = await waitUntil(seconds: 3) {
++            FileManager.default.fileExists(atPath: directory.appendingPathComponent("peer-ready").path)
++        }
++        guard await check("controller verified owned peer readback", preflight) else { return rows }
++        try? await Task.sleep(for: .seconds(2))
++        await model.refreshAll()
++        try? await Task.sleep(for: .milliseconds(500))
++        guard await check("settled connected model before idle", healthy()) else { return rows }
++        let since = model.connectedPeers.first?.sinceUnixMs
++        let daemonPID = model.supervisedDaemonPID
++        phase = "steady_idle"
++        note("steady_begin", snapshot())
++        // No heartbeat, observer client, refresh, request, or model polling in this interval.
++        try? await Task.sleep(for: .seconds(30))
++        note("steady_end", snapshot())
++        let sampled = await waitUntil(seconds: 2) {
++            FileManager.default.fileExists(atPath: directory.appendingPathComponent("idle-sampled").path)
++        }
++        guard await check("30-second connected idle preserves exact session", sampled && healthy()
++                    && model.connectedPeers.first?.sinceUnixMs == since
++                    && model.supervisedDaemonPID == daemonPID) else { return rows }
++        phase = "recovery"
++        note("disconnect_begin")
++        model.disconnect()
++        let disconnected = await waitUntil(seconds: 2) {
++            model.isReady && model.state == .idle && model.connectedPeers.isEmpty && model.pendingTrust.isEmpty
++        }
++        guard await check("one public disconnect clears peer", disconnected) else { return rows }
++        note("disconnected", snapshot())
++        model.join(address)
++        let rejoined = await waitUntil(seconds: 3) { healthy() }
++        guard await check("one trusted rejoin to exact identity", rejoined) else { return rows }
++        await model.refreshAll()
++        guard await check("public healthy readback after rejoin", healthy() && model.supervisedDaemonPID == daemonPID) else { return rows }
++        note("rejoined", snapshot())
++        let finalReadback = await waitUntil(seconds: 3) {
++            FileManager.default.fileExists(atPath: directory.appendingPathComponent("rejoin-readback").path)
++        }
++        _ = await check("controller verified final owned peer readback", finalReadback)
++        phase = "teardown"
++        note("end", snapshot())
++        return rows
++    }
++
++

@@ -1,0 +1,62 @@
+[
+  {
+    "detail": "link=connected daemon=0.1.0 pid=51096",
+    "name": "connect",
+    "passed": true
+  },
+  {
+    "detail": "role=off remote=",
+    "name": "starts from safe off config",
+    "passed": true
+  },
+  {
+    "detail": "state=idle peers=0",
+    "name": "private TLS enabled",
+    "passed": true
+  },
+  {
+    "detail": "state=connecting peers=0",
+    "name": "owned peer public fingerprint matches pending trust",
+    "passed": true
+  },
+  {
+    "detail": "state=connected peers=1",
+    "name": "real trusted peer and supervised virtual daemon ready",
+    "passed": true
+  },
+  {
+    "detail": "state=connected peers=1",
+    "name": "controller verified owned peer readback",
+    "passed": true
+  },
+  {
+    "detail": "state=connected peers=1",
+    "name": "settled connected model before idle",
+    "passed": true
+  },
+  {
+    "detail": "state=connected peers=1",
+    "name": "30-second connected idle preserves exact session",
+    "passed": true
+  },
+  {
+    "detail": "state=idle peers=0",
+    "name": "one public disconnect clears peer",
+    "passed": true
+  },
+  {
+    "detail": "state=connected peers=1",
+    "name": "one trusted rejoin to exact identity",
+    "passed": true
+  },
+  {
+    "detail": "state=connected peers=1",
+    "name": "public healthy readback after rejoin",
+    "passed": true
+  },
+  {
+    "detail": "state=connected peers=1",
+    "name": "controller verified final owned peer readback",
+    "passed": true
+  }
+]

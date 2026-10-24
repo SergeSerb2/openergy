@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "swift",
+    "build",
+    "--package-path",
+    "/private/tmp/oe-idle-r3-f553ae64-nnze4977/source/apps/macos",
+    "--scratch-path",
+    "/private/tmp/oe-idle-r3-f553ae64-nnze4977/swift",
+    "--cache-path",
+    "/private/tmp/oe-idle-r3-f553ae64-nnze4977/cache",
+    "--config-path",
+    "/private/tmp/oe-idle-r3-f553ae64-nnze4977/config",
+    "--security-path",
+    "/private/tmp/oe-idle-r3-f553ae64-nnze4977/security",
+    "--manifest-cache",
+    "local",
+    "-c",
+    "release",
+    "--jobs",
+    "2",
+    "--disable-automatic-resolution",
+    "--skip-update"
+  ],
+  "cwd": "/private/tmp/oe-idle-r3-f553ae64-nnze4977",
+  "exit": 0,
+  "elapsed_seconds": 27.84935275,
+  "stdout": "Building for production...\n[Planning deferred tasks]\n[13\u2009/\u200922]\n[17\u2009/\u200922]\n[18\u2009/\u200923] Openergy-product\n[26\u2009/\u200996]\n[30\u2009/\u200996]\n[36\u2009/\u200996]\n[41\u2009/\u200996]\n[43\u2009/\u200996]\n[48\u2009/\u200996]\n[49\u2009/\u200996]\n[52\u2009/\u200996]\n[56\u2009/\u200996]\n[60\u2009/\u200996]\n[63\u2009/\u200996]\n[66\u2009/\u200996]\n[67\u2009/\u200996]\n[71\u2009/\u200996]\n[76\u2009/\u200996]\n[78\u2009/\u200996]\n[82\u2009/\u200996]\n[84\u2009/\u200996]\n[87\u2009/\u200996]\n[88\u2009/\u200996]\n[89\u2009/\u200996]\n[90\u2009/\u200996]\n[91\u2009/\u200996]\n[92\u2009/\u200996] Openergy-product\n[94\u2009/\u200996] Openergy-product\n[95\u2009/\u200996] Openergy-product\nBuild complete! (24.69 secs.)\n",
+  "stderr": "warning: '--skip-update' option is deprecated and will be removed in a future release\n",
+  "launcher_pid": 45018,
+  "controller_absolute_ni": 15,
+  "nice_wrappers": []
+}

@@ -1,0 +1,491 @@
+{
+  "event": {
+    "action_error": null,
+    "phase": "startup",
+    "elapsed_ms": 421.021083,
+    "is_ready": true,
+    "kind": "ready",
+    "unix_ms": 1792803856026.73,
+    "daemon_pid": 51096,
+    "status": {
+      "clipboard": {
+        "enabled": true
+      },
+      "client": {
+        "attempt": 0,
+        "remote": "127.0.0.1:65202"
+      },
+      "state": "connected",
+      "secureInput": {},
+      "cursor": {
+        "y": 0,
+        "x": 0
+      },
+      "permissions": {
+        "postEvents": "not_required",
+        "inputMonitoring": "not_required",
+        "accessibility": "not_required"
+      },
+      "stats": {
+        "eventsIn": 6,
+        "eventsOut": 2,
+        "rssBytes": 10452992
+      },
+      "server": {},
+      "name": "app",
+      "role": "client",
+      "tls": {
+        "enabled": true,
+        "fingerprint": "35:36:E6:B3:55:60:34:30:73:A3:EF:73:E4:02:27:26:50:BD:0A:FC:9F:EA:DB:52:42:81:41:55:DB:80:50:0D"
+      },
+      "daemon": {
+        "pid": 51096,
+        "version": "0.1.0",
+        "platform": "virtual",
+        "uptimeS": 0
+      },
+      "pendingTrust": [],
+      "peers": [
+        {
+          "sinceUnixMs": 1792803855932,
+          "protocol": {
+            "major": 1,
+            "product": "Synergy",
+            "minor": 8
+          },
+          "tls": {
+            "fingerprint": "B1:D3:58:C0:94:3E:EA:0A:7B:29:44:9C:54:A2:19:70:39:2B:55:EC:91:E8:BD:3A:39:5E:94:AA:81:7B:8D:E7",
+            "trusted": true,
+            "version": "TLSv1_3",
+            "enabled": true
+          },
+          "connected": true,
+          "role": "server",
+          "screen": {},
+          "name": "server",
+          "address": "127.0.0.1:65202"
+        }
+      ],
+      "localScreen": {
+        "h": 1080,
+        "displays": [
+          {
+            "w": 1920,
+            "scale": 1,
+            "y": 0,
+            "x": 0,
+            "h": 1080
+          }
+        ],
+        "w": 1920
+      }
+    },
+    "app_pid": 51094,
+    "config": {
+      "name": "app",
+      "role": "client",
+      "hotkeys": {},
+      "client": {
+        "autoconnect": true,
+        "remote": "127.0.0.1:65202"
+      },
+      "server": {
+        "port": 65203,
+        "listen": "127.0.0.1:65203"
+      },
+      "macos": {
+        "clickNumbering": "native"
+      },
+      "switch": {
+        "delayMs": 0,
+        "cornerSizePx": 0,
+        "doubleTapMs": 0,
+        "deadCorners": []
+      },
+      "input": {
+        "preventSleep": false,
+        "invertScrollY": false,
+        "scrollSensitivity": 1,
+        "syncLanguage": true,
+        "relativeMouse": false
+      },
+      "derivedLinks": [],
+      "screen": [],
+      "tls": {
+        "enabled": true
+      },
+      "clipboard": {
+        "maxBytes": 67108864,
+        "enabled": true
+      }
+    },
+    "trusted": {
+      "servers": [
+        "B1:D3:58:C0:94:3E:EA:0A:7B:29:44:9C:54:A2:19:70:39:2B:55:EC:91:E8:BD:3A:39:5E:94:AA:81:7B:8D:E7"
+      ],
+      "clients": []
+    }
+  },
+  "raw_readback": {
+    "peer:status.get": {
+      "active_screen": "idle-peer-f553ae64-r3",
+      "client": {
+        "attempt": 0,
+        "next_retry_ms": null,
+        "remote": null
+      },
+      "clipboard": {
+        "enabled": true,
+        "last_blocked": null,
+        "last_transfer": null
+      },
+      "cursor": {
+        "screen": "idle-peer-f553ae64-r3",
+        "x": 0,
+        "y": 0
+      },
+      "daemon": {
+        "pid": 51089,
+        "platform": "virtual",
+        "uptime_s": 0,
+        "version": "0.1.0"
+      },
+      "last_error": null,
+      "local_screen": {
+        "displays": [
+          {
+            "h": 1080,
+            "scale": 1.0,
+            "w": 1920,
+            "x": 0,
+            "y": 0
+          }
+        ],
+        "h": 1080,
+        "w": 1920
+      },
+      "name": "idle-peer-f553ae64-r3",
+      "peers": [
+        {
+          "address": "127.0.0.1:65207",
+          "connected": true,
+          "name": "app",
+          "protocol": {
+            "major": 1,
+            "minor": 8,
+            "product": "Synergy"
+          },
+          "role": "client",
+          "rtt_ms": null,
+          "screen": {
+            "h": 1080,
+            "w": 1920
+          },
+          "secure_input_app": null,
+          "since_unix_ms": 1792803855822,
+          "tls": {
+            "enabled": true,
+            "fingerprint": "35:36:E6:B3:55:60:34:30:73:A3:EF:73:E4:02:27:26:50:BD:0A:FC:9F:EA:DB:52:42:81:41:55:DB:80:50:0D",
+            "trusted": false,
+            "version": "TLSv1_3"
+          }
+        }
+      ],
+      "pending_trust": [],
+      "permissions": {
+        "accessibility": "not_required",
+        "input_monitoring": "not_required",
+        "post_events": "not_required"
+      },
+      "role": "server",
+      "secure_input": {
+        "local_app": null
+      },
+      "server": {
+        "listen": "127.0.0.1:65202"
+      },
+      "state": "connected",
+      "stats": {
+        "events_in": 2,
+        "events_out": 6,
+        "rss_bytes": 10469376
+      },
+      "tls": {
+        "enabled": true,
+        "fingerprint": "B1:D3:58:C0:94:3E:EA:0A:7B:29:44:9C:54:A2:19:70:39:2B:55:EC:91:E8:BD:3A:39:5E:94:AA:81:7B:8D:E7"
+      }
+    },
+    "peer:config.get": {
+      "config": {
+        "client": {
+          "autoconnect": false,
+          "heartbeat_ms": 3000,
+          "remote": ""
+        },
+        "clipboard": {
+          "enabled": true,
+          "max_bytes": 67108864,
+          "receive": true,
+          "send": true
+        },
+        "hotkeys": {},
+        "input": {
+          "invert_scroll_y": false,
+          "prevent_sleep": false,
+          "relative_mouse": false,
+          "scroll_sensitivity": 1.0,
+          "sync_language": true
+        },
+        "macos": {
+          "click_numbering": "native"
+        },
+        "name": "idle-peer-f553ae64-r3",
+        "role": "server",
+        "screen": [
+          {
+            "aliases": [],
+            "name": "idle-peer-f553ae64-r3",
+            "rect": {
+              "h": 1080.0,
+              "w": 1920.0,
+              "x": 0.0,
+              "y": 0.0
+            }
+          },
+          {
+            "aliases": [],
+            "name": "app",
+            "rect": {
+              "h": 1080.0,
+              "w": 1920.0,
+              "x": 1920.0,
+              "y": 0.0
+            }
+          }
+        ],
+        "server": {
+          "heartbeat_ms": 3000,
+          "listen": "127.0.0.1:65202",
+          "port": 65202
+        },
+        "switch": {
+          "corner_size_px": 0,
+          "dead_corners": [],
+          "delay_ms": 0,
+          "double_tap_ms": 0
+        },
+        "tls": {
+          "enabled": true,
+          "require_client_trust": false
+        },
+        "version": 1
+      },
+      "derived_links": [
+        {
+          "edge": "right",
+          "from": "idle-peer-f553ae64-r3",
+          "from_range": [
+            0,
+            100
+          ],
+          "to": "app",
+          "to_range": [
+            0,
+            100
+          ]
+        },
+        {
+          "edge": "left",
+          "from": "app",
+          "from_range": [
+            0,
+            100
+          ],
+          "to": "idle-peer-f553ae64-r3",
+          "to_range": [
+            0,
+            100
+          ]
+        }
+      ]
+    },
+    "peer:trust.list": {
+      "clients": [],
+      "servers": []
+    },
+    "app:status.get": {
+      "active_screen": null,
+      "client": {
+        "attempt": 0,
+        "next_retry_ms": null,
+        "remote": "127.0.0.1:65202"
+      },
+      "clipboard": {
+        "enabled": true,
+        "last_blocked": null,
+        "last_transfer": null
+      },
+      "cursor": {
+        "screen": null,
+        "x": 0,
+        "y": 0
+      },
+      "daemon": {
+        "pid": 51096,
+        "platform": "virtual",
+        "uptime_s": 0,
+        "version": "0.1.0"
+      },
+      "last_error": null,
+      "local_screen": {
+        "displays": [
+          {
+            "h": 1080,
+            "scale": 1.0,
+            "w": 1920,
+            "x": 0,
+            "y": 0
+          }
+        ],
+        "h": 1080,
+        "w": 1920
+      },
+      "name": "app",
+      "peers": [
+        {
+          "address": "127.0.0.1:65202",
+          "connected": true,
+          "name": "server",
+          "protocol": {
+            "major": 1,
+            "minor": 8,
+            "product": "Synergy"
+          },
+          "role": "server",
+          "rtt_ms": null,
+          "screen": {
+            "h": null,
+            "w": null
+          },
+          "secure_input_app": null,
+          "since_unix_ms": 1792803855932,
+          "tls": {
+            "enabled": true,
+            "fingerprint": "B1:D3:58:C0:94:3E:EA:0A:7B:29:44:9C:54:A2:19:70:39:2B:55:EC:91:E8:BD:3A:39:5E:94:AA:81:7B:8D:E7",
+            "trusted": true,
+            "version": "TLSv1_3"
+          }
+        }
+      ],
+      "pending_trust": [],
+      "permissions": {
+        "accessibility": "not_required",
+        "input_monitoring": "not_required",
+        "post_events": "not_required"
+      },
+      "role": "client",
+      "secure_input": {
+        "local_app": null
+      },
+      "server": {
+        "listen": null
+      },
+      "state": "connected",
+      "stats": {
+        "events_in": 6,
+        "events_out": 2,
+        "rss_bytes": 10567680
+      },
+      "tls": {
+        "enabled": true,
+        "fingerprint": "35:36:E6:B3:55:60:34:30:73:A3:EF:73:E4:02:27:26:50:BD:0A:FC:9F:EA:DB:52:42:81:41:55:DB:80:50:0D"
+      }
+    },
+    "app:config.get": {
+      "config": {
+        "client": {
+          "autoconnect": true,
+          "heartbeat_ms": 3000,
+          "remote": "127.0.0.1:65202"
+        },
+        "clipboard": {
+          "enabled": true,
+          "max_bytes": 67108864,
+          "receive": true,
+          "send": true
+        },
+        "hotkeys": {},
+        "input": {
+          "invert_scroll_y": false,
+          "prevent_sleep": false,
+          "relative_mouse": false,
+          "scroll_sensitivity": 1.0,
+          "sync_language": true
+        },
+        "macos": {
+          "click_numbering": "native"
+        },
+        "name": "app",
+        "role": "client",
+        "screen": [],
+        "server": {
+          "heartbeat_ms": 3000,
+          "listen": "127.0.0.1:65203",
+          "port": 65203
+        },
+        "switch": {
+          "corner_size_px": 0,
+          "dead_corners": [],
+          "delay_ms": 0,
+          "double_tap_ms": 0
+        },
+        "tls": {
+          "enabled": true,
+          "require_client_trust": true
+        },
+        "version": 1
+      },
+      "derived_links": []
+    },
+    "app:trust.list": {
+      "clients": [],
+      "servers": [
+        "B1:D3:58:C0:94:3E:EA:0A:7B:29:44:9C:54:A2:19:70:39:2B:55:EC:91:E8:BD:3A:39:5E:94:AA:81:7B:8D:E7"
+      ]
+    }
+  },
+  "conditions": {
+    "server_config_name": true,
+    "server_status_name": true,
+    "server_pid": true,
+    "server_virtual": true,
+    "server_role": true,
+    "server_connected": true,
+    "server_listen": true,
+    "server_tls": true,
+    "server_fingerprint": true,
+    "server_pending_empty": true,
+    "server_error_empty": true,
+    "app_pid": true,
+    "app_virtual": true,
+    "app_role": true,
+    "app_connected": true,
+    "app_remote": true,
+    "app_tls": true,
+    "app_trust_membership": true,
+    "app_pending_empty": true,
+    "app_error_empty": true,
+    "app_one_peer": true,
+    "app_peer_role_label": true,
+    "app_peer_address": true,
+    "app_peer_tls_enabled": true,
+    "app_peer_tls_trusted": true,
+    "app_peer_fingerprint": true,
+    "app_own_fingerprint": true,
+    "server_one_peer": true,
+    "server_client_name": true,
+    "server_client_loopback": true,
+    "server_client_tls": true,
+    "server_client_fingerprint": true
+  }
+}
