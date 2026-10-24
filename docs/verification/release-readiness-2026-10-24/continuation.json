@@ -1,6 +1,6 @@
 {
   "schema": "openergy.hardening-continuation.v2",
-  "recorded_at": "2026-10-24T10:44:03-07:00",
+  "recorded_at": "2026-10-24 17:55:56 UTC",
   "user_resumed_at": "2026-10-24T09:53:14-07:00",
   "root": "/Users/serge/.t3/worktrees/openergy/t3-52422617",
   "base_commit": "133a44cbdfec90fec0ad9f34eab0923b588c454c",
@@ -18,36 +18,6 @@
     "note": "User requests broad parallelism up to 15; active harness capacity is four slots including parent."
   },
   "active_tasks": {
-    "ordinary_r10_review": {
-      "taskId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-ordinary-journal-independent-review-r10-e34401c-20261024",
-      "childThreadId": "thread:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-ordinary-journal-independent-review-r10-e34401c-20261024",
-      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%253Adelegate-task%253Aoe-ordinary-journal-independent-review-r10-e34401c-20261024:ordinal:1",
-      "childNodeId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-ordinary-journal-independent-review-r10-e34401c-20261024",
-      "status": "running",
-      "workState": "working",
-      "hasPendingChildRuns": false,
-      "latestTerminalRunId": null,
-      "latestTerminalStatus": null,
-      "latestTerminalSummary": null,
-      "latestTerminalResultContextTransferId": null,
-      "providerInstanceId": "codex",
-      "model": "gpt-6.1-sol",
-      "options": [
-        {
-          "id": "reasoningEffort",
-          "value": "xhigh"
-        },
-        {
-          "id": "serviceTier",
-          "value": "default"
-        }
-      ],
-      "summary": null,
-      "resultContextTransferId": null,
-      "hasPendingQuestion": false,
-      "pendingApproval": null,
-      "waitTimedOut": false
-    },
     "windows_r8_review": {
       "taskId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-windows-adapter-independent-review-r8-1d01d67-20261024",
       "childThreadId": "thread:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-windows-adapter-independent-review-r8-1d01d67-20261024",
@@ -107,6 +77,36 @@
       "hasPendingQuestion": false,
       "pendingApproval": null,
       "waitTimedOut": false
+    },
+    "sparkle_pinned_inputs_r1": {
+      "taskId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-sparkle-pinned-artifact-data-recovery-r1-1ea63e5-20261024",
+      "childThreadId": "thread:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-sparkle-pinned-artifact-data-recovery-r1-1ea63e5-20261024",
+      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%253Adelegate-task%253Aoe-sparkle-pinned-artifact-data-recovery-r1-1ea63e5-20261024:ordinal:1",
+      "childNodeId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-sparkle-pinned-artifact-data-recovery-r1-1ea63e5-20261024",
+      "status": "running",
+      "workState": "working",
+      "hasPendingChildRuns": false,
+      "latestTerminalRunId": null,
+      "latestTerminalStatus": null,
+      "latestTerminalSummary": null,
+      "latestTerminalResultContextTransferId": null,
+      "providerInstanceId": "codex",
+      "model": "gpt-6.1-sol",
+      "options": [
+        {
+          "id": "reasoningEffort",
+          "value": "xhigh"
+        },
+        {
+          "id": "serviceTier",
+          "value": "default"
+        }
+      ],
+      "summary": null,
+      "resultContextTransferId": null,
+      "hasPendingQuestion": false,
+      "pendingApproval": null,
+      "waitTimedOut": false
     }
   },
   "closed_operations": [
@@ -120,10 +120,11 @@
     "causal bind runtime diagnostics pending qualified trace"
   ],
   "work_remaining": [
-    "Independently review exact held ordinary R9 and Windows R7 repairs",
-    "Recover nine exact Windows fixture path facts within the new bounded data-only task",
-    "Ordinary compiled app/Sparkle/icon/raw workspace input prerequisites remain missing; no reassembly/build/runtime authorized by source handoffs",
-    "Run qualified flows only after actual prerequisites and unchanged authority gates are satisfied"
+    "Independent Windows adapter R8 review and nine exact Windows fixture facts",
+    "Recover exact pinned public Sparkle artifact bytes as data; no build",
+    "Ordinary source review closed, but compiled app/icon/raw workspace inputs and complete signed bundle remain unqualified or missing",
+    "No existing isolated Mac returned by connected inventory; blocked Swift build diagnosis still requires a qualified environment",
+    "Bounded runtime acceptance must wait for actual prerequisites; old failures and closed Sparkle one-shot stay unchanged"
   ],
   "boundaries": [
     "No unit tests/mocks/simulations or computer use for testing",
@@ -283,6 +284,36 @@
       "hasPendingQuestion": false,
       "pendingApproval": null,
       "waitTimedOut": false
+    },
+    "ordinary_r10_review": {
+      "taskId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-ordinary-journal-independent-review-r10-e34401c-20261024",
+      "childThreadId": "thread:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-ordinary-journal-independent-review-r10-e34401c-20261024",
+      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%253Adelegate-task%253Aoe-ordinary-journal-independent-review-r10-e34401c-20261024:ordinal:1",
+      "childNodeId": "node:delegated-task:command%3Amcp%3Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%3Adelegate-task%3Aoe-ordinary-journal-independent-review-r10-e34401c-20261024",
+      "status": "completed",
+      "workState": "result_available",
+      "hasPendingChildRuns": false,
+      "latestTerminalRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%253Adelegate-task%253Aoe-ordinary-journal-independent-review-r10-e34401c-20261024:ordinal:1",
+      "latestTerminalStatus": "completed",
+      "latestTerminalSummary": null,
+      "latestTerminalResultContextTransferId": null,
+      "providerInstanceId": "codex",
+      "model": "gpt-6.1-sol",
+      "options": [
+        {
+          "id": "reasoningEffort",
+          "value": "xhigh"
+        },
+        {
+          "id": "serviceTier",
+          "value": "default"
+        }
+      ],
+      "summary": "No actionable P1/P2 found. R8-P2-1 is addressed in source; prior repairs remain preserved.\n\n[Review report with exact hashes and proof limits](/Users/serge/.t3/worktrees/openergy/t3-3f0af888/docs/verification/ordinary-controller-R9-review-2026-10-24-t3-3f0af888.md)\n\nCommit: `8a97e3bf5b862d3f3ac1ab740a826e3e0bab0353`. Only the report was added; tree is clean.\n\nRuntime remains **UNVERIFIED**. Qualified inputs remain incomplete. Original result stays **FAILED / NOT ACCEPTED, 23/25**.\n\n",
+      "resultContextTransferId": "context-transfer:type:subagent_result:source-thread:thread%3Adelegated-task%3Acommand%253Amcp%253Ab4890d07-b0f9-4bcc-b5de-c69ae0c6cc08%253Adelegate-task%253Aoe-ordinary-journal-independent-review-r10-e34401c-20261024:target-thread:2d863197-a54d-4f3f-96fa-6ed045f9e4a3:d754d773-b2fe-446b-a088-04e5a392245f",
+      "hasPendingQuestion": false,
+      "pendingApproval": null,
+      "waitTimedOut": false
     }
   },
   "integrated_reviews": [
@@ -337,7 +368,12 @@
       "controller_sha256": "eed1d018cf0e963c41d40a11e148b8b4c4d3a395b140581e8782a5333ef54b39",
       "manifest_sha256": "b92e0285a6f4e9a9d6a8bfc26248febba2023cd8c12221738729e595d7f161a8",
       "parent_19_files_match_held_git": true,
-      "state": "Independent R10 review running; no runtime/source approval claim"
+      "state": "R10 independent source review no actionable P1/P2; runtime UNVERIFIED because qualified app/bundle inputs remain incomplete",
+      "review": {
+        "source": "8a97e3bf5b862d3f3ac1ab740a826e3e0bab0353",
+        "root_import": "572535c",
+        "path": "docs/verification/ordinary-controller-R9-review-2026-10-24-t3-3f0af888.md"
+      }
     },
     "windows": {
       "source": "1d01d672c93b03d089d6d902f5bc7f15c10ffd05",
@@ -372,5 +408,15 @@
     "duplicate_child_work_created": false,
     "pending_old_status_reads_were_read_only": true
   },
-  "delegation_preparation_note": "An initial JS prompt construction had an unescaped backtick syntax error before evaluation; no delegate call ran. Corrected requests succeeded once each with stable distinct clientRequestIds."
+  "delegation_preparation_note": "An initial JS prompt construction had an unescaped backtick syntax error before evaluation; no delegate call ran. Corrected requests succeeded once each with stable distinct clientRequestIds.",
+  "isolated_mac_prerequisite": {
+    "checked_via": "cua-sandboxes skill and connected sandbox_list metadata",
+    "local_rows": 0,
+    "direct_rows": 0,
+    "cloud_rows": 0,
+    "new_machine_created_or_started": false,
+    "host_or_guest_commands_run": false,
+    "statement": "No existing sandbox was returned by the three connected inventory locations; this is not an inventory of all possible hosts.",
+    "qualification": "No approved disposable macOS environment established for the stopped process-scoped Foundation/filesystem diagnostic"
+  }
 }
