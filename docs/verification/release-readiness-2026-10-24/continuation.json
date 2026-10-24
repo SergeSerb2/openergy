@@ -1,6 +1,6 @@
 {
   "schema": "openergy.hardening-continuation.v2",
-  "recorded_at": "2026-10-24T09:55:17-07:00",
+  "recorded_at": "2026-10-24T10:04:00-07:00",
   "user_resumed_at": "2026-10-24T09:53:14-07:00",
   "root": "/Users/serge/.t3/worktrees/openergy/t3-52422617",
   "base_commit": "133a44cbdfec90fec0ad9f34eab0923b588c454c",
@@ -48,11 +48,11 @@
       "pendingApproval": null,
       "waitTimedOut": false
     },
-    "sparkle_ls_r8": {
-      "taskId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-scoped-ls-independent-source-review-r8-a7492bc-20261024",
-      "childThreadId": "thread:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-scoped-ls-independent-source-review-r8-a7492bc-20261024",
-      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A20cecdea-d6e2-42ef-ae29-4fd434da6da6%253Adelegate-task%253Aoe-scoped-ls-independent-source-review-r8-a7492bc-20261024:ordinal:1",
-      "childNodeId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-scoped-ls-independent-source-review-r8-a7492bc-20261024",
+    "windows_adapter_r7": {
+      "taskId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-windows-adapter-two-p2-repair-r7-7ce44f6-20261024",
+      "childThreadId": "thread:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-windows-adapter-two-p2-repair-r7-7ce44f6-20261024",
+      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A20cecdea-d6e2-42ef-ae29-4fd434da6da6%253Adelegate-task%253Aoe-windows-adapter-two-p2-repair-r7-7ce44f6-20261024:ordinal:1",
+      "childNodeId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-windows-adapter-two-p2-repair-r7-7ce44f6-20261024",
       "status": "running",
       "workState": "working",
       "hasPendingChildRuns": false,
@@ -78,11 +78,11 @@
       "pendingApproval": null,
       "waitTimedOut": false
     },
-    "windows_adapter_r6": {
-      "taskId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-windows-adapter-independent-source-review-r6-6b7a029-20261024",
-      "childThreadId": "thread:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-windows-adapter-independent-source-review-r6-6b7a029-20261024",
-      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A20cecdea-d6e2-42ef-ae29-4fd434da6da6%253Adelegate-task%253Aoe-windows-adapter-independent-source-review-r6-6b7a029-20261024:ordinal:1",
-      "childNodeId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-windows-adapter-independent-source-review-r6-6b7a029-20261024",
+    "ordinary_inputs_r1": {
+      "taskId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-ordinary-retained-input-recovery-r1-133a44c-20261024",
+      "childThreadId": "thread:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-ordinary-retained-input-recovery-r1-133a44c-20261024",
+      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A20cecdea-d6e2-42ef-ae29-4fd434da6da6%253Adelegate-task%253Aoe-ordinary-retained-input-recovery-r1-133a44c-20261024:ordinal:1",
+      "childNodeId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-ordinary-retained-input-recovery-r1-133a44c-20261024",
       "status": "running",
       "workState": "working",
       "hasPendingChildRuns": false,
@@ -132,5 +132,111 @@
     "No live sharing, installed app, production config/TLS/default IPC, TCC/login/service/task/account/firewall/globalDNS/toolchain-default change",
     "No TCP24800/UDP5353 or Docker",
     "Actual owned Mac NI15; native Windows BelowNormal/session0; Rust1.99.1/jobs2/deployment15 where applicable"
-  ]
+  ],
+  "completed_tasks": {
+    "windows_adapter_r6": {
+      "taskId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-windows-adapter-independent-source-review-r6-6b7a029-20261024",
+      "childThreadId": "thread:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-windows-adapter-independent-source-review-r6-6b7a029-20261024",
+      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A20cecdea-d6e2-42ef-ae29-4fd434da6da6%253Adelegate-task%253Aoe-windows-adapter-independent-source-review-r6-6b7a029-20261024:ordinal:1",
+      "childNodeId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-windows-adapter-independent-source-review-r6-6b7a029-20261024",
+      "status": "completed",
+      "workState": "result_available",
+      "hasPendingChildRuns": false,
+      "latestTerminalRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A20cecdea-d6e2-42ef-ae29-4fd434da6da6%253Adelegate-task%253Aoe-windows-adapter-independent-source-review-r6-6b7a029-20261024:ordinal:1",
+      "latestTerminalStatus": "completed",
+      "latestTerminalSummary": null,
+      "latestTerminalResultContextTransferId": null,
+      "providerInstanceId": "codex",
+      "model": "gpt-6.1-sol",
+      "options": [
+        {
+          "id": "reasoningEffort",
+          "value": "xhigh"
+        },
+        {
+          "id": "serviceTier",
+          "value": "default"
+        }
+      ],
+      "summary": "[Review document](/Users/serge/.t3/worktrees/openergy/t3-76aa12eb/docs/verification/windows-prerequisite-recovery-r5-review-2026-10-24-76aa12eb/REVIEW.md) records two P2 findings:\n\n- Rooted fixture paths can escape TEMP. Reject rooted paths and enforce containment.\n- Terminating build errors bypass compiler recovery. Add bounded cleanup on every failure path.\n\nR2 readiness/stop logic and all 178 published files/hash bindings remain preserved. No supplied code ran. PowerShell/C# syntax and runtime remain **UNVERIFIED**.\n\nCommit: `7ce44f6a02890b89cffca407a78497e0ba9bbddb`  \nClean checkout; hooks and signing disabled.\n\nReview SHA-256: `e19ebf2089afffda0d874e84c81962f865bf9d9ceffa309d34162910f0fd71b5`",
+      "resultContextTransferId": "context-transfer:type:subagent_result:source-thread:thread%3Adelegated-task%3Acommand%253Amcp%253A20cecdea-d6e2-42ef-ae29-4fd434da6da6%253Adelegate-task%253Aoe-windows-adapter-independent-source-review-r6-6b7a029-20261024:target-thread:2d863197-a54d-4f3f-96fa-6ed045f9e4a3:7b7a7919-6fe5-4546-ae47-80081e715fd1",
+      "hasPendingQuestion": false,
+      "pendingApproval": null,
+      "waitTimedOut": false
+    },
+    "sparkle_ls_r8": {
+      "taskId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-scoped-ls-independent-source-review-r8-a7492bc-20261024",
+      "childThreadId": "thread:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-scoped-ls-independent-source-review-r8-a7492bc-20261024",
+      "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A20cecdea-d6e2-42ef-ae29-4fd434da6da6%253Adelegate-task%253Aoe-scoped-ls-independent-source-review-r8-a7492bc-20261024:ordinal:1",
+      "childNodeId": "node:delegated-task:command%3Amcp%3A20cecdea-d6e2-42ef-ae29-4fd434da6da6%3Adelegate-task%3Aoe-scoped-ls-independent-source-review-r8-a7492bc-20261024",
+      "status": "completed",
+      "workState": "result_available",
+      "hasPendingChildRuns": false,
+      "latestTerminalRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A20cecdea-d6e2-42ef-ae29-4fd434da6da6%253Adelegate-task%253Aoe-scoped-ls-independent-source-review-r8-a7492bc-20261024:ordinal:1",
+      "latestTerminalStatus": "completed",
+      "latestTerminalSummary": null,
+      "latestTerminalResultContextTransferId": null,
+      "providerInstanceId": "codex",
+      "model": "gpt-6.1-sol",
+      "options": [
+        {
+          "id": "reasoningEffort",
+          "value": "xhigh"
+        },
+        {
+          "id": "serviceTier",
+          "value": "default"
+        }
+      ],
+      "summary": "No actionable P1/P2 source findings. All five prior repairs remain preserved; 39 unchanged functions/classes, three patches and 59 freeze entries verified.\n\n[Independent review](/Users/serge/.t3/worktrees/openergy/t3-0f3fa1c3/docs/verification/sparkle-scoped-ls-independent-review-2026-10-24-t3-0f3fa1c3/review.md)\n\nCommit: `01c0b7caa765409c3826a4b2cd6b19c0325ad5cc`. Clean worktree. Only the review document changed; hooks and signing were disabled.\n\nExact reviewed SHA-256 values:\n\n```text\ncontroller 2a25d273ebf5b79783de44b7d39c38e4916b7475a2ba4901b092691506826175\nhelper     b4672e2c65d604ab793247083283ac140056923a3341ee331a2bdba893e03644\nproposal   589cee62e7a0446f19d55d4e29060e6770bcd86a16f5043ce69a3e8765911fff\nfreeze     c48e635d57611b7a6231141c10de44f120e1d29c9d2f98b47bd9369b7ff45487\n```\n\nSource review only. Runtime remains **UNVERIFIED**. Missing artifacts, marker expiry and closed consent still block the old operation. No executable receipt or approval was created.\n\n",
+      "resultContextTransferId": "context-transfer:type:subagent_result:source-thread:thread%3Adelegated-task%3Acommand%253Amcp%253A20cecdea-d6e2-42ef-ae29-4fd434da6da6%253Adelegate-task%253Aoe-scoped-ls-independent-source-review-r8-a7492bc-20261024:target-thread:2d863197-a54d-4f3f-96fa-6ed045f9e4a3:633468d0-d691-49e1-a66c-220a89b4d463",
+      "hasPendingQuestion": false,
+      "pendingApproval": null,
+      "waitTimedOut": false
+    }
+  },
+  "integrated_reviews": [
+    {
+      "source": "7ce44f6a02890b89cffca407a78497e0ba9bbddb",
+      "root": "d7b5b9e",
+      "verdict": "two P2; repair in progress"
+    },
+    {
+      "source": "01c0b7caa765409c3826a4b2cd6b19c0325ad5cc",
+      "root": "d62129f",
+      "verdict": "no actionable source P1/P2; old operation still closed/expired"
+    }
+  ],
+  "windows_transport": {
+    "status": "RECOVERED_EXACT_EXISTING_SELECTOR_AS_PRIVATE_DATA",
+    "private_root_relative": "resume-20261024-258a8bc3479242629ae25ed87aac8b11",
+    "record_sha256": "5bcd9394e469759e0b66f6caf3563f46a3d4a6ef32808a675ec121fca35d15e9",
+    "historical_command_signature": "771d4cc962030be4b74bf02659834163f8803710cda6b5ca48605b2d46184725",
+    "public_metadata_variants": 54,
+    "exact_matches": 1,
+    "remote_contacts": 0,
+    "credentials_or_keys_read": false,
+    "nine_fixture_root_bindings": "MISSING",
+    "report": "windows-input-recovery.md",
+    "new_local_serialization_corrected": true
+  },
+  "history_reads": {
+    "native_thread": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-current-daemon-windows-stop-e2e-r1-e1ef124-20261023",
+    "native_positions": [
+      [
+        17,
+        20
+      ],
+      [
+        40,
+        79
+      ]
+    ],
+    "dns_r12_thread": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-reviewed-9a4ac2e-runtime-r12-8281eb7-20261023",
+    "dns_r12_positions": [
+      0,
+      39
+    ],
+    "no_supplied_command_replayed": true
+  }
 }
