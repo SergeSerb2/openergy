@@ -1,0 +1,254 @@
+"""SOURCE-ONLY future one-shot binary-reuse controller. Not run during this repair.
+Materialize reviewed .txt sources before a later real run. No compiler stage.
+Old native roots and guards are immutable; this revision has one new guard/root.
+"""
+import base64
+import datetime
+import hashlib
+import io
+import json
+import os
+from pathlib import Path, PurePosixPath
+import subprocess
+import tarfile
+import tempfile
+import time
+import traceback
+
+HERE = Path(__file__).resolve().parent
+REPO = Path(subprocess.check_output(['git','-C',str(HERE),'rev-parse','--show-toplevel']).decode().strip())
+SOURCE = 'e1ef1243988d072cb9afc33fd2f5a56ca70e2f5a'
+ORIGINAL = Path('/Users/serge/.t3/worktrees/openergy/t3-c8a3489c/docs/verification/release-integration-2026-10-23/daemon-stop-native-windows-c8a3489c')
+ARTIFACT_SHA256 = '4984ef1222bbcd551dbebdda9db2fc623ff42a3560c5261806f09ad8f3dbda2f'
+BUNDLE_SHA256 = '3247d9f23cd5fb078c7c048de7f5ae48e4d71614ab4cd5dcc5a39658d7ea6908'
+OPTIONS = ['-o','BatchMode=yes','-o','ConnectTimeout=8','-o','StrictHostKeyChecking=yes','-o','UpdateHostKeys=no','-o','ControlMaster=no','-o','ServerAliveInterval=10','-o','ServerAliveCountMax=2','-o','ForwardAgent=no']
+def sha(data): return hashlib.sha256(data).hexdigest()
+def save(path,obj): path.write_text(json.dumps(obj,indent=2)+'\n')
+def now(): return datetime.datetime.now().astimezone().isoformat()
+def git(*args): return subprocess.check_output(['git','-C',str(REPO),*args],cwd=REPO)
+
+def local_prior():
+    # Exact published inventory only. No home/credential/key or remote enumeration.
+    inventory=json.loads((ORIGINAL/'artifacts.json').read_text())['files']
+    files=[]
+    for entry in inventory:
+        rel=PurePosixPath(entry['path'])
+        assert not rel.is_absolute() and '..' not in rel.parts
+        data=(ORIGINAL/entry['path']).read_bytes()
+        assert len(data)==entry['bytes'] and sha(data)==entry['sha256']
+        files.append({'path':entry['path'],'bytes':len(data),'sha256':sha(data)})
+    return files
+
+class Controller:
+    def __init__(self):
+        with (HERE/'reuse-controller-r2-once.guard').open('x') as f:f.write(now()+'\n')
+        self.started=time.monotonic();self.deadline=self.started+2400
+        assert os.getpriority(os.PRIO_PROCESS,0)==15
+        assert os.environ.get('MACOSX_DEPLOYMENT_TARGET')=='15.0'
+        transport=json.loads(Path('/tmp/oe-stop-c8a3489c-transport-selection.json').read_text())
+        self.alias=transport['ssh_alias'];self.retained=Path(json.loads((ORIGINAL/'private-evidence-location.json').read_text())['private_root'])
+        self.private=Path(tempfile.mkdtemp(prefix='oe-stop-native-win-repair-r2-dbcc0160-'));os.chmod(self.private,0o700)
+        self.raw=self.private/'raw';self.raw.mkdir(mode=0o700)
+        self.root=None;self.state=None
+        self.nonce=os.urandom(4).hex();self.remote_name='oe-stop-win-r2-dbcc0160-e1ef124-'+self.nonce
+        self.result={'previous_runtime_failure_preserved':str(ORIGINAL), 'overall_workflow_started_local':now(), 'source_commit':SOURCE,'started_local':now(),'controller_nice':os.getpriority(os.PRIO_PROCESS,0),'macos_deployment_target':'15.0','total_workflow_bound_seconds':2400,'owned_recovery_bound_seconds':30,'passed':False,'source_overlays':[],'compiler_stage_attempts':0,'runtime_stage_attempts':0,'retained_binary_reuse':True,'remote_fixture':self.remote_name,'transport':'Existing R6 transport; OpenSSH immediate control stdin EOF; fixed-file scp -O; strict known-host checking; no credential read/copy'}
+        save(HERE/'private-evidence-location.json',{'private_root':str(self.private)})
+        self.prior=local_prior();save(self.private/'local-prior-before.json',self.prior)
+
+    def command(self,label,argv,timeout,script=None):
+        with (self.raw/(label+'.once.guard')).open('x') as guard:guard.write(now()+'\n')
+        limit=self.deadline if label=='transport-owned-recovery' else self.deadline-30
+        timeout=min(timeout,max(1,int(limit-time.monotonic())))
+        assert time.monotonic()<limit,'total workflow bound reached'
+        identity=sha(Path(__file__).read_bytes());frozen=self.private/('controller-'+identity+'.py')
+        if not frozen.exists():frozen.write_bytes(Path(__file__).read_bytes())
+        if script is not None:(self.raw/(label+'.ps1')).write_text(script)
+        started=now();clock=time.monotonic();timedout=False
+        try:
+            p=subprocess.run(argv,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=timeout)
+            out,err,code=p.stdout,p.stderr,p.returncode
+        except subprocess.TimeoutExpired as e:out,err,code,timedout=e.stdout or b'',e.stderr or b'',None,True
+        (self.raw/(label+'.stdout')).write_bytes(out);(self.raw/(label+'.stderr')).write_bytes(err)
+        shown=[x.replace(self.alias,'<SSH_TRANSPORT>').replace(str(self.private),'<LOCAL_PRIVATE>') for x in argv]
+        if script is not None:shown[-1]='<UTF16LE_BASE64_OF_'+label+'.ps1>'
+        receipt={'command':shown,'signature':sha(json.dumps(argv).encode()),'controller_sha256':identity,'started_local':started,'ended_local':now(),'elapsed_seconds':time.monotonic()-clock,'timeout_seconds':timeout,'exit_code':code,'timed_out':timedout,'stdin':'DEVNULL immediate EOF','script_sha256':sha(script.encode()) if script else None,'stdout_sha256':sha(out),'stderr_sha256':sha(err)}
+        save(self.raw/(label+'.json'),receipt);print(label,'exit=',code,'timed_out=',timedout,flush=True)
+        if timedout and script is not None and label != 'transport-owned-recovery':self.recover_transport_owner(script)
+        return receipt,out
+
+    def remote(self,label,script,timeout=45):
+        encoded=base64.b64encode(script.encode('utf-16le')).decode()
+        return self.command(label,['/usr/bin/ssh',*OPTIONS,self.alias,'powershell.exe','-NoLogo','-NoProfile','-NonInteractive','-EncodedCommand',encoded],timeout,script)
+
+    def recover_transport_owner(self,original):
+        encoded=base64.b64encode(original.encode('utf-16le')).decode()
+        script=r'''$ErrorActionPreference='Stop';(Get-Process -Id $PID).PriorityClass='BelowNormal'
+$all=@(Get-CimInstance Win32_Process)
+$owners=@($all|Where-Object {$_.Name -eq 'powershell.exe' -and $_.CommandLine -and $_.CommandLine.EndsWith('__ENCODED__')})
+if($owners.Count -eq 0){Write-Output 'NO_EXACT_TRANSPORT_OWNER_REMAINS';exit 0}
+if($owners.Count -ne 1){throw 'exact transport owner not unique; no kill'}
+$known=@{};$known[[int]$owners[0].ProcessId]=$owners[0].CreationDate
+for($pass=0;$pass -lt 12;$pass++){foreach($p in $all){if($known.ContainsKey([int]$p.ParentProcessId) -and $p.CreationDate -ge $known[[int]$p.ParentProcessId]){$known[[int]$p.ProcessId]=$p.CreationDate}}}
+$deadline=[Diagnostics.Stopwatch]::GetTimestamp()+30L*[Diagnostics.Stopwatch]::Frequency
+$stopped=@(foreach($p in $all|Sort-Object CreationDate -Descending){
+ if($known.ContainsKey([int]$p.ProcessId)){
+  $live=Get-CimInstance Win32_Process -Filter ('ProcessId='+$p.ProcessId)
+  if(-not $live){continue}
+  if($live.CreationDate -ne $p.CreationDate -or $live.CommandLine -cne $p.CommandLine -or $live.ExecutablePath -ine $p.ExecutablePath){throw 'transport recovery identity changed; no kill'}
+  $owned=Get-Process -Id $p.ProcessId;$null=$owned.SafeHandle
+  try{
+   if([Math]::Abs(($owned.StartTime.ToUniversalTime()-$p.CreationDate.ToUniversalTime()).TotalMilliseconds) -ge 2 -or $owned.Path -ine $p.ExecutablePath){throw 'retained transport handle identity mismatch; no kill'}
+   $left=[Math]::Floor(1000.0*($deadline-[Diagnostics.Stopwatch]::GetTimestamp())/[Diagnostics.Stopwatch]::Frequency)
+   if($left -le 0){throw 'transport owned recovery deadline reached'}
+   $owned.Kill();$signalled=$owned.WaitForExit([int][Math]::Min(10000,$left))
+   [ordered]@{pid=$p.ProcessId;created=$p.CreationDate;path=$p.ExecutablePath;command_line=$p.CommandLine;exact_owner_or_descendant=$true;retained_handle_signalled=$signalled;exit_code=$(if($signalled){$owned.ExitCode}else{$null});normal_exit_acceptance=$false}
+   if(-not $signalled){throw 'transport owned recovery did not signal'}
+  }finally{$owned.Dispose()}
+ }
+})
+$stopped|ConvertTo-Json -Depth 8 -Compress
+'''.replace('__ENCODED__',encoded)
+        rec,_=self.remote('transport-owned-recovery',script,30)
+        assert rec['exit_code']==0,'bounded owned transport recovery unverified'
+
+    def stage(self,name,timeout):
+        assert name in ('qualify','runtime','postflight')
+        inner="try { & '"+self.root+'\\'+name+".ps1' } catch { [IO.File]::WriteAllText('"+self.root+'\\'+name+"-first-stage-failure.stderr', ($_|Out-String)); exit 1 }"
+        inner64=base64.b64encode(inner.encode('utf-16le')).decode()
+        script="$ErrorActionPreference='Stop';(Get-Process -Id $PID).PriorityClass='BelowNormal'; & 'C:\\Program Files\\PowerShell\\7\\pwsh.exe' -NoLogo -NoProfile -NonInteractive -EncodedCommand "+inner64+"; exit $LASTEXITCODE"
+        return self.remote(name,script,timeout)
+
+    def bind_retained(self):
+        # Immutable saved bytes only. No build or product execution.
+        build_data=(self.retained/'downloaded/build-result.json').read_bytes()
+        assert sha(build_data)=='f52b45d2cbea71c19cc1b6d43eee6b6ce99b2072b852a5cd29f688f677213eca'
+        build=json.loads(build_data.decode('utf-8-sig'))
+        assert build['passed'] and build['source_commit']==SOURCE
+        artifact=build['artifact']
+        assert artifact['bytes']==4139520 and artifact['sha256']==ARTIFACT_SHA256 and artifact['amd64_pe32plus']
+        binary=self.retained/'downloaded/target/x86_64-pc-windows-msvc/release/openergy.exe'
+        data=binary.read_bytes();assert len(data)==4139520 and sha(data)==ARTIFACT_SHA256,'retained verified bytes required; no rebuild fallback'
+        bundle=(self.retained/'evidence.tar').read_bytes()
+        assert len(bundle)==46836736 and sha(bundle)==BUNDLE_SHA256
+        (self.private/'openergy.exe').write_bytes(data)
+        (self.private/'retained-build-result.json').write_bytes(build_data)
+        manifest_data=(ORIGINAL/'source-manifest.json').read_bytes();manifest=json.loads(manifest_data)
+        assert manifest['source_commit']==SOURCE and len(manifest['files'])==558
+        archive=(self.retained/'source.tar').read_bytes()
+        assert len(archive)==manifest['archive_bytes'] and sha(archive)==manifest['archive_sha256']
+        (self.private/'source.tar').write_bytes(archive);(self.private/'source-manifest.json').write_bytes(manifest_data)
+        assert not git('diff','--name-only',SOURCE,'--','Cargo.toml','Cargo.lock','rust-toolchain.toml','rustfmt.toml','crates','tools/e2e','vendor')
+        self.result.update({'artifact':artifact,'archive_sha256':sha(archive),'source_files':558,'retained_build_receipt_sha256':sha(build_data)})
+
+    def setup(self):
+        script=r'''$ErrorActionPreference='Stop';$ProgressPreference='SilentlyContinue'
+(Get-Process -Id $PID).PriorityClass='BelowNormal'
+if((Get-Process -Id $PID).SessionId -ne 0){throw 'session 0 required'}
+foreach($p in @('C:\Program Files\PowerShell\7\pwsh.exe',(Join-Path $env:WINDIR 'System32/tar.exe'))){if(-not (Test-Path -LiteralPath $p -PathType Leaf)){throw 'installed prerequisite absent'}}
+$root=Join-Path $env:TEMP '__NAME__'
+if(Test-Path -LiteralPath $root){throw 'fresh owned root exists; no retry'}
+New-Item -ItemType Directory -Path $root|Out-Null
+$sid=[Security.Principal.WindowsIdentity]::GetCurrent().User
+$acl=[Security.AccessControl.DirectorySecurity]::new();$acl.SetAccessRuleProtection($true,$false);$acl.SetOwner($sid)
+$acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new($sid,'FullControl','ContainerInherit,ObjectInherit','None','Allow'))
+Set-Acl -LiteralPath $root -AclObject $acl
+$a=Get-Acl -LiteralPath $root
+if(-not $a.AreAccessRulesProtected -or $a.Owner -ne $sid.Translate([Security.Principal.NTAccount]).Value -or @($a.Access).Count -ne 1){throw 'protected current-user-owned ACL required'}
+[ordered]@{root=$root;original_temp=$env:TEMP;profile=$env:USERPROFILE;session=(Get-Process -Id $PID).SessionId;priority=(Get-Process -Id $PID).PriorityClass.ToString();created_utc=[DateTime]::UtcNow.ToString('o');root_acl_protected=$a.AreAccessRulesProtected}|ConvertTo-Json -Compress
+'''.replace('__NAME__',self.remote_name)
+        rec,out=self.remote('setup',script);assert rec['exit_code']==0,'fresh setup failed'
+        self.state=json.loads(out.decode('utf-8-sig'));self.root=self.state['root']
+        old_data=(self.retained/'state.json').read_bytes();assert sha(old_data)=='48ac89d19da2804c742365c3ac2fbb393684dfb37c54f451ff8dceb7ce7aa571'
+        old=json.loads(old_data);self.state['prior_fixtures']=old['prior_fixtures']
+        save(self.private/'state.json',self.state)
+        for name in ('common.ps1','qualify.ps1','observer.cs','runtime.ps1','postflight.ps1'):
+            data=(HERE/name).read_text().replace('__NONCE__',self.nonce).encode()
+            (self.private/name).write_bytes(data)
+        files=['source.tar','source-manifest.json','state.json','common.ps1','qualify.ps1','observer.cs','runtime.ps1','postflight.ps1','retained-build-result.json','openergy.exe']
+        manifest={'files':[{'path':n,'bytes':(self.private/n).stat().st_size,'sha256':sha((self.private/n).read_bytes())} for n in files]}
+        save(self.private/'transfer-manifest.json',manifest);save(HERE/'workflow-bindings.json',{'nonce':self.nonce,'files':[e for e in manifest['files'] if e['path'] not in ('source.tar','state.json')]})
+        rec,_=self.command('upload',['/usr/bin/scp','-O','-q',*OPTIONS,*[str(self.private/n) for n in files+['transfer-manifest.json']],self.alias+':'+self.root.replace('\\','/')+'/'],90)
+        assert rec['exit_code']==0,'fixed-file upload failed; no blind retry'
+
+    def collect(self):
+        rec,out=self.stage('postflight',600);self.result['postflight_exit']=rec['exit_code']
+        bundle=json.loads(out.decode('utf-8-sig'));save(self.private/'bundle-remote.json',bundle)
+        rec,_=self.command('download',['/usr/bin/scp','-O','-q',*OPTIONS,self.alias+':'+self.root.replace('\\','/')+'/evidence.tar',str(self.private/'evidence.tar')],90)
+        assert rec['exit_code']==0,'evidence transfer failed; fixture retained'
+        data=(self.private/'evidence.tar').read_bytes();assert len(data)==bundle['bytes'] and sha(data)==bundle['sha256']
+        self.result['bundle']=bundle;seen=set()
+        with tarfile.open(fileobj=io.BytesIO(data),mode='r:') as tar:
+            for item in tar.getmembers():
+                p=PurePosixPath(item.name);assert not p.is_absolute() and '..' not in p.parts and item.isfile() and item.name not in seen;seen.add(item.name)
+                dest=self.private/'downloaded'/item.name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(tar.extractfile(item).read())
+        for e in json.loads((self.private/'downloaded/evidence-manifest.json').read_text()):
+            data=(self.private/'downloaded'/e['path']).read_bytes();assert len(data)==e['bytes'] and sha(data)==e['sha256']
+        build_data=(self.private/'downloaded/retained-build-result.json').read_bytes()
+        assert sha(build_data)==self.result['retained_build_receipt_sha256']
+        data=(self.private/'downloaded/openergy.exe').read_bytes()
+        assert len(data)==4139520 and sha(data)==ARTIFACT_SHA256
+        # Removal is permitted only after independently verifying the private archive.
+        script=r'''$ErrorActionPreference='Stop';(Get-Process -Id $PID).PriorityClass='BelowNormal'
+$root='__ROOT__'
+if((Split-Path $root -Leaf) -ne '__NAME__' -or (Split-Path $root -Parent) -ne '__TEMP__'){throw 'owned root identity mismatch'}
+$owned=@(Get-CimInstance Win32_Process|Where-Object {$_.ProcessId -ne $PID -and (($_.ExecutablePath -and $_.ExecutablePath.StartsWith($root+'\',[StringComparison]::OrdinalIgnoreCase)) -or ($_.CommandLine -and $_.CommandLine.Contains($root)))}|Select-Object Name,ProcessId,CreationDate,ExecutablePath,CommandLine)
+if($owned.Count){throw 'owned process remains; fixture retained'}
+Remove-Item -LiteralPath $root -Recurse -Force
+[ordered]@{recorded_utc=[DateTime]::UtcNow.ToString('o');owned_processes_before_removal=$owned;owned_root_removed=(-not (Test-Path -LiteralPath $root));removed_only_fresh_owned_root=$true;artifact_and_raw_evidence_verified_and_retained_privately_before_removal=$true}|ConvertTo-Json -Depth 8 -Compress
+'''.replace('__ROOT__',self.root).replace('__NAME__',self.remote_name).replace('__TEMP__',self.state['original_temp'])
+        rec,out=self.remote('cleanup',script,90);self.result['cleanup_exit']=rec['exit_code']
+        assert rec['exit_code']==0,'owned cleanup failed'
+        self.result['cleanup']=json.loads(out.decode('utf-8-sig'))
+
+    def export(self):
+        current=local_prior();save(self.private/'local-prior-after.json',current)
+        self.result['local_prior_evidence_equal']=current==self.prior
+        self.result['passed']=self.result['passed'] and current==self.prior
+        first_private=json.loads((ORIGINAL/'setup-failure-01/private-evidence-location.json').read_text())['private_root']
+        replacements=[(first_private,'<FIRST_SETUP_PRIVATE>'),(self.alias,'<SSH_TRANSPORT>'),(str(self.private),'<LOCAL_PRIVATE>'),(str(self.retained),'<RETAINED_PRIVATE>')]
+        if self.state:
+            p=self.state['profile'];replacements += [(p.replace('\\','\\\\'),'<PROFILE_JSON>'),(p,'<PROFILE>'),(p.replace('\\','/'),'<PROFILE_FORWARD_SLASH>')]
+        def mask(s):
+            for old,new in replacements:s=s.replace(old,new)
+            return s
+        ledger=[]
+        for folder in (self.raw,self.private/'downloaded'):
+            if not folder.exists():continue
+            for p in sorted(folder.rglob('*')):
+                if not p.is_file() or p.suffix not in ('.json','.ps1','.cs','.stdout','.stderr','.guard','.toml','.log'):continue
+                original=p.read_bytes();rel=Path(folder.name)/p.relative_to(folder)
+                omit=p.name in ('shared-before.json','shared-after.json','source-manifest.json')
+                copied=mask(original.decode('utf-8-sig')).encode()
+                if not omit:
+                    dest=HERE/'evidence'/rel;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(copied)
+                ledger.append({'path':str(rel),'original_bytes':len(original),'original_sha256':sha(original),'committed_copy':not omit,'copy_bytes':len(copied),'copy_sha256':sha(copied),'byte_equal':original==copied})
+        save(HERE/'copy-ledger.json',{'method':'Exact raw originals retained privately. Derived UTF-8 copies remove BOM and replace known transport/profile/private-root prefixes only; preserve line endings. Full shared snapshots and duplicate source manifest omitted.','files':ledger})
+        for name in ('shared-before.json','shared-after.json'):
+            path=self.private/'downloaded'/name
+            if path.exists():
+                data=path.read_bytes();value=json.loads(data.decode('utf-8-sig'))
+                save(HERE/(name.replace('.json','-summary.json')),{'bytes':len(data),'sha256':sha(data),'trees':[{'label':x['label'],'files':x['files'],'items':x['items'],'entries_sha256':sha(json.dumps(x['entries'],sort_keys=True).encode())} for x in value['trees']],'default_fields':len(value['defaults']),'tool_fields':len(value['tools']),'sharing_identity_count':len(value['sharing']),'old_failed_root_absent':value['old_failed_root_absent']})
+        save(HERE/'local-prior-preservation.json',json.loads(mask(json.dumps({'equal':current==self.prior,'before_sha256':sha(json.dumps(self.prior,sort_keys=True).encode()),'after_sha256':sha(json.dumps(current,sort_keys=True).encode()),'original_inventory_files':len(self.prior),'full_manifests_retained_privately':True}))))
+        self.result['controller_exit']=0 if self.result['passed'] else 1
+        save(self.private/'result.json',self.result);save(HERE/'result.json',json.loads(mask(json.dumps(self.result))))
+
+    def run(self):
+        self.bind_retained();self.setup()
+        rec,_=self.stage('qualify',600);self.result['qualification_exit']=rec['exit_code']
+        if rec['exit_code']==0:
+            self.result['runtime_stage_attempts']+=1
+            rec,_=self.stage('runtime',150+30);self.result['runtime_exit']=rec['exit_code']
+        self.collect()
+        self.result['passed']=all(self.result.get(x)==0 for x in ('qualification_exit','runtime_exit','postflight_exit','cleanup_exit')) and self.result['cleanup']['owned_root_removed']
+
+if __name__=='__main__':
+    workflow=Controller();code=0
+    try:
+        workflow.run()
+        code=0 if workflow.result['passed'] else 1
+    except BaseException:
+        code=1;raw=traceback.format_exc();(workflow.raw/'controller-first-failure.stderr').write_text(raw);workflow.result['failure']=raw.splitlines()[-1];print(workflow.result['failure'],flush=True)
+    finally:
+        workflow.result['ended_local']=now();workflow.result['elapsed_seconds']=time.monotonic()-workflow.started;workflow.result['controller_exit']=code
+        workflow.export();code=0 if workflow.result['passed'] else 1;print('NATIVE_DAEMON_OFF_RESULT','PASS' if workflow.result['passed'] else 'FAIL_OR_UNVERIFIED',flush=True)
+    raise SystemExit(code if workflow.result['passed'] else 1)

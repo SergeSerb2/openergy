@@ -1,0 +1,114 @@
+{
+  "scope": "STATIC_DATA_ONLY_NOT_RUNTIME_ACCEPTANCE",
+  "status": "SOURCE_PROPOSAL_FOR_INDEPENDENT_REVIEW",
+  "python_ast": {
+    "parsed": true,
+    "source": "source/controller.py.txt",
+    "imported": false,
+    "executed": false,
+    "class_methods": [
+      "__init__",
+      "command",
+      "remote",
+      "recover_transport_owner",
+      "stage",
+      "bind_retained",
+      "setup",
+      "collect",
+      "export",
+      "run"
+    ]
+  },
+  "json_decode": {
+    "passed": true,
+    "files": [
+      "inputs.json",
+      "retained-inventory.json",
+      "static-validation.json"
+    ]
+  },
+  "patch_materialization": {
+    "passed": true,
+    "method": "apply unified hunks to immutable baseline strings in memory; compare all output bytes",
+    "files": [
+      {
+        "source": "common.ps1.txt",
+        "changed": false,
+        "baseline_bytes": 6364,
+        "corrected_bytes": 6364,
+        "corrected_sha256": "c09ce6f29820bd3805fec5398f49de9fe797d71e57a0e3e4f233f56f51043ce0",
+        "unified_hunks": 0,
+        "materialized_byte_equal": true
+      },
+      {
+        "source": "controller.py.txt",
+        "changed": true,
+        "baseline_bytes": 21421,
+        "corrected_bytes": 21220,
+        "corrected_sha256": "2bcb95f50e5ce621ebdc74d6c09f4f9ddb0b402370b910600bd8f3632025d54b",
+        "unified_hunks": 10,
+        "materialized_byte_equal": true
+      },
+      {
+        "source": "observer.cs.txt",
+        "changed": true,
+        "baseline_bytes": 7760,
+        "corrected_bytes": 12054,
+        "corrected_sha256": "8559ecbca18de3b896407df1048c278633c927134858cc99124ae883e816f5e2",
+        "unified_hunks": 4,
+        "materialized_byte_equal": true
+      },
+      {
+        "source": "postflight.ps1.txt",
+        "changed": true,
+        "baseline_bytes": 3630,
+        "corrected_bytes": 4806,
+        "corrected_sha256": "122a3dd486f23e437c23403f6e3eada637282643dfa10040d66cdcb7e2064874",
+        "unified_hunks": 2,
+        "materialized_byte_equal": true
+      },
+      {
+        "source": "qualify.ps1.txt",
+        "changed": true,
+        "baseline_bytes": 4267,
+        "corrected_bytes": 3519,
+        "corrected_sha256": "67ff4f480344ca1cde38ba49679d124ba0b9528cb1499d150f109ce00c79f379",
+        "unified_hunks": 2,
+        "materialized_byte_equal": true
+      },
+      {
+        "source": "runtime.ps1.txt",
+        "changed": true,
+        "baseline_bytes": 15219,
+        "corrected_bytes": 21202,
+        "corrected_sha256": "d60991664908e4e332dc70b71a99c851779a368bd0541c6734ce8f522c0ff964",
+        "unified_hunks": 8,
+        "materialized_byte_equal": true
+      }
+    ]
+  },
+  "original_exact_inputs_unchanged": 25,
+  "original_published_inventory_members_unchanged": 178,
+  "retained_exact_inventory_matches": true,
+  "powershell_syntax": "UNVERIFIED; no PowerShell parser or import ran",
+  "csharp_syntax": "UNVERIFIED; no C# import or compiler ran",
+  "runtime": "FAILED_OR_UNVERIFIED_FROM_ORIGINAL; NO_NEW_EXECUTION",
+  "executions": {
+    "saved_or_corrected_task_helpers": 0,
+    "powershell_or_csharp_imports": 0,
+    "products": 0,
+    "builds": 0,
+    "tests_mocks_simulations": 0,
+    "preflights": 0,
+    "remote_commands": 0,
+    "process_or_os_queries": 0,
+    "socket_or_pipe_probes": 0,
+    "signing": 0,
+    "non_documentation_network_actions": 0,
+    "delegation": 0
+  },
+  "allowed_operations": "local source/evidence reads, Git metadata, owned text edits, JSON/AST parsing, hashes, in-memory patch materialization; public primary API documentation lookup",
+  "all_deliverables_utf8_text": true,
+  "all_source_files_inert_txt": true,
+  "patch_container_whitespace": "The exact unified diff has nine required space-prefixed empty context lines. A folder-local repair.patch whitespace attribute exempts blank-at-eol only; corrected source receives the normal whitespace check."
+}
