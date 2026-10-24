@@ -1,0 +1,37 @@
+{
+  "actual_own_getpriority_for_static_hashes": 15,
+  "all_124_comparison_records_valid": true,
+  "baseline_commit": "d8fa4945e88cb381b48aceab36eb105ee9268f23",
+  "copy_inventory_equals_complete_public_inventory": true,
+  "existing_tracked_edits": "NONE",
+  "git_diff_check": "PASS",
+  "kind": "STATIC DATA/FILE/GIT/JSON CHECKS ONLY; no test or runtime execution",
+  "network_budget_unchanged": {
+    "archive_bytes": 10193895,
+    "archive_initial_GETs": 1,
+    "metadata_bytes": 1002,
+    "metadata_fetches": 1
+  },
+  "original_and_retention_folders_git_diff": "EMPTY versus retention commit",
+  "outside_owned_docs_git_diff": "EMPTY versus baseline",
+  "private_http_journal_hash_rechecked": true,
+  "private_receipt_hash_rechecked": true,
+  "private_receipt_sha256": "7dce50e63988399ba6b062383286b6d74c7b8a501bb3defdb06b023ee1ce6c8a",
+  "public_absolute_private_path_or_signed_URL_scan": "PASS",
+  "public_files_excluding_this_record": [
+    {
+      "bytes": 9961,
+      "path": "README.md",
+      "sha256": "ce6bae1b5e52217a954a1eb5e9d368846045d5075a10c2efaf52e657915a30a7"
+    },
+    {
+      "bytes": 80474,
+      "path": "recovery-bindings.json",
+      "sha256": "f667fc59a6f2249c89d0d98d1482afe211d7d28e0ebc6de042698ab586548f71"
+    }
+  ],
+  "retention_commit": "1ea63e55719d1310b6d6a18f65c4736983f4af7e",
+  "retrieval_wall_seconds_from_original_start": 95.496668,
+  "source_bindings_rechecked": 6,
+  "validation_limit": "Checks bindings and evidence structure. Does not execute recovered bytes, infer architecture/signatures/ABI, recover missing app/icon/raw state, or prove app acceptance."
+}
