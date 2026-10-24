@@ -1,0 +1,26 @@
+[
+  {
+    "command": [
+      "/usr/sbin/lsof",
+      "-nP",
+      "-iTCP:25118",
+      "-iTCP:25119"
+    ],
+    "exit_code": 1,
+    "elapsed_ns": 66976250,
+    "local_time": "2026-10-23T17:14:48.295889-07:00",
+    "stdout_filter": null
+  },
+  {
+    "command": [
+      "/usr/sbin/netstat",
+      "-anv",
+      "-p",
+      "tcp"
+    ],
+    "exit_code": 0,
+    "elapsed_ns": 13501833,
+    "local_time": "2026-10-23T17:14:48.309443-07:00",
+    "stdout_filter": "only owned fixture ports"
+  }
+]

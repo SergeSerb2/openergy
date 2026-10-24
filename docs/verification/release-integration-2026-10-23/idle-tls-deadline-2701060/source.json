@@ -1,0 +1,30 @@
+{
+  "parent": "270106002490ef3e135d4c6500df1c8ff452b45b",
+  "existing_example_after_removing_only_additions_byte_identical": true,
+  "parent_example_sha256": "530c880eb74f6c95d24a0612c4fa8773fa21d256765fc3f9f6260801fa303a30",
+  "inputs": {
+    "crates/net/examples/dns_queue_cancel_c4806a3d.rs": "623f08c01aecec59a5d43ce02a3e11db4e2900f575d6e6012f5e9c8ba37e1111",
+    "crates/net/examples/dns_queue_cancel_c4806a3d/idle_tls_deadline.rs": "2c3be2b299867d2779160d62035cb3133e53216a8a001f3ec12275296935bd02",
+    "crates/net/src/reactor.rs": "2fdfd8783e0d249c2441b1994ad7b67d8926662f6fee8244bbfd9558451e851d",
+    "Cargo.toml": "7ea29af11f38ac187df7fb78ecbfb5ba0f5c4d2248211efb857010b91412ea04",
+    "Cargo.lock": "6d57d3d84fcef4208a9ce657e511b07099187dcda084cd9decb9ab9a56756800",
+    "crates/net/Cargo.toml": "c74312dcc7dc550825d7c247961e2fd44f7ca1dbbdfc7bb6c28e7351ef30637c",
+    "rust-toolchain.toml": "f715f440167e20fd8ea9afa0498c3d1ab80174cfcb8cbc895f106a34d907a1e1",
+    "rustfmt.toml": "be6b347de980e910a52b008bc0f11daea064fbcd8d5e6acd477bd9c2983a65ec"
+  },
+  "production_library_changed": false,
+  "existing_predicates_and_limits_unchanged": true,
+  "production_net_sources_unchanged_vs_parent": {
+    "crates/net/src/cli.rs": "b22cef41a524d556c81afb98e7b6d5d57557749ce9ca586145881995b82acb41",
+    "crates/net/src/connect_error.rs": "a3c944fefddc2b4a9e759298b5a4c9d5637503bf88fcbbf5dc0baf7e78929568",
+    "crates/net/src/discovery.rs": "7c861e1cbbc65b4e24b2e851db7b1e74044791be1565e510f5980531e3269f71",
+    "crates/net/src/identity.rs": "102aa396739087ce2f117f775f18508475ff3b4326fe702b7ad4d1a4d886b07c",
+    "crates/net/src/lib.rs": "1bfcda0c11d7bb5be7f23005d9db9170e62317161877e52b616c79c655317ac9",
+    "crates/net/src/reactor.rs": "2fdfd8783e0d249c2441b1994ad7b67d8926662f6fee8244bbfd9558451e851d",
+    "crates/net/src/tls.rs": "b6c852d4d03ea27549e24eeba5d80ca65432dd6a90ea6f2cf1cf33dda1157abe",
+    "crates/net/src/trust.rs": "830010af377e5b93a32334d8386f325cc10e19fe83520dda26b267a0a81ee6ff",
+    "crates/net/src/windows_permissions.rs": "2dbca5dc28eb51dc87c89bb2b0a8b7f009037094db45c7085db635ae598090c4"
+  },
+  "runtime_attempts": 1,
+  "binary_sha256": "35374d73d9a9c8ad68ce7a43b9387241f2d5ee92eab4f01ce7ad78e163aec855"
+}

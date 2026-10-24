@@ -1,0 +1,29 @@
+{
+  "name": "release",
+  "command": [
+    "/usr/bin/nice",
+    "-n",
+    "15",
+    "/Users/serge/.cargo/bin/cargo",
+    "+1.99.1",
+    "build",
+    "--offline",
+    "--locked",
+    "--release",
+    "-j",
+    "2",
+    "-p",
+    "openergy-net",
+    "--example",
+    "dns_queue_cancel_c4806a3d"
+  ],
+  "start_local": "2026-10-23T17:13:12.080731-07:00",
+  "environment": {
+    "CARGO_TARGET_DIR": "/private/tmp/oe-idle-tls-20261023-o7v3syut/target",
+    "CARGO_BUILD_JOBS": "2",
+    "MACOSX_DEPLOYMENT_TARGET": "15.0",
+    "CARGO_NET_OFFLINE": "true"
+  },
+  "exit_code": 0,
+  "elapsed_ns": 34210843334
+}

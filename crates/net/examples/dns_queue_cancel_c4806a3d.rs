@@ -11,6 +11,9 @@ use std::{
     time::{Duration, Instant},
 };
 
+#[path = "dns_queue_cancel_c4806a3d/idle_tls_deadline.rs"]
+mod idle_tls_deadline;
+
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 const HEALTHY: u16 = 25116;
 const REFUSED: u16 = 25117;
@@ -1611,17 +1614,25 @@ fn run() -> Result<i32> {
     let root = PathBuf::from(args.next().ok_or("dns_queue_cancel_c4806a3d NEW_ISOLATED_DIR")?);
     let mut refusal_only = false;
     let mut attempts = false;
+    let mut idle_tls = false;
     for arg in args {
         match arg.as_str() {
             "--refusal-only" if !refusal_only => refusal_only = true,
             "--observe-attempts" if !attempts => attempts = true,
+            "--idle-tls-deadline-only" if !idle_tls => idle_tls = true,
             _ => return Err("unknown or repeated probe option".into()),
         }
+    }
+    if idle_tls && (refusal_only || attempts) {
+        return Err("idle TLS mode is separate and enables its own finite observer".into());
     }
     if !root.is_absolute() || root.exists() {
         return Err("requires a new absolute isolated directory".into());
     }
     std::fs::create_dir(&root)?;
+    if idle_tls {
+        return idle_tls_deadline::run(&root);
+    }
     if attempts {
         log::set_logger(&OBSERVER).map_err(|error| format!("observer initialization: {error}"))?;
         log::set_max_level(log::LevelFilter::Trace);

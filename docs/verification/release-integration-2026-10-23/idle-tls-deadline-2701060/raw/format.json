@@ -1,0 +1,22 @@
+{
+  "name": "format",
+  "command": [
+    "/usr/bin/nice",
+    "-n",
+    "15",
+    "/Users/serge/.cargo/bin/rustfmt",
+    "+1.99.1",
+    "--edition",
+    "2021",
+    "crates/net/examples/dns_queue_cancel_c4806a3d.rs"
+  ],
+  "start_local": "2026-10-23T17:12:57.365078-07:00",
+  "environment": {
+    "CARGO_TARGET_DIR": "/private/tmp/oe-idle-tls-20261023-o7v3syut/target",
+    "CARGO_BUILD_JOBS": "2",
+    "MACOSX_DEPLOYMENT_TARGET": "15.0",
+    "CARGO_NET_OFFLINE": "true"
+  },
+  "exit_code": 0,
+  "elapsed_ns": 71101292
+}
