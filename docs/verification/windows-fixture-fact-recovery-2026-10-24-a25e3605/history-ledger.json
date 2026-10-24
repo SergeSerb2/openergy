@@ -1,0 +1,1926 @@
+{
+  "schema": "openergy.windows-fixture-facts.redacted-history-ledger.v1",
+  "threads": [
+    {
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "title": "Verify bounded discovery on private native Windows fixtures"
+    },
+    {
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-reviewed-9a4ac2e-runtime-r12-8281eb7-20261023",
+      "title": "Verify reviewed DNS command on private native Windows fixtures"
+    },
+    {
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "title": "Run matching strict DNS refusal negative control on native Windows"
+    },
+    {
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "title": "Verify DNS readiness on private native Windows fixtures"
+    },
+    {
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-current-daemon-windows-stop-e2e-r1-e1ef124-20261023",
+      "title": "Verify current daemon stop on native Windows"
+    },
+    {
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-idle-tls-native-build-cwd-repair-r6-4c98c28-20261023",
+      "title": "Finish the corrected native Windows build workflow"
+    }
+  ],
+  "retrievals": [
+    {
+      "key": "bounded",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:message:message%3Adelegated-task%3Acommand%253Amcp%253A5e046180-d7f7-4401-a1e1-166b62262ea5%253Adelegate-task%253Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "position": 0,
+      "chars": 4865,
+      "bytes": 4865,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "8f44bb669f3ba23be09c34cabcfbca2e12bed4a79f32247793907682faeb4cf0"
+    },
+    {
+      "key": "bounded",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_04d0a90d3005a95c016adb8e025c9081948574503d8b1d4ee9",
+      "position": 2,
+      "chars": 231,
+      "bytes": 235,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "154906a6f9280a18d9d9f12a728e526e7a307e5f79d4ab8b183b2e1fa0698a6a"
+    },
+    {
+      "key": "bounded",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_04d0a90d3005a95c016adb8e1d9a988194b08ffe71be8873e2",
+      "position": 11,
+      "chars": 274,
+      "bytes": 276,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "904b7dd84ebf7f8bdc2274bb7bf104133090b590a90c3a11da0653127ff5ed30"
+    },
+    {
+      "key": "bounded",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_04d0a90d3005a95c016adb8e9d53c4819489924199a88952f5",
+      "position": 19,
+      "chars": 277,
+      "bytes": 279,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "b94d5bf934844457bdfa61694262e3c52b24dc65be23dc6e53aac76b71f7de39"
+    },
+    {
+      "key": "bounded",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_04d0a90d3005a95c016adb8eef55b08194819e006ad221cd66",
+      "position": 23,
+      "chars": 226,
+      "bytes": 226,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "fcd2d79c06f5149a026c687358ca0b65146224fa3af639b556ae81f62bb609ac"
+    },
+    {
+      "key": "bounded",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_04d0a90d3005a95c016adb8f4cdef481948464ffe1a925b1f5",
+      "position": 31,
+      "chars": 273,
+      "bytes": 275,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "2f5997155e3e181ce0607c1ab94eef5adce9c6e16c70ab30787dc38b75b3d098"
+    },
+    {
+      "key": "bounded",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_04d0a90d3005a95c016adb8f99053481948876f68dd664d7f7",
+      "position": 38,
+      "chars": 265,
+      "bytes": 267,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "5d334b79cabca814586a72e517536b617eee1a835825a803115198d9e96426b6"
+    },
+    {
+      "key": "bounded",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_04d0a90d3005a95c016adb8fd26d7c81948b9b9d90905becac",
+      "position": 42,
+      "chars": 299,
+      "bytes": 301,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "00a82997f4e4398ac2880d007f523cc3949b822b5c9c3d51becdd7a9a80301c3"
+    },
+    {
+      "key": "bounded",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_04d0a90d3005a95c016adb8fe6e7688194b7675fe5f3a01b7b",
+      "position": 46,
+      "chars": 284,
+      "bytes": 284,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "6dd7ba87d05d9634b8b3f93ae8c03b969d749c1d242d85d01b4a7ca9267984be"
+    },
+    {
+      "key": "bounded",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_04d0a90d3005a95c016adb9010065c81948fbe868fb5c1fea4",
+      "position": 48,
+      "chars": 381,
+      "bytes": 383,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "54cbef1c81d42c30ab00f29e632c297c71100f6ccfd8abf784a9e7c12f81c1e6"
+    },
+    {
+      "key": "bounded",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_04d0a90d3005a95c016adb912a7e8c8194a74aeb9d6ec87ab8",
+      "position": 56,
+      "chars": 312,
+      "bytes": 318,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "84b3bc2aecc0d3e495497afcfb8dd083d52c2318c8b5be8918a51195ab1f321d"
+    },
+    {
+      "key": "bounded",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_04d0a90d3005a95c016adb917676e081949122bf0946cd0c81",
+      "position": 60,
+      "chars": 687,
+      "bytes": 691,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "5ca68ca87899bdb2a7f636b9b6f4812f328cd17984c8e22059d6a99f10873c1d"
+    },
+    {
+      "key": "r12",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-reviewed-9a4ac2e-runtime-r12-8281eb7-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_044d76e4588a725c016adbef423ea881978a20d54f36995dd7",
+      "position": 42,
+      "chars": 254,
+      "bytes": 254,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "021aebd6403fd3e858b14f8e03fa23ed725cf074baac9825f616c03718e5c9df"
+    },
+    {
+      "key": "r12",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-reviewed-9a4ac2e-runtime-r12-8281eb7-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_044d76e4588a725c016adbef7f35d88197ba7703688a969d2f",
+      "position": 46,
+      "chars": 233,
+      "bytes": 233,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "8000b4b032c0663f72fc1d2b7eb32676cfb041a3ec4b45bf723e2aedf177ab74"
+    },
+    {
+      "key": "r12",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-reviewed-9a4ac2e-runtime-r12-8281eb7-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_044d76e4588a725c016adbefcf1524819781bebb8580101900",
+      "position": 51,
+      "chars": 285,
+      "bytes": 287,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "235ffbc1e8767b72998de85f27bb16369471caf099d9c081e639b65459947f98"
+    },
+    {
+      "key": "r12",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-reviewed-9a4ac2e-runtime-r12-8281eb7-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_044d76e4588a725c016adbf021ca5c81979d31458fdb3d00a0",
+      "position": 54,
+      "chars": 253,
+      "bytes": 257,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "7db04406b0fed82b6bc46c5a7608ff993d8686696ddefa8762f35d07da7db8fc"
+    },
+    {
+      "key": "r12",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-reviewed-9a4ac2e-runtime-r12-8281eb7-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_044d76e4588a725c016adbf07e636c81979506ad653b32b6b9",
+      "position": 60,
+      "chars": 525,
+      "bytes": 525,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "2fff830f4783653fef87c52f7d8ea8e6e07d1cdaf7275a4f8c47b479381f1625"
+    },
+    {
+      "key": "r12",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-reviewed-9a4ac2e-runtime-r12-8281eb7-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_044d76e4588a725c016adbf10b70b08197a15900a985f1440a",
+      "position": 66,
+      "chars": 327,
+      "bytes": 327,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "f69547940a603ac5f8728080c44208b66db858803b230f31566e678597bc01d6"
+    },
+    {
+      "key": "r12",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-reviewed-9a4ac2e-runtime-r12-8281eb7-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_044d76e4588a725c016adbf1271bf08197b87082ad6ee0c364",
+      "position": 69,
+      "chars": 815,
+      "bytes": 815,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "9039f7b53a1fc105b66ae30eab6f9d1241d1e09f57c27f41272720c735bf8404"
+    },
+    {
+      "key": "refusal",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:message:message%3Adelegated-task%3Acommand%253Amcp%253A39c449e5-b45e-42f0-9401-545a2c771c11%253Adelegate-task%253Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "position": 0,
+      "chars": 2734,
+      "bytes": 2734,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "bd7b8764fefbc0002fb5fc75179a6a8edf3b2ef28b8fa30aa8bceb8a26713252"
+    },
+    {
+      "key": "refusal",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_091d2ca51867ffdb016adbf2898b0c819085fd715f46eb14dc",
+      "position": 2,
+      "chars": 235,
+      "bytes": 239,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "d7fbb59fe42b9784e7f92eb7a3ef8da7446cb94e5dfbd5c5a91cdac915a31a91"
+    },
+    {
+      "key": "refusal",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_091d2ca51867ffdb016adbf29329e88190ab4e71d4a1d6ae9d",
+      "position": 6,
+      "chars": 166,
+      "bytes": 168,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "32594ec41450a6782979e20dd73054b29e281a98037d5d3b0fab82b0040a1da0"
+    },
+    {
+      "key": "refusal",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_091d2ca51867ffdb016adbf2afcdfc8190924d5dae25d77525",
+      "position": 16,
+      "chars": 253,
+      "bytes": 255,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "e938fc2ee3d144120598c95a88a40c62b7477717efd23ae376553570eaa3ad69"
+    },
+    {
+      "key": "refusal",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_091d2ca51867ffdb016adbf30625d88190a542cb906259cbe1",
+      "position": 31,
+      "chars": 266,
+      "bytes": 266,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "58343acced2e6589b6b9d9c248026af50e44692aa9f2349bd101ecf4d9e57c31"
+    },
+    {
+      "key": "refusal",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_091d2ca51867ffdb016adbf37d501081909930f17fe1678b92",
+      "position": 36,
+      "chars": 263,
+      "bytes": 263,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "3acdc477d7fc497dbd2e9f17a06b216d89dd54053dc25771836cf14ade096dc6"
+    },
+    {
+      "key": "refusal",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_091d2ca51867ffdb016adbf3deb5688190bafcab42b5153164",
+      "position": 41,
+      "chars": 271,
+      "bytes": 273,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "99264bdd8d9c0fe0ac7e5055e5fa89686e7b4e6009878aca9ad4cfc746796a3b"
+    },
+    {
+      "key": "refusal",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_091d2ca51867ffdb016adbf42b25a08190913f3c76496f0de9",
+      "position": 45,
+      "chars": 280,
+      "bytes": 282,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "d0ef3687c1d93103b18b60222d0e219d91c87974090e190b51a256699c050662"
+    },
+    {
+      "key": "refusal",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_091d2ca51867ffdb016adbf47a1b2881909ef5adb898439d5c",
+      "position": 49,
+      "chars": 267,
+      "bytes": 269,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "7a6f7f5ba089fec03c3dd766ff52f730edcad7f3f3ecbeb3fa4f1e7276f6554c"
+    },
+    {
+      "key": "refusal",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_091d2ca51867ffdb016adbf4b95938819088f5d8b23376d00d",
+      "position": 52,
+      "chars": 294,
+      "bytes": 294,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "9f2aa7de3b00a7a5112a5ae2c1d1c73cfef9bfa9b907d7f6cf887502e6773a91"
+    },
+    {
+      "key": "refusal",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_091d2ca51867ffdb016adbf4f4597c8190ae65119ac803736f",
+      "position": 56,
+      "chars": 228,
+      "bytes": 230,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "40cfcd978af22b69b81b9879124de7c1f7cc4508b1504fb45b7e5b786e7f7785"
+    },
+    {
+      "key": "refusal",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_091d2ca51867ffdb016adbf563cb108190818ed70e0d7c2644",
+      "position": 62,
+      "chars": 334,
+      "bytes": 336,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "7f8ca0c493e743f9dcd06aa40527e3b2dbff0e86f8904eed9e14b95522718f31"
+    },
+    {
+      "key": "dnsold",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:message:message%3Adelegated-task%3Acommand%253Amcp%253Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%253Adelegate-task%253Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "position": 0,
+      "chars": 3268,
+      "bytes": 3268,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "4a38e1a7c37a99f28b5d499c13a91f54c1a7a338375c677c49d89a987fc883a0"
+    },
+    {
+      "key": "dnsold",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:msg_00721d3881e2f388016adae2f3a6e881938b7a9c86c51c1fca",
+      "position": 2,
+      "chars": 206,
+      "bytes": 210,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "4d7fd690a941cabfa4ce54406b55ac65d16eae03572c6121d64de25fc429fd5c"
+    },
+    {
+      "key": "dnsold",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:msg_00721d3881e2f388016adae31ac5b08193bb065daa71a0da17",
+      "position": 14,
+      "chars": 292,
+      "bytes": 292,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "3060ddb1a9d525e959f68d8dfe687e4cfd77736e8e2b67e24c1709681388ebe2"
+    },
+    {
+      "key": "dnsold",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:msg_00721d3881e2f388016adae3a413608193aa0c6dd2ad33e2db",
+      "position": 24,
+      "chars": 280,
+      "bytes": 284,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "afaee718a7540ee000c722785551dbde0a7d57120c432bbc551cc87954e708db"
+    },
+    {
+      "key": "dnsold",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:msg_00721d3881e2f388016adae3f089448193b9aefdffeea2871c",
+      "position": 34,
+      "chars": 290,
+      "bytes": 290,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "59c983f8bf4b4e946cc6ba68373d798323141c6affc1cb705baf79c176b14066"
+    },
+    {
+      "key": "dnsold",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:msg_00721d3881e2f388016adae43b5c7081939ff9d2791d64a865",
+      "position": 40,
+      "chars": 255,
+      "bytes": 257,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "2640441d433500cfaa791936cb86ec081d5011aa56344a767f10e8b2376ea402"
+    },
+    {
+      "key": "dnsold",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:msg_00721d3881e2f388016adae469a0748193a49410677f164fc6",
+      "position": 45,
+      "chars": 321,
+      "bytes": 323,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "318c4782edf0c8d4a4b5967494e44f409097f929e19c59049158d51ee96620c1"
+    },
+    {
+      "key": "dnsold",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:msg_00721d3881e2f388016adae4cc122c8193aa11e6c95aa6ee89",
+      "position": 52,
+      "chars": 367,
+      "bytes": 367,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "4a7bda87585521a85eeac3bcd048017b58ac5f416c82ee639a13b5fa680463bb"
+    },
+    {
+      "key": "dnsold",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:msg_00721d3881e2f388016adae53d20a48193ac2f19f9add20941",
+      "position": 57,
+      "chars": 256,
+      "bytes": 258,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "b90851442530bbfaa7e6ad47ad07c97e1c0e06cb5a193d73f462a53e9065a7d4"
+    },
+    {
+      "key": "dnsold",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:msg_00721d3881e2f388016adae550523c819393ee111c7fc5d798",
+      "position": 63,
+      "chars": 967,
+      "bytes": 967,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "c26a4b5c3ddebd9d0912d7aebe586e224935ec9818c89a0daa5de3a2629a2ffd"
+    },
+    {
+      "key": "dnsold",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:message:message%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Athread-send%3Aoe-windows-os-refusal-window-followup-r2-20261022",
+      "position": 65,
+      "chars": 2645,
+      "bytes": 2645,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "06038779243ed3f2cc34f0a2b8b098d74b1a9f112243d64b3ed1e8882f131050"
+    },
+    {
+      "key": "dnsold",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:msg_00721d3881e2f388016adae5a2d16c8193b08bbaeccf923b99",
+      "position": 66,
+      "chars": 231,
+      "bytes": 235,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "d384069d54f43ddaad1e0f4668e7812b9afd0edde161f632aec723dcae7b5265"
+    },
+    {
+      "key": "boundedMessages2",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:message:message%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Athread-send%3Aoe-windows-startup-order-diagnosis-r2-20261023",
+      "position": 62,
+      "chars": 3515,
+      "bytes": 3515,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "c5808f18d13d16ba5b1a174d24d469aabcf60491b8739286895bf55da2834b24"
+    },
+    {
+      "key": "boundedMessages2",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_04d0a90d3005a95c016adb92219cac8194910cf5cb9138cbae",
+      "position": 63,
+      "chars": 234,
+      "bytes": 238,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "52882ffef1257417430c70d3740db1e4c9da5acbd1885e9fc2ae3efa89ca6335"
+    },
+    {
+      "key": "boundedMessages2",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_04d0a90d3005a95c016adb9257e61481949131f6c8b6c77799",
+      "position": 70,
+      "chars": 684,
+      "bytes": 688,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "576899afafd68986d2d947dd94531d5e7f33e5fa559abd36808d93527a7a352a"
+    },
+    {
+      "key": "boundedMessages2",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_04d0a90d3005a95c016adb92ce3a2081949ea6dc8e32bbf23f",
+      "position": 74,
+      "chars": 325,
+      "bytes": 325,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "c2bd4f128b5f6050d1ead32674ac674376189f770ff6893eccab9a1fce70545b"
+    },
+    {
+      "key": "boundedMessages2",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_04d0a90d3005a95c016adb93a67ff88194840ad5104fa2bde1",
+      "position": 85,
+      "chars": 332,
+      "bytes": 334,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "4d3996f67f447d47622f64ce2b17b396e924ed70ab6ba27ac964f3ed3b2d08f3"
+    },
+    {
+      "key": "boundedMessages2",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_04d0a90d3005a95c016adb945736b481949be5725755c824d5",
+      "position": 91,
+      "chars": 421,
+      "bytes": 429,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "49a5bb1d0ff4597c50f906aa161b8c992cc5695e236c65084c53622b5c15c643"
+    },
+    {
+      "key": "boundedMessages2",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_04d0a90d3005a95c016adb94e4b3e88194936d20097bbf87b9",
+      "position": 95,
+      "chars": 506,
+      "bytes": 508,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "d1893245c13a86b67189ec7d2c5d68bc43067d2734bcc2a6d15b6eb1eb25974d"
+    },
+    {
+      "key": "boundedMessages2",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:message:message%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Athread-send%3Aoe-windows-startup-r6-review-context-20261023",
+      "position": 98,
+      "chars": 1515,
+      "bytes": 1515,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "e62a03ac8c67a5ca6e7b915d80296bcf021dac01fb07be716d2864f61751d9ce"
+    },
+    {
+      "key": "boundedMessages2",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_04d0a90d3005a95c016adb956919448194b794d7ec3d09377d",
+      "position": 99,
+      "chars": 456,
+      "bytes": 458,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "01528b2002757fcd72465905bc50fb36338a74379418a061ef5d2fff26a4c60a"
+    },
+    {
+      "key": "boundedMessages2",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_04d0a90d3005a95c016adb9690ecc48194b2ac64addcb203c2",
+      "position": 105,
+      "chars": 445,
+      "bytes": 445,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "86f96d061f30917dba266b8e1cba0bee2796868e2220b7582dbaaeef43a91949"
+    },
+    {
+      "key": "boundedMessages2",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_04d0a90d3005a95c016adb97398994819498af2b28b635ef88",
+      "position": 109,
+      "chars": 291,
+      "bytes": 293,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "cc6a8ba3bea9d35323ee033ca80bfec3de560d21cd923a4dc3b847be08625870"
+    },
+    {
+      "key": "boundedMessages2",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_04d0a90d3005a95c016adb9752c364819492bcbd54d949cb6e",
+      "position": 111,
+      "chars": 922,
+      "bytes": 926,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "72f29bd8ba06875eaaf6dfea9cd41e5d90eb7903b1c08583604ce69e9616867d"
+    },
+    {
+      "key": "refusalSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:%5B%2201a16b2b-5de5-7f30-b721-6b0485482b59%22%2C%22rs_091d2ca51867ffdb016adbf2cca7f881909c93fe5763e0a6bf%22%2C%22summary%22%2C0%5D",
+      "position": 24,
+      "chars": 527,
+      "bytes": 531,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "58ca1c6f90906ceb584f4facdff7ff4034aa84581ce2e2d8a2383de9b80d891a"
+    },
+    {
+      "key": "refusalSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:%5B%2201a16b2b-5de5-7f30-b721-6b0485482b59%22%2C%22rs_091d2ca51867ffdb016adbf2cca7f881909c93fe5763e0a6bf%22%2C%22summary%22%2C1%5D",
+      "position": 25,
+      "chars": 568,
+      "bytes": 570,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "9f429e78c88181146cdf516fe0518083c1f04891c16701b90c4a76b6066cc2b3"
+    },
+    {
+      "key": "refusalSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-1acf3f03-ce92-479d-aeb0-3905315753fa",
+      "position": 26,
+      "chars": 5396,
+      "bytes": 5396,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "e5116e6f5d3743b38c27b89e60c16fa0df413c8335edd0e5bb125a60f283ddfa"
+    },
+    {
+      "key": "refusalSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:%5B%2201a16b2b-5de5-7f30-b721-6b0485482b59%22%2C%22rs_091d2ca51867ffdb016adbf2eef0008190912188834ccd55e4%22%2C%22summary%22%2C0%5D",
+      "position": 27,
+      "chars": 552,
+      "bytes": 558,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "b88a21933cd96cdc4a3ed16b3b5701fc194cf79903a619ae48ff47419b25420a"
+    },
+    {
+      "key": "refusalSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:%5B%2201a16b2b-5de5-7f30-b721-6b0485482b59%22%2C%22rs_091d2ca51867ffdb016adbf2eef0008190912188834ccd55e4%22%2C%22summary%22%2C1%5D",
+      "position": 28,
+      "chars": 561,
+      "bytes": 561,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "ae549ebe33f0036c7806d3ce2082b2ea90d33cfc6449d09fd808a7773f3e91bd"
+    },
+    {
+      "key": "refusalSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-360ae2c0-b52d-44b2-9752-966132fc06a7",
+      "position": 29,
+      "chars": 3257,
+      "bytes": 3257,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "dda4b1123fbd1ccf55dac401875e98a7a12bee23cd7c7443db36087cbd9d0095"
+    },
+    {
+      "key": "refusalSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:%5B%2201a16b2b-5de5-7f30-b721-6b0485482b59%22%2C%22rs_091d2ca51867ffdb016adbf3055ed08190ac1527cd634f90e3%22%2C%22summary%22%2C0%5D",
+      "position": 30,
+      "chars": 402,
+      "bytes": 402,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "cbfbb34751bf150a08812011e37cea1c68aaca76b5a40bcab30fee24080ada7b"
+    },
+    {
+      "key": "refusalSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_091d2ca51867ffdb016adbf30625d88190a542cb906259cbe1",
+      "position": 31,
+      "chars": 266,
+      "bytes": 266,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "58343acced2e6589b6b9d9c248026af50e44692aa9f2349bd101ecf4d9e57c31"
+    },
+    {
+      "key": "refusalSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-fd1353af-e03d-4a8a-ae5c-3f7628eb0e81",
+      "position": 32,
+      "chars": 11821,
+      "bytes": 11821,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "5d1dad1637b2e3970cb7e004b026132071e1600c6ae8e4e0c7bb36cc73ce3b0b"
+    },
+    {
+      "key": "refusalSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-4dc9bf60-50c9-4d61-af0f-b54335aa8306",
+      "position": 33,
+      "chars": 2911,
+      "bytes": 2911,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "bc8fb24d0ff8c6468efcc398a56a9bbee53547cb1eb74f0de65109dad9d3600a"
+    },
+    {
+      "key": "nativeTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-current-daemon-windows-stop-e2e-r1-e1ef124-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_0274a87efd1bc9aa016adc272c8620819688ef0f5e7bfed53f",
+      "position": 80,
+      "chars": 313,
+      "bytes": 315,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "811daafff79480c9b8183de5f249bc1c5464f093a22f7ed3826fd84b62f53294"
+    },
+    {
+      "key": "nativeTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-current-daemon-windows-stop-e2e-r1-e1ef124-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-2e0669b8-4241-428b-ae0e-33948da943a0",
+      "position": 81,
+      "chars": 2617,
+      "bytes": 2617,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "97d27337a2cb82b6e0ac2bf038cdb0d594123384033235d006b0246c435f7f43"
+    },
+    {
+      "key": "nativeTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-current-daemon-windows-stop-e2e-r1-e1ef124-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-962e483f-561b-4364-a187-ac05406e4f34",
+      "position": 82,
+      "chars": 4769,
+      "bytes": 4769,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "150229f3e63f6802bc0e67b9392512ccca75c653e1d3125a1302eaabe4cee467"
+    },
+    {
+      "key": "nativeTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-current-daemon-windows-stop-e2e-r1-e1ef124-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-89dc7539-b856-4b61-9982-459369944589",
+      "position": 83,
+      "chars": 1424,
+      "bytes": 1424,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "576ed19008c8e34ccb0e2656d8dc61832ccd1f9208257eed688a8d2d208905a8"
+    },
+    {
+      "key": "nativeTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-current-daemon-windows-stop-e2e-r1-e1ef124-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_0274a87efd1bc9aa016adc278ea99c819685f141d7958566d0",
+      "position": 84,
+      "chars": 467,
+      "bytes": 469,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "2c92d9ff31355453643b518ae4f24af02f000c122fdc60b559b9d5949cddc280"
+    },
+    {
+      "key": "nativeTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-current-daemon-windows-stop-e2e-r1-e1ef124-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-f523b40d-23c9-4c8e-a4e0-952b8a718b95",
+      "position": 85,
+      "chars": 3692,
+      "bytes": 3692,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "0ac647f9e2519879e894c2a3a51bc1dac532621e604fe41609ce3352d0fd98f2"
+    },
+    {
+      "key": "nativeTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-current-daemon-windows-stop-e2e-r1-e1ef124-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-611cf5a5-2373-4129-b70d-43b80db08633",
+      "position": 86,
+      "chars": 1840,
+      "bytes": 1840,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "7ee1d1440bf5ca42ffe650b7cd224315458e46a38c952a4ceb7916c59d410d7f"
+    },
+    {
+      "key": "nativeTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-current-daemon-windows-stop-e2e-r1-e1ef124-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-2dae0f3d-5f76-4a2e-a8c2-a57974348ff3",
+      "position": 87,
+      "chars": 2129,
+      "bytes": 2129,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "f036f490a77b7888d599311e0844851ee052c8df9fbbc7f26beaa9dbb75cbff3"
+    },
+    {
+      "key": "nativeTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-current-daemon-windows-stop-e2e-r1-e1ef124-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_0274a87efd1bc9aa016adc27df6c288196b341237ecc00bbb3",
+      "position": 88,
+      "chars": 372,
+      "bytes": 372,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "44f4ee62abf05351dc9c6a060f68201092162529734acd25e6bbe4f40ba0e0ee"
+    },
+    {
+      "key": "nativeTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-current-daemon-windows-stop-e2e-r1-e1ef124-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-34218989-b8ee-45f7-899a-67f42d2374c0",
+      "position": 89,
+      "chars": 2229,
+      "bytes": 2229,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "61f660b55e2e2b36b4f39732720b9e89bc7462a2dda9f956211e13412a7a7259"
+    },
+    {
+      "key": "nativeTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-current-daemon-windows-stop-e2e-r1-e1ef124-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-e019ab3c-a4f7-497a-8924-655cf167986c",
+      "position": 90,
+      "chars": 10317,
+      "bytes": 10317,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "a06eb8a46c7a1a27d4d3c2675dc96cde49d7070d5c3cf6eae52bd5eaf696681b"
+    },
+    {
+      "key": "nativeTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-current-daemon-windows-stop-e2e-r1-e1ef124-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-f48e9fae-1ffa-440e-b404-fcc0e2f584d7",
+      "position": 91,
+      "chars": 3443,
+      "bytes": 3443,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "f1d2c21dad13505f9862d6f4b36b44b63e17a7b128fd64ab15b08b00993c88a7"
+    },
+    {
+      "key": "nativeTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-current-daemon-windows-stop-e2e-r1-e1ef124-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-b40d6840-ab9f-40f4-a9e2-b924d6e5771d",
+      "position": 92,
+      "chars": 1201,
+      "bytes": 1201,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "5299c266fedf70056e26f4a275e4abddf60b1281e197134d14ee41008cbca060"
+    },
+    {
+      "key": "nativeTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-current-daemon-windows-stop-e2e-r1-e1ef124-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_0274a87efd1bc9aa016adc29e0c5048196906a564a3646b5a8",
+      "position": 93,
+      "chars": 304,
+      "bytes": 306,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "2f1c1ccd49ec5c9e925323e36e6df58c51919e40c879749b28eb8b86351bff7d"
+    },
+    {
+      "key": "nativeTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-current-daemon-windows-stop-e2e-r1-e1ef124-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-3c963937-42fa-4425-ae87-3b3e9dce14f6",
+      "position": 94,
+      "chars": 28230,
+      "bytes": 28230,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "7f5eba8a7c4f9c57e0d676031819a8a0f7cb2247846b549ab52b5e1f54aea8e2"
+    },
+    {
+      "key": "nativeTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-current-daemon-windows-stop-e2e-r1-e1ef124-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-17b133aa-0c0c-4faa-87da-c38a0efafe83",
+      "position": 95,
+      "chars": 1926,
+      "bytes": 1926,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "a19801d0da786a952947e18ec31dad74f4c80ad5fc0229879a5852f03219f150"
+    },
+    {
+      "key": "nativeTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-current-daemon-windows-stop-e2e-r1-e1ef124-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_0274a87efd1bc9aa016adc2a1e63c481968e4059e3daa9a118",
+      "position": 96,
+      "chars": 298,
+      "bytes": 300,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "1a866140056ab5a98113782f96efc2275e0b18356c0efe4655708e3823ef8702"
+    },
+    {
+      "key": "nativeTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-current-daemon-windows-stop-e2e-r1-e1ef124-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-b4e2a438-65e7-4d36-a48b-7af0a4cf4958",
+      "position": 97,
+      "chars": 5561,
+      "bytes": 5561,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "c161254d3d8bdec9445bf90a94e02cf30e749b95bd6f7ed213a03853dc5a2d71"
+    },
+    {
+      "key": "nativeTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-current-daemon-windows-stop-e2e-r1-e1ef124-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_0274a87efd1bc9aa016adc2a460b4481968667c1c27b39f34a",
+      "position": 98,
+      "chars": 692,
+      "bytes": 692,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "bd3722c8dac2aaa86dee13e7ceaea0c10985b76a4dc1f35c4eed2df66949b79f"
+    },
+    {
+      "key": "nativeTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-current-daemon-windows-stop-e2e-r1-e1ef124-20261023",
+      "itemId": "turn-item:provider:codex:native-item:checkpoint%3Acheckpoint%3Ascope%3Acheckpoint-scope%253Athread%253Athread%25253Adelegated-task%25253Acommand%2525253Amcp%2525253A3d97011f-0ffb-48d8-8535-12c0502d83cc%2525253Adelegate-task%2525253Aoe-current-daemon-windows-stop-e2e-r1-e1ef124-20261023%253Aname%253Aroot%3Aname%3A1",
+      "position": 99,
+      "chars": 37607,
+      "bytes": 37607,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "cc879f4c32f68e97747c65e4ec6c28cad3c1c85abfe6ffd8b7f581c8176f260f"
+    },
+    {
+      "key": "r12Tail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-reviewed-9a4ac2e-runtime-r12-8281eb7-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-46b7d805-2a25-44bf-a357-757a6ee10804",
+      "position": 40,
+      "chars": 558,
+      "bytes": 558,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "9b90b46096bc486d840db344542dab0b03f2b95d1341dc861eade0244a987658"
+    },
+    {
+      "key": "r12Tail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-reviewed-9a4ac2e-runtime-r12-8281eb7-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-c07712d5-b510-4857-b001-28ce02b12460",
+      "position": 41,
+      "chars": 1738,
+      "bytes": 1738,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "925c7e7ac22216b14ad8d642279284c6f38511c23c1935d8b45877fac2abce8c"
+    },
+    {
+      "key": "r12Tail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-reviewed-9a4ac2e-runtime-r12-8281eb7-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_044d76e4588a725c016adbef423ea881978a20d54f36995dd7",
+      "position": 42,
+      "chars": 254,
+      "bytes": 254,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "021aebd6403fd3e858b14f8e03fa23ed725cf074baac9825f616c03718e5c9df"
+    },
+    {
+      "key": "r12Tail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-reviewed-9a4ac2e-runtime-r12-8281eb7-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-b1cab1e9-aa52-4e7c-9227-1a90d17c7099",
+      "position": 43,
+      "chars": 6680,
+      "bytes": 6680,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "ce85876c25d0166d0e1ff29a965133b7a4f82248ef8b4635cef4c187d51016c8"
+    },
+    {
+      "key": "r12Tail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-reviewed-9a4ac2e-runtime-r12-8281eb7-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-166b9ed9-32e9-4fb4-8354-5604db24b028",
+      "position": 44,
+      "chars": 6415,
+      "bytes": 6415,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "214b68f16b5aad60b13d68c80d9ca69b673d6e6a7ed3ca9663899d3984680bf8"
+    },
+    {
+      "key": "r12Tail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-reviewed-9a4ac2e-runtime-r12-8281eb7-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-2e318438-741d-42da-b6f7-f5e54bd33c49",
+      "position": 45,
+      "chars": 1503,
+      "bytes": 1503,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "225788f7866910cd0f23dd288e7cadfc6e021c1009f39a8f11e6b3d5c6ebb714"
+    },
+    {
+      "key": "r12Tail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-reviewed-9a4ac2e-runtime-r12-8281eb7-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_044d76e4588a725c016adbef7f35d88197ba7703688a969d2f",
+      "position": 46,
+      "chars": 233,
+      "bytes": 233,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "8000b4b032c0663f72fc1d2b7eb32676cfb041a3ec4b45bf723e2aedf177ab74"
+    },
+    {
+      "key": "r12Tail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-reviewed-9a4ac2e-runtime-r12-8281eb7-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-1a9af3b3-924f-49e3-a8c1-df9689c75857",
+      "position": 47,
+      "chars": 7082,
+      "bytes": 7082,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "def08337940ea9f9228e96c73b96c68e660254dcebf5ed6aadf86284444209cc"
+    },
+    {
+      "key": "r12Tail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-reviewed-9a4ac2e-runtime-r12-8281eb7-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-633314ea-ee5f-4efa-a92e-f358c679b4f0",
+      "position": 48,
+      "chars": 380,
+      "bytes": 380,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "0c630ef0eca37b1d7159a0346045826f05b4e43efa788962ba23d9109bd36735"
+    },
+    {
+      "key": "r12Tail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-reviewed-9a4ac2e-runtime-r12-8281eb7-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-ef847e0f-883b-415f-90ab-fa8b8026ac91",
+      "position": 49,
+      "chars": 4428,
+      "bytes": 4428,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "6ad6bcac72bb4fb54b68968d44d8813b5eeb4b366fb9524c4f42f529ed0d6839"
+    },
+    {
+      "key": "boundedSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-13cbb96c-9c22-4d18-99f7-9b2663e2b09e",
+      "position": 12,
+      "chars": 16261,
+      "bytes": 16261,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "ab85c7a63df4ac53395417e7ac87eca5171554b3197392a59fd61a7c083bcb1e"
+    },
+    {
+      "key": "boundedSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-8e058939-c8f1-4f4f-b9cf-e68026c45c1f",
+      "position": 13,
+      "chars": 109,
+      "bytes": 109,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "e3e52fb9453d8a74bbd720196db359e8a3183bf01387bc06b9935f77df69bca3"
+    },
+    {
+      "key": "boundedSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-958dac60-7653-4950-8e4d-dd3b40c39ba1",
+      "position": 14,
+      "chars": 3891,
+      "bytes": 3891,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "7b7b8feccfbd583f163e0449d26f86fc68443c7cb2929fd588bfca5864e00cb9"
+    },
+    {
+      "key": "boundedSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:%5B%2201a169a2-abff-7003-9a30-88c34c88a8e8%22%2C%22rs_04d0a90d3005a95c016adb8e425f6c81948d9dce817bec86e8%22%2C%22summary%22%2C0%5D",
+      "position": 15,
+      "chars": 466,
+      "bytes": 472,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "39f925d8bfd8b90a5ee410d2d90455dd501d2715247ba090f936ce84fcb63d3d"
+    },
+    {
+      "key": "boundedSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-8a23347e-12ae-4caa-9653-a50d2af934bd",
+      "position": 16,
+      "chars": 5538,
+      "bytes": 5538,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "92077528fcb14403345d7ab4ff7064a2e242cc0a6c7660fc23215d0384957d86"
+    },
+    {
+      "key": "boundedSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-6f1239c2-8886-421c-bd60-d689961c427f",
+      "position": 17,
+      "chars": 13652,
+      "bytes": 13652,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "7964c17cf8026a556427627f724952d2fef108084a4986c595c8fba2b2c17340"
+    },
+    {
+      "key": "boundedSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:%5B%2201a169a2-abff-7003-9a30-88c34c88a8e8%22%2C%22rs_04d0a90d3005a95c016adb8e989fb88194b47596be856eeb7e%22%2C%22summary%22%2C0%5D",
+      "position": 18,
+      "chars": 396,
+      "bytes": 406,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "65781766aa5d8af8faf34f70c8ff75836af8f9b2ce44ca4f2d3a40285908893c"
+    },
+    {
+      "key": "boundedSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_04d0a90d3005a95c016adb8e9d53c4819489924199a88952f5",
+      "position": 19,
+      "chars": 277,
+      "bytes": 279,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "b94d5bf934844457bdfa61694262e3c52b24dc65be23dc6e53aac76b71f7de39"
+    },
+    {
+      "key": "boundedSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-e4c01b6b-4854-47a9-9992-591aaf86a97c",
+      "position": 20,
+      "chars": 1507,
+      "bytes": 1507,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "2e4c3853b41deaf5e9f6cad6261d5d09222956b32a27193357731965010f8d61"
+    },
+    {
+      "key": "boundedSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-4ee70a5d-f828-4445-babf-f97ce3f54212",
+      "position": 21,
+      "chars": 10885,
+      "bytes": 10885,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "0183a5d79db6c7c3f59b20e1ea5d208642c54f63996cd6d37538f1ddbce41a66"
+    },
+    {
+      "key": "dnsoldSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:exec-02b20cff-82fb-40b1-b85b-b0dc9aa33ef9",
+      "position": 15,
+      "chars": 1506,
+      "bytes": 1506,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "7498bef53d4e837ce00aa5a162228a792f554ed2cd0369b95a0bfd51aeff8536"
+    },
+    {
+      "key": "dnsoldSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:exec-7a99bd9f-20a5-4e9b-8f11-ab6331fa1518",
+      "position": 16,
+      "chars": 10096,
+      "bytes": 10096,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "74a3c0ef4a2f96fe19f10e3b5b2ed9c97060c17a226783a601bf074aaff68c40"
+    },
+    {
+      "key": "dnsoldSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:exec-a875d566-6d7f-4ea2-9e70-1d8938e5038c",
+      "position": 17,
+      "chars": 3219,
+      "bytes": 3219,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "71cee9b78034f51d0a6f61f2502349e5dda4fba563d89b631eda33be0ce6243a"
+    },
+    {
+      "key": "dnsoldSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:exec-3b9aa339-05be-4f42-a1db-9857f998afb0",
+      "position": 18,
+      "chars": 1804,
+      "bytes": 1804,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "2ff0e16357fe38f16201aa4f3c1c688ae0bbdb9fda34e2c423cd9fadf073cbb5"
+    },
+    {
+      "key": "dnsoldSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:exec-1bc25102-3581-4c64-9a74-c5f453ed8765",
+      "position": 19,
+      "chars": 10989,
+      "bytes": 10989,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "c621bd13ffa729fc0263967911dd80a8f5871d9b6bca51b57e2811a7c138b9f6"
+    },
+    {
+      "key": "dnsoldSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:exec-9e7c66b4-3c74-4392-87d4-d8d5c875adfc",
+      "position": 20,
+      "chars": 7641,
+      "bytes": 7641,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "c90a3cad6b20e79b068961b7d9df2f3af013fe70d2d112e27311ea4357cca733"
+    },
+    {
+      "key": "dnsoldSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:exec-174369d1-5bbe-4d35-8251-7508ede04a0e",
+      "position": 21,
+      "chars": 821,
+      "bytes": 821,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "86aad248e8c24e609838937d9fffbbccfd46b45911b3b3544ff872f194bf161b"
+    },
+    {
+      "key": "dnsoldSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:exec-2c751fe2-5e98-453e-9c37-bba1f4bd1d7e",
+      "position": 22,
+      "chars": 2086,
+      "bytes": 2086,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "505bab28bcb725a15c384632e51daa0a68a8abcb3e950e89382b71b4b1cee13e"
+    },
+    {
+      "key": "dnsoldSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:%5B%2201a16706-8133-79a3-9608-7a7551f6e070%22%2C%22rs_00721d3881e2f388016adae39accf0819391f8afca0beea5f6%22%2C%22summary%22%2C0%5D",
+      "position": 23,
+      "chars": 470,
+      "bytes": 472,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "4861f6b74e529099ee06eef93468df0126a57f456ff580d231cd3d665cd82913"
+    },
+    {
+      "key": "dnsoldSetup",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:msg_00721d3881e2f388016adae3a413608193aa0c6dd2ad33e2db",
+      "position": 24,
+      "chars": 280,
+      "bytes": 284,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "afaee718a7540ee000c722785551dbde0a7d57120c432bbc551cc87954e708db"
+    },
+    {
+      "key": "boundedObserved",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-f7dd40e9-fcb3-47cd-a5a7-478e67899857",
+      "position": 151,
+      "chars": 127,
+      "bytes": 127,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "5267a1dafa81ab454e203e944835279313942e9da0358269a494e25ca066b6db"
+    },
+    {
+      "key": "boundedObserved",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-1b8c43cd-6c15-4231-bd74-9321b0fc6cba",
+      "position": 152,
+      "chars": 5469,
+      "bytes": 5469,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "dbc85826e6ec3e46d065afe9401fc9287e531127af01f81af875b56a8049ccdf"
+    },
+    {
+      "key": "boundedObserved",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-c9b5b677-0c94-4653-9d40-4e63abb7abbd",
+      "position": 153,
+      "chars": 2417,
+      "bytes": 2417,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "27af7559ea494ae2a84ce6b714d5a12b561dd48e4436068d3ab16a9a185ef51e"
+    },
+    {
+      "key": "boundedObserved",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-a33aabf2-a04a-4fd1-a120-b643b7703f41",
+      "position": 154,
+      "chars": 437,
+      "bytes": 437,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "3ecf58fe23a504bb5c26b319db8424f488a85360889e967d48a48174dfda52fc"
+    },
+    {
+      "key": "boundedObserved",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-eef93264-945f-4440-987b-e1ee1f068e4c",
+      "position": 155,
+      "chars": 9621,
+      "bytes": 9621,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "a1ed196224e3bec786008f5b1d43cf22994de469ae61cc36e441e0fd1191dd4a"
+    },
+    {
+      "key": "boundedObserved",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-abf23f18-efe2-403b-8899-6dab6b6c562d",
+      "position": 156,
+      "chars": 2766,
+      "bytes": 2766,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "daaf2eeace1f696f99809145ab17df2c2f31bb74af03a60434d49954b03740a7"
+    },
+    {
+      "key": "boundedObserved",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-27b4f28f-c05f-4779-9df3-6962acb3ec9b",
+      "position": 157,
+      "chars": 1488,
+      "bytes": 1488,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "5b6241aaf7df765178545617ea99eb589998562c632c777e07f1d3197ed9c3f3"
+    },
+    {
+      "key": "boundedObserved",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_04d0a90d3005a95c016adba63c95d0819481d4d40782caf941",
+      "position": 158,
+      "chars": 256,
+      "bytes": 256,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "bbb1f425953df4b826daec47bfea813f45746a1e3227400a7156b95b3ccf9e6b"
+    },
+    {
+      "key": "boundedObserved",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-23f7013b-9107-4240-9c36-0b7929b1d71c",
+      "position": 159,
+      "chars": 7339,
+      "bytes": 7339,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "8ba026fada62134b58c5a71784f5b1ef9d7c39344c298e8063e9dcb1ea76cd49"
+    },
+    {
+      "key": "boundedObserved",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-49f1c1ed-9afd-464b-8121-deeb1e449613",
+      "position": 160,
+      "chars": 1531,
+      "bytes": 1531,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "94467f60fa80062496055a44b42e198244f1d97b9fede9359d4c4a847807d806"
+    },
+    {
+      "key": "boundedObserved",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_04d0a90d3005a95c016adba6a4b6b081949071bde1f0b86f35",
+      "position": 161,
+      "chars": 239,
+      "bytes": 241,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "a316a42f6f3a04b1f4737c5df40d2636a56b6133984fb8d77b3389d0c3c9931a"
+    },
+    {
+      "key": "boundedObserved",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-a615a237-a829-4b85-8c46-e5cc49497979",
+      "position": 162,
+      "chars": 516,
+      "bytes": 516,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "7e1cc47b0465a5d8731d6c50c279d92b8ecf240ad9a4bd51ad61bcd895db007c"
+    },
+    {
+      "key": "r6Tail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-idle-tls-native-build-cwd-repair-r6-4c98c28-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_0eef49e87963954d016adc0801a1348194b24243e51b9b99f5",
+      "position": 40,
+      "chars": 262,
+      "bytes": 262,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "ba0a515a519667c1a7509dcf9072a48860719b13de5f8ab1e7f177cb94c7d191"
+    },
+    {
+      "key": "r6Tail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-idle-tls-native-build-cwd-repair-r6-4c98c28-20261023",
+      "itemId": "turn-item:provider:codex:native-item:%5B%2201a16b7a-99b7-7e30-8478-63dc89398d84%22%2C%22rs_0eef49e87963954d016adc082b71108194a9c1e6275be23e1e%22%2C%22summary%22%2C0%5D",
+      "position": 41,
+      "chars": 452,
+      "bytes": 454,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "5c0c579b618d8c243dca07a93dfe5f53ab78e99fc9d245b6f420ead253805221"
+    },
+    {
+      "key": "r6Tail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-idle-tls-native-build-cwd-repair-r6-4c98c28-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_0eef49e87963954d016adc082f45508194b39be557ce2362ea",
+      "position": 42,
+      "chars": 310,
+      "bytes": 310,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "6cf53b91dcd7cb48c218a0a27881be74898d4b75cd21fa594ff5ed9ec9924ef9"
+    },
+    {
+      "key": "r6Tail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-idle-tls-native-build-cwd-repair-r6-4c98c28-20261023",
+      "itemId": "turn-item:provider:codex:native-item:%5B%2201a16b7a-99b7-7e30-8478-63dc89398d84%22%2C%22rs_0eef49e87963954d016adc082f585081948cd022c946f1fc04%22%2C%22summary%22%2C0%5D",
+      "position": 43,
+      "chars": 564,
+      "bytes": 564,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "e8552e3b36bda6a0fb0a2e21628edf5f3417ff992e07c29f417e3656ce49e4f0"
+    },
+    {
+      "key": "r6Tail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-idle-tls-native-build-cwd-repair-r6-4c98c28-20261023",
+      "itemId": "turn-item:provider:codex:native-item:%5B%2201a16b7a-99b7-7e30-8478-63dc89398d84%22%2C%22rs_0eef49e87963954d016adc082f585081948cd022c946f1fc04%22%2C%22summary%22%2C1%5D",
+      "position": 44,
+      "chars": 482,
+      "bytes": 482,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "4a60d33cfc19fea4153dbaaf6b46493a753838df02b1f31f89a3bda689042357"
+    },
+    {
+      "key": "r6Tail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-idle-tls-native-build-cwd-repair-r6-4c98c28-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-f3be2345-3176-4283-af54-89411ae01eb3",
+      "position": 45,
+      "chars": 2521,
+      "bytes": 2521,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "893d00ff0b4bf2c81959db1513e9db50bc5b16fcc3d8d8c1121ba09740ed9403"
+    },
+    {
+      "key": "r6Tail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-idle-tls-native-build-cwd-repair-r6-4c98c28-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-3ab63f1a-dd4d-4017-add9-52e4ecfcb59f",
+      "position": 46,
+      "chars": 7908,
+      "bytes": 7908,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "81d2f4a20e6c0446e472530f91d62864800472b47fe0f2ddf1dd84cc9f918e64"
+    },
+    {
+      "key": "r6Tail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-idle-tls-native-build-cwd-repair-r6-4c98c28-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-ceac29ae-92b9-4ead-97a7-efc80c797bda",
+      "position": 47,
+      "chars": 154,
+      "bytes": 154,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "415f4ea98be94d097ce4662629d9bebb33d9b98bc070ee3ca68764a29be9e276"
+    },
+    {
+      "key": "r6Tail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-idle-tls-native-build-cwd-repair-r6-4c98c28-20261023",
+      "itemId": "turn-item:provider:codex:native-item:%5B%2201a16b7a-99b7-7e30-8478-63dc89398d84%22%2C%22rs_0eef49e87963954d016adc086d1b888194853fec94481de5a7%22%2C%22summary%22%2C0%5D",
+      "position": 48,
+      "chars": 553,
+      "bytes": 555,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "9c0510d6a91570049cbb62bfa944a2d68e64127c1d0581d2d55e583c050a3a97"
+    },
+    {
+      "key": "r6Tail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A3d97011f-0ffb-48d8-8535-12c0502d83cc%3Adelegate-task%3Aoe-idle-tls-native-build-cwd-repair-r6-4c98c28-20261023",
+      "itemId": "turn-item:provider:codex:native-item:%5B%2201a16b7a-99b7-7e30-8478-63dc89398d84%22%2C%22rs_0eef49e87963954d016adc086d1b888194853fec94481de5a7%22%2C%22summary%22%2C1%5D",
+      "position": 49,
+      "chars": 546,
+      "bytes": 548,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "965e0ee2ac68859df93706476f3d0236b88838ae96c6534cdae1da03f596041a"
+    },
+    {
+      "key": "dnsoldDiag",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:exec-39414c74-a002-4032-ae9c-d1270f37c5f9",
+      "position": 67,
+      "chars": 10716,
+      "bytes": 10719,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "e5fc1142a228098fb95edf6afee0a57483a9e5f4760e9219cd6785c881c02985"
+    },
+    {
+      "key": "dnsoldDiag",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:exec-a9a1312d-fd46-4819-8b6c-bc3c823dec50",
+      "position": 68,
+      "chars": 353,
+      "bytes": 353,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "1691763df96ddcfdd2a20e53c9e1a83ec88b81ad63360220d18552cca26dead2"
+    },
+    {
+      "key": "dnsoldDiag",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:turn-plan%3A01a16710-fd9b-7a72-a4d6-f253a8beb9b4",
+      "position": 69,
+      "chars": 594,
+      "bytes": 594,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "ff2afb384e4ab84e4a3243ad298f9a6af9c9e27235e5aed3179b4062d7e5e3aa"
+    },
+    {
+      "key": "dnsoldDiag",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:msg_00721d3881e2f388016adae5c7f2ac8193a8a927fce14af7b7",
+      "position": 70,
+      "chars": 310,
+      "bytes": 314,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "3e3c00fbfe33e75f37567e14313dee974aabd0f4223321cef3467bee22782c7c"
+    },
+    {
+      "key": "dnsoldDiag",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:%5B%2201a16710-fd9b-7a72-a4d6-f253a8beb9b4%22%2C%22rs_00721d3881e2f388016adae5ddf29c819398d8c16930db8015%22%2C%22summary%22%2C0%5D",
+      "position": 71,
+      "chars": 482,
+      "bytes": 482,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "25fbb19ddaaaed4b5351b6af9387006765d884f4567559a3cd11d501019fe066"
+    },
+    {
+      "key": "dnsoldDiag",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:exec-f9b6c461-96cc-47c8-9a56-74ef5b579875",
+      "position": 72,
+      "chars": 647,
+      "bytes": 647,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "39db90c3691b23a6b713b1858143b0fdd3fd131be7eea7bc48073964bf0a0e6e"
+    },
+    {
+      "key": "dnsoldDiag",
+      "threadId": "thread:delegated-task:command%3Amcp%3Ab786be6e-beeb-49a5-b4a7-a8d29d93b772%3Adelegate-task%3Aoe-windows-dns-readiness-07adb0a-r1-20261022",
+      "itemId": "turn-item:provider:codex:native-item:exec-8c06af45-8163-48b3-ad38-e70629829581",
+      "position": 73,
+      "chars": 4218,
+      "bytes": 4218,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "1192f3e58e3e162720f0ae6c98289a4b0e1e8b58c5328a92fc2d7b923ce05ade"
+    },
+    {
+      "key": "boundedOwned",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-d27b6116-45f0-407b-a4d2-cf993e350235",
+      "position": 116,
+      "chars": 12152,
+      "bytes": 12152,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "76fd4b33b19a473bcc2440bcd653ecea54ab00b3719bcd7d5c6e75ae3659a811"
+    },
+    {
+      "key": "boundedOwned",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:turn-plan%3A01a169dd-d88c-7a63-967f-b9318a9fd4c9",
+      "position": 117,
+      "chars": 310,
+      "bytes": 310,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "ceca0c68e696345e117f9a327897a210eb26e64944927b151c386c83039113c4"
+    },
+    {
+      "key": "boundedOwned",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-1a19969e-7acb-4bbd-89b0-7a95a6f5a7de",
+      "position": 118,
+      "chars": 5548,
+      "bytes": 5548,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "bda54406ebf42316511590e7838d05495c238bfbe4b645c0becb3115d744aa4f"
+    },
+    {
+      "key": "boundedOwned",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_04d0a90d3005a95c016adb9e388b70819485257927762f5bc9",
+      "position": 119,
+      "chars": 412,
+      "bytes": 418,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "d5ac99db11f98ce887867a82da678bdda973d2b019d2ac3705eb24fbc66e11d7"
+    },
+    {
+      "key": "boundedOwned",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-d2234b8c-a7c3-4d8e-979c-a9925d426eac",
+      "position": 120,
+      "chars": 7255,
+      "bytes": 7255,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "a5b1f21d3e47d71edafe2650dd354a570a6edcd05966fc34fae98b1513aec545"
+    },
+    {
+      "key": "boundedOwned",
+      "threadId": "thread:delegated-task:command%3Amcp%3A5e046180-d7f7-4401-a1e1-166b62262ea5%3Adelegate-task%3Aoe-windows-bounded-discovery-e4f48ba-r1-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-1aa24099-45e3-4a72-953f-bdce5e346a27",
+      "position": 121,
+      "chars": 14289,
+      "bytes": 14289,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "1308b2c203ec9b70a0983be1bd65e9ada99346fd3eea6f9e5667df892cd5a505"
+    },
+    {
+      "key": "refusalTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-65b1e8c5-3d04-4646-bc8a-7a845454d5d9",
+      "position": 63,
+      "chars": 2495,
+      "bytes": 2495,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "c770cec8f970bdf96c2f8f8c984781bdc090ad2ccc75b4dac21cdd98d2cdc42c"
+    },
+    {
+      "key": "refusalTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-af41d266-5e96-49d0-9296-86588c339970",
+      "position": 64,
+      "chars": 13235,
+      "bytes": 13235,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "95c86851cb1b1b266c90e1131757b9add0087a04485d2ffc9ce9a2e90b843249"
+    },
+    {
+      "key": "refusalTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-403ae1cf-a401-431d-95bd-99a7b881e737",
+      "position": 65,
+      "chars": 785,
+      "bytes": 785,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "60b96c9824f6e5a36b6257b879cf0fa48f4b73ae16d4664ef387b2b372acfeda"
+    },
+    {
+      "key": "refusalTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:%5B%2201a16b2b-5de5-7f30-b721-6b0485482b59%22%2C%22rs_091d2ca51867ffdb016adbf59641388190a5010cffdf25d5b4%22%2C%22summary%22%2C0%5D",
+      "position": 66,
+      "chars": 379,
+      "bytes": 381,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "55379aa17fe301a7cae848da51e421b27edc4bf3c235c33f4e58f56b3f6850bd"
+    },
+    {
+      "key": "refusalTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-0b69fe42-4dd6-4f0f-90b1-dfd2317874fe",
+      "position": 67,
+      "chars": 7118,
+      "bytes": 7118,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "7a535b946e3e5393bf2a7f8c0d31179413229cdd76642dd5a83a41ba8c84d9c9"
+    },
+    {
+      "key": "refusalTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:%5B%2201a16b2b-5de5-7f30-b721-6b0485482b59%22%2C%22rs_091d2ca51867ffdb016adbf59c1a6c8190af40fb9da588bbed%22%2C%22summary%22%2C0%5D",
+      "position": 68,
+      "chars": 512,
+      "bytes": 514,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "dd4e9bfa9d77ea51e405a1870d582275d2ae4a194a88f119c3b58fd54fd8979d"
+    },
+    {
+      "key": "refusalTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-3ba7f8db-e367-40ab-9402-342b124f0eba",
+      "position": 69,
+      "chars": 10929,
+      "bytes": 10929,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "fffc8a60586540cade6dace21611a3f41de46010eefca406148a21b46cef5ae7"
+    },
+    {
+      "key": "refusalTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:exec-a6dd73c3-7854-458d-bc1e-c5c8c9dfc8b2",
+      "position": 70,
+      "chars": 227,
+      "bytes": 227,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "25654eb38e641ab1b702c849e7993e43eaf579b97f6f4b6a24b689356494e6a9"
+    },
+    {
+      "key": "refusalTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:msg_091d2ca51867ffdb016adbf5b5cc648190a13c139242022796",
+      "position": 71,
+      "chars": 503,
+      "bytes": 505,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "8eaec6a2a408e062d0d405d3a81a79eb2debfdc0eb308d59aa18e2542408654d"
+    },
+    {
+      "key": "refusalTail",
+      "threadId": "thread:delegated-task:command%3Amcp%3A39c449e5-b45e-42f0-9401-545a2c771c11%3Adelegate-task%3Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023",
+      "itemId": "turn-item:provider:codex:native-item:checkpoint%3Acheckpoint%3Ascope%3Acheckpoint-scope%253Athread%253Athread%25253Adelegated-task%25253Acommand%2525253Amcp%2525253A39c449e5-b45e-42f0-9401-545a2c771c11%2525253Adelegate-task%2525253Aoe-windows-dns-matching-refusal-negative-r14-d47f6a3-20261023%253Aname%253Aroot%3Aname%3A1",
+      "position": 72,
+      "chars": 14495,
+      "bytes": 14495,
+      "truncated": false,
+      "offset": 0,
+      "text_sha256": "153591958d757d43f1f829f52d2ac451bf067729e023c82b288655eb5c74587e"
+    }
+  ],
+  "raw_item_text_included": false,
+  "private_pointer_provenance": [
+    {
+      "itemId": "turn-item:provider:codex:native-item:exec-1acf3f03-ce92-479d-aeb0-3905315753fa",
+      "position": 26,
+      "key": "refusalSetup",
+      "location_sha256": "50ce8ebfbeea5d374425b6071c72cd216a082ccaabfee2bed446f244670dcf8e"
+    },
+    {
+      "itemId": "turn-item:provider:codex:native-item:exec-1acf3f03-ce92-479d-aeb0-3905315753fa",
+      "position": 26,
+      "key": "refusalSetup",
+      "location_sha256": "64408daea80aefd80f46ad61a4dceb48c89676f04d9788b70f5e44dbbd1a01c8"
+    },
+    {
+      "itemId": "turn-item:provider:codex:native-item:exec-360ae2c0-b52d-44b2-9752-966132fc06a7",
+      "position": 29,
+      "key": "refusalSetup",
+      "location_sha256": "64408daea80aefd80f46ad61a4dceb48c89676f04d9788b70f5e44dbbd1a01c8"
+    },
+    {
+      "itemId": "turn-item:provider:codex:native-item:exec-fd1353af-e03d-4a8a-ae5c-3f7628eb0e81",
+      "position": 32,
+      "key": "refusalSetup",
+      "location_sha256": "64408daea80aefd80f46ad61a4dceb48c89676f04d9788b70f5e44dbbd1a01c8"
+    },
+    {
+      "itemId": "turn-item:provider:codex:native-item:exec-4dc9bf60-50c9-4d61-af0f-b54335aa8306",
+      "position": 33,
+      "key": "refusalSetup",
+      "location_sha256": "64408daea80aefd80f46ad61a4dceb48c89676f04d9788b70f5e44dbbd1a01c8"
+    },
+    {
+      "itemId": "turn-item:provider:codex:native-item:exec-c07712d5-b510-4857-b001-28ce02b12460",
+      "position": 41,
+      "key": "r12Tail",
+      "location_sha256": "50ce8ebfbeea5d374425b6071c72cd216a082ccaabfee2bed446f244670dcf8e"
+    },
+    {
+      "itemId": "turn-item:provider:codex:native-item:exec-2e318438-741d-42da-b6f7-f5e54bd33c49",
+      "position": 45,
+      "key": "r12Tail",
+      "location_sha256": "50ce8ebfbeea5d374425b6071c72cd216a082ccaabfee2bed446f244670dcf8e"
+    },
+    {
+      "itemId": "turn-item:provider:codex:native-item:exec-1a9af3b3-924f-49e3-a8c1-df9689c75857",
+      "position": 47,
+      "key": "r12Tail",
+      "location_sha256": "50ce8ebfbeea5d374425b6071c72cd216a082ccaabfee2bed446f244670dcf8e"
+    },
+    {
+      "itemId": "turn-item:provider:codex:native-item:exec-633314ea-ee5f-4efa-a92e-f358c679b4f0",
+      "position": 48,
+      "key": "r12Tail",
+      "location_sha256": "50ce8ebfbeea5d374425b6071c72cd216a082ccaabfee2bed446f244670dcf8e"
+    },
+    {
+      "itemId": "turn-item:provider:codex:native-item:exec-ef847e0f-883b-415f-90ab-fa8b8026ac91",
+      "position": 49,
+      "key": "r12Tail",
+      "location_sha256": "50ce8ebfbeea5d374425b6071c72cd216a082ccaabfee2bed446f244670dcf8e"
+    },
+    {
+      "itemId": "turn-item:provider:codex:native-item:exec-02b20cff-82fb-40b1-b85b-b0dc9aa33ef9",
+      "position": 15,
+      "key": "dnsoldSetup",
+      "location_sha256": "de480c82e64d7bd9f6136243abaa4d37bf489923d77009a69167da8e0e244b03"
+    },
+    {
+      "itemId": "turn-item:provider:codex:native-item:exec-7a99bd9f-20a5-4e9b-8f11-ab6331fa1518",
+      "position": 16,
+      "key": "dnsoldSetup",
+      "location_sha256": "de480c82e64d7bd9f6136243abaa4d37bf489923d77009a69167da8e0e244b03"
+    },
+    {
+      "itemId": "turn-item:provider:codex:native-item:exec-7a99bd9f-20a5-4e9b-8f11-ab6331fa1518",
+      "position": 16,
+      "key": "dnsoldSetup",
+      "location_sha256": "de480c82e64d7bd9f6136243abaa4d37bf489923d77009a69167da8e0e244b03"
+    },
+    {
+      "itemId": "turn-item:provider:codex:native-item:exec-7a99bd9f-20a5-4e9b-8f11-ab6331fa1518",
+      "position": 16,
+      "key": "dnsoldSetup",
+      "location_sha256": "de480c82e64d7bd9f6136243abaa4d37bf489923d77009a69167da8e0e244b03"
+    },
+    {
+      "itemId": "turn-item:provider:codex:native-item:exec-a875d566-6d7f-4ea2-9e70-1d8938e5038c",
+      "position": 17,
+      "key": "dnsoldSetup",
+      "location_sha256": "de480c82e64d7bd9f6136243abaa4d37bf489923d77009a69167da8e0e244b03"
+    },
+    {
+      "itemId": "turn-item:provider:codex:native-item:exec-3b9aa339-05be-4f42-a1db-9857f998afb0",
+      "position": 18,
+      "key": "dnsoldSetup",
+      "location_sha256": "de480c82e64d7bd9f6136243abaa4d37bf489923d77009a69167da8e0e244b03"
+    },
+    {
+      "itemId": "turn-item:provider:codex:native-item:exec-1bc25102-3581-4c64-9a74-c5f453ed8765",
+      "position": 19,
+      "key": "dnsoldSetup",
+      "location_sha256": "de480c82e64d7bd9f6136243abaa4d37bf489923d77009a69167da8e0e244b03"
+    },
+    {
+      "itemId": "turn-item:provider:codex:native-item:exec-9e7c66b4-3c74-4392-87d4-d8d5c875adfc",
+      "position": 20,
+      "key": "dnsoldSetup",
+      "location_sha256": "de480c82e64d7bd9f6136243abaa4d37bf489923d77009a69167da8e0e244b03"
+    },
+    {
+      "itemId": "turn-item:provider:codex:native-item:exec-2c751fe2-5e98-453e-9c37-bba1f4bd1d7e",
+      "position": 22,
+      "key": "dnsoldSetup",
+      "location_sha256": "de480c82e64d7bd9f6136243abaa4d37bf489923d77009a69167da8e0e244b03"
+    },
+    {
+      "itemId": "turn-item:provider:codex:native-item:exec-1b8c43cd-6c15-4231-bd74-9321b0fc6cba",
+      "position": 152,
+      "key": "boundedObserved",
+      "location_sha256": "52d61e12be00a18f85a301fd6f07a4d605b59b49019f90e7a85624e27e0b98ee"
+    },
+    {
+      "itemId": "turn-item:provider:codex:native-item:exec-1b8c43cd-6c15-4231-bd74-9321b0fc6cba",
+      "position": 152,
+      "key": "boundedObserved",
+      "location_sha256": "8239e62be59b323778b1cb0e9d376d4e3ebcca0720d3fbb9e3a59e3b39e6e48d"
+    },
+    {
+      "itemId": "turn-item:provider:codex:native-item:exec-1b8c43cd-6c15-4231-bd74-9321b0fc6cba",
+      "position": 152,
+      "key": "boundedObserved",
+      "location_sha256": "ea14afd280bceffd7b04f6f38f006e953fe1e598e45731b09c6019339fb5259b"
+    }
+  ]
+}

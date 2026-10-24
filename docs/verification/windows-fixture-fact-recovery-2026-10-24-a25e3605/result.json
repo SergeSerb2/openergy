@@ -1,0 +1,128 @@
+{
+  "schema": "openergy.windows-fixture-facts.bounded-recovery.v1",
+  "recorded_at": "2026-10-24T10:55:07-07:00",
+  "base_commit": "a2a83194efbab6559aacb30def21b8b9890027c3",
+  "status": "BOUNDED_ITEM_BUDGET_EXHAUSTED_NO_QUALIFIED_SELECTION",
+  "execution": false,
+  "runtime": "UNVERIFIED",
+  "qualified_binding_count": 0,
+  "required_binding_count": 9,
+  "ordered_bindings": [
+    {
+      "label": "e4f48ba-original",
+      "status": "MISSING_PROVEN_LABEL_TO_TEMP_RELATIVE"
+    },
+    {
+      "label": "startup-diagnosis",
+      "status": "MISSING_PROVEN_LABEL_TO_TEMP_RELATIVE"
+    },
+    {
+      "label": "owned-cleanup-dfa405c",
+      "status": "MISSING_PROVEN_LABEL_TO_TEMP_RELATIVE"
+    },
+    {
+      "label": "observed-startup-e6a9125",
+      "status": "MISSING_PROVEN_LABEL_TO_TEMP_RELATIVE"
+    },
+    {
+      "label": "historical-dns-remote",
+      "status": "MISSING_PROVEN_LABEL_TO_TEMP_RELATIVE"
+    },
+    {
+      "label": "historical-dns-diag_remote",
+      "status": "MISSING_PROVEN_LABEL_TO_TEMP_RELATIVE"
+    },
+    {
+      "label": "stopped-dns-8333a48",
+      "status": "MISSING_PROVEN_LABEL_TO_TEMP_RELATIVE"
+    },
+    {
+      "label": "prior-exact-r12-8281eb7",
+      "status": "MISSING_PROVEN_LABEL_TO_TEMP_RELATIVE"
+    },
+    {
+      "label": "historical-refusal-615c16e1",
+      "status": "MISSING_PROVEN_LABEL_TO_TEMP_RELATIVE"
+    }
+  ],
+  "unqualified_exact_root_observations": 1,
+  "unqualified_root_sha256": "5ba1bba41a06191f230c98ac3ce4464ce65081e27d48ca7a55042cd61384a6a6",
+  "unqualified_reason": [
+    "Required exact label association is not established by the inspected data.",
+    "Historical setup joins LOCALAPPDATA and a private component; its original TEMP relationship is not established.",
+    "A repeated frozen-root value in the diagnosis thread does not recover diag_remote."
+  ],
+  "baseline_selection_created": false,
+  "partial_private_data_file": "partial-fixture-facts.json",
+  "private_root_relative": "fixture-facts-20261024-a25e3605",
+  "private_files": [
+    {
+      "file": "partial-fixture-facts.json",
+      "bytes": 1805,
+      "sha256": "c6106ae4fa154f00e660596bd0cd5b32bd9e5e5f26334eeadf4ab43c7368d3a1"
+    },
+    {
+      "file": "provenance-journal.json",
+      "bytes": 91127,
+      "sha256": "4ee4c6c860c133b297af81d5992048a882c60a72540a86d282f5676e5a76b97a"
+    },
+    {
+      "file": "hash-receipt.json",
+      "bytes": 865,
+      "sha256": "36066e75534b932480926817355f80df4065daad1f7a7964a76ba7f12def0f7d"
+    },
+    {
+      "file": "exact-location-checks.json",
+      "bytes": 319,
+      "sha256": "c29aa57889891d85086db3894957c7e66fec1e10468e745f9b60c978e01800cf"
+    },
+    {
+      "file": "named-data-checks.json",
+      "bytes": 945,
+      "sha256": "c97eb9e3faffbf84b917bb36d64acc476a9472c7dd0ac53f07ea29a5cb27c200"
+    }
+  ],
+  "limits": {
+    "relevant_threads": 8,
+    "new_item_retrievals": 160,
+    "bytes_per_item_text": 1048576,
+    "explicit_file_git_bytes": 33554432,
+    "exact_locations": 64
+  },
+  "usage": {
+    "relevant_threads_read": 6,
+    "charged_item_retrievals": 160,
+    "unique_items": 155,
+    "duplicate_retrievals_charged": 5,
+    "item_text_bytes": 446627,
+    "max_single_item_text_bytes": 37607,
+    "truncated_items": 0,
+    "continuation_fetches": 0,
+    "conservative_explicit_file_git_bytes_charge": 2097152,
+    "conservative_exact_location_charge": 48,
+    "private_named_locations_checked": 6,
+    "private_named_locations_present": 0
+  },
+  "parent_read_boundaries_repeated": false,
+  "broad_scan_or_remote_fallback": false,
+  "historical_commands_replayed": false,
+  "no_selector_config_credentials_or_keys_inspected": true,
+  "no_current_state_inferred": true,
+  "preservation": {
+    "all_preexisting_tracked_files_unchanged": true,
+    "native_parent_tree": "e96bfbeeceb2958e5468ec963788fba5b2b0511f",
+    "native_parent_tree_listing_sha256": "7f1ffcd4cbac1d0ea5c3ef6f4cfb3155d48bf72e6a964e418358017a9155c898",
+    "native_parent_tracked_files": 179,
+    "native_count_note": "The current parent contains 179 tracked files in this package. All remain unchanged; the inherited 178-file evidence and guards were not edited."
+  },
+  "proof_limits": [
+    "Historical thread text is documentary data only.",
+    "Lexical JSON/path checks are not a host or filesystem check.",
+    "No supplied source/module/helper/checker/AST was imported, evaluated, compiled or run.",
+    "No build, native/API/DNS/bind/preflight/fixture creation, SSH or remote query ran.",
+    "The seven-source runtime adapter remains inert and under separate review.",
+    "Old FAILED / UNVERIFIED evidence and stopped gates remain unchanged.",
+    "The expired closed Sparkle one-shot was not retried or renewed.",
+    "Item-budget exhaustion does not prove that no other historical record exists."
+  ]
+}
