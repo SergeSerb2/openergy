@@ -1,0 +1,23 @@
+{
+  "pid": 39920,
+  "parent_pid": 19505,
+  "uid": 501,
+  "before": 0,
+  "requested_absolute_ni": 15,
+  "wrappers": [],
+  "after": 15,
+  "ps": {
+    "argv": [
+      "/bin/ps",
+      "-p",
+      "39920",
+      "-o",
+      "pid=,ppid=,pgid=,uid=,ni=,state=,comm="
+    ],
+    "cwd": "/private/tmp/oe-idle-r2-c57ae290-qypkpvud",
+    "exit": 0,
+    "elapsed_seconds": 0.005205375000000005,
+    "stdout": "39920 19505 39920   501 15 SNs  /Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/Resources/Python.app/Contents/MacOS/Python\n",
+    "stderr": ""
+  }
+}

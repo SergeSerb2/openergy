@@ -1,0 +1,29 @@
+IPC → {"params":{},"id":1,"method":"events.subscribe"}
+IPC → {"id":2,"params":{},"method":"status.get"}
+IPC → {"id":3,"params":{},"method":"config.get"}
+IPC → {"id":4,"params":{},"method":"discovery.list"}
+IPC → {"method":"trust.list","params":{},"id":5}
+PASS  connect — link=connected daemon=0.1.0 pid=46934
+PASS  starts from safe off config — role=off remote=
+IDLE begin 0.613584
+IPC → {"id":6,"params":{"patch":{"tls":{"enabled":true}}},"method":"config.patch"}
+IPC → {"method":"status.get","id":7,"params":{}}
+IPC → {"id":8,"params":{},"method":"config.get"}
+IPC → {"method":"discovery.list","id":9,"params":{}}
+IPC → {"method":"trust.list","id":10,"params":{}}
+IDLE check 105.88275
+IPC → {"method":"config.patch","id":11,"params":{"patch":{"client":{"autoconnect":true,"remote":"127.0.0.1:55021"},"role":"client"}}}
+IPC → {"method":"connection.connect","id":12,"params":{}}
+IPC → {"id":13,"params":{},"method":"status.get"}
+IPC → {"method":"config.get","id":14,"params":{}}
+IPC → {"id":15,"params":{},"method":"discovery.list"}
+IPC → {"id":16,"method":"trust.list","params":{}}
+IPC → {"method":"status.get","id":17,"params":{}}
+IDLE check 316.643917
+IPC → {"id":18,"params":{"fingerprint":"FA:CA:C6:1D:E8:B3:9E:5D:F6:55:62:36:0E:92:16:7A:B5:8A:83:FE:B6:37:57:6F:BD:B1:19:A2:99:A6:88:6E"},"method":"trust.approve"}
+IPC → {"method":"status.get","params":{},"id":19}
+IPC → {"method":"config.get","id":20,"params":{}}
+IPC → {"id":21,"params":{},"method":"discovery.list"}
+IPC → {"id":22,"method":"trust.list","params":{}}
+IDLE check 3368.088417
+E2E FAILED

@@ -1,0 +1,23 @@
+{
+  "app": "/private/tmp/oe-idle-r2-c57ae290-qypkpvud/Openergy.app/Contents/MacOS/Openergy",
+  "app_sha256": "3f7e1c10c3f81125d75b6ddc26d463f5a5e20c93c5a2c50f0da743e00d3d353a",
+  "daemon": "/private/tmp/oe-idle-r2-c57ae290-qypkpvud/openergy-daemon",
+  "daemon_sha256": "350db4541b95f67b8a295419d71933eb4832d07de37881c781664d212a29d572",
+  "compiled_sha256": "165a438ee06ef1a959ba78e63c101c54faa321232e43e681ec5185bb150b6213",
+  "bundle_sign": {
+    "argv": [
+      "/usr/bin/codesign",
+      "--force",
+      "--sign",
+      "-",
+      "/private/tmp/oe-idle-r2-c57ae290-qypkpvud/Openergy.app"
+    ],
+    "cwd": "/private/tmp/oe-idle-r2-c57ae290-qypkpvud",
+    "exit": 0,
+    "elapsed_seconds": 0.04237520899999936,
+    "stdout": "",
+    "stderr": "/private/tmp/oe-idle-r2-c57ae290-qypkpvud/Openergy.app: replacing existing signature\n"
+  },
+  "cached_inputs_unchanged_after_build": true,
+  "compiler_inventory_after_build": []
+}

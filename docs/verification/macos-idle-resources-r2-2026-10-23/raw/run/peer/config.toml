@@ -1,0 +1,18 @@
+version = 1
+role = "server"
+name = "idle-peer-c57ae290-r2"
+[server]
+listen = "127.0.0.1:55021"
+port = 55021
+[client]
+remote = ""
+autoconnect = false
+[tls]
+enabled = true
+require_client_trust = false
+[[screen]]
+name = "idle-peer-c57ae290-r2"
+rect = { x = 0, y = 0, w = 1920, h = 1080 }
+[[screen]]
+name = "app"
+rect = { x = 1920, y = 0, w = 1920, h = 1080 }

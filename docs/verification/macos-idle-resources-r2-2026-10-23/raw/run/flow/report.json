@@ -1,0 +1,27 @@
+[
+  {
+    "detail" : "link=connected daemon=0.1.0 pid=46934",
+    "name" : "connect",
+    "passed" : true
+  },
+  {
+    "detail" : "role=off remote=",
+    "name" : "starts from safe off config",
+    "passed" : true
+  },
+  {
+    "detail" : "state=idle peers=0",
+    "name" : "private TLS enabled",
+    "passed" : true
+  },
+  {
+    "detail" : "state=connecting peers=0",
+    "name" : "owned peer public fingerprint matches pending trust",
+    "passed" : true
+  },
+  {
+    "detail" : "state=connected peers=1",
+    "name" : "real trusted peer and supervised virtual daemon ready",
+    "passed" : false
+  }
+]

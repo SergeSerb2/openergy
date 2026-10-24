@@ -1,0 +1,17 @@
+{
+  "phase": "archive documentation only, after runtime completion",
+  "changes_applied": false,
+  "runtime_attempts_added": 0,
+  "failures": [
+    {
+      "tool": "apply_patch",
+      "error": "apply_patch verification failed: Failed to find expected lines",
+      "expected_line": "No later probe replaces this first result."
+    },
+    {
+      "tool": "apply_patch",
+      "error": "apply_patch verification failed: Failed to find expected lines",
+      "expected_line": "The three provider-stopped workstreams were not resumed."
+    }
+  ]
+}

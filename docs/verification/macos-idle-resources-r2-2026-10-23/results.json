@@ -1,0 +1,211 @@
+{
+  "status": "UNVERIFIED",
+  "reason": "The single new flow failed the full trusted-readiness predicate before baseline. Strict peer-port rebind also failed.",
+  "source_parent": "5a9783738c5b649844805e1614da7ea37cfbf2bb",
+  "old_evidence_commit": "e31213ef8edf4979a2487a692114071b97c4c200",
+  "old_evidence_directory": "docs/verification/macos-idle-resources-2026-10-23",
+  "owned_directory": "docs/verification/macos-idle-resources-r2-2026-10-23",
+  "private_root": "/private/tmp/oe-idle-r2-c57ae290-qypkpvud",
+  "new_runtime_source_identity": {
+    "controller_sha256": "3ee701ac3f02b9013ca9d5a556dfc7c705eb7c143667ee984cee3818982112b6",
+    "overlay_sha256": "d053fa6e8e993d53321e584b5a55216e400050f0577341a7ee34aed9e2e46c24",
+    "controller_repair_patch_sha256": "7c2d4f48a0cc7ffce627ce16396b9b4c7be4358800ceb09730e7b0ac6022cc31",
+    "matches_runtime_entry": true
+  },
+  "attempts": {
+    "private_whole_app_build": 1,
+    "actual_runtime": 1,
+    "runtime_retries": 0,
+    "cleanup_port_rebind_retries": 0,
+    "prebuild_local_extraction_failure": 1
+  },
+  "build": {
+    "exit": 0,
+    "controller_elapsed_seconds": 36.81486,
+    "compiler_reported_elapsed_seconds": 33.2,
+    "jobs": 2,
+    "macos_deployment_target": "15.0",
+    "swift_version": "Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1)\nTarget: arm64-apple-macosx27.2.0",
+    "rust_version_check": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+    "rust_rebuild": false,
+    "automatic_dependency_resolution": false,
+    "dependency_cache_files": 768,
+    "historical_cache_mismatches": [],
+    "source_input_count": 456,
+    "unchanged_reference_input_count": 455,
+    "reference_input_differences": [
+      "apps/macos/Sources/Openergy/App/AppEndToEnd.swift"
+    ],
+    "changed_private_app_inputs": [
+      "apps/macos/Sources/Openergy/App/AppEndToEnd.swift"
+    ],
+    "compiler_sample_target_seconds": 0.5,
+    "compiler_effective_ni_claim": "Owned driver and recorded direct compiler children observed at NI 15. The all-compiler inventory also includes NI 0 processes; complete ancestry was not recorded."
+  },
+  "artifacts": {
+    "signed_app_sha256": "3f7e1c10c3f81125d75b6ddc26d463f5a5e20c93c5a2c50f0da743e00d3d353a",
+    "compiled_app_sha256": "165a438ee06ef1a959ba78e63c101c54faa321232e43e681ec5185bb150b6213",
+    "copied_daemon_sha256": "350db4541b95f67b8a295419d71933eb4832d07de37881c781664d212a29d572"
+  },
+  "launcher_repair": {
+    "relative_nice_wrappers": 0,
+    "controller_absolute_ni": 15,
+    "controller_ni_before": 0,
+    "controller_ni_after": 15,
+    "observed_owned_identities": [
+      {
+        "pid": 46929,
+        "ppid": 46926,
+        "pgid": 46929,
+        "uid": 501,
+        "path": "/private/tmp/oe-idle-r2-c57ae290-qypkpvud/openergy-daemon",
+        "ni": 15,
+        "state": "SNs",
+        "lstart": "Fri Oct 23 17:47:38 2026",
+        "role": "peer",
+        "exec_barrier_elapsed_seconds": 0.004242208000000004,
+        "observations": 1
+      },
+      {
+        "pid": 46932,
+        "ppid": 46926,
+        "pgid": 46932,
+        "uid": 501,
+        "path": "/private/tmp/oe-idle-r2-c57ae290-qypkpvud/Openergy.app/Contents/MacOS/Openergy",
+        "ni": 15,
+        "state": "SNs",
+        "lstart": "Fri Oct 23 17:47:38 2026",
+        "role": "app",
+        "exec_barrier_elapsed_seconds": 0.004256707999999998,
+        "observations": 1
+      },
+      {
+        "pid": 46934,
+        "ppid": 46932,
+        "pgid": 46934,
+        "uid": 501,
+        "path": "/private/tmp/oe-idle-r2-c57ae290-qypkpvud/openergy-daemon",
+        "ni": 15,
+        "state": "UN",
+        "lstart": "Fri Oct 23 17:47:38 2026",
+        "role": "daemon",
+        "exec_barrier_elapsed_seconds": 0.007254582999999926,
+        "observations": 1
+      }
+    ],
+    "max_exec_wait_seconds": 3,
+    "launcher_transient_observed": false,
+    "transient_allowance_validation": "source review only; not exercised in actual flow",
+    "sampling_requires_exact_identities_and_trusted_connection": true
+  },
+  "runtime": {
+    "controller_exit": 1,
+    "app_exit": 1,
+    "peer_exit": 0,
+    "daemon_exit": "not independently collected",
+    "runtime_wall_elapsed_seconds": 4.734243583,
+    "public_requests": {
+      "app_requests": 22,
+      "cli_requests": 1,
+      "total_public_requests": 23,
+      "steady_idle_app_requests": null,
+      "methods": {
+        "config.get": 4,
+        "config.patch": 2,
+        "connection.connect": 1,
+        "discovery.list": 4,
+        "events.subscribe": 1,
+        "status.get": 5,
+        "trust.approve": 1,
+        "trust.list": 4
+      },
+      "largest_app_request_utf8_bytes": 157
+    },
+    "peer_literal_endpoint": "127.0.0.1:55021",
+    "app_private_host_literal_endpoint": "127.0.0.1:55022",
+    "virtual_platform": true,
+    "discovery_disabled_in_environment": true,
+    "failed_app_step": {
+      "detail": "state=connected peers=1",
+      "name": "real trusted peer and supervised virtual daemon ready",
+      "passed": false
+    },
+    "predicate_failure_subcondition": "UNKNOWN: no final status/config/trust snapshot was saved",
+    "tls_transport_log_evidence": "Both owned daemons logged TLSv1_3 connection establishment. This is not full readiness acceptance.",
+    "os_samples": 0,
+    "trusted_ready_marker": false,
+    "steady_phase": false,
+    "recovery_flow": false
+  },
+  "sampling_contract": {
+    "target_period_seconds": 1,
+    "timestamp": "batch start, time.monotonic and Unix wall ms; sequential per-process reads; batch duration recorded when sampling runs",
+    "monotonic_clock_resolution_seconds": 4.166666666666667e-08,
+    "cpu_counter": "libproc proc_pid_rusage v0 user_time + system_time",
+    "cpu_storage_unit": "integer ns",
+    "cpu_effective_os_resolution": "UNVERIFIED",
+    "ps_cumulative_cpu_display_resolution_seconds": 0.01,
+    "compiler_activity_during_runtime": "UNMEASURED: readiness-gated sampler never ran",
+    "resource_metrics": "UNVERIFIED: no accepted samples"
+  },
+  "cleanup": {
+    "passed": false,
+    "process_cleanup_elapsed_seconds": 4.591248417,
+    "owned_pids_gone": true,
+    "owned_groups_gone": true,
+    "private_ipc_sockets_absent": true,
+    "new_private_tls_removed": true,
+    "peer_port_55021_exclusive_rebind": false,
+    "peer_port_failure": "OSError: [Errno 48] Address already in use",
+    "peer_port_lsof_record": "UNAVAILABLE: executed controller replaced the lsof result with the bind-failure dict",
+    "peer_port_failure_cause": "UNVERIFIED; no TIME_WAIT or release claim",
+    "host_port_55022_exclusive_rebind": true,
+    "sigkill_observed": false
+  },
+  "preservation": {
+    "production_source_input_mismatches": [],
+    "historical_dependency_cache_mismatches": [],
+    "old_private_fixture_mismatches": [],
+    "old_committed_evidence_mismatches": [],
+    "old_os_samples_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "old_os_samples_result": "UNVERIFIED; empty, unchanged",
+    "new_os_samples_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "original_first_failure_sha256": "77e070d1a5cbc1b0f1561bc2a92f151004c260e89455876003d98d76e6f2b3b9",
+    "new_first_runtime_failure_sha256": "cfdca7ce7ca9a9b0a564e19e4c5f97603c7d716a14c8acc7e7d2d6da4f656f44"
+  },
+  "claims": {
+    "openergy_defect_inferred": false,
+    "cpu_idle": false,
+    "resource_bound": false,
+    "memory_bound": false,
+    "speedup": false,
+    "complete_cleanup": false,
+    "complete_end_to_end_acceptance": false
+  },
+  "not_performed": [
+    "unit tests",
+    "mocks",
+    "computer use or UI automation",
+    "further delegation",
+    "production code or config changes",
+    "installed app changes",
+    "default IPC or service changes",
+    "forbidden port fixtures",
+    "global dependencies or Docker",
+    "push or publication",
+    "Cloudflare changes",
+    "provider-stopped workstreams"
+  ],
+  "raw_records_manifest": "raw-records.json",
+  "raw_records_manifest_sha256": "218ca68da8d2896da497e090e8b18f18ae4b8df1df39e5393d051915b9f27cfa",
+  "resume_reconciliation": {
+    "file": "resume-reconciliation.json",
+    "sha256": "00c4f0dd271f215730f5437bd7a2bc1a358e9bbaeb34a4dfe801a9b811350007",
+    "known_pids_absent": true,
+    "owned_groups_absent": true,
+    "new_builds": 0,
+    "new_runtime_attempts": 0,
+    "port_rebind_rechecks": 0,
+    "first_cleanup_result_replaced": false
+  }
+}
