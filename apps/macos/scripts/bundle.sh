@@ -10,6 +10,7 @@ APP_SRC="$ROOT/apps/macos"
 export PATH="$HOME/.cargo/bin:$PATH"
 export CARGO_BUILD_JOBS=2
 PYTHON="${PYTHON:-python3}"
+owned() { "$PYTHON" "$ROOT/tools/release/priority.py" -- "$@"; }
 [[ "$(uname -s)" == "Darwin" ]] || { echo "bundle.sh requires macOS" >&2; exit 1; }
 # Validate signing intent and public updates before any builds or destination changes.
 SPARKLE_TOOL="$ROOT/tools/release/sparkle.py"
@@ -44,7 +45,7 @@ DAEMON_BINS=()
 for arch in "${ARCHS[@]}"; do
   target="aarch64-apple-darwin"
   [[ "$arch" == "x86_64" ]] && target="x86_64-apple-darwin"
-  (cd "$ROOT" && nice -n 15 cargo build --release --locked --bin openergy --target "$target")
+  (cd "$ROOT" && owned cargo build --release --locked --bin openergy --target "$target")
   DAEMON_BINS+=("$TARGET_DIR/$target/release/openergy")
 done
 
@@ -55,8 +56,8 @@ SWIFT_SCRATCH_PATH="${SWIFT_SCRATCH_PATH:-$APP_SRC/.build}"
 mkdir -p "$SWIFT_SCRATCH_PATH"
 SWIFT_SCRATCH_PATH="$(cd "$SWIFT_SCRATCH_PATH" && pwd -P)"
 SWIFT_FLAGS=(--scratch-path "$SWIFT_SCRATCH_PATH" -c release --jobs 2 --disable-automatic-resolution "${SWIFT_ARCH_FLAGS[@]}")
-(cd "$APP_SRC" && nice -n 15 swift build "${SWIFT_FLAGS[@]}")
-APP_BIN="$(cd "$APP_SRC" && swift build "${SWIFT_FLAGS[@]}" --show-bin-path)/Openergy"
+(cd "$APP_SRC" && owned swift build "${SWIFT_FLAGS[@]}")
+APP_BIN="$(cd "$APP_SRC" && owned swift build "${SWIFT_FLAGS[@]}" --show-bin-path)/Openergy"
 
 step "Assembling the bundle"
 # Helpers avoids an Openergy/openergy collision on case-insensitive volumes.
@@ -77,7 +78,7 @@ for name in LICENSE-MIT LICENSE-APACHE THIRD_PARTY_NOTICES.md; do
   fi
 done
 ICONSET="$WORK/AppIcon.iconset"
-nice -n 15 swift "$APP_SRC/scripts/make-icon.swift" "$ICONSET" >/dev/null
+owned swift "$APP_SRC/scripts/make-icon.swift" "$ICONSET" >/dev/null
 iconutil -c icns "$ICONSET" -o "$STAGED_APP/Contents/Resources/AppIcon.icns"
 "$PYTHON" "$SPARKLE_TOOL" configure-plist --template "$APP_SRC/Support/Info.plist" \
   --output "$STAGED_APP/Contents/Info.plist" --version "$VERSION" --build "$BUILD_NUMBER"
@@ -98,7 +99,7 @@ mkdir -p "$WORK/check/tls"
 DAEMON_VERSION="$(OPENERGY_CONFIG="$WORK/check/config.toml" OPENERGY_CONFIG_DIR="$WORK/check" \
   OPENERGY_SOCKET="$WORK/check/control.sock" OPENERGY_TLS_DIR="$WORK/check/tls" \
   OPENERGY_ALLOW_PORT_24800=0 OPENERGY_DISABLE_DISCOVERY=1 \
-  "$STAGED_APP/Contents/Helpers/openergy" version)"
+  owned "$STAGED_APP/Contents/Helpers/openergy" version)"
 [[ "$DAEMON_VERSION" == "openergy $VERSION" ]] || { echo "Bundled daemon version mismatch" >&2; exit 1; }
 mv "$STAGED_APP" "$APP"
 if [[ "$IDENTITY" == "-" ]]; then

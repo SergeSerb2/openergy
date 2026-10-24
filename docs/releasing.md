@@ -123,6 +123,11 @@ SDKs, ad-hoc signatures, or binaries from different checkout paths produce
 identical bytes. The manifest records compiler versions and macOS Xcode/SDK
 versions. Record the OS version too when reviewing a release.
 
+Owned Unix release commands set and verify absolute nice 15. Nested packaging,
+build and signing calls retain that value. If the calling process already has
+a lower scheduling priority and cannot set nice 15, the command refuses before
+executing its payload. Windows keeps its separate priority policy.
+
 Packaging refuses to overwrite an existing artifact. Use a fresh output
 directory. Temporary icon files, staged bundles, and extracted checks are
 removed on success or error. Cargo and Swift build caches stay in their normal

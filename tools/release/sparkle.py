@@ -30,7 +30,8 @@ FRAMEWORK = Path("Sparkle.xcframework/macos-arm64_x86_64/Sparkle.framework")
 
 def run(*args, sensitive=False):
     # Tool diagnostics can include malformed private-key contents. Never relay them.
-    result = subprocess.run(["nice", "-n", "15", *map(str, args)], capture_output=True,
+    result = subprocess.run([sys.executable, str(ROOT / "tools/release/priority.py"),
+                             "--", *map(str, args)], capture_output=True,
                             text=True, timeout=600, stdin=subprocess.DEVNULL)
     if result.returncode:
         detail = "" if sensitive else ": " + (result.stderr or result.stdout).strip()[:2000]

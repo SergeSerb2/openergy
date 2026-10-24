@@ -41,9 +41,9 @@ def run(args, *, capture=False, env=None, check=True, timeout=1800, binary=False
     args = [str(a) for a in args]
     if not capture:
         print("+ " + " ".join(args), flush=True)
-    # Inherit this priority for every compiler and owned daemon on Unix.
+    # Nested release tools must retain absolute nice 15 instead of adding to it.
     if os.name != "nt":
-        args = ["nice", "-n", "15", *args]
+        args = [sys.executable, ROOT / "tools/release/priority.py", "--", *args]
     return subprocess.run(args, cwd=ROOT, env=env, text=not binary, check=check,
                           capture_output=capture, timeout=timeout)
 
@@ -167,7 +167,7 @@ def smoke(binary, port_range):
             command = [str(binary), "daemon", "--platform", "virtual", "--config", str(config),
                        "--socket", str(socket), "--foreground"]
             if os.name != "nt":
-                command = ["nice", "-n", "15", *command]
+                command = [sys.executable, ROOT / "tools/release/priority.py", "--", *command]
             process = subprocess.Popen(command, cwd=ROOT, env=env, stdin=subprocess.DEVNULL,
                                        stdout=log, stderr=log)
             try:
