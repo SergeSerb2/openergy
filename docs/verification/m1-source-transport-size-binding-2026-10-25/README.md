@@ -1,0 +1,11 @@
+# SOURCE metadata transport size binding
+
+Static byte accounting found that the caller summary cannot pass directly through the proposed local transport. A deliberately incomplete successful 50-command result has **209116 bytes**, above the fixed **131,072-byte stdout cap**. This is a source/data bound, not a measured runtime result.
+
+The lower-bound shape retains the required labels, argv strings, raw record references, publication states and duplicate positions from `perform`, `direct_children` and the final result. It sets all referenced byte lengths to zero and uses fixed 64-character digest strings. It omits auxiliary commands, most process/status/timing fields and outer result fields. The full candidate result must include more data. It uses the exact 50 vector file and current bound M1 evidence/bundle paths. The serialized compact sorted ASCII JSON includes its final newline. [size-bound.json](size-bound.json) binds the inputs and computed bytes. [minimum-shape.json](minimum-shape.json) retains the exact reduced shape as data.
+
+The earlier exploratory calculation included stream references in the retained pre-publication collector-status copy. That overcounted that position. This retained calculation removes them there; the cap mismatch still holds. No conclusion depends on the exploratory number.
+
+Keep the transport caps unchanged. A separate bounded SOURCE launcher must capture the full caller output on the M1, retain it as exclusive initial evidence before ledger initialization, and emit a small receipt with exact raw references. Its actual caller-exit observation, output capture and publication must all fit the original shared 120-second phase. The local transport still needs its independent actual exit observation inside its original 135-second envelope. Full result references alone cannot grant native or artifact acceptance.
+
+The new SOURCE payload task is separate implementation and review work. This data report provides no payload, binding, execution permission or runtime acceptance. COPY publication remains a separate reserved-writer integration duty. No old evidence, source qualification, guard or acceptance predicate was changed. No candidate/helper or native command ran; no unit tests or mocks were used. All FAILED/UNKNOWN and runtime/whole-flow NI15 UNVERIFIED states remain preserved.

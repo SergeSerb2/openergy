@@ -1,0 +1,15 @@
+{
+  "analysis": "static JSON byte accounting only; no supplied code executed and no system behavior modeled",
+  "direct_passthrough_admissible": false,
+  "execution": false,
+  "minimum_excess_bytes": 78044,
+  "minimum_serialized_bytes": 209116,
+  "minimum_shape_sha256": "b0b8fc94cf7b1c44fc31128aee173e192798cb552726d8909c422c1170b50c13",
+  "native_records": 50,
+  "omitted": "all auxiliary commands, most status and timing fields, outer result fields, direct-child stream refs and all nonzero byte lengths",
+  "runtime": "UNVERIFIED",
+  "schema": "openergy.static-metadata-summary-lower-bound.v1",
+  "source_caller_sha256": "464ab85baebf47e3b373463768e9abb2001d39dd181b4e2a790e1868d2b90597",
+  "transport_stdout_cap": 131072,
+  "vectors_sha256": "e3ff5756ab3b35a5c815e50ac1fad6520117836e080849260de87592bd327fa0"
+}
