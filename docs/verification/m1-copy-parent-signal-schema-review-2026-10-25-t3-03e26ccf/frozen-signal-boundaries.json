@@ -1,0 +1,85 @@
+{
+  "execution": false,
+  "patterns": [
+    {
+      "path": "docs/verification/m1-metadata-r9-repair-2026-10-25-t3-9b2c2354/metadata-caller.py.txt",
+      "source": {
+        "bytes": 46908,
+        "sha256": "01623cd4759f96cd0066a9456a2680bff476bc37b5b1acb61ec40388582a5e9f"
+      },
+      "call_line": 484,
+      "call": "proc.kill()",
+      "declaration": {
+        "name": "collect",
+        "start": 408,
+        "end": 528,
+        "bytes": 6427,
+        "sha256": "504f5f75a7228dd37c6b3dc6a55f2d6cdd32222d36c812c58cd2ae70ab722bf6"
+      },
+      "context": {
+        "start": 470,
+        "end": 493,
+        "text": "    finally:\n        if proc is not None:\n            try:\n                with until(deadline):\n                    kill_eligibility_exit = proc.poll()\n                    try:\n                        kill_eligibility_observed_ns = clock_ns()\n                    finally:\n                        # A real poll exit remains reaped even if the clock raises.\n                        if kill_eligibility_exit is not None:\n                            reaped = True\n                    if kill_eligibility_exit is None:\n                        if kill_eligibility_observed_ns < deadline and kill_eligibility_observed_ns < phase_deadline:\n                            kill_attempted = True\n                            proc.kill()  # Only this retained, unreaped direct child.\n                            kill_delivered = True\n                        else:\n                            timed_out = deadline_loss = True\n                    proc.wait(timeout=remaining(deadline))\n                    reaped = True\n            except Exception as exc:\n                kill_error = type(exc).__name__ + ': ' + str(exc)[:1024]\n                deadline_loss = True\n            # No drain pass after failure; unread bytes remain explicitly unknown.\n",
+        "bytes": 1233,
+        "sha256": "0e798a2b3a51ac1f182801e332196f5e64e6c9ed868d12eda8458178db551b27"
+      },
+      "changed": false,
+      "new_failure_path_clearance": false,
+      "limit": "Same public Popen.kill wrapper can poll/skip; no dependency patch or full fresh dependency review; historical successful data unchanged"
+    },
+    {
+      "path": "docs/verification/m1-source-stdin-payload-kill-gate-repair-2026-10-25-t3-da89534d/source-payload.py.txt",
+      "source": {
+        "bytes": 37775,
+        "sha256": "8d7844a20ce347b7be52c07a516b8d9136bdb5c067e450bea24eb3453441afa6"
+      },
+      "call_line": 515,
+      "call": "proc.kill()",
+      "declaration": {
+        "name": "collect",
+        "start": 438,
+        "end": 549,
+        "bytes": 6348,
+        "sha256": "1c5c67d0cbb061573921e5291c1cde20eaaa5bc2f484e5e8df1c8b7a57b16d21"
+      },
+      "context": {
+        "start": 500,
+        "end": 525,
+        "text": "            status['timed_out'] = True\n    finally:\n        if proc is not None and not status['reaped']:\n            try:\n                with until(reap_end):\n                    code = proc.poll()\n                    observed_ns = observe_exit(proc, status, code)\n                    status['kill_eligibility_exit'] = code\n                    status['kill_eligibility_observed_ns'] = observed_ns\n                    if code is None:\n                        if not (observed_ns < reap_end and observed_ns < end):\n                            status['timed_out'] = True\n                            status['unread_or_dropped_unknown'] = True\n                            raise TimeoutError('late KILL eligibility poll; no signal')\n                        status['kill_attempted'] = True\n                        proc.kill()  # Retained direct SYSTEM caller ONLY; no group/PID sweep.\n                        status['kill_delivered'] = True\n                        code = proc.wait(timeout=remaining(reap_end))\n                        observe_exit(proc, status, code)\n            except BaseException as exc:\n                status['kill_or_reap_error'] = type(exc).__name__\n                latch(status, 'kill_or_reap', exc)\n        if proc is not None:\n            for name in ('stdout', 'stderr'):\n                stream = getattr(proc, name)\n                if stream is not None:\n",
+        "bytes": 1380,
+        "sha256": "05b86d7d2e3454891248b34a5d12f466c33697a8d72c2594b3747a8ee049f0cd"
+      },
+      "changed": false,
+      "new_failure_path_clearance": false,
+      "limit": "Same public Popen.kill wrapper can poll/skip; no dependency patch or full fresh dependency review; historical successful data unchanged"
+    },
+    {
+      "path": "docs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/transport-collector.py.txt",
+      "source": {
+        "bytes": 28060,
+        "sha256": "695dc01461b31e04eb7b8c4a12848350f26a45731f05b0ddca971c05749e4df6"
+      },
+      "call_line": 427,
+      "call": "self.process.kill()",
+      "declaration": {
+        "name": "settle",
+        "start": 402,
+        "end": 449,
+        "bytes": 2294,
+        "sha256": "9707be347e3b36b120659e6ef278a3f87bc171e3a4d7fc9d8f00c86a82c7fcef"
+      },
+      "context": {
+        "start": 403,
+        "end": 446,
+        "text": "        self.settle_stop_ns = min(self.settle_end, time.monotonic_ns() + 2 * SECOND)\n        self.observe_exit()\n        if time.monotonic_ns() >= self.settle_stop_ns:\n            self.timeout = True\n            self.fail(\"settle_deadline\", \"settle\")\n        if self.process is None or self.actual_exit is not None:\n            return\n        if self.first_failure is None:\n            self.fail(\"unreaped_transport\", \"settle\")\n        # Only this retained local SSH handle. poll() rechecks before kill().\n        eligible = (self.timeout or any(item[\"overflow\"] for item in self.streams.values())\n                    or time.monotonic_ns() >= self.work)\n        if eligible and time.monotonic_ns() < self.settle_stop_ns:\n            code = self.process.poll()\n            observed = time.monotonic_ns()  # Immediately after the eligibility poll.\n            if code is not None:\n                self.actual_exit = code\n                self.exit_observed_ns = observed\n                if code != 0:\n                    self.fail(\"ssh_exit_nonzero\", \"poll\")\n            elif observed < self.settle_stop_ns and observed < self.absolute:\n                self.kill[\"attempted\"] = True\n                self.kill[\"observed_ns\"] = observed\n                try:\n                    self.process.kill()\n                    self.kill[\"returned\"] = True\n                except OSError:\n                    pass\n            else:\n                self.timeout = True\n                self.fail(\"settle_deadline\", \"settle\")\n        self.observe_exit()\n        remaining = (self.settle_stop_ns - time.monotonic_ns()) / SECOND\n        if self.actual_exit is None and remaining > 0:\n            try:\n                code = self.process.wait(timeout=remaining)\n                observed = time.monotonic_ns()  # BEFORE any receipt writes.\n                self.actual_exit = code\n                self.exit_observed_ns = observed\n                if code != 0:\n                    self.fail(\"ssh_exit_nonzero\", \"wait\")\n            except subprocess.TimeoutExpired:\n                self.timeout = True\n                self.fail(\"ssh_reap_timeout\", \"settle\")\n",
+        "bytes": 2134,
+        "sha256": "ed76553c9f9b230933dbfd622fd792971e16b6652487e17e9b2231288becebb0"
+      },
+      "changed": false,
+      "new_failure_path_clearance": false,
+      "limit": "Same public Popen.kill wrapper can poll/skip; no dependency patch or full fresh dependency review; historical successful data unchanged"
+    }
+  ],
+  "composition_status": "PENDING; frozen matching Popen.kill failure patterns are not repaired or newly cleared by this COPY review",
+  "root_local_CPython315_audit": "Reported in task brief; no new local collector source or runtime clearance inferred"
+}
