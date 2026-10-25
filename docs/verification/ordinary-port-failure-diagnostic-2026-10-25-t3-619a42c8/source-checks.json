@@ -1,0 +1,83 @@
+{
+  "added_functions": [
+    "port_diagnostic.query",
+    "port_diagnostic.socket_rows"
+  ],
+  "changed_existing_functions": [
+    "Controller.port"
+  ],
+  "execution": false,
+  "python_files": {
+    "common.py": {
+      "bytes": 11655,
+      "lines": 298,
+      "sha256": "8bcb99e34baef85ef021c558d6f2b8882376cb27f598ba08726710bf4e161a2d"
+    },
+    "controller.py": {
+      "bytes": 34078,
+      "lines": 574,
+      "sha256": "b542f9841d42fd5d7e67e405699b408f1d440a103b675bb79b97c9c87e1e7104"
+    },
+    "exec_owned.py": {
+      "bytes": 2219,
+      "lines": 46,
+      "sha256": "e7d9a755eed1fadfd04b43b3b96dbd0663cabdf07cc5aa7808ce006183859af2"
+    },
+    "macproc.py": {
+      "bytes": 8075,
+      "lines": 190,
+      "sha256": "d4f6fe358bd9af786fc4c2cba61f1a47f3f4015c918aae85cf8e6aa1c6d3e6c7"
+    },
+    "ownership.py": {
+      "bytes": 31900,
+      "lines": 533,
+      "sha256": "ef5400c711fc80f24a9cbf0d8cf0bc31ff2f237b6820a3ea7d0f8aba4d9a1a4a"
+    },
+    "port_diagnostic.py": {
+      "bytes": 10096,
+      "lines": 186,
+      "sha256": "9d35bf1adbde9209562d9b4cfa211b75574a0fb1922dc0297761880c2d6d3985"
+    },
+    "prepare.py": {
+      "bytes": 11632,
+      "lines": 160,
+      "sha256": "16f2c5d9dce3f3bce8a871bd53eea06ebf1818080de5f9bdaae3997b86304e9a"
+    },
+    "probe.py": {
+      "bytes": 699,
+      "lines": 21,
+      "sha256": "d65d17246bbd9057576e32454014b00afed6988dfead7899251435302a651efd"
+    },
+    "watchdog.py": {
+      "bytes": 18563,
+      "lines": 353,
+      "sha256": "b8ee8f6c7a9036f0e263301858996a62aece617bbcc11146540cf08c867b0e8f"
+    }
+  },
+  "schema": "openergy.port-diagnostic.source-bindings.v1",
+  "unchanged_controller_functions": [
+    "__init__",
+    "drain",
+    "collect",
+    "abort",
+    "request_cleanup",
+    "observe",
+    "tick",
+    "launch",
+    "_launch",
+    "cli",
+    "flow",
+    "_flow",
+    "cleanup",
+    "run"
+  ],
+  "unchanged_m1_modules": [
+    "common.py",
+    "exec_owned.py",
+    "macproc.py",
+    "ownership.py",
+    "prepare.py",
+    "probe.py",
+    "watchdog.py"
+  ]
+}

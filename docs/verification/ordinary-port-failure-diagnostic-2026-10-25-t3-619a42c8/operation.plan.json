@@ -1,0 +1,77 @@
+{
+  "base_commit": "b221d9807cbc4c3db5a30f2114399ce20942dcf1",
+  "bind_attempts_per_declared_port_per_phase": 1,
+  "cause": "UNKNOWN",
+  "declared_ports": [
+    65431,
+    65432
+  ],
+  "evidence_charge_class": "regular; critical=false; existing byte ledger and double charge",
+  "execution": false,
+  "extra_queries_max": 1,
+  "extra_query_argv": [
+    "/usr/sbin/netstat",
+    "-AanW",
+    "-p",
+    "tcp"
+  ],
+  "extra_query_max_seconds": 0.5,
+  "future_parent_steps": [
+    "Independently review exact source delta and composed priority repair; this package was checked independently of that other delta.",
+    "Materialize the exact eight M1 admission modules plus this patch as data into a separately owned future package. Bind all nine hashes in source-checks.json.",
+    "Retain unchanged limits and establish qualified fresh inputs under the parent existing scope. Do not reopen or copy the old failed runtime.",
+    "Keep execution=false unless the parent existing authorization covers a concrete fresh operation. This package grants no runtime authority or retry.",
+    "If a future authorized full flow reaches EADDRINUSE, publish the first failure, attempt at most one same-budget diagnostic, then rethrow the original failure.",
+    "Collect/retain only the bounded private failure packet and existing terminal evidence; do not infer cause or fill missing archival gates."
+  ],
+  "helper_cleanup": "retained unreaped direct netstat child only; existing kill/reap policy; no PID/group/product signals",
+  "historical_attempt_reopened": false,
+  "historical_attempt_status": "FAILED_NOT_ACCEPTED",
+  "incomplete_on": [
+    "insufficient existing time",
+    "spawn/read/reap error",
+    "timeout",
+    "unreaped direct helper",
+    "nonzero or unknown query exit",
+    "missing EOF",
+    "output cap",
+    "row cap or clipping",
+    "unsupported output or flags",
+    "missing header or decode error",
+    "record byte cap",
+    "publication failure"
+  ],
+  "minimum_query_budget_seconds": 0.05,
+  "must_preserve": [
+    "first exception and first FAILED bind",
+    "original pre-bind snapshots",
+    "no second port after first exception",
+    "all product predicates",
+    "NI15 and sample limits",
+    "cleanup and terminal reserves",
+    "source/artifact qualification",
+    "app-first peer ordering",
+    "ownership journal and exit ledgers",
+    "all historical failures"
+  ],
+  "new_retry_or_consent": false,
+  "one_fresh_product_flow_max": 1,
+  "output_limits": {
+    "combined_read_bytes": 262144,
+    "encoded_record_bytes": 98304,
+    "row_bytes": 1024,
+    "rows": 64,
+    "stderr_retained_bytes": 4096
+  },
+  "owner": "parent",
+  "phases": [
+    "pre",
+    "post"
+  ],
+  "publication_deadline": "min(existing_port_deadline, monotonic_now + 0.05)",
+  "query_deadline": "min(existing_port_deadline - 0.05, monotonic_now + 0.5)",
+  "query_on": "first postflight EADDRINUSE only; failed bind must remain failed",
+  "runtime_status": "UNVERIFIED",
+  "schema": "openergy.strict-bind-diagnostic.plan.v1",
+  "unchanged_limits_sha256": "cadd06e19607f5dbe0ad070072673c8e518d961b1554958d243a0d028243d733"
+}
