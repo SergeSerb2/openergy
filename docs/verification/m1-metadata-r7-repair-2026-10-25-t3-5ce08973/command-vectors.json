@@ -1,0 +1,536 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/lipo",
+        "-archs",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/Autoupdate"
+      ],
+      "label": "object-0-arch"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--verify",
+        "--strict",
+        "--all-architectures",
+        "--verbose=4",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/Autoupdate"
+      ],
+      "label": "object-0-verify"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--verbose=4",
+        "--arch",
+        "arm64",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/Autoupdate"
+      ],
+      "label": "object-0-display"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--arch",
+        "arm64",
+        "--entitlements",
+        ":-",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/Autoupdate"
+      ],
+      "label": "object-0-entitlements"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--arch",
+        "arm64",
+        "--requirements",
+        ":-",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/Autoupdate"
+      ],
+      "label": "object-0-requirements"
+    },
+    {
+      "argv": [
+        "/usr/bin/otool",
+        "-arch",
+        "arm64",
+        "-L",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/Autoupdate"
+      ],
+      "label": "object-0-dependencies"
+    },
+    {
+      "argv": [
+        "/usr/bin/otool",
+        "-arch",
+        "arm64",
+        "-l",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/Autoupdate"
+      ],
+      "label": "object-0-loadcommands"
+    },
+    {
+      "argv": [
+        "/usr/bin/lipo",
+        "-archs",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/Sparkle"
+      ],
+      "label": "object-1-arch"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--verify",
+        "--strict",
+        "--all-architectures",
+        "--verbose=4",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework"
+      ],
+      "label": "object-1-verify"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--verbose=4",
+        "--arch",
+        "arm64",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework"
+      ],
+      "label": "object-1-display"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--arch",
+        "arm64",
+        "--entitlements",
+        ":-",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework"
+      ],
+      "label": "object-1-entitlements"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--arch",
+        "arm64",
+        "--requirements",
+        ":-",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework"
+      ],
+      "label": "object-1-requirements"
+    },
+    {
+      "argv": [
+        "/usr/bin/otool",
+        "-arch",
+        "arm64",
+        "-L",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/Sparkle"
+      ],
+      "label": "object-1-dependencies"
+    },
+    {
+      "argv": [
+        "/usr/bin/otool",
+        "-arch",
+        "arm64",
+        "-l",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/Sparkle"
+      ],
+      "label": "object-1-loadcommands"
+    },
+    {
+      "argv": [
+        "/usr/bin/lipo",
+        "-archs",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/Updater.app/Contents/MacOS/Updater"
+      ],
+      "label": "object-2-arch"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--verify",
+        "--strict",
+        "--all-architectures",
+        "--verbose=4",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/Updater.app"
+      ],
+      "label": "object-2-verify"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--verbose=4",
+        "--arch",
+        "arm64",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/Updater.app"
+      ],
+      "label": "object-2-display"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--arch",
+        "arm64",
+        "--entitlements",
+        ":-",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/Updater.app"
+      ],
+      "label": "object-2-entitlements"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--arch",
+        "arm64",
+        "--requirements",
+        ":-",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/Updater.app"
+      ],
+      "label": "object-2-requirements"
+    },
+    {
+      "argv": [
+        "/usr/bin/otool",
+        "-arch",
+        "arm64",
+        "-L",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/Updater.app/Contents/MacOS/Updater"
+      ],
+      "label": "object-2-dependencies"
+    },
+    {
+      "argv": [
+        "/usr/bin/otool",
+        "-arch",
+        "arm64",
+        "-l",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/Updater.app/Contents/MacOS/Updater"
+      ],
+      "label": "object-2-loadcommands"
+    },
+    {
+      "argv": [
+        "/usr/bin/lipo",
+        "-archs",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Downloader.xpc/Contents/MacOS/Downloader"
+      ],
+      "label": "object-3-arch"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--verify",
+        "--strict",
+        "--all-architectures",
+        "--verbose=4",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Downloader.xpc"
+      ],
+      "label": "object-3-verify"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--verbose=4",
+        "--arch",
+        "arm64",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Downloader.xpc"
+      ],
+      "label": "object-3-display"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--arch",
+        "arm64",
+        "--entitlements",
+        ":-",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Downloader.xpc"
+      ],
+      "label": "object-3-entitlements"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--arch",
+        "arm64",
+        "--requirements",
+        ":-",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Downloader.xpc"
+      ],
+      "label": "object-3-requirements"
+    },
+    {
+      "argv": [
+        "/usr/bin/otool",
+        "-arch",
+        "arm64",
+        "-L",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Downloader.xpc/Contents/MacOS/Downloader"
+      ],
+      "label": "object-3-dependencies"
+    },
+    {
+      "argv": [
+        "/usr/bin/otool",
+        "-arch",
+        "arm64",
+        "-l",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Downloader.xpc/Contents/MacOS/Downloader"
+      ],
+      "label": "object-3-loadcommands"
+    },
+    {
+      "argv": [
+        "/usr/bin/lipo",
+        "-archs",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Installer.xpc/Contents/MacOS/Installer"
+      ],
+      "label": "object-4-arch"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--verify",
+        "--strict",
+        "--all-architectures",
+        "--verbose=4",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Installer.xpc"
+      ],
+      "label": "object-4-verify"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--verbose=4",
+        "--arch",
+        "arm64",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Installer.xpc"
+      ],
+      "label": "object-4-display"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--arch",
+        "arm64",
+        "--entitlements",
+        ":-",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Installer.xpc"
+      ],
+      "label": "object-4-entitlements"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--arch",
+        "arm64",
+        "--requirements",
+        ":-",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Installer.xpc"
+      ],
+      "label": "object-4-requirements"
+    },
+    {
+      "argv": [
+        "/usr/bin/otool",
+        "-arch",
+        "arm64",
+        "-L",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Installer.xpc/Contents/MacOS/Installer"
+      ],
+      "label": "object-4-dependencies"
+    },
+    {
+      "argv": [
+        "/usr/bin/otool",
+        "-arch",
+        "arm64",
+        "-l",
+        "${BUNDLE}/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Installer.xpc/Contents/MacOS/Installer"
+      ],
+      "label": "object-4-loadcommands"
+    },
+    {
+      "argv": [
+        "/usr/bin/lipo",
+        "-archs",
+        "${BUNDLE}/Contents/Helpers/openergy"
+      ],
+      "label": "object-5-arch"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--verify",
+        "--strict",
+        "--all-architectures",
+        "--verbose=4",
+        "${BUNDLE}/Contents/Helpers/openergy"
+      ],
+      "label": "object-5-verify"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--verbose=4",
+        "--arch",
+        "arm64",
+        "${BUNDLE}/Contents/Helpers/openergy"
+      ],
+      "label": "object-5-display"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--arch",
+        "arm64",
+        "--entitlements",
+        ":-",
+        "${BUNDLE}/Contents/Helpers/openergy"
+      ],
+      "label": "object-5-entitlements"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--arch",
+        "arm64",
+        "--requirements",
+        ":-",
+        "${BUNDLE}/Contents/Helpers/openergy"
+      ],
+      "label": "object-5-requirements"
+    },
+    {
+      "argv": [
+        "/usr/bin/otool",
+        "-arch",
+        "arm64",
+        "-L",
+        "${BUNDLE}/Contents/Helpers/openergy"
+      ],
+      "label": "object-5-dependencies"
+    },
+    {
+      "argv": [
+        "/usr/bin/otool",
+        "-arch",
+        "arm64",
+        "-l",
+        "${BUNDLE}/Contents/Helpers/openergy"
+      ],
+      "label": "object-5-loadcommands"
+    },
+    {
+      "argv": [
+        "/usr/bin/lipo",
+        "-archs",
+        "${BUNDLE}/Contents/MacOS/Openergy"
+      ],
+      "label": "object-6-arch"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--verify",
+        "--strict",
+        "--all-architectures",
+        "--verbose=4",
+        "${BUNDLE}"
+      ],
+      "label": "object-6-verify"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--verbose=4",
+        "--arch",
+        "arm64",
+        "${BUNDLE}"
+      ],
+      "label": "object-6-display"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--arch",
+        "arm64",
+        "--entitlements",
+        ":-",
+        "${BUNDLE}"
+      ],
+      "label": "object-6-entitlements"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--arch",
+        "arm64",
+        "--requirements",
+        ":-",
+        "${BUNDLE}"
+      ],
+      "label": "object-6-requirements"
+    },
+    {
+      "argv": [
+        "/usr/bin/otool",
+        "-arch",
+        "arm64",
+        "-L",
+        "${BUNDLE}/Contents/MacOS/Openergy"
+      ],
+      "label": "object-6-dependencies"
+    },
+    {
+      "argv": [
+        "/usr/bin/otool",
+        "-arch",
+        "arm64",
+        "-l",
+        "${BUNDLE}/Contents/MacOS/Openergy"
+      ],
+      "label": "object-6-loadcommands"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--verify",
+        "--deep",
+        "--strict",
+        "--all-architectures",
+        "--verbose=4",
+        "${BUNDLE}"
+      ],
+      "label": "full-bundle-deep-verify"
+    }
+  ],
+  "execution": false,
+  "schema": "openergy.closed-native-metadata-vectors.v1"
+}
