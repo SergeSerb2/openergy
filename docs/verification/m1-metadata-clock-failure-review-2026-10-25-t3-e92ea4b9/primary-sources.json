@@ -1,0 +1,53 @@
+{
+  "access": "official primary documentation/source web reads only; no target operation",
+  "inference": "Candidate exception and finalization paths are static deductions from caller text and these sources, not measured failures.",
+  "read_date": "2026-10-25",
+  "schema": "openergy.metadata-clock-failure-review-primary-sources.v1",
+  "sources": [
+    {
+      "supports": "Buffered close calls flush before closing the raw stream.",
+      "url": "https://github.com/python/cpython/blob/v3.9.6/Modules/_io/bufferedio.c#L454-L501",
+      "version": "CPython v3.9.6"
+    },
+    {
+      "supports": "A failed buffered flush returns without the normal reset of pending write state.",
+      "url": "https://github.com/python/cpython/blob/v3.9.6/Modules/_io/bufferedio.c#L1747-L1799",
+      "version": "CPython v3.9.6"
+    },
+    {
+      "supports": "Normal interpreter finalization flushes stdout and stderr.",
+      "url": "https://github.com/python/cpython/blob/v3.9.6/Python/pylifecycle.c#L1312-L1318",
+      "version": "CPython v3.9.6"
+    },
+    {
+      "supports": "The buffered flush failure path retains pending write state in the private-interpreter version too.",
+      "url": "https://github.com/python/cpython/blob/v3.13.9/Modules/_io/bufferedio.c#L1889-L1940",
+      "version": "CPython v3.13.9"
+    },
+    {
+      "supports": "Normal interpreter finalization flushes standard streams in the private-interpreter version too.",
+      "url": "https://github.com/python/cpython/blob/v3.13.9/Python/pylifecycle.c#L1968-L1974",
+      "version": "CPython v3.13.9"
+    },
+    {
+      "supports": "macOS time.monotonic uses a process-local t0 subtraction.",
+      "url": "https://github.com/python/cpython/blob/v3.9.6/Python/pytime.c#L772-L821",
+      "version": "CPython v3.9.6"
+    },
+    {
+      "supports": "macOS monotonic implementation converts the Mach tick value without the old t0 subtraction.",
+      "url": "https://github.com/python/cpython/blob/v3.13.9/Python/pytime.c#L1074-L1094",
+      "version": "CPython v3.13.9"
+    },
+    {
+      "supports": "clock_gettime_ns calls clock_gettime with the requested clock ID and returns integer nanoseconds.",
+      "url": "https://github.com/python/cpython/blob/v3.9.6/Modules/timemodule.c#L187-L207",
+      "version": "CPython v3.9.6"
+    },
+    {
+      "supports": "SystemExit permits interpreter cleanup, which includes flushing buffered standard streams.",
+      "url": "https://docs.python.org/3.13/library/sys.html#sys.exit",
+      "version": "Python 3.13 documentation"
+    }
+  ]
+}

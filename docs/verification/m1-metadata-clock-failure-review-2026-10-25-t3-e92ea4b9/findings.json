@@ -1,0 +1,57 @@
+{
+  "caller_sha256": "464ab85baebf47e3b373463768e9abb2001d39dd181b4e2a790e1868d2b90597",
+  "candidate_commit": "e4ec20bdc6058efaa2fdb272ca88b84a7519116c",
+  "child_agents": 0,
+  "execution": false,
+  "original_findings": [
+    {
+      "id": "R1",
+      "limits": "Same-host/same-boot parent causal boundary remains external; conversion/cross-process behavior unmeasured. R3 separately prevents full deadline-path clearance.",
+      "status": "CLOSED_SOURCE_ONLY"
+    },
+    {
+      "id": "R2",
+      "limits": "Early command latch precedes raw/status publication. No failure-injection evidence. R3 separately prevents overall publication-path clearance.",
+      "status": "CLOSED_SOURCE_ONLY"
+    }
+  ],
+  "p1": [],
+  "p2": [
+    {
+      "effect": "Buffered close or normal interpreter finalization attempts the pending payload again outside the intended active deadline check. The run remains failed; no extra publication attempt is permitted.",
+      "id": "R3",
+      "locations": [
+        {
+          "end": 600,
+          "role": "buffered final summary write and flush",
+          "start": 595
+        },
+        {
+          "end": 715,
+          "role": "catch then normal sys.exit finalization",
+          "start": 706
+        },
+        {
+          "end": 96,
+          "role": "alarm disabled/restored before normal shutdown",
+          "start": 92
+        },
+        {
+          "end": 203,
+          "role": "related source buffered close retry on flush exception",
+          "start": 199
+        }
+      ],
+      "minimal_fix": "Use caller-owned unbuffered source writes and a bounded raw/nonblocking summary with no pending Python buffer at teardown. Preserve exclusive0600, caps, explicit fsync, partial/unknown states, exact launchers, unchanged common/time and COPY regular reservations. No extra time or retry.",
+      "path": "docs/verification/m1-metadata-clock-failure-repair-2026-10-25-t3-d1e829a9/metadata-caller.py.txt",
+      "proof": "Static exception/cleanup flow plus official pinned CPython source; no runtime or fault injection.",
+      "title": "Buffered publication can flush again during close or shutdown after the phase deadline",
+      "trigger": "Phase alarm or write error interrupts a buffered flush while pending bytes remain."
+    }
+  ],
+  "private_reads": 0,
+  "runtime": "UNVERIFIED",
+  "schema": "openergy.metadata-clock-failure-independent-findings.v1",
+  "scope": "SOURCE_DATA_ONLY",
+  "verdict": "HOLD"
+}
