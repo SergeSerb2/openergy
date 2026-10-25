@@ -1,0 +1,231 @@
+. (Join-Path $PSScriptRoot 'common.ps1')
+$buildStart=[Diagnostics.Stopwatch]::GetTimestamp();$buildDeadline=$buildStart+600L*[Diagnostics.Stopwatch]::Frequency
+$settlementLimit=$buildDeadline+30L*[Diagnostics.Stopwatch]::Frequency
+$receiptLimit=$settlementLimit
+if(-not (Get-Content -Raw -LiteralPath (Join-Path $root 'qualification.json')|ConvertFrom-Json).passed){throw 'source qualification required'}
+if(Test-Path -LiteralPath (Join-Path $root 'build-once.guard')){throw 'build already attempted; no retry'}
+$guard=[IO.File]::Open((Join-Path $root 'build-once.guard'),[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None);$guard.Dispose()
+$env:CARGO_HOME=Join-Path $root 'cargo-home'
+$env:CARGO_TARGET_DIR=Join-Path $root 'target'
+$env:CARGO_BUILD_JOBS='2';$env:CARGO_NET_OFFLINE='true'
+$env:RUSTUP_AUTO_INSTALL='0';$env:RUSTUP_TOOLCHAIN='1.99.1-x86_64-pc-windows-msvc'
+$env:RUSTC=Join-Path $toolRoot 'rustc.exe';$env:RUSTDOC=Join-Path $toolRoot 'rustdoc.exe'
+$env:RUSTC_WRAPPER='';$env:RUSTC_WORKSPACE_WRAPPER=''
+$env:RUSTFLAGS='';$env:CARGO_ENCODED_RUSTFLAGS=''
+$env:TEMP=Join-Path $root 'temp';$env:TMP=$env:TEMP
+$msvcBin=Join-Path $msvc 'bin/Hostx64/x64'
+$sdkBin=Join-Path $sdk ('bin/'+$sdkVersion+'/x64')
+$env:PATH=$toolRoot+';'+$msvcBin+';'+$sdkBin+';'+$env:PATH
+$env:INCLUDE=(Join-Path $msvc 'include')+';'+(Join-Path $sdk ('Include/'+$sdkVersion+'/ucrt'))+';'+(Join-Path $sdk ('Include/'+$sdkVersion+'/shared'))+';'+(Join-Path $sdk ('Include/'+$sdkVersion+'/um'))+';'+(Join-Path $sdk ('Include/'+$sdkVersion+'/winrt'))
+$env:LIB=(Join-Path $msvc 'lib/x64')+';'+(Join-Path $sdk ('Lib/'+$sdkVersion+'/ucrt/x64'))+';'+(Join-Path $sdk ('Lib/'+$sdkVersion+'/um/x64'))
+$env:LIBPATH=Join-Path $msvc 'lib/x64'
+$env:VCToolsInstallDir=$msvc+'\';$env:WindowsSdkDir=$sdk+'\';$env:WindowsSDKVersion=$sdkVersion+'\'
+$env:CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_LINKER=Join-Path $msvcBin 'link.exe'
+$env:CC_x86_64_pc_windows_msvc=Join-Path $msvcBin 'cl.exe'
+$env:AR_x86_64_pc_windows_msvc=Join-Path $msvcBin 'lib.exe'
+$env:OPENERGY_DISABLE_DISCOVERY='1';$env:OPENERGY_ALLOW_PORT_24800='0'
+$base=@('--locked','--offline','--release','--target','x86_64-pc-windows-msvc','--jobs','2','-p','openergy-daemon','--bin','openergy')
+$steps=@(@{name='release';arguments=(@('build')+$base)})
+function Same-Time($a,$b){[Math]::Abs(($a.ToUniversalTime()-$b.ToUniversalTime()).TotalMilliseconds) -lt 2}
+$result=[ordered]@{schema='openergy.fresh-release-build.v1';source_manifest_sha256=(Hash (Join-Path $root 'source-manifest.json'));archive_sha256=(Hash (Join-Path $root 'source.tar'));source_commit=$state.source_commit;started_utc=[DateTime]::UtcNow.ToString('o');session=(Get-Process -Id $PID).SessionId;priority=(Get-Process -Id $PID).PriorityClass.ToString();jobs=2;native_target='x86_64-pc-windows-msvc';msvc=$msvc;sdk_version=$sdkVersion;child_only_environment=[ordered]@{CARGO_HOME=$env:CARGO_HOME;CARGO_TARGET_DIR=$env:CARGO_TARGET_DIR;RUSTC=$env:RUSTC;INCLUDE=$env:INCLUDE;LIB=$env:LIB;LIBPATH=$env:LIBPATH;linker=$env:CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_LINKER;cc=$env:CC_x86_64_pc_windows_msvc;ar=$env:AR_x86_64_pc_windows_msvc;TEMP=$env:TEMP};steps=@();runtime_invocations=0;binary_executed=$false;passed=$false}
+# Register ownership before launch; never reopen an owned generation by PID for recovery.
+$script:buildOwners=[Collections.Generic.List[object]]::new()
+$script:buildKnown=@{};$script:buildFirstError=$null
+$script:buildErrors=[Collections.Generic.List[string]]::new()
+$samples=[Collections.Generic.List[object]]::new();$races=[Collections.Generic.List[object]]::new()
+$child=$null;$out=$null;$err=$null;$watch=$null;$stepRecord=$null
+function Build-Failure($errorRecord){
+ $text=if($errorRecord -is [Management.Automation.ErrorRecord]){($errorRecord|Out-String)}else{[string]$errorRecord}
+ if($null -eq $script:buildFirstError){$script:buildFirstError=$text}
+ $script:buildErrors.Add($text)
+}
+function Build-Before($deadline){if([Diagnostics.Stopwatch]::GetTimestamp() -ge $deadline){throw 'absolute build lifecycle deadline reached'}}
+function Build-Ms($deadline,$cap){
+ Build-Before $deadline
+ $left=[Math]::Floor(1000.0*($deadline-[Diagnostics.Stopwatch]::GetTimestamp())/[Diagnostics.Stopwatch]::Frequency)
+ if($left -lt 1){throw 'no build lifecycle wait budget remains'}
+ [int][Math]::Min($cap,$left)
+}
+function Build-Identity($process,$deadline){
+ if((Build-Ms $deadline 1000) -lt 1000){throw 'no bounded CIM observation budget remains'}
+ $cim=Get-CimInstance Win32_Process -Filter ('ProcessId='+$process.Id) -OperationTimeoutSec 1
+ Build-Before $deadline
+ if(-not $cim -or -not $cim.CreationDate -or -not $cim.ExecutablePath -or -not $cim.CommandLine){throw 'compiler creation identity unavailable'}
+ if(-not (Same-Time $process.StartTime $cim.CreationDate) -or $process.Path -ine $cim.ExecutablePath){throw 'compiler retained handle identity mismatch'}
+ [ordered]@{pid=$process.Id;start_utc=$process.StartTime.ToUniversalTime().ToString('o');creation_utc=$cim.CreationDate.ToUniversalTime().ToString('o');parent_pid=$cim.ParentProcessId;path=$process.Path;command_line=$cim.CommandLine;session=$process.SessionId;priority=$process.PriorityClass.ToString();retained_handle=$true;recorded_utc=[DateTime]::UtcNow.ToString('o')}
+}
+function Build-Owner($process,$isRoot){
+ $record=[ordered]@{pid=$null;root=$isRoot;identity=$null;owned_generation_verified=$isRoot;retained_handle=$false;kill_called=$false;kill_ticks=$null;retained_handle_signalled=$false;exit_code=$null;handle_closed=$false;normal_exit_acceptance=$false;process_disposed=$false;error=$null}
+ $entry=@{process=$process;handle=$null;started=$false;verified=$isRoot;record=$record}
+ $script:buildOwners.Add($entry)
+ return $entry
+}
+function Observe-Compilers($deadline){
+ if((Build-Ms $deadline 1000) -lt 1000){throw 'no bounded compiler poll budget remains'}
+ $all=@(Get-CimInstance Win32_Process -Filter "Name='cargo.exe' OR Name='rustc.exe' OR Name='cargo-clippy.exe' OR Name='clippy-driver.exe' OR Name='link.exe' OR Name='cl.exe' OR Name LIKE 'build-script%'" -OperationTimeoutSec 1)
+ Build-Before $deadline
+ for($pass=0;$pass -lt 4;$pass++){foreach($p in $all){
+  Build-Before $deadline
+  # A reused PID is never a new owned generation merely because its number is known.
+  if($script:buildKnown.ContainsKey([int]$p.ProcessId)){continue}
+  if(-not $script:buildKnown.ContainsKey([int]$p.ParentProcessId)){continue}
+  $parent=$script:buildKnown[[int]$p.ParentProcessId]
+  if($parent.process.WaitForExit(0) -or $p.CreationDate.ToUniversalTime() -lt ([DateTime]$parent.record.identity.start_utc).ToUniversalTime()){continue}
+  try{$live=[Diagnostics.Process]::GetProcessById([int]$p.ProcessId)}catch [ArgumentException]{
+   $races.Add([ordered]@{pid=$p.ProcessId;message=$_.Exception.Message;recorded_utc=[DateTime]::UtcNow.ToString('o');ownership_not_inferred=$true});continue
+  }
+  $entry=Build-Owner $live $false;$entry.started=$true
+  try{
+   $entry.handle=$live.SafeHandle;$entry.record.retained_handle=$true;$entry.record.pid=$live.Id
+   $id=Build-Identity $live $deadline
+   if(-not (Same-Time ([DateTime]$id.creation_utc) $p.CreationDate) -or $id.parent_pid -ne $p.ParentProcessId -or $id.path -ine $p.ExecutablePath -or $id.command_line -cne $p.CommandLine -or $parent.process.WaitForExit(0)){throw 'compiler parent/generation changed; no ownership inferred'}
+   $entry.record.identity=$id;$entry.verified=$true;$entry.record.owned_generation_verified=$true
+   $script:buildKnown[[int]$p.ProcessId]=$entry
+   $samples.Add([ordered]@{recorded_utc=$id.recorded_utc;name=$p.Name;pid=$id.pid;parent_pid=$id.parent_pid;creation_utc=$id.creation_utc;session=$id.session;priority=$id.priority;path=$id.path;command_line=$id.command_line})
+   if($id.priority -ne 'BelowNormal' -or $id.session -ne 0){throw 'compiler descendant priority/session mismatch'}
+  }catch{
+   if($entry.verified -or -not $entry.handle -or -not $live.WaitForExit(0)){throw}
+   $entry.record.error=($_|Out-String)
+   $races.Add([ordered]@{pid=$p.ProcessId;message=$entry.record.error;recorded_utc=[DateTime]::UtcNow.ToString('o');retained_handle_already_signalled=$true;ownership_not_inferred=$true})
+  }
+ }}
+}
+try{
+ Save 'build-start.json' $result
+ Save 'build-controller.json' (Ancestors (Get-Process -Id $PID))
+ foreach($step in $steps){
+  Build-Before $buildDeadline
+  $info=[Diagnostics.ProcessStartInfo]::new((Join-Path $toolRoot 'cargo.exe'))
+  $info.UseShellExecute=$false;$info.RedirectStandardOutput=$true;$info.RedirectStandardError=$true;$info.RedirectStandardInput=$true
+  $info.StandardOutputEncoding=[Text.UTF8Encoding]::new($false);$info.StandardErrorEncoding=[Text.UTF8Encoding]::new($false)
+  $info.WorkingDirectory=Join-Path $root 'source'
+  foreach($a in $step.arguments){$info.ArgumentList.Add($a)}
+  $started=[DateTime]::UtcNow;$watch=[Diagnostics.Stopwatch]::StartNew()
+  $child=[Diagnostics.Process]::new();$child.StartInfo=$info
+  $owner=Build-Owner $child $true
+  $stepRecord=[ordered]@{name=$step.name;command=@($info.FileName)+$step.arguments;started_utc=$started.ToString('o');cargo_pid=$null;root_identity=$null;timeout_seconds=600;owned_recovery_seconds=30;stdin_closed=$false;timed_out=$false;stopped=@();exit_code=$null}
+  $result.steps+=@($stepRecord)
+  $owner.started=$child.Start()
+  if(-not $owner.started){throw 'Cargo process creation did not succeed'}
+  # FIRST operation after successful creation: pin the exact creation handle.
+  $owner.handle=$child.SafeHandle;$owner.record.retained_handle=$true
+  $owner.record.pid=$child.Id;$stepRecord.cargo_pid=$child.Id
+  $child.StandardInput.Close();$stepRecord.stdin_closed=$true
+  $out=$child.StandardOutput.ReadToEndAsync();$err=$child.StandardError.ReadToEndAsync()
+  $rootIdentity=Build-Identity $child $buildDeadline
+  $owner.record.identity=$rootIdentity;$stepRecord.root_identity=$rootIdentity
+  if($rootIdentity.parent_pid -ne $PID -or $rootIdentity.path -ine $info.FileName -or $rootIdentity.priority -ne 'BelowNormal' -or $rootIdentity.session -ne 0){throw 'Cargo root executable/parent/priority/session mismatch'}
+  $script:buildKnown[[int]$child.Id]=$owner
+  $samples.Add([ordered]@{recorded_utc=$rootIdentity.recorded_utc;name='cargo.exe';pid=$rootIdentity.pid;parent_pid=$rootIdentity.parent_pid;creation_utc=$rootIdentity.creation_utc;session=$rootIdentity.session;priority=$rootIdentity.priority;path=$rootIdentity.path;command_line=$rootIdentity.command_line})
+  Save ($step.name+'-start.json') $stepRecord
+  while(-not $child.WaitForExit(0)){
+   Observe-Compilers $buildDeadline
+   Start-Sleep -Milliseconds (Build-Ms $buildDeadline 50)
+  }
+  Build-Before $buildDeadline
+  $stepRecord.exit_code=$child.ExitCode
+  if($child.ExitCode -ne 0){throw ('Cargo release exited '+$child.ExitCode)}
+  if(-not $out.Wait((Build-Ms $buildDeadline 5000)) -or -not $err.Wait((Build-Ms $buildDeadline 5000))){throw 'compiler output receipt exceeded bounded wait'}
+  [IO.File]::WriteAllText((Join-Path $root ($step.name+'.stdout')),$out.GetAwaiter().GetResult(),[Text.UTF8Encoding]::new($false))
+  [IO.File]::WriteAllText((Join-Path $root ($step.name+'.stderr')),$err.GetAwaiter().GetResult(),[Text.UTF8Encoding]::new($false))
+  $stepRecord.stdout_sha256=Hash (Join-Path $root ($step.name+'.stdout'));$stepRecord.stderr_sha256=Hash (Join-Path $root ($step.name+'.stderr'))
+ }
+ Build-Before $buildDeadline
+ $binary=Join-Path $root 'target/x86_64-pc-windows-msvc/release/openergy.exe'
+ $f=Get-Item -LiteralPath $binary
+ $result.artifact=[ordered]@{path=$binary;bytes=$f.Length;sha256=(Hash $binary);executed=$false}
+ $pe=[IO.File]::ReadAllBytes($binary);$peOffset=[BitConverter]::ToInt32($pe,60);if($pe[0] -ne 77 -or $pe[1] -ne 90 -or [BitConverter]::ToUInt32($pe,$peOffset) -ne 17744 -or [BitConverter]::ToUInt16($pe,$peOffset+4) -ne 34404 -or [BitConverter]::ToUInt16($pe,$peOffset+24) -ne 523){throw 'not AMD64 PE32+'};$result.artifact.amd64_pe32plus=$true
+ Copy-Item -LiteralPath $binary -Destination (Join-Path $root 'openergy.exe')
+ $runtimeBinary=Join-Path $root 'openergy.exe'
+ if((Hash $runtimeBinary) -ne $result.artifact.sha256 -or (Get-Item -LiteralPath $runtimeBinary).Length -ne $result.artifact.bytes){throw 'fresh runtime copy differs'}
+ $result.artifact.path=$runtimeBinary
+ Save 'source-after-build.json' (Assert-Source)
+ Build-Before $buildDeadline
+ $result.passed=$true
+}catch{
+ Build-Failure $_
+}finally{
+ # One shared 30-second settlement deadline; a wait never starts its own reserve.
+ $recoveryStart=[Diagnostics.Stopwatch]::GetTimestamp()
+ $recoveryDeadline=[Math]::Min($settlementLimit,$recoveryStart+30L*[Diagnostics.Stopwatch]::Frequency)
+ if($stepRecord){$stepRecord.timed_out=([Diagnostics.Stopwatch]::GetTimestamp() -ge $buildDeadline)}
+ # Stop the exact Cargo handle first so it cannot spawn while verified children settle.
+ # No CIM call, receipt write, PID lookup, tree kill, SSH or ambient job is required here.
+ foreach($entry in @($script:buildOwners.ToArray())){
+  try{
+   if($entry.started -and $entry.verified -and -not $entry.process.WaitForExit(0)){
+    Build-Failure 'owned compiler remained at lifecycle settlement; forced recovery is failure'
+    Build-Before $recoveryDeadline
+    $entry.record.kill_reason='failed or incomplete build lifecycle; no normal acceptance'
+    $entry.record.kill_ticks=[Diagnostics.Stopwatch]::GetTimestamp()
+    $entry.process.Kill();$entry.record.kill_called=$true
+   }
+  }catch{$entry.record.error=($_|Out-String);Build-Failure $_}
+ }
+ # Signal all verified live generations before any blocking wait. Close all handles even if a wait/stream fails.
+ try{
+  foreach($entry in @($script:buildOwners.ToArray())){
+   try{
+    if($entry.started){
+     $entry.record.retained_handle_signalled=$entry.process.WaitForExit(0)
+     if($entry.verified -and -not $entry.record.retained_handle_signalled){
+      $entry.record.retained_handle_signalled=$entry.process.WaitForExit((Build-Ms $recoveryDeadline 10000))
+     }
+     if($entry.record.retained_handle_signalled){$entry.record.exit_code=$entry.process.ExitCode}
+     elseif($entry.verified){throw 'owned compiler exit remains UNVERIFIED'}
+    }
+   }catch{$entry.record.wait_error=($_|Out-String);Build-Failure $_}
+  }
+  # Drain only inside the same reserve, after exit observation and before stream disposal.
+  foreach($task in @($out,$err)){
+   if($null -ne $task){try{if(-not $task.IsCompleted -and -not $task.Wait((Build-Ms $recoveryDeadline 5000))){throw 'compiler stream did not settle inside recovery bound'};if($task.IsFaulted -or $task.IsCanceled){throw 'compiler stream completion failed'}}catch{Build-Failure $_}}
+  }
+ }finally{
+  foreach($entry in @($script:buildOwners.ToArray())){
+   try{$entry.process.Dispose();$entry.record.process_disposed=$true}catch{Build-Failure $_;$entry.record.dispose_error=($_|Out-String)}
+   try{
+    if($entry.handle){$entry.handle.Dispose();$entry.record.handle_closed=$entry.handle.IsClosed}
+    else{$entry.record.handle_closed=(-not $entry.started)}
+    if(-not $entry.record.handle_closed){throw 'compiler retained handle closure unverified'}
+   }catch{Build-Failure $_;$entry.record.close_error=($_|Out-String)}
+  }
+ }
+ $result.recovery_finished_ticks=[Diagnostics.Stopwatch]::GetTimestamp()
+ if($result.recovery_finished_ticks -ge $recoveryDeadline){Build-Failure 'owned compiler settlement exceeded shared recovery deadline'}
+ $ownership=@($script:buildOwners|ForEach-Object {$_.record})
+ if($watch){$watch.Stop()}
+ if($stepRecord){
+  $stepRecord.stopped=@($ownership|Where-Object {$_.kill_called})
+  $stepRecord.ownership=$ownership
+  $stepRecord.exit_code=$(if($ownership.Count -and $ownership[0].retained_handle_signalled){$ownership[0].exit_code}else{$null})
+  $stepRecord.handle_disposed=($ownership.Count -gt 0 -and $ownership[0].handle_closed)
+  $stepRecord.elapsed_ms=$watch.ElapsedMilliseconds;$stepRecord.ended_utc=[DateTime]::UtcNow.ToString('o')
+ }
+ $result.owned_generations=$ownership
+ $result.owned_generations_settled=(@($ownership|Where-Object {$_.owned_generation_verified -and (-not $_.retained_handle_signalled -or -not $_.handle_closed)}).Count -eq 0)
+ $result.recovery_start_ticks=$recoveryStart;$result.recovery_deadline_ticks=$recoveryDeadline
+ # All following writes remain inside finally, AFTER every registered handle was visited.
+ if($script:buildFirstError){
+  if($out -and $out.IsCompletedSuccessfully){try{[IO.File]::WriteAllText((Join-Path $root 'release-recovery.stdout'),$out.GetAwaiter().GetResult(),[Text.UTF8Encoding]::new($false))}catch{Build-Failure $_}}
+  if($err -and $err.IsCompletedSuccessfully){try{[IO.File]::WriteAllText((Join-Path $root 'release-recovery.stderr'),$err.GetAwaiter().GetResult(),[Text.UTF8Encoding]::new($false))}catch{Build-Failure $_}}
+ }
+ try{Save 'release-processes.json' @($samples.ToArray())}catch{Build-Failure $_}
+ try{Save 'release-observation-races.json' @($races.ToArray())}catch{Build-Failure $_}
+ if($stepRecord){
+  try{$stepRecord.process_samples_sha256=Hash (Join-Path $root 'release-processes.json');Save 'release-result.json' $stepRecord}catch{Build-Failure $_}
+ }
+ if($script:buildFirstError){try{[IO.File]::WriteAllText((Join-Path $root 'build-first-failure.stderr'),$script:buildFirstError)}catch{Build-Failure $_}}
+ if([Diagnostics.Stopwatch]::GetTimestamp() -ge $receiptLimit){Build-Failure 'build final receipt deadline exceeded'}
+ $result.first_error=$script:buildFirstError;$result.errors=@($script:buildErrors.ToArray())
+ $result.receipt_deadline_ticks=$receiptLimit
+ $result.finished_ticks=[Diagnostics.Stopwatch]::GetTimestamp();$result.ended_utc=[DateTime]::UtcNow.ToString('o')
+ $result.passed=($result.passed -and $null -eq $script:buildFirstError -and $result.owned_generations_settled -and $result.finished_ticks -lt $receiptLimit)
+ # A final-receipt write fault also fails the stage; cleanup has already run.
+ try{Build-Before $receiptLimit;Save 'build-result.json' $result;Build-Before $receiptLimit}catch{Build-Failure $_;$result.passed=$false}
+}
+if(-not $result.passed){
+ if($script:buildFirstError){[Console]::Error.WriteLine($script:buildFirstError)}
+ if($stepRecord -and $null -ne $stepRecord.exit_code -and $stepRecord.exit_code -ne 0){exit $stepRecord.exit_code}
+ exit 1
+}
+Write-Output 'ONE_FRESH_NATIVE_RELEASE_BUILD_PASS_NO_RUNTIME'

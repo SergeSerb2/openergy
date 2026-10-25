@@ -1,0 +1,81 @@
+{
+  "schema": "openergy.inert-source-bindings.v1",
+  "execution": false,
+  "reviewed_base_commit": "762240ac041a835707b7ae3867b4e15b1e06b8c0",
+  "reviewed_base_path": "docs/verification/windows-missing-pid-repair-r9-2026-10-24",
+  "files": [
+    {
+      "path": "source/build.ps1.txt",
+      "bytes": 18259,
+      "sha256": "3cdd135dd806e511fc68278e85cca7d34bc83f2efcafea86106d2e3950af6c33",
+      "r9_bytes": 18281,
+      "r9_sha256": "bc42365d060d9cda6d86642f7282970bebf3892c9681bd71e937376b76bb18b8",
+      "byte_equal_r9": false,
+      "added": false
+    },
+    {
+      "path": "source/common.ps1.txt",
+      "bytes": 7121,
+      "sha256": "7c343002754725567dbfba5c66d0a3c81f2a3f05490d77b5933e895ef89218c9",
+      "r9_bytes": 6364,
+      "r9_sha256": "c09ce6f29820bd3805fec5398f49de9fe797d71e57a0e3e4f233f56f51043ce0",
+      "byte_equal_r9": false,
+      "added": false
+    },
+    {
+      "path": "source/controller.py.txt",
+      "bytes": 32815,
+      "sha256": "2852b0a592d87510d066ca3803535a64ac176780880eba8b1328a4f6d939a764",
+      "r9_bytes": 21578,
+      "r9_sha256": "10431430e9a218418addc4cc47d31521b42aabaed6dced439e25ba4a89da334e",
+      "byte_equal_r9": false,
+      "added": false
+    },
+    {
+      "path": "source/observer.cs.txt",
+      "bytes": 12054,
+      "sha256": "8559ecbca18de3b896407df1048c278633c927134858cc99124ae883e816f5e2",
+      "r9_bytes": 12054,
+      "r9_sha256": "8559ecbca18de3b896407df1048c278633c927134858cc99124ae883e816f5e2",
+      "byte_equal_r9": true,
+      "added": false
+    },
+    {
+      "path": "source/postflight.ps1.txt",
+      "bytes": 4857,
+      "sha256": "615104a7027f547dcbee574c1bdf8a504fb06492a579d365db6ebaccf116532b",
+      "r9_bytes": 4749,
+      "r9_sha256": "77456c370740da9ef7e86a4bbb9046342a239c7b9d9b72b9da34c43eb9bdbd2a",
+      "byte_equal_r9": false,
+      "added": false
+    },
+    {
+      "path": "source/qualify.ps1.txt",
+      "bytes": 4218,
+      "sha256": "d0da8fecdec0ae2c31ea99e938306b59d7a2e45085685ca0d4cb0b2029d6c953",
+      "r9_bytes": 4272,
+      "r9_sha256": "3d9f926395adbdeee29518a9fdaa164ddb7545db67747f3f2ec9023ac2729d22",
+      "byte_equal_r9": false,
+      "added": false
+    },
+    {
+      "path": "source/runtime.ps1.txt",
+      "bytes": 21465,
+      "sha256": "2540d09a2840cc0b0c84ce0c2a0a7b874d75de35da3b12af46832b0c3bdd370d",
+      "r9_bytes": 21487,
+      "r9_sha256": "986b6246e79f8ecb9ddefa32bcfa23ca0aec6c31af44b97915c45bc481f9e615",
+      "byte_equal_r9": false,
+      "added": false
+    },
+    {
+      "path": "source/safety.ps1.txt",
+      "bytes": 5332,
+      "sha256": "26741118315aa23853d58b9701821496ac21aa9bc868632141e9658b05ecb610",
+      "r9_bytes": null,
+      "r9_sha256": null,
+      "byte_equal_r9": false,
+      "added": true
+    }
+  ],
+  "diff_sha256": "1412984d383e8b2546a94f068c979fdb34b0650ee55b443b3b092264ba27afad"
+}
