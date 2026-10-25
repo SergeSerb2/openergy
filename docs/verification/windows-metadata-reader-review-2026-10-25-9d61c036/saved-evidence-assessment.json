@@ -1,0 +1,187 @@
+{
+  "cases": [
+    {
+      "driver_case_accepted": true,
+      "label": "success",
+      "outer_observed_seconds": 0.044687374999739404,
+      "reader_exit": 0,
+      "receipt_fields": {
+        "effective_limits": "UNVERIFIED",
+        "first_error": null,
+        "local_child_returncode": 0,
+        "local_exit_observed": true,
+        "local_kill_called": false,
+        "metadata_complete": false,
+        "purpose": "local-reader-verification",
+        "remote_cleanup_proved": false,
+        "remote_query_exit_and_current_state": "UNVERIFIED",
+        "status": "COMPLETE",
+        "streams": {
+          "stderr": {
+            "bytes": 0,
+            "bytes_not_preserved": 0,
+            "bytes_read": 0,
+            "eof": true,
+            "overflow_observed": false,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdout": {
+            "bytes": 7,
+            "bytes_not_preserved": 0,
+            "bytes_read": 7,
+            "eof": true,
+            "overflow_observed": false,
+            "sha256": "d4431c5127a04a3695bb810b98d7385b306f1c3617771f50c0e191ad7b954eb2"
+          }
+        }
+      }
+    },
+    {
+      "driver_case_accepted": true,
+      "label": "nonzero",
+      "outer_observed_seconds": 0.05226504100028251,
+      "reader_exit": 1,
+      "receipt_fields": {
+        "effective_limits": "UNVERIFIED",
+        "first_error": null,
+        "local_child_returncode": 1,
+        "local_exit_observed": true,
+        "local_kill_called": false,
+        "metadata_complete": false,
+        "purpose": "local-reader-verification",
+        "remote_cleanup_proved": false,
+        "remote_query_exit_and_current_state": "UNVERIFIED",
+        "status": "INCOMPLETE",
+        "streams": {
+          "stderr": {
+            "bytes": 0,
+            "bytes_not_preserved": 0,
+            "bytes_read": 0,
+            "eof": true,
+            "overflow_observed": false,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdout": {
+            "bytes": 0,
+            "bytes_not_preserved": 0,
+            "bytes_read": 0,
+            "eof": true,
+            "overflow_observed": false,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      }
+    },
+    {
+      "driver_case_accepted": true,
+      "label": "partial-timeout",
+      "outer_observed_seconds": 0.28771320800024114,
+      "reader_exit": 1,
+      "receipt_fields": {
+        "effective_limits": "UNVERIFIED",
+        "first_error": {
+          "class": "TimeoutError",
+          "phase": "capture"
+        },
+        "local_child_returncode": -9,
+        "local_exit_observed": true,
+        "local_kill_called": true,
+        "metadata_complete": false,
+        "purpose": "local-reader-verification",
+        "remote_cleanup_proved": false,
+        "remote_query_exit_and_current_state": "UNVERIFIED",
+        "status": "INCOMPLETE",
+        "streams": {
+          "stderr": {
+            "bytes": 0,
+            "bytes_not_preserved": 0,
+            "bytes_read": 0,
+            "eof": true,
+            "overflow_observed": false,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdout": {
+            "bytes": 7,
+            "bytes_not_preserved": 0,
+            "bytes_read": 7,
+            "eof": true,
+            "overflow_observed": false,
+            "sha256": "5a958fd0cb0435992ec0b7afb3255dbe976078447b0fe2830119c083b9eae082"
+          }
+        }
+      }
+    },
+    {
+      "driver_case_accepted": false,
+      "label": "output-cap",
+      "outer_observed_seconds": 0.04275204199984728,
+      "reader_exit": 1,
+      "receipt_fields": {
+        "effective_limits": "UNVERIFIED",
+        "first_error": {
+          "class": "OverflowError",
+          "phase": "capture"
+        },
+        "local_child_returncode": -13,
+        "local_exit_observed": true,
+        "local_kill_called": false,
+        "metadata_complete": false,
+        "purpose": "local-reader-verification",
+        "remote_cleanup_proved": false,
+        "remote_query_exit_and_current_state": "UNVERIFIED",
+        "status": "INCOMPLETE",
+        "streams": {
+          "stderr": {
+            "bytes": 0,
+            "bytes_not_preserved": 0,
+            "bytes_read": 0,
+            "eof": false,
+            "overflow_observed": false,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdout": {
+            "bytes": 128,
+            "bytes_not_preserved": 1,
+            "bytes_read": 129,
+            "eof": false,
+            "overflow_observed": true,
+            "sha256": "9d6ef848784352df50e182a9ab91ddfa588d245d01112e7e1d1b1cc22b250d68"
+          }
+        }
+      }
+    }
+  ],
+  "driver_exit": 1,
+  "driver_revision_reviewed": "aa474ae00703abd2f39e3d1bc5c4432ba468a222",
+  "flow_elapsed_seconds": 0.42957825000030425,
+  "flow_first_failure": {
+    "type": "RuntimeError"
+  },
+  "outer_elapsed_seconds": 0.47896154200043384,
+  "outer_timeout": false,
+  "private_raw_files_copied": false,
+  "raw_bindings_verified": true,
+  "reviewer_supplied_program_execution": false,
+  "revised_driver_reviewed": false,
+  "saved_flow_status": "FAILED_INCOMPLETE_PRESERVED",
+  "schema": "openergy.metadata-reader-saved-data-assessment.v1",
+  "source_records": [
+    {
+      "bytes": 21506,
+      "name": "metadata_reader.py.txt",
+      "sha256": "e7fb7a8fde0f63246796d5209f85571d2de0418ab96536797101561bec39b380"
+    },
+    {
+      "bytes": 4586,
+      "name": "metadata-query.ps1.txt",
+      "sha256": "3404c46e256d41c17c1c7efaea1364216075f7988e1e5d38f588b43c92358443"
+    },
+    {
+      "bytes": 6635,
+      "name": "verify-cli.py",
+      "sha256": "8090e3dce24bbaf5b557f2ee219ab08ba20ba71477ad71f4583390b266622915"
+    }
+  ],
+  "windows_contacted": false,
+  "windows_qualification": false
+}
