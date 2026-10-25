@@ -1,0 +1,794 @@
+{
+  "$comment": "Author DATA contract for new full COPY openergy.metadata-observations.v3 only. Raw status has no schema key. Signed exits/null are failure evidence; success requires 0. Clock/PID/byte constraints do not prove causal order or semantics. Generic complete and old SOURCE v2 remain unchanged.",
+  "$defs": {
+    "collector_status": {
+      "additionalProperties": false,
+      "properties": {
+        "actual_exit": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "argv": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "clock": {
+          "const": {
+            "api": "time.clock_gettime_ns",
+            "clock": "CLOCK_MONOTONIC",
+            "clock_id": 6,
+            "platform": "darwin",
+            "schema": "openergy.shared-clock.v1",
+            "scope": "same-host-same-boot",
+            "unit": "nanoseconds"
+          }
+        },
+        "command_deadline_ns": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "deadline_loss": {
+          "type": "boolean"
+        },
+        "dropped_observed_bytes": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "error": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "finished_ns": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "handle_retained": {
+          "type": "boolean"
+        },
+        "kill_attempted": {
+          "type": "boolean"
+        },
+        "kill_eligibility_exit": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "kill_eligibility_observed_ns": {
+          "minimum": 0,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "kill_or_reap_error": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "kill_syscall_returned": {
+          "type": "boolean"
+        },
+        "label": {
+          "enum": [
+            "copy-files-before",
+            "object-0-arch",
+            "object-0-verify",
+            "object-0-display",
+            "object-0-entitlements",
+            "object-0-requirements",
+            "object-0-dependencies",
+            "object-0-loadcommands",
+            "object-1-arch",
+            "object-1-verify",
+            "object-1-display",
+            "object-1-entitlements",
+            "object-1-requirements",
+            "object-1-dependencies",
+            "object-1-loadcommands",
+            "object-2-arch",
+            "object-2-verify",
+            "object-2-display",
+            "object-2-entitlements",
+            "object-2-requirements",
+            "object-2-dependencies",
+            "object-2-loadcommands",
+            "object-3-arch",
+            "object-3-verify",
+            "object-3-display",
+            "object-3-entitlements",
+            "object-3-requirements",
+            "object-3-dependencies",
+            "object-3-loadcommands",
+            "object-4-arch",
+            "object-4-verify",
+            "object-4-display",
+            "object-4-entitlements",
+            "object-4-requirements",
+            "object-4-dependencies",
+            "object-4-loadcommands",
+            "object-5-arch",
+            "object-5-verify",
+            "object-5-display",
+            "object-5-entitlements",
+            "object-5-requirements",
+            "object-5-dependencies",
+            "object-5-loadcommands",
+            "object-6-arch",
+            "object-6-verify",
+            "object-6-display",
+            "object-6-entitlements",
+            "object-6-requirements",
+            "object-6-dependencies",
+            "object-6-loadcommands",
+            "full-bundle-deep-verify",
+            "copy-files-after"
+          ]
+        },
+        "observed_stream_bytes": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "overflow": {
+          "type": "boolean"
+        },
+        "pid": {
+          "minimum": 1,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "reaped": {
+          "type": "boolean"
+        },
+        "started_ns": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "stderr_eof": {
+          "type": "boolean"
+        },
+        "stdout_eof": {
+          "type": "boolean"
+        },
+        "timed_out": {
+          "type": "boolean"
+        },
+        "unread_or_dropped_unknown": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "label",
+        "argv",
+        "pid",
+        "handle_retained",
+        "reaped",
+        "stdout_eof",
+        "stderr_eof",
+        "unread_or_dropped_unknown",
+        "overflow",
+        "timed_out",
+        "deadline_loss",
+        "kill_attempted",
+        "kill_syscall_returned",
+        "actual_exit",
+        "kill_eligibility_exit",
+        "observed_stream_bytes",
+        "dropped_observed_bytes",
+        "started_ns",
+        "command_deadline_ns",
+        "finished_ns",
+        "kill_eligibility_observed_ns",
+        "error",
+        "kill_or_reap_error",
+        "clock"
+      ],
+      "type": "object"
+    },
+    "direct_child": {
+      "additionalProperties": false,
+      "properties": {
+        "actual_exit": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "argv": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "collector_status": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/retained_status"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "handle_retained": {
+          "const": true
+        },
+        "label": {
+          "enum": [
+            "copy-files-before",
+            "object-0-arch",
+            "object-0-verify",
+            "object-0-display",
+            "object-0-entitlements",
+            "object-0-requirements",
+            "object-0-dependencies",
+            "object-0-loadcommands",
+            "object-1-arch",
+            "object-1-verify",
+            "object-1-display",
+            "object-1-entitlements",
+            "object-1-requirements",
+            "object-1-dependencies",
+            "object-1-loadcommands",
+            "object-2-arch",
+            "object-2-verify",
+            "object-2-display",
+            "object-2-entitlements",
+            "object-2-requirements",
+            "object-2-dependencies",
+            "object-2-loadcommands",
+            "object-3-arch",
+            "object-3-verify",
+            "object-3-display",
+            "object-3-entitlements",
+            "object-3-requirements",
+            "object-3-dependencies",
+            "object-3-loadcommands",
+            "object-4-arch",
+            "object-4-verify",
+            "object-4-display",
+            "object-4-entitlements",
+            "object-4-requirements",
+            "object-4-dependencies",
+            "object-4-loadcommands",
+            "object-5-arch",
+            "object-5-verify",
+            "object-5-display",
+            "object-5-entitlements",
+            "object-5-requirements",
+            "object-5-dependencies",
+            "object-5-loadcommands",
+            "object-6-arch",
+            "object-6-verify",
+            "object-6-display",
+            "object-6-entitlements",
+            "object-6-requirements",
+            "object-6-dependencies",
+            "object-6-loadcommands",
+            "full-bundle-deep-verify",
+            "copy-files-after"
+          ]
+        },
+        "pid": {
+          "minimum": 1,
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "label",
+        "argv",
+        "pid",
+        "actual_exit",
+        "handle_retained",
+        "collector_status"
+      ],
+      "type": "object"
+    },
+    "published_status": {
+      "additionalProperties": false,
+      "properties": {
+        "actual_exit": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "argv": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "clock": {
+          "const": {
+            "api": "time.clock_gettime_ns",
+            "clock": "CLOCK_MONOTONIC",
+            "clock_id": 6,
+            "platform": "darwin",
+            "schema": "openergy.shared-clock.v1",
+            "scope": "same-host-same-boot",
+            "unit": "nanoseconds"
+          }
+        },
+        "command_deadline_ns": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "deadline_loss": {
+          "type": "boolean"
+        },
+        "dropped_observed_bytes": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "error": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "finished_ns": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "handle_retained": {
+          "type": "boolean"
+        },
+        "kill_attempted": {
+          "type": "boolean"
+        },
+        "kill_eligibility_exit": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "kill_eligibility_observed_ns": {
+          "minimum": 0,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "kill_or_reap_error": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "kill_syscall_returned": {
+          "type": "boolean"
+        },
+        "label": {
+          "enum": [
+            "copy-files-before",
+            "object-0-arch",
+            "object-0-verify",
+            "object-0-display",
+            "object-0-entitlements",
+            "object-0-requirements",
+            "object-0-dependencies",
+            "object-0-loadcommands",
+            "object-1-arch",
+            "object-1-verify",
+            "object-1-display",
+            "object-1-entitlements",
+            "object-1-requirements",
+            "object-1-dependencies",
+            "object-1-loadcommands",
+            "object-2-arch",
+            "object-2-verify",
+            "object-2-display",
+            "object-2-entitlements",
+            "object-2-requirements",
+            "object-2-dependencies",
+            "object-2-loadcommands",
+            "object-3-arch",
+            "object-3-verify",
+            "object-3-display",
+            "object-3-entitlements",
+            "object-3-requirements",
+            "object-3-dependencies",
+            "object-3-loadcommands",
+            "object-4-arch",
+            "object-4-verify",
+            "object-4-display",
+            "object-4-entitlements",
+            "object-4-requirements",
+            "object-4-dependencies",
+            "object-4-loadcommands",
+            "object-5-arch",
+            "object-5-verify",
+            "object-5-display",
+            "object-5-entitlements",
+            "object-5-requirements",
+            "object-5-dependencies",
+            "object-5-loadcommands",
+            "object-6-arch",
+            "object-6-verify",
+            "object-6-display",
+            "object-6-entitlements",
+            "object-6-requirements",
+            "object-6-dependencies",
+            "object-6-loadcommands",
+            "full-bundle-deep-verify",
+            "copy-files-after"
+          ]
+        },
+        "observed_stream_bytes": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "overflow": {
+          "type": "boolean"
+        },
+        "pid": {
+          "minimum": 1,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "reaped": {
+          "type": "boolean"
+        },
+        "started_ns": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "stderr": {
+          "$ref": "#/$defs/reference"
+        },
+        "stderr_eof": {
+          "type": "boolean"
+        },
+        "stdout": {
+          "$ref": "#/$defs/reference"
+        },
+        "stdout_eof": {
+          "type": "boolean"
+        },
+        "timed_out": {
+          "type": "boolean"
+        },
+        "unread_or_dropped_unknown": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "label",
+        "argv",
+        "pid",
+        "handle_retained",
+        "reaped",
+        "stdout_eof",
+        "stderr_eof",
+        "unread_or_dropped_unknown",
+        "overflow",
+        "timed_out",
+        "deadline_loss",
+        "kill_attempted",
+        "kill_syscall_returned",
+        "actual_exit",
+        "kill_eligibility_exit",
+        "observed_stream_bytes",
+        "dropped_observed_bytes",
+        "started_ns",
+        "command_deadline_ns",
+        "finished_ns",
+        "kill_eligibility_observed_ns",
+        "error",
+        "kill_or_reap_error",
+        "clock",
+        "stdout",
+        "stderr"
+      ],
+      "type": "object"
+    },
+    "reference": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "maximum": 8388608,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "path": {
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "bytes",
+        "sha256"
+      ],
+      "type": "object"
+    },
+    "retained_status": {
+      "additionalProperties": false,
+      "properties": {
+        "actual_exit": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "argv": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "clock": {
+          "const": {
+            "api": "time.clock_gettime_ns",
+            "clock": "CLOCK_MONOTONIC",
+            "clock_id": 6,
+            "platform": "darwin",
+            "schema": "openergy.shared-clock.v1",
+            "scope": "same-host-same-boot",
+            "unit": "nanoseconds"
+          }
+        },
+        "command_deadline_ns": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "deadline_loss": {
+          "type": "boolean"
+        },
+        "dropped_observed_bytes": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "error": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "finished_ns": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "handle_retained": {
+          "type": "boolean"
+        },
+        "kill_attempted": {
+          "type": "boolean"
+        },
+        "kill_eligibility_exit": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "kill_eligibility_observed_ns": {
+          "minimum": 0,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "kill_or_reap_error": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "kill_syscall_returned": {
+          "type": "boolean"
+        },
+        "label": {
+          "enum": [
+            "copy-files-before",
+            "object-0-arch",
+            "object-0-verify",
+            "object-0-display",
+            "object-0-entitlements",
+            "object-0-requirements",
+            "object-0-dependencies",
+            "object-0-loadcommands",
+            "object-1-arch",
+            "object-1-verify",
+            "object-1-display",
+            "object-1-entitlements",
+            "object-1-requirements",
+            "object-1-dependencies",
+            "object-1-loadcommands",
+            "object-2-arch",
+            "object-2-verify",
+            "object-2-display",
+            "object-2-entitlements",
+            "object-2-requirements",
+            "object-2-dependencies",
+            "object-2-loadcommands",
+            "object-3-arch",
+            "object-3-verify",
+            "object-3-display",
+            "object-3-entitlements",
+            "object-3-requirements",
+            "object-3-dependencies",
+            "object-3-loadcommands",
+            "object-4-arch",
+            "object-4-verify",
+            "object-4-display",
+            "object-4-entitlements",
+            "object-4-requirements",
+            "object-4-dependencies",
+            "object-4-loadcommands",
+            "object-5-arch",
+            "object-5-verify",
+            "object-5-display",
+            "object-5-entitlements",
+            "object-5-requirements",
+            "object-5-dependencies",
+            "object-5-loadcommands",
+            "object-6-arch",
+            "object-6-verify",
+            "object-6-display",
+            "object-6-entitlements",
+            "object-6-requirements",
+            "object-6-dependencies",
+            "object-6-loadcommands",
+            "full-bundle-deep-verify",
+            "copy-files-after"
+          ]
+        },
+        "observed_stream_bytes": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "overflow": {
+          "type": "boolean"
+        },
+        "pid": {
+          "minimum": 1,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "reaped": {
+          "type": "boolean"
+        },
+        "started_ns": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "stderr": {
+          "$ref": "#/$defs/reference"
+        },
+        "stderr_eof": {
+          "type": "boolean"
+        },
+        "stdout": {
+          "$ref": "#/$defs/reference"
+        },
+        "stdout_eof": {
+          "type": "boolean"
+        },
+        "timed_out": {
+          "type": "boolean"
+        },
+        "unread_or_dropped_unknown": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "label",
+        "argv",
+        "pid",
+        "handle_retained",
+        "reaped",
+        "stdout_eof",
+        "stderr_eof",
+        "unread_or_dropped_unknown",
+        "overflow",
+        "timed_out",
+        "deadline_loss",
+        "kill_attempted",
+        "kill_syscall_returned",
+        "actual_exit",
+        "kill_eligibility_exit",
+        "observed_stream_bytes",
+        "dropped_observed_bytes",
+        "started_ns",
+        "command_deadline_ns",
+        "finished_ns",
+        "kill_eligibility_observed_ns",
+        "error",
+        "kill_or_reap_error",
+        "clock"
+      ],
+      "type": "object"
+    },
+    "success_published_status": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/published_status"
+        },
+        {
+          "properties": {
+            "actual_exit": {
+              "const": 0
+            },
+            "deadline_loss": {
+              "const": false
+            },
+            "dropped_observed_bytes": {
+              "const": 0
+            },
+            "error": {
+              "const": null
+            },
+            "handle_retained": {
+              "const": true
+            },
+            "kill_attempted": {
+              "const": false
+            },
+            "kill_eligibility_exit": {
+              "const": 0
+            },
+            "kill_eligibility_observed_ns": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "kill_or_reap_error": {
+              "const": null
+            },
+            "kill_syscall_returned": {
+              "const": false
+            },
+            "overflow": {
+              "const": false
+            },
+            "pid": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "reaped": {
+              "const": true
+            },
+            "stderr_eof": {
+              "const": true
+            },
+            "stdout_eof": {
+              "const": true
+            },
+            "timed_out": {
+              "const": false
+            },
+            "unread_or_dropped_unknown": {
+              "const": false
+            }
+          }
+        }
+      ]
+    }
+  },
+  "$id": "urn:openergy:metadata-copy-child-status:v3",
+  "$ref": "#/$defs/published_status",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

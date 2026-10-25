@@ -1,0 +1,81 @@
+{
+  "current_copy_parent": {
+    "bytes": 120718,
+    "can_launch_new_alias_as_is": false,
+    "commit": "c82cc12b8a2d709d8ce1e384545475159b24d2a9",
+    "execution_in_this_task": false,
+    "functions": {
+      "collect": {
+        "lines": [
+          725,
+          872
+        ],
+        "sha256": "524602c4f3a2b47e4fae0043af8fa0955ce9d04061391a77fd47bb3c16461c7c"
+      },
+      "copy_record_complete": {
+        "lines": [
+          913,
+          935
+        ],
+        "sha256": "571357b367e6b93c3a9fa68c32bfd27f6eb0d96f98c2950637ab847dd9e815a1"
+      },
+      "inspect_copy_result": {
+        "lines": [
+          950,
+          1070
+        ],
+        "sha256": "0389af1ff2c6ab0cfb48e1e1442604c16eda444701cd2788e73b1cf846442ec4"
+      },
+      "inspect_fixed_inputs": {
+        "lines": [
+          479,
+          497
+        ],
+        "sha256": "dfa95fb06f7fc255ef73210be8363b3906b72622c4b580283e8345cf5b57bf16"
+      },
+      "inspect_saved_source": {
+        "lines": [
+          500,
+          520
+        ],
+        "sha256": "719b8892f8a9b0eac880712c5b5ca3f882d191726a6fa64b3e8bb6dd48ffb672"
+      },
+      "main": {
+        "lines": [
+          1086,
+          1234
+        ],
+        "sha256": "28b76646b2851ba7068e61b98519fefd052cdee329ba226e93f3e5b7cf67a2a3"
+      }
+    },
+    "import_commit": "6ef1663caee7ec8e421daaaf9effca6796ecedf0",
+    "own_collect_direct_signal": true,
+    "sha256": "94efc9b4de615485827e471c3e3f31250b28ea64f35228955b91154e4ba2a22a",
+    "still_launches_old_leaf": true,
+    "still_requires_copy_full_v2": true,
+    "still_requires_copy_kill_delivered": true
+  },
+  "exact_parent_materializer_composition": "BLOCKED, separate work and fresh independent review required",
+  "new_copy_full_result_schema": "openergy.metadata-observations.v3",
+  "new_copy_record_key": "kill_syscall_returned",
+  "old_source_fresh_source_and_complete_byte_exact": true,
+  "old_source_schema": "openergy.metadata-observations.v2",
+  "saved_SOURCE_public_data": {
+    "all_actual_exit_zero": true,
+    "boundary_canonical_sha256": "3376bf786d29aa3478c21741d8aa3a100c2073c812157fa4a38d0579fa82722b",
+    "boundary_files": 6,
+    "no_kill_reported": true,
+    "proof_scope": "Exact public recorded data and parent literal identities only; no new private evidence inspection",
+    "raw_manifest_canonical_sha256": "2baea069155b633485b1e8aed8fe72f3bf746f67de83a84f07a2daf0648fe4ee",
+    "raw_private_files_reopened": false,
+    "raw_rows": 212,
+    "records": 53,
+    "result": {
+      "bytes": 327813,
+      "sha256": "7482a637159e0389c5cd4c505778919bb49354437bc9feb1cf008d9db395712d"
+    },
+    "source_repeated": false,
+    "validation_caller_sha256": "01623cd4759f96cd0066a9456a2680bff476bc37b5b1acb61ec40388582a5e9f",
+    "validation_status": "BOUNDED_SOURCE_METADATA_PASS"
+  }
+}

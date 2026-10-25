@@ -1,0 +1,34 @@
+--- a/docs/verification/m1-metadata-r9-repair-2026-10-25-t3-9b2c2354/metadata-caller.py.txt
++++ b/m1-copy-only-caller-direct-signal-2026-10-25-t3-56c87ccf/metadata-copy-caller-direct-signal.py.txt
+@@ -3,2 +3,5 @@
+-CLI: metadata-caller.py.txt source|copy EVIDENCE START_CLOCK_MONOTONIC_NS PARENT_RECORD_SHA256
+-Source parent record: EVIDENCE/metadata-source-parent.json. Copy: bounded stdin.
++CLI: metadata-copy-caller-direct-signal.py.txt copy EVIDENCE START_CLOCK_MONOTONIC_NS PARENT_RECORD_SHA256
++COPY ONLY. Bounded stdin; saved SOURCE v2 stays in the SAME existing ROOT.
++Publish this new alias only AFTER prepare through existing SYSTEM/common R9
++regular reservations; pin its exact bytes before private entry. Separate exact
++parent/materializer composition and independent review remain BLOCKED.
+@@ -24,0 +28 @@
++COPY_CALLER_LEAF = 'metadata-copy-caller-direct-signal.py.txt'
+@@ -420 +424 @@
+-    kill_attempted, kill_delivered = False, False
++    kill_attempted, kill_syscall_returned = False, False
+@@ -483,3 +487,5 @@
+-                            kill_attempted = True
+-                            proc.kill()  # Only this retained, unreaped direct child.
+-                            kill_delivered = True
++                            if overflow or timed_out:
++                                kill_attempted = True
++                                # Only this retained, still-unreaped child; no extra poll/OS query.
++                                os.kill(proc.pid, signal.SIGKILL)
++                                kill_syscall_returned = True  # Return is not delivery, exit or reap.
+@@ -521 +527 @@
+-                  kill_attempted=kill_attempted, kill_delivered=kill_delivered,
++                  kill_attempted=kill_attempted, kill_syscall_returned=kill_syscall_returned,
+@@ -671 +677,2 @@
+-    require(len(sys.argv) == 5 and sys.argv[1] in ('source', 'copy'), 'fixed CLI')
++    require(len(sys.argv) == 5 and sys.argv[1] == 'copy', 'fixed COPY-only CLI')
++    require(Path(__file__).name == COPY_CALLER_LEAF, 'fixed COPY caller leaf')
+@@ -684 +691 @@
+-    result = dict(schema='openergy.metadata-observations.v2', clock=CLOCK, mode=mode, expected_basis_sha256=EXPECTED_HASH,
++    result = dict(schema='openergy.metadata-observations.v3', clock=CLOCK, mode=mode, expected_basis_sha256=EXPECTED_HASH,

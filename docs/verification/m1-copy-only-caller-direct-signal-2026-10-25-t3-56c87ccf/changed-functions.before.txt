@@ -1,0 +1,233 @@
+def collect(label, argv, root, phase_deadline):
+    """Direct child only. Bounded nonblocking reads; no communicate or PID inference."""
+    started = clock_ns()
+    deadline = min(started + 10 * NS, phase_deadline - NS)  # Leave publication time inside phase.
+    require(deadline - started > 750000000, label + ': no command/reap allowance')
+    work_end = deadline - 500000000  # Kill/reap share the command's original ceiling.
+    buffers = {'stdout': bytearray(), 'stderr': bytearray()}
+    eof = {'stdout': False, 'stderr': False}
+    observed, dropped, drop_unknown = 0, 0, False
+    overflow, timed_out, deadline_loss = False, False, False
+    proc, error, kill_error, reaped = None, None, None, False
+    selector = selectors.DefaultSelector()
+    kill_attempted, kill_delivered = False, False
+    kill_eligibility_exit, kill_eligibility_observed_ns = None, None
+    try:
+        with until(work_end):
+            proc = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE, cwd=root, env=native_environment(root),
+                                    shell=False, close_fds=True)
+            HANDLES.append(dict(label=label, argv=list(argv), handle=proc, collector_status=None))
+            for name in ('stdout', 'stderr'):
+                stream = getattr(proc, name)
+                os.set_blocking(stream.fileno(), False)
+                selector.register(stream, selectors.EVENT_READ, name)
+            while True:
+                status = proc.poll()  # Actual waitpid status from the retained handle.
+                if status is not None and all(eof.values()):
+                    reaped = True
+                    break
+                if clock_ns() >= work_end:
+                    timed_out = deadline_loss = True
+                    break
+                if not selector.get_map():
+                    # EOF without exit: block only within the remaining work interval.
+                    try:
+                        proc.wait(timeout=remaining(work_end))
+                    except subprocess.TimeoutExpired:
+                        timed_out = deadline_loss = True
+                    continue
+                for key, _mask in selector.select(min(0.05, remaining(work_end))):
+                    # Read at most remaining capacity + one overflow byte. Never capture then cap.
+                    allowance = STREAM_CAP - sum(len(x) for x in buffers.values())
+                    try:
+                        chunk = os.read(key.fd, min(65536, allowance + 1))
+                    except BlockingIOError:
+                        continue
+                    if not chunk:
+                        eof[key.data] = True
+                        selector.unregister(key.fileobj)
+                        continue
+                    observed += len(chunk)
+                    buffers[key.data].extend(chunk[:allowance])
+                    if len(chunk) > allowance:
+                        dropped += len(chunk) - allowance
+                        overflow, drop_unknown = True, True
+                        break
+                if overflow:
+                    break
+    except Exception as exc:
+        error = type(exc).__name__ + ': ' + str(exc)[:1024]
+        if isinstance(exc, (TimeoutError, subprocess.TimeoutExpired)):
+            timed_out = deadline_loss = True
+    finally:
+        if proc is not None:
+            try:
+                with until(deadline):
+                    kill_eligibility_exit = proc.poll()
+                    try:
+                        kill_eligibility_observed_ns = clock_ns()
+                    finally:
+                        # A real poll exit remains reaped even if the clock raises.
+                        if kill_eligibility_exit is not None:
+                            reaped = True
+                    if kill_eligibility_exit is None:
+                        if kill_eligibility_observed_ns < deadline and kill_eligibility_observed_ns < phase_deadline:
+                            kill_attempted = True
+                            proc.kill()  # Only this retained, unreaped direct child.
+                            kill_delivered = True
+                        else:
+                            timed_out = deadline_loss = True
+                    proc.wait(timeout=remaining(deadline))
+                    reaped = True
+            except Exception as exc:
+                kill_error = type(exc).__name__ + ': ' + str(exc)[:1024]
+                deadline_loss = True
+            # No drain pass after failure; unread bytes remain explicitly unknown.
+            if not all(eof.values()):
+                drop_unknown = True
+            if clock_ns() > deadline:
+                deadline_loss = True
+            for name in ('stdout', 'stderr'):
+                stream = getattr(proc, name)
+                if stream is not None:
+                    try:
+                        stream.close()
+                    except Exception as exc:
+                        if error is None:
+                            error = type(exc).__name__ + ': ' + str(exc)[:1024]
+        try:
+            selector.close()
+        except Exception as exc:
+            if error is None:
+                error = type(exc).__name__ + ': ' + str(exc)[:1024]
+    finished = clock_ns()
+    if finished > deadline:
+        deadline_loss = True
+    status = proc.returncode if proc is not None else None
+    record = dict(label=label, argv=argv, pid=proc.pid if proc is not None else None,
+                  handle_retained=proc is not None, actual_exit=status, reaped=reaped,
+                  stdout_eof=eof['stdout'], stderr_eof=eof['stderr'],
+                  observed_stream_bytes=observed, dropped_observed_bytes=dropped,
+                  unread_or_dropped_unknown=drop_unknown, overflow=overflow,
+                  timed_out=timed_out, deadline_loss=deadline_loss,
+                  kill_attempted=kill_attempted, kill_delivered=kill_delivered,
+                  kill_eligibility_exit=kill_eligibility_exit,
+                  kill_eligibility_observed_ns=kill_eligibility_observed_ns,
+                  error=error, kill_or_reap_error=kill_error, clock=CLOCK, started_ns=started,
+                  command_deadline_ns=deadline, finished_ns=finished)
+    if proc is not None:
+        HANDLES[-1]['collector_status'] = record
+    return record, bytes(buffers['stdout']), bytes(buffers['stderr'])
+
+
+def main():
+    require(len(sys.argv) == 5 and sys.argv[1] in ('source', 'copy'), 'fixed CLI')
+    mode, root = sys.argv[1], canonical(sys.argv[2])
+    require(root == Path(__file__).resolve(strict=True).parent and Path.cwd() == root, 'materialized caller cwd')
+    require(root.parent == Path('/Users/m1-dev/.local/state/openergy-verification') and root.name.startswith('m1-ordinary-reviewed-flow-20261025-'), 'fresh evidence namespace')
+    info = root.stat()
+    require(info.st_uid == os.getuid() and stat.S_IMODE(info.st_mode) == 0o700 and info.st_dev == Path('/private/tmp').stat().st_dev, 'evidence owner/mode/filesystem')
+    require(sys.argv[3].isascii() and sys.argv[3].isdigit() and len(sys.argv[3]) <= 20, 'integer shared-clock CLI')
+    started = int(sys.argv[3])
+    require(str(started) == sys.argv[3] and started <= clock_ns(), 'parent explicit shared-clock start')
+    deadline = started + 120 * NS
+    os.umask(0o077)
+    writer = None
+    result_ref = None
+    result = dict(schema='openergy.metadata-observations.v2', clock=CLOCK, mode=mode, expected_basis_sha256=EXPECTED_HASH,
+                  started_ns=started, phase_deadline_ns=deadline, native_records=[], auxiliary_records=[],
+                  completed_native_commands=0, observation_sequence_complete=False, first_error=None,
+                  artifact_gate_authority=False, runtime='UNVERIFIED', actual_direct_children=[],
+                  first_failed_command=None, first_failed_comparison=None, collected_commands=[],
+                  active_command=None, publication_errors=[])
+    try:
+        with until(deadline):
+            normalize_startup(root, mode)
+            vectors, expected = pin_inputs(root, deadline)
+            if mode == 'source':
+                parent_bytes = bound(root / 'metadata-source-parent.json', sys.argv[4], deadline, STREAM_CAP)
+            else:
+                # Parent captures entry authentication in memory. No unmetered
+                # post-prepare file or second private writer entry is needed.
+                parent_bytes = sys.stdin.buffer.read(STREAM_CAP + 1)
+                require(len(parent_bytes) <= STREAM_CAP and sha(parent_bytes) == sys.argv[4], 'copy bounded stdin parent binding')
+            parent = json.loads(parent_bytes)
+            require(set(parent) == {'schema', 'mode', 'clock', 'phase_started_ns', 'phase_deadline_ns', 'source_file_qualification', 'entry_authentication'}, 'parent record shape')
+            require(parent['schema'] == 'openergy.metadata-parent-boundary.v2' and parent['mode'] == mode
+                    and parent['clock'] == CLOCK and type(parent['phase_started_ns']) is int
+                    and type(parent['phase_deadline_ns']) is int and parent['phase_started_ns'] == started
+                    and parent['phase_deadline_ns'] == deadline, 'parent phase binding')
+            common = None
+            if mode == 'source':
+                # Parent owns exact /usr/bin/python3 launch. A system launcher
+                # can report its toolchain executable in sys.executable.
+                require(sys.flags.isolated and sys.flags.no_site and sys.flags.dont_write_bytecode and not sys.flags.optimize, 'source system -I -S -B flags')
+                require(parent['entry_authentication'] is None, 'source authenticates entry-template itself')
+                inspect_completed_source(root, parent['source_file_qualification'], started, deadline)
+            else:
+                require(parent['source_file_qualification'] is None, 'copy parent boundary')
+                auth = parent['entry_authentication']
+                parent_streams = inspect_parent_helper(root, auth, started, deadline)
+                # This check binds data AFTER entry. It cannot replace the parent's pre-entry gate.
+                common = import_common(root, deadline)
+            writer = Writer(root, mode, deadline, common)
+            writer.save('metadata-' + mode + '-once.json', dict(mode=mode, clock=CLOCK, started_ns=started, phase_deadline_ns=deadline, parent_record_sha256=sys.argv[4], execution_attempts=1))
+            if mode == 'copy':
+                # ALL new post-prepare evidence uses regular pre-write reservations.
+                writer.put('metadata-copy-parent.json', parent_bytes)
+                for name, data in parent_streams.items():
+                    writer.put('metadata-copy-parent-entry.' + name, data)
+            bundle = BUNDLE if mode == 'source' else copy_bundle(root, deadline)
+            helper = [SYSTEM, '-I', '-S', '-B', str(root / 'file-qualification.recipe.py.txt'), str(root)]
+            if mode == 'source':
+                result['auxiliary_records'].append(perform(writer, 'entry-template', helper + ['entry-template'], bundle, helper_mode='entry-template'))
+                # Exact first private-Python entry only AFTER the trusted helper completed.
+                result['auxiliary_records'].append(perform(writer, 'python-version', [PYTHON, '-I', '-S', '-B', '--version'], bundle, exact_stdout='Python 3.13.9\n'))
+                result['auxiliary_records'].append(perform(writer, 'python-architecture', ['/usr/bin/lipo', '-archs', PYTHON], bundle, exact_stdout='arm64\n'))
+                fresh = [None] * 50
+            else:
+                fresh = fresh_source(root, deadline, vectors)
+                result['auxiliary_records'].append(perform(writer, 'copy-files-before', helper + ['copy'], bundle, helper_mode='copy'))
+            for vector, basis, source in zip(vectors, expected, fresh):
+                result['native_records'].append(perform(writer, vector['label'], expand(vector, bundle), bundle, basis=basis, fresh=source))
+                result['completed_native_commands'] += 1
+            if mode == 'copy':
+                result['auxiliary_records'].append(perform(writer, 'copy-files-after', helper + ['copy'], bundle, helper_mode='copy'))
+            result['observation_sequence_complete'] = True
+    except Exception as exc:
+        result['first_error'] = type(exc).__name__ + ': ' + str(exc)[:2048]
+        result['observation_sequence_complete'] = False
+    if writer is not None:
+        result.update(collected_commands=writer.collected_commands, active_command=writer.active_command,
+                      first_failed_command=writer.first_failed_command, first_failed_comparison=writer.first_failed_comparison,
+                      publication_errors=writer.publication_errors)
+        if writer.first_failed_command is not None:
+            result['stop_detail'] = result['first_error']
+            result['first_error'] = writer.first_failed_command['label'] + ': first failed COMMAND status'
+        elif writer.first_failed_comparison is not None:
+            result['stop_detail'] = result['first_error']
+            result['first_error'] = writer.first_failed_comparison['label'] + ': first failed status/comparison'
+    # This is a pre-publication observation, never a claim about caller actual exit.
+    # Parent owns actual outer exit/EOF and must include it within the SAME phase.
+    try:
+        with until(deadline):
+            result['observations_finished_ns'] = clock_ns()
+            result['actual_direct_children'] = direct_children()
+            require(writer is not None, 'no admitted writer')
+            result_ref = writer.save('metadata-' + mode + '-result.json', result)
+    except Exception as exc:
+        result['observation_sequence_complete'] = False
+        result['result_publication_error'] = type(exc).__name__ + ': ' + str(exc)[:1024]
+        if result['first_error'] is None:
+            result['first_error'] = result['result_publication_error']
+        result['actual_direct_children'] = direct_children()
+    # One stdout summary attempt, no retry or late writer/extra allowance. If
+    # time is gone, the parent keeps its actual handle/partial streams/exit and
+    # missing facts stay missing. A partial summary is never issued a second time.
+    try:
+        emit_summary(result, deadline, result_ref)
+        remaining(deadline)
+    except Exception:
+        return 1
+    return 0 if result['observation_sequence_complete'] else 1

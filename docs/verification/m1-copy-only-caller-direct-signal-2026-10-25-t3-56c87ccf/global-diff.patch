@@ -1,0 +1,12 @@
+--- a/R9-globals
++++ b/COPY-alias-globals
+@@ -3,2 +3,5 @@
+-CLI: metadata-caller.py.txt source|copy EVIDENCE START_CLOCK_MONOTONIC_NS PARENT_RECORD_SHA256
+-Source parent record: EVIDENCE/metadata-source-parent.json. Copy: bounded stdin.
++CLI: metadata-copy-caller-direct-signal.py.txt copy EVIDENCE START_CLOCK_MONOTONIC_NS PARENT_RECORD_SHA256
++COPY ONLY. Bounded stdin; saved SOURCE v2 stays in the SAME existing ROOT.
++Publish this new alias only AFTER prepare through existing SYSTEM/common R9
++regular reservations; pin its exact bytes before private entry. Separate exact
++parent/materializer composition and independent review remain BLOCKED.
+@@ -24,0 +28 @@
++COPY_CALLER_LEAF = 'metadata-copy-caller-direct-signal.py.txt'
