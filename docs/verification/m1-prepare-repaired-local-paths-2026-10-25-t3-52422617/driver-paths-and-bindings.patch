@@ -1,0 +1,83 @@
+--- a/driver.py.txt
++++ b/driver.py.txt
+@@ -23,3 +23,3 @@
+-DRIVER = BASE + '/prepare-launch/prepare-local-parent-driver.py'
+-OBSERVER = BASE + '/prepare-launch/prepare-local-exit-observer.py'
+-ASSESSOR = BASE + '/tools/prepare-transport-assessor.py'
++DRIVER = BASE + '/prepare-repaired-launch/prepare-local-parent-driver.py'
++OBSERVER = BASE + '/prepare-repaired-launch/prepare-local-exit-observer.py'
++ASSESSOR = BASE + '/tools/prepare-repaired-transport-assessor.py'
+@@ -28,2 +28,2 @@
+-REQUIRED_COMPOSITION_CANDIDATE = '8bde42c5d18bb548aa435ee8f25321f236150da8'
+-REQUIRED_TEMPLATES = {'observer': {'bytes': 7673, 'sha256': '7b7e9dd96e0d7e3c1168c8dd2f5acc266967441061fefe2d29622add9729d5a6'}, 'assessor': {'bytes': 25746, 'sha256': '517c7cc82336d1a924e1578d3c13c68960834554596a668e80013fd8818ed913'}, 'collector': {'bytes': 28099, 'sha256': 'f1fa00b2ec61f6e4996b5938388f345a8ddcfb205455bc4482ce25711824f371'}}
++REQUIRED_COMPOSITION_CANDIDATE = 'b94f1c7cba63a15f86aa6dc2f7301158e6bf5b1d'
++REQUIRED_TEMPLATES = {'observer': {'bytes': 7754, 'sha256': 'bc000353179a65a2b1149b26729fa557a2ae93fefb0dcf55bb3d2f1b5c8badb6'}, 'assessor': {'bytes': 25827, 'sha256': '5d55fb13fbbc541c1c081fe4530a70d904b1b134c8f9f2085018072ae2a38d9e'}, 'collector': {'bytes': 28099, 'sha256': 'f1fa00b2ec61f6e4996b5938388f345a8ddcfb205455bc4482ce25711824f371'}}
+@@ -42 +42 @@
+-    'assessor_template': ('tools', 'prepare-transport-assessor.direct-signal.template.py.txt', 65536, 0o400),
++    'assessor_template': ('tools', 'prepare-repaired-transport-assessor.template.py.txt', 65536, 0o400),
+@@ -53,2 +53,2 @@
+-    'parent': ('base', 'prepare-parent-exit.json', 16384, 0o600),
+-    'request': ('base', 'prepare-parent-request.json', 16384, 0o600),
++    'parent': ('base', 'prepare-repaired-parent-exit.json', 16384, 0o600),
++    'request': ('base', 'prepare-repaired-parent-request.json', 16384, 0o600),
+@@ -60,11 +60,11 @@
+-    'assessment': ('base', 'prepare-transport-assessment.json', 16384, 0o600),
+-    'assessor_source': ('tools', 'prepare-transport-assessor.py', 65536, 0o400)}
+-NEW = [('base', 'prepare-local-parent-once.json'),
+-       ('base', 'prepare-local-parent-result.json'),
+-       ('base', 'prepare-observer-handle-source.json'),
+-       ('base', 'prepare-local-direct-topology.json'),
+-       ('base', 'prepare-run'), ('base', 'prepare-parent-request.json'),
+-       ('base', 'prepare-parent-exit.json'), ('base', 'prepare-transport-assessment.json'),
+-       ('tools', 'prepare-transport-assessor.py'),
+-       ('tools', 'prepare-assessor-render-method.json'),
+-       ('tools', 'prepare-assessor-render-proof.json')]
++    'assessment': ('base', 'prepare-repaired-transport-assessment.json', 16384, 0o600),
++    'assessor_source': ('tools', 'prepare-repaired-transport-assessor.py', 65536, 0o400)}
++NEW = [('base', 'prepare-repaired-local-parent-once.json'),
++       ('base', 'prepare-repaired-local-parent-result.json'),
++       ('base', 'prepare-repaired-observer-handle-source.json'),
++       ('base', 'prepare-repaired-local-direct-topology.json'),
++       ('base', 'prepare-repaired-run'), ('base', 'prepare-repaired-parent-request.json'),
++       ('base', 'prepare-repaired-parent-exit.json'), ('base', 'prepare-repaired-transport-assessment.json'),
++       ('tools', 'prepare-repaired-transport-assessor.py'),
++       ('tools', 'prepare-repaired-assessor-render-method.json'),
++       ('tools', 'prepare-repaired-assessor-render-proof.json')]
+@@ -72,7 +72,7 @@
+-    'once': ('base', 'prepare-local-parent-once.json', 16384, 0o600),
+-    'handle': ('base', 'prepare-observer-handle-source.json', 16384, 0o600),
+-    'topology': ('base', 'prepare-local-direct-topology.json', 16384, 0o600),
+-    'method': ('tools', 'prepare-assessor-render-method.json', 16384, 0o400),
+-    'assessor': ('tools', 'prepare-transport-assessor.py', 65536, 0o400),
+-    'render': ('tools', 'prepare-assessor-render-proof.json', 16384, 0o400),
+-    'result': ('base', 'prepare-local-parent-result.json', 16384, 0o600)}
++    'once': ('base', 'prepare-repaired-local-parent-once.json', 16384, 0o600),
++    'handle': ('base', 'prepare-repaired-observer-handle-source.json', 16384, 0o600),
++    'topology': ('base', 'prepare-repaired-local-direct-topology.json', 16384, 0o600),
++    'method': ('tools', 'prepare-repaired-assessor-render-method.json', 16384, 0o400),
++    'assessor': ('tools', 'prepare-repaired-transport-assessor.py', 65536, 0o400),
++    'render': ('tools', 'prepare-repaired-assessor-render-proof.json', 16384, 0o400),
++    'result': ('base', 'prepare-repaired-local-parent-result.json', 16384, 0o600)}
+@@ -282 +282 @@
+-    for label, leaf in [('launch', 'prepare-launch'), ('tools', 'tools')]:
++    for label, leaf in [('launch', 'prepare-repaired-launch'), ('tools', 'tools')]:
+@@ -327,2 +327,2 @@
+-        prefix = {'base': BASE, 'launch': BASE + '/prepare-launch',
+-                  'tools': BASE + '/tools', 'run': BASE + '/prepare-run'}[directory]
++        prefix = {'base': BASE, 'launch': BASE + '/prepare-repaired-launch',
++                  'tools': BASE + '/tools', 'run': BASE + '/prepare-repaired-run'}[directory]
+@@ -340 +340 @@
+-            leaf = {'launch': 'prepare-launch', 'tools': 'tools', 'run': 'prepare-run'}[label]
++            leaf = {'launch': 'prepare-repaired-launch', 'tools': 'tools', 'run': 'prepare-repaired-run'}[label]
+@@ -710 +710 @@
+-                'run_directory': BASE + '/prepare-run', 'started_ns': S, 'absolute_until_ns': A,
++                'run_directory': BASE + '/prepare-repaired-run', 'started_ns': S, 'absolute_until_ns': A,
+@@ -756 +756 @@
+-    DIRS['run'] = os.open('prepare-run', os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
++    DIRS['run'] = os.open('prepare-repaired-run', os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+@@ -909 +909 @@
+-        observer = ({'record': {key: PUBLICATIONS['prepare-observer-handle-source.json'][key]
++        observer = ({'record': {key: PUBLICATIONS['prepare-repaired-observer-handle-source.json'][key]
+@@ -911 +911 @@
+-                    if 'prepare-observer-handle-source.json' in PUBLICATIONS else OBSERVER_RECORD)
++                    if 'prepare-repaired-observer-handle-source.json' in PUBLICATIONS else OBSERVER_RECORD)
