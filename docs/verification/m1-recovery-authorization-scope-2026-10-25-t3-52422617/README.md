@@ -2,7 +2,7 @@
 
 The parent re-read the complete durable thread timeline through position8475.
 Only direct user messages were used for authorization. Agent/MCP reports and
-automatic goal deliveries were excluded. Exact item IDs, dates and relevant
+automatic goal deliveries were excluded. Exact item IDs, positions and relevant
 user text are retained in bindings.json.
 
 The user requested continued bug fixes, security, stability, performance,
