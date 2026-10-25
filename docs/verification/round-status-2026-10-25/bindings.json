@@ -1,6 +1,8 @@
 {
   "comparison_sha256": "124bcddb206e4281839fccf6c6c72b0c937fa34fa8ece1408625af1241275999",
   "metadata_audit": "de8779a28539cd09ad434d931aded18f01c92abd",
+  "metadata_caller_candidate": "621e0e3a9037e15b391e05b964dfcdb25da01515",
+  "metadata_caller_review": "pending; parent clock-domain objection retained",
   "new_performance_measurements": 0,
   "performance_audit": "880eb9f93f3a75dc214961ed49749b38bf199ff6",
   "previews": [
@@ -13,20 +15,29 @@
     {
       "appearance": "light",
       "console_messages": 0,
-      "height": 1183,
-      "width": 360
-    },
-    {
-      "appearance": "dark",
-      "console_messages": 0,
-      "height": 1595,
-      "historical_details": "open in preview only",
+      "height": 1225,
       "width": 360
     }
   ],
   "qualified_current_legacy_runtime_pairs": 0,
   "schema": "openergy.status-visual-bindings.v1",
   "sdk_proposal": "cfe7721",
-  "sdk_review_status": "running at last authoritative task_status",
-  "visual_sha256": "9aabd466ace57fdc79d0b4ef25a1d20ccfd8d23089a32c3a5ef9308937322361"
+  "sdk_review_status": "Bounded data CLEAR c490566f5306d79f2537e9bbce3c75db79a279d3",
+  "source_file_qualification": {
+    "actual_helper_exit": 0,
+    "actual_ssh_exit": 0,
+    "bundle_records": 167,
+    "facts_sha256": "ebd466312ed346991a9cdd72c64535dbc0696af82b4061b9d79d91fcc937d192",
+    "modules": 10,
+    "prefix_entries": 2006,
+    "prefix_regular_bytes": 46504040,
+    "prefix_root_mode": "0o700",
+    "private_python_entries": 0,
+    "product_invocations": 0,
+    "saved_data_audit": "pending",
+    "sdk_headers": 10,
+    "source_files": 702,
+    "status": "SOURCE_FILES_QUALIFIED_RUNTIME_UNVERIFIED"
+  },
+  "visual_sha256": "5bc9937da66b40dd44b284038b0b31ec4afb53d91dec251674720a772ef1d817"
 }
