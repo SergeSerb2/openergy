@@ -1,0 +1,13 @@
+{
+  "execution": false,
+  "notes": [
+    {
+      "kind": "absent_public_path_lookup",
+      "observation": "cat reported No such file or directory; no candidate or private access followed from that failure.",
+      "path": "docs/verification/m1-local-shared-clock-prerequisite-2026-10-25/README.md",
+      "resolution": "rg located the existing public docs/verification/local-metadata-coordinator-prerequisite-2026-10-25/README.md and receipt.json; both were read and Git/hash-bound."
+    }
+  ],
+  "schema": "openergy.metadata-r8-static-reader-notes.v1",
+  "scope": "Independent static data readers only. No supplied checker or caller was run. Synthetic byte arithmetic is not a runtime test, mock, failure injection or target measurement."
+}

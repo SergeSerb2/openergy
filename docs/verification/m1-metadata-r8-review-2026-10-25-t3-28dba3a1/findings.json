@@ -1,0 +1,100 @@
+{
+  "P1_count": 0,
+  "P2_count": 1,
+  "approval_authority": false,
+  "candidate_commit": "13fccbe1d547198d5025748d20af5fb5c3a8c287",
+  "execution": false,
+  "execution_counts": {
+    "activation": 0,
+    "build": 0,
+    "caller": 0,
+    "children": 0,
+    "controller": 0,
+    "copy50": 0,
+    "mocks": 0,
+    "native_queries": 0,
+    "prepare": 0,
+    "private_access": 0,
+    "private_version": 0,
+    "product": 0,
+    "remote": 0,
+    "signing": 0,
+    "source50": 0,
+    "source_file_qualification": 0,
+    "tests": 0,
+    "unit_tests": 0
+  },
+  "findings": [
+    {
+      "cause": "The None branch goes directly from proc.poll() to proc.kill(); the next explicit remaining(deadline) is after KILL. until computes a positive relative duration before handler/timer setup, so its alarm alone does not enforce the missing post-return gate.",
+      "concrete_static_path": "With command end D well before phase end, sample20ms remaining at84; schedule50ms delay before91; arm that stale20ms duration after D; poll returnsNone promptly; issue KILL after D before the alarm; remaining(D) at477 then rejects. No actual race or signal was tested.",
+      "function": "collect",
+      "id": "R8-P2-1",
+      "impact": "A new direct-child KILL can be attempted after the fixed10s command end that must include kill/reap. Later failure flags and parent rejection cannot prevent the already attempted signal.",
+      "inherited": true,
+      "introduced_by_R7": false,
+      "line_end": 477,
+      "line_start": 472,
+      "minimal_fix": "Retain the eligibility poll return and take an immediate shared-clock reading after it, including None. Preserve an actual exit. If None, permit KILL only while the sample is strictly before unchanged command and phase ends; otherwise record failure/uncertainty and skip KILL. Keep original bounded wait, handle/null facts, caps, clocks, first failure and no retry/drain/new writer or allowance.",
+      "path": "docs/verification/m1-metadata-r7-repair-2026-10-25-t3-5ce08973/metadata-caller.py.txt",
+      "priority": "P2",
+      "scope_limit": "Static action-ordering defect only; no hard OS preemption guarantee, runtime reproduction, new signal target, clock-origin finding or approval authority.",
+      "separate_context": "PAYLOAD-P2-1 and transport P2-02 are bound to separate components. Their pending repairs do not repair this unchanged caller function.",
+      "status": "OPEN_SOURCE",
+      "supporting_lines": [
+        [
+          84,
+          94
+        ],
+        [
+          410,
+          413
+        ],
+        [
+          479,
+          486
+        ],
+        [
+          500,
+          502
+        ]
+      ],
+      "title": "Check the shared deadline after the KILL-eligibility poll returns"
+    }
+  ],
+  "import_commit": "0dad1c00d0a27f8266ed8e138f780a9d94656cdc",
+  "prior_dispositions": [
+    {
+      "id": "R6-P2-1",
+      "response": "Exact durable full-result save return now feeds a closed <=512-byte success receipt. Fixed-root maxima SOURCE377/COPY373 independently match. FIFO/actualPC_PIPE_BUF>=512 and one nonblocking exact-count raw write replace large successful stdout. Full/insufficient pipe can still EAGAIN; parent compact binding and full raw acceptance remain external.",
+      "status": "CLOSED_SOURCE_ONLY"
+    },
+    {
+      "id": "R1",
+      "response": "Shared CLOCK_MONOTONIC6 integer-ns identity and conservative common conversion remain exact. R8-P2-1 is a separate post-poll action gate.",
+      "status": "CLOSED_SOURCE_ONLY"
+    },
+    {
+      "id": "R2",
+      "response": "Failed COMMAND status remains latched before raw publication; comparator follows durable raw/status; errors/nulls/partial refs and first causes remain exact.",
+      "status": "CLOSED_SOURCE_ONLY"
+    },
+    {
+      "id": "R4-R3",
+      "response": "Raw exclusive SOURCE writes/one close, unbuffered stdout and os._exit remain exact; no deferred payload or second attempt. Common internals and hard OS-stall behavior remain outside that closure.",
+      "status": "CLOSED_CALLER_OWNED_SOURCE_ONLY"
+    }
+  ],
+  "runtime": "UNVERIFIED",
+  "schema": "openergy.metadata-r8-findings.v1",
+  "unresolved_obligations": [
+    "Repair and independently review R8-P2-1 without changing fixed ceilings or signal authority.",
+    "Bind/strictly validate exact compact stdout, full original result bytes/hash and every53 SOURCE or52 COPY raw/status/comparison record; schema, receipt, file or command50 alone cannot accept.",
+    "Observe actual caller0/reap and complete both EOF with all error/loss/kill/deadline predicates before the SAME shared120s phase end.",
+    "Parent prefix authentication before every private entry; completed-original causal inspection, later remote five-file checks and new shared inspected/start readings remain external.",
+    "Pending SOURCE payload late-poll repair, transportR4 review, rendering/route/D4 and COPY reserved-publication integration receive no clearance here.",
+    "No runtime, target pipe/cross-process clock/private startup/durability/containment, native/signature/ABI/artifact/product/NI15/release/UI/performance/whole-flow proof."
+  ],
+  "verdict": "HOLD",
+  "whole_flow_NI15": "UNVERIFIED"
+}
