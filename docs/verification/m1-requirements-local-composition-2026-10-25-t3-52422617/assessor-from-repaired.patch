@@ -1,0 +1,97 @@
+--- a/assessor.py.txt
++++ b/assessor.py.txt
+@@ -18 +18 @@
+-CONFIG_TEXT = r'''{"schema":"openergy.prepare-transport-assessor-config.v1","payload":{"bytes":null,"sha256":null},"observer_rendered":{"bytes":null,"sha256":null},"capsule":{"candidate":null,"review":null,"review_sha256":null},"runtime":{"resolved_python":null,"full_version":null},"external":{"original_started_ns":null,"original_absolute_until_ns":null,"observer_pid":null,"observer_exit":null,"observer_exit_observed_ns":null,"observer_console_complete_ns":null,"observer_console_eof_ns":null,"observer_console_text":null,"same_local_host_boot_evidence_sha256":null,"observer_handle_source_evidence_sha256":null,"observer_render_proof_sha256":null,"payload_render_proof_sha256":null,"profile_guard_qualification_sha256":null,"assessor_review_sha256":null,"assessor_render_proof_sha256":null}}'''
++CONFIG_TEXT = '{"capsule":{"candidate":null,"review":null,"review_sha256":null},"external":{"assessor_render_proof_sha256":null,"assessor_review_sha256":null,"observer_console_complete_ns":null,"observer_console_eof_ns":null,"observer_console_text":null,"observer_exit":null,"observer_exit_observed_ns":null,"observer_handle_source_evidence_sha256":null,"observer_pid":null,"observer_render_proof_sha256":null,"original_absolute_until_ns":null,"original_started_ns":null,"payload_render_proof_sha256":null,"profile_guard_qualification_sha256":null,"same_local_host_boot_evidence_sha256":null},"observer_rendered":{"bytes":null,"sha256":null},"payload":{"bytes":null,"sha256":null},"runtime":{"full_version":null,"resolved_python":null},"schema":"openergy.requirements-source-transport-assessor-config.v1"}'
+@@ -22,2 +22,2 @@
+-OBSERVER = BASE + '/prepare-repaired-launch/prepare-local-exit-observer.py'
+-ASSESSOR = BASE + '/tools/prepare-repaired-transport-assessor.py'
++OBSERVER = BASE + '/requirements-source-launch/requirements-source-local-exit-observer.py'
++ASSESSOR = BASE + '/tools/requirements-source-transport-assessor.py'
+@@ -26,3 +26,3 @@
+-PAYLOAD = BASE + '/prepare-repaired-launch/prepare.payload.py'
+-RUN = BASE + '/prepare-repaired-run'
+-OUTPUT = 'prepare-repaired-transport-assessment.json'
++PAYLOAD = BASE + '/requirements-source-launch/requirements-source.payload.py'
++RUN = BASE + '/requirements-source-run'
++OUTPUT = 'requirements-source-transport-assessment.json'
+@@ -66,2 +66,2 @@
+-READS = {'parent': (False, 'prepare-repaired-parent-exit.json', 16384, 0o600),
+-         'request': (False, 'prepare-repaired-parent-request.json', 16384, 0o600),
++READS = {'parent': (False, 'requirements-source-parent-exit.json', 16384, 0o600),
++         'request': (False, 'requirements-source-parent-request.json', 16384, 0o600),
+@@ -148 +148 @@
+-    equal(value['schema'], 'openergy.prepare-transport-assessor-config.v1')
++    equal(value['schema'], 'openergy.requirements-source-transport-assessor-config.v1')
+@@ -309 +309 @@
+-              'phase': 'prepare', 'selected_work_seconds': 130, 'selected_settle_seconds': 2,
++              'phase': 'metadata-source', 'selected_work_seconds': 130, 'selected_settle_seconds': 2,
+@@ -321 +321 @@
+-                    'phase': 'prepare', 'elapsed_seconds': (T - S) / SECOND,
++                    'phase': 'metadata-source', 'elapsed_seconds': (T - S) / SECOND,
+@@ -331 +331 @@
+-    argv = [PYTHON, '-I', '-S', '-B', COLLECTOR, '--phase', 'prepare',
++    argv = [PYTHON, '-I', '-S', '-B', COLLECTOR, '--phase', 'metadata-source',
+@@ -337 +337 @@
+-                  'operation': 'one-file-only-prepare', 'phase': 'prepare',
++                  'operation': 'one-source-seven-requirements', 'phase': 'metadata-source',
+@@ -369 +369 @@
+-        for key, wanted in [('phase', 'prepare'), ('bindings', bindings), ('clock', CLOCK),
++        for key, wanted in [('phase', 'metadata-source'), ('bindings', bindings), ('clock', CLOCK),
+@@ -373 +373 @@
+-    equal(guard, {'schema': 'openergy.metadata-transport-once.v1', 'phase': 'prepare',
++    equal(guard, {'schema': 'openergy.metadata-transport-once.v1', 'phase': 'metadata-source',
+@@ -406,0 +407,14 @@
++def requirements_compact(value):
++    # Success transport summary only; full capture/basis/body acceptance stays external.
++    keys(value, ['v', 'state', 'r', 'c', 'n', 'reaped', 'eof', 'kill', 'loss',
++                 'p', 'raws_unpublished', 'f'])
++    require(type(value['r']) is list and len(value['r']) == 2)
++    integer(value['r'][0], 1, 16384)
++    hexhash(value['r'][1])
++    equal(value, {'v': 'requirements-source.v1', 'state': 'COLLECTED_DATA_ONLY',
++                  'r': value['r'], 'c': [0] * 9, 'n': 9, 'reaped': 511, 'eof': 511,
++                  'kill': 0, 'loss': 0, 'p': [2, 2, 2, 2],
++                  'raws_unpublished': False, 'f': None})
++    return value
++
++
+@@ -420,6 +434 @@
+-    keys(compact, ['v', 'state', 'r'])
+-    equal(compact['v'], 'prepare-parent.v1')
+-    equal(compact['state'], 'PREPARED_DATA_COMPLETE')
+-    require(type(compact['r']) is list and len(compact['r']) == 2)
+-    integer(compact['r'][0], 1, 262144)
+-    hexhash(compact['r'][1])
++    requirements_compact(compact)
+@@ -434 +443 @@
+-    linked = os.stat('prepare-repaired-run', dir_fd=ROOT, follow_symlinks=False)
++    linked = os.stat('requirements-source-run', dir_fd=ROOT, follow_symlinks=False)
+@@ -482,2 +491,2 @@
+-    raw = canonical({'v': 'prepare-transport-assessment.v1',
+-                     'state': 'TRANSPORT_ONLY_PENDING_FULL_PREPARE', 'r': reference,
++    raw = canonical({'v': 'requirements-source-transport-assessment.v1',
++                     'state': 'TRANSPORT_ONLY_PENDING_FULL_REQUIREMENTS', 'r': reference,
+@@ -513 +522 @@
+-        RUNFD = os.open('prepare-repaired-run', os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
++        RUNFD = os.open('requirements-source-run', os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+@@ -524,3 +533,3 @@
+-            value = {'schema': 'openergy.prepare-transport-assessment.v1',
+-                     'status': 'TRANSPORT_ONLY_PENDING_FULL_PREPARE',
+-                     'phase': 'prepare', 'original_started_ns': S, 'original_absolute_until_ns': A,
++            value = {'schema': 'openergy.requirements-source-transport-assessment.v1',
++                     'status': 'TRANSPORT_ONLY_PENDING_FULL_REQUIREMENTS',
++                     'phase': 'metadata-source', 'original_started_ns': S, 'original_absolute_until_ns': A,
+@@ -532,3 +541,3 @@
+-                     'compact_reference': compact, 'full_prepare_receipt_assessed': False,
+-                     'full_prepare_raws_retained_locally': False,
+-                     'pending': ['full prepare receipt and raw retention',
++                     'compact_reference': compact, 'full_requirements_receipt_assessed': False,
++                     'full_requirements_raws_retained_locally': False,
++                     'pending': ['full requirements receipt, capture, basis and guard retention',
+@@ -536 +545 @@
+-                                 'full prepare, copy and artifact predicates'],
++                                 'all nine actual observations and seven full requirements bodies; CURRENT artifact gate'],
+@@ -538 +547 @@
+-                     'prepare_accepted': False, 'copy_accepted': False,
++                     'requirements_accepted': False, 'copy_accepted': False,
