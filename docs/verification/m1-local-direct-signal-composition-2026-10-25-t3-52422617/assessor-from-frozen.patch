@@ -1,0 +1,26 @@
+--- docs/verification/m1-prepare-transport-assessor-2026-10-25-t3-c696c14b/assessor.py.txt
++++ assessor.py.txt
+@@ -21,12 +21,12 @@
+ PYTHON = '/opt/homebrew/bin/python3.15'
+ OBSERVER = BASE + '/prepare-launch/prepare-local-exit-observer.py'
+ ASSESSOR = BASE + '/tools/prepare-transport-assessor.py'
+-COLLECTOR = BASE + '/tools/transport-phase-budgets.py'
++COLLECTOR = BASE + '/tools/transport-direct-signal.py'
+ PROFILE = BASE + '/m1-profile.json'
+ PAYLOAD = BASE + '/prepare-launch/prepare.payload.py'
+ RUN = BASE + '/prepare-run'
+ OUTPUT = 'prepare-transport-assessment.json'
+-COLLECTOR_HASH = '695dc01461b31e04eb7b8c4a12848350f26a45731f05b0ddca971c05749e4df6'
++COLLECTOR_HASH = 'f1fa00b2ec61f6e4996b5938388f345a8ddcfb205455bc4482ce25711824f371'
+ PROFILE_HASH = 'dc9ff86519970ad740961012b0740b1b1a7aab3135a6fe79e47aa0de071acf4f'
+ CLOCK_HASH = '67e4f9525b2d1b1496689808d08ab625fc88698bb1e2b049e463868f08e5303d'
+ SECOND = 1000000000
+@@ -352,7 +352,7 @@
+     keys(guard, GUARD_KEYS)
+     bindings = {name: {'path': path, 'sha256': sha, 'verified': True, 'bytes': size}
+                 for name, path, sha, size in [
+-                    ('collector', COLLECTOR, COLLECTOR_HASH, 28060),
++                    ('collector', COLLECTOR, COLLECTOR_HASH, 28099),
+                     ('profile', PROFILE, PROFILE_HASH, 821),
+                     ('payload', PAYLOAD, config['payload']['sha256'], config['payload']['bytes'])]}
+     keys(receipt['deadlines'], ['started_ns', 'entry_ns', 'work_until_ns',

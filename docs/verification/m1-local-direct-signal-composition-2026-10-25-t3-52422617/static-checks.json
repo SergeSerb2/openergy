@@ -1,0 +1,36 @@
+{
+  "assessor_CONFIG_bindings_still_null": true,
+  "collector_direct_os_kill_sites": 1,
+  "execution": false,
+  "historical_actual_statuses_rechecked": 53,
+  "no_Popen_kill_calls_in_three_new_sources": true,
+  "observer_payload_bindings_still_null": true,
+  "patches": [
+    {
+      "baseline_hash": true,
+      "exact_patch_reconstruction": true,
+      "hunks": 2,
+      "new_hash": true,
+      "source": "assessor"
+    },
+    {
+      "baseline_hash": true,
+      "exact_patch_reconstruction": true,
+      "hunks": 3,
+      "new_hash": true,
+      "source": "collector"
+    },
+    {
+      "baseline_hash": true,
+      "exact_patch_reconstruction": true,
+      "hunks": 3,
+      "new_hash": true,
+      "source": "observer"
+    }
+  ],
+  "runtime_or_product_acceptance": false,
+  "schema": "openergy.local-direct-signal-static-data.v1",
+  "source_data_AST_only": true,
+  "staged_git_whitespace_full_exit": 0,
+  "staged_git_whitespace_without_patches_exit": 0
+}

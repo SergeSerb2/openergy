@@ -1,0 +1,29 @@
+--- docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/observer.py.txt
++++ observer.py.txt
+@@ -8,7 +8,7 @@
+ TOTAL_SECONDS=135
+ PAYLOAD_BYTES=None
+ PAYLOAD_SHA256=None
+-COLLECTOR_SHA256='695dc01461b31e04eb7b8c4a12848350f26a45731f05b0ddca971c05749e4df6'
++COLLECTOR_SHA256='f1fa00b2ec61f6e4996b5938388f345a8ddcfb205455bc4482ce25711824f371'
+ PROFILE_SHA256='dc9ff86519970ad740961012b0740b1b1a7aab3135a6fe79e47aa0de071acf4f'
+ CLOCK_SHA256='67e4f9525b2d1b1496689808d08ab625fc88698bb1e2b049e463868f08e5303d'
+ PROCESS=None
+@@ -66,7 +66,7 @@
+     assert os.getpriority(os.PRIO_PROCESS,0)==15
+     console=os.fstat(1);assert stat.S_ISFIFO(console.st_mode) and os.fpathconf(1,'PC_PIPE_BUF')>=512
+     os.set_blocking(1,False)
+-    read_bound(B+'/tools/transport-phase-budgets.py',28060,COLLECTOR_SHA256,0o400)
++    read_bound(B+'/tools/transport-direct-signal.py',28099,COLLECTOR_SHA256,0o400)
+     read_bound(B+'/m1-profile.json',821,PROFILE_SHA256,0o400)
+     read_bound(B+'/prepare-launch/prepare.payload.py',PAYLOAD_BYTES,PAYLOAD_SHA256,0o400)
+     info=time.get_clock_info('monotonic')
+@@ -81,7 +81,7 @@
+     finally:os.close(fd)
+     own_sha=hashlib.sha256(own_source).hexdigest()
+     S=time.monotonic_ns();A=S+TOTAL_SECONDS*1000000000
+-    argv=[PYTHON,'-I','-S','-B',B+'/tools/transport-phase-budgets.py','--phase',PHASE,'--profile',B+'/m1-profile.json','--profile-sha256',PROFILE_SHA256,'--payload',B+'/prepare-launch/prepare.payload.py','--payload-sha256',PAYLOAD_SHA256,'--run-dir',B+'/prepare-run','--collector-sha256',COLLECTOR_SHA256,'--envelope-start-ns',str(S),'--clock-sha256',CLOCK_SHA256]
++    argv=[PYTHON,'-I','-S','-B',B+'/tools/transport-direct-signal.py','--phase',PHASE,'--profile',B+'/m1-profile.json','--profile-sha256',PROFILE_SHA256,'--payload',B+'/prepare-launch/prepare.payload.py','--payload-sha256',PAYLOAD_SHA256,'--run-dir',B+'/prepare-run','--collector-sha256',COLLECTOR_SHA256,'--envelope-start-ns',str(S),'--clock-sha256',CLOCK_SHA256]
+     request={'schema':'openergy.phase-parent-once.v1','operation':'one-file-only-prepare','phase':PHASE,'selected_work_seconds':WORK_SECONDS,'selected_settle_seconds':SETTLE_SECONDS,'selected_final_seconds':FINAL_SECONDS,'selected_total_seconds':TOTAL_SECONDS,'observer_source_sha256':own_sha,'own_priority_before':15,'clock':clock,'same_local_host_and_boot_bound_by_direct_topology':True,'started_ns':S,'work_until_ns':S+WORK_SECONDS*1000000000,'absolute_until_ns':A,'argv':argv,'retries':0,'exclusive_target_root_owned_for_serial_attempt':True,'remote_enclosure':'actual completed activity must be proved within original local envelope; no cross-host timestamp comparison or assumed latency'}
+     save('prepare-parent-request.json',request,A)
+     assert time.monotonic_ns()<A

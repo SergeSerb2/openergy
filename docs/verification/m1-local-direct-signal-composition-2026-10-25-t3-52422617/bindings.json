@@ -1,0 +1,119 @@
+{
+  "COPY_acceptance": false,
+  "actual_assessor_path": "BASE/tools/prepare-transport-assessor.py",
+  "actual_materialization": null,
+  "actual_observer_path": "BASE/prepare-launch/prepare-local-exit-observer.py",
+  "all_previous_guards_records_and_private_staging_preserved": true,
+  "execution": false,
+  "final_seconds": 3,
+  "future_assessor_template_path": "BASE/tools/prepare-transport-assessor.direct-signal.template.py.txt",
+  "future_fixed_collector_path": "BASE/tools/transport-direct-signal.py",
+  "future_observer_template_path": "BASE/prepare-launch/observer.direct-signal.template.py.txt",
+  "prepare_acceptance": false,
+  "product_acceptance": false,
+  "review": null,
+  "runtime_acceptance": false,
+  "runtime_public_source": {
+    "bytes": 100417,
+    "path": "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py",
+    "ranges": {
+      "internal_poll": [
+        2171,
+        2193
+      ],
+      "kill": [
+        2506,
+        2509
+      ],
+      "poll": [
+        1422,
+        1425
+      ],
+      "send_signal": [
+        2469,
+        2499
+      ]
+    },
+    "scope": "public installed source text only; no Popen behavior executed",
+    "sha256": "68a09b33081bc3c640f3fe0ea2cc75ef2b31ddc1c2b624047ab01591d3763622"
+  },
+  "schema": "openergy.local-direct-signal-composition.v1",
+  "settle_seconds": 2,
+  "sources": {
+    "assessor": {
+      "baseline": {
+        "bytes": 25746,
+        "candidate_commit": "89f62e6269dd3f7f3011c86938a761d6b63dc2cb",
+        "path": "docs/verification/m1-prepare-transport-assessor-2026-10-25-t3-c696c14b/assessor.py.txt",
+        "review_commit": "8d9494216ca01ef5258ee104b04cf58cab7073cb",
+        "review_scope": "historical source verdict; exact new composition remains unreviewed",
+        "review_sha256": "d4c126c625ec04dd7f523599496a565413ce691d0797f6a069b4a8ec46aa0f62",
+        "sha256": "1e52486a991886c0dbaa463ef3203695cabcd61aeedb841bb45275850541cbd9"
+      },
+      "patch": {
+        "bytes": 1494,
+        "sha256": "3ae73e4441dd609685525b45395ecd2a67fcc1ede7eaca0873c52be63d863020"
+      },
+      "source": {
+        "bytes": 25746,
+        "path": "assessor.py.txt",
+        "sha256": "517c7cc82336d1a924e1578d3c13c68960834554596a668e80013fd8818ed913"
+      }
+    },
+    "collector": {
+      "baseline": {
+        "bytes": 28060,
+        "candidate_commit": "c591ea5941020e556d878ffef0349625ec42be9f",
+        "path": "docs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/transport-collector.py.txt",
+        "review_commit": "98b403d1902ac4d0651c230fb7ec28c4cc154035",
+        "review_scope": "historical source verdict; exact new composition remains unreviewed",
+        "review_sha256": "0c3b311ebff23145ecebd1b64ed38f0e6feaaff46c80c0b1d7a8ecc92d769a3c",
+        "sha256": "695dc01461b31e04eb7b8c4a12848350f26a45731f05b0ddca971c05749e4df6"
+      },
+      "patch": {
+        "bytes": 1107,
+        "sha256": "9a1b3b895514ef11e6604f79aaa7977eb1e4da386edd6bb4f174b37050b55cc2"
+      },
+      "source": {
+        "bytes": 28099,
+        "path": "collector.py.txt",
+        "sha256": "f1fa00b2ec61f6e4996b5938388f345a8ddcfb205455bc4482ce25711824f371"
+      }
+    },
+    "observer": {
+      "baseline": {
+        "bytes": 7673,
+        "candidate_commit": "41bf91daf3f6756179437c5ab652ffeb040ca759",
+        "path": "docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/observer.py.txt",
+        "review_commit": "91f7c8a1f3359d4a322c936712b3ebe9d451901d",
+        "review_scope": "historical source verdict; exact new composition remains unreviewed",
+        "review_sha256": "bb8ed39275540eabc116cca932a40d42246c939c7245f8c04eaba03c87c97ed1",
+        "sha256": "845d90024ad47f6b76d6d6e646b679d00bb97b8ca0478d0fa86523de3dbec60f"
+      },
+      "patch": {
+        "bytes": 2766,
+        "sha256": "94921d50fab2a48db988aa3808ec9eebe3c15e1467cbe84be5d1be0fb2b0105f"
+      },
+      "source": {
+        "bytes": 7673,
+        "path": "observer.py.txt",
+        "sha256": "7b7e9dd96e0d7e3c1168c8dd2f5acc266967441061fefe2d29622add9729d5a6"
+      }
+    }
+  },
+  "status": "IMPLEMENTED_UNREVIEWED",
+  "unchanged_caps": {
+    "combined": 196608,
+    "payload": 1048576,
+    "stderr": 65536,
+    "stdout": 131072
+  },
+  "unchanged_phase_work_seconds": {
+    "controller": 335,
+    "metadata-copy": 130,
+    "metadata-source": 130,
+    "prepare": 130
+  },
+  "upstream_3_13_9_source": "https://raw.githubusercontent.com/python/cpython/v3.13.9/Lib/subprocess.py",
+  "upstream_source_is_not_remote_installed_identity": true
+}
