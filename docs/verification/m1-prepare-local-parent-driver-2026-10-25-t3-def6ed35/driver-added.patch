@@ -1,6 +1,6 @@
 --- /dev/null
 +++ docs/verification/m1-prepare-local-parent-driver-2026-10-25-t3-def6ed35/driver.py.txt
-@@ -0,0 +1,952 @@
+@@ -0,0 +1,957 @@
 +"""INERT SOURCE/DATA ONLY; execution=false; independent FULL review required.
 +
 +One fixed observer, then one fixed transport assessor. Only CONFIG_TEXT renders.
@@ -28,6 +28,8 @@
 +ASSESSOR = BASE + '/tools/prepare-transport-assessor.py'
 +ENV = {'PATH': '/usr/bin:/bin', 'LC_ALL': 'C', 'LANG': 'C'}
 +SECOND = 1000000000
++REQUIRED_COMPOSITION_CANDIDATE = '8bde42c5d18bb548aa435ee8f25321f236150da8'
++REQUIRED_TEMPLATES = {'observer': {'bytes': 7673, 'sha256': '7b7e9dd96e0d7e3c1168c8dd2f5acc266967441061fefe2d29622add9729d5a6'}, 'assessor': {'bytes': 25746, 'sha256': '517c7cc82336d1a924e1578d3c13c68960834554596a668e80013fd8818ed913'}, 'collector': {'bytes': 28099, 'sha256': 'f1fa00b2ec61f6e4996b5938388f345a8ddcfb205455bc4482ce25711824f371'}}
 +PROFILE_HASH = 'dc9ff86519970ad740961012b0740b1b1a7aab3135a6fe79e47aa0de071acf4f'
 +CLOCK_HASH = '67e4f9525b2d1b1496689808d08ab625fc88698bb1e2b049e463868f08e5303d'
 +CLOCK = {'schema': 'openergy.local-macos-clock.v1', 'clock': 'time.monotonic_ns',
@@ -203,6 +205,8 @@
 +        hexhash(dep['review'], 40)
 +        hexhash(dep['review_sha256'])
 +        bytehash(dep['template'], cap)
++        equal(dep['candidate'], REQUIRED_COMPOSITION_CANDIDATE)
++        equal(dep['template'], REQUIRED_TEMPLATES[name])
 +    # Historical zero-KILL success is preserved, but these old templates are
 +    # never an active direct-signal dependency selection for this driver.
 +    for name, old_hash in [
@@ -215,6 +219,7 @@
 +    hexhash(composition['candidate'], 40)
 +    hexhash(composition['review'], 40)
 +    hexhash(composition['review_sha256'])
++    equal(composition['candidate'], REQUIRED_COMPOSITION_CANDIDATE)
 +    equal(value['proofs']['assessor_review']['sha256'],
 +          value['dependencies']['assessor']['review_sha256'])
 +    hexhash(value['assessor_method_sha256'])

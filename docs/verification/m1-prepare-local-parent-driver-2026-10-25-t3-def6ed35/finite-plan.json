@@ -1,5 +1,6 @@
 {
   "COPY": {
+    "R3_review_status": "under fresh independent review per root; new verdict pending",
     "candidate_short": "f33a1fd",
     "findings": [
       "signal internal poll",
@@ -105,7 +106,7 @@
   },
   "prepare_R5": {
     "new_verdict": null,
-    "status": "separate repair; candidate/review UNKNOWN here"
+    "status": "under fresh independent review per root; new verdict pending"
   },
   "prepare_accepted": false,
   "private_state_access": false,
@@ -113,6 +114,8 @@
   "product_accepted": false,
   "r9_authority": false,
   "remote_network_native_runtime": false,
+  "required_composition_review": null,
+  "required_composition_source_candidate": "8bde42c5d18bb548aa435ee8f25321f236150da8",
   "retry_reset_replacement": false,
   "schema": "openergy.prepare-local-parent-false-plan.v1",
   "selected_phase": "prepare",

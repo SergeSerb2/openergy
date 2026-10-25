@@ -3,9 +3,10 @@
   "coordination": {
     "author_read_installed_runtime": false,
     "collector_issue": "POSIX kill -> send_signal -> poll -> waitpid before os.kill can cross signal deadline",
+    "exact_source_handoff_read_as_public_Git_data": true,
     "final_dependency_composition_review": "PENDING",
     "future_collector_fixed_path": "BASE/tools/transport-direct-signal.py",
-    "future_packet_commit": null,
+    "future_packet_commit": "8bde42c5d18bb548aa435ee8f25321f236150da8",
     "future_template_paths": [
       "BASE/prepare-launch/observer.direct-signal.template.py.txt",
       "BASE/tools/prepare-transport-assessor.direct-signal.template.py.txt"
@@ -255,5 +256,26 @@
       "sha256": "3c7c6e639ee64ca2e8ec49b27c993921ee4e7abff90928fd2f498135f2b20135"
     }
   ],
+  "required_future_composition": {
+    "candidate": "8bde42c5d18bb548aa435ee8f25321f236150da8",
+    "packet_folder": "docs/verification/m1-local-direct-signal-composition-2026-10-25-t3-52422617/",
+    "review": null,
+    "review_sha256": null,
+    "source_identities": {
+      "assessor": {
+        "bytes": 25746,
+        "sha256": "517c7cc82336d1a924e1578d3c13c68960834554596a668e80013fd8818ed913"
+      },
+      "collector": {
+        "bytes": 28099,
+        "sha256": "f1fa00b2ec61f6e4996b5938388f345a8ddcfb205455bc4482ce25711824f371"
+      },
+      "observer": {
+        "bytes": 7673,
+        "sha256": "7b7e9dd96e0d7e3c1168c8dd2f5acc266967441061fefe2d29622add9729d5a6"
+      }
+    },
+    "status": "IMPLEMENTED_UNREVIEWED"
+  },
   "schema": "openergy.local-parent-frozen-inputs.v1"
 }
