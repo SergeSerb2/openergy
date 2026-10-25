@@ -1,0 +1,444 @@
+{
+  "AST_literal_constants_read_as_data": true,
+  "all_candidate_changes": [
+    "A\tdocs/verification/ordinary-combined-context-tuple-repair-2026-10-25/README.md",
+    "A\tdocs/verification/ordinary-combined-context-tuple-repair-2026-10-25/SHA256SUMS",
+    "A\tdocs/verification/ordinary-combined-context-tuple-repair-2026-10-25/bindings.json",
+    "A\tdocs/verification/ordinary-combined-context-tuple-repair-2026-10-25/coverage-policy.json",
+    "A\tdocs/verification/ordinary-combined-context-tuple-repair-2026-10-25/future-flow-plan.json",
+    "A\tdocs/verification/ordinary-combined-context-tuple-repair-2026-10-25/limits.json",
+    "A\tdocs/verification/ordinary-combined-context-tuple-repair-2026-10-25/materialization.json",
+    "A\tdocs/verification/ordinary-combined-context-tuple-repair-2026-10-25/operation.template.json",
+    "A\tdocs/verification/ordinary-combined-context-tuple-repair-2026-10-25/restore-context.patch",
+    "A\tdocs/verification/ordinary-combined-context-tuple-repair-2026-10-25/source-checks.json",
+    "A\tdocs/verification/ordinary-combined-context-tuple-repair-2026-10-25/source/controller.py.txt"
+  ],
+  "all_changes_since_composition": [
+    "M\tdocs/verification/metadata-reader-local-cli-2026-10-25/README.md",
+    "M\tdocs/verification/metadata-reader-local-cli-2026-10-25/SHA256SUMS",
+    "M\tdocs/verification/metadata-reader-local-cli-2026-10-25/verify-cli.py",
+    "A\tdocs/verification/ordinary-combined-context-tuple-repair-2026-10-25/README.md",
+    "A\tdocs/verification/ordinary-combined-context-tuple-repair-2026-10-25/SHA256SUMS",
+    "A\tdocs/verification/ordinary-combined-context-tuple-repair-2026-10-25/bindings.json",
+    "A\tdocs/verification/ordinary-combined-context-tuple-repair-2026-10-25/coverage-policy.json",
+    "A\tdocs/verification/ordinary-combined-context-tuple-repair-2026-10-25/future-flow-plan.json",
+    "A\tdocs/verification/ordinary-combined-context-tuple-repair-2026-10-25/limits.json",
+    "A\tdocs/verification/ordinary-combined-context-tuple-repair-2026-10-25/materialization.json",
+    "A\tdocs/verification/ordinary-combined-context-tuple-repair-2026-10-25/operation.template.json",
+    "A\tdocs/verification/ordinary-combined-context-tuple-repair-2026-10-25/restore-context.patch",
+    "A\tdocs/verification/ordinary-combined-context-tuple-repair-2026-10-25/source-checks.json",
+    "A\tdocs/verification/ordinary-combined-context-tuple-repair-2026-10-25/source/controller.py.txt",
+    "A\tdocs/verification/ordinary-combined-recorder-diagnostic-review-2026-10-25-t3-392ae27f/REVIEW.md",
+    "A\tdocs/verification/ordinary-combined-recorder-diagnostic-review-2026-10-25-t3-392ae27f/SHA256SUMS",
+    "A\tdocs/verification/ordinary-combined-recorder-diagnostic-review-2026-10-25-t3-392ae27f/bindings.json",
+    "A\tdocs/verification/windows-metadata-deadline-review-2026-10-25-fb965bd1/REVIEW.md",
+    "A\tdocs/verification/windows-metadata-deadline-review-2026-10-25-fb965bd1/SHA256SUMS",
+    "A\tdocs/verification/windows-metadata-deadline-review-2026-10-25-fb965bd1/bindings.json",
+    "A\tdocs/verification/windows-metadata-deadline-review-2026-10-25-fb965bd1/repair-from-626e2bc.patch.txt",
+    "A\tdocs/verification/windows-metadata-deadline-review-2026-10-25-fb965bd1/static-data-checks.json"
+  ],
+  "authoritative_HEAD_at_check": "3c52f5320c7ad8f434f06fadbbd4520565dd0b9b",
+  "authoritative_checkout": "/Users/serge/.t3/worktrees/openergy/t3-52422617",
+  "authoritative_clean_at_check": true,
+  "candidate": "2b5fc1f505b1f0426b8f1e8b00537a0b6e805fc7",
+  "candidate_parent": "32810df980ef1c18f4b6384f40d5235058359511",
+  "candidate_tree": "b17d8a7c3f29c4cb55fb8bbb0feeb46ff46ef946",
+  "composition_scope": {
+    "controller_only_port_and_declared_imports_differ_from_priority": true,
+    "other_eight_priority_modules_byte_exact": true,
+    "port_diagnostic_module_byte_exact": true
+  },
+  "continuous_priority": "UNVERIFIED",
+  "controller_delta": {
+    "added_bytes": 11,
+    "added_lines": 1,
+    "keyword": "coverage=(self.runtime, 'main' if label == 'pre' else 'postflight', self.spec)",
+    "new_sha256": "08f1bbea8aeb5852b4aaddd0f3f693c7717c69e5e898462baa90b49cba41e3a4",
+    "old_sha256": "25348029134e10e7d587a5018d081cb3c7bfbe2025e257a0dd05beff6ba15e79",
+    "only_coverage_keyword_changed_in_AST": true,
+    "patch_sha256": "d3a1ad20aae3ddae41027e73c993b52c77ed75681ac1f4115e1cdfe6168623e5",
+    "priority_controller_sha256": "c955ad3a4ca7c01a46bdb6e5317718c0ba2c6ca743f5b55b0bab2208755bcfaa",
+    "priority_keyword_AST_exact": true,
+    "removed_lines": 1,
+    "strict_patch_reconstruction": true
+  },
+  "copied_policy_limits_disabled_template": [
+    {
+      "bytes": 876,
+      "name": "limits.json",
+      "sha256": "cadd06e19607f5dbe0ad070072673c8e518d961b1554958d243a0d028243d733"
+    },
+    {
+      "bytes": 1864,
+      "name": "coverage-policy.json",
+      "sha256": "35516fa08202a4ccd26ece557daecc5bf4e1e8f8e690f18b59d5cc70c3d30d36"
+    },
+    {
+      "bytes": 109,
+      "name": "operation.template.json",
+      "sha256": "77c56e57e9e834d2c6f224b16f831c404e062a50731573983c9ce30573794bbd"
+    }
+  ],
+  "date": "2026-10-25",
+  "future_plan": {
+    "all_steps_execution": false,
+    "execution": false,
+    "new_human_approval_gate": false,
+    "only_added_composition_and_full_review_inputs_and_updated_pending_label": true,
+    "operation_artifact_receipt": null
+  },
+  "helper_contract": {
+    "all_five_coverage_calls": [
+      {
+        "argument": "(self.runtime, 'postflight', self.spec)",
+        "line": 551,
+        "module": "controller.py",
+        "tuple_items": 3
+      },
+      {
+        "argument": "(self.runtime, 'main' if label == 'pre' else 'postflight', self.spec)",
+        "line": 260,
+        "module": "controller.py",
+        "tuple_items": 3
+      },
+      {
+        "argument": "(self.runtime, self.actor, self.spec)",
+        "line": 324,
+        "module": "ownership.py",
+        "tuple_items": 3
+      },
+      {
+        "argument": "(self.runtime, self.actor, self.spec)",
+        "line": 514,
+        "module": "ownership.py",
+        "tuple_items": 3
+      },
+      {
+        "argument": "(self.runtime, self.actor, self.spec)",
+        "line": 123,
+        "module": "watchdog.py",
+        "tuple_items": 3
+      }
+    ],
+    "constructor_arguments": [
+      "self",
+      "runtime",
+      "actor",
+      "spec",
+      "argv",
+      "deadline"
+    ],
+    "consumer": "CommandCoverage(*coverage, argv, deadline)",
+    "required_tuple_items": 3
+  },
+  "materialization": {
+    "additional_immutable_input": {
+      "bytes": 151287,
+      "commit": "7f20c9cdd97c1dc313f007b879babc726acbb914",
+      "destination": "build-source-bindings.json",
+      "path": "docs/verification/m1-sampler-source-repair-r3-2026-10-24/source-bindings.json",
+      "sha256": "20e011251151cec81f69c4b80b0072d9fd0a98c1eaaf0e6c74d83ff752546617"
+    },
+    "all_ten_sources_resolve_and_hash_match": true,
+    "do_not_run_in_package": true,
+    "execution": false,
+    "runtime_modules_materialized": false,
+    "source_checks_AST_claims_verified": true,
+    "source_checks_all_records_verified": true,
+    "unique_destinations": true
+  },
+  "modules": {
+    "common.py": {
+      "AST_parses_as_data": true,
+      "bytes": 12781,
+      "git_blob": "c3fd4b4524111bdad0d75ecf149d4b775da69cda",
+      "immutable_commit": "1ecac53902893d9a4fc2281b7967679e7121dd49",
+      "lines": 320,
+      "path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/common.py.txt",
+      "sha256": "20a9c16030b2de53b99870f25bada68137bfc6fbc5b67cc29f8e878312d4129c",
+      "unchanged_from_prior": true
+    },
+    "controller.py": {
+      "AST_parses_as_data": true,
+      "bytes": 36307,
+      "git_blob": "2d2394581ee63405d5bc41ba6b1d5f42fb810718",
+      "immutable_commit": "2b5fc1f505b1f0426b8f1e8b00537a0b6e805fc7",
+      "lines": 606,
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/source/controller.py.txt",
+      "sha256": "08f1bbea8aeb5852b4aaddd0f3f693c7717c69e5e898462baa90b49cba41e3a4",
+      "unchanged_from_prior": false
+    },
+    "coverage.py": {
+      "AST_parses_as_data": true,
+      "bytes": 11382,
+      "git_blob": "99d5d3e9f34d2d1318cc45597b6f488d8063ff52",
+      "immutable_commit": "1ecac53902893d9a4fc2281b7967679e7121dd49",
+      "lines": 215,
+      "path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/coverage.py.txt",
+      "sha256": "d154561f7f256e41b32c90941f7ce18ffa79d5284d23eecea9be88cc1c48f747",
+      "unchanged_from_prior": true
+    },
+    "exec_owned.py": {
+      "AST_parses_as_data": true,
+      "bytes": 2219,
+      "git_blob": "609d61182684dcb8aed6c3121727fd57a8a96603",
+      "immutable_commit": "1ecac53902893d9a4fc2281b7967679e7121dd49",
+      "lines": 46,
+      "path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/exec_owned.py.txt",
+      "sha256": "e7d9a755eed1fadfd04b43b3b96dbd0663cabdf07cc5aa7808ce006183859af2",
+      "unchanged_from_prior": true
+    },
+    "macproc.py": {
+      "AST_parses_as_data": true,
+      "bytes": 8075,
+      "git_blob": "6be48d0c8f3ff92a71965eebc4dd449b7149f8d2",
+      "immutable_commit": "1ecac53902893d9a4fc2281b7967679e7121dd49",
+      "lines": 190,
+      "path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/macproc.py.txt",
+      "sha256": "d4f6fe358bd9af786fc4c2cba61f1a47f3f4015c918aae85cf8e6aa1c6d3e6c7",
+      "unchanged_from_prior": true
+    },
+    "ownership.py": {
+      "AST_parses_as_data": true,
+      "bytes": 35975,
+      "git_blob": "c1d39953f4e4c6a89591af694506fd7ab5fe800a",
+      "immutable_commit": "1ecac53902893d9a4fc2281b7967679e7121dd49",
+      "lines": 596,
+      "path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/ownership.py.txt",
+      "sha256": "3ac4bab54db909beb236d0d9caa4ee83084ad9b566aa19d97c5b6d26c356b091",
+      "unchanged_from_prior": true
+    },
+    "port_diagnostic.py": {
+      "AST_parses_as_data": true,
+      "bytes": 10096,
+      "git_blob": "1642e2d94dc6efd570a6f6fa04f0841332c07f1d",
+      "immutable_commit": "1ecac53902893d9a4fc2281b7967679e7121dd49",
+      "lines": 186,
+      "path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/port_diagnostic.py.txt",
+      "sha256": "9d35bf1adbde9209562d9b4cfa211b75574a0fb1922dc0297761880c2d6d3985",
+      "unchanged_from_prior": true
+    },
+    "prepare.py": {
+      "AST_parses_as_data": true,
+      "bytes": 11632,
+      "git_blob": "b3491c6f70c853b750c9395ea659749beec6b6c0",
+      "immutable_commit": "1ecac53902893d9a4fc2281b7967679e7121dd49",
+      "lines": 160,
+      "path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/prepare.py.txt",
+      "sha256": "16f2c5d9dce3f3bce8a871bd53eea06ebf1818080de5f9bdaae3997b86304e9a",
+      "unchanged_from_prior": true
+    },
+    "probe.py": {
+      "AST_parses_as_data": true,
+      "bytes": 699,
+      "git_blob": "35236510f157b8475fef3da4f09276efba31d89b",
+      "immutable_commit": "1ecac53902893d9a4fc2281b7967679e7121dd49",
+      "lines": 21,
+      "path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/probe.py.txt",
+      "sha256": "d65d17246bbd9057576e32454014b00afed6988dfead7899251435302a651efd",
+      "unchanged_from_prior": true
+    },
+    "watchdog.py": {
+      "AST_parses_as_data": true,
+      "bytes": 18760,
+      "git_blob": "70624a8282c4771875a1497660de7c7c09deb9e8",
+      "immutable_commit": "1ecac53902893d9a4fc2281b7967679e7121dd49",
+      "lines": 355,
+      "path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/watchdog.py.txt",
+      "sha256": "5efe2cd41f9339463187dfc3d5b11ec8d14f1a159a58787e9b3e01fe60db158d",
+      "unchanged_from_prior": true
+    }
+  },
+  "new_P1": [],
+  "new_P2": [],
+  "new_full_flow_ran": false,
+  "port_cause": "UNKNOWN",
+  "prior_bound_paths_changed_since_composition": [],
+  "prior_bound_records_count": 254,
+  "prior_bound_unique_paths_count": 195,
+  "prior_finding_response": {
+    "id": "P2-1",
+    "reason": "Exact priority three-item coverage keyword restored, including self.spec; consumer and constructor unchanged.",
+    "status": "CLOSED_IN_SOURCE"
+  },
+  "prior_full_review": {
+    "commit": "c138853c78227e2e8ed8251cfd612ba3d3f5f678",
+    "complete_report_read": true,
+    "files": [
+      {
+        "bytes": 17977,
+        "git_blob": "21445da89d797d3df22ded9e886989e1a2eaa168",
+        "path": "docs/verification/ordinary-combined-recorder-diagnostic-review-2026-10-25-t3-392ae27f/REVIEW.md",
+        "sha256": "628a89f4a3bf38836a2fefb14cfa969e1441c5e5572fb424649d9f2de6e7a31c"
+      },
+      {
+        "bytes": 156,
+        "git_blob": "86fa49c3d1c94889c1dd27f34f78ef157e98a934",
+        "path": "docs/verification/ordinary-combined-recorder-diagnostic-review-2026-10-25-t3-392ae27f/SHA256SUMS",
+        "sha256": "0cc10f452057e7698c3d5f5ce9402efbb0fdb3d7551185592fc66af126a55e88"
+      },
+      {
+        "bytes": 115944,
+        "git_blob": "c22e8d9dffa96229afb8ba7e4c1232688dbaf86f",
+        "path": "docs/verification/ordinary-combined-recorder-diagnostic-review-2026-10-25-t3-392ae27f/bindings.json",
+        "sha256": "72f68086bc12221a270a17e613c53cde76f72b96864af9bd13e743f1e1153742"
+      }
+    ],
+    "imported_commit": "32810df980ef1c18f4b6384f40d5235058359511",
+    "old_archive_reaudited": false,
+    "old_review_verdict": "SOURCE_NOT_CLEAR_ONE_P2",
+    "path": "docs/verification/ordinary-combined-recorder-diagnostic-review-2026-10-25-t3-392ae27f",
+    "proof_limits_reused": true,
+    "tree": "006edd3155812f9dca40e6a3775710674f9f0ac4"
+  },
+  "raw_full_index_binary_candidate_diff": {
+    "bytes": 63785,
+    "sha256": "68d0eedb0ad9074d1e0f24c738352d2c3156d8d616546da956103512a89676bf"
+  },
+  "repair_checksum_entries": 10,
+  "repair_files": [
+    {
+      "bytes": 1831,
+      "git_blob": "d090b107cf298d14d4d80f0f28a2897412d7ae1e",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/README.md",
+      "sha256": "28f643800fa300edde2ec06bd886a12fbe8ad82a6ac2a05031622fcda70a0df9"
+    },
+    {
+      "bytes": 850,
+      "git_blob": "20a71a0283497588d825eb59033f0fef48e3e948",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/SHA256SUMS",
+      "sha256": "671837c51c8acfbecbd47b5806db20a0108edca233a9493aee1c1e98ef0a1818"
+    },
+    {
+      "bytes": 2449,
+      "git_blob": "44c7d8493ca34b7fb17020255a5246fbc9f409d4",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/bindings.json",
+      "sha256": "3c1ce2c28740a4cbb97d084cf43dfbd061f1e5081a847795e5d7183b0df8158f"
+    },
+    {
+      "bytes": 1864,
+      "git_blob": "9c4f4032fdd94dcae0934eebee766bea30d97776",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/coverage-policy.json",
+      "sha256": "35516fa08202a4ccd26ece557daecc5bf4e1e8f8e690f18b59d5cc70c3d30d36"
+    },
+    {
+      "bytes": 7330,
+      "git_blob": "2ea3503789f89195765cb12f71a226478810c459",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/future-flow-plan.json",
+      "sha256": "491e177658de732ee1d7c97ef2ae66febc4235bd070e17e0d33c0608997d635a"
+    },
+    {
+      "bytes": 876,
+      "git_blob": "06b351179fdaa936ee25d35d6f8478d9d987308d",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/limits.json",
+      "sha256": "cadd06e19607f5dbe0ad070072673c8e518d961b1554958d243a0d028243d733"
+    },
+    {
+      "bytes": 2743,
+      "git_blob": "5fb952cfa6f7a720a65f49a5bbca5e2a32e4e93c",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/materialization.json",
+      "sha256": "aee494d76e674bf5c8f292bdab210a284bc4c8e42edc4189a6892af618b8dc7d"
+    },
+    {
+      "bytes": 109,
+      "git_blob": "ddbecd31dcaff9af96be831138638ea6f48c5d60",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/operation.template.json",
+      "sha256": "77c56e57e9e834d2c6f224b16f831c404e062a50731573983c9ce30573794bbd"
+    },
+    {
+      "bytes": 741,
+      "git_blob": "fe637fb1b0e67440a9eff0f52d9b65d2f50629f4",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/restore-context.patch",
+      "sha256": "d3a1ad20aae3ddae41027e73c993b52c77ed75681ac1f4115e1cdfe6168623e5"
+    },
+    {
+      "bytes": 2932,
+      "git_blob": "cc5e7ab5387152ae0d7096a27d3c327f8a52b127",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/source-checks.json",
+      "sha256": "2bde5cf1f9396df5c7d8518caaadcdd69eafc5ff2f39117158efaf87e8d080f5"
+    },
+    {
+      "bytes": 36307,
+      "git_blob": "2d2394581ee63405d5bc41ba6b1d5f42fb810718",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/source/controller.py.txt",
+      "sha256": "08f1bbea8aeb5852b4aaddd0f3f693c7717c69e5e898462baa90b49cba41e3a4"
+    }
+  ],
+  "repair_package": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25",
+  "repair_package_tree": "020ce328cb56828a601c54d50c2f81940a063e63",
+  "review_initial_HEAD": "2b5fc1f505b1f0426b8f1e8b00537a0b6e805fc7",
+  "review_initial_clean": true,
+  "review_reader_initial_assertions": [
+    {
+      "reason": "Overbroad assumption that all post-composition history was additions only; pre-existing metadata-reader modifications are outside repair scope.",
+      "status": "FAILED_ASSERTION"
+    },
+    {
+      "reason": "Authoritative parent concurrently advanced to a separate metadata-evidence commit; all reviewed file bytes still match the fixed candidate.",
+      "status": "FAILED_ASSERTION"
+    }
+  ],
+  "reviewer_checkout": "/Users/serge/.t3/worktrees/openergy/t3-4d328640",
+  "runtime": "UNVERIFIED",
+  "saved_M1_inherited_from_unchanged_prior_review": {
+    "app_OS_exit": 0,
+    "app_checks": "25/25",
+    "cause": "UNKNOWN",
+    "controller_OS_exit": 1,
+    "first_strict_post_bind": "65431 EADDRINUSE FAILED",
+    "private_archive_reopened": false,
+    "public_review_and_bindings_rechecked": true,
+    "status": "FAILED_NOT_ACCEPTED",
+    "whole_flow_NI15": "UNVERIFIED"
+  },
+  "schema": "openergy.context-tuple-independent-source-review.v1",
+  "source_data_only": true,
+  "supplied_code_or_AST_executed_or_imported": false,
+  "timezone": "America/Vancouver",
+  "ultrashort_stage_observation": "UNVERIFIED",
+  "unchanged_diagnostic_caps": {
+    "ARGV": [
+      "/usr/sbin/netstat",
+      "-AanW",
+      "-p",
+      "tcp"
+    ],
+    "MIN_QUERY_SECONDS": 0.05,
+    "OUTPUT_CAP": 262144,
+    "PUBLICATION_SECONDS": 0.05,
+    "QUERY_SECONDS": 0.5,
+    "RECORD_CAP": 98304,
+    "ROW_BYTES": 1024,
+    "ROW_CAP": 64,
+    "STDERR_CAP": 4096
+  },
+  "unchanged_prior_package_trees": [
+    {
+      "path": "docs/verification/ni15-controller-coverage-2026-10-25-t3-a6d1c0b1",
+      "trees": {
+        "1ecac53902893d9a4fc2281b7967679e7121dd49": "cb72e133f6c0d001db1be68d7eedaa1e2aaaf010",
+        "2b5fc1f505b1f0426b8f1e8b00537a0b6e805fc7": "cb72e133f6c0d001db1be68d7eedaa1e2aaaf010",
+        "43446949beac4dd445dfce980da9cd7f9a869ceb": "cb72e133f6c0d001db1be68d7eedaa1e2aaaf010",
+        "c884126196f0215094896f29649af4b895befd72": "cb72e133f6c0d001db1be68d7eedaa1e2aaaf010"
+      }
+    },
+    {
+      "path": "docs/verification/ordinary-port-failure-diagnostic-2026-10-25-t3-619a42c8",
+      "trees": {
+        "1ecac53902893d9a4fc2281b7967679e7121dd49": "9c278847c832891288e887c9f99815050b958202",
+        "2aefaf4056a8d35a005f38e7856ffad89d771a82": "9c278847c832891288e887c9f99815050b958202",
+        "2b5fc1f505b1f0426b8f1e8b00537a0b6e805fc7": "9c278847c832891288e887c9f99815050b958202",
+        "e4a2be2d2e92433d8b42c943bacc158b1687023d": "9c278847c832891288e887c9f99815050b958202"
+      }
+    },
+    {
+      "path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25",
+      "trees": {
+        "1ecac53902893d9a4fc2281b7967679e7121dd49": "7fa97d16dd468c26d0667c83e77cbfea6b9f6d14",
+        "2b5fc1f505b1f0426b8f1e8b00537a0b6e805fc7": "7fa97d16dd468c26d0667c83e77cbfea6b9f6d14"
+      }
+    }
+  ],
+  "unrelated_intervening_metadata_changes_reviewed": false,
+  "verdict": "SOURCE_DATA_DELTA_CLEAR"
+}
