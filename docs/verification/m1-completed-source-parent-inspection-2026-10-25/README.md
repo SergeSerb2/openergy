@@ -1,0 +1,9 @@
+# Parent inspection of completed SOURCE file evidence
+
+The parent read the seven exact retained originals and checked their complete saved status and guard data. All hashes and mode0600 match the existing seven-file manifest. Both saved actual exits are0; both output streams at each level reached EOF. First errors are null, no kill is recorded, and the parent records zero retries. The parent also checked the exact payload length/hash and review bindings, the 29-token M1 SSH shape, the remote helper/root guard, facts/raw equality and the empty helper stderr. The original local150s and remote120s deadlines were checked separately in their own original clock domains.
+
+[inspection.json](inspection.json) records the checked predicates and read ledger. The first pass checked bytes and JSON key shapes; the second inspected the full statuses and guards. Together they used14 regular-file opens and11010 content bytes. Every directory component used no-follow handles. Regular leaves used no-follow/nonblocking reads, a1MiB maximum and stable metadata checks. No other private leaf or directory inventory was read. No private file was written. Endpoint, alias, selector and PID values are not published.
+
+This is a current parent inspection of saved evidence. It does not repeat qualification or inspect live remote artifact bytes. A later SOURCE payload must still verify the exact five remote originals, then take NEW M1 shared-clock inspected and phase-start timestamps in that order. The local report wall time supplies no phase/deadline proof. No new M1 timestamp or metadata phase has started. The reviewed caller, transport and payload still need their final bindings and review.
+
+All historical FAIL/UNKNOWN states remain. Native metadata, private-copy qualification, whole-flow NI15, runtime and release acceptance remain UNVERIFIED. No private Python, native command, helper, prepare, controller or product was executed by this inspection.
