@@ -1,0 +1,17 @@
+{
+  "schema": "openergy.metadata-bridge-reader-notes.v1",
+  "private_passes": [
+    {"pass": 1, "purpose": "Bound hashes and sanitized JSON/AST shapes", "regular_opens": 4, "content_bytes": 512853},
+    {"pass": 2, "purpose": "Locate the nested literal JSON EXPECTED assignment", "regular_opens": 4, "content_bytes": 512853},
+    {"pass": 3, "purpose": "Inspect EXPECTED shape", "regular_opens": 4, "content_bytes": 512853, "analysis_result": "AttributeError: reviewer assumed a dictionary when the historical EXPECTED is a list", "private_read_result": "All four reads completed and matched their hashes", "ledger_reset": false},
+    {"pass": 4, "purpose": "Correct list-shape inspection and bind the historical digest", "regular_opens": 4, "content_bytes": 512853},
+    {"pass": 5, "purpose": "Independent full 50-row provenance and public binding comparison", "regular_opens": 4, "content_bytes": 512853},
+    {"pass": 6, "purpose": "Final four-file hash and mode preservation check", "regular_opens": 4, "content_bytes": 512853}
+  ],
+  "error_disposition": "Corrected reviewer shape handling; supplied source and predicates unchanged. Original reader-errors.json retained.",
+  "supplied_code_executed_imported_evaluated_or_compiled": false,
+  "supplied_ast_executed": false,
+  "static_parsing": "AST syntax trees used only as data; ast.literal_eval decodes constant nodes. Literal JSON is passed only to the standard JSON parser. No eval, exec, compile call or dynamic import.",
+  "private_payload_copied_to_repository": false,
+  "private_writes": 0
+}
