@@ -1,0 +1,189 @@
+{
+  "build_or_product_run": false,
+  "complete_source_archive": {
+    "bytes": 5365760,
+    "file": "source-workspace-r3.tar",
+    "sha256": "e28b00daeaf5de62ab12f1e0165a5ba1b815d22ca9139a74b54f599e20ada277"
+  },
+  "complete_source_receipt_sha256": "7ec86206f0ad7a0931451e46c0e056e6dea07223cd60e4e05d4037f1b4f5c0bb",
+  "current_step": "TOOLS_QUALIFIED_AWAITING_BUILD_PLAN_REVIEW",
+  "expired_sparkle_operation": "CLOSED_NO_REUSE",
+  "hashlib_file_digest_exercised_by_release_version": false,
+  "pending_build_plan_taskId": "node:delegated-task:command%3Amcp%3A2fa14641-9d87-4d46-93f8-74a2b9bbb23b%3Adelegate-task%3Aoe-m1-fresh-build-plan-r1-ed7d96b-20261024",
+  "pending_windows_review_taskId": "node:delegated-task:command%3Amcp%3A2fa14641-9d87-4d46-93f8-74a2b9bbb23b%3Adelegate-task%3Aoe-windows-fresh-baseline-independent-review-r2-9911db7-20261024",
+  "preserved_failures": {
+    "first_release_cli": {
+      "exit": 1,
+      "original_tree_and_archive_unchanged": true,
+      "raw_private_record": {
+        "bytes": 569,
+        "file": "python-qualification-receipt.json",
+        "sha256": "bc5f34e2fcdf1d7f9dae7e6578233dcc4a738e552bc1365df7312a879a71c5e5"
+      },
+      "reason": "initial selected source omitted tools/e2e/Cargo.toml; vendor/mdns-sd was absent as well"
+    },
+    "git_archive_export": {
+      "archive_retained": true,
+      "error": "Git archive member blob differs from raw Git blob",
+      "mismatches": [
+        {
+          "actual_git_blob": "e008c1b665bc7957df748ac31a5e9e0c02ac1385",
+          "bytes": 511,
+          "expected_git_blob": "9cd6f37ce26dde4edcad6f808492171f8daf3462",
+          "path": "tools/windows/openergy-run.cmd"
+        }
+      ],
+      "missing": [],
+      "source_or_build_not_run": true
+    }
+  },
+  "private_directory_labels": {
+    "complete_source": "m1-workspace-source-r3-20261024-fa2f21b767dd",
+    "local_source_records": "m1-resume-private-20261024/workspace-source-r3-c099763a6f47",
+    "local_stage_records": "m1-resume-private-20261024/data-stage-278ca852e380",
+    "rust_prefix": "m1-rust-prefix-20261024-cd73216644ef",
+    "staged_data": "m1-prerequisite-data-20261024-d896c0b3636a"
+  },
+  "private_evidence_bindings": [
+    {
+      "bytes": 438,
+      "file": "python-extraction-receipt.json",
+      "sha256": "f8a692b846e5aec73d52f47d62f6467dfe9d1ef1b63639641e78d83674aeca12"
+    },
+    {
+      "bytes": 569,
+      "file": "python-qualification-receipt.json",
+      "sha256": "bc5f34e2fcdf1d7f9dae7e6578233dcc4a738e552bc1365df7312a879a71c5e5"
+    },
+    {
+      "bytes": 1797,
+      "file": "rust-qualification-receipt.json",
+      "sha256": "4d010d5358a75cd850639a45153ab5766d95616b9840fe2b7c65b97422cc7191"
+    },
+    {
+      "bytes": 456,
+      "file": "cargo-metadata-receipt.json",
+      "sha256": "507b5b3499c4ad1d0c42b304a698da1c14632093d921cdea0cf22d2878074895"
+    },
+    {
+      "bytes": 4252,
+      "file": "executed-python-qualification.py.txt",
+      "sha256": "8c9424a490880313423f5abce013537ff5beef6425863766664b29282ff3aaf0"
+    },
+    {
+      "bytes": 4232,
+      "file": "executed-rust-qualification.py.txt",
+      "sha256": "d03843c3ef0e733b3ab5ba9dc3246e8829c28bc166e55b9435b174cb38c64362"
+    },
+    {
+      "bytes": 2112,
+      "file": "executed-cargo-metadata.py.txt",
+      "sha256": "716e04bdf029806bcadd5c441a4116fba97827998cafbded1f9c258f168b4573"
+    },
+    {
+      "bytes": 1229,
+      "file": "qualification-receipt.json",
+      "sha256": "9b32315792d64479b7e0867e38edf466596982a2671ded112b08d5dab656603b"
+    },
+    {
+      "bytes": 194761,
+      "file": "source-workspace-r3-receipt.json",
+      "sha256": "7ec86206f0ad7a0931451e46c0e056e6dea07223cd60e4e05d4037f1b4f5c0bb"
+    },
+    {
+      "bytes": 4153,
+      "file": "executed-source-qualification.py.txt",
+      "sha256": "e8d594ae89bc7814761308ea15c61e9393ff96af38b3e4c840ecc00236352d3b"
+    }
+  ],
+  "python_extraction": {
+    "elapsed_seconds": 0.9247283329968923,
+    "exit": 0,
+    "product_or_build_run": false,
+    "remote_directory_label": "m1-prerequisite-data-20261024-d896c0b3636a",
+    "review_commit": "00f5792793b27d604689d2e827015e9e650bec6f",
+    "schema": "openergy-m1-python-data-extraction-v1",
+    "stderr": "",
+    "stdout": "DATA ONLY: extracted-data/python/bin/python3.13 is mode0600; no target code executed\n",
+    "target_interpreter_executed": false
+  },
+  "python_real_release_version": {
+    "actual_bootstrap_ni": 15,
+    "commands": [
+      {
+        "command_role": "real-release-tool-version",
+        "elapsed_seconds": 0.15739633299999997,
+        "exit": 0,
+        "stderr": "",
+        "stdout": "0.1.0\n"
+      }
+    ],
+    "hashlib_file_digest_exercised": false,
+    "interpreter_mode": "0700",
+    "interpreter_sha256": "d81701904d7a58f6abb3ab339c1d38d48cd24a39b37645cf7338c07a1e8e70e6",
+    "product_or_build_run": false,
+    "source_commit": "ed7d96bf53da1a539fa2acde3b7133613221fd4b",
+    "source_files_verified": 702,
+    "status": "QUALIFIED"
+  },
+  "real_cargo_metadata": {
+    "actual_bootstrap_ni": 15,
+    "build_or_product_run": false,
+    "elapsed_seconds": 0.020640000000000006,
+    "exit": 0,
+    "lock_unchanged": true,
+    "stderr": "",
+    "stdout_bytes": 34661,
+    "stdout_sha256": "06840cc6f2e0a9175839010c047beaf16cf6fd18bcdd18ab20bf9fdc17cf2954",
+    "workspace_members": 11,
+    "workspace_packages": 11
+  },
+  "rust_and_cargo_versions": {
+    "actual_bootstrap_ni": 15,
+    "build_or_product_run": false,
+    "cargo_seed_files_verified": 210,
+    "commands": [
+      {
+        "elapsed_seconds": 1.849561333,
+        "exit": 0,
+        "role": "rustc-version",
+        "stderr": "",
+        "stdout": "rustc 1.99.1 (58cf8f9c3 2026-10-13)\nbinary: rustc\ncommit-hash: 58cf8f9c35b355199727627d07ae34a4e2846d67\ncommit-date: 2026-10-13\nhost: aarch64-apple-darwin\nrelease: 1.99.1\nLLVM version: 23.1.1\n"
+      },
+      {
+        "elapsed_seconds": 0.2977126669999999,
+        "exit": 0,
+        "role": "cargo-version",
+        "stderr": "",
+        "stdout": "cargo 1.99.1 (5f94df478 2026-08-27)\n"
+      }
+    ],
+    "owner_exec_paths": [
+      "bin/cargo",
+      "bin/cargo-clippy",
+      "bin/cargo-fmt",
+      "bin/clippy-driver",
+      "bin/rust-gdb",
+      "bin/rust-gdbgui",
+      "bin/rust-lldb",
+      "bin/rustc",
+      "bin/rustdoc",
+      "bin/rustfmt",
+      "lib/rustlib/aarch64-apple-darwin/bin/gcc-ld/ld.lld",
+      "lib/rustlib/aarch64-apple-darwin/bin/gcc-ld/ld64.lld",
+      "lib/rustlib/aarch64-apple-darwin/bin/gcc-ld/lld-link",
+      "lib/rustlib/aarch64-apple-darwin/bin/gcc-ld/wasm-ld",
+      "lib/rustlib/aarch64-apple-darwin/bin/rust-lld",
+      "lib/rustlib/aarch64-apple-darwin/bin/rust-objcopy",
+      "lib/rustlib/aarch64-apple-darwin/bin/wasm-component-ld",
+      "lib/rustlib/aarch64-apple-darwin/lib/libstd-c8df3f17af30326b.dylib",
+      "lib/rustlib/x86_64-apple-darwin/lib/libstd-bd40bdc07610af03.dylib",
+      "libexec/rust-analyzer-proc-macro-srv"
+    ],
+    "rust_files_verified": 225,
+    "status": "PRIVATE_RUST_TOOLS_QUALIFIED",
+    "system_toolchain_defaults_changed": false
+  },
+  "schema": "openergy-m1-native-tool-qualification-v1",
+  "source_commit": "ed7d96bf53da1a539fa2acde3b7133613221fd4b"
+}
