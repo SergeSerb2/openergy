@@ -1,0 +1,546 @@
+{
+  "execution": false,
+  "reviewed_full_current_bodies": 45,
+  "declarations": [
+    {
+      "name": "Stop",
+      "range": {
+        "bytes": 35,
+        "end_line": 940,
+        "sha256": "fd5f0e9e870ae08920c1d407fc73b253c407fdd0aef25c908048f181025ae7f5",
+        "start_line": 939
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "closed admission and exact stable public data",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "require",
+      "range": {
+        "bytes": 65,
+        "end_line": 945,
+        "sha256": "fa57bb7c8de0a6f63c620d5d56849a58849c546317137baa3463c4ce8f7d4766",
+        "start_line": 943
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "closed admission and exact stable public data",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "clock_ns",
+      "range": {
+        "bytes": 342,
+        "end_line": 953,
+        "sha256": "0a708be90d476ccafb3f658a6edeae5a969cd1fed47fc9e4568632c78144e7bf",
+        "start_line": 948
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "original absolute time and conservative conversion",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "remaining",
+      "range": {
+        "bytes": 142,
+        "end_line": 959,
+        "sha256": "b723e8885f1273197aa575682bee963f2cefbec7b0df8c8b6a051a0e26ac7c78",
+        "start_line": 956
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "original absolute time and conservative conversion",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "until",
+      "range": {
+        "bytes": 666,
+        "end_line": 978,
+        "sha256": "00ff5b79c8d3acd8bbcd3e298fb472fab7427f91611e93116c199224033746ff",
+        "start_line": 962
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "original absolute time and conservative conversion",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "until.expired",
+      "range": {
+        "bytes": 88,
+        "end_line": 970,
+        "sha256": "bc1ec102edf0eae776d4cdfa698bb0528d7764f751efecc51a5cd16bd1bd3505",
+        "start_line": 969
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "original absolute time and conservative conversion",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "sha",
+      "range": {
+        "bytes": 59,
+        "end_line": 982,
+        "sha256": "4e627faf4b903521e935f7c6f3ae93545856f821d0e2565ba7ea6cf97d3d0e6c",
+        "start_line": 981
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "closed admission and exact stable public data",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "encoded",
+      "range": {
+        "bytes": 172,
+        "end_line": 987,
+        "sha256": "47546d7a82bbb5e109d0a86a34e3046f3adab68837513ddf922600b33ce202d2",
+        "start_line": 985
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "closed admission and exact stable public data",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "hex_string",
+      "range": {
+        "bytes": 146,
+        "end_line": 992,
+        "sha256": "fd9f19e03ed808aeded45d465053a19b34fd34724e58ee0d2c21641f1df07d78",
+        "start_line": 990
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "closed admission and exact stable public data",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "same_data",
+      "range": {
+        "bytes": 427,
+        "end_line": 1003,
+        "sha256": "b03e25037d583929f50a0cc97c4069c4e211552782a8f14037cba370a49734fe",
+        "start_line": 995
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "closed admission and exact stable public data",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "stamp",
+      "range": {
+        "bytes": 152,
+        "end_line": 1008,
+        "sha256": "5ad54262f0589d8245e2a4e1d0fc970a2264bcd8ad3c9eee89e66022b017e1c0",
+        "start_line": 1006
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "closed admission and exact stable public data",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "open_root",
+      "range": {
+        "bytes": 781,
+        "end_line": 1027,
+        "sha256": "c7aee36ba2ba05b59397e13a30160ffc77a94a2360d705ff22a54dfe69ae163f",
+        "start_line": 1011
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "closed admission and exact stable public data",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "read_leaf",
+      "range": {
+        "bytes": 1057,
+        "end_line": 1049,
+        "sha256": "963beb17880dcd6f322370c6df7a7d2a0c1cf573b049cbcf990faf02e4af389f",
+        "start_line": 1030
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "closed admission and exact stable public data",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "inspect_remote",
+      "range": {
+        "bytes": 2530,
+        "end_line": 1086,
+        "sha256": "1def34c6cbdaffd2021c2ff805c428fcef4a11d3a2ce2bebb4fe512149a4c47b",
+        "start_line": 1052
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "closed admission and exact stable public data",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "inventory",
+      "range": {
+        "bytes": 2065,
+        "end_line": 1124,
+        "sha256": "12c46f1c5b191b7fdd68455b26c33fc259c4119b9b3b5b9647a93a5737ebb22f",
+        "start_line": 1089
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "exact layout and bounded flat metadata closure",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "inventory.walk",
+      "range": {
+        "bytes": 1871,
+        "end_line": 1122,
+        "sha256": "14509512ab33bd3066c48331714922123e25b543cae89ca20eb2ed0ffe8845aa",
+        "start_line": 1092
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "exact layout and bounded flat metadata closure",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "closed_root_layout",
+      "range": {
+        "bytes": 2382,
+        "end_line": 1166,
+        "sha256": "8fbf95ffc744e1489fdba92fb86255339db500273f179c08c6435fbfc0184323",
+        "start_line": 1127
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "exact layout and bounded flat metadata closure",
+      "state_vs_basis": "ADDED"
+    },
+    {
+      "name": "startup",
+      "range": {
+        "bytes": 420,
+        "end_line": 1174,
+        "sha256": "77f6e5efc6f48392d70f305e7f8be86b6d20f82574df1cff818d28389c088bd9",
+        "start_line": 1169
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "actual child status, caps, direct signal and first failure",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "latch",
+      "range": {
+        "bytes": 145,
+        "end_line": 1179,
+        "sha256": "1fc81f469b2139c30fcccfcc0ba115eec20e8deb4cd190d363f56bf31fe80640",
+        "start_line": 1177
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "actual child status, caps, direct signal and first failure",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "observe_exit",
+      "range": {
+        "bytes": 438,
+        "end_line": 1189,
+        "sha256": "94a6fafecbef10b6509533a0d792cce1fc61b4fcb99d9183118da1916b83610c",
+        "start_line": 1182
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "actual child status, caps, direct signal and first failure",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "collection_complete",
+      "range": {
+        "bytes": 799,
+        "end_line": 1201,
+        "sha256": "1e392aa0f5b155a79c614f7f8b967bf8edeefba7fb7729ccaa3ceacc25c6a793",
+        "start_line": 1192
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "actual child status, caps, direct signal and first failure",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "closed_json",
+      "range": {
+        "bytes": 524,
+        "end_line": 1217,
+        "sha256": "019219040de9c1e8fb305ae0ee2e61a3335591568ac79d70de9011d53b77b2eb",
+        "start_line": 1204
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "closed admission and exact stable public data",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "closed_json.pairs",
+      "range": {
+        "bytes": 178,
+        "end_line": 1210,
+        "sha256": "0631fc06468cfa7e32fdd726ce494a810b7000bdc90d5bc09083833869579093",
+        "start_line": 1205
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "closed admission and exact stable public data",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "closed_json.nonfinite",
+      "range": {
+        "bytes": 73,
+        "end_line": 1212,
+        "sha256": "f32a3a64e87b6448d7ef0b65c9c39395f23789cd334acc2948a07eb81d192925",
+        "start_line": 1211
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "closed admission and exact stable public data",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "closed_json.finite_float",
+      "range": {
+        "bytes": 145,
+        "end_line": 1216,
+        "sha256": "580f75ecd092de39c675e9c790c854f42fe72decd96690c24b15ad302f5d7b85",
+        "start_line": 1213
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "closed admission and exact stable public data",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "bind_config",
+      "range": {
+        "bytes": 2936,
+        "end_line": 1260,
+        "sha256": "b04c520e2b268acf889f27957d315eb381a7a128a1ff8140fd17b05a583a79ec",
+        "start_line": 1220
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "closed admission and exact stable public data",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "fail",
+      "range": {
+        "bytes": 139,
+        "end_line": 1266,
+        "sha256": "de1bd3450d76eb0036a1f40c2d29b91d542d1715469a2bb1256f8f309997adcc",
+        "start_line": 1263
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "actual child status, caps, direct signal and first failure",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "absent",
+      "range": {
+        "bytes": 186,
+        "end_line": 1274,
+        "sha256": "947f6b50c9344014a2e2d2a3cc77b865affc8ba26d46a98c5b8bbcc62d600b0f",
+        "start_line": 1269
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "closed admission and exact stable public data",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "console_admission",
+      "range": {
+        "bytes": 668,
+        "end_line": 1287,
+        "sha256": "a5447dfce8fef6cac5259f0315182e0d0c206e8a9cfe50b8ffe280ef029e41fe",
+        "start_line": 1277
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "one way writer transition and safe final publication",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "read_new_leaf",
+      "range": {
+        "bytes": 1063,
+        "end_line": 1309,
+        "sha256": "2b9c6970ae56804639e26a755b436528d84ae41d4ae0df09f3cea42d86b5b46c",
+        "start_line": 1290
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "closed admission and exact stable public data",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "read_build_record",
+      "range": {
+        "bytes": 639,
+        "end_line": 1325,
+        "sha256": "6ea479ece901fb742b3e22a71d973af62d23dc35897fa04bb33f256f2fc4a8fa",
+        "start_line": 1312
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "closed admission and exact stable public data",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "reference",
+      "range": {
+        "bytes": 424,
+        "end_line": 1333,
+        "sha256": "fd11ab41a612c579f21d048250603a916429d50a7022e540a71a0bb87f698fe3",
+        "start_line": 1328
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "closed admission and exact stable public data",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "inspect_artifact",
+      "range": {
+        "bytes": 2240,
+        "end_line": 1366,
+        "sha256": "1824e62a3616f2a40b03f3d9316fa1c96120a00626ab308ffff2f14150185c30",
+        "start_line": 1336
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "closed admission and exact stable public data",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "inspect_frozen",
+      "range": {
+        "bytes": 3436,
+        "end_line": 1415,
+        "sha256": "884c872a746f513558473b04be39ad4fa04013a88e66a73c4dff3eb0fc6e2504",
+        "start_line": 1369
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "closed admission and exact stable public data",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "initial_put",
+      "range": {
+        "bytes": 1792,
+        "end_line": 1455,
+        "sha256": "7b3fdc887bb007e6ae1e7378f0599cd602d7dfec450a1f2e7fcd3fa7ff493249",
+        "start_line": 1418
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "one way writer transition and safe final publication",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "inspect_entry",
+      "range": {
+        "bytes": 1646,
+        "end_line": 1478,
+        "sha256": "d89e380c42166abef964b867a3e431cecb96cda8e5bad6919424a27dd594cc51",
+        "start_line": 1458
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "actual child status, caps, direct signal and first failure",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "import_common",
+      "range": {
+        "bytes": 1536,
+        "end_line": 1503,
+        "sha256": "6d85c0b9001588798704cae6e80793aaf0548cf03dd8fbb4b9ff145c61e5e70f",
+        "start_line": 1481
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "one way writer transition and safe final publication",
+      "state_vs_basis": "CHANGED"
+    },
+    {
+      "name": "common_deadline",
+      "range": {
+        "bytes": 928,
+        "end_line": 1521,
+        "sha256": "1d8dcb38b35c9dd3390e5275b12940e0d8b5662ccf01a52aa230ad8a87da6b72",
+        "start_line": 1506
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "original absolute time and conservative conversion",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "existing_ledger",
+      "range": {
+        "bytes": 791,
+        "end_line": 1535,
+        "sha256": "f14b8a32e7ffa286b368e1e3fb4e870b85200b59a20fac15b6a87e1b94869d81",
+        "start_line": 1524
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "one way writer transition and safe final publication",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "reserved_put",
+      "range": {
+        "bytes": 1728,
+        "end_line": 1569,
+        "sha256": "2af9e40a0c20195b3e4cb9fbd2073581c70d05a502cccba443a7eee67c945ae0",
+        "start_line": 1538
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "one way writer transition and safe final publication",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "canonical_prepared_directory",
+      "range": {
+        "bytes": 887,
+        "end_line": 1588,
+        "sha256": "0eba03c23e2c12eafe1e1a13d91721ed671ead77aaaaadd2f4725d575ff6bf1d",
+        "start_line": 1572
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "new prepared DATA only with actual successful child",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "inspect_prepared",
+      "range": {
+        "bytes": 3445,
+        "end_line": 1635,
+        "sha256": "474b6b43175cd5c662109f02ac24cf1e9148a82d1047b785cbb1c355e13b7636",
+        "start_line": 1591
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "new prepared DATA only with actual successful child",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "collect",
+      "range": {
+        "bytes": 7660,
+        "end_line": 1770,
+        "sha256": "0013548bd59577cbbbec695f7b6e5ce3a15284f87ec8c41a6bb5a47a7a344160",
+        "start_line": 1636
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "actual child status, caps, direct signal and first failure",
+      "state_vs_basis": "CHANGED"
+    },
+    {
+      "name": "emit_once",
+      "range": {
+        "bytes": 738,
+        "end_line": 1783,
+        "sha256": "548d547e0d17682cc006964f4d75fb3e6f7aa3132576600fc87e1727c9349cc7",
+        "start_line": 1773
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "one way writer transition and safe final publication",
+      "state_vs_basis": "UNCHANGED"
+    },
+    {
+      "name": "main",
+      "range": {
+        "bytes": 8346,
+        "end_line": 1919,
+        "sha256": "090435abea270530ae357c8d3e8ca506468d040bb8ede9438e079fcb5b706734",
+        "start_line": 1786
+      },
+      "review": "No new P1/P2 in bounded source scope",
+      "assessment": "one way writer transition and safe final publication",
+      "state_vs_basis": "CHANGED"
+    }
+  ]
+}

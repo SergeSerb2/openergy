@@ -1,0 +1,86 @@
+{
+  "execution": false,
+  "verdict": "BOUNDED_SOURCE_CLEAR",
+  "P1": 0,
+  "P2": 0,
+  "new_findings": [],
+  "closures": [
+    {
+      "id": "PREPARE-P2-1",
+      "status": "CLOSED_SOURCE_ONLY",
+      "scope": "Exact R4 fresh launch case preserved; actual timing unverified",
+      "lines": [
+        1665,
+        1668,
+        1670,
+        1672
+      ]
+    },
+    {
+      "id": "PREPARE-P2-2",
+      "status": "CLOSED_SOURCE_ONLY",
+      "scope": "Exact R4 common cache case preserved; actual absence unverified",
+      "lines": [
+        1487,
+        1489,
+        1804,
+        1846,
+        1848
+      ]
+    },
+    {
+      "id": "PREPARE-P2-3",
+      "status": "CLOSED_SOURCE_ONLY",
+      "scope": "Exact260/264 flat root topology before helper/common/private; exclusivity external",
+      "lines": [
+        921,
+        925,
+        1127,
+        1133,
+        1148,
+        1151,
+        1158,
+        1161,
+        1163,
+        1489,
+        1804,
+        1848
+      ]
+    },
+    {
+      "id": "COPY-P2-1 matching prepare collect",
+      "status": "CLOSED_SOURCE_ONLY",
+      "scope": "Prepare parent only, one direct syscall and truthful return flag; actual signal/reap unverified",
+      "lines": [
+        1182,
+        1723,
+        1724,
+        1728,
+        1732,
+        1736,
+        1737,
+        1739,
+        1741
+      ]
+    }
+  ],
+  "separate": [
+    "Original R2/R4/COPY report verdicts unchanged",
+    "COPY R3 whole review outside scope",
+    "Frozen phase/R9/SOURCE/common/port diagnostic signal branches need separate audit",
+    "Overall future local/remote composition UNVERIFIED",
+    "All actual execution/runtime/ROOT/layout/signal/durability/native/performance/product acceptance UNVERIFIED"
+  ],
+  "additional_public_data_comparisons": {
+    "actual_input_pins_17_equal": true,
+    "public_source_result_binding_equal": true,
+    "public_publisher_boundary_result_caller_equal": true,
+    "public_four_input_receipt_ref": {
+      "bytes": 4447,
+      "mode": "0o600",
+      "private_relative_path": "retained-DATA-data-materialization-receipt.json",
+      "sha256": "b636f388889d5e801c473812283f197a9955f7c0bd91f64486db5a751e88a2c7"
+    },
+    "unique_original_CONFIG_string_token": true
+  }
+}
