@@ -1,0 +1,67 @@
+{
+  "schema": "openergy.windows-fresh-independent-static-review.v1",
+  "candidate": "9911db75fa07d0383b81366d319475ded016c066",
+  "review_start_head": "ce742a5d3c4488501ae706fe824973bd5c23bddf",
+  "execution": false,
+  "native_syntax": "UNVERIFIED",
+  "native_runtime": "UNVERIFIED",
+  "supplied_code_or_ast_imported_or_executed": false,
+  "powershell_csharp_parser_used": false,
+  "network_or_transport_or_os_probe": false,
+  "tests_mocks_simulation": false,
+  "candidate_package_equal_checkout": true,
+  "package_files": 22,
+  "package_manifest_members_matched": 21,
+  "requested_hashes": {
+    "manifest.json": "c79c4491cb9b95f86ef5cc0e7fb2e975ec41a9b0c4aede7be69142c913de00f7",
+    "diff-from-reviewed-r9.patch": "1412984d383e8b2546a94f068c979fdb34b0650ee55b443b3b092264ba27afad",
+    "source/controller.py.txt": "2852b0a592d87510d066ca3803535a64ac176780880eba8b1328a4f6d939a764"
+  },
+  "json_decoded": [
+    "current-source-manifest.json",
+    "historical-file-preservation.json",
+    "input-bindings.json",
+    "input-contracts.json",
+    "manifest.json",
+    "plan.json",
+    "result.schema.json",
+    "source-bindings.json",
+    "static-checks.json"
+  ],
+  "input_bindings_matched": 48,
+  "regenerated_exact_r9_diff": true,
+  "source_bindings_matched": 8,
+  "historical_full_folder_matched": 179,
+  "historical_published_inventory_matched": 178,
+  "current_source_git_records_matched": 558,
+  "reference_git_archive": {
+    "bytes": 4065280,
+    "sha256": "7a333dd962419984e480eac465b63ff49fc2339ec8fb1bf4bbc522815d2af012",
+    "members": 623,
+    "archive_written": false
+  },
+  "ast_parse_as_data_only": true,
+  "unchanged_methods": [
+    "sha",
+    "save",
+    "now",
+    "local_prior",
+    "command",
+    "remote",
+    "recover_transport_owner",
+    "stage",
+    "export"
+  ],
+  "build_runtime_only_declared_binding_changes": true,
+  "observer_exact_r2": true,
+  "r9_missing_pid_single_expression_preserved": true,
+  "transport_recovery_size_lower_bound": {
+    "safety_ascii_characters_alone": 5332,
+    "first_utf16_base64_characters_alone": 14220,
+    "recovery_utf16_base64_characters_alone": 37920,
+    "native_command_line_max_including_null": 32767,
+    "dynamic_input_or_supplied_function_evaluated": false
+  },
+  "candidate_added_only_new_package": true,
+  "reviewer_completion_receipt_note": "An earlier unbatched static reader yielded after 10 seconds without its final output being retained by the caller. No completion claim relies on that invocation. This separate batched data reader supplies the retained result."
+}
