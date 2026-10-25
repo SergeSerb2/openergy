@@ -1,0 +1,11 @@
+# Controlled SYSTEM Python startup context
+
+One new bounded read-only prerequisite query launched isolated SYSTEM Python3.9.6 with the exact ten-key `next-operation.json#/parent_startup` environment and the new evidence cwd. Its only child command prints controlled environment key names, whether the ten supplied values match, flags, its own nice and version, and LC_CTYPE. It does not load the metadata caller or private Python. No unrestricted inherited environment dump was read or printed.
+
+Actual system child exit and local SSH exit are0. Both output streams completed without an error or kill, within their own3s child and20s parent deadlines. The input values all match and no key is missing. Actual flags are isolated1/no_site1/dont_write_bytecode1/optimize0; child and query worker observe their own NI15.
+
+The effective child environment has six extra keys: **CPATH, LC_CTYPE, LIBRARY_PATH, MANPATH, SDKROOT, __CF_USER_TEXT_ENCODING**. LC_CTYPE is `C.UTF-8`. Values of the other five were not requested. The source of each added key was not separately traced. [observations.json](observations.json) preserves the complete controlled child observation; its encoded outer record and executable query/collector remain private and hash-indexed.
+
+This establishes a concrete mismatch with the unexecuted metadata caller's exact `dict(os.environ) == startup(root)` predicate. The current source would reject this observed SYSTEM launch before metadata commands. The query is not a caller run, a passing native metadata phase, or permission to broadly ignore unexpected environment data. A repair must keep a closed, explicit bootstrap contract, preserve every required input value and flag, reject other keys, and establish the original controlled effective environment before actual work. It must preserve fixed vectors, parent phase and byte budgets, prefix-before-private-entry order and all historical results.
+
+No private-Python, source50, prepare, copy, controller, product, build, signing or updater action occurred. This does not qualify private Python's COPY startup. The SYSTEM observation does not revoke the completed source-file qualification or its bounded audit. Raw clocks stay in their own process/host domains. All original FAIL/UNKNOWN, whole-flow NI15 and release/runtime UNVERIFIED states remain unchanged.
