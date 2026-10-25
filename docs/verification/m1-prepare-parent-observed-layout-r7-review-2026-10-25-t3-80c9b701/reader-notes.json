@@ -1,0 +1,18 @@
+{
+  "execution": false,
+  "schema": "openergy.r7-reviewer-data-notes.v1",
+  "corrections": [
+    {
+      "reader": "data-reader.py packet checksum path validation",
+      "initial_result": "Stopped before evidence output on saved-requirements/metadata-source-object-0-requirements-comparison.json.",
+      "cause": "Reviewer initially assumed only a raw/ subfolder in the old failed packet.",
+      "correction": "Require each checksum name to be a member of the exact frozen Git packet path set and reject absolute/traversal names.",
+      "inputs_changed": false,
+      "supplied_code_executed": false,
+      "target_retry": false
+    }
+  ],
+  "long_output_note": "An initial broad Git listing and combined text display were truncated. Relevant full source/contract bodies were then read in bounded chunks; complete packet bytes and long literal rows were checked by the independent data reader.",
+  "preservation_inventory": "One old-entry inventory only; original stage records merged into each corresponding entry. No repeated giant closing inventory.",
+  "post_commit_evidence": "Reported from actual read-only Git and per-entry comparison output outside this packet. No self-referential commit/report hash is invented."
+}

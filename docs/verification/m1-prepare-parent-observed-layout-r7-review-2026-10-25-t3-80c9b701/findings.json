@@ -1,0 +1,40 @@
+{
+  "schema": "openergy.r7-independent-bounded-verdict.v1",
+  "execution": false,
+  "verdict": "BOUNDED_SOURCE_CLEAR",
+  "candidate": "44a6f8dfc7b8cb9597caec7b2fa34e98677cb705",
+  "import": "5a587faa701da00d6e16f2e5ff9f2f43f553caf5",
+  "source": {
+    "bytes": 110497,
+    "sha256": "8fb377d4e9d0f1fc45a261bf26b8b2df06111fa780e8d3932d9fbc3029e4d67c"
+  },
+  "P1": 0,
+  "P2": 0,
+  "finding_count_scope": "This exact full R7 prepare-parent source packet. Inherited requirements and composition findings remain held outside this layout closure.",
+  "closed": [{"id": "FP-P2-3", "status": "CLOSED_SOURCE_ONLY"}],
+  "open": [
+    {"id": "FP-P2-1", "status": "OPEN", "reason": "Inherited requirements destination bypasses reserved writer."},
+    {"id": "FP-P2-2", "status": "OPEN", "reason": "Seven captured requirements stdout bodies are empty; one observed comment is not seven-body proof."}
+  ],
+  "latest_failed_audit_report_sha256": "604fec5c9c11b6ca34706d8752c8db5332b9c78163af8338aabf291fef485d7f",
+  "old_attempt": "FAILED_UNVERIFIED",
+  "updater": "CLOSED",
+  "all_historical_FAILED_UNKNOWN_UNVERIFIED_preserved": true,
+  "runtime_acceptance": false,
+  "operator_acceptance": false,
+  "requirements_semantic_acceptance": false,
+  "local_b94f1c7_clearance": false,
+  "can_execute_as_is_with_known_missing_semantic_data": false,
+  "new_user_confirmation_gate": false,
+  "actual_future_local_driver": null,
+  "actual_future_observer": null,
+  "actual_future_assessor": null,
+  "actual_future_composition": null,
+  "actual_future_render": null,
+  "actual_future_review": null,
+  "actual_future_ref": null,
+  "actual_future_operation": null,
+  "execution_authority": null,
+  "target_access": false,
+  "actual_invocations": 0
+}
