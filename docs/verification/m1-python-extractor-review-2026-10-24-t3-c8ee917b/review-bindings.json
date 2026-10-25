@@ -1,0 +1,329 @@
+{
+  "P1_count": 0,
+  "P2_count": 0,
+  "additional_source_bindings": {
+    "Cargo.toml": {
+      "bytes": 862,
+      "mode": "0644",
+      "sha256": "7ea29af11f38ac187df7fb78ecbfb5ba0f5c4d2248211efb857010b91412ea04"
+    },
+    "apps/macos/Package.swift": {
+      "bytes": 677,
+      "mode": "0644",
+      "sha256": "ce093f04ed71f2f7fb806ac19633c9c41a6d7d1aaf245341c9ed6b367788e505"
+    },
+    "apps/macos/Support/Info.plist": {
+      "bytes": 1827,
+      "mode": "0644",
+      "sha256": "4300cad741fb7e2d7b14d41897f78a2631a1ebf93bff2e45484878d25a3573a2"
+    },
+    "crates/config/Cargo.toml": {
+      "bytes": 251,
+      "mode": "0644",
+      "sha256": "2a747685780dabe93f139c609859005c2baad60e6599c4b8442273f5dea79968"
+    },
+    "crates/daemon/Cargo.toml": {
+      "bytes": 1447,
+      "mode": "0644",
+      "sha256": "4cb03349cb6d9cf4a6f95dce64cd0e3ed5306a7faa7762326fdc00d28a48aefa"
+    },
+    "crates/ipc/Cargo.toml": {
+      "bytes": 226,
+      "mode": "0644",
+      "sha256": "6ba4201f9b8b94fa813fc3699d422165b7db6102e14c2b70292c7cc83f7073d3"
+    },
+    "crates/net/Cargo.toml": {
+      "bytes": 908,
+      "mode": "0644",
+      "sha256": "c74312dcc7dc550825d7c247961e2fd44f7ca1dbbdfc7bb6c28e7351ef30637c"
+    },
+    "crates/platform-linux/Cargo.toml": {
+      "bytes": 502,
+      "mode": "0644",
+      "sha256": "d9f8772dc001e12d2fe9f1489d35918deeeeead9daab8131371ea91cf0b1a4ac"
+    },
+    "crates/platform-macos/Cargo.toml": {
+      "bytes": 314,
+      "mode": "0644",
+      "sha256": "7b2607a96c77a79f3e8f6ab482fc39249e74a0ea8a283e3b6db5cf0cffdb2280"
+    },
+    "crates/platform-windows/Cargo.toml": {
+      "bytes": 693,
+      "mode": "0644",
+      "sha256": "080605b569ed545650abd65a3cc551dbb5c3231f8eb3d8589b5598fc3f6cf460"
+    },
+    "crates/platform/Cargo.toml": {
+      "bytes": 231,
+      "mode": "0644",
+      "sha256": "88ee6e62955081ae5017549067c0055bd3ebd7a7e52b739b4b59455cebcc02ce"
+    },
+    "crates/protocol/Cargo.toml": {
+      "bytes": 159,
+      "mode": "0644",
+      "sha256": "c91717334a50d2e68057c5e306b685e95a1506fc4d0bd9b08f443b62d6897445"
+    },
+    "crates/session/Cargo.toml": {
+      "bytes": 440,
+      "mode": "0644",
+      "sha256": "a1c5e86b885cb1cf079c19600bf180fb04fb3847173b9d5324426047865fae18"
+    },
+    "docs/verification/m1-build-unblock-2026-10-24/README.md": {
+      "bytes": 3471,
+      "mode": "0644",
+      "sha256": "8c16d2e5dff6c4c3e692bcc665b1475aa66e19e9e3287997345f23fdea327d73"
+    },
+    "rust-toolchain.toml": {
+      "bytes": 86,
+      "mode": "0644",
+      "sha256": "f715f440167e20fd8ea9afa0498c3d1ab80174cfcb8cbc895f106a34d907a1e1"
+    },
+    "tools/e2e/Cargo.toml": {
+      "bytes": 359,
+      "mode": "0644",
+      "sha256": "78bb98248bc0c14ead549803d241fd912b95b068b894b2040d1d36d6ac55b83c"
+    },
+    "tools/release/release.py": {
+      "bytes": 31284,
+      "mode": "0644",
+      "sha256": "96817425c76fa697fc10d7a073698358fb142e3f92995efd4e09931d49a1f995"
+    }
+  },
+  "bindings_self_hash": "Excluded to avoid recursion; the review Git commit binds this file.",
+  "branch": "t3/m1-python-extractor-review",
+  "candidate": "83334d4235c91f4dddb55dd43eed2d1eabdc82a1",
+  "candidate_and_imported_git_entries": {
+    "docs/verification/m1-python-prerequisite-data-2026-10-24-t3-27c54a9f/README.md": {
+      "blob": "56a5a97a5d60342296391e641141a0f24c8eb98f",
+      "mode": "100644"
+    },
+    "docs/verification/m1-python-prerequisite-data-2026-10-24-t3-27c54a9f/receipt.json": {
+      "blob": "78e7a267686bcedd87af9687c3a3854d2b0e27e6",
+      "mode": "100644"
+    },
+    "docs/verification/m1-python-prerequisite-data-2026-10-24-t3-27c54a9f/safe-extraction-recipe.py.txt": {
+      "blob": "fab13d74d6b31b0e91e1696c9796217951594e38",
+      "mode": "100644"
+    }
+  },
+  "candidate_and_imported_source_content_diff_exit_code": 0,
+  "commit_settings": {
+    "commit.gpgsign": false,
+    "core.hooksPath": "/dev/null"
+  },
+  "findings": [],
+  "future_release_version_source_assessment": {
+    "arguments": [
+      "-I",
+      "-S",
+      "-B",
+      "/absolute/bound/source/tools/release/release.py",
+      "version"
+    ],
+    "exact_regular_interpreter": "extracted-data/python/bin/python3.13",
+    "expected_workspace_version": "0.1.0",
+    "hashlib_file_digest_exercised_by_version": false,
+    "interpreter_bytes": 50248,
+    "interpreter_sha256": "d81701904d7a58f6abb3ab339c1d38d48cd24a39b37645cf7338c07a1e8e70e6",
+    "only_future_mode_change": "0600 to0700 on that exact regular file after target identity and hash checks",
+    "performed_by_this_review": false,
+    "product_build_launch_native_update_or_release_acceptance": false,
+    "source_path_reads_configuration_and_imports_tomllib": true,
+    "source_path_starts_child_commands": false,
+    "tag_argument": null
+  },
+  "independent_data_reader": {
+    "all_1844_member_records_match_retained_scan": true,
+    "command": "/usr/bin/python3 -I -S -B docs/verification/m1-python-extractor-review-2026-10-24-t3-c8ee917b/read-retained-data.py.txt",
+    "exit_code": 0,
+    "invocations": 1,
+    "metadata_and_checksum_read_as_primary_retained_data": true,
+    "recipe_python39_grammar_parse": true,
+    "stderr": "docs/verification/m1-python-extractor-review-2026-10-24-t3-c8ee917b/data-reader.stderr.txt",
+    "stdout": "docs/verification/m1-python-extractor-review-2026-10-24-t3-c8ee917b/data-observations.json",
+    "supplied_code_executed_or_imported": false
+  },
+  "local_date": "2026-10-24",
+  "precommit_reobservation": {
+    "head": "d131b6f35c9ec449812d2bf0e6c4552c749f3365",
+    "only_own_review_folder_staged": true,
+    "unstaged_diff_empty": true,
+    "worktree_path_unchanged": true
+  },
+  "private_data_bindings": {
+    "SHA256SUMS": {
+      "bytes": 116506,
+      "mode": "0600",
+      "nlink": 1,
+      "sha256": "4f5250ed42c07b384ba079fc1c6150186a9846c370111f8dac50b1e3795225ff",
+      "uid": 501
+    },
+    "acquisition.json": {
+      "bytes": 1344,
+      "mode": "0600",
+      "nlink": 1,
+      "sha256": "4f2f12394c952258ec9b741457cdde82e28ff624066f84220201459eda1d00d1",
+      "uid": 501
+    },
+    "cpython-3.13.9+20251014-aarch64-apple-darwin-install_only.tar.gz": {
+      "bytes": 16526691,
+      "mode": "0600",
+      "nlink": 1,
+      "sha256": "931db8f735e18700d4eab9ee39dbbd0b4c114d7d039dd2707b2d932ded039698",
+      "uid": 501
+    },
+    "file-metadata.json": {
+      "bytes": 845,
+      "mode": "0600",
+      "nlink": 1,
+      "sha256": "ef96ce3ad2d79a37f0de605e2891cf369d0436dab6e0a6ecb69b10b357f2612a",
+      "uid": 501
+    },
+    "future-extraction-tail.txt": {
+      "bytes": 5613,
+      "mode": "0600",
+      "nlink": 1,
+      "sha256": "db3ad7ecc85370fe3638f0c1879077b35d24f15b15d1e473c3420fd7d0d823d1",
+      "uid": 501
+    },
+    "priority-before-acquisition.json": {
+      "bytes": 363,
+      "mode": "0600",
+      "nlink": 1,
+      "sha256": "97293167cf28d35eb914e2cd67b3c1938815ee400c2ab7d4105c431a1a6a935d",
+      "uid": 501
+    },
+    "receipt.json": {
+      "bytes": 20538,
+      "mode": "0600",
+      "nlink": 1,
+      "sha256": "ea5aaf52ae45e21dc9b8bcb9b18fcfcf1a2045f459701c3213cbc0065fbdb270",
+      "uid": 501
+    },
+    "release-20251014.json": {
+      "bytes": 1486052,
+      "mode": "0600",
+      "nlink": 1,
+      "sha256": "e4b40842a5021bd46e84197bca665db337f13daec157ad9a0979081fd3a321b8",
+      "uid": 501
+    },
+    "release-response.json": {
+      "bytes": 1739,
+      "mode": "0600",
+      "nlink": 1,
+      "sha256": "d66f28dc45f8a58c2ba46f6addf27c07cf6efc9710a1f447b184676a8e2823a6",
+      "uid": 501
+    },
+    "static-inspection-before-recipe-review.json": {
+      "bytes": 556886,
+      "mode": "0600",
+      "nlink": 1,
+      "sha256": "0b1398b0881ffc1e42212601846ac766fd7c0ea678c6be73b981ab4bac7f710b",
+      "uid": 501
+    },
+    "static-inspection-initial.json": {
+      "bytes": 556886,
+      "mode": "0600",
+      "nlink": 1,
+      "sha256": "0b1398b0881ffc1e42212601846ac766fd7c0ea678c6be73b981ab4bac7f710b",
+      "uid": 501
+    },
+    "static-inspection.json": {
+      "bytes": 556886,
+      "mode": "0600",
+      "nlink": 1,
+      "sha256": "0b1398b0881ffc1e42212601846ac766fd7c0ea678c6be73b981ab4bac7f710b",
+      "uid": 501
+    },
+    "static-inspection.py.txt": {
+      "bytes": 13847,
+      "mode": "0600",
+      "nlink": 1,
+      "sha256": "adef7e4c40efac34c5206cd064d915c040e6ba15d4cd3b0fe901c324b9023a94",
+      "uid": 501
+    }
+  },
+  "residual_limits": [
+    "No extraction or real system-Python3.9 extractor execution",
+    "Advisory flock and descriptor operations do not exclude same-owner or privileged mutation",
+    "Mode0600 is a file permission state, not a sandbox against later explicit import or dynamic loading",
+    "No independent signature or attestation, source-to-binary equivalence, code security audit, or current security qualification",
+    "Offline retained provenance and hashes do not independently authenticate historical HTTPS transport",
+    "Mach-O and source version data do not establish target loader acceptance or runtime correctness",
+    "A future release.py version pass does not exercise hashlib.file_digest or all helper APIs",
+    "No wall-time or filesystem quota guarantee; verdict is exact-data-specific"
+  ],
+  "review_file_bindings": {
+    "docs/verification/m1-python-extractor-review-2026-10-24-t3-c8ee917b/README.md": {
+      "bytes": 12629,
+      "mode": "0644",
+      "sha256": "4c7243d420ebdcad40f3aa30ae5c187838ae93e7b2df63d0972c1d6054407808"
+    },
+    "docs/verification/m1-python-extractor-review-2026-10-24-t3-c8ee917b/data-observations.json": {
+      "bytes": 18892,
+      "mode": "0644",
+      "sha256": "594ac6e0a31b5687ef02c7820a57eefd879ff9eb7383c89ff1e27a8cfdd2aab3"
+    },
+    "docs/verification/m1-python-extractor-review-2026-10-24-t3-c8ee917b/data-reader.stderr.txt": {
+      "bytes": 0,
+      "mode": "0644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/verification/m1-python-extractor-review-2026-10-24-t3-c8ee917b/read-retained-data.py.txt": {
+      "bytes": 16795,
+      "mode": "0644",
+      "sha256": "4d53aec5842326cb428e3843a95c7dec7b4cb5fb40b63a96a51dd1f9cff1ed72"
+    }
+  },
+  "schema": "openergy.m1-python-extractor-source-review.v1",
+  "scope": {
+    "archive_members_extracted": 0,
+    "candidate_code_edits": false,
+    "delegation": false,
+    "expired_sparkle_operation": "Closed; not reused or reopened",
+    "historical_failed_or_unverified_evidence": "Unchanged",
+    "new_network_fetch": false,
+    "only_new_review_folder_added": true,
+    "process_port_or_os_query": false,
+    "remote_connection": false,
+    "runtime_qualification": false,
+    "system_or_homebrew_config_install": false,
+    "tests_or_mocks": false,
+    "user_questions": false
+  },
+  "source_input_bindings": {
+    "docs/verification/m1-python-prerequisite-data-2026-10-24-t3-27c54a9f/README.md": {
+      "bytes": 9605,
+      "mode": "0644",
+      "sha256": "9e5ac7e0797bb4e64becb61235e34c36a0d506f2eb490f9baac58b3a4f89214a"
+    },
+    "docs/verification/m1-python-prerequisite-data-2026-10-24-t3-27c54a9f/receipt.json": {
+      "bytes": 20538,
+      "mode": "0644",
+      "sha256": "ea5aaf52ae45e21dc9b8bcb9b18fcfcf1a2045f459701c3213cbc0065fbdb270"
+    },
+    "docs/verification/m1-python-prerequisite-data-2026-10-24-t3-27c54a9f/safe-extraction-recipe.py.txt": {
+      "bytes": 18787,
+      "mode": "0644",
+      "sha256": "bab38f8ed1bf4ab1d15843fc8ad3872c553e6665faf5eb97e432261f51f9b027"
+    }
+  },
+  "source_verdict_preconditions": [
+    "Exact pinned candidate recipe and archive bytes",
+    "New parent-controlled current-user-owned mode0700 private directory without symlink ancestors",
+    "No concurrent mutation of the input, private directory, destination, or ancestors",
+    "Transfer byte and hash bindings checked on the target before use"
+  ],
+  "starting_branch": "t3/c8ee917b",
+  "starting_checkout_clean": true,
+  "starting_head": "d131b6f35c9ec449812d2bf0e6c4552c749f3365",
+  "timezone": "America/Vancouver",
+  "verdicts": {
+    "code_security_qualification": "UNVERIFIED",
+    "extraction": "NOT RUN",
+    "interpreter_activation": "NOT RUN",
+    "native_qualification": "UNVERIFIED",
+    "release_py_version": "NOT RUN",
+    "source": "CLEAR"
+  },
+  "worktree": "/Users/serge/.t3/worktrees/openergy/t3-c8ee917b"
+}
