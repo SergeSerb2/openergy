@@ -1,0 +1,20 @@
+--- a/observer.py.txt
++++ b/observer.py.txt
+@@ -71 +71 @@
+-    read_bound(B+'/prepare-launch/prepare.payload.py',PAYLOAD_BYTES,PAYLOAD_SHA256,0o400)
++    read_bound(B+'/prepare-repaired-launch/prepare.payload.py',PAYLOAD_BYTES,PAYLOAD_SHA256,0o400)
+@@ -76 +76 @@
+-    for name in ['prepare-run','prepare-parent-request.json','prepare-parent-exit.json']:
++    for name in ['prepare-repaired-run','prepare-repaired-parent-request.json','prepare-repaired-parent-exit.json']:
+@@ -84 +84 @@
+-    argv=[PYTHON,'-I','-S','-B',B+'/tools/transport-direct-signal.py','--phase',PHASE,'--profile',B+'/m1-profile.json','--profile-sha256',PROFILE_SHA256,'--payload',B+'/prepare-launch/prepare.payload.py','--payload-sha256',PAYLOAD_SHA256,'--run-dir',B+'/prepare-run','--collector-sha256',COLLECTOR_SHA256,'--envelope-start-ns',str(S),'--clock-sha256',CLOCK_SHA256]
++    argv=[PYTHON,'-I','-S','-B',B+'/tools/transport-direct-signal.py','--phase',PHASE,'--profile',B+'/m1-profile.json','--profile-sha256',PROFILE_SHA256,'--payload',B+'/prepare-repaired-launch/prepare.payload.py','--payload-sha256',PAYLOAD_SHA256,'--run-dir',B+'/prepare-repaired-run','--collector-sha256',COLLECTOR_SHA256,'--envelope-start-ns',str(S),'--clock-sha256',CLOCK_SHA256]
+@@ -86 +86 @@
+-    save('prepare-parent-request.json',request,A)
++    save('prepare-repaired-parent-request.json',request,A)
+@@ -106 +106 @@
+-    record={'schema':'openergy.metadata-transport-independent-exit.v1','observer_resolved_python':os.path.realpath(sys.executable),'observer_full_version':sys.version,'clock_descriptor':clock,'same_local_host_and_boot_bound':True,'collector_source_sha256':COLLECTOR_SHA256,'profile_sha256':PROFILE_SHA256,'payload_sha256':PAYLOAD_SHA256,'run_directory':B+'/prepare-run','started_ns':S,'absolute_until_ns':A,'actual_collector_pid_from_retained_handle':PROCESS.pid,'actual_collector_exit':code,'actual_wait_or_poll_returned':returned,'post_actual_exit_observed_ns':T,'strictly_before_absolute':bool(returned and T<A),'timeout':timeout,'receipt_assessed':False,'artifact_accepted':False,'phase':PHASE,'selected_work_seconds':WORK_SECONDS,'selected_settle_seconds':SETTLE_SECONDS,'selected_final_seconds':FINAL_SECONDS,'selected_total_seconds':TOTAL_SECONDS}
++    record={'schema':'openergy.metadata-transport-independent-exit.v1','observer_resolved_python':os.path.realpath(sys.executable),'observer_full_version':sys.version,'clock_descriptor':clock,'same_local_host_and_boot_bound':True,'collector_source_sha256':COLLECTOR_SHA256,'profile_sha256':PROFILE_SHA256,'payload_sha256':PAYLOAD_SHA256,'run_directory':B+'/prepare-repaired-run','started_ns':S,'absolute_until_ns':A,'actual_collector_pid_from_retained_handle':PROCESS.pid,'actual_collector_exit':code,'actual_wait_or_poll_returned':returned,'post_actual_exit_observed_ns':T,'strictly_before_absolute':bool(returned and T<A),'timeout':timeout,'receipt_assessed':False,'artifact_accepted':False,'phase':PHASE,'selected_work_seconds':WORK_SECONDS,'selected_settle_seconds':SETTLE_SECONDS,'selected_final_seconds':FINAL_SECONDS,'selected_total_seconds':TOTAL_SECONDS}
+@@ -110 +110 @@
+-        ref=save('prepare-parent-exit.json',record,A)
++        ref=save('prepare-repaired-parent-exit.json',record,A)
