@@ -1,0 +1,11 @@
+--- a/controller.py
++++ b/controller.py
+@@ -258,7 +258,7 @@
+     def port(self, port, label, retain, deadline):
+         # Original pre-bind snapshot, first bind and literal ports stay unchanged.
+         raw = command(['/usr/sbin/netstat', '-an', '-p', 'tcp'], deadline,
+-                      coverage=(self.runtime, 'main' if label == 'pre' else 'postflight')).decode()
++                      coverage=(self.runtime, 'main' if label == 'pre' else 'postflight', self.spec)).decode()
+         scoped = [line for line in raw.splitlines() if re.search(r'\.' + str(port) + r'\s', line)]
+         state = dict(filter_port=port, scoped_rows=scoped, monotonic=time.monotonic())
+         handle = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
