@@ -1,0 +1,125 @@
+--- docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/common.py.txt
++++ docs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/source/common.py.txt
+@@ -261,48 +261,81 @@
+ 
+ 
+ def command(argv, deadline, cap=4194304, *, coverage=None):
+-    """Read-only tools/probes only. Products always use exec_owned.py + a Popen ledger."""
+-    with io_until(deadline):
+-        argv = list(map(str, argv))
+-        recorder = None
+-        if coverage is not None:
+-            from coverage import CommandCoverage
+-            recorder = CommandCoverage(*coverage, argv, deadline)
+-        process = subprocess.Popen(argv, cwd=REPO,
+-                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+-        try:
+-            if recorder is None:
+-                stdout, stderr = process.communicate(timeout=remaining(deadline) * 0.8)
+-            else:
+-                communication_end = time.monotonic() + remaining(deadline) * 0.8
+-                recorder.deadline = communication_end
+-                recorder.spawn(process)
+-                while True:
+-                    recorder.sample(process)  # Before the first blocking wait; no command retry.
++    """Read-only tools/probes only. Products always use exec_owned.py + a Popen ledger.
++
++    The parent exclusively reaps this retained direct child. No other thread,
++    waitpid caller or SIGCHLD discard may reap it; an unreaped PID cannot be reused.
++    """
++    first_error, recorder, process = None, None, None
++    try:
++        with io_until(deadline):
++            try:
++                argv = list(map(str, argv))
++                if coverage is not None:
++                    from coverage import CommandCoverage
++                    recorder = CommandCoverage(*coverage, argv, deadline)
++                process = subprocess.Popen(argv, cwd=REPO,
++                                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
++                try:
++                    if recorder is None:
++                        stdout, stderr = process.communicate(timeout=remaining(deadline) * 0.8)
++                    else:
++                        communication_end = time.monotonic() + remaining(deadline) * 0.8
++                        recorder.deadline = communication_end
++                        recorder.spawn(process)
++                        while True:
++                            recorder.sample(process)  # Before the first blocking wait; no command retry.
++                            try:
++                                stdout, stderr = process.communicate(timeout=min(0.02, remaining(communication_end)))
++                                break
++                            except subprocess.TimeoutExpired:
++                                remaining(communication_end)
++                except BaseException as error:
++                    first_error = error  # Before cleanup or coverage sinks.
+                     try:
+-                        stdout, stderr = process.communicate(timeout=min(0.02, remaining(communication_end)))
+-                        break
+-                    except subprocess.TimeoutExpired:
+-                        remaining(communication_end)
+-        except BaseException:
+-            # An unreaped direct tool child cannot have its PID reused.
+-            if process.poll() is None:
+-                process.kill()
+-            # Reserve part of the same absolute budget for killing/reaping our
+-            # unreaped probe/tool child; never borrow from product cleanup.
+-            process.communicate(timeout=remaining(deadline))
+-            raise
+-        finally:
+-            if recorder is not None:
+-                recorder.deadline = deadline
+-                recorder.finish(process)  # Actual status, including timeout cleanup; no invented exit.
+-        if len(stdout) + len(stderr) > cap:
+-            raise RuntimeError('tool output byte cap exceeded')
+-        if process.returncode != 0:
+-            raise RuntimeError(repr(dict(argv=list(map(str, argv)), code=process.returncode,
+-                                         stdout=stdout.decode(errors='replace'),
+-                                         stderr=stderr.decode(errors='replace'))))
+-        return stdout
++                        # poll retains the actual signed code on this same Popen
++                        # before the immediate same-process clock sample.
++                        code = process.poll()
++                        sampled = time.monotonic()
++                        if code is None and sampled < deadline:
++                            os.kill(process.pid, signal.SIGKILL)
++                        if sampled >= deadline:
++                            raise DeadlineError('helper eligibility poll reached absolute deadline')
++                        # Syscall return proves no delivery, exit or reap. Keep
++                        # the original remaining helper budget; never renew it.
++                        process.communicate(timeout=remaining(deadline))
++                    except BaseException as cleanup_error:
++                        if len(COVERAGE_ERRORS) < 32:
++                            COVERAGE_ERRORS.append(('helper cleanup: ' + repr(cleanup_error))[:2048])
++                    raise
++                # Latch command/cap failure before recorder.finish can fail.
++                if len(stdout) + len(stderr) > cap:
++                    raise RuntimeError('tool output byte cap exceeded')
++                if process.returncode != 0:
++                    raise RuntimeError(repr(dict(argv=list(map(str, argv)), code=process.returncode,
++                                                 stdout=stdout.decode(errors='replace'),
++                                                 stderr=stderr.decode(errors='replace'))))
++            except BaseException as error:
++                if first_error is None:
++                    first_error = error
++                raise
++            finally:
++                if recorder is not None and process is not None:
++                    try:
++                        recorder.deadline = deadline
++                        recorder.finish(process)  # Actual signed status; None is never reaped.
++                    except BaseException as recorder_error:
++                        if first_error is None:
++                            first_error = recorder_error
++                            raise
++                        if len(COVERAGE_ERRORS) < 32:
++                            COVERAGE_ERRORS.append(('helper coverage finish: ' + repr(recorder_error))[:2048])
++            return stdout
++    except BaseException:
++        # io_until restoration/clock errors cannot replace an earlier failure.
++        if first_error is not None:
++            raise first_error
++        raise
+ 
+ 
+ def git_file(path, deadline):

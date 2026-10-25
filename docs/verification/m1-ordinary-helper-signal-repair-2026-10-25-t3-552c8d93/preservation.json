@@ -1,0 +1,47 @@
+{
+  "baseline": {
+    "canonical_digest_sha256": "2b1d63db1e54743a45e4998c0bdf6e86502c61434e9396f4f73db572dee1c21b",
+    "canonical_format": "UTF-8 compact JSON plus LF; Git ls-tree order; rows [path, Git mode, blob OID, full working permission mode in octal, byte length, raw working SHA256]",
+    "index_stage_records_sha256": "66f2e4dcca46538ac7a7f0f854cd5c0e0a5f07ba60ceeb8d0ecbce7eeba4af1a",
+    "opening_mismatches": [],
+    "opening_per_file_tree_index_comparisons": 4566,
+    "opening_raw_working_samples": 4566,
+    "opening_status": "CLEAN",
+    "parent": "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+    "preexisting_raw_working_vs_blob_differences": [
+      {
+        "path": "tools/windows/openergy-run.cmd",
+        "raw_working_blob_oid": "e008c1b665bc7957df748ac31a5e9e0c02ac1385",
+        "tree_and_index_oid": "9cd6f37ce26dde4edcad6f808492171f8daf3462"
+      }
+    ],
+    "raw_git_tree_sha256": "4b917fb300e2408d6569901c0f038d2c5f72e242c86ffb02c1f31902b1c87532",
+    "tracked_count": 4566,
+    "tree": "c7f4e2071504be7aa62db964e4af055f503346ea"
+  },
+  "closing": {
+    "actual_per_file_comparisons": 4566,
+    "canonical_digest_sha256": "2b1d63db1e54743a45e4998c0bdf6e86502c61434e9396f4f73db572dee1c21b",
+    "entire_opening_index_stage_records_equal": true,
+    "index_blobs_modes_stages_equal": true,
+    "mismatch_paths": [],
+    "old_parent_tree_equal": true,
+    "old_tracked_diff_names": [],
+    "opening_row_reconstitution": "After removing the temporary duplicate inventory, reconstituted the exact rows from the baseline public Git tree/current bytes only after their canonical digest equalled the frozen opening digest. Every old row is again compared individually before and after commit.",
+    "original_private_files": "Not read or written; outside this public checkout comparison scope.",
+    "phase": "Final construction, before folder-only commit",
+    "raw_working_bytes_lengths_and_full_permission_modes_equal": true,
+    "scope": "Every old PublicGit tracked entry compared individually to its opening raw bytes/length/mode/hash and index tuple. Summary retained; duplicate baseline rows removed before commit."
+  },
+  "commit_policy": {
+    "final_commit_hash": "Reported in final console output; not embedded in its own committed bytes.",
+    "fsmonitor": "core.fsmonitor=false",
+    "hooks": "core.hooksPath=/dev/null",
+    "only_new_folder": true,
+    "owned_folder": "docs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93",
+    "post_commit_verification": "Actual old per-file comparisons and clean status run after commit; final console output is separate from this precommit record.",
+    "signing": "commit.gpgsign=false"
+  },
+  "execution": false,
+  "reader_note": "First baseline reader assumed raw working bytes equal Git blobs and stopped before any write at tools/windows/openergy-run.cmd. Public check-attr reports text/eol=crlf. Corrected reader retains actual raw bytes and compares them to their opening samples, independently of Git normalization; no tracked file changed."
+}
