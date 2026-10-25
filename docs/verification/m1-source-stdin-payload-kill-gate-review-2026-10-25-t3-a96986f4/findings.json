@@ -1,0 +1,85 @@
+{
+  "P1_count": 0,
+  "P2_count": 0,
+  "approval_authority": false,
+  "candidate_commit": "f78f2be0fe14e5e4cf81990156cb18a1abb5ff62",
+  "execution": false,
+  "external_dependencies": {
+    "actual_rendered_payload_sha256": null,
+    "caller_compact_success": "R6-P2-1 CLOSED_SOURCE_ONLY",
+    "caller_overall_verdict": "HOLD for separate inherited R8-P2-1",
+    "caller_r7_review": "8326f49945824c71e1b58d421f107a3cfafff3da",
+    "caller_r9": "REPORTED_RUNNING_NOT_REVIEWED_HERE",
+    "final_caller_binding": null,
+    "final_caller_review": null,
+    "local_coordinator": "190e11f2477c0a68b8980a154dcf934ea0363882",
+    "old_r7_local_packet": "DISABLED",
+    "parent_inspection": "492f067",
+    "profile": "75ef628876013ea882472bbfa0a392439fe3e03d",
+    "transport_candidate": "1c46c16b225924d6664d33c06382a3cd05581272",
+    "transport_review": "a7e22725cbbf07b5e6ac7e7aa7e7fb0d3dff93b4",
+    "transport_review_import": "81252214f7c391c465510193acf48115ec3d95db",
+    "transport_verdict": "SOURCE CLEAR, component-scoped only"
+  },
+  "findings": [],
+  "future_execution_approval_created": false,
+  "human_gate_created": false,
+  "import_commit": "920eac7deae597b18963b88ccce7c0ba97910ce9",
+  "patch_sha256": "bf302cd44d99267ca632004fea0d86c286d38c4f75a5d9ffce17e20971b81808",
+  "preserved_states": [
+    "strict SDK FAILED_UNVERIFIED helper1/SSH1",
+    "old M1 app25/25 app0/controller1 FAILED_NOT_ACCEPTED",
+    "first strict post65431 EADDRINUSE cause UNKNOWN",
+    "whole-flow NI15/runtime UNVERIFIED",
+    "earlier23/25 FAILED",
+    "all original failed files/guards",
+    "missing original second post-bind/bundle-after/outcome/archive",
+    "stripping warning",
+    "full outer build duration/exit UNKNOWN",
+    "Windows SSH255/no route and remote state UNKNOWN",
+    "closed updater operation"
+  ],
+  "prior_dispositions": [
+    {
+      "id": "PAYLOAD-P2-1",
+      "limit": "Source ordering only. No hard preemption, timely signal/reap, interpreter-internals or runtime proof.",
+      "prior_primary_lines": [
+        501,
+        508
+      ],
+      "prior_review_commit": "4b5d756769cdc540abd7f07c92fead31b9530101",
+      "response": "The real eligibility poll result is immediately sampled even for None, with code/sample retained before branch. None requires sample strictly before both unchanged reap and phase ends; late or failed observation cannot reach KILL. Real exit/reap and first observation are not replaced; unchanged wait, handle, null rules and unreaped publication gate remain.",
+      "response_lines": [
+        428,
+        435,
+        503,
+        521
+      ],
+      "status": "CLOSED_SOURCE_ONLY"
+    }
+  ],
+  "proof_limits": [
+    "Static source/data review only; no supplied source/check execution or import, tests, mocks, private access, remote/native/process query, children, build/signing or activation.",
+    "Runtime, clock equivalence/rate, signal/reap, pipe delivery, fault durability, private startup, containment, parent causal act and whole-flow NI15 remain UNVERIFIED.",
+    "No native/UI/performance/ABI/signature/artifact/integration/product/release acceptance.",
+    "Failure may prevent complete returned/durable status; missing exit/sample/prefix/reference facts remain missing."
+  ],
+  "runtime": "UNVERIFIED",
+  "runtime_acceptance": false,
+  "schema": "openergy.independent-source-payload-kill-gate-findings.v1",
+  "source_clear": true,
+  "source_clear_scope": "Exact payload source/data only; no caller, transport, runtime or approval grant",
+  "source_sha256": "8d7844a20ce347b7be52c07a516b8d9136bdb5c067e450bea24eb3453441afa6",
+  "unresolved_obligations": [
+    "Final exact caller/R9 bytes and independent review, with any CLI/cwd/environment/parent/capture/writer-lifetime change reconciled.",
+    "Real parent bindings for all22 null slots; strict sole-token rendering and exact rendered payload identity. No hash/string alone proves the causal acts.",
+    "Five remote original checks after seven-original parent inspection and before NEW inspected/start clock readings; no repeat/retag/offset.",
+    "Exclusive root temporal ownership and no surviving external writer; actual direct reap before all later publication and fresh root counts.",
+    "Complete exact full caller result and all53 SOURCE native/aux raw/status/comparison records, plus complete actual exit/EOF/error/drop/kill/deadline facts.",
+    "Actual local transport facts and independent D4 before original135s; no receipt-only acceptance.",
+    "No COPY/prepare/controller/product/artifact-receipt/SSH/materializer implementation or approval in this slice."
+  ],
+  "verdict": "CLEAR",
+  "verdict_label": "SOURCE CLEAR",
+  "whole_flow_NI15": "UNVERIFIED"
+}
