@@ -1,0 +1,1801 @@
+{
+  "all_functions": [
+    {
+      "bytes": 100,
+      "end_line": 81,
+      "name": "require",
+      "review": "Exact True singleton admits; all other conditions reject.",
+      "sha256": "c3afd7ca6d0833f2a1088e7960609a0f5b02a0da59ef047cb21bcb9cfba4fd7a",
+      "start_line": 79
+    },
+    {
+      "bytes": 174,
+      "end_line": 86,
+      "name": "canonical",
+      "review": "Finite sorted compact ASCII JSON with exactly one LF.",
+      "sha256": "c7e20586dd39a473001c0f3b863310ea8a23a9518707c78310ce54bf30ef3b49",
+      "start_line": 84
+    },
+    {
+      "bytes": 60,
+      "end_line": 90,
+      "name": "digest",
+      "review": "SHA256 over actual bytes.",
+      "sha256": "884bb01e185f2d9d9430301d9fae0ad420aa9c9ab5ec6be9c82587a6bf0ed525",
+      "start_line": 89
+    },
+    {
+      "bytes": 145,
+      "end_line": 98,
+      "name": "unique",
+      "review": "Duplicate keys reject at each nesting level.",
+      "sha256": "4b7f14805ba175c5a1727062c6018c45186a45cd472b1cb1ed7c9feef69800a8",
+      "start_line": 93
+    },
+    {
+      "bytes": 99,
+      "end_line": 104,
+      "name": "finite_float",
+      "review": "Finite float conversion required; exact expected types still apply.",
+      "sha256": "4800b35232afbfaa00665f834e8f5a25674e96c0ccd0d02bcbc7f42630c3f054",
+      "start_line": 101
+    },
+    {
+      "bytes": 60,
+      "end_line": 108,
+      "name": "nonfinite",
+      "review": "Nonfinite named JSON constants always reject.",
+      "sha256": "bb5f10d33bec9fad429f312cf174b562f90d303bebbd0cc59607d972586d6da4",
+      "start_line": 107
+    },
+    {
+      "bytes": 158,
+      "end_line": 113,
+      "name": "load",
+      "review": "ASCII parser with strict duplicate and nonfinite hooks.",
+      "sha256": "eb2de38697bb5e1a11420cf3438397b0d94d627185f1d759fa13842bcaed9b77",
+      "start_line": 111
+    },
+    {
+      "bytes": 86,
+      "end_line": 117,
+      "name": "keys",
+      "review": "Exact dict type and full key-set closure.",
+      "sha256": "76118bb4504d9fc14654a4161edbaafd3a899ce7bbf4c5d55b52defd336ca0db",
+      "start_line": 116
+    },
+    {
+      "bytes": 478,
+      "end_line": 132,
+      "name": "equal",
+      "review": "Recursive exact type before equality prevents bool/int and float/int confusion.",
+      "sha256": "72bc4341b30b5f7db3a2be37f2be89ce4741568117ca22257f9359036e52bf7f",
+      "start_line": 120
+    },
+    {
+      "bytes": 141,
+      "end_line": 137,
+      "name": "integer",
+      "review": "Exact int and selected bounds; bool rejects.",
+      "sha256": "e98dbb4f911a16e61561eb2e592d5866d88558362a325c90700aed16f350f1cf",
+      "start_line": 135
+    },
+    {
+      "bytes": 148,
+      "end_line": 142,
+      "name": "hexhash",
+      "review": "Exact lowercase hex string with40/64 selected length.",
+      "sha256": "55aee7c60020624799faed8a9c667925dfd10073fdd216675e14078ac22c807c",
+      "start_line": 140
+    },
+    {
+      "bytes": 2182,
+      "end_line": 182,
+      "name": "bind_config",
+      "review": "Closed24 actual slots, held candidate/review reject, null admission fails before any file operation.",
+      "sha256": "4f8835c5a7f76b32fa3c0e0a51e07de19e7f68a3fee991ac5770de4e39be5224",
+      "start_line": 145
+    },
+    {
+      "bytes": 116,
+      "end_line": 188,
+      "name": "before",
+      "review": "Entry and current sample must remain within original S/A.",
+      "sha256": "f13d7a23271b9e7ab5ffde12b6e03b0ec8ba4f4413583d158870c81bc1bdcc27",
+      "start_line": 185
+    },
+    {
+      "bytes": 75,
+      "end_line": 195,
+      "name": "close",
+      "review": "Close followed by original deadline check even on error.",
+      "sha256": "6328513a9ba5fd290cf0322fe293ee8c56679828740dda41f033c18fce832588",
+      "start_line": 191
+    },
+    {
+      "bytes": 172,
+      "end_line": 200,
+      "name": "stamp",
+      "review": "Full dev/inode/mode/uid/gid/link/size/mtime/ctime stamp.",
+      "sha256": "b2848e87c0ee6c3c9fb1cc84b6ecf8ab33b7787e754f5919661f1c1535709abf",
+      "start_line": 198
+    },
+    {
+      "bytes": 201,
+      "end_line": 208,
+      "name": "owned_directory",
+      "review": "Retained final base and run FDs require owned0700.",
+      "sha256": "974be7b5e7b104fad8bfe183105bc287212856f4e01b98bc016934fd1deedf0c",
+      "start_line": 203
+    },
+    {
+      "bytes": 604,
+      "end_line": 230,
+      "name": "open_base",
+      "review": "Fixed absolute nofollow/nonblocking component walk; prior FDs close.",
+      "sha256": "6241ab7409abf45eb7aa2bd958e10ad21a13e332a973f02952fb5a3ea56bb3e0",
+      "start_line": 211
+    },
+    {
+      "bytes": 436,
+      "end_line": 241,
+      "name": "file_state",
+      "review": "FD and nofollow name match initial owned one-link regular mode/cap stamp.",
+      "sha256": "e29f664b35b1adacbcd748fb56147efaabe72c2ad436d3decdcf8af72dc33145",
+      "start_line": 233
+    },
+    {
+      "bytes": 1133,
+      "end_line": 275,
+      "name": "read_fixed",
+      "review": "Seven fixed table leaves; capped reads plus probe, repeated stable stamps/deadline checks, close before return.",
+      "sha256": "78466d7040be8e1e249d7f1bcf40430752b2884d1315ac64c6642a2e6c9b8cc5",
+      "start_line": 244
+    },
+    {
+      "bytes": 970,
+      "end_line": 295,
+      "name": "clock_runtime",
+      "review": "Fixed argv, Darwin CPython3.15/startup flags, resolved runtime/version, own NI15 and exact Mach descriptor; interpreter trust external.",
+      "sha256": "7556ef19bad2e7573b6270dd6c1e229dee0a86a3fad1e1c3981c8efc9c8503f4",
+      "start_line": 278
+    },
+    {
+      "bytes": 1874,
+      "end_line": 326,
+      "name": "parent_record",
+      "review": "Exact24 parent fields, collector0/T bounds, canonical record-bound console and supplied observer OS/EOF observations before entry.",
+      "sha256": "95c824b06d54ad24b358c2ac63c2d6265898c59b8b919c537529f541e4a332e9",
+      "start_line": 298
+    },
+    {
+      "bytes": 1338,
+      "end_line": 347,
+      "name": "request_record",
+      "review": "Exact18 request fields and23-string vector preserve all nine flags, phase130/2/3, hashes/paths and original S.",
+      "sha256": "36bc44cca98cc82810cdcc3c3e85ba3718d9496111a794f2d01f8639646bb0ff",
+      "start_line": 329
+    },
+    {
+      "bytes": 3749,
+      "end_line": 404,
+      "name": "transport_records",
+      "review": "Closed33/10/9 records plus nested keys/types; actual SSH0 before work, no loss/error/timeout/kill/retry; stop fields are limits.",
+      "sha256": "bc9be63cc292f7b5d80eff1dd4b0af6e5936276c5c88326d8229b0b0510c48a2",
+      "start_line": 350
+    },
+    {
+      "bytes": 1098,
+      "end_line": 428,
+      "name": "stream_records",
+      "review": "Actual saved raw lengths/hashes, both EOF/fsync/no loss, empty stderr, snapshot rehash, canonical compact reference only.",
+      "sha256": "94ce072839db4773bbe4c3affd5360d63999766e13b05c8d2b4d0a8e7a5e1090",
+      "start_line": 407
+    },
+    {
+      "bytes": 487,
+      "end_line": 444,
+      "name": "retained_inputs",
+      "review": "Input stamps and owned run name rechecked before publication and after barriers; exclusive path ownership external.",
+      "sha256": "d314c0d523be2e9461d139518d78f47e6363d557066b5d04df7a4741b1fb0b73",
+      "start_line": 431
+    },
+    {
+      "bytes": 1038,
+      "end_line": 478,
+      "name": "publish",
+      "review": "One exclusive0600 file <=16KiB, single full write, file close/root fsync, output/input postchecks; no retry/replacement.",
+      "sha256": "66ffc15f89a03b1d6cce556a96917ca37ff33d6c9e61f45597cf2933bb572203",
+      "start_line": 447
+    },
+    {
+      "bytes": 484,
+      "end_line": 493,
+      "name": "console_once",
+      "review": "One nonblocking FIFO line <=512 after publication and directory closes; actual exit/EOF external.",
+      "sha256": "7d89c608f5c8603280f2fab5a2bd724626b194f37520eabd9e1fd291e1afce49",
+      "start_line": 481
+    },
+    {
+      "bytes": 2928,
+      "end_line": 550,
+      "name": "main",
+      "review": "Admission, seven reads, prepublication assessment end, one publication, all retained directory closes, console; no acceptance.",
+      "sha256": "34999c65444fa31226827a89837dad96a02c216a4f3ac5f746e8571597652d48",
+      "start_line": 496
+    }
+  ],
+  "call_sites": [
+    {
+      "call": "time.monotonic_ns",
+      "line": 9
+    },
+    {
+      "call": "'schema observer_resolved_python observer_full_version clock_descriptor same_local_host_and_boot_bound collector_source_sha256 profile_sha256 payload_sha256 run_directory started_ns absolute_until_ns actual_collector_pid_from_retained_handle actual_collector_exit actual_wait_or_poll_returned post_actual_exit_observed_ns strictly_before_absolute timeout receipt_assessed artifact_accepted phase selected_work_seconds selected_settle_seconds selected_final_seconds selected_total_seconds'.split",
+      "line": 41
+    },
+    {
+      "call": "'schema operation phase selected_work_seconds selected_settle_seconds selected_final_seconds selected_total_seconds observer_source_sha256 own_priority_before clock same_local_host_and_boot_bound_by_direct_topology started_ns work_until_ns absolute_until_ns argv retries exclusive_target_root_owned_for_serial_attempt remote_enclosure'.split",
+      "line": 49
+    },
+    {
+      "call": "'schema phase bindings clock deadlines python caps retries remote_state remote_child_exit'.split",
+      "line": 54
+    },
+    {
+      "call": "'schema status phase bindings clock deadlines python guard_durable spawn_started_ns spawn_returned_ns settle_stop_ns final_stop_ns actual_local_ssh_pid actual_local_ssh_exit actual_exit_observed_ns handle_retained kill timeout streams first_observed_failure secondary_publication_failures publication_failure_count caps retries completion_passes remote_child_exit remote_current_state payload_receipt_assessed artifact_accepted r9_reserved_publisher own_cli_exit_observed independent_parent_observation_required receipt_prewrite_ns'.split",
+      "line": 56
+    },
+    {
+      "call": "ValueError",
+      "line": 81
+    },
+    {
+      "call": "(json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=True, allow_nan=False) + '\\n').encode",
+      "line": 85
+    },
+    {
+      "call": "json.dumps",
+      "line": 85
+    },
+    {
+      "call": "hashlib.sha256",
+      "line": 90
+    },
+    {
+      "call": "hashlib.sha256(raw).hexdigest",
+      "line": 90
+    },
+    {
+      "call": "require",
+      "line": 96
+    },
+    {
+      "call": "float",
+      "line": 102
+    },
+    {
+      "call": "math.isfinite",
+      "line": 103
+    },
+    {
+      "call": "require",
+      "line": 103
+    },
+    {
+      "call": "ValueError",
+      "line": 108
+    },
+    {
+      "call": "json.loads",
+      "line": 112
+    },
+    {
+      "call": "raw.decode",
+      "line": 112
+    },
+    {
+      "call": "require",
+      "line": 117
+    },
+    {
+      "call": "set",
+      "line": 117
+    },
+    {
+      "call": "set",
+      "line": 117
+    },
+    {
+      "call": "type",
+      "line": 117
+    },
+    {
+      "call": "require",
+      "line": 122
+    },
+    {
+      "call": "type",
+      "line": 122
+    },
+    {
+      "call": "type",
+      "line": 122
+    },
+    {
+      "call": "type",
+      "line": 123
+    },
+    {
+      "call": "keys",
+      "line": 124
+    },
+    {
+      "call": "equal",
+      "line": 126
+    },
+    {
+      "call": "type",
+      "line": 127
+    },
+    {
+      "call": "len",
+      "line": 128
+    },
+    {
+      "call": "len",
+      "line": 128
+    },
+    {
+      "call": "require",
+      "line": 128
+    },
+    {
+      "call": "zip",
+      "line": 129
+    },
+    {
+      "call": "equal",
+      "line": 130
+    },
+    {
+      "call": "require",
+      "line": 132
+    },
+    {
+      "call": "require",
+      "line": 136
+    },
+    {
+      "call": "type",
+      "line": 136
+    },
+    {
+      "call": "len",
+      "line": 141
+    },
+    {
+      "call": "require",
+      "line": 141
+    },
+    {
+      "call": "type",
+      "line": 141
+    },
+    {
+      "call": "all",
+      "line": 142
+    },
+    {
+      "call": "CONFIG_TEXT.encode",
+      "line": 146
+    },
+    {
+      "call": "load",
+      "line": 146
+    },
+    {
+      "call": "keys",
+      "line": 147
+    },
+    {
+      "call": "equal",
+      "line": 148
+    },
+    {
+      "call": "keys",
+      "line": 150
+    },
+    {
+      "call": "integer",
+      "line": 151
+    },
+    {
+      "call": "hexhash",
+      "line": 152
+    },
+    {
+      "call": "keys",
+      "line": 153
+    },
+    {
+      "call": "hexhash",
+      "line": 155
+    },
+    {
+      "call": "hexhash",
+      "line": 156
+    },
+    {
+      "call": "require",
+      "line": 157
+    },
+    {
+      "call": "keys",
+      "line": 159
+    },
+    {
+      "call": "value['runtime'].values",
+      "line": 160
+    },
+    {
+      "call": "len",
+      "line": 161
+    },
+    {
+      "call": "require",
+      "line": 161
+    },
+    {
+      "call": "type",
+      "line": 161
+    },
+    {
+      "call": "require",
+      "line": 162
+    },
+    {
+      "call": "value['runtime']['resolved_python'].startswith",
+      "line": 162
+    },
+    {
+      "call": "keys",
+      "line": 164
+    },
+    {
+      "call": "integer",
+      "line": 174
+    },
+    {
+      "call": "equal",
+      "line": 175
+    },
+    {
+      "call": "require",
+      "line": 176
+    },
+    {
+      "call": "type",
+      "line": 176
+    },
+    {
+      "call": "ext['observer_console_text'].encode",
+      "line": 177
+    },
+    {
+      "call": "len",
+      "line": 178
+    },
+    {
+      "call": "require",
+      "line": 178
+    },
+    {
+      "call": "name.endswith",
+      "line": 180
+    },
+    {
+      "call": "hexhash",
+      "line": 181
+    },
+    {
+      "call": "time.monotonic_ns",
+      "line": 186
+    },
+    {
+      "call": "require",
+      "line": 187
+    },
+    {
+      "call": "type",
+      "line": 187
+    },
+    {
+      "call": "os.close",
+      "line": 193
+    },
+    {
+      "call": "before",
+      "line": 195
+    },
+    {
+      "call": "os.fstat",
+      "line": 204
+    },
+    {
+      "call": "before",
+      "line": 205
+    },
+    {
+      "call": "os.getuid",
+      "line": 206
+    },
+    {
+      "call": "require",
+      "line": 206
+    },
+    {
+      "call": "stat.S_ISDIR",
+      "line": 206
+    },
+    {
+      "call": "stat.S_IMODE",
+      "line": 207
+    },
+    {
+      "call": "before",
+      "line": 212
+    },
+    {
+      "call": "os.open",
+      "line": 213
+    },
+    {
+      "call": "before",
+      "line": 215
+    },
+    {
+      "call": "BASE[1:].split",
+      "line": 216
+    },
+    {
+      "call": "os.open",
+      "line": 217
+    },
+    {
+      "call": "before",
+      "line": 220
+    },
+    {
+      "call": "close",
+      "line": 221
+    },
+    {
+      "call": "close",
+      "line": 223
+    },
+    {
+      "call": "owned_directory",
+      "line": 226
+    },
+    {
+      "call": "close",
+      "line": 229
+    },
+    {
+      "call": "os.fstat",
+      "line": 234
+    },
+    {
+      "call": "before",
+      "line": 235
+    },
+    {
+      "call": "os.stat",
+      "line": 236
+    },
+    {
+      "call": "before",
+      "line": 237
+    },
+    {
+      "call": "os.getuid",
+      "line": 238
+    },
+    {
+      "call": "require",
+      "line": 238
+    },
+    {
+      "call": "stat.S_ISREG",
+      "line": 238
+    },
+    {
+      "call": "stat.S_IMODE",
+      "line": 239
+    },
+    {
+      "call": "require",
+      "line": 241
+    },
+    {
+      "call": "stamp",
+      "line": 241
+    },
+    {
+      "call": "stamp",
+      "line": 241
+    },
+    {
+      "call": "stamp",
+      "line": 241
+    },
+    {
+      "call": "before",
+      "line": 247
+    },
+    {
+      "call": "os.open",
+      "line": 248
+    },
+    {
+      "call": "before",
+      "line": 250
+    },
+    {
+      "call": "os.fstat",
+      "line": 251
+    },
+    {
+      "call": "before",
+      "line": 252
+    },
+    {
+      "call": "file_state",
+      "line": 253
+    },
+    {
+      "call": "file_state",
+      "line": 256
+    },
+    {
+      "call": "before",
+      "line": 257
+    },
+    {
+      "call": "min",
+      "line": 258
+    },
+    {
+      "call": "os.read",
+      "line": 258
+    },
+    {
+      "call": "before",
+      "line": 259
+    },
+    {
+      "call": "file_state",
+      "line": 260
+    },
+    {
+      "call": "len",
+      "line": 261
+    },
+    {
+      "call": "require",
+      "line": 262
+    },
+    {
+      "call": "parts.append",
+      "line": 265
+    },
+    {
+      "call": "b''.join",
+      "line": 266
+    },
+    {
+      "call": "len",
+      "line": 267
+    },
+    {
+      "call": "require",
+      "line": 267
+    },
+    {
+      "call": "file_state",
+      "line": 268
+    },
+    {
+      "call": "stamp",
+      "line": 269
+    },
+    {
+      "call": "digest",
+      "line": 271
+    },
+    {
+      "call": "len",
+      "line": 271
+    },
+    {
+      "call": "before",
+      "line": 272
+    },
+    {
+      "call": "close",
+      "line": 274
+    },
+    {
+      "call": "require",
+      "line": 279
+    },
+    {
+      "call": "os.geteuid",
+      "line": 283
+    },
+    {
+      "call": "os.getuid",
+      "line": 283
+    },
+    {
+      "call": "equal",
+      "line": 284
+    },
+    {
+      "call": "os.path.realpath",
+      "line": 284
+    },
+    {
+      "call": "equal",
+      "line": 285
+    },
+    {
+      "call": "os.setpriority",
+      "line": 287
+    },
+    {
+      "call": "os.getpriority",
+      "line": 288
+    },
+    {
+      "call": "require",
+      "line": 288
+    },
+    {
+      "call": "time.get_clock_info",
+      "line": 289
+    },
+    {
+      "call": "equal",
+      "line": 290
+    },
+    {
+      "call": "equal",
+      "line": 291
+    },
+    {
+      "call": "equal",
+      "line": 292
+    },
+    {
+      "call": "equal",
+      "line": 293
+    },
+    {
+      "call": "canonical",
+      "line": 294
+    },
+    {
+      "call": "digest",
+      "line": 294
+    },
+    {
+      "call": "equal",
+      "line": 294
+    },
+    {
+      "call": "before",
+      "line": 295
+    },
+    {
+      "call": "keys",
+      "line": 299
+    },
+    {
+      "call": "equal",
+      "line": 312
+    },
+    {
+      "call": "integer",
+      "line": 313
+    },
+    {
+      "call": "integer",
+      "line": 314
+    },
+    {
+      "call": "require",
+      "line": 315
+    },
+    {
+      "call": "require",
+      "line": 317
+    },
+    {
+      "call": "ext['observer_console_text'].encode",
+      "line": 319
+    },
+    {
+      "call": "load",
+      "line": 319
+    },
+    {
+      "call": "equal",
+      "line": 320
+    },
+    {
+      "call": "canonical",
+      "line": 324
+    },
+    {
+      "call": "equal",
+      "line": 324
+    },
+    {
+      "call": "ext['observer_console_text'].encode",
+      "line": 324
+    },
+    {
+      "call": "before",
+      "line": 325
+    },
+    {
+      "call": "keys",
+      "line": 330
+    },
+    {
+      "call": "str",
+      "line": 334
+    },
+    {
+      "call": "equal",
+      "line": 336
+    },
+    {
+      "call": "before",
+      "line": 347
+    },
+    {
+      "call": "keys",
+      "line": 351
+    },
+    {
+      "call": "keys",
+      "line": 352
+    },
+    {
+      "call": "keys",
+      "line": 358
+    },
+    {
+      "call": "integer",
+      "line": 361
+    },
+    {
+      "call": "equal",
+      "line": 371
+    },
+    {
+      "call": "equal",
+      "line": 373
+    },
+    {
+      "call": "dict",
+      "line": 388
+    },
+    {
+      "call": "equal",
+      "line": 390
+    },
+    {
+      "call": "integer",
+      "line": 391
+    },
+    {
+      "call": "integer",
+      "line": 394
+    },
+    {
+      "call": "require",
+      "line": 398
+    },
+    {
+      "call": "require",
+      "line": 400
+    },
+    {
+      "call": "require",
+      "line": 401
+    },
+    {
+      "call": "before",
+      "line": 404
+    },
+    {
+      "call": "keys",
+      "line": 408
+    },
+    {
+      "call": "len",
+      "line": 409
+    },
+    {
+      "call": "len",
+      "line": 409
+    },
+    {
+      "call": "require",
+      "line": 409
+    },
+    {
+      "call": "equal",
+      "line": 411
+    },
+    {
+      "call": "len",
+      "line": 411
+    },
+    {
+      "call": "len",
+      "line": 412
+    },
+    {
+      "call": "digest",
+      "line": 414
+    },
+    {
+      "call": "len",
+      "line": 415
+    },
+    {
+      "call": "require",
+      "line": 415
+    },
+    {
+      "call": "equal",
+      "line": 416
+    },
+    {
+      "call": "len",
+      "line": 416
+    },
+    {
+      "call": "digest",
+      "line": 417
+    },
+    {
+      "call": "equal",
+      "line": 417
+    },
+    {
+      "call": "len",
+      "line": 418
+    },
+    {
+      "call": "require",
+      "line": 418
+    },
+    {
+      "call": "load",
+      "line": 419
+    },
+    {
+      "call": "keys",
+      "line": 420
+    },
+    {
+      "call": "equal",
+      "line": 421
+    },
+    {
+      "call": "equal",
+      "line": 422
+    },
+    {
+      "call": "len",
+      "line": 423
+    },
+    {
+      "call": "require",
+      "line": 423
+    },
+    {
+      "call": "type",
+      "line": 423
+    },
+    {
+      "call": "integer",
+      "line": 424
+    },
+    {
+      "call": "hexhash",
+      "line": 425
+    },
+    {
+      "call": "canonical",
+      "line": 426
+    },
+    {
+      "call": "equal",
+      "line": 426
+    },
+    {
+      "call": "before",
+      "line": 427
+    },
+    {
+      "call": "owned_directory",
+      "line": 432
+    },
+    {
+      "call": "owned_directory",
+      "line": 433
+    },
+    {
+      "call": "os.stat",
+      "line": 434
+    },
+    {
+      "call": "before",
+      "line": 435
+    },
+    {
+      "call": "os.fstat",
+      "line": 436
+    },
+    {
+      "call": "before",
+      "line": 437
+    },
+    {
+      "call": "require",
+      "line": 438
+    },
+    {
+      "call": "stamp",
+      "line": 438
+    },
+    {
+      "call": "stamp",
+      "line": 438
+    },
+    {
+      "call": "os.stat",
+      "line": 441
+    },
+    {
+      "call": "before",
+      "line": 442
+    },
+    {
+      "call": "require",
+      "line": 443
+    },
+    {
+      "call": "stamp",
+      "line": 443
+    },
+    {
+      "call": "before",
+      "line": 444
+    },
+    {
+      "call": "canonical",
+      "line": 448
+    },
+    {
+      "call": "len",
+      "line": 449
+    },
+    {
+      "call": "require",
+      "line": 449
+    },
+    {
+      "call": "retained_inputs",
+      "line": 450
+    },
+    {
+      "call": "before",
+      "line": 451
+    },
+    {
+      "call": "os.open",
+      "line": 452
+    },
+    {
+      "call": "before",
+      "line": 455
+    },
+    {
+      "call": "os.fstat",
+      "line": 456
+    },
+    {
+      "call": "before",
+      "line": 457
+    },
+    {
+      "call": "file_state",
+      "line": 458
+    },
+    {
+      "call": "require",
+      "line": 459
+    },
+    {
+      "call": "before",
+      "line": 460
+    },
+    {
+      "call": "len",
+      "line": 461
+    },
+    {
+      "call": "os.write",
+      "line": 461
+    },
+    {
+      "call": "require",
+      "line": 461
+    },
+    {
+      "call": "before",
+      "line": 462
+    },
+    {
+      "call": "os.fsync",
+      "line": 463
+    },
+    {
+      "call": "before",
+      "line": 464
+    },
+    {
+      "call": "os.fstat",
+      "line": 465
+    },
+    {
+      "call": "before",
+      "line": 466
+    },
+    {
+      "call": "file_state",
+      "line": 467
+    },
+    {
+      "call": "len",
+      "line": 468
+    },
+    {
+      "call": "require",
+      "line": 468
+    },
+    {
+      "call": "close",
+      "line": 471
+    },
+    {
+      "call": "os.fsync",
+      "line": 472
+    },
+    {
+      "call": "before",
+      "line": 473
+    },
+    {
+      "call": "os.stat",
+      "line": 474
+    },
+    {
+      "call": "before",
+      "line": 475
+    },
+    {
+      "call": "require",
+      "line": 476
+    },
+    {
+      "call": "stamp",
+      "line": 476
+    },
+    {
+      "call": "stamp",
+      "line": 476
+    },
+    {
+      "call": "retained_inputs",
+      "line": 477
+    },
+    {
+      "call": "digest",
+      "line": 478
+    },
+    {
+      "call": "len",
+      "line": 478
+    },
+    {
+      "call": "canonical",
+      "line": 482
+    },
+    {
+      "call": "len",
+      "line": 485
+    },
+    {
+      "call": "require",
+      "line": 485
+    },
+    {
+      "call": "before",
+      "line": 486
+    },
+    {
+      "call": "os.fstat",
+      "line": 487
+    },
+    {
+      "call": "before",
+      "line": 488
+    },
+    {
+      "call": "os.fpathconf",
+      "line": 489
+    },
+    {
+      "call": "require",
+      "line": 489
+    },
+    {
+      "call": "stat.S_ISFIFO",
+      "line": 489
+    },
+    {
+      "call": "os.set_blocking",
+      "line": 490
+    },
+    {
+      "call": "before",
+      "line": 491
+    },
+    {
+      "call": "len",
+      "line": 492
+    },
+    {
+      "call": "os.write",
+      "line": 492
+    },
+    {
+      "call": "require",
+      "line": 492
+    },
+    {
+      "call": "before",
+      "line": 493
+    },
+    {
+      "call": "bind_config",
+      "line": 498
+    },
+    {
+      "call": "require",
+      "line": 501
+    },
+    {
+      "call": "before",
+      "line": 502
+    },
+    {
+      "call": "clock_runtime",
+      "line": 503
+    },
+    {
+      "call": "os.umask",
+      "line": 504
+    },
+    {
+      "call": "open_base",
+      "line": 505
+    },
+    {
+      "call": "load",
+      "line": 507
+    },
+    {
+      "call": "read_fixed",
+      "line": 507
+    },
+    {
+      "call": "require",
+      "line": 508
+    },
+    {
+      "call": "before",
+      "line": 509
+    },
+    {
+      "call": "parent_record",
+      "line": 510
+    },
+    {
+      "call": "load",
+      "line": 511
+    },
+    {
+      "call": "read_fixed",
+      "line": 511
+    },
+    {
+      "call": "request_record",
+      "line": 511
+    },
+    {
+      "call": "before",
+      "line": 512
+    },
+    {
+      "call": "os.open",
+      "line": 513
+    },
+    {
+      "call": "before",
+      "line": 516
+    },
+    {
+      "call": "owned_directory",
+      "line": 517
+    },
+    {
+      "call": "load",
+      "line": 518
+    },
+    {
+      "call": "read_fixed",
+      "line": 518
+    },
+    {
+      "call": "load",
+      "line": 519
+    },
+    {
+      "call": "read_fixed",
+      "line": 519
+    },
+    {
+      "call": "transport_records",
+      "line": 520
+    },
+    {
+      "call": "read_fixed",
+      "line": 521
+    },
+    {
+      "call": "read_fixed",
+      "line": 521
+    },
+    {
+      "call": "stream_records",
+      "line": 521
+    },
+    {
+      "call": "read_fixed",
+      "line": 522
+    },
+    {
+      "call": "before",
+      "line": 523
+    },
+    {
+      "call": "CONFIG_TEXT.encode",
+      "line": 528
+    },
+    {
+      "call": "digest",
+      "line": 528
+    },
+    {
+      "call": "publish",
+      "line": 541
+    },
+    {
+      "call": "close",
+      "line": 543
+    },
+    {
+      "call": "close",
+      "line": 546
+    },
+    {
+      "call": "console_once",
+      "line": 549
+    },
+    {
+      "call": "main",
+      "line": 554
+    },
+    {
+      "call": "os._exit",
+      "line": 557
+    }
+  ],
+  "config_null_leaf_paths": [
+    "payload.bytes",
+    "payload.sha256",
+    "observer_rendered.bytes",
+    "observer_rendered.sha256",
+    "capsule.candidate",
+    "capsule.review",
+    "capsule.review_sha256",
+    "runtime.resolved_python",
+    "runtime.full_version",
+    "external.original_started_ns",
+    "external.original_absolute_until_ns",
+    "external.observer_pid",
+    "external.observer_exit",
+    "external.observer_exit_observed_ns",
+    "external.observer_console_complete_ns",
+    "external.observer_console_eof_ns",
+    "external.observer_console_text",
+    "external.same_local_host_boot_evidence_sha256",
+    "external.observer_handle_source_evidence_sha256",
+    "external.observer_render_proof_sha256",
+    "external.payload_render_proof_sha256",
+    "external.profile_guard_qualification_sha256",
+    "external.assessor_review_sha256",
+    "external.assessor_render_proof_sha256"
+  ],
+  "entry": {
+    "bytes": 146,
+    "end_line": 557,
+    "review": "main exceptions become RESULT1; raw os._exit; real parent exit remains external",
+    "sha256": "509e6da77b96e25b902de97d1f975518fe9b3dc58b22b1fcf83ec62b86fc4171",
+    "start_line": 553
+  },
+  "execution": false,
+  "module_statements": [
+    {
+      "end_line": 6,
+      "names": null,
+      "sha256": "84a3206c659d5af76cf093f2453b6527827c1bf32eb283f3802b658389f2cb1d",
+      "start_line": 1,
+      "type": "Expr"
+    },
+    {
+      "end_line": 7,
+      "names": null,
+      "sha256": "7b2ddb8a2e64c6166feedaf30ee50ac62165fe149fdd8b0d7b777ebee21ca34d",
+      "start_line": 7,
+      "type": "Import"
+    },
+    {
+      "end_line": 9,
+      "names": [
+        "ENTRY_NS"
+      ],
+      "sha256": "b1d3adeefbb6f59b79d54edf3a7d7e65c0762cb0bc1f01dd52fa7bf516b312fa",
+      "start_line": 9,
+      "type": "Assign"
+    },
+    {
+      "end_line": 11,
+      "names": null,
+      "sha256": "3b3ea3cdc7068a9e97cfcddbcd9d8e0c54fe4d068347b80b158fdd8b14676e3b",
+      "start_line": 11,
+      "type": "Import"
+    },
+    {
+      "end_line": 12,
+      "names": null,
+      "sha256": "261a9112a2918e2aba03e19a2f221a027ab4b6f9e946a6c39814f54e18e07dfc",
+      "start_line": 12,
+      "type": "Import"
+    },
+    {
+      "end_line": 13,
+      "names": null,
+      "sha256": "085ea91d7cfeb4f5695793f882c7463cbfdf7be9f98e6c5133847a245bbea366",
+      "start_line": 13,
+      "type": "Import"
+    },
+    {
+      "end_line": 14,
+      "names": null,
+      "sha256": "3727adff524e0616022eadd8f4af21a0778b29fc4c77bdfefd1afce2cbf5e4b7",
+      "start_line": 14,
+      "type": "Import"
+    },
+    {
+      "end_line": 15,
+      "names": null,
+      "sha256": "1fd20c880d3cde1a258aa761090aabc445918b6cf2b91712928debfc04392cff",
+      "start_line": 15,
+      "type": "Import"
+    },
+    {
+      "end_line": 16,
+      "names": null,
+      "sha256": "c517577851c489e45abae2591256c40404a05c6d19cd4d5ae7fd22b0084cec6c",
+      "start_line": 16,
+      "type": "Import"
+    },
+    {
+      "end_line": 18,
+      "names": [
+        "CONFIG_TEXT"
+      ],
+      "sha256": "f44da4e641ff74ddbc63a7e24b7112ec76d0bd20e05c8e3ad0195e862c20f27e",
+      "start_line": 18,
+      "type": "Assign"
+    },
+    {
+      "end_line": 20,
+      "names": [
+        "BASE"
+      ],
+      "sha256": "4d7b2be419a75ad66330ac4d4a5cf72ffe2793889e802b835cfca935002b2a80",
+      "start_line": 20,
+      "type": "Assign"
+    },
+    {
+      "end_line": 21,
+      "names": [
+        "PYTHON"
+      ],
+      "sha256": "d74c848772cea07e853e73d3a351d48542ef86c3c6278f4daa8eda8d1c1eba2e",
+      "start_line": 21,
+      "type": "Assign"
+    },
+    {
+      "end_line": 22,
+      "names": [
+        "OBSERVER"
+      ],
+      "sha256": "3deac3ecff1f95e509c8da2101f58b24ded8c33d1398e7e369afd8a1f75cab7b",
+      "start_line": 22,
+      "type": "Assign"
+    },
+    {
+      "end_line": 23,
+      "names": [
+        "ASSESSOR"
+      ],
+      "sha256": "bacffe334b95cfcbe82da330676d8f4ee1aa65a4c4303ac297854219ce8b7674",
+      "start_line": 23,
+      "type": "Assign"
+    },
+    {
+      "end_line": 24,
+      "names": [
+        "COLLECTOR"
+      ],
+      "sha256": "c75b4e9e987d6550eba33952df6cc1c9ba6f251f65b5248a42d729e290a9b9b0",
+      "start_line": 24,
+      "type": "Assign"
+    },
+    {
+      "end_line": 25,
+      "names": [
+        "PROFILE"
+      ],
+      "sha256": "5c2ed7b7939c1b4dc9cb0511f3f01953cafb5a020cde3f34aa558d5a5545f69d",
+      "start_line": 25,
+      "type": "Assign"
+    },
+    {
+      "end_line": 26,
+      "names": [
+        "PAYLOAD"
+      ],
+      "sha256": "ece347b4ff94a75124ffaac5a565e77a2f7e395754e88ab73f3017b2d643534f",
+      "start_line": 26,
+      "type": "Assign"
+    },
+    {
+      "end_line": 27,
+      "names": [
+        "RUN"
+      ],
+      "sha256": "2677004aefe2a73bcd88efe60ba820f27fcf686903a137f7681882c0d003e1f6",
+      "start_line": 27,
+      "type": "Assign"
+    },
+    {
+      "end_line": 28,
+      "names": [
+        "OUTPUT"
+      ],
+      "sha256": "362016e0bc3e4fb91baf308a4ecc88d19350f8e3596cdd54079e8b159b70d925",
+      "start_line": 28,
+      "type": "Assign"
+    },
+    {
+      "end_line": 29,
+      "names": [
+        "COLLECTOR_HASH"
+      ],
+      "sha256": "4e7e4072b761856fabebe458c8e9acd0e38570181d4a2eaa783345163af9543d",
+      "start_line": 29,
+      "type": "Assign"
+    },
+    {
+      "end_line": 30,
+      "names": [
+        "PROFILE_HASH"
+      ],
+      "sha256": "5b9b5fca4c4cdad6d4688506f34c445e6866f2b345ab3fc62c98e290c222cb60",
+      "start_line": 30,
+      "type": "Assign"
+    },
+    {
+      "end_line": 31,
+      "names": [
+        "CLOCK_HASH"
+      ],
+      "sha256": "ee5b70fe06b65e12818d3ad6d7d895d5c00338168520365278457da349b8d27c",
+      "start_line": 31,
+      "type": "Assign"
+    },
+    {
+      "end_line": 32,
+      "names": [
+        "SECOND"
+      ],
+      "sha256": "2315ce084abd99c2a5c0dd35f42085e3df026ffbebbcb5ecf9d4049ddd5837c5",
+      "start_line": 32,
+      "type": "Assign"
+    },
+    {
+      "end_line": 33,
+      "names": [
+        "STREAM_CAPS"
+      ],
+      "sha256": "c26415cb8a2428d7de58201a22d11bcbb28aa0f3986acd3edde2759233094a31",
+      "start_line": 33,
+      "type": "Assign"
+    },
+    {
+      "end_line": 34,
+      "names": [
+        "INPUT_CAPS"
+      ],
+      "sha256": "0cb270c96ca66dc8c81cf96d0903831c431f01c7dfbe7a5b5781a318401a1f90",
+      "start_line": 34,
+      "type": "Assign"
+    },
+    {
+      "end_line": 40,
+      "names": [
+        "CLOCK"
+      ],
+      "sha256": "e56dadf9f8feaa5bced8115ae3889962128e21634d54c535599f2b2cb1fecd6e",
+      "start_line": 35,
+      "type": "Assign"
+    },
+    {
+      "end_line": 48,
+      "names": [
+        "PARENT_KEYS"
+      ],
+      "sha256": "66597d8b6835384ef6fd81bd66cddb5f588972d79ccf38ed3010c077b4c4a5ed",
+      "start_line": 41,
+      "type": "Assign"
+    },
+    {
+      "end_line": 53,
+      "names": [
+        "REQUEST_KEYS"
+      ],
+      "sha256": "ac4e02887b0d3298cc61811bf6bc14e8cbc77d0cd845ae19c1d64cf355777698",
+      "start_line": 49,
+      "type": "Assign"
+    },
+    {
+      "end_line": 55,
+      "names": [
+        "GUARD_KEYS"
+      ],
+      "sha256": "9514ba11e157b6f58f11fc95d17bfd0ee8b2549cf0e3e8239a33d9c57ac55495",
+      "start_line": 54,
+      "type": "Assign"
+    },
+    {
+      "end_line": 64,
+      "names": [
+        "RECEIPT_KEYS"
+      ],
+      "sha256": "8329257150e9355346237b6e0990ddc55b5a79a94ae4bbf3ca8ffa7b1b39f891",
+      "start_line": 56,
+      "type": "Assign"
+    },
+    {
+      "end_line": 72,
+      "names": [
+        "READS"
+      ],
+      "sha256": "fa4e8194a04524a2002351e218cea9910f1b3eed5cd30f6c91f9be3b6cbad3f3",
+      "start_line": 66,
+      "type": "Assign"
+    },
+    {
+      "end_line": 73,
+      "names": [
+        "S",
+        "A"
+      ],
+      "sha256": "67ff91a194701c538a907e009ea0a04d0768c0709a80c68e88bd10e279ecdd1d",
+      "start_line": 73,
+      "type": "Assign"
+    },
+    {
+      "end_line": 74,
+      "names": [
+        "ROOT",
+        "RUNFD"
+      ],
+      "sha256": "6f29ed1d011e18c6998e3ac45ac0728d560bea197981b035cbcc5f92fb1a7c21",
+      "start_line": 74,
+      "type": "Assign"
+    },
+    {
+      "end_line": 75,
+      "names": [
+        "READ_REFS"
+      ],
+      "sha256": "1650b4b8afc92a8078172e029dc64ffa237cb1860a6a8fa55bf0848be53c1ea6",
+      "start_line": 75,
+      "type": "Assign"
+    },
+    {
+      "end_line": 76,
+      "names": [
+        "READ_STAMPS"
+      ],
+      "sha256": "3b20a5a62691eefa32712d195a5f9ac666329e8c5280df44b92444cd19529949",
+      "start_line": 76,
+      "type": "Assign"
+    },
+    {
+      "end_line": 556,
+      "names": null,
+      "sha256": "fb555842d4b9481871a7ea4020c1ba02d23b53980ef02e063b517ea1fb231103",
+      "start_line": 553,
+      "type": "Try"
+    },
+    {
+      "end_line": 557,
+      "names": null,
+      "sha256": "9e2f3780b63e6f1f360adb06009d4ac893323c672fbcc57feaa6a6c6e7cd6b25",
+      "start_line": 557,
+      "type": "Expr"
+    }
+  ],
+  "normalized_ast_sha256_independently_matched": true,
+  "render_token": {
+    "bytes": 785,
+    "end_byte_exclusive": 1212,
+    "future_rendered_sha256": null,
+    "name": "CONFIG_TEXT",
+    "normalization": "Only CONFIG_TEXT string value replaced with <CONFIG_TEXT>; ast.dump(include_attributes=False), UTF-8, no trailing LF.",
+    "normalized_ast_data_sha256": "9cb17eb879d5d956aadf4ff9e25a67b36dff1db9fcfdd20402c29e23ac8216be",
+    "prefix_sha256": "99b0571285fc239a4347f26d87abafe5631f9160caa846bed78d5ba5a759d03a",
+    "sha256": "875fed11ad869d831cf7a74ec8077aa485afa173708394360faefb9aa323c60d",
+    "start_byte_inclusive": 427,
+    "suffix_sha256": "dfad53263d9ef6ecaaade9f3042d851a93527c69fcb0dd92d48f465c01a2c84c",
+    "token_type": "STRING"
+  },
+  "schema": "openergy.assessor-full-review-functions.v1",
+  "source_sha256": "1e52486a991886c0dbaa463ef3203695cabcd61aeedb841bb45275850541cbd9"
+}

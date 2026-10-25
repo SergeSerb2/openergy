@@ -1,0 +1,802 @@
+{
+  "author_record_sha256": "d9b3d50649963e36a2cce16d7714d2cec0eaf1aeefe31b8e0b155eab30a24d0f",
+  "claim_count": 113,
+  "claims": [
+    {
+      "author_claim": "CONFIG_TEXT exact decoded template",
+      "author_index": 1,
+      "author_passed": true,
+      "evidence": "Single literal token, exact decoded template,24 null leaves, token prefix/suffix hashes, normalized full AST data identity; direct source admission review.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "24 required null leaf bindings",
+      "author_index": 2,
+      "author_passed": true,
+      "evidence": "Single literal token, exact decoded template,24 null leaves, token prefix/suffix hashes, normalized full AST data identity; direct source admission review.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "unique literal CONFIG_TEXT assignment",
+      "author_index": 3,
+      "author_passed": true,
+      "evidence": "Single literal token, exact decoded template,24 null leaves, token prefix/suffix hashes, normalized full AST data identity; direct source admission review.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "one CONFIG_TEXT string token",
+      "author_index": 4,
+      "author_passed": true,
+      "evidence": "Single literal token, exact decoded template,24 null leaves, token prefix/suffix hashes, normalized full AST data identity; direct source admission review.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "closed standard-library import allowlist",
+      "author_index": 5,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "no process/network/evaluation/sleep/retry-cleanup calls",
+      "author_index": 6,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "no assertions used for admission",
+      "author_index": 7,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "no environment selectors",
+      "author_index": 8,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "os._exit final module statement",
+      "author_index": 9,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "entry sample before remaining imports",
+      "author_index": 10,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "configuration admission first in main",
+      "author_index": 11,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "all null payload rejects before any file call",
+      "author_index": 12,
+      "author_passed": true,
+      "evidence": "Single literal token, exact decoded template,24 null leaves, token prefix/suffix hashes, normalized full AST data identity; direct source admission review.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "known held capsule rejected",
+      "author_index": 13,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "original A arithmetic only",
+      "author_index": 14,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "one runtime assignment of original S/A",
+      "author_index": 15,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "full literal Mach descriptor hash",
+      "author_index": 16,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "fixed interpreter path",
+      "author_index": 17,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "fixed reviewed local base",
+      "author_index": 18,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "seven fixed reads and exact modes/caps",
+      "author_index": 19,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "unchanged transport stream caps",
+      "author_index": 20,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "unchanged collector input caps",
+      "author_index": 21,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "PARENT_KEYS producer key count/order/exact unique set",
+      "author_index": 22,
+      "author_passed": true,
+      "evidence": "Independent literal AST key extraction from actual producer source, shape and closed contract comparisons.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "REQUEST_KEYS producer key count/order/exact unique set",
+      "author_index": 23,
+      "author_passed": true,
+      "evidence": "Independent literal AST key extraction from actual producer source, shape and closed contract comparisons.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "GUARD_KEYS producer key count/order/exact unique set",
+      "author_index": 24,
+      "author_passed": true,
+      "evidence": "Independent literal AST key extraction from actual producer source, shape and closed contract comparisons.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "RECEIPT_KEYS producer key count/order/exact unique set",
+      "author_index": 25,
+      "author_passed": true,
+      "evidence": "Independent literal AST key extraction from actual producer source, shape and closed contract comparisons.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "guard and receipt exact producer contract lists",
+      "author_index": 26,
+      "author_passed": true,
+      "evidence": "Independent literal AST key extraction from actual producer source, shape and closed contract comparisons.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "closed recursive exact type guard",
+      "author_index": 27,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "integer excludes bool",
+      "author_index": 28,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "strict duplicate and nonfinite parser callbacks",
+      "author_index": 29,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "required nofollow/nonblocking/regular/mode/link/stability reader gates",
+      "author_index": 30,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "during-read bound plus one overflow probe",
+      "author_index": 31,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "close has deadline finally",
+      "author_index": 32,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "one output exclusive0600 O_EXCL and bounded16KiB",
+      "author_index": 33,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "single file write and single console write sites",
+      "author_index": 34,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "console nonblocking FIFO one raw512 line",
+      "author_index": 35,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "both original S/T ordering and entry external gates",
+      "author_index": 36,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "successful SSH observed before original work",
+      "author_index": 37,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "empty successful stderr and compact cap",
+      "author_index": 38,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "compact receipt cap unchanged",
+      "author_index": 39,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "canonical compact full-byte equality",
+      "author_index": 40,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "output full_prepare_receipt_assessed remains exact false",
+      "author_index": 41,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "output full_prepare_raws_retained_locally remains exact false",
+      "author_index": 42,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "output prepare_accepted remains exact false",
+      "author_index": 43,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "output copy_accepted remains exact false",
+      "author_index": 44,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "output artifact_accepted remains exact false",
+      "author_index": 45,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "output product_accepted remains exact false",
+      "author_index": 46,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "output r9_reserved_publisher remains exact false",
+      "author_index": 47,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "output own_exit_observed remains exact false",
+      "author_index": 48,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "output remote child remains null",
+      "author_index": 49,
+      "author_passed": true,
+      "evidence": "Single literal token, exact decoded template,24 null leaves, token prefix/suffix hashes, normalized full AST data identity; direct source admission review.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "inventory source identity exact",
+      "author_index": 50,
+      "author_passed": true,
+      "evidence": "Frozen public Git/blob/mode/size/SHA256 identity and packet manifest checks.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "all28 functions inventoried once",
+      "author_index": 51,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash require",
+      "author_index": 52,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash canonical",
+      "author_index": 53,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash digest",
+      "author_index": 54,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash unique",
+      "author_index": 55,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash finite_float",
+      "author_index": 56,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash nonfinite",
+      "author_index": 57,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash load",
+      "author_index": 58,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash keys",
+      "author_index": 59,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash equal",
+      "author_index": 60,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash integer",
+      "author_index": 61,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash hexhash",
+      "author_index": 62,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash bind_config",
+      "author_index": 63,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash before",
+      "author_index": 64,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash close",
+      "author_index": 65,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash stamp",
+      "author_index": 66,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash owned_directory",
+      "author_index": 67,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash open_base",
+      "author_index": 68,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash file_state",
+      "author_index": 69,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash read_fixed",
+      "author_index": 70,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash clock_runtime",
+      "author_index": 71,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash parent_record",
+      "author_index": 72,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash request_record",
+      "author_index": 73,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash transport_records",
+      "author_index": 74,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash stream_records",
+      "author_index": 75,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash retained_inputs",
+      "author_index": 76,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash publish",
+      "author_index": 77,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash console_once",
+      "author_index": 78,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "function full range/hash main",
+      "author_index": 79,
+      "author_passed": true,
+      "evidence": "Independent AST physical function ranges and byte hashes in function-bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "full final entry block hash",
+      "author_index": 80,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "CONFIG token and invariant spans exact",
+      "author_index": 81,
+      "author_passed": true,
+      "evidence": "Single literal token, exact decoded template,24 null leaves, token prefix/suffix hashes, normalized full AST data identity; direct source admission review.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "whole added source patch exact independent diff",
+      "author_index": 82,
+      "author_passed": true,
+      "evidence": "Whole independent diff bytes and every added hunk line reconstruct exact source; static-observations.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "one complete added-file patch hunk",
+      "author_index": 83,
+      "author_passed": true,
+      "evidence": "Whole independent diff bytes and every added hunk line reconstruct exact source; static-observations.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "added hunk physical line count exact",
+      "author_index": 84,
+      "author_passed": true,
+      "evidence": "Whole independent diff bytes and every added hunk line reconstruct exact source; static-observations.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "entire added patch reconstructs source bytes",
+      "author_index": 85,
+      "author_passed": true,
+      "evidence": "Whole independent diff bytes and every added hunk line reconstruct exact source; static-observations.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "frozen input bytes/hash/mode/blob docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/observer.py.txt",
+      "author_index": 86,
+      "author_passed": true,
+      "evidence": "Independent frozen Git/current worktree equality in bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "frozen input bytes/hash/mode/blob docs/verification/m1-prepare-local-exit-observer-review-2026-10-25-t3-c2d0d953/REVIEW.md",
+      "author_index": 87,
+      "author_passed": true,
+      "evidence": "Independent frozen Git/current worktree equality in bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "frozen input bytes/hash/mode/blob docs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/transport-collector.py.txt",
+      "author_index": 88,
+      "author_passed": true,
+      "evidence": "Independent frozen Git/current worktree equality in bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "frozen input bytes/hash/mode/blob docs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/parent-observer.contract.json",
+      "author_index": 89,
+      "author_passed": true,
+      "evidence": "Independent frozen Git/current worktree equality in bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "frozen input bytes/hash/mode/blob docs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/phase-budget.contract.json",
+      "author_index": 90,
+      "author_passed": true,
+      "evidence": "Independent frozen Git/current worktree equality in bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "frozen input bytes/hash/mode/blob docs/verification/m1-transport-phase-budget-review-2026-10-25-t3-04f3d533/REVIEW.md",
+      "author_index": 91,
+      "author_passed": true,
+      "evidence": "Independent frozen Git/current worktree equality in bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "frozen input bytes/hash/mode/blob docs/verification/m1-prepare-parent-capsule-2026-10-25-t3-764cae00/prepare-parent.py.txt",
+      "author_index": 92,
+      "author_passed": true,
+      "evidence": "Independent frozen Git/current worktree equality in bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "frozen input bytes/hash/mode/blob docs/verification/m1-prepare-parent-full-review-2026-10-25-t3-1b3fcbf5/REVIEW.md",
+      "author_index": 93,
+      "author_passed": true,
+      "evidence": "Independent frozen Git/current worktree equality in bindings.json.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "prompt observer hash",
+      "author_index": 94,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "prompt collector hash",
+      "author_index": 95,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "strict unique-key finite packet JSON config.schema.json",
+      "author_index": 96,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "strict unique-key finite packet JSON config.template.json",
+      "author_index": 97,
+      "author_passed": true,
+      "evidence": "Single literal token, exact decoded template,24 null leaves, token prefix/suffix hashes, normalized full AST data identity; direct source admission review.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "strict unique-key finite packet JSON finite-plan.json",
+      "author_index": 98,
+      "author_passed": true,
+      "evidence": "Full false/null plan read; independent review does not alter author implementation status.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "strict unique-key finite packet JSON function-inventory.json",
+      "author_index": 99,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "strict unique-key finite packet JSON input-bindings.json",
+      "author_index": 100,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "strict unique-key finite packet JSON record-shapes.json",
+      "author_index": 101,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "record shape keys/types complete parent",
+      "author_index": 102,
+      "author_passed": true,
+      "evidence": "Independent literal AST key extraction from actual producer source, shape and closed contract comparisons.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "record shape keys/types complete request",
+      "author_index": 103,
+      "author_passed": true,
+      "evidence": "Independent literal AST key extraction from actual producer source, shape and closed contract comparisons.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "record shape keys/types complete guard",
+      "author_index": 104,
+      "author_passed": true,
+      "evidence": "Independent literal AST key extraction from actual producer source, shape and closed contract comparisons.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "record shape keys/types complete receipt",
+      "author_index": 105,
+      "author_passed": true,
+      "evidence": "Independent literal AST key extraction from actual producer source, shape and closed contract comparisons.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "plan stays unrun false/null and updater CLOSED",
+      "author_index": 106,
+      "author_passed": true,
+      "evidence": "Single literal token, exact decoded template,24 null leaves, token prefix/suffix hashes, normalized full AST data identity; direct source admission review.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "parent HEAD remains exact",
+      "author_index": 107,
+      "author_passed": true,
+      "evidence": "Author-time working/index/untracked state cannot be recreated. This review separately freezes and checks its own opening/closing state.",
+      "review_disposition": "AUTHOR_HISTORICAL_WORKSPACE_CLAIM_NOT_REPLAYED"
+    },
+    {
+      "author_claim": "old tracked working tree and index unchanged",
+      "author_index": 108,
+      "author_passed": true,
+      "evidence": "Author-time working/index/untracked state cannot be recreated. This review separately freezes and checks its own opening/closing state.",
+      "review_disposition": "AUTHOR_HISTORICAL_WORKSPACE_CLAIM_NOT_REPLAYED"
+    },
+    {
+      "author_claim": "all untracked files under sole owned folder",
+      "author_index": 109,
+      "author_passed": true,
+      "evidence": "Author-time working/index/untracked state cannot be recreated. This review separately freezes and checks its own opening/closing state.",
+      "review_disposition": "AUTHOR_HISTORICAL_WORKSPACE_CLAIM_NOT_REPLAYED"
+    },
+    {
+      "author_claim": "old4316 tracked inventory hash exact",
+      "author_index": 110,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "added source whitespace check",
+      "author_index": 111,
+      "author_passed": true,
+      "evidence": "Full source/data review and independent static observations; no execution inference.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "normalized CONFIG_TEXT-only AST data hash retained; no AST execution",
+      "author_index": 112,
+      "author_passed": true,
+      "evidence": "Single literal token, exact decoded template,24 null leaves, token prefix/suffix hashes, normalized full AST data identity; direct source admission review.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    },
+    {
+      "author_claim": "closed26-field assessment output shape exact; false/null acceptance types retained",
+      "author_index": 113,
+      "author_passed": true,
+      "evidence": "Independent literal AST key extraction from actual producer source, shape and closed contract comparisons.",
+      "review_disposition": "CONFIRMED_STATIC_DATA_ONLY"
+    }
+  ],
+  "confirmed_static_data_count": 110,
+  "execution": false,
+  "historical_workspace_not_replayed_count": 3,
+  "meaning": "All claims read. Static matches are not executed proof. Author-time workspace checks remain historical claims. No author checker executed.",
+  "schema": "openergy.assessor-full-review-author-claims.v1"
+}
