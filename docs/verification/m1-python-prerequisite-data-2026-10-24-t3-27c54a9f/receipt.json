@@ -1,0 +1,548 @@
+{
+  "acquisition": {
+    "archive": {
+      "actual_bytes": 16526691,
+      "asset_id": 304305223,
+      "content_length": "16526691",
+      "final_host": "release-assets.githubusercontent.com",
+      "http_status": 200,
+      "mode": "0o600",
+      "name": "cpython-3.13.9+20251014-aarch64-apple-darwin-install_only.tar.gz",
+      "retrieved_at": "2026-10-25T03:16:10.562319+00:00",
+      "sha256": "931db8f735e18700d4eab9ee39dbbd0b4c114d7d039dd2707b2d932ded039698",
+      "source_url": "https://github.com/astral-sh/python-build-standalone/releases/download/20251014/cpython-3.13.9%2B20251014-aarch64-apple-darwin-install_only.tar.gz"
+    },
+    "archive_downloads": 1,
+    "checksum_asset": {
+      "actual_bytes": 116506,
+      "asset_id": 304306156,
+      "content_length": "116506",
+      "final_host": "release-assets.githubusercontent.com",
+      "http_status": 200,
+      "mode": "0o600",
+      "name": "SHA256SUMS",
+      "retrieved_at": "2026-10-25T03:16:09.748185+00:00",
+      "sha256": "4f5250ed42c07b384ba079fc1c6150186a9846c370111f8dac50b1e3795225ff",
+      "source_url": "https://github.com/astral-sh/python-build-standalone/releases/download/20251014/SHA256SUMS"
+    },
+    "matching_checksum_line": "931db8f735e18700d4eab9ee39dbbd0b4c114d7d039dd2707b2d932ded039698  cpython-3.13.9+20251014-aarch64-apple-darwin-install_only.tar.gz",
+    "nice": 15,
+    "release_id": 254523032,
+    "tag": "20251014"
+  },
+  "archive_asset": {
+    "browser_download_url": "https://github.com/astral-sh/python-build-standalone/releases/download/20251014/cpython-3.13.9%2B20251014-aarch64-apple-darwin-install_only.tar.gz",
+    "created_at": "2025-10-14T22:29:18Z",
+    "digest": "sha256:931db8f735e18700d4eab9ee39dbbd0b4c114d7d039dd2707b2d932ded039698",
+    "id": 304305223,
+    "name": "cpython-3.13.9+20251014-aarch64-apple-darwin-install_only.tar.gz",
+    "size": 16526691,
+    "state": "uploaded",
+    "updated_at": "2025-10-14T22:29:20Z",
+    "url": "https://api.github.com/repos/astral-sh/python-build-standalone/releases/assets/304305223"
+  },
+  "branch": "t3/27c54a9f",
+  "checksum_asset": {
+    "browser_download_url": "https://github.com/astral-sh/python-build-standalone/releases/download/20251014/SHA256SUMS",
+    "created_at": "2025-10-14T22:31:25Z",
+    "digest": "sha256:4f5250ed42c07b384ba079fc1c6150186a9846c370111f8dac50b1e3795225ff",
+    "id": 304306156,
+    "name": "SHA256SUMS",
+    "size": 116506,
+    "state": "uploaded",
+    "updated_at": "2025-10-14T22:31:25Z",
+    "url": "https://api.github.com/repos/astral-sh/python-build-standalone/releases/assets/304306156"
+  },
+  "checksum_match": {
+    "archive_matches_checksum_asset": true,
+    "archive_matches_release_bytes": true,
+    "archive_matches_release_digest": true,
+    "checksum_asset_matches_its_release_digest": true,
+    "exact_name_matches": 1,
+    "line": "931db8f735e18700d4eab9ee39dbbd0b4c114d7d039dd2707b2d932ded039698  cpython-3.13.9+20251014-aarch64-apple-darwin-install_only.tar.gz"
+  },
+  "extraction_limits": {
+    "checksum_download_bytes_max": 1048576,
+    "decompressed_tar_stream_bytes_max": 1073741824,
+    "download_bytes_max": 268435456,
+    "extracted_regular_payload_bytes_max": 1073741824,
+    "gnu_long_metadata_bytes_max": 4097,
+    "link_depth_max": 40,
+    "members_max": 12000,
+    "metadata_capture_per_file_bytes_max": 1048576,
+    "metadata_download_bytes_max": 4194304,
+    "path_utf8_bytes_max": 4096,
+    "physical_headers_max": 12000
+  },
+  "inert_recipe": {
+    "bootstrap": "Host /usr/bin/python3 3.9+ with -I -S -B; stdlib only; no target Python needed",
+    "bytes": 18787,
+    "destination": "New extracted-data child of a parent-controlled absolute current-user-owned mode0700 directory; refuse pre-existing destination",
+    "git_mode": "100644",
+    "git_relative_path": "docs/verification/m1-python-prerequisite-data-2026-10-24-t3-27c54a9f/safe-extraction-recipe.py.txt",
+    "output_modes": "directories0700, regular files0600, internal symlinks last; executable activation excluded",
+    "sha256": "bab38f8ed1bf4ab1d15843fc8ad3872c553e6665faf5eb97e432261f51f9b027",
+    "validation": "Python 3.9 grammar AST parse and static source review only; extraction path never executed"
+  },
+  "local_date": "2026-10-24",
+  "macho_metadata": {
+    "python/bin/python3.13": {
+      "architecture": "arm64",
+      "build_versions": [
+        {
+          "command": "LC_BUILD_VERSION",
+          "min_os": "11.0.0",
+          "platform": 1,
+          "sdk": "15.5.0"
+        }
+      ],
+      "cpu_subtype": 0,
+      "cpu_type": "0x100000c",
+      "dylibs": [
+        "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation",
+        "@executable_path/../lib/libpython3.13.dylib",
+        "/usr/lib/libSystem.B.dylib"
+      ],
+      "file_type": 2,
+      "rpaths": []
+    },
+    "python/lib/itcl4.2.4/libitcl4.2.4.dylib": {
+      "architecture": "arm64",
+      "build_versions": [
+        {
+          "command": "LC_BUILD_VERSION",
+          "min_os": "11.0.0",
+          "platform": 1,
+          "sdk": "15.5.0"
+        }
+      ],
+      "cpu_subtype": 0,
+      "cpu_type": "0x100000c",
+      "dylibs": [
+        "libitcl4.2.4.dylib",
+        "/usr/lib/libSystem.B.dylib"
+      ],
+      "file_type": 6,
+      "rpaths": []
+    },
+    "python/lib/libpython3.13.dylib": {
+      "architecture": "arm64",
+      "build_versions": [
+        {
+          "command": "LC_BUILD_VERSION",
+          "min_os": "11.0.0",
+          "platform": 1,
+          "sdk": "15.5.0"
+        }
+      ],
+      "cpu_subtype": 0,
+      "cpu_type": "0x100000c",
+      "dylibs": [
+        "/install/lib/libpython3.13.dylib",
+        "/usr/lib/libSystem.B.dylib",
+        "/usr/lib/libncurses.5.4.dylib",
+        "/usr/lib/libpanel.5.4.dylib",
+        "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation",
+        "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/SystemConfiguration",
+        "/usr/lib/libedit.3.dylib",
+        "/usr/lib/libz.1.dylib"
+      ],
+      "file_type": 6,
+      "rpaths": []
+    },
+    "python/lib/libtcl8.6.dylib": {
+      "architecture": "arm64",
+      "build_versions": [
+        {
+          "command": "LC_BUILD_VERSION",
+          "min_os": "11.0.0",
+          "platform": 1,
+          "sdk": "15.5.0"
+        }
+      ],
+      "cpu_subtype": 0,
+      "cpu_type": "0x100000c",
+      "dylibs": [
+        "@rpath/libtcl8.6.dylib",
+        "/usr/lib/libSystem.B.dylib",
+        "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation"
+      ],
+      "file_type": 6,
+      "rpaths": []
+    },
+    "python/lib/libtk8.6.dylib": {
+      "architecture": "arm64",
+      "build_versions": [
+        {
+          "command": "LC_BUILD_VERSION",
+          "min_os": "11.0.0",
+          "platform": 1,
+          "sdk": "15.5.0"
+        }
+      ],
+      "cpu_subtype": 0,
+      "cpu_type": "0x100000c",
+      "dylibs": [
+        "@rpath/libtk8.6.dylib",
+        "/usr/lib/libSystem.B.dylib",
+        "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation",
+        "/usr/lib/libobjc.A.dylib",
+        "/System/Library/Frameworks/Cocoa.framework/Versions/A/Cocoa",
+        "/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit",
+        "/System/Library/Frameworks/ApplicationServices.framework/Versions/A/ApplicationServices",
+        "/System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics",
+        "/System/Library/Frameworks/CoreServices.framework/Versions/A/CoreServices",
+        "/System/Library/Frameworks/CoreText.framework/Versions/A/CoreText",
+        "/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation",
+        "/System/Library/Frameworks/Carbon.framework/Versions/A/Carbon",
+        "/System/Library/Frameworks/IOKit.framework/Versions/A/IOKit",
+        "/System/Library/Frameworks/QuartzCore.framework/Versions/A/QuartzCore",
+        "/System/Library/Frameworks/UniformTypeIdentifiers.framework/Versions/A/UniformTypeIdentifiers"
+      ],
+      "file_type": 6,
+      "rpaths": []
+    },
+    "python/lib/python3.13/lib-dynload/_ctypes_test.cpython-313-darwin.so": {
+      "architecture": "arm64",
+      "build_versions": [
+        {
+          "command": "LC_BUILD_VERSION",
+          "min_os": "11.0.0",
+          "platform": 1,
+          "sdk": "15.5.0"
+        }
+      ],
+      "cpu_subtype": 0,
+      "cpu_type": "0x100000c",
+      "dylibs": [
+        "/usr/lib/libSystem.B.dylib"
+      ],
+      "file_type": 8,
+      "rpaths": [
+        "@loader_path/../.."
+      ]
+    },
+    "python/lib/python3.13/lib-dynload/_tkinter.cpython-313-darwin.so": {
+      "architecture": "arm64",
+      "build_versions": [
+        {
+          "command": "LC_BUILD_VERSION",
+          "min_os": "11.0.0",
+          "platform": 1,
+          "sdk": "15.5.0"
+        }
+      ],
+      "cpu_subtype": 0,
+      "cpu_type": "0x100000c",
+      "dylibs": [
+        "@rpath/libtcl8.6.dylib",
+        "@rpath/libtk8.6.dylib",
+        "/usr/lib/libSystem.B.dylib"
+      ],
+      "file_type": 8,
+      "rpaths": [
+        "@loader_path/../.."
+      ]
+    },
+    "python/lib/thread2.8.9/libthread2.8.9.dylib": {
+      "architecture": "arm64",
+      "build_versions": [
+        {
+          "command": "LC_BUILD_VERSION",
+          "min_os": "11.0.0",
+          "platform": 1,
+          "sdk": "15.5.0"
+        }
+      ],
+      "cpu_subtype": 0,
+      "cpu_type": "0x100000c",
+      "dylibs": [
+        "libthread2.8.9.dylib",
+        "/usr/lib/libSystem.B.dylib"
+      ],
+      "file_type": 6,
+      "rpaths": []
+    }
+  },
+  "official_release": {
+    "api_url": "https://api.github.com/repos/astral-sh/python-build-standalone/releases/tags/20251014",
+    "draft": false,
+    "html_url": "https://github.com/astral-sh/python-build-standalone/releases/tag/20251014",
+    "id": 254523032,
+    "immutable": true,
+    "prerelease": false,
+    "published_at": "2025-10-14T22:17:22Z",
+    "repository": "astral-sh/python-build-standalone",
+    "tag": "20251014",
+    "target_commitish_recorded_but_not_followed": "main"
+  },
+  "priority_before_acquisition": {
+    "nice": 15,
+    "observed_at": "2026-10-25T03:15:06.959861+00:00",
+    "processes": "  PID  PPID NI COMM\n  512 27777 15 /Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/Resources/Python.app/Contents/MacOS/Python\n27777 27172 15 codex\n",
+    "purpose": "NI15 verified before any official metadata/archive acquisition"
+  },
+  "private_archive_relative_path": "m1-python-prerequisite-2026-10-24-t3-27c54a9f/cpython-3.13.9+20251014-aarch64-apple-darwin-install_only.tar.gz",
+  "private_base": "/Users/serge/.local/state/openergy-verification",
+  "private_directory_mode": "0700",
+  "private_file_bindings": {
+    "SHA256SUMS": {
+      "bytes": 116506,
+      "mode": "0600",
+      "sha256": "4f5250ed42c07b384ba079fc1c6150186a9846c370111f8dac50b1e3795225ff"
+    },
+    "acquisition.json": {
+      "bytes": 1344,
+      "mode": "0600",
+      "sha256": "4f2f12394c952258ec9b741457cdde82e28ff624066f84220201459eda1d00d1"
+    },
+    "cpython-3.13.9+20251014-aarch64-apple-darwin-install_only.tar.gz": {
+      "bytes": 16526691,
+      "mode": "0600",
+      "sha256": "931db8f735e18700d4eab9ee39dbbd0b4c114d7d039dd2707b2d932ded039698"
+    },
+    "file-metadata.json": {
+      "bytes": 845,
+      "mode": "0600",
+      "sha256": "ef96ce3ad2d79a37f0de605e2891cf369d0436dab6e0a6ecb69b10b357f2612a"
+    },
+    "future-extraction-tail.txt": {
+      "bytes": 5613,
+      "mode": "0600",
+      "sha256": "db3ad7ecc85370fe3638f0c1879077b35d24f15b15d1e473c3420fd7d0d823d1"
+    },
+    "priority-before-acquisition.json": {
+      "bytes": 363,
+      "mode": "0600",
+      "sha256": "97293167cf28d35eb914e2cd67b3c1938815ee400c2ab7d4105c431a1a6a935d"
+    },
+    "release-20251014.json": {
+      "bytes": 1486052,
+      "mode": "0600",
+      "sha256": "e4b40842a5021bd46e84197bca665db337f13daec157ad9a0979081fd3a321b8"
+    },
+    "release-response.json": {
+      "bytes": 1739,
+      "mode": "0600",
+      "sha256": "d66f28dc45f8a58c2ba46f6addf27c07cf6efc9710a1f447b184676a8e2823a6"
+    },
+    "static-inspection-before-recipe-review.json": {
+      "bytes": 556886,
+      "mode": "0600",
+      "sha256": "0b1398b0881ffc1e42212601846ac766fd7c0ea678c6be73b981ab4bac7f710b"
+    },
+    "static-inspection-initial.json": {
+      "bytes": 556886,
+      "mode": "0600",
+      "sha256": "0b1398b0881ffc1e42212601846ac766fd7c0ea678c6be73b981ab4bac7f710b"
+    },
+    "static-inspection.json": {
+      "bytes": 556886,
+      "mode": "0600",
+      "sha256": "0b1398b0881ffc1e42212601846ac766fd7c0ea678c6be73b981ab4bac7f710b"
+    },
+    "static-inspection.py.txt": {
+      "bytes": 13847,
+      "mode": "0600",
+      "sha256": "adef7e4c40efac34c5206cd064d915c040e6ba15d4cd3b0fe901c324b9023a94"
+    }
+  },
+  "private_relative_directory": "m1-python-prerequisite-2026-10-24-t3-27c54a9f",
+  "recorded_at_utc": "2026-10-25T03:21:50.905966+00:00",
+  "result": "VERIFIED_DATA_ONLY; native qualification UNVERIFIED",
+  "root_commit": "ed7d96bf53da1a539fa2acde3b7133613221fd4b",
+  "safety_predicates_passed": [
+    "Every raw tar header checksum parsed before output creation",
+    "All regular file bytes hashed; all payload and tar padding read",
+    "One python/ root; no absolute, empty-component, dot, dotdot, backslash, colon, or control paths",
+    "No duplicate names; NFD-casefold aliases rejected for each full path and every implied ancestor",
+    "Only regular files, directories, relative symlinks, and direct-regular-file hardlinks accepted; no PAX, sparse, devices, FIFOs, or other types",
+    "No source special permission bits; no nonfile payload",
+    "Every extraction parent is a directory, never a symlink or file",
+    "Every symlink target resolves within python/ to an existing entry; no dangling links or cycles; all eight actual links point directly to regular files",
+    "No hardlinks in selected archive; recipe would materialize allowed hardlinks as independent mode0600 files",
+    "No source executable bit, owner, group, timestamp, ACL, xattr, or privilege metadata is restored by future recipe",
+    "Future writes use fresh private destination, exclusive creation, directory descriptors and O_NOFOLLOW; links are created last",
+    "No extraction, import, dynamic loading, target execution, or product execution occurred"
+  ],
+  "schema": "openergy.m1-python-prerequisite-data.v1",
+  "scope": {
+    "archive_downloads": 1,
+    "archive_members_extracted": 0,
+    "delegation": false,
+    "downloaded_code_executed_or_imported": false,
+    "global_cache_or_config_mutated": false,
+    "historical_failures": "Preserved; no FAILED/UNVERIFIED record changed",
+    "packages_installed": false,
+    "product_or_update_or_native_run": false,
+    "project_helpers_executed": false,
+    "remote_connections_to_M1": 0,
+    "rust": "Parent supplies exact Rust 1.99.1 separately",
+    "sparkle_approval": "Expired historical approval remains closed; not reused or reopened",
+    "tests_or_mocks": false
+  },
+  "selected_member_bindings": [
+    {
+      "kind": "file",
+      "name": "python/bin/python3.13",
+      "payload_offset": 8192,
+      "sha256": "d81701904d7a58f6abb3ab339c1d38d48cd24a39b37645cf7338c07a1e8e70e6",
+      "size": 50248,
+      "source_mode": "0o775"
+    },
+    {
+      "kind": "file",
+      "name": "python/include/python3.13/patchlevel.h",
+      "payload_offset": 1863168,
+      "sha256": "a503e9b8769b2dc861238f497f1b8f0999d479380bf2ad7f53b5085717e04b52",
+      "size": 1299,
+      "source_mode": "0o664"
+    },
+    {
+      "kind": "file",
+      "name": "python/lib/libpython3.13.dylib",
+      "payload_offset": 2420736,
+      "sha256": "40e889cbb3c92c803f16b0d2e8aa06d86fe73fb4039ee2b8ed5184abc5191b8d",
+      "size": 17893344,
+      "source_mode": "0o775"
+    },
+    {
+      "kind": "file",
+      "name": "python/lib/python3.13/_sysconfigdata__darwin_darwin.py",
+      "payload_offset": 24368640,
+      "sha256": "32ce97d9d5ad78e4da40925e52197bb0b223b99091bc68f852952a80d845944a",
+      "size": 50777,
+      "source_mode": "0o664"
+    }
+  ],
+  "static_tar_inspection": {
+    "decompressed_tar_bytes": 47918592,
+    "file_payload_bytes": 46504040,
+    "macho_count": 8,
+    "manifest_sha256_before_resolved_target_fields": "59f67ef4f7da255b45d55e3d43ac5a0f8699d4986d59292b3ea59d57f2d2fdd7",
+    "member_count": 1844,
+    "physical_header_count": 1844,
+    "types": {
+      "file": 1836,
+      "symlink": 8
+    }
+  },
+  "symlinks": [
+    {
+      "kind": "symlink",
+      "linkname": "idle3.13",
+      "name": "python/bin/idle3",
+      "payload_offset": 512,
+      "resolved_target": "python/bin/idle3.13",
+      "size": 0,
+      "source_mode": "0o775",
+      "target": "python/bin/idle3.13"
+    },
+    {
+      "kind": "symlink",
+      "linkname": "pydoc3.13",
+      "name": "python/bin/pydoc3",
+      "payload_offset": 5120,
+      "resolved_target": "python/bin/pydoc3.13",
+      "size": 0,
+      "source_mode": "0o775",
+      "target": "python/bin/pydoc3.13"
+    },
+    {
+      "kind": "symlink",
+      "linkname": "python3.13",
+      "name": "python/bin/python",
+      "payload_offset": 6656,
+      "resolved_target": "python/bin/python3.13",
+      "size": 0,
+      "source_mode": "0o775",
+      "target": "python/bin/python3.13"
+    },
+    {
+      "kind": "symlink",
+      "linkname": "python3.13",
+      "name": "python/bin/python3",
+      "payload_offset": 7168,
+      "resolved_target": "python/bin/python3.13",
+      "size": 0,
+      "source_mode": "0o775",
+      "target": "python/bin/python3.13"
+    },
+    {
+      "kind": "symlink",
+      "linkname": "python3.13-config",
+      "name": "python/bin/python3-config",
+      "payload_offset": 7680,
+      "resolved_target": "python/bin/python3.13-config",
+      "size": 0,
+      "source_mode": "0o775",
+      "target": "python/bin/python3.13-config"
+    },
+    {
+      "kind": "symlink",
+      "linkname": "python-3.13-embed.pc",
+      "name": "python/lib/pkgconfig/python3-embed.pc",
+      "payload_offset": 23546880,
+      "resolved_target": "python/lib/pkgconfig/python-3.13-embed.pc",
+      "size": 0,
+      "source_mode": "0o775",
+      "target": "python/lib/pkgconfig/python-3.13-embed.pc"
+    },
+    {
+      "kind": "symlink",
+      "linkname": "python-3.13.pc",
+      "name": "python/lib/pkgconfig/python3.pc",
+      "payload_offset": 23547392,
+      "resolved_target": "python/lib/pkgconfig/python-3.13.pc",
+      "size": 0,
+      "source_mode": "0o775",
+      "target": "python/lib/pkgconfig/python-3.13.pc"
+    },
+    {
+      "kind": "symlink",
+      "linkname": "python3.13.1",
+      "name": "python/share/man/man1/python3.1",
+      "payload_offset": 47891968,
+      "resolved_target": "python/share/man/man1/python3.13.1",
+      "size": 0,
+      "source_mode": "0o775",
+      "target": "python/share/man/man1/python3.13.1"
+    }
+  ],
+  "target_context_supplied_by_parent": {
+    "bootstrap_python": "/usr/bin/python3 3.9.6",
+    "independently_verified_by_this_task": false,
+    "machine": "M1 arm64",
+    "macos": "27.0.1",
+    "missing": "Homebrew and named Python 3.11+",
+    "sdk": "27.0",
+    "swift": "6.4",
+    "xcode": "27.1"
+  },
+  "timezone": "America/Vancouver",
+  "trust_boundary": "Official HTTPS release identity, API asset IDs, immutable flag, byte count and SHA256 establish provenance and byte agreement only. The checksum shares the publisher trust domain. No independent signature/attestation, source-to-binary audit, security audit, code trust decision, native execution, loader behavior, OS trust acceptance, or helper compatibility was established.",
+  "version_and_platform": {
+    "host_file_on_validated_stdin": "Mach-O 64-bit executable arm64",
+    "method": "Host stdlib AST literal_eval of build_time_vars; no import or execution of archive content; host file reads stdin bytes only",
+    "observed_at": "2026-10-25T03:20:43.233300+00:00",
+    "python_version": "3.13.9",
+    "release_level": "PY_RELEASE_LEVEL_FINAL",
+    "release_serial": 0,
+    "sysconfig_literals": {
+      "ABIFLAGS": "",
+      "BINDIR": "/install/bin",
+      "BUILD_GNU_TYPE": "aarch64-apple-darwin",
+      "HOST_GNU_TYPE": "aarch64-apple-darwin",
+      "LDVERSION": "3.13",
+      "LIBDIR": "/install/lib",
+      "MACOSX_DEPLOYMENT_TARGET": "11.0",
+      "MULTIARCH": "darwin",
+      "Py_GIL_DISABLED": 0,
+      "SOABI": "cpython-313-darwin",
+      "VERSION": "3.13",
+      "prefix": "/install"
+    },
+    "sysconfig_member": "python/lib/python3.13/_sysconfigdata__darwin_darwin.py"
+  },
+  "worktree": "t3-27c54a9f"
+}
