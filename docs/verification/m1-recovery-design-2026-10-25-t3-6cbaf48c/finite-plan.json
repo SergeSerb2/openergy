@@ -1,0 +1,135 @@
+{
+  "controller_or_product_authorized": false,
+  "exact_new_attempt_approval": null,
+  "execution": false,
+  "execution_authority": false,
+  "fresh50_SOURCE": false,
+  "future_bindings": {
+    "active_composition_review": null,
+    "active_module_map": null,
+    "active_source_checks": null,
+    "actual_alias_publication": null,
+    "actual_copy": null,
+    "actual_prepare": null,
+    "alias_materializer_review": null,
+    "alias_materializer_source": null,
+    "capsule_review": null,
+    "capsule_source": null,
+    "controller": null,
+    "copy_alias_review": null,
+    "copy_alias_source": null,
+    "copy_parent_review": null,
+    "copy_parent_source": null,
+    "copy_schema_review": null,
+    "exact_new_attempt": null,
+    "external_completed_inspection": null,
+    "local_composition_review": null,
+    "local_driver_source": null,
+    "new_final_receipt_schema_review": null,
+    "operator_new_scope": null,
+    "runtime": null,
+    "supplement_actual_basis": null,
+    "supplement_actual_parent_gate": null,
+    "supplement_actual_raws": null,
+    "supplement_materializer_review": null,
+    "supplement_materializer_source": null,
+    "supplement_review": null,
+    "supplement_source": null
+  },
+  "independent_failure_audit": null,
+  "new_guard_is_authority": false,
+  "new_scope_decision": null,
+  "old_file_overwrite_delete_rename": false,
+  "old_guard_reset": false,
+  "root_reset": false,
+  "runtime_acceptance": false,
+  "schema": "openergy.recovery-design-finite-plan.v1",
+  "source_rerun": false,
+  "status": "DESIGN_ONLY_BLOCKED_NO_NEW_ATTEMPT_AUTHORITY",
+  "steps": [
+    {
+      "actual": null,
+      "depends_on": [],
+      "id": "source",
+      "maximum_new_docs_folders": 1,
+      "purpose": "Review actual failure/source; prepare bounded interface source deltas only; no execution.",
+      "review": null
+    },
+    {
+      "actual": null,
+      "depends_on": [
+        "source"
+      ],
+      "id": "compose",
+      "maximum_compositions": 1,
+      "purpose": "Bind exact revised remote/local capsule, external7 locality, fixed caps/layout; new supplement, publisher, COPY v4 parent/caller/schema and operator gate.",
+      "review": null
+    },
+    {
+      "actual": null,
+      "depends_on": [
+        "compose"
+      ],
+      "id": "new_scope",
+      "maximum_decisions": 1,
+      "new_attempt": null,
+      "purpose": "Explicit exact new prepare attempt despite burned driver, known requirements gap before file-only prepare, seven-command source supplement and later COPY; no root/guard reset or general retry.",
+      "review": null
+    },
+    {
+      "actual": null,
+      "depends_on": [
+        "new_scope"
+      ],
+      "id": "prepare",
+      "maximum_entry_helpers": 1,
+      "maximum_private_prepare_entries": 1,
+      "new_attempt": null,
+      "purpose": "Actual file-only prepare plus real full lifecycle/ledger proof; STOP on failure.",
+      "review": null
+    },
+    {
+      "actual": null,
+      "depends_on": [
+        "prepare"
+      ],
+      "id": "supplement",
+      "maximum_SYSTEM_stdin_entries": 1,
+      "maximum_file_helpers": 2,
+      "maximum_native_commands": 7,
+      "maximum_new_ROOT_leaves": 4,
+      "maximum_observations": 9,
+      "new_attempt": null,
+      "purpose": "Capture corrected seven requirements on original objects, retain one raw pack, project new basis/vectors; no SOURCE/50 repeat.",
+      "review": null
+    },
+    {
+      "actual": null,
+      "depends_on": [
+        "supplement"
+      ],
+      "id": "publish_alias",
+      "maximum_aliases": 1,
+      "maximum_publication_receipts": 1,
+      "new_attempt": null,
+      "purpose": "SYSTEM existing common writer publishes reviewed new COPY leaf only after supplemental gate.",
+      "review": null
+    },
+    {
+      "actual": null,
+      "depends_on": [
+        "publish_alias"
+      ],
+      "id": "copy",
+      "maximum_caller_file_helpers": 2,
+      "maximum_caller_observations": 52,
+      "maximum_native_commands": 50,
+      "maximum_parent_entry_helpers": 1,
+      "maximum_private_caller_entries": 1,
+      "new_attempt": null,
+      "purpose": "COPY v4 exact43/7 comparators, actual all52/208 refs and complete lifecycle within unchanged120; then STOP before controller.",
+      "review": null
+    }
+  ],
+  "updater": "CLOSED"
+}
