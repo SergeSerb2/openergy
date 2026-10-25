@@ -1,0 +1,486 @@
+{
+  "acceptance": "No native, updater, distribution, release, cleanup or host-restoration clearance",
+  "candidate_commit": "65b95a7c6643beba780e6284968b246496bbd4c9",
+  "data_observations": {
+    "all_702_source_paths_raw_git_blob_hashes_lengths_modes_match": true,
+    "all_eight_package_sha256sums_match": true,
+    "all_package_files_equal_candidate_git_blobs": true,
+    "all_ten_named_private_qualification_records_hash_match": true,
+    "archives_read_without_extraction": [
+      {
+        "archive_and_all_payload_hashes_match": true,
+        "bytes": 5365760,
+        "directory_link_sparse_special_entries": 0,
+        "effective_extraction_modes": {
+          "0o644": 686,
+          "0o755": 16
+        },
+        "file": "source-workspace-r3.tar",
+        "materialized_files": 0,
+        "regular_bytes": 4773386,
+        "regular_records": 702,
+        "sha256": "e28b00daeaf5de62ab12f1e0165a5ba1b815d22ca9139a74b54f599e20ada277"
+      },
+      {
+        "archive_and_all_payload_hashes_match": true,
+        "bytes": 223257861,
+        "directory_link_sparse_special_entries": 0,
+        "effective_extraction_modes": {
+          "0o644": 205,
+          "0o755": 20
+        },
+        "file": "rust-toolchain.tar.gz",
+        "materialized_files": 0,
+        "regular_bytes": 639160693,
+        "regular_records": 225,
+        "sha256": "c981c4cbc442451fc6d300f4f34540b20032a67f26bce6ec8d97454cb18ffb3c"
+      },
+      {
+        "archive_and_all_payload_hashes_match": true,
+        "bytes": 22988930,
+        "directory_link_sparse_special_entries": 0,
+        "effective_extraction_modes": {
+          "0o644": 210
+        },
+        "file": "cargo-seed.tar.gz",
+        "materialized_files": 0,
+        "regular_bytes": 29274679,
+        "regular_records": 210,
+        "sha256": "178fb8a0fcb8298faaebacff7a6cd7d671d8644af126bdda205ec3b20fbad48b"
+      }
+    ],
+    "build_input_receipt_sha256": "96079ccbb6a0352141b5865cd5df4dd64b212b7f0f9694222ab7d2c3c9621e54",
+    "candidate_git_diff_check": "PASS",
+    "controller_ast_python_3_11_grammar_parse_only": true,
+    "execution": false,
+    "first_source_version_failure_preserved_in_retained_record": true,
+    "local_path_edges": 24,
+    "pinned_cpython_walk_source_read_as_data": {
+      "archive_sha256": "931db8f735e18700d4eab9ee39dbbd0b4c114d7d039dd2707b2d932ded039698",
+      "materialized_files": 0,
+      "member_sha256": "5e640713e89023372f493054ccedb7512ee27eb3ea6461677bc8c27c640d0605",
+      "member_suffix": "/lib/python3.13/os.py",
+      "scandir_error_callback_lines": [
+        369,
+        370,
+        371,
+        372
+      ],
+      "target_module_imported_or_executed": false
+    },
+    "product_source_diff_from_source_commit": [],
+    "public_prerequisite_manifest_file_bytes_and_hashes_match": true,
+    "r3_release_version_retained_command": {
+      "command_role": "real-release-tool-version",
+      "elapsed_seconds": 0.15739633299999997,
+      "exit": 0,
+      "stderr": "",
+      "stdout": "0.1.0\n"
+    },
+    "recursive_local_manifests": 13,
+    "retained_cargo_metadata": {
+      "actual_bootstrap_ni": 15,
+      "build_or_product_run": false,
+      "elapsed_seconds": 0.020640000000000006,
+      "exit": 0,
+      "lock_unchanged": true,
+      "stderr": "",
+      "stdout_bytes": 34661,
+      "stdout_sha256": "06840cc6f2e0a9175839010c047beaf16cf6fd18bcdd18ab20bf9fdc17cf2954",
+      "workspace_members": 11,
+      "workspace_packages": 11
+    },
+    "retained_cargo_metadata_command_source_has_locked_offline_no_deps": true,
+    "retained_rust_commands": [
+      {
+        "elapsed_seconds": 1.849561333,
+        "exit": 0,
+        "role": "rustc-version",
+        "stderr": "",
+        "stdout": "rustc 1.99.1 (58cf8f9c3 2026-10-13)\nbinary: rustc\ncommit-hash: 58cf8f9c35b355199727627d07ae34a4e2846d67\ncommit-date: 2026-10-13\nhost: aarch64-apple-darwin\nrelease: 1.99.1\nLLVM version: 23.1.1\n"
+      },
+      {
+        "elapsed_seconds": 0.2977126669999999,
+        "exit": 0,
+        "role": "cargo-version",
+        "stderr": "",
+        "stdout": "cargo 1.99.1 (5f94df478 2026-08-27)\n"
+      }
+    ],
+    "review_local_links_checked": 4,
+    "source_r3_receipt_all_702_records_match": true,
+    "source_r3_receipt_sha256": "7ec86206f0ad7a0931451e46c0e056e6dea07223cd60e4e05d4037f1b4f5c0bb",
+    "source_regular_bytes": 4773386,
+    "template_recipe_hashes_match": true,
+    "workspace_closure_matches_independent_toml_reads": true,
+    "workspace_member_manifests": 11
+  },
+  "date_local": "2026-10-24",
+  "execution_binding": "PARENT_CONCRETE_BINDING_PENDING_AFTER_SOURCE_REPAIR_AND_REVIEW; no new human approval condition",
+  "finding_counts": {
+    "P1": 0,
+    "P2": 1
+  },
+  "findings": [
+    {
+      "basis": "Source-only control-flow and normal directory-move/removal race; no runtime reproduction claimed",
+      "bundle_lines": [
+        32,
+        33,
+        104
+      ],
+      "candidate_modified": false,
+      "controller_lines": [
+        58,
+        59,
+        448,
+        450,
+        453,
+        455,
+        572,
+        577
+      ],
+      "id": "P2-1",
+      "severity": "P2",
+      "title": "Normal directory removal can abort the filesystem sampler"
+    }
+  ],
+  "interfaces_and_configuration": [
+    {
+      "bytes": 5591,
+      "lines": 112,
+      "path": "apps/macos/scripts/bundle.sh",
+      "sha256": "0882eee11375beb639890908b97d11367a611debbb549930baf67e70b2ebbda7"
+    },
+    {
+      "bytes": 568,
+      "lines": 17,
+      "path": "tools/release/priority.py",
+      "sha256": "5bdfd3e8674b4a44e5854c57e55a88a7df9edd8a211700040431d58dde9d3b0c"
+    },
+    {
+      "bytes": 31284,
+      "lines": 599,
+      "path": "tools/release/release.py",
+      "sha256": "96817425c76fa697fc10d7a073698358fb142e3f92995efd4e09931d49a1f995"
+    },
+    {
+      "bytes": 23101,
+      "lines": 426,
+      "path": "tools/release/sparkle.py",
+      "sha256": "28a7eba2edc3c7676422c50ce904be2383126e6777bc910a881fd281e739fe35"
+    },
+    {
+      "bytes": 677,
+      "lines": 22,
+      "path": "apps/macos/Package.swift",
+      "sha256": "ce093f04ed71f2f7fb806ac19633c9c41a6d7d1aaf245341c9ed6b367788e505"
+    },
+    {
+      "bytes": 388,
+      "lines": 15,
+      "path": "apps/macos/Package.resolved",
+      "sha256": "c797ae9a0970d8225f66f11736f94a1a8337d68a55f65bb34e5a47d4edc94282"
+    },
+    {
+      "bytes": 1827,
+      "lines": 56,
+      "path": "apps/macos/Support/Info.plist",
+      "sha256": "4300cad741fb7e2d7b14d41897f78a2631a1ebf93bff2e45484878d25a3573a2"
+    },
+    {
+      "bytes": 862,
+      "lines": 36,
+      "path": "Cargo.toml",
+      "sha256": "7ea29af11f38ac187df7fb78ecbfb5ba0f5c4d2248211efb857010b91412ea04"
+    },
+    {
+      "bytes": 26222,
+      "lines": 1063,
+      "path": "Cargo.lock",
+      "sha256": "6d57d3d84fcef4208a9ce657e511b07099187dcda084cd9decb9ab9a56756800"
+    },
+    {
+      "bytes": 86,
+      "lines": 4,
+      "path": "rust-toolchain.toml",
+      "sha256": "f715f440167e20fd8ea9afa0498c3d1ab80174cfcb8cbc895f106a34d907a1e1"
+    },
+    {
+      "bytes": 14495,
+      "lines": 381,
+      "path": "crates/daemon/src/main.rs",
+      "sha256": "ba5a5d6ae3817bed2a9fd6955b9fee751983bc6b1f53c0df9f9e12f76519bb61"
+    },
+    {
+      "bytes": 5685,
+      "lines": 114,
+      "path": "CONTRIBUTING.md",
+      "sha256": "a6aa0e3cb5f8cba1561b64bc12c9ddee45fa738c3ed0714eb7ba656ff340dfc4"
+    }
+  ],
+  "isolated_swift_cause": "UNPROVED_OLD_PREDICATES_UNCHANGED",
+  "local_sdk_evidence": {
+    "checked_constants": {
+      "MAXCOMLEN": 16,
+      "PROC_PGRP_ONLY": 2,
+      "PROC_PIDTBSDINFO": 3,
+      "SZOMB": 5
+    },
+    "headers": [
+      {
+        "bytes": 7575,
+        "lines": 173,
+        "path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/libproc.h",
+        "sha256": "246d87709fc6b9157ce5cf3c475656ac48e0e1ae8bbdc46cf45acd34294448cd"
+      },
+      {
+        "bytes": 31262,
+        "lines": 851,
+        "path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/sys/proc_info.h",
+        "sha256": "e427fa96b348537b21552b9de71e01039410bcad2cedee5584c5e5fddafd70fc"
+      },
+      {
+        "bytes": 9948,
+        "lines": 235,
+        "path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/sys/param.h",
+        "sha256": "10d7a9553d341c5bc0b473444802920a7ec2e6222281eeaeb61b32dfff29c4b4"
+      },
+      {
+        "bytes": 11852,
+        "lines": 227,
+        "path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/sys/proc.h",
+        "sha256": "593af71b2740ba6248995691280bcb15f8900d46b1d9868f7345084aa0692949"
+      },
+      {
+        "bytes": 4133,
+        "lines": 103,
+        "path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/sys/_types.h",
+        "sha256": "863c4f07045775002b63b7e616742d9f746e4a02da4441442d8fe1138bbd0ff9"
+      }
+    ],
+    "native_abi_query_run": false,
+    "proc_bsdinfo_layout_bytes": 136,
+    "sdk_version": "27.0",
+    "settings": {
+      "bytes": 7948,
+      "lines": 1,
+      "path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/SDKSettings.json",
+      "sha256": "7b93ad7e534cc4b31c6a4e39d19b5e0288acf2168c2649479a796d1cb51939fb"
+    },
+    "start_microseconds_offset": 128,
+    "start_seconds_offset": 120
+  },
+  "native_windows_stop_original": "FAILED_UNVERIFIED",
+  "ordinary_original": "FAILED_NOT_ACCEPTED_23_OF_25",
+  "prerequisite_private_evidence": [
+    {
+      "bytes": 438,
+      "file": "python-extraction-receipt.json",
+      "local_retained_record_hash_match": true,
+      "read_as_data_only": true,
+      "sha256": "f8a692b846e5aec73d52f47d62f6467dfe9d1ef1b63639641e78d83674aeca12"
+    },
+    {
+      "bytes": 569,
+      "file": "python-qualification-receipt.json",
+      "local_retained_record_hash_match": true,
+      "read_as_data_only": true,
+      "sha256": "bc5f34e2fcdf1d7f9dae7e6578233dcc4a738e552bc1365df7312a879a71c5e5"
+    },
+    {
+      "bytes": 1797,
+      "file": "rust-qualification-receipt.json",
+      "local_retained_record_hash_match": true,
+      "read_as_data_only": true,
+      "sha256": "4d010d5358a75cd850639a45153ab5766d95616b9840fe2b7c65b97422cc7191"
+    },
+    {
+      "bytes": 456,
+      "file": "cargo-metadata-receipt.json",
+      "local_retained_record_hash_match": true,
+      "read_as_data_only": true,
+      "sha256": "507b5b3499c4ad1d0c42b304a698da1c14632093d921cdea0cf22d2878074895"
+    },
+    {
+      "bytes": 4252,
+      "file": "executed-python-qualification.py.txt",
+      "local_retained_record_hash_match": true,
+      "read_as_data_only": true,
+      "sha256": "8c9424a490880313423f5abce013537ff5beef6425863766664b29282ff3aaf0"
+    },
+    {
+      "bytes": 4232,
+      "file": "executed-rust-qualification.py.txt",
+      "local_retained_record_hash_match": true,
+      "read_as_data_only": true,
+      "sha256": "d03843c3ef0e733b3ab5ba9dc3246e8829c28bc166e55b9435b174cb38c64362"
+    },
+    {
+      "bytes": 2112,
+      "file": "executed-cargo-metadata.py.txt",
+      "local_retained_record_hash_match": true,
+      "read_as_data_only": true,
+      "sha256": "716e04bdf029806bcadd5c441a4116fba97827998cafbded1f9c258f168b4573"
+    },
+    {
+      "bytes": 1229,
+      "file": "qualification-receipt.json",
+      "local_retained_record_hash_match": true,
+      "read_as_data_only": true,
+      "sha256": "9b32315792d64479b7e0867e38edf466596982a2671ded112b08d5dab656603b"
+    },
+    {
+      "bytes": 194761,
+      "file": "source-workspace-r3-receipt.json",
+      "local_retained_record_hash_match": true,
+      "read_as_data_only": true,
+      "sha256": "7ec86206f0ad7a0931451e46c0e056e6dea07223cd60e4e05d4037f1b4f5c0bb"
+    },
+    {
+      "bytes": 4153,
+      "file": "executed-source-qualification.py.txt",
+      "local_retained_record_hash_match": true,
+      "read_as_data_only": true,
+      "sha256": "e8d594ae89bc7814761308ea15c61e9393ff96af38b3e4c840ecc00236352d3b"
+    }
+  ],
+  "prerequisite_public_evidence": [
+    {
+      "bytes": 4133,
+      "lines": 71,
+      "path": "docs/verification/m1-native-tool-qualification-2026-10-24/README.md",
+      "sha256": "0ffb00661ff2698040e77ae1ea7bd90b0c1ad4462c186fcbfd46ba805cba3110"
+    },
+    {
+      "bytes": 280,
+      "lines": 12,
+      "path": "docs/verification/m1-native-tool-qualification-2026-10-24/manifest.json",
+      "sha256": "f1f5d5f43a2efd25eb924e9f83c9994cb6b6db39e7fb18f4bd3565d6cf9537cf"
+    },
+    {
+      "bytes": 7169,
+      "lines": 189,
+      "path": "docs/verification/m1-native-tool-qualification-2026-10-24/qualification.json",
+      "sha256": "37324f2ab89ede90aef1d4f2946707717549b8dc47c906b3fe942a5e8a7f486a"
+    },
+    {
+      "bytes": 2939,
+      "lines": 49,
+      "path": "docs/verification/m1-prerequisite-staging-2026-10-24/README.md",
+      "sha256": "92b43d13295162bcf0497ee8e3c6bc9c16b6b37da74abf4857ef1b85d02d9a6b"
+    },
+    {
+      "bytes": 151,
+      "lines": 6,
+      "path": "docs/verification/m1-prerequisite-staging-2026-10-24/first-transfer.stderr",
+      "sha256": "42a765dfaa197ebcffa50f43833d24310f5dd67395f7b89affb46abd5a94614f"
+    },
+    {
+      "bytes": 0,
+      "lines": 0,
+      "path": "docs/verification/m1-prerequisite-staging-2026-10-24/first-transfer.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 562,
+      "lines": 22,
+      "path": "docs/verification/m1-prerequisite-staging-2026-10-24/manifest.json",
+      "sha256": "977dc68f708b95ab553b07fa6d60c4d40094c917353659c409d2ded7d5fd9048"
+    },
+    {
+      "bytes": 5000,
+      "lines": 129,
+      "path": "docs/verification/m1-prerequisite-staging-2026-10-24/staging.json",
+      "sha256": "f8ca3c8b21de3926d4e0b168f3efa2be8e1248ba1158c0f8f4348e4fda6b228f"
+    }
+  ],
+  "review_checkout_base": "9a540b5ef78bedf9cf10e43eb66cdb359adcdbbc",
+  "review_data_reader_first_error": {
+    "error": "KeyError('mode')",
+    "phase": "Additional R3 receipt field comparison; before bindings file creation",
+    "resolution": "Read actual git_mode receipt field and compare its permission bits to source bindings mode. Original error remains in this record; no comparison predicate weakened.",
+    "supplied_code_executed": false
+  },
+  "review_execution_limits": {
+    "candidate_imports_or_runs": 0,
+    "compiler_build_resolution_signing_product_native_update_commands": 0,
+    "delegation": 0,
+    "fixtures_or_probe_files_created": 0,
+    "materialized_archive_files": 0,
+    "only_new_review_report_and_bindings_written": true,
+    "os_process_port_queries": 0,
+    "remote_network_commands": 0,
+    "supplied_helper_execution": 0,
+    "tests_mocks_simulations": 0
+  },
+  "review_report": {
+    "bytes": 12174,
+    "lines": 196,
+    "path": "docs/verification/m1-bundle-controller-review-2026-10-24-t3-eaede70a/REVIEW.md",
+    "sha256": "b8fca7caeff10992ce44d02f04620fcd9a47d6f93b25f02dc44ef90e3032aa18"
+  },
+  "reviewed_package": [
+    {
+      "bytes": 20795,
+      "lines": 322,
+      "path": "docs/verification/m1-fresh-build-plan-2026-10-24-t3-c52ad306/README.md",
+      "sha256": "69993e52e3ed78b7b280dd9c1f134d48b1996ceeb378a34e8a2bc2593b0203ca"
+    },
+    {
+      "bytes": 674,
+      "lines": 8,
+      "path": "docs/verification/m1-fresh-build-plan-2026-10-24-t3-c52ad306/SHA256SUMS",
+      "sha256": "85b1c2d127d179515b3a0de72f7f37875cc5e33db75ebf285a1dcbf905115ed8"
+    },
+    {
+      "bytes": 1815,
+      "lines": 45,
+      "path": "docs/verification/m1-fresh-build-plan-2026-10-24-t3-c52ad306/budgets.json",
+      "sha256": "c3c8a1b05832a17ae401f9b20ba49f396494f690981037d33db1073782a6f78b"
+    },
+    {
+      "bytes": 32987,
+      "lines": 637,
+      "path": "docs/verification/m1-fresh-build-plan-2026-10-24-t3-c52ad306/controller.py",
+      "sha256": "9b13db9b9f382ffcf17a3be1d311374208191680c89fa493bfbdad1be631eb98"
+    },
+    {
+      "bytes": 1164,
+      "lines": 20,
+      "path": "docs/verification/m1-fresh-build-plan-2026-10-24-t3-c52ad306/operation.template.json",
+      "sha256": "3d2e63163ae559096aeeda656bc01ca7e8e7c54454822c3e3a9a8e1d4b59be83"
+    },
+    {
+      "bytes": 151287,
+      "lines": 4316,
+      "path": "docs/verification/m1-fresh-build-plan-2026-10-24-t3-c52ad306/source-bindings.json",
+      "sha256": "20e011251151cec81f69c4b80b0072d9fd0a98c1eaaf0e6c74d83ff752546617"
+    },
+    {
+      "bytes": 2118,
+      "lines": 46,
+      "path": "docs/verification/m1-fresh-build-plan-2026-10-24-t3-c52ad306/static-checks.json",
+      "sha256": "2d8a8ccb19a8003575a3209f764db05cf37cd3d97e3d6d7717084247fe1af35a"
+    },
+    {
+      "bytes": 400,
+      "lines": 12,
+      "path": "docs/verification/m1-fresh-build-plan-2026-10-24-t3-c52ad306/swift-entry.sh",
+      "sha256": "eda808a9e24b9041afbfaaf4f1febcaa01e0f76c4a56c7502da7eb602472eb08"
+    },
+    {
+      "bytes": 4452,
+      "lines": 164,
+      "path": "docs/verification/m1-fresh-build-plan-2026-10-24-t3-c52ad306/workspace-source-closure.json",
+      "sha256": "3095604db55ff011e03f6ef1649e8d238930b22a56ccfdb04b2316dd551143d5"
+    }
+  ],
+  "runtime": "NOT_RUN_UNVERIFIED",
+  "schema": "openergy.m1-bundle-controller-source-review.v1",
+  "source_commit": "ed7d96bf53da1a539fa2acde3b7133613221fd4b",
+  "sparkle_expired_operation": "CLOSED_NO_REUSE",
+  "timezone": "America/Vancouver",
+  "verdict": "SOURCE_HOLD",
+  "worktree": "t3-eaede70a"
+}
