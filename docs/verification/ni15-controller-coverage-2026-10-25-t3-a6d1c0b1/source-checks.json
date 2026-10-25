@@ -1,0 +1,264 @@
+{
+  "active_command_sites": [
+    {
+      "line": 495,
+      "module": "controller.py"
+    },
+    {
+      "line": 257,
+      "module": "controller.py"
+    },
+    {
+      "line": 324,
+      "module": "ownership.py"
+    },
+    {
+      "line": 514,
+      "module": "ownership.py"
+    },
+    {
+      "line": 123,
+      "module": "watchdog.py"
+    }
+  ],
+  "added_functions": {
+    "common.py": [],
+    "controller.py": [],
+    "coverage.py": [
+      "CommandCoverage.__init__",
+      "CommandCoverage.error",
+      "CommandCoverage.finish",
+      "CommandCoverage.record",
+      "CommandCoverage.sample",
+      "CommandCoverage.spawn",
+      "audit",
+      "controls",
+      "require",
+      "same"
+    ],
+    "exec_owned.py": [],
+    "macproc.py": [],
+    "ownership.py": [
+      "Inventory.acquire_product"
+    ],
+    "prepare.py": [],
+    "probe.py": [],
+    "watchdog.py": []
+  },
+  "admission_patch_hunks": 7,
+  "changed_functions": {
+    "common.py": [
+      "command"
+    ],
+    "controller.py": [
+      "Controller._flow",
+      "Controller._launch",
+      "Controller.cleanup",
+      "Controller.collect",
+      "Controller.port",
+      "Controller.run"
+    ],
+    "coverage.py": [],
+    "exec_owned.py": [],
+    "macproc.py": [],
+    "ownership.py": [
+      "Inventory._observe",
+      "Inventory._signal",
+      "Inventory.observe"
+    ],
+    "prepare.py": [],
+    "probe.py": [],
+    "watchdog.py": [
+      "Recovery.advance",
+      "Recovery.finish",
+      "Recovery.targeted"
+    ]
+  },
+  "checks": {
+    "Controller.port_exact_after_helper_keyword_removal": true,
+    "Inventory._signal_exact_after_helper_keyword_removal": true,
+    "Recovery.targeted_exact_after_helper_keyword_removal": true,
+    "admission_seven_hunks_reconstruct": true,
+    "all_five_active_command_sites_instrumented": true,
+    "all_four_unchanged_modules_byte_exact": true,
+    "all_inputs_equal_immutable_git_and_checkout": true,
+    "all_nine_python_texts_parse_as_ast": true,
+    "cleanup_exact_after_phase_label_removal": true,
+    "collect_exact_after_sticky_failure_operand_removal": true,
+    "command_original_exception_kill_reap_body_exact": true,
+    "helper_actual_python_binding_from_in_memory_spec": true,
+    "launch_original_prefix_and_return_exact": true,
+    "no_removed_functions": true,
+    "observe_transaction_exact_after_focus_parameter_and_default_removal": true,
+    "recovery_advance_exact_after_phase_label_removal": true,
+    "repair_patch_exact_materialization": true
+  },
+  "execution": false,
+  "independent_parent_review": "PENDING",
+  "python_files": {
+    "common.py": {
+      "bytes": 12781,
+      "lines": 320,
+      "package_path": "source/common.py.txt",
+      "sha256": "20a9c16030b2de53b99870f25bada68137bfc6fbc5b67cc29f8e878312d4129c",
+      "unchanged_from_admission": false
+    },
+    "controller.py": {
+      "bytes": 32173,
+      "lines": 550,
+      "package_path": "source/controller.py.txt",
+      "sha256": "c955ad3a4ca7c01a46bdb6e5317718c0ba2c6ca743f5b55b0bab2208755bcfaa",
+      "unchanged_from_admission": false
+    },
+    "coverage.py": {
+      "bytes": 11382,
+      "lines": 215,
+      "package_path": "source/coverage.py.txt",
+      "sha256": "d154561f7f256e41b32c90941f7ce18ffa79d5284d23eecea9be88cc1c48f747",
+      "unchanged_from_admission": false
+    },
+    "exec_owned.py": {
+      "bytes": 2219,
+      "lines": 46,
+      "package_path": "source/exec_owned.py.txt",
+      "sha256": "e7d9a755eed1fadfd04b43b3b96dbd0663cabdf07cc5aa7808ce006183859af2",
+      "unchanged_from_admission": true
+    },
+    "macproc.py": {
+      "bytes": 8075,
+      "lines": 190,
+      "package_path": "source/macproc.py.txt",
+      "sha256": "d4f6fe358bd9af786fc4c2cba61f1a47f3f4015c918aae85cf8e6aa1c6d3e6c7",
+      "unchanged_from_admission": true
+    },
+    "ownership.py": {
+      "bytes": 35975,
+      "lines": 596,
+      "package_path": "source/ownership.py.txt",
+      "sha256": "3ac4bab54db909beb236d0d9caa4ee83084ad9b566aa19d97c5b6d26c356b091",
+      "unchanged_from_admission": false
+    },
+    "prepare.py": {
+      "bytes": 11632,
+      "lines": 160,
+      "package_path": "source/prepare.py.txt",
+      "sha256": "16f2c5d9dce3f3bce8a871bd53eea06ebf1818080de5f9bdaae3997b86304e9a",
+      "unchanged_from_admission": true
+    },
+    "probe.py": {
+      "bytes": 699,
+      "lines": 21,
+      "package_path": "source/probe.py.txt",
+      "sha256": "d65d17246bbd9057576e32454014b00afed6988dfead7899251435302a651efd",
+      "unchanged_from_admission": true
+    },
+    "watchdog.py": {
+      "bytes": 18760,
+      "lines": 355,
+      "package_path": "source/watchdog.py.txt",
+      "sha256": "5efe2cd41f9339463187dfc3d5b11ec8d14f1a159a58787e9b3e01fe60db158d",
+      "unchanged_from_admission": false
+    }
+  },
+  "reader_error_record": "static-reader-errors.json",
+  "repair_patch_hunks": 36,
+  "runtime": "UNVERIFIED",
+  "schema": "openergy.ni15-source-checks.v1",
+  "scope": "Own Git/file/JSON/hash/AST/patch data readers only; no supplied code imported or evaluated.",
+  "source_input_count": 41,
+  "unchanged_functions": {
+    "common.py": [
+      "Evidence.__init__",
+      "Evidence.attempt",
+      "append",
+      "archive_reserved",
+      "byte_lock",
+      "charge",
+      "encoded",
+      "exists",
+      "first",
+      "git_file",
+      "initialize_bytes",
+      "io_until",
+      "load",
+      "nice15",
+      "pause",
+      "read",
+      "remaining",
+      "save",
+      "sha",
+      "tree",
+      "write_bytes"
+    ],
+    "controller.py": [
+      "Controller.__init__",
+      "Controller.abort",
+      "Controller.cli",
+      "Controller.drain",
+      "Controller.flow",
+      "Controller.launch",
+      "Controller.observe",
+      "Controller.request_cleanup",
+      "Controller.tick",
+      "main"
+    ],
+    "coverage.py": [],
+    "exec_owned.py": [
+      "main"
+    ],
+    "macproc.py": [
+      "api",
+      "argv",
+      "bsd",
+      "detail",
+      "executable",
+      "expected_starts",
+      "key",
+      "snapshot",
+      "targeted"
+    ],
+    "ownership.py": [
+      "Inventory.__init__",
+      "Inventory._final",
+      "Inventory.absence_guard",
+      "Inventory.absent",
+      "Inventory.final",
+      "Inventory.identify",
+      "Inventory.initialize_uncertainty",
+      "Inventory.known_pids",
+      "Inventory.note_pending",
+      "Inventory.reload",
+      "Inventory.restore_uncertainty",
+      "Inventory.retain_uncertainty",
+      "Inventory.signal",
+      "Inventory.uncertainty_append",
+      "Inventory.uncertainty_lock",
+      "Inventory.uncertainty_state",
+      "budget",
+      "exact_argv",
+      "expected",
+      "wrapper_argv"
+    ],
+    "prepare.py": [
+      "bind_sources",
+      "main"
+    ],
+    "probe.py": [
+      "main"
+    ],
+    "watchdog.py": [
+      "Recovery.__init__",
+      "Recovery.cli_deadlines",
+      "Recovery.declare_abort",
+      "Recovery.fail",
+      "Recovery.move",
+      "Recovery.once",
+      "Recovery.publish",
+      "Recovery.step",
+      "Recovery.stop",
+      "Recovery.terminal",
+      "app_role",
+      "main"
+    ]
+  }
+}

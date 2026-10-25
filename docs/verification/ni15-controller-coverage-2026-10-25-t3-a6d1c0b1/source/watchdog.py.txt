@@ -1,0 +1,355 @@
+"""Independent bounded recovery. Evidence publication never gates verified recovery."""
+from common import *
+from ownership import Inventory
+from macproc import api, bsd, detail, key
+import signal
+import sys
+import traceback
+
+
+def app_role(role):
+    return role == 'app' or role.endswith('supervised-daemon')
+
+
+class Recovery:
+    def __init__(self, spec, runtime, request, actor='watchdog'):
+        self.spec, self.runtime, self.request = spec, Path(runtime), request
+        self.actor, self.deadline = actor, request['cleanup_deadline']
+        self.inventory = Inventory(spec, runtime, actor)
+        self.phase = 'app-grace' if request['normal'] else 'app-stop'
+        self.until = min(self.deadline, time.monotonic() + 10)
+        self.terms, self.kills, self.term_rounds = {}, {}, {}
+        self.advance_number = 0
+        self.failures, self.failure_count, self.failure_keys = [], 0, set()
+        self.evidence = Evidence()
+        self.last_good, self.done, self.result = None, False, None
+        self.aborting, self.peer_permitted = not request['normal'], False
+        if self.aborting:
+            self.declare_abort('declared recovery request')
+
+    def publish(self, path, value, deadline=None):
+        self.evidence.attempt(first, self.runtime / path, value,
+                              deadline or min(self.deadline, time.monotonic() + 0.05),
+                              critical='terminal' if path in ('abort.json', 'recovery-done.json') else True)
+
+    def fail(self, message):
+        # Bound memory/terminal size even for persistent sink or read errors.
+        self.failure_count += 1
+        if len(self.failures) < 32:
+            self.failures.append(dict(monotonic=time.monotonic(), phase=self.phase, error=message[:4096]))
+        self.publish('first-' + self.actor + '-failure.json',
+                     self.failures[0] if self.failures else dict(error='bounded recovery failure'))
+
+    def once(self, token, message):
+        if token not in self.failure_keys:
+            self.failure_keys.add(token)
+            self.fail(message)
+
+    def declare_abort(self, reason):
+        self.aborting = True  # Must precede abort publication.
+        self.publish('abort.json', dict(reason=reason, monotonic=time.monotonic()))
+
+    def move(self, phase, grace=0):
+        self.phase = phase
+        self.until = min(self.deadline, time.monotonic() + grace)
+
+    def stop(self, roles):
+        """Per PID/start TERM delivery -> five seconds -> KILL -> absence wait.
+
+        No phase-entry or CLI-deadline timestamp substitutes for TERM delivery.
+        Newly delivered TERM always returns to the next advance before KILL.
+        """
+        # Recover an actual delivery even if a later sink/deadline exception
+        # prevented its caller from receiving the return value.
+        for (identity, sig), receipt in self.inventory.deliveries.items():
+            target = self.terms if sig == int(signal.SIGTERM) else self.kills if sig == int(signal.SIGKILL) else None
+            if target is not None:
+                target.setdefault(identity, receipt['delivered_monotonic'])
+                if sig == int(signal.SIGTERM):
+                    self.term_rounds.setdefault(identity, self.advance_number)
+        current = {r['pid']: r for r in self.last_good['rows']}
+        records = sorted(self.inventory.records.values(), key=lambda r: r['stage'] == 'product', reverse=True)
+        attempted = set()
+        for record in records:
+            token = key(record)
+            row = current.get(record['pid'])
+            if not roles(record['role']) or record['pid'] in attempted or row is None or row['status'] == 5:
+                continue
+            attempted.add(record['pid'])
+            try:
+                if token not in self.terms:
+                    if time.monotonic() + 5 > self.deadline:
+                        self.once(('grace-budget', token), 'insufficient cleanup budget for full TERM grace: ' + token)
+                    limit = min(self.deadline, time.monotonic() + 1)
+                    if row['status'] == 4:
+                        self.inventory.signal(record, signal.SIGCONT, limit)
+                    receipt = self.inventory.signal(record, signal.SIGTERM, limit)
+                    if receipt['delivered']:
+                        self.terms[token] = receipt['delivered_monotonic']
+                        self.term_rounds[token] = self.advance_number
+                        if self.terms[token] + 5 > self.deadline:
+                            self.once(('late-TERM', token), 'TERM delivered too late for full grace: ' + token)
+                    continue  # Never TERM then KILL in this advance.
+                if self.term_rounds.get(token) == self.advance_number or time.monotonic() < self.terms[token] + 5:
+                    continue
+                if token not in self.kills:
+                    receipt = self.inventory.signal(record, signal.SIGKILL,
+                                                     min(self.deadline, time.monotonic() + 1))
+                    if receipt['delivered']:
+                        self.kills[token] = receipt['delivered_monotonic']
+                        if self.kills[token] + 5 > self.deadline:
+                            self.once(('kill-budget', token), 'insufficient five-second post-KILL absence budget: ' + token)
+                elif time.monotonic() >= self.kills[token] + 5:
+                    self.once(('still-present', token), 'owned identity still present after KILL absence allowance: ' + token)
+            except Exception:
+                self.fail(traceback.format_exc())
+
+    def targeted(self):
+        """Fresh targeted ownership recovery; cannot permit peer teardown/final PASS."""
+        limit = min(self.deadline, time.monotonic() + 1)
+        # Cached records survive failed identity/observation publication.
+        self.inventory.reload(limit)
+        direct = dict(self.inventory.direct)
+        self.inventory.launch_labels |= {p.name.removesuffix('-command.json') for p in self.runtime.glob('*-command.json')}
+        for label in self.inventory.commands:
+            path = self.runtime / (label + '-exec.json')
+            if path.exists():
+                receipt = self.evidence.attempt(load, path, limit)
+                if receipt is not None:
+                    direct[label] = receipt
+        self.inventory.direct = direct
+        known = {key(r) for r in self.inventory.records.values()} | {key(self.spec['owner'])}
+        known |= {r['parent_identity'] for r in self.inventory.records.values()} | {key(r) for r in direct.values()}
+        data = json.loads(command([PYTHON, HERE / 'probe.py', str(limit), self.spec['private_root'],
+                                   '--targeted', *sorted(known)], limit, coverage=(self.runtime, self.actor, self.spec)))
+        self.last_good = data
+        rows = {r['pid']: r for r in data['rows']}
+        for row in data['rows']:
+            if row['pid'] == self.spec['owner']['pid'] or row.get('read_race') or 'argv' not in row:
+                continue
+            try:
+                record = self.inventory.identify(row, rows, direct, limit, data['absence'])
+                if record is not None:
+                    identity_id = key(row) + '-' + record['stage']
+                    record.update(row, identity_id=identity_id, observed_monotonic=time.monotonic())
+                    self.inventory.records[identity_id] = record
+                    self.publish('identity-' + identity_id + '.json', record)
+            except Exception:
+                self.fail(traceback.format_exc())
+        # Publication cannot skip registration, app-first decisions, or signals.
+        self.publish('first-' + self.actor + '-targeted-recovery.json', dict(data=data, monotonic=time.monotonic()))
+        app_records = [r for r in self.inventory.records.values() if r['role'] == 'app']
+        unresolved_app = ('app' in self.inventory.launch_labels and not app_records)
+        app_absent = not unresolved_app and all(data['absence'].get(str(r['pid'])) == 'ESRCH' for r in app_records)
+        if not app_absent:
+            self.stop(lambda role: role == 'app')
+        else:
+            self.stop(lambda role: role.endswith('supervised-daemon'))
+        self.cli_deadlines()
+        # Once a full inventory already permitted peer teardown, a later sink/
+        # enumeration error cannot disable verified peer recovery.
+        if self.peer_permitted:
+            self.stop(lambda role: role.startswith('peer'))
+
+    def cli_deadlines(self):
+        for label in ('peer-status', 'peer-stop'):
+            path = self.runtime / (label + '-command.json')
+            try:
+                if path.exists():
+                    row = load(path, min(self.deadline, time.monotonic() + 0.1))
+                    if time.monotonic() >= row['absolute_deadline']:
+                        active = any(r['role'] == label and any(x['pid'] == r['pid'] for x in self.last_good['rows'])
+                                     for r in self.inventory.records.values())
+                        if active:
+                            self.once(('cli', label), label + ' exceeded absolute five-second CLI deadline')
+                            self.stop(lambda role, label=label: role == label)
+            except Exception:
+                self.fail(traceback.format_exc())
+
+    def terminal(self):
+        """Every durable intent, spawn and retained handle must close with a real OS exit."""
+        limit = min(self.deadline, time.monotonic() + 0.5)
+        closed = load(self.runtime / 'collector-terminal.json', limit)
+        intents = {p.name.removesuffix('-command.json') for p in self.runtime.glob('*-command.json')}
+        spawns = {p.name.removesuffix('-spawn.json') for p in self.runtime.glob('*-spawn.json')}
+        exits = {p.name.removesuffix('-exit.json') for p in self.runtime.glob('*-exit.json')}
+        if (spawns != intents or exits != intents or closed.get('sealed') is not True or closed['collector_pid'] != self.spec['owner']['pid'] or
+                set(closed['intents']) != intents or set(closed['handles']) != intents or
+                set(closed['exits']) != intents):
+            return False
+        for label in intents:
+            spawn = load(self.runtime / (label + '-spawn.json'), limit)
+            receipt = load(self.runtime / (label + '-exit.json'), limit)
+            if (spawn['label'] != label or spawn['pid'] != closed['handles'][label] or
+                    receipt != closed['exits'][label] or receipt['label'] != label or
+                    receipt['pid'] != spawn['pid'] or receipt['collector_pid'] != self.spec['owner']['pid'] or
+                    receipt.get('complete_os_exit_status') is not True):
+                return False
+            if receipt['code'] != 0:
+                self.once(('exit', label), label + ' OS exit nonzero: ' + str(receipt['code']))
+        if closed.get('evidence_errors'):
+            self.once('collector-evidence', 'collector evidence failed')
+        return True
+
+    def step(self):
+        self.advance_number += 1
+        try:
+            with io_until(min(self.deadline, time.monotonic() + 2)):
+                self.advance()
+        except Exception:
+            self.fail(traceback.format_exc())
+
+    def advance(self):
+        if self.done:
+            return
+        self.inventory.last = None
+        self.inventory.phase = 'cleanup:' + self.phase
+        try:
+            self.last_good = self.inventory.observe(min(self.deadline, time.monotonic() + 1), validate=True)
+        except Exception:
+            self.fail(traceback.format_exc())
+            self.declare_abort('cleanup ownership observation failed')
+            if self.phase == 'app-grace':
+                self.move('app-stop')
+            self.targeted()
+            return
+        if self.inventory.evidence.count or self.evidence.count:
+            self.once('sink', 'recovery evidence publication failed; acceptance prohibited')
+            self.declare_abort('recovery evidence sink failed')
+            if self.phase == 'app-grace':
+                self.move('app-stop')
+        data = self.last_good
+        app_gone = self.inventory.absent(data, lambda role: role == 'app')
+        tree_gone = self.inventory.absent(data, app_role)
+        self.cli_deadlines()
+        now = time.monotonic()
+        # One phase decision per advance. No fall-through signal escalation.
+        if self.phase == 'app-grace':
+            if tree_gone:
+                self.move('peer-request')
+            elif now >= self.until:
+                self.fail('app tree remained after normal ten-second grace')
+                self.declare_abort('normal cleanup grace expired')
+                self.move('app-stop')
+        elif self.phase == 'app-stop':
+            if app_gone:
+                self.move('children-stop')
+            else:
+                self.stop(lambda role: role == 'app')
+        elif self.phase == 'children-stop':
+            if tree_gone:
+                self.move('peer-request')
+            else:
+                self.stop(lambda role: role.endswith('supervised-daemon'))
+        elif self.phase == 'peer-request':
+            with self.inventory.absence_guard(self.deadline):
+                if tree_gone:
+                    self.peer_permitted = True
+                    self.move('peer-grace', 10)
+                    self.publish('peer-stop-permitted.json', dict(monotonic=now, app_tree_absent=True,
+                                                                 declared_abort=self.aborting))
+                else:
+                    self.move('app-stop')
+        elif self.phase == 'peer-grace':
+            if self.inventory.absent(data, lambda role: role.startswith('peer')):
+                self.move('all-exits')
+            elif now >= self.until:
+                self.fail('peer remained after ten-second public-stop allowance')
+                self.move('peer-stop')
+        elif self.phase == 'peer-stop':
+            if self.inventory.absent(data, lambda role: role.startswith('peer')):
+                self.move('all-exits')
+            else:
+                self.stop(lambda role: role.startswith('peer'))
+        elif self.phase == 'all-exits':
+            final = self.inventory.final(data, self.deadline)
+            if final['absent']:
+                try:
+                    collected = self.terminal()
+                except Exception:
+                    collected = False  # Missing/unclosed ledger is never vacuous success.
+                if collected:
+                    self.finish(final, True)
+
+    def finish(self, final=None, collected=False):
+        if self.done:
+            return
+        if not (final and final['absent'] and collected):
+            self.fail('bounded deadline ended without complete absence and closed direct-child ledger')
+        self.result = dict(actor=self.actor, normal_request=self.request['normal'], phase=self.phase,
+             start=self.request['cleanup_start'], end=time.monotonic(), cleanup_deadline=self.deadline,
+             failures=self.failures, failure_count=self.failure_count,
+             evidence_errors=self.evidence.errors, inventory_evidence_errors=self.inventory.evidence.errors,
+             term_deliveries=self.terms, kill_deliveries=self.kills,
+             all_direct_exits_collected=collected, inventory=final,
+             recovered=bool(final and final['absent'] and collected),
+             passed=bool(final and final['absent'] and collected and not self.failure_count and
+                         not self.evidence.count and not self.inventory.evidence.count and not self.aborting and
+                         not COVERAGE_ERRORS), helper_coverage_errors=COVERAGE_ERRORS[:32])
+        self.publish('recovery-done.json', self.result, time.monotonic() + 1)
+        if self.evidence.count:
+            self.result['passed'] = False
+        self.done = True  # In-memory terminal state survives failed final publication.
+
+
+def main():
+    nice15()
+    runtime = Path(sys.argv[1])
+    spec = load(runtime / 'session.json', time.monotonic() + 2)
+    hard_end = spec['flow_deadline'] + CLEANUP_SECONDS
+    with io_until(time.monotonic() + 1):
+        identity = detail(api(), bsd(api(), os.getpid()))
+        save(runtime / 'watchdog-ready.json', dict(identity=identity, monotonic=time.monotonic(),
+             flow_deadline=spec['flow_deadline'], hard_end=hard_end), time.monotonic() + 1, critical=True)
+    request = None
+    os.set_blocking(0, False)
+    control = b''
+    while time.monotonic() < spec['flow_deadline']:
+        try:
+            limit = min(spec['flow_deadline'], time.monotonic() + 0.5)
+            with io_until(limit):
+                try:
+                    chunk = os.read(0, 513)
+                except BlockingIOError:
+                    chunk = None
+                if chunk == b'':
+                    start = time.monotonic()
+                    request = dict(normal=False, cleanup_start=start, cleanup_deadline=min(start + CLEANUP_SECONDS, hard_end))
+                    break
+                if chunk:
+                    control += chunk
+                    if len(control) > 512:
+                        raise RuntimeError('cleanup control byte cap')
+                    if control.endswith(b'\n'):
+                        request = json.loads(control)
+                        break
+                if (runtime / 'cleanup-request.json').exists():
+                    request = load(runtime / 'cleanup-request.json', limit)
+                    break
+                if (runtime / 'abort.json').exists() or os.getppid() != spec['owner']['pid']:
+                    start = time.monotonic()
+                    request = dict(normal=False, cleanup_start=start, cleanup_deadline=min(start + CLEANUP_SECONDS, hard_end))
+                    break
+            pause(spec['flow_deadline'])
+        except Exception:
+            start = time.monotonic()
+            request = dict(normal=False, cleanup_start=start, cleanup_deadline=min(start + CLEANUP_SECONDS, hard_end))
+            break
+    if request is None:
+        request = dict(normal=False, cleanup_start=time.monotonic(), cleanup_deadline=hard_end)
+    request['cleanup_deadline'] = min(request['cleanup_deadline'], request['cleanup_start'] + CLEANUP_SECONDS, hard_end)
+    recovery = Recovery(spec, runtime, request)
+    while time.monotonic() < recovery.deadline and not recovery.done:
+        recovery.step()
+        if not recovery.done:
+            try:
+                pause(recovery.deadline)
+            except DeadlineError:
+                break
+    if not recovery.done:
+        recovery.finish()
+    return 0 if recovery.result['passed'] else 1
+
+
+if __name__ == '__main__':
+    sys.exit(main())
