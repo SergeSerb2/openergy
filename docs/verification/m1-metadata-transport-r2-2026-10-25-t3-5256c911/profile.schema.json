@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Closed existing M1 SSH profile; R2 source/data contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "source_guard",
+    "argv"
+  ],
+  "properties": {
+    "schema": {
+      "const": "openergy.m1-bound-ssh-profile.v1"
+    },
+    "source_guard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 2,
+          "pattern": "^/[^\\u0000]+$",
+          "not": {
+            "pattern": "//|/\\.{1,2}(/|$)|/$"
+          }
+        },
+        "sha256": {
+          "const": "9e0b9a5afb47b7755d1ebaf5f50edf45cf0a7372baaa2f83b83d9255011aed4c"
+        }
+      }
+    },
+    "argv": {
+      "type": "array",
+      "minItems": 29,
+      "maxItems": 29,
+      "prefixItems": [
+        {
+          "const": "/usr/bin/ssh"
+        },
+        {
+          "const": "-o"
+        },
+        {
+          "const": "BatchMode=yes"
+        },
+        {
+          "const": "-o"
+        },
+        {
+          "const": "ConnectTimeout=8"
+        },
+        {
+          "const": "-o"
+        },
+        {
+          "const": "ConnectionAttempts=1"
+        },
+        {
+          "const": "-o"
+        },
+        {
+          "const": "StrictHostKeyChecking=yes"
+        },
+        {
+          "const": "-o"
+        },
+        {
+          "const": "ControlMaster=no"
+        },
+        {
+          "const": "-o"
+        },
+        {
+          "const": "ControlPath=none"
+        },
+        {
+          "const": "-o"
+        },
+        {
+          "const": "ControlPersist=no"
+        },
+        {
+          "const": "-o"
+        },
+        {
+          "const": "ServerAliveInterval=5"
+        },
+        {
+          "const": "-o"
+        },
+        {
+          "const": "ServerAliveCountMax=3"
+        },
+        {
+          "const": "-p"
+        },
+        {
+          "const": "22"
+        },
+        {
+          "const": "-o"
+        },
+        {
+          "type": "string",
+          "pattern": "^HostName=[A-Za-z0-9_\\[\\]:][A-Za-z0-9_.:\\[\\]-]{0,254}$",
+          "not": {
+            "pattern": "[\\u0000-\\u0020\\u007f]"
+          }
+        },
+        {
+          "const": "-o"
+        },
+        {
+          "type": "string",
+          "pattern": "^HostKeyAlias=[A-Za-z0-9_\\[\\]:][A-Za-z0-9_.:\\[\\]-]{0,254}$",
+          "not": {
+            "pattern": "[\\u0000-\\u0020\\u007f]"
+          }
+        },
+        {
+          "const": "-o"
+        },
+        {
+          "type": "string",
+          "pattern": "^UserKnownHostsFile=/[A-Za-z0-9_./:@+-]+$",
+          "not": {
+            "pattern": "//|/\\.{1,2}(/|$)|/$|[\\u0000-\\u0020\\u007f]"
+          }
+        },
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.@:-]{0,254}$",
+          "not": {
+            "pattern": "[\\u0000-\\u0020\\u007f]"
+          }
+        },
+        {
+          "const": "/usr/bin/python3 -I -S -B -"
+        }
+      ],
+      "items": false
+    }
+  },
+  "$comment": "Null templates are intentionally inadmissible. No remote schema resolution or validator ran. Parent must separately qualify the exact 1563-byte saved guard and complete argv equality before binding the whole profile SHA-256; this schema and collector do not read that private guard. Inherited effective SSH config is not newly verified."
+}
