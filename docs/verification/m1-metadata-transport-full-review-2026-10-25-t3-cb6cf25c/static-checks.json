@@ -1,0 +1,319 @@
+{
+  "baseline": {
+    "bytes": 26005,
+    "path": "docs/verification/m1-metadata-transport-envelope-2026-10-25-t3-ac18b956/transport-collector.py.txt",
+    "sha256": "5c27140ebe7c7ab575168187f08d4a28a4f52e0e53b789e75b4187abf5e2eb4e"
+  },
+  "checks": {
+    "baseline_exact_f252_blob": true,
+    "caller_source_and_vectors_retained_hashes_match": true,
+    "candidate_folder_import_byte_identity": true,
+    "caps_unchanged": true,
+    "exact_patch_hunks_reconstructed": 6,
+    "exact_public_20_token_prefix": true,
+    "four_route_nulls_and_null_guard_path_retained": true,
+    "full_function_change_blocks_match": true,
+    "full_source_AST_parse": true,
+    "historical_public_reference_bindings_verified": 9,
+    "manifest_entries_verified": 19,
+    "minimum_excess_bytes": 78044,
+    "minimum_shape_canonical_bytes": 209116,
+    "nine_unique_required_flags": true,
+    "observer_steps_and_record_identical": true,
+    "one_Popen_call_site": true,
+    "one_exact_handle_kill_call_site": true,
+    "patch_reconstructs_full_final_bytes": true,
+    "schema_template_all_29_positions": true,
+    "unique_key_JSON_parse": 13
+  },
+  "checks_do_not_prove": [
+    "runtime timing/capture/signal/reap/durability",
+    "actual collector OS exit and independent D4 timestamp",
+    "private guard bytes/profile equality/inherited effective SSH config",
+    "trusted actual CPython3.15 or remote SYSTEM Python qualification",
+    "SOURCE/COPY payload or R9 integration",
+    "caller/source/copy/artifact/native/NI15/release acceptance"
+  ],
+  "execution": false,
+  "findings": [
+    "P2-01 new run-directory parent has no fsync before guard_durable/SSH spawn",
+    "P2-02 KILL deadline sampled before poll, with no post-poll deadline gate"
+  ],
+  "fsync_call_arguments": [
+    {
+      "argument": "fd",
+      "line": 297
+    },
+    {
+      "argument": "self.root",
+      "line": 301
+    },
+    {
+      "argument": "payload_fd",
+      "line": 483
+    },
+    {
+      "argument": "self.root",
+      "line": 484
+    },
+    {
+      "argument": "fd",
+      "line": 527
+    }
+  ],
+  "function_inventory": [
+    {
+      "changed_from_f252": false,
+      "end_line": 47,
+      "line": 45,
+      "manually_read_in_full": true,
+      "name": "canonical",
+      "sha256": "e419bd331d2784052dc0ef02a3c28401a0dee30d07fbd7e1ceda0173b0934ef6"
+    },
+    {
+      "changed_from_f252": false,
+      "end_line": 51,
+      "line": 50,
+      "manually_read_in_full": true,
+      "name": "digest",
+      "sha256": "50b76bfffc27cbd7a792c95d031f6fd8e49777b6241b96ed8c4c4773edc356cb"
+    },
+    {
+      "changed_from_f252": true,
+      "end_line": 71,
+      "line": 54,
+      "manually_read_in_full": true,
+      "name": "clock_descriptor",
+      "sha256": "6d53309863ad527e72115a38b3508f75492a1f79deddc4e5c8aa4ae4d09885b0"
+    },
+    {
+      "changed_from_f252": false,
+      "end_line": 93,
+      "line": 74,
+      "manually_read_in_full": true,
+      "name": "arguments",
+      "sha256": "a11c1eb28b4d16b691d502b957498c01cea56ad915802fdd85770b4fb6fb64e2"
+    },
+    {
+      "changed_from_f252": true,
+      "end_line": 114,
+      "line": 96,
+      "manually_read_in_full": true,
+      "name": "directory",
+      "sha256": "4461be5df0079e88b76ee43f49e6b2345cda43f6e7a95834a59841a8f51eb0e2"
+    },
+    {
+      "changed_from_f252": false,
+      "end_line": 121,
+      "line": 117,
+      "manually_read_in_full": true,
+      "name": "leaf",
+      "sha256": "6ad86056c9ffd7c497969e43a1cfa3cf4fd8c2550596b1ebaa2828c594e17ec3"
+    },
+    {
+      "changed_from_f252": false,
+      "end_line": 126,
+      "line": 124,
+      "manually_read_in_full": true,
+      "name": "identity",
+      "sha256": "930b37739e4385b2525b2a0c8d115d4bd7bd08c2b073e39519ade5c6b29ca6fc"
+    },
+    {
+      "changed_from_f252": false,
+      "end_line": 160,
+      "line": 129,
+      "manually_read_in_full": true,
+      "name": "read_bound",
+      "sha256": "3f999036c297a199ccff52d0712211c94b8de90d4debfe699dc7e19ecf6c5d77"
+    },
+    {
+      "changed_from_f252": false,
+      "end_line": 169,
+      "line": 163,
+      "manually_read_in_full": true,
+      "name": "unique_object",
+      "sha256": "9f03e4d922b56685581d765b4413675261a89932d57e28d6b8a996d5ec2e8721"
+    },
+    {
+      "changed_from_f252": true,
+      "end_line": 213,
+      "line": 172,
+      "manually_read_in_full": true,
+      "name": "profile_vector",
+      "sha256": "a27fa1cbbe0a3975b99ceb4cdd0f6b7b60c375ba2450e04a8563105846852ee5"
+    },
+    {
+      "changed_from_f252": false,
+      "end_line": 249,
+      "line": 217,
+      "manually_read_in_full": true,
+      "name": "Collector.__init__",
+      "sha256": "634b2e5e77800ae24f14046ac45dc9b76bc908e7316e7d2083bb23a0436f03dc"
+    },
+    {
+      "changed_from_f252": false,
+      "end_line": 254,
+      "line": 251,
+      "manually_read_in_full": true,
+      "name": "Collector.fail",
+      "sha256": "99d2a8a97c5ae13590bb05453a3af0559406a987df2e9cdabb8403315870817f"
+    },
+    {
+      "changed_from_f252": false,
+      "end_line": 260,
+      "line": 256,
+      "manually_read_in_full": true,
+      "name": "Collector.check",
+      "sha256": "9db65cc62ce271161baa7db1d7cece7f3fd527c4566aa1270ea2bf211c61e1d6"
+    },
+    {
+      "changed_from_f252": false,
+      "end_line": 263,
+      "line": 262,
+      "manually_read_in_full": true,
+      "name": "Collector.admission_clock",
+      "sha256": "ff7d1367f1ec074310c4045f0a5fb811cb055a2f8879867453a236e0283eb906"
+    },
+    {
+      "changed_from_f252": false,
+      "end_line": 271,
+      "line": 265,
+      "manually_read_in_full": true,
+      "name": "Collector.publication_failure",
+      "sha256": "478b1c586b869bb0a8a495412d8459325b8f5444d02c00ad5d41b5ec2d604db0"
+    },
+    {
+      "changed_from_f252": false,
+      "end_line": 275,
+      "line": 273,
+      "manually_read_in_full": true,
+      "name": "Collector.create",
+      "sha256": "0c2532818f150ad521c6b59af7cc93851bcc967e4927dfa8eb3292c120117c21"
+    },
+    {
+      "changed_from_f252": false,
+      "end_line": 288,
+      "line": 277,
+      "manually_read_in_full": true,
+      "name": "Collector.write",
+      "sha256": "54d0da37c4ae12d200042b2fefa5c29a148e2cf6e47a12de6227a5ba3c3e1541"
+    },
+    {
+      "changed_from_f252": false,
+      "end_line": 302,
+      "line": 290,
+      "manually_read_in_full": true,
+      "name": "Collector.put",
+      "sha256": "68640cab80582aa14667d9b454d78d0a0c4188c05e631a51ea81102364f1a78d"
+    },
+    {
+      "changed_from_f252": false,
+      "end_line": 318,
+      "line": 304,
+      "manually_read_in_full": true,
+      "name": "Collector.bindings",
+      "sha256": "fadc510b32a68b735166e09df05285763529845296a7ec05c8d5e773dde40c02"
+    },
+    {
+      "changed_from_f252": false,
+      "end_line": 325,
+      "line": 320,
+      "manually_read_in_full": true,
+      "name": "Collector.deadlines",
+      "sha256": "2ac77958ca674996d2f1290e248ad707763288bb403bbdeedd068ea0f5417e9a"
+    },
+    {
+      "changed_from_f252": false,
+      "end_line": 335,
+      "line": 327,
+      "manually_read_in_full": true,
+      "name": "Collector.observe_exit",
+      "sha256": "35cc838d73f0d1baaf545738a958b0927020f2081cf2959dceb4984763227d13"
+    },
+    {
+      "changed_from_f252": false,
+      "end_line": 394,
+      "line": 337,
+      "manually_read_in_full": true,
+      "name": "Collector.capture",
+      "sha256": "3eb7cafecba46cb55a0c8c8a2c35824a3c055ec3ed0647be5d24771c5df4a00e"
+    },
+    {
+      "changed_from_f252": false,
+      "end_line": 433,
+      "line": 396,
+      "manually_read_in_full": true,
+      "name": "Collector.settle",
+      "sha256": "7a3d33587ae9c54484211ec601f09e97ce596c98f2ac7c95ec6660de39419b20"
+    },
+    {
+      "changed_from_f252": true,
+      "end_line": 593,
+      "line": 435,
+      "manually_read_in_full": true,
+      "name": "Collector.run",
+      "sha256": "ce9e163c5a2fa495d2dabbff7964b2471e91770b42d2bd251ed3630b4f01b4f1"
+    },
+    {
+      "changed_from_f252": false,
+      "end_line": 603,
+      "line": 596,
+      "manually_read_in_full": true,
+      "name": "main",
+      "sha256": "a3b873c22bf70f9f051ddeefeb74131a107cc6f9aa356288497eb465f35511a3"
+    }
+  ],
+  "json_files": [
+    "docs/verification/m1-metadata-transport-r2-2026-10-25-t3-5256c911/bindings.json",
+    "docs/verification/m1-metadata-transport-r2-2026-10-25-t3-5256c911/bindings.template.json",
+    "docs/verification/m1-metadata-transport-r2-2026-10-25-t3-5256c911/caller-summary-limit.json",
+    "docs/verification/m1-metadata-transport-r2-2026-10-25-t3-5256c911/finite-plan.json",
+    "docs/verification/m1-metadata-transport-r2-2026-10-25-t3-5256c911/parent-observer.contract.json",
+    "docs/verification/m1-metadata-transport-r2-2026-10-25-t3-5256c911/profile.schema.json",
+    "docs/verification/m1-metadata-transport-r2-2026-10-25-t3-5256c911/profile.template.json",
+    "docs/verification/m1-metadata-transport-r2-2026-10-25-t3-5256c911/static-checks.json",
+    "docs/verification/m1-metadata-transport-envelope-2026-10-25-t3-ac18b956/bindings.json",
+    "docs/verification/m1-metadata-transport-envelope-2026-10-25-t3-ac18b956/finite-plan.json",
+    "docs/verification/m1-metadata-transport-envelope-2026-10-25-t3-ac18b956/parent-observer.contract.json",
+    "docs/verification/m1-metadata-transport-envelope-2026-10-25-t3-ac18b956/profile.template.json",
+    "docs/verification/m1-metadata-transport-envelope-2026-10-25-t3-ac18b956/static-checks.json"
+  ],
+  "original_candidate": "88db0b54cf4d07092ea464392fe9b16ac7da2940",
+  "prohibited_work_performed": {
+    "candidate_execution_or_import": false,
+    "child_agents": false,
+    "implementation_edits": false,
+    "private_files": false,
+    "remote_native_process_port_queries": false,
+    "signing_activation": false,
+    "tests_or_mocks": false
+  },
+  "reviewed_import": "87dcd6aec728c7ef01c1bf87c617c31afcb2ff6d",
+  "reviewer_check_corrections": [
+    {
+      "candidate_changes": false,
+      "correction": "remove the reviewer-only extra newline from the comparison",
+      "diagnostic_result": "all eight full before/after blocks equal their source segments without that added newline",
+      "initial_check": "function block byte equality",
+      "initial_result": "AssertionError; checker wrongly appended an extra newline to source segments"
+    }
+  ],
+  "runtime": "UNVERIFIED",
+  "schema": "openergy.independent-transport-full-static-review.v1",
+  "source": {
+    "bytes": 27181,
+    "path": "docs/verification/m1-metadata-transport-r2-2026-10-25-t3-5256c911/transport-collector.py.txt",
+    "sha256": "0aa1032bfbeb6eb13642c5c7cd4805c10a3b2c9ea897f1810ff67ec2f8a0b389"
+  },
+  "status": "HOLD_P2",
+  "validator": {
+    "executable": "/usr/bin/python3",
+    "flags": [
+      "-I",
+      "-S",
+      "-B"
+    ],
+    "role": "reviewer-authored AST/JSON/hash/patch processing only; not candidate runtime qualification",
+    "version": "3.9.6 (default, Aug 17 2026, 12:07:42) \n[Clang 21.0.0 (clang-2100.3.34.1)]"
+  }
+}
