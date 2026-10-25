@@ -1,0 +1,262 @@
+{
+  "candidate": "2b5fc1f505b1f0426b8f1e8b00537a0b6e805fc7",
+  "controller_sha256": "08f1bbea8aeb5852b4aaddd0f3f693c7717c69e5e898462baa90b49cba41e3a4",
+  "diagnostic": {
+    "argv": [
+      "/usr/sbin/netstat",
+      "-AanW",
+      "-p",
+      "tcp"
+    ],
+    "cause": "UNKNOWN",
+    "encoded_record_bytes_max": 98304,
+    "inside_existing_port_seconds": 2,
+    "publication_share_seconds": 0.05,
+    "query_seconds_max": 0.5,
+    "read_bytes_max": 262144,
+    "result_cannot_accept": true,
+    "row_prefix_bytes_max": 1024,
+    "selected_rows_max": 64,
+    "stderr_bytes_max": 4096,
+    "trigger": "only first failed strict postflight EADDRINUSE after product cleanup"
+  },
+  "execution": false,
+  "fixed_limits": {
+    "KILL_requires_later_advance": true,
+    "SO_REUSE": false,
+    "TERM_grace_seconds_from_actual_delivery": 5,
+    "accounting_reserve": 65536,
+    "aggregate_bytes": 33554432,
+    "alternate_ports": false,
+    "app_tree_absence_before_peer_stop": true,
+    "cleanup": 60,
+    "cleanup_reserve": 4194304,
+    "cleanup_rounds": 1024,
+    "cleanup_rows": 4096,
+    "first_strict_bind_only": true,
+    "flow": 120,
+    "flow_retries": 0,
+    "launches_per_role": 1,
+    "main_rounds": 4976,
+    "main_rows": 19904,
+    "per_file_bytes": 8388608,
+    "ports": [
+      65431,
+      65432
+    ],
+    "post_KILL_absence_seconds": 5,
+    "product_reserve": 16777216,
+    "rounds": 6000,
+    "rows": 24000,
+    "terminal_within_cleanup": 1048576
+  },
+  "historical_result": "FAILED_NOT_ACCEPTED: old M1 app25/25 exit0, controller1, first post65431 EADDRINUSE; cause UNKNOWN. Whole-flow NI15 and original second post-bind/bundle-after/outcome/archive remain missing. Preserve50 old metadata records and all old failed files.",
+  "initial_head": "ab036fef8eb80f619fe4d146d7d3748331ff97ca",
+  "materialization": {
+    "build_source": {
+      "commit": "7f20c9cdd97c1dc313f007b879babc726acbb914",
+      "destination": "build-source-bindings.json",
+      "path": "docs/verification/m1-sampler-source-repair-r3-2026-10-24/source-bindings.json",
+      "sha256": "20e011251151cec81f69c4b80b0072d9fd0a98c1eaaf0e6c74d83ff752546617"
+    },
+    "commit": "2b5fc1f505b1f0426b8f1e8b00537a0b6e805fc7",
+    "coverage_policy": {
+      "bytes": 1864,
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/coverage-policy.json",
+      "sha256": "35516fa08202a4ccd26ece557daecc5bf4e1e8f8e690f18b59d5cc70c3d30d36"
+    },
+    "limits": {
+      "bytes": 876,
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/limits.json",
+      "sha256": "cadd06e19607f5dbe0ad070072673c8e518d961b1554958d243a0d028243d733"
+    },
+    "manifest": {
+      "bytes": 2743,
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/materialization.json",
+      "sha256": "aee494d76e674bf5c8f292bdab210a284bc4c8e42edc4189a6892af618b8dc7d"
+    },
+    "modules": 10,
+    "rule": "Resolve each source relative to manifest at exact candidate Git commit. Verify unique safe .py destinations, bytes/hash against source-checks; exclusive0600 writes in EVIDENCE. Copy source-checks/limits/build-source-bindings exactly. Historical pending labels are superseded by the bound clear review; never edit them.",
+    "source_checks": {
+      "bytes": 2932,
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/source-checks.json",
+      "sha256": "2bde5cf1f9396df5c7d8518caaadcdd69eafc5ff2f39117158efaf87e8d080f5"
+    }
+  },
+  "missing_bindings": [
+    {
+      "path": "paths.EVIDENCE",
+      "reason": "parent chooses fresh root/nonce and confirms filesystem",
+      "value": null
+    },
+    {
+      "path": "${EVIDENCE}/qualification-source-files.json",
+      "reason": "fresh prefix2006/source702/bundle167/header facts absent",
+      "value": null
+    },
+    {
+      "path": "${EVIDENCE}/qualification-artifact-observations.json",
+      "reason": "fresh source native metadata/actual exits absent",
+      "value": null
+    },
+    {
+      "path": "${EVIDENCE}/artifact-receipt.json",
+      "reason": "complete fresh refs not bound",
+      "value": null
+    },
+    {
+      "path": "${EVIDENCE}/operation.bound.json#/artifact_receipt_sha256",
+      "reason": "new receipt hash absent; template false",
+      "value": null
+    },
+    {
+      "path": "${EVIDENCE}/prepared.json#/bundle",
+      "reason": "one future prepare chooses private root",
+      "value": null
+    },
+    {
+      "path": "${EVIDENCE}/prepared-copy-qualification.json",
+      "reason": "fresh copy/native metadata/actual exits absent",
+      "value": null
+    },
+    {
+      "path": "${EVIDENCE}/controller-os-exit.json",
+      "reason": "new flow not executed",
+      "value": null
+    }
+  ],
+  "new_helper_parent_review": "file-qualification.recipe.py.txt only; no user approval request",
+  "new_human_approval_gate": false,
+  "parent_may_adapt_data": true,
+  "parent_startup": {
+    "HOME": "${EVIDENCE}",
+    "LANG": "C",
+    "MACOSX_DEPLOYMENT_TARGET": "15.0",
+    "OPENERGY_DISABLE_UPDATES": "1",
+    "OPENERGY_ORDINARY_PYTHON": "/Users/m1-dev/.local/state/openergy-verification/m1-prerequisite-data-20261024-d896c0b3636a/extracted-data/python/bin/python3.13",
+    "OPENERGY_ORDINARY_SOURCE_ROOT": "/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/repo",
+    "PATH": "/usr/bin:/bin",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONNOUSERSITE": "1",
+    "TMPDIR": "${EVIDENCE}/"
+  },
+  "paths": {
+    "EVIDENCE": null,
+    "PREPARED_COPY": null,
+    "PYTHON": "/Users/m1-dev/.local/state/openergy-verification/m1-prerequisite-data-20261024-d896c0b3636a/extracted-data/python/bin/python3.13",
+    "SOURCE_BUNDLE": "/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/dist/Openergy.app",
+    "SOURCE_ROOT": "/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/repo",
+    "evidence_name_template": "m1-ordinary-reviewed-flow-20261025-${PARENT_CHOSEN_NONCE}",
+    "evidence_parent": "/Users/m1-dev/.local/state/openergy-verification"
+  },
+  "reuse_original_attempt": false,
+  "runtime": "UNVERIFIED",
+  "schema": "openergy.next-reviewed-ordinary-recipe.v1",
+  "source_delta_clear_review": "b8a422145a5ab5dc197304f6420b85654b5f14ea",
+  "steps": [
+    {
+      "action": "Parent chooses fresh canonical owned0700 EVIDENCE on /private/tmp filesystem. Materialize ten modules and exact data. Add new helper/recipes/artifact template. Never copy old operation, guard, prepared, session, runtime or result.",
+      "execution": false,
+      "kind": "materialize-data",
+      "maximum": 1,
+      "order": 1
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-I",
+        "-S",
+        "-B",
+        "${EVIDENCE}/file-qualification.recipe.py.txt",
+        "${EVIDENCE}",
+        "source"
+      ],
+      "execution": false,
+      "failure": "Stop at exact failed/missing path; preserve first record; no input repair or wider search.",
+      "kind": "source-file-qualification",
+      "maximum": 1,
+      "order": 2,
+      "output": "${EVIDENCE}/qualification-source-files.json",
+      "seconds": 120
+    },
+    {
+      "action": "System-Python entry-template authentication before private version. Match corrected saved raw metadata. Bind immutable build/ABI/plist assessment to fresh source/bundle/header bytes. Publish new Python/no-transfer/metadata summaries. Do not repeat readiness.",
+      "additional_python_commands": 2,
+      "commands": 50,
+      "execution": false,
+      "kind": "source-metadata",
+      "maximum": 1,
+      "order": 3,
+      "output": "${EVIDENCE}/qualification-artifact-observations.json",
+      "recipe": "metadata.recipe.json",
+      "seconds": 120
+    },
+    {
+      "action": "Apply existing receipt schema and full contract. Write NEW immutable artifact-receipt.json with all actual refs. Then create NEW operation.bound.json from template with execution=true and actual receipt hash. Repository templates remain false/null.",
+      "execution": false,
+      "kind": "bind-artifact",
+      "maximum": 1,
+      "order": 4
+    },
+    {
+      "argv": [
+        "/Users/m1-dev/.local/state/openergy-verification/m1-prerequisite-data-20261024-d896c0b3636a/extracted-data/python/bin/python3.13",
+        "-B",
+        "${EVIDENCE}/prepare.py"
+      ],
+      "before": "system-Python entry authentication",
+      "cwd": "${EVIDENCE}",
+      "execution": false,
+      "failure": "Keep exclusive guard and partial root; no second prepare.",
+      "file_seconds": 120,
+      "kind": "prepare",
+      "maximum": 1,
+      "order": 5,
+      "outer_seconds": 135,
+      "output": "${EVIDENCE}/prepare-os-exit.json"
+    },
+    {
+      "before_and_after": "system-Python copy file qualification; entry authentication before private writer",
+      "bundle_from": "${EVIDENCE}/prepared.json#/bundle",
+      "commands": 50,
+      "execution": false,
+      "failure": "Stop before controller; no completion rerun/re-copy/build/sign repair.",
+      "kind": "copy-qualification",
+      "maximum_metadata_passes": 1,
+      "order": 6,
+      "output": "${EVIDENCE}/prepared-copy-qualification.json",
+      "recipe": "metadata.recipe.json",
+      "seconds": 120
+    },
+    {
+      "argv": [
+        "/Users/m1-dev/.local/state/openergy-verification/m1-prerequisite-data-20261024-d896c0b3636a/extracted-data/python/bin/python3.13",
+        "-B",
+        "${EVIDENCE}/controller.py"
+      ],
+      "before": "system-Python entry authentication; parent inspects new copy raw facts/hash, not passed alone",
+      "cleanup_seconds": 60,
+      "cwd": "${EVIDENCE}",
+      "environment": "exact prepared.json environment, verified against artifact source/Python",
+      "execution": false,
+      "file_preflight_seconds": 120,
+      "flow_seconds": 120,
+      "kind": "controller",
+      "maximum": 1,
+      "order": 7,
+      "outer_collection_envelope_seconds": 340,
+      "outer_rule": "Keep real handle/status, first error and bounded streams through reserved writes. Envelope includes120s file admission plus evidence collection. Never grants product time beyond start+180 or cancels detached watchdog.",
+      "output": "${EVIDENCE}/controller-os-exit.json",
+      "product_end": "flow_start+180"
+    },
+    {
+      "action": "Apply full receipt-contract, all mandatory run refs/gates. Keep actual OS exits, required priority samples, first strict bind failures/diagnostic. Missing remains null/UNVERIFIED. No extra query/bind/retry to fill gaps.",
+      "execution": false,
+      "kind": "assess-data",
+      "maximum": 1,
+      "order": 8
+    }
+  ],
+  "stop_at_missing_binding": true,
+  "unchanged_controller_review_satisfied": true
+}

@@ -1,0 +1,217 @@
+{
+  "argv_patterns": {
+    "arch": [
+      "/usr/bin/lipo",
+      "-archs",
+      "${BINARY}"
+    ],
+    "dependencies": [
+      "/usr/bin/otool",
+      "-arch",
+      "arm64",
+      "-L",
+      "${BINARY}"
+    ],
+    "display": [
+      "/usr/bin/codesign",
+      "--display",
+      "--verbose=4",
+      "--arch",
+      "arm64",
+      "${CODE_OBJECT}"
+    ],
+    "entitlements": [
+      "/usr/bin/codesign",
+      "--display",
+      "--arch",
+      "arm64",
+      "--entitlements",
+      ":-",
+      "${CODE_OBJECT}"
+    ],
+    "loadcommands": [
+      "/usr/bin/otool",
+      "-arch",
+      "arm64",
+      "-l",
+      "${BINARY}"
+    ],
+    "requirements": [
+      "/usr/bin/codesign",
+      "--display",
+      "--arch",
+      "arm64",
+      "--requirements",
+      ":-",
+      "${CODE_OBJECT}"
+    ],
+    "verify": [
+      "/usr/bin/codesign",
+      "--verify",
+      "--strict",
+      "--all-architectures",
+      "--verbose=4",
+      "${CODE_OBJECT}"
+    ]
+  },
+  "basis_selection": "arch/dependencies/loadcommands use source.commands by label. Four codesign verbs use objects.codesign_basis. Deep verify uses source.commands full-bundle-deep-verify.",
+  "bundles": [
+    "source_bundle",
+    "one prepared copy"
+  ],
+  "collection": "Use parent bounded collector: cap during reads; retain direct handles, actual exits and first records; ordinary reserved writes after ledger initialization. No capture-then-cap buffer or unmetered redirection. Stop at the first missing/failed binding; keep partial records. Do not repeat a command or open a completion phase.",
+  "commands_per_bundle": 50,
+  "comparison": {
+    "all_other_output": "Exact UTF-8 text after that prefix substitution. No strip, sorting, XML/warning rewrite or empty/no-payload conversion.",
+    "codesign_verify_only": "Labels ending -verify: sorted complete UTF-8 splitlines() lists per stream; retain duplicate and empty lines. Saved approved parallel progress comparison.",
+    "exit": "actual == expected == 0; retain actual OS status, timeout and both raw byte streams first",
+    "fresh_copy": "Compare copy to fresh source, each matching corrected saved basis. Keep raw bytes; never reissue failed/incomplete commands.",
+    "path_normalization": "Replace only the exact BUNDLE prefix with source_bundle prefix independently per stream."
+  },
+  "copy_bundle": "${EVIDENCE}/prepared.json#/bundle",
+  "deep_verify": [
+    "/usr/bin/codesign",
+    "--verify",
+    "--deep",
+    "--strict",
+    "--all-architectures",
+    "--verbose=4",
+    "${BUNDLE}"
+  ],
+  "environment": {
+    "DEVELOPER_DIR": "/Applications/Xcode.app/Contents/Developer",
+    "HOME": "${EVIDENCE}",
+    "LC_ALL": "C",
+    "MACOSX_DEPLOYMENT_TARGET": "15.0",
+    "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONNOUSERSITE": "1",
+    "TMPDIR": "${EVIDENCE}/"
+  },
+  "execution": false,
+  "expand": "Object index order, then verb_order: BINARY=BUNDLE/binary; CODE_OBJECT=BUNDLE/code_object (empty means BUNDLE). Emit object-{index}-{verb}; finally full-bundle-deep-verify. Substitute whole argv tokens only; no shell.",
+  "expected_data": {
+    "old_copy_50": {
+      "bytes": 134698,
+      "path": "/Users/serge/.local/state/openergy-verification/m1-resume-private-20261024/ordinary-flow-inputs-aa9357b7f58a/prepared-copy-qualification-completion.json",
+      "sha256": "15fcd03a3d952dfa2e4661c227a9e831643677b8386931ed29c4dea417b891c3"
+    },
+    "old_failed_first_9": {
+      "bytes": 20494,
+      "path": "/Users/serge/.local/state/openergy-verification/m1-resume-private-20261024/ordinary-flow-inputs-aa9357b7f58a/prepared-copy-qualification.json",
+      "sha256": "a5ed2bfabb71ad37111213837b59e95ce55ec6d26fa9afa4a9a77231d3e90ae7"
+    },
+    "source": {
+      "bytes": 151715,
+      "path": "/Users/serge/.local/state/openergy-verification/m1-resume-private-20261024/ordinary-artifact-qualification-8d1e4fee522f/retained/artifact-observations.json",
+      "sha256": "6f7531f7dd28ca9672bc206bf1c511fe706005904f1cfd5ffa9694dfa8b8c48a"
+    },
+    "supplement": {
+      "bytes": 40212,
+      "path": "/Users/serge/.local/state/openergy-verification/m1-resume-private-20261024/ordinary-artifact-qualification-8d1e4fee522f/retained/supplement.json",
+      "sha256": "c541d45f40e85e7ec7d652a8b98a34d151e9e8bd133aed58f99ba5090cfad15a"
+    }
+  },
+  "fresh_copy_result": null,
+  "fresh_source_result": null,
+  "initial_data_and_writer": "Before prepare, source qualification files are bounded exclusive0600 initial data charged by prepare.initialize_bytes. Never initialize the ledger early. After prepare, all new receipts/output use existing locked reserved writer; authenticate prefix before private-Python writer.",
+  "limits": {
+    "aggregate_bytes": 33554432,
+    "combined_stream_bytes_per_command": 1048576,
+    "command_deadline": "min(phase_deadline,start+10); direct-child reap inside same phase",
+    "per_command_seconds": 10,
+    "per_file_bytes": 8388608,
+    "phase_seconds": 120
+  },
+  "max_invocations_per_command_per_bundle": 1,
+  "objects": [
+    {
+      "binary": "Contents/Frameworks/Sparkle.framework/Versions/B/Autoupdate",
+      "code_object": "Contents/Frameworks/Sparkle.framework/Versions/B/Autoupdate",
+      "codesign_basis": {
+        "file": "supplement.json",
+        "first_index": 4,
+        "verbs": [
+          "verify",
+          "display",
+          "entitlements",
+          "requirements"
+        ]
+      },
+      "index": 0
+    },
+    {
+      "binary": "Contents/Frameworks/Sparkle.framework/Versions/B/Sparkle",
+      "code_object": "Contents/Frameworks/Sparkle.framework",
+      "codesign_basis": {
+        "file": "artifact-observations.json",
+        "label_prefix": "object-1-"
+      },
+      "index": 1
+    },
+    {
+      "binary": "Contents/Frameworks/Sparkle.framework/Versions/B/Updater.app/Contents/MacOS/Updater",
+      "code_object": "Contents/Frameworks/Sparkle.framework/Versions/B/Updater.app",
+      "codesign_basis": {
+        "file": "artifact-observations.json",
+        "label_prefix": "object-2-"
+      },
+      "index": 2
+    },
+    {
+      "binary": "Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Downloader.xpc/Contents/MacOS/Downloader",
+      "code_object": "Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Downloader.xpc",
+      "codesign_basis": {
+        "file": "artifact-observations.json",
+        "label_prefix": "object-3-"
+      },
+      "index": 3
+    },
+    {
+      "binary": "Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Installer.xpc/Contents/MacOS/Installer",
+      "code_object": "Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Installer.xpc",
+      "codesign_basis": {
+        "file": "artifact-observations.json",
+        "label_prefix": "object-4-"
+      },
+      "index": 4
+    },
+    {
+      "binary": "Contents/Helpers/openergy",
+      "code_object": "Contents/Helpers/openergy",
+      "codesign_basis": {
+        "file": "supplement.json",
+        "first_index": 0,
+        "verbs": [
+          "verify",
+          "display",
+          "entitlements",
+          "requirements"
+        ]
+      },
+      "index": 5
+    },
+    {
+      "binary": "Contents/MacOS/Openergy",
+      "code_object": "",
+      "codesign_basis": {
+        "file": "artifact-observations.json",
+        "label_prefix": "object-6-"
+      },
+      "index": 6
+    }
+  ],
+  "provenance": "Exact saved corrected EXPECTED data; old launchers are read-only records, never executable inputs.",
+  "saved_expected_canonical_json_sha256": "b46d03fec326f76748fb0e181a0bb607ad4cef58198efaa62e762c22336e30e0",
+  "schema": "openergy.parent-metadata-recipe.v1",
+  "source_bundle": "/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/dist/Openergy.app",
+  "verb_order": [
+    "arch",
+    "verify",
+    "display",
+    "entitlements",
+    "requirements",
+    "dependencies",
+    "loadcommands"
+  ]
+}

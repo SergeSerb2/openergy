@@ -1,0 +1,161 @@
+"""INERT new parent recipe. File reads only; never run in the preparation task.
+
+Parent reviews this adaptation of the retained prefix/source/tree algorithms.
+Use trusted system Python, without -O. This is not an artifact receipt checker.
+No supplied module import, native parser, command, process/port query or write.
+"""
+import hashlib
+import json
+import os
+from pathlib import Path
+import signal
+import stat
+import sys
+import time
+
+
+def expired(_signal, _frame):
+    raise TimeoutError('file qualification 120s deadline')
+
+
+signal.signal(signal.SIGALRM, expired)
+signal.setitimer(signal.ITIMER_REAL, 120)
+started = time.monotonic()
+root, mode = Path(sys.argv[1]), sys.argv[2]
+assert mode in ('entry', 'entry-template', 'source', 'copy')
+assert root.is_absolute() and root.resolve(strict=True) == root
+assert stat.S_IMODE(root.stat().st_mode) == 0o700
+
+
+def digest(path):
+    result = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        while True:
+            block = stream.read(262144)
+            if not block:
+                return result.hexdigest()
+            result.update(block)
+
+
+def load(path):
+    with Path(path).open('rb') as stream:
+        data = stream.read(8388609)
+    assert len(data) <= 8388608, str(path)
+    return json.loads(data)
+
+
+def canonical(path):
+    path = Path(path)
+    assert path.is_absolute() and '..' not in path.parts
+    assert path.resolve(strict=True) == path, str(path)
+    return path
+
+
+def tree(path):
+    records = []
+    for item in sorted(path.rglob('*')):
+        info = item.lstat()
+        row = dict(path=str(item.relative_to(path)), mode=oct(stat.S_IMODE(info.st_mode)))
+        if stat.S_ISLNK(info.st_mode):
+            assert os.path.commonpath((str(path), str(item.resolve(strict=True)))) == str(path)
+            row['link'] = os.readlink(item)
+        elif stat.S_ISDIR(info.st_mode):
+            row['directory'] = True
+        else:
+            assert stat.S_ISREG(info.st_mode), str(item)
+            assert info.st_size <= 8388608, str(item)
+            row.update(bytes=info.st_size, sha256=digest(item))
+        records.append(row)
+        assert len(records) <= 167, str(path)
+    return records
+
+
+receipt = load(root / ('artifact-receipt.template.json' if mode in ('source', 'entry-template') else 'artifact-receipt.json'))
+prefix = canonical(receipt['python']['prefix_root'])
+python = canonical(receipt['python']['launch_path'])
+rows, total = [], 0
+
+
+def walk_error(error):
+    raise error
+
+
+for parent, directories, files in os.walk(prefix, followlinks=False, onerror=walk_error):
+    for name in directories + files:
+        assert len(rows) < 2006, str(prefix)
+        item = Path(parent) / name
+        info, relative = item.lstat(), str(item.relative_to(prefix))
+        if stat.S_ISLNK(info.st_mode):
+            assert os.path.commonpath((str(prefix), str(item.resolve(strict=True)))) == str(prefix)
+            row = [relative, 'l', os.readlink(item)]
+        elif stat.S_ISDIR(info.st_mode):
+            row = [relative, 'd', stat.S_IMODE(info.st_mode)]
+        else:
+            assert stat.S_ISREG(info.st_mode), str(item)
+            assert total + info.st_size <= 46504040, str(item)
+            row = [relative, 'f', stat.S_IMODE(info.st_mode), info.st_size, digest(item)]
+            total += info.st_size
+        rows.append(row)
+        assert len(rows) <= 2006 and total <= 46504040, str(prefix)
+prefix_hash = hashlib.sha256()
+for row in sorted(rows):
+    prefix_hash.update((json.dumps(row, separators=(',', ':'), ensure_ascii=True) + '\n').encode())
+assert len(rows) == 2006 and total == 46504040
+assert prefix_hash.hexdigest() == receipt['python']['prefix_sha256'] == 'c46c9234c07785e90b66774ca161f20c7ef72c0a87323f52583fa4edb1186e67'
+assert digest(python) == receipt['python']['executable_sha256'] == 'd81701904d7a58f6abb3ab339c1d38d48cd24a39b37645cf7338c07a1e8e70e6'
+assert stat.S_IMODE(python.stat().st_mode) == 0o700
+assert digest(root / 'source-checks.json') == '2bde5cf1f9396df5c7d8518caaadcdd69eafc5ff2f39117158efaf87e8d080f5'
+checks = load(root / 'source-checks.json')['python_files']
+assert len(checks) == 10
+for name, record in checks.items():
+    item = root / name
+    assert item.name == name and not item.is_symlink() and item.is_file()
+    assert item.stat().st_size == record['bytes'] and digest(item) == record['sha256'], str(item)
+assert digest(root / 'limits.json') == 'cadd06e19607f5dbe0ad070072673c8e518d961b1554958d243a0d028243d733'
+assert digest(root / 'build-source-bindings.json') == '20e011251151cec81f69c4b80b0072d9fd0a98c1eaaf0e6c74d83ff752546617'
+facts = dict(mode=mode, prefix_entries=len(rows), prefix_regular_bytes=total,
+             prefix_sha256=prefix_hash.hexdigest(), modules=10,
+             prefix_root_mode=oct(stat.S_IMODE(prefix.stat().st_mode)))
+if mode in ('source', 'copy'):
+    bindings = load(root / 'build-source-bindings.json')
+    repo = canonical(receipt['source_root'])
+    source_rows = bindings['source_files']
+    assert bindings['source_commit'] == receipt['source_commit'] == 'ed7d96bf53da1a539fa2acde3b7133613221fd4b'
+    assert len(source_rows) == 702
+    actual_paths = set()
+    for item in repo.rglob('*'):
+        kind = item.lstat().st_mode
+        if not stat.S_ISDIR(kind):
+            assert stat.S_ISREG(kind), str(item)
+            actual_paths.add(str(item.relative_to(repo)))
+    assert actual_paths == {r['path'] for r in source_rows}, str(repo)
+    for record in source_rows:
+        item = repo / record['path']
+        info = item.lstat()
+        assert stat.S_ISREG(info.st_mode) and info.st_size == record['bytes'], str(item)
+        assert oct(stat.S_IMODE(info.st_mode)) == record['mode'] and digest(item) == record['sha256'], str(item)
+    reference = receipt['evidence']['bundle_files']
+    assert digest(reference['path']) == reference['sha256'] == 'e8255fcb45e50be4ea11710e921f64d8a60368fde2f217a7044e07b0d490e78f'
+    inventory = load(reference['path'])
+    assert inventory['app'] == receipt['build_bundle_path']
+    bundle = canonical(receipt['source_bundle'])
+    assert stat.S_IMODE(bundle.stat().st_mode) == 0o700
+    assert len(inventory['files']) == 167 and tree(bundle) == inventory['files']
+    for header in load(root / 'qualification.recipe.json')['sdk_headers']:
+        item = canonical(header['path'])
+        assert item.stat().st_size == header['bytes'] and digest(item) == header['sha256'], str(item)
+    facts.update(source_files=702, bundle_records=167, sdk_headers=10)
+    if mode == 'copy':
+        prepared = load(root / 'prepared.json')
+        private = canonical(prepared['private_root'])
+        assert private.parent == Path('/private/tmp') and private.name.startswith('oe-m1-ordinary-fresh-')
+        copied = canonical(prepared['bundle'])
+        assert copied == private / 'Openergy.app'
+        assert private.stat().st_uid == copied.stat().st_uid == root.stat().st_uid
+        assert stat.S_IMODE(private.stat().st_mode) == stat.S_IMODE(copied.stat().st_mode) == 0o700
+        assert prepared['source_bundle'] == str(bundle)
+        assert tree(copied) == prepared['bundle_tree'] == inventory['files']
+        facts['copied_bundle'] = str(copied)
+facts.update(schema='openergy.file-qualification-observation.v1', elapsed_seconds=time.monotonic() - started,
+             product_invocations=0, runtime='UNVERIFIED')
+print(json.dumps(facts, sort_keys=True))
