@@ -1,0 +1,56 @@
+{
+  "execution": false,
+  "findings": [
+    {
+      "evidence": "The fit predicate uses started sampled at line1583. The newer launch_started_ns at1615 is never checked for the required120s+0.5s fit. until(work_end) only requires a positive remainder.",
+      "id": "PREPARE-P2-1",
+      "impact": "The irreversible private prepare attempt can be spawned when its unchanged120s file budget plus0.5s no longer fits before remote work end. A later work timeout or late-spawn-return rejection cannot undo that launch.",
+      "line_end": 1618,
+      "line_start": 1610,
+      "minimal_fix": "Sample and retain launch_started_ns immediately before Popen, then require launch_started_ns+120000000000+500000000<work_end before spawning. Keep the original remote/local starts and all existing deadlines; preserve cooperative OS-stall limits.",
+      "observed_runtime_failure": false,
+      "priority": "P2",
+      "related_lines": [
+        1583,
+        1615,
+        1622,
+        1623
+      ],
+      "source": "docs/verification/m1-prepare-parent-capsule-2026-10-25-t3-764cae00/prepare-parent.py.txt",
+      "title": "Use a fresh launch sample for prepare admission",
+      "trigger": "collect started before work_end-120.5s, but launch admission runs after that threshold and before work_end."
+    },
+    {
+      "actual_M1_cache_presence": "NOT_INSPECTED_OR_ASSERTED",
+      "evidence": "inventory has no cache-name exclusion; source pins authenticate common.py only. spec_from_file_location chooses SourceFileLoader for.py and exec_module uses its get_code. CPython3.9 SourceLoader reads a valid cache before reading/compiling source; dont_write_bytecode gates cache writes only.",
+      "id": "PREPARE-P2-2",
+      "impact": "The code executed as common can differ from the hash-pinned source. Module constants checked after execution do not bind function bodies or prevent earlier module side effects. The same root cache issue also matters to the unchanged primary common import.",
+      "line_end": 1441,
+      "line_start": 1438,
+      "minimal_fix": "Before any supplied-module/private entry, reject the root __pycache__ and other relevant unpinned bytecode locations, then retain exclusive ownership. Alternatively use a source-only loader that consumes the exact authenticated raw source. Do not delete caches, change argv, or retry.",
+      "observed_runtime_failure": false,
+      "priority": "P2",
+      "related_lines": [
+        1079,
+        1082,
+        1107,
+        1108,
+        1326,
+        1329,
+        1432,
+        1433,
+        1442,
+        1446
+      ],
+      "source": "docs/verification/m1-prepare-parent-capsule-2026-10-25-t3-764cae00/prepare-parent.py.txt",
+      "title": "Exclude unpinned common bytecode before module entry",
+      "trigger": "An otherwise admitted initial root contains a regular0600 compatible common bytecode cache in an owned0700 __pycache__ directory, inside existing byte/count/depth limits."
+    }
+  ],
+  "new_human_gate": false,
+  "p1": 0,
+  "p2": 2,
+  "runtime_acceptance": false,
+  "schema": "openergy.independent-prepare-parent-full-review.v1",
+  "verdict": "HOLD_SOURCE"
+}
