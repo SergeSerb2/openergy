@@ -1,0 +1,386 @@
+{
+  "dependency_reviews_are_historical_bounded_verdicts": true,
+  "execution": false,
+  "fixed_historical_bindings": {
+    "file_helper": {
+      "review_commit": "20187fe1b286851f1416437c40cc27108269b542",
+      "review_sha256": "c7de1f4dcec5f045282e9a5c656aac9d798ba71bf72e969132716bfef4736efb",
+      "source": {
+        "bytes": 7381,
+        "sha256": "bf2ddd03f00bedbf799b4eee518a2b7b25d1eb9a6df06a2f55c419252f6fa428"
+      },
+      "verdict": "CLEAR_SOURCE_ONLY"
+    },
+    "metadata_caller": {
+      "review_commit": "1c0e4bcdc2dddcb64a3277db34d5ccd5e872fab2",
+      "review_sha256": "ad868577561145dcba9e74db7138e5118544e721ca3629f5c0c4f1808203c496",
+      "source": {
+        "bytes": 46908,
+        "sha256": "01623cd4759f96cd0066a9456a2680bff476bc37b5b1acb61ec40388582a5e9f"
+      },
+      "verdict": "CLEAR_SOURCE_ONLY"
+    },
+    "source_payload": {
+      "review_commit": "98a7ecab421ca64b67ac7f57db153be54b70f989",
+      "review_sha256": "3b04ce2543a07325bf5ae114002806064d0b01cd63206837976d04bc1e079dfd",
+      "source": {
+        "bytes": 37775,
+        "sha256": "8d7844a20ce347b7be52c07a516b8d9136bdb5c067e450bea24eb3453441afa6"
+      },
+      "verdict": "CLEAR_SOURCE_ONLY"
+    },
+    "transport": {
+      "review_commit": "98b403d1902ac4d0651c230fb7ec28c4cc154035",
+      "review_sha256": "0c3b311ebff23145ecebd1b64ed38f0e6feaaff46c80c0b1d7a8ecc92d769a3c",
+      "source": {
+        "bytes": 28060,
+        "sha256": "695dc01461b31e04eb7b8c4a12848350f26a45731f05b0ddca971c05749e4df6"
+      },
+      "verdict": "CLEAR_SOURCE_ONLY"
+    }
+  },
+  "new_signal_dependency_audit": "UNVERIFIED_SEPARATE_AUDIT_REQUIRED",
+  "source_pins": [
+    {
+      "binding": {
+        "bytes": 3496,
+        "sha256": "6250a8698664c757af9f9bdb5ef191f3604d82725282ae860741eae2529939d3"
+      },
+      "name": "artifact-receipt.template.json",
+      "source": {
+        "blob": "7827702d8344d191016c80bbc217bb11dad3e435",
+        "bytes": 3496,
+        "commit": "05b056cdc25a137f820efb59ae5004ce98781770",
+        "mode": "100644",
+        "path": "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/artifact-receipt.template.json",
+        "role": "unchanged upstream public input",
+        "sha256": "6250a8698664c757af9f9bdb5ef191f3604d82725282ae860741eae2529939d3",
+        "verified_raw_Git_and_current_bytes": true
+      }
+    },
+    {
+      "binding": {
+        "bytes": 151287,
+        "sha256": "20e011251151cec81f69c4b80b0072d9fd0a98c1eaaf0e6c74d83ff752546617"
+      },
+      "name": "build-source-bindings.json",
+      "source": {
+        "blob": "9a4b41af7c0c6b8665ccdd86ac7ad94d6d66195f",
+        "bytes": 151287,
+        "commit": "05b056cdc25a137f820efb59ae5004ce98781770",
+        "mode": "100644",
+        "path": "docs/verification/m1-sampler-source-repair-r3-2026-10-24/source-bindings.json",
+        "role": "unchanged upstream public input",
+        "sha256": "20e011251151cec81f69c4b80b0072d9fd0a98c1eaaf0e6c74d83ff752546617",
+        "verified_raw_Git_and_current_bytes": true
+      }
+    },
+    {
+      "binding": {
+        "bytes": 12781,
+        "sha256": "20a9c16030b2de53b99870f25bada68137bfc6fbc5b67cc29f8e878312d4129c"
+      },
+      "name": "common.py",
+      "source": {
+        "blob": "c3fd4b4524111bdad0d75ecf149d4b775da69cda",
+        "bytes": 12781,
+        "commit": "05b056cdc25a137f820efb59ae5004ce98781770",
+        "mode": "100644",
+        "path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/common.py.txt",
+        "role": "unchanged upstream public input",
+        "sha256": "20a9c16030b2de53b99870f25bada68137bfc6fbc5b67cc29f8e878312d4129c",
+        "verified_raw_Git_and_current_bytes": true
+      }
+    },
+    {
+      "binding": {
+        "bytes": 36307,
+        "sha256": "08f1bbea8aeb5852b4aaddd0f3f693c7717c69e5e898462baa90b49cba41e3a4"
+      },
+      "name": "controller.py",
+      "source": {
+        "blob": "2d2394581ee63405d5bc41ba6b1d5f42fb810718",
+        "bytes": 36307,
+        "commit": "05b056cdc25a137f820efb59ae5004ce98781770",
+        "mode": "100644",
+        "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/source/controller.py.txt",
+        "role": "unchanged upstream public input",
+        "sha256": "08f1bbea8aeb5852b4aaddd0f3f693c7717c69e5e898462baa90b49cba41e3a4",
+        "verified_raw_Git_and_current_bytes": true
+      }
+    },
+    {
+      "binding": {
+        "bytes": 11382,
+        "sha256": "d154561f7f256e41b32c90941f7ce18ffa79d5284d23eecea9be88cc1c48f747"
+      },
+      "name": "coverage.py",
+      "source": {
+        "blob": "99d5d3e9f34d2d1318cc45597b6f488d8063ff52",
+        "bytes": 11382,
+        "commit": "05b056cdc25a137f820efb59ae5004ce98781770",
+        "mode": "100644",
+        "path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/coverage.py.txt",
+        "role": "unchanged upstream public input",
+        "sha256": "d154561f7f256e41b32c90941f7ce18ffa79d5284d23eecea9be88cc1c48f747",
+        "verified_raw_Git_and_current_bytes": true
+      }
+    },
+    {
+      "binding": {
+        "bytes": 2219,
+        "sha256": "e7d9a755eed1fadfd04b43b3b96dbd0663cabdf07cc5aa7808ce006183859af2"
+      },
+      "name": "exec_owned.py",
+      "source": {
+        "blob": "609d61182684dcb8aed6c3121727fd57a8a96603",
+        "bytes": 2219,
+        "commit": "05b056cdc25a137f820efb59ae5004ce98781770",
+        "mode": "100644",
+        "path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/exec_owned.py.txt",
+        "role": "unchanged upstream public input",
+        "sha256": "e7d9a755eed1fadfd04b43b3b96dbd0663cabdf07cc5aa7808ce006183859af2",
+        "verified_raw_Git_and_current_bytes": true
+      }
+    },
+    {
+      "binding": {
+        "bytes": 7381,
+        "sha256": "bf2ddd03f00bedbf799b4eee518a2b7b25d1eb9a6df06a2f55c419252f6fa428"
+      },
+      "name": "file-qualification.recipe.py.txt",
+      "source": {
+        "blob": "df331874224a87ce0335335b3fc79d5160e5cbd1",
+        "bytes": 7381,
+        "commit": "05b056cdc25a137f820efb59ae5004ce98781770",
+        "mode": "100644",
+        "path": "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/file-qualification.recipe.py.txt",
+        "role": "unchanged upstream public input",
+        "sha256": "bf2ddd03f00bedbf799b4eee518a2b7b25d1eb9a6df06a2f55c419252f6fa428",
+        "verified_raw_Git_and_current_bytes": true
+      }
+    },
+    {
+      "binding": {
+        "bytes": 876,
+        "sha256": "cadd06e19607f5dbe0ad070072673c8e518d961b1554958d243a0d028243d733"
+      },
+      "name": "limits.json",
+      "source": {
+        "blob": "06b351179fdaa936ee25d35d6f8478d9d987308d",
+        "bytes": 876,
+        "commit": "05b056cdc25a137f820efb59ae5004ce98781770",
+        "mode": "100644",
+        "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/limits.json",
+        "role": "unchanged upstream public input",
+        "sha256": "cadd06e19607f5dbe0ad070072673c8e518d961b1554958d243a0d028243d733",
+        "verified_raw_Git_and_current_bytes": true
+      }
+    },
+    {
+      "binding": {
+        "bytes": 8075,
+        "sha256": "d4f6fe358bd9af786fc4c2cba61f1a47f3f4015c918aae85cf8e6aa1c6d3e6c7"
+      },
+      "name": "macproc.py",
+      "source": {
+        "blob": "6be48d0c8f3ff92a71965eebc4dd449b7149f8d2",
+        "bytes": 8075,
+        "commit": "05b056cdc25a137f820efb59ae5004ce98781770",
+        "mode": "100644",
+        "path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/macproc.py.txt",
+        "role": "unchanged upstream public input",
+        "sha256": "d4f6fe358bd9af786fc4c2cba61f1a47f3f4015c918aae85cf8e6aa1c6d3e6c7",
+        "verified_raw_Git_and_current_bytes": true
+      }
+    },
+    {
+      "binding": {
+        "bytes": 7915,
+        "sha256": "f97b12054aceb745cadcd3159d25f4693b3570a44d216ffdd96d9c1ddf05701e"
+      },
+      "name": "metadata.recipe.json",
+      "source": {
+        "blob": "e1c3fc853eb3493fe4cc09fe9b551d06c1328b83",
+        "bytes": 7915,
+        "commit": "05b056cdc25a137f820efb59ae5004ce98781770",
+        "mode": "100644",
+        "path": "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/metadata.recipe.json",
+        "role": "unchanged upstream public input",
+        "sha256": "f97b12054aceb745cadcd3159d25f4693b3570a44d216ffdd96d9c1ddf05701e",
+        "verified_raw_Git_and_current_bytes": true
+      }
+    },
+    {
+      "binding": {
+        "bytes": 35975,
+        "sha256": "3ac4bab54db909beb236d0d9caa4ee83084ad9b566aa19d97c5b6d26c356b091"
+      },
+      "name": "ownership.py",
+      "source": {
+        "blob": "c1d39953f4e4c6a89591af694506fd7ab5fe800a",
+        "bytes": 35975,
+        "commit": "05b056cdc25a137f820efb59ae5004ce98781770",
+        "mode": "100644",
+        "path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/ownership.py.txt",
+        "role": "unchanged upstream public input",
+        "sha256": "3ac4bab54db909beb236d0d9caa4ee83084ad9b566aa19d97c5b6d26c356b091",
+        "verified_raw_Git_and_current_bytes": true
+      }
+    },
+    {
+      "binding": {
+        "bytes": 10096,
+        "sha256": "9d35bf1adbde9209562d9b4cfa211b75574a0fb1922dc0297761880c2d6d3985"
+      },
+      "name": "port_diagnostic.py",
+      "source": {
+        "blob": "1642e2d94dc6efd570a6f6fa04f0841332c07f1d",
+        "bytes": 10096,
+        "commit": "05b056cdc25a137f820efb59ae5004ce98781770",
+        "mode": "100644",
+        "path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/port_diagnostic.py.txt",
+        "role": "unchanged upstream public input",
+        "sha256": "9d35bf1adbde9209562d9b4cfa211b75574a0fb1922dc0297761880c2d6d3985",
+        "verified_raw_Git_and_current_bytes": true
+      }
+    },
+    {
+      "binding": {
+        "bytes": 11632,
+        "sha256": "16f2c5d9dce3f3bce8a871bd53eea06ebf1818080de5f9bdaae3997b86304e9a"
+      },
+      "name": "prepare.py",
+      "source": {
+        "blob": "b3491c6f70c853b750c9395ea659749beec6b6c0",
+        "bytes": 11632,
+        "commit": "05b056cdc25a137f820efb59ae5004ce98781770",
+        "mode": "100644",
+        "path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/prepare.py.txt",
+        "role": "unchanged upstream public input",
+        "sha256": "16f2c5d9dce3f3bce8a871bd53eea06ebf1818080de5f9bdaae3997b86304e9a",
+        "verified_raw_Git_and_current_bytes": true
+      }
+    },
+    {
+      "binding": {
+        "bytes": 699,
+        "sha256": "d65d17246bbd9057576e32454014b00afed6988dfead7899251435302a651efd"
+      },
+      "name": "probe.py",
+      "source": {
+        "blob": "35236510f157b8475fef3da4f09276efba31d89b",
+        "bytes": 699,
+        "commit": "05b056cdc25a137f820efb59ae5004ce98781770",
+        "mode": "100644",
+        "path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/probe.py.txt",
+        "role": "unchanged upstream public input",
+        "sha256": "d65d17246bbd9057576e32454014b00afed6988dfead7899251435302a651efd",
+        "verified_raw_Git_and_current_bytes": true
+      }
+    },
+    {
+      "binding": {
+        "bytes": 7671,
+        "sha256": "d90586546d6b3127dca26147b9d090544d29d7a8b229479966dae68ef25d3b11"
+      },
+      "name": "qualification.recipe.json",
+      "source": {
+        "blob": "4b0ee745d03c7a393ce8d86301406b65b415f98a",
+        "bytes": 7671,
+        "commit": "05b056cdc25a137f820efb59ae5004ce98781770",
+        "mode": "100644",
+        "path": "docs/verification/m1-sdk-canonical-path-repair-2026-10-25/qualification.recipe.json",
+        "role": "unchanged upstream public input",
+        "sha256": "d90586546d6b3127dca26147b9d090544d29d7a8b229479966dae68ef25d3b11",
+        "verified_raw_Git_and_current_bytes": true
+      }
+    },
+    {
+      "binding": {
+        "bytes": 2932,
+        "sha256": "2bde5cf1f9396df5c7d8518caaadcdd69eafc5ff2f39117158efaf87e8d080f5"
+      },
+      "name": "source-checks.json",
+      "source": {
+        "blob": "cc5e7ab5387152ae0d7096a27d3c327f8a52b127",
+        "bytes": 2932,
+        "commit": "05b056cdc25a137f820efb59ae5004ce98781770",
+        "mode": "100644",
+        "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/source-checks.json",
+        "role": "unchanged upstream public input",
+        "sha256": "2bde5cf1f9396df5c7d8518caaadcdd69eafc5ff2f39117158efaf87e8d080f5",
+        "verified_raw_Git_and_current_bytes": true
+      }
+    },
+    {
+      "binding": {
+        "bytes": 18760,
+        "sha256": "5efe2cd41f9339463187dfc3d5b11ec8d14f1a159a58787e9b3e01fe60db158d"
+      },
+      "name": "watchdog.py",
+      "source": {
+        "blob": "70624a8282c4771875a1497660de7c7c09deb9e8",
+        "bytes": 18760,
+        "commit": "05b056cdc25a137f820efb59ae5004ce98781770",
+        "mode": "100644",
+        "path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/watchdog.py.txt",
+        "role": "unchanged upstream public input",
+        "sha256": "5efe2cd41f9339463187dfc3d5b11ec8d14f1a159a58787e9b3e01fe60db158d",
+        "verified_raw_Git_and_current_bytes": true
+      }
+    }
+  ],
+  "ten_modules": [
+    {
+      "destination": "common.py",
+      "sha256": "20a9c16030b2de53b99870f25bada68137bfc6fbc5b67cc29f8e878312d4129c",
+      "source": "../ordinary-combined-recorder-diagnostic-2026-10-25/source/common.py.txt"
+    },
+    {
+      "destination": "controller.py",
+      "sha256": "08f1bbea8aeb5852b4aaddd0f3f693c7717c69e5e898462baa90b49cba41e3a4",
+      "source": "source/controller.py.txt"
+    },
+    {
+      "destination": "coverage.py",
+      "sha256": "d154561f7f256e41b32c90941f7ce18ffa79d5284d23eecea9be88cc1c48f747",
+      "source": "../ordinary-combined-recorder-diagnostic-2026-10-25/source/coverage.py.txt"
+    },
+    {
+      "destination": "exec_owned.py",
+      "sha256": "e7d9a755eed1fadfd04b43b3b96dbd0663cabdf07cc5aa7808ce006183859af2",
+      "source": "../ordinary-combined-recorder-diagnostic-2026-10-25/source/exec_owned.py.txt"
+    },
+    {
+      "destination": "macproc.py",
+      "sha256": "d4f6fe358bd9af786fc4c2cba61f1a47f3f4015c918aae85cf8e6aa1c6d3e6c7",
+      "source": "../ordinary-combined-recorder-diagnostic-2026-10-25/source/macproc.py.txt"
+    },
+    {
+      "destination": "ownership.py",
+      "sha256": "3ac4bab54db909beb236d0d9caa4ee83084ad9b566aa19d97c5b6d26c356b091",
+      "source": "../ordinary-combined-recorder-diagnostic-2026-10-25/source/ownership.py.txt"
+    },
+    {
+      "destination": "port_diagnostic.py",
+      "sha256": "9d35bf1adbde9209562d9b4cfa211b75574a0fb1922dc0297761880c2d6d3985",
+      "source": "../ordinary-combined-recorder-diagnostic-2026-10-25/source/port_diagnostic.py.txt"
+    },
+    {
+      "destination": "prepare.py",
+      "sha256": "16f2c5d9dce3f3bce8a871bd53eea06ebf1818080de5f9bdaae3997b86304e9a",
+      "source": "../ordinary-combined-recorder-diagnostic-2026-10-25/source/prepare.py.txt"
+    },
+    {
+      "destination": "probe.py",
+      "sha256": "d65d17246bbd9057576e32454014b00afed6988dfead7899251435302a651efd",
+      "source": "../ordinary-combined-recorder-diagnostic-2026-10-25/source/probe.py.txt"
+    },
+    {
+      "destination": "watchdog.py",
+      "sha256": "5efe2cd41f9339463187dfc3d5b11ec8d14f1a159a58787e9b3e01fe60db158d",
+      "source": "../ordinary-combined-recorder-diagnostic-2026-10-25/source/watchdog.py.txt"
+    }
+  ]
+}

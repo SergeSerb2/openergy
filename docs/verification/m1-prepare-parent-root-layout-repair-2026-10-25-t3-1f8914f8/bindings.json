@@ -1,0 +1,105 @@
+{
+  "COPY_review": {
+    "commit": "f33a1fd761770cb2a2961f9cf55b59dc4aeb40d5",
+    "import_commit": "931d2c3364e177abd6615d5bd26811d9d854f8a8",
+    "review_bytes": 21224,
+    "review_path": "docs/verification/m1-copy-parent-full-review-2026-10-25-t3-9edf92e5/REVIEW.md",
+    "review_sha256": "33550d9e4fca61a4425eadfe095b8a8234a825a1978b1a263852e3dac365d53f",
+    "verdict": "HOLD_SOURCE preserved; matching COPY-P2-1 repaired only in this prepare parent"
+  },
+  "R2": {
+    "commit": "f6e15d0803d52905636f9b916b50e0c0a23ef05a",
+    "import_commit": "078ced42f232509118e038cd3abbc80225e80929",
+    "review_path": "docs/verification/m1-prepare-parent-full-review-2026-10-25-t3-1b3fcbf5/REVIEW.md",
+    "review_sha256": "e50e67ef33aa690525f821fb3d77bf7601a1138740e9ee7c4910b1cfc1129981",
+    "verdict": "HOLD_SOURCE historical bytes; exact two cases CLOSED_SOURCE_ONLY by R4"
+  },
+  "R4": {
+    "bytes": 20339,
+    "commit": "c85725bdd7dc15ab69a065f7bc2b9cd3592b5e6e",
+    "import_commit": "a302d4ba0101ee16650c54c987f0c0d66a5f0e8e",
+    "path": "docs/verification/m1-prepare-parent-admission-cache-review-2026-10-25-t3-85610967/REVIEW.md",
+    "sha256": "897d2315c99487444d0fcdfefdde231d0bf3c0164598a1fbdf0165fedd401d1b",
+    "verdict": "HOLD_SOURCE original0P1/1newP2; preserved"
+  },
+  "actual_prepared": null,
+  "actual_render": null,
+  "basis": {
+    "bytes": 106001,
+    "commit": "88e4444b8e5604fe9bfde7e768ea31d138ab64be",
+    "import_commit": "161ffce69c9dd588ef44b348c9fa0efe8ac8f0b2",
+    "path": "docs/verification/m1-prepare-parent-admission-cache-repair-2026-10-25-t3-53a3c637/prepare-parent.py.txt",
+    "sha256": "fce82ca2775607fd86e0ef8dbb8c44fd3cd5a213815ae77cb9501327160ee57d"
+  },
+  "execution": false,
+  "independent_new_full_review": null,
+  "parent": "7e5de706e7457de5f4880cdef180b27536dc0d5e",
+  "patch": {
+    "bytes": 7227,
+    "hunks": [
+      {
+        "bytes": 985,
+        "new_count": 16,
+        "new_start": 916,
+        "old_count": 6,
+        "old_start": 916,
+        "sha256": "036889bd6ff94e059332981add572569081b6704793d02b6c3e6eec70879b209"
+      },
+      {
+        "bytes": 2626,
+        "new_count": 48,
+        "new_start": 1122,
+        "old_count": 6,
+        "old_start": 1112,
+        "sha256": "13e09f01f8f45138a76e490fe4203e7d775e06bec58e5d306a1c022bd409cf83"
+      },
+      {
+        "bytes": 537,
+        "new_count": 7,
+        "new_start": 1486,
+        "old_count": 6,
+        "old_start": 1434,
+        "sha256": "fe62f098b24c0662af88f1ced9dbd32dc4cd612de7d57012b1d71f244923ed8e"
+      },
+      {
+        "bytes": 609,
+        "new_count": 7,
+        "new_start": 1655,
+        "old_count": 7,
+        "old_start": 1602,
+        "sha256": "c88f06aaa1fef46e06f4a1116f2b00485920f9986bb19224299f2b5493f34b4a"
+      },
+      {
+        "bytes": 720,
+        "new_count": 8,
+        "new_start": 1733,
+        "old_count": 8,
+        "old_start": 1680,
+        "sha256": "1615a6fe15c610514f3f41e991280d19426f9ca01129f4238607d5eef955972f"
+      },
+      {
+        "bytes": 1158,
+        "new_count": 14,
+        "new_start": 1801,
+        "old_count": 13,
+        "old_start": 1748,
+        "sha256": "b188d77aeeba856b9cf3887bffdad22e0a063e57c1b885d77bac9524aec1c512"
+      },
+      {
+        "bytes": 509,
+        "new_count": 7,
+        "new_start": 1845,
+        "old_count": 6,
+        "old_start": 1791,
+        "sha256": "be800eb9803e963561f6cadd7e6a8e4315a4dab2ce5619d78afdecb73b244acd"
+      }
+    ],
+    "sha256": "228c06f5e57b74016bd19e54168519fea36e06a150a83943a559b9e1c4d9b217"
+  },
+  "runtime": "UNVERIFIED",
+  "source": {
+    "bytes": 109444,
+    "sha256": "b3fbd793a0709c7857e34efca667a081a0486accfd0f3ad13a8068484b7eb8d9"
+  },
+  "source_clear": false
+}

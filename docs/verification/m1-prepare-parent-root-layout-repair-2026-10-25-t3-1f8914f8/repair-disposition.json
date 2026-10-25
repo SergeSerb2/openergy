@@ -1,0 +1,43 @@
+{
+  "D4": "UNVERIFIED",
+  "actual_root_absence_layout": "UNVERIFIED",
+  "execution": false,
+  "findings": [
+    {
+      "change": "fresh launch admission unchanged",
+      "id": "PREPARE-P2-1",
+      "state": "CLOSED_SOURCE_ONLY exact R4 case preserved"
+    },
+    {
+      "change": "three explicit absence gates unchanged; new flat gate adds full closure",
+      "id": "PREPARE-P2-2",
+      "state": "CLOSED_SOURCE_ONLY exact R4 case preserved"
+    },
+    {
+      "change": "exact260 initial flat names and exact264 before common/private; reject presence",
+      "id": "PREPARE-P2-3",
+      "state": "AUTHOR_IMPLEMENTED_UNREVIEWED"
+    },
+    {
+      "change": "one os.kill retained-child PID syscall; truthful kill_syscall_returned rename",
+      "id": "COPY-P2-1 matching prepare collect branch",
+      "state": "AUTHOR_IMPLEMENTED_UNREVIEWED"
+    },
+    {
+      "change": "no COPY source/schema edit",
+      "id": "COPY-P2-1 and COPY-P2-2 original COPY",
+      "state": "HOLD_SOURCE unchanged"
+    },
+    {
+      "change": "source/text evidence only; no upstream edits or silent new CLEAR",
+      "id": "frozen dependency signal-method occurrences",
+      "state": "UNVERIFIED_SEPARATE_AUDIT_REQUIRED"
+    }
+  ],
+  "historical_source_statuses_rewritten": false,
+  "independent_new_full_review": null,
+  "name_approval_is_byte_authentication": false,
+  "native_COPY": "UNVERIFIED",
+  "runtime": "UNVERIFIED",
+  "status": "IMPLEMENTED_UNREVIEWED_FULL_NEW_REVIEW_REQUIRED"
+}

@@ -1,0 +1,24 @@
+{
+  "bytes": 64569,
+  "path": "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/importlib/_bootstrap_external.py",
+  "ranges": [
+    {
+      "end": 1414,
+      "start": 1374,
+      "text": "    @classmethod\n    def _get_spec(cls, fullname, path, target=None):\n        \"\"\"Find the loader or namespace_path for this module/package name.\"\"\"\n        # If this ends up being a namespace package, namespace_path is\n        #  the list of paths that will become its __path__\n        namespace_path = []\n        for entry in path:\n            if not isinstance(entry, (str, bytes)):\n                continue\n            finder = cls._path_importer_cache(entry)\n            if finder is not None:\n                if hasattr(finder, 'find_spec'):\n                    spec = finder.find_spec(fullname, target)\n                else:\n                    spec = cls._legacy_get_spec(fullname, finder)\n                if spec is None:\n                    continue\n                if spec.loader is not None:\n                    return spec\n                portions = spec.submodule_search_locations\n                if portions is None:\n                    raise ImportError('spec missing loader')\n                # This is possibly part of a namespace package.\n                #  Remember these path entries (if any) for when we\n                #  create a namespace package, and continue iterating\n                #  on path.\n                namespace_path.extend(portions)\n        else:\n            spec = _bootstrap.ModuleSpec(fullname, None)\n            spec.submodule_search_locations = namespace_path\n            return spec\n\n    @classmethod\n    def find_spec(cls, fullname, path=None, target=None):\n        \"\"\"Try to find a spec for 'fullname' on sys.path or 'path'.\n\n        The search is based on sys.path_hooks and sys.path_importer_cache.\n        \"\"\"\n        if path is None:\n            path = sys.path\n        spec = cls._get_spec(fullname, path, target)\n"
+    },
+    {
+      "end": 1558,
+      "start": 1515,
+      "text": "            mtime = -1\n        if mtime != self._path_mtime:\n            self._fill_cache()\n            self._path_mtime = mtime\n        # tail_module keeps the original casing, for __file__ and friends\n        if _relax_case():\n            cache = self._relaxed_path_cache\n            cache_module = tail_module.lower()\n        else:\n            cache = self._path_cache\n            cache_module = tail_module\n        # Check if the module is the name of a directory (and thus a package).\n        if cache_module in cache:\n            base_path = _path_join(self.path, tail_module)\n            for suffix, loader_class in self._loaders:\n                init_filename = '__init__' + suffix\n                full_path = _path_join(base_path, init_filename)\n                if _path_isfile(full_path):\n                    return self._get_spec(loader_class, fullname, full_path, [base_path], target)\n            else:\n                # If a namespace package, return the path if we don't\n                #  find a module in the next section.\n                is_namespace = _path_isdir(base_path)\n        # Check for a file w/ a proper suffix exists.\n        for suffix, loader_class in self._loaders:\n            try:\n                full_path = _path_join(self.path, tail_module + suffix)\n            except ValueError:\n                return None\n            _bootstrap._verbose_message('trying {}', full_path, verbosity=2)\n            if cache_module + suffix in cache:\n                if _path_isfile(full_path):\n                    return self._get_spec(loader_class, fullname, full_path,\n                                          None, target)\n        if is_namespace:\n            _bootstrap._verbose_message('possible namespace for {}', base_path)\n            spec = _bootstrap.ModuleSpec(fullname, None)\n            spec.submodule_search_locations = [base_path]\n            return spec\n        return None\n\n    def _fill_cache(self):\n        \"\"\"Fill the cache of potential modules and packages for this directory.\"\"\"\n        path = self.path\n"
+    },
+    {
+      "end": 1644,
+      "start": 1634,
+      "text": "def _get_supported_file_loaders():\n    \"\"\"Returns a list of file-based module loaders.\n\n    Each item is a tuple (loader, suffixes).\n    \"\"\"\n    extensions = ExtensionFileLoader, _imp.extension_suffixes()\n    source = SourceFileLoader, SOURCE_SUFFIXES\n    bytecode = SourcelessFileLoader, BYTECODE_SUFFIXES\n    return [extensions, source, bytecode]\n\n\n"
+    }
+  ],
+  "read_as_text_only": true,
+  "sha256": "ae0b9f573429b63e40942e8d3365c73a7ed37302fff6dfc7eebbd2bb62b6bd85",
+  "target_runtime_qualified": false
+}
