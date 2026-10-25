@@ -1,0 +1,194 @@
+{
+  "schema": "openergy.canonical-sdk-public-bindings-review.v1",
+  "candidate_commit": "cfe7721ec08adfda2352d903200b33f921472836",
+  "candidate_parent": "9ef38a647ca63832f3270aa4c691a3e6c7b2ff39",
+  "candidate_files": [
+    {
+      "path": "docs/verification/m1-sdk-canonical-path-repair-2026-10-25/README.md",
+      "bytes": 2843,
+      "sha256": "aa01d2ac824d98f3582b2c1f874e485c6494b40dd3220d116a9180af04544e1f",
+      "git_blob": "c994f2337dcdb59cb8fce89df41176b24a393a53",
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/verification/m1-sdk-canonical-path-repair-2026-10-25/SHA256SUMS",
+      "bytes": 697,
+      "sha256": "512229d2091bdcc724e850c25e96cb0211749be7fccb98150c0edda64ae96dcb",
+      "git_blob": "8e0b45e9bd7e96f65813de974b099daa5e04e245",
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/verification/m1-sdk-canonical-path-repair-2026-10-25/bindings.json",
+      "bytes": 5245,
+      "sha256": "16ed65df8137a133748e1d35d834f70af73aa0b9239fc7c470b26904579ffc5c",
+      "git_blob": "dec157d4749a27a3d087900fd0111db3570dfc8c",
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/verification/m1-sdk-canonical-path-repair-2026-10-25/future-plan.json",
+      "bytes": 1336,
+      "sha256": "37d045a2d83c8436b7d164f683a660ba02ed9535be95c3d9c5645c8e2a99b686",
+      "git_blob": "0a5d57d6ed29c984516d9d3363a92bb74728e763",
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/verification/m1-sdk-canonical-path-repair-2026-10-25/private-evidence-index.json",
+      "bytes": 3460,
+      "sha256": "76a95163b484450ce9c09c92afef4c64829237329462e01136e6423878e64c28",
+      "git_blob": "6f97152c69ae3e778fc5831b3578d6d774a1d27f",
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/verification/m1-sdk-canonical-path-repair-2026-10-25/qualification.recipe.json",
+      "bytes": 7671,
+      "sha256": "d90586546d6b3127dca26147b9d090544d29d7a8b229479966dae68ef25d3b11",
+      "git_blob": "4b0ee745d03c7a393ce8d86301406b65b415f98a",
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/verification/m1-sdk-canonical-path-repair-2026-10-25/recipe.patch",
+      "bytes": 4142,
+      "sha256": "e3b5e5ca24d33bc65377d8cd476e9c800d25edb2b0dd9b257377744f55cf603c",
+      "git_blob": "c38fc67042f9c65a620d6992a9ab0e7df0133c97",
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/verification/m1-sdk-canonical-path-repair-2026-10-25/sdk-path-observations.json",
+      "bytes": 4202,
+      "sha256": "d1ccf9d1e663a6f4bbd52aeadb6ade08566603e95c1030bdc48db7994a205f51",
+      "git_blob": "0d845f6defbd482f33bac273933dca56801fdb09",
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/verification/m1-sdk-canonical-path-repair-2026-10-25/source-qualification-failure.json",
+      "bytes": 1077,
+      "sha256": "68f2414c3526fb551b0a478089dbbc9a3e4e4fc8ce9200419e8a127b99de7a5d",
+      "git_blob": "afd4f754f483abf814825e8fe68a67730f087a37",
+      "git_mode": "100644"
+    }
+  ],
+  "changed_json_pointers": [
+    "/sdk_headers/0/path",
+    "/sdk_headers/1/path",
+    "/sdk_headers/2/path",
+    "/sdk_headers/3/path",
+    "/sdk_headers/4/path",
+    "/sdk_headers/5/path",
+    "/sdk_headers/6/path",
+    "/sdk_headers/7/path",
+    "/sdk_headers/8/path",
+    "/sdk_headers/9/path"
+  ],
+  "all_other_json_values_equal": true,
+  "exact_patch_equal": true,
+  "old_recipe_sha256": "07ebb740dc83a12deffee0094d6116e04d27bb3949ad7a3f6cd3d7fd7fe64537",
+  "new_recipe_sha256": "d90586546d6b3127dca26147b9d090544d29d7a8b229479966dae68ef25d3b11",
+  "helper_sha256": "bf2ddd03f00bedbf799b4eee518a2b7b25d1eb9a6df06a2f55c419252f6fa428",
+  "helper_review_sha256": "c7de1f4dcec5f045282e9a5c656aac9d798ba71bf72e969132716bfef4736efb",
+  "sdk_headers": [
+    {
+      "bytes": 31262,
+      "mode": "0o644",
+      "requested_path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk/usr/include/sys/proc_info.h",
+      "resolved_path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/sys/proc_info.h",
+      "sha256": "e427fa96b348537b21552b9de71e01039410bcad2cedee5584c5e5fddafd70fc",
+      "uid": 0
+    },
+    {
+      "bytes": 7575,
+      "mode": "0o644",
+      "requested_path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk/usr/include/libproc.h",
+      "resolved_path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/libproc.h",
+      "sha256": "246d87709fc6b9157ce5cf3c475656ac48e0e1ae8bbdc46cf45acd34294448cd",
+      "uid": 0
+    },
+    {
+      "bytes": 37975,
+      "mode": "0o644",
+      "requested_path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk/usr/include/sys/sysctl.h",
+      "resolved_path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/sys/sysctl.h",
+      "sha256": "d6d627d3353607f4078079051e09ea0e9a3b32a6771934be1ac5d89fbe93b1c7",
+      "uid": 0
+    },
+    {
+      "bytes": 11852,
+      "mode": "0o644",
+      "requested_path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk/usr/include/sys/proc.h",
+      "resolved_path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/sys/proc.h",
+      "sha256": "593af71b2740ba6248995691280bcb15f8900d46b1d9868f7345084aa0692949",
+      "uid": 0
+    },
+    {
+      "bytes": 9948,
+      "mode": "0o644",
+      "requested_path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk/usr/include/sys/param.h",
+      "resolved_path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/sys/param.h",
+      "sha256": "10d7a9553d341c5bc0b473444802920a7ec2e6222281eeaeb61b32dfff29c4b4",
+      "uid": 0
+    },
+    {
+      "bytes": 8391,
+      "mode": "0o644",
+      "requested_path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk/usr/include/sys/types.h",
+      "resolved_path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/sys/types.h",
+      "sha256": "82111e1f1d0262bee191b4679842e5ff51de57310ce4da9f48d39af0d8e10284",
+      "uid": 0
+    },
+    {
+      "bytes": 4133,
+      "mode": "0o644",
+      "requested_path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk/usr/include/sys/_types.h",
+      "resolved_path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/sys/_types.h",
+      "sha256": "863c4f07045775002b63b7e616742d9f746e4a02da4441442d8fe1138bbd0ff9",
+      "uid": 0
+    },
+    {
+      "bytes": 1458,
+      "mode": "0o644",
+      "requested_path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk/usr/include/sys/_types/_uid_t.h",
+      "resolved_path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/sys/_types/_uid_t.h",
+      "sha256": "d2140a65a17943a857381757c0b73a920f35ade41dc9809437c168be457c276a",
+      "uid": 0
+    },
+    {
+      "bytes": 1438,
+      "mode": "0o644",
+      "requested_path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk/usr/include/sys/_types/_gid_t.h",
+      "resolved_path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/sys/_types/_gid_t.h",
+      "sha256": "e687ad58c03701c132a02ebf20699c8cacfd34c3a67271bd2a415a5a8e4a9ea7",
+      "uid": 0
+    },
+    {
+      "bytes": 4470,
+      "mode": "0o644",
+      "requested_path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk/usr/include/arm/_types.h",
+      "resolved_path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/arm/_types.h",
+      "sha256": "4f0bde85f9a41cc7d30fff22ebd7e8f4eb206a55a926eda012a2e7481e3524fa",
+      "uid": 0
+    }
+  ],
+  "future_materialization": {
+    "input_count": 18,
+    "replacement_count": 1,
+    "replacement_name": "qualification.recipe.json",
+    "replacement_bytes": 7671,
+    "replacement_sha256": "d90586546d6b3127dca26147b9d090544d29d7a8b229479966dae68ef25d3b11",
+    "executed": false
+  },
+  "source_records": 702,
+  "bundle_records": 167,
+  "prefix_entries": 2006,
+  "sdk_headers_count": 10,
+  "limits_and_metadata_unchanged": true,
+  "fresh_execution": false,
+  "runtime": "UNVERIFIED",
+  "p1_count": 0,
+  "p2_count": 0,
+  "controller_prior_review": {
+    "commit": "b8a422145a5ab5dc197304f6420b85654b5f14ea",
+    "path": "docs/verification/ordinary-combined-context-tuple-review-2026-10-25-t3-4d328640/REVIEW.md",
+    "sha256": "8b276e5270a09ac98732abd7fb34c99377b6236a2e7321a50070b167098043ea",
+    "matches_original": true,
+    "logic_rereviewed": false
+  }
+}
