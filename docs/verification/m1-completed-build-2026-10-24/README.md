@@ -13,7 +13,7 @@ prepared operations remain unchanged.
 
 | Saved observation | Result |
 |---|---|
-| Controller operation | 101.05 s, before its absolute deadline |
+| Worker operation | 101.05 s, before its absolute deadline |
 | Dependency resolution | 9.43 s, exit 0 |
 | Bundling | 87.46 s, exit 0 |
 | Bundle inventory | 167 entries; 95 regular files; 9 symlinks |
@@ -53,7 +53,13 @@ the cause of the old isolated Swift `output-file-map.json` I/O failures.
 Those failures and the prior ordinary 23/25 FAILED / NOT ACCEPTED result remain unchanged.
 The expired Sparkle update approval remains closed, with no retry authorized.
 
-Next: independently audit this saved evidence, bind the reviewed ordinary headless
-flow to this retained bundle, then perform one real flow with the existing limits.
+The [independent saved-evidence review](../m1-completed-build-review-2026-10-24-t3-10d5c28a/REVIEW.md)
+found no concrete P1/P2. It corrected the timing label: 101.05 seconds covers the
+worker after preparation through inventory, not the full controller. The separate
+local SSH invocation envelope is 103.82 seconds and includes launch/collection
+overhead. An exact full controller duration is not claimed.
+
+Next: bind the reviewed ordinary headless flow to this retained bundle, then
+perform one real flow with the existing limits.
 Native UI/input, current macOS 27.2 behavior, update/relaunch, release trust and
 matched performance comparison remain separate open gates.

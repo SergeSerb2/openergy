@@ -32,14 +32,17 @@
   "dropped_output_bytes": 0,
   "evidence_files_verified": 44,
   "export_receipt_sha256": "eea76dfe52a76ed10b1bf4a3e8cb6867d3d03a546779d19bb50c90b99de6168d",
-  "independent_saved_evidence_review": "PENDING: oe-m1-completed-build-saved-evidence-review-r5-7f20c9c-20261024",
+  "independent_saved_evidence_review": {
+    "commit": "3d176f04184ba90e9922e0c309458696592ddc5e",
+    "runtime_and_release_acceptance": "UNVERIFIED",
+    "verdict": "NO_CONCRETE_P1_P2"
+  },
   "jobs": 2,
   "keeper_reaped_exit0": true,
   "native_app_flow_and_release_acceptance": "UNVERIFIED",
   "observed_nice_values": [
     15
   ],
-  "operation_elapsed_seconds": 101.05031070899986,
   "operation_sha256": "99759a37cf8fa251d1f400c2db15b6f62bfd387bc9a99fd32e0cb50c6186a039",
   "private_fixture_metadata_absent": true,
   "private_local_directory_label": "m1-resume-private-20261024/completed-build-aa30bb8df0bd",
@@ -59,15 +62,20 @@
   "signing_mode": "adhoc",
   "source_controller_commit": "7f20c9cdd97c1dc313f007b879babc726acbb914",
   "source_review_commit": "fb7b0d97ba4842021d8315956800c9aa8ec20dfe",
+  "ssh_invocation_envelope_limit": "Includes SSH/bootstrap and output/receipt collection; not a separate exact controller duration.",
+  "ssh_invocation_envelope_seconds": 103.82015408400184,
+  "ssh_invocation_receipt_sha256": "8c623c18ea1aa0d69462a3c1a0dd5d0672a3ab212d8ec19ccb9ff01dc2714125",
   "status": "SCOPED_BUILD_COMPLETED_RETAINED",
   "swift": "6.4",
   "target_arch": "arm64",
   "target_os": "macOS 27.0.1 (26A434)",
+  "timing_scope_correction": "101.050310709s is worker work after preparation through inventory, not full controller time.",
   "unique_sampled_pids": 90,
   "warning_preserved": "rust-objcopy SIGABRT; @rpath/libLLVM.dylib not found",
   "warnings": [
     "rust-objcopy stripping failed: SIGABRT, @rpath/libLLVM.dylib missing",
     "PrivateUpdateFixture.swift lines109,147: deprecated init(cString:)"
   ],
+  "worker_operation_elapsed_seconds": 101.05031070899986,
   "xcode": "27.1 (27A9275)"
 }
