@@ -1,0 +1,3459 @@
+{
+  "all_module_global_entry_and_gap_segments_reviewed": true,
+  "composition_declarations": {
+    "assessor": [
+      {
+        "bytes": 100,
+        "changed": false,
+        "first_line": 79,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 81,
+        "name": "require",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "c3afd7ca6d0833f2a1088e7960609a0f5b02a0da59ef047cb21bcb9cfba4fd7a",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 174,
+        "changed": false,
+        "first_line": 84,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 86,
+        "name": "canonical",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "c7e20586dd39a473001c0f3b863310ea8a23a9518707c78310ce54bf30ef3b49",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 60,
+        "changed": false,
+        "first_line": 89,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 90,
+        "name": "digest",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "884bb01e185f2d9d9430301d9fae0ad420aa9c9ab5ec6be9c82587a6bf0ed525",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 145,
+        "changed": false,
+        "first_line": 93,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 98,
+        "name": "unique",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "4b7f14805ba175c5a1727062c6018c45186a45cd472b1cb1ed7c9feef69800a8",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 99,
+        "changed": false,
+        "first_line": 101,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 104,
+        "name": "finite_float",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "4800b35232afbfaa00665f834e8f5a25674e96c0ccd0d02bcbc7f42630c3f054",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 60,
+        "changed": false,
+        "first_line": 107,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 108,
+        "name": "nonfinite",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "bb5f10d33bec9fad429f312cf174b562f90d303bebbd0cc59607d972586d6da4",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 158,
+        "changed": false,
+        "first_line": 111,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 113,
+        "name": "load",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "eb2de38697bb5e1a11420cf3438397b0d94d627185f1d759fa13842bcaed9b77",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 86,
+        "changed": false,
+        "first_line": 116,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 117,
+        "name": "keys",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "76118bb4504d9fc14654a4161edbaafd3a899ce7bbf4c5d55b52defd336ca0db",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 478,
+        "changed": false,
+        "first_line": 120,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 132,
+        "name": "equal",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "72bc4341b30b5f7db3a2be37f2be89ce4741568117ca22257f9359036e52bf7f",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 141,
+        "changed": false,
+        "first_line": 135,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 137,
+        "name": "integer",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "e98dbb4f911a16e61561eb2e592d5866d88558362a325c90700aed16f350f1cf",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 148,
+        "changed": false,
+        "first_line": 140,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 142,
+        "name": "hexhash",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "55aee7c60020624799faed8a9c667925dfd10073fdd216675e14078ac22c807c",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 2182,
+        "changed": false,
+        "first_line": 145,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 182,
+        "name": "bind_config",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "4f8835c5a7f76b32fa3c0e0a51e07de19e7f68a3fee991ac5770de4e39be5224",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 116,
+        "changed": false,
+        "first_line": 185,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 188,
+        "name": "before",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "f13d7a23271b9e7ab5ffde12b6e03b0ec8ba4f4413583d158870c81bc1bdcc27",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 75,
+        "changed": false,
+        "first_line": 191,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 195,
+        "name": "close",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "6328513a9ba5fd290cf0322fe293ee8c56679828740dda41f033c18fce832588",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 172,
+        "changed": false,
+        "first_line": 198,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 200,
+        "name": "stamp",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "b2848e87c0ee6c3c9fb1cc84b6ecf8ab33b7787e754f5919661f1c1535709abf",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 201,
+        "changed": false,
+        "first_line": 203,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 208,
+        "name": "owned_directory",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "974be7b5e7b104fad8bfe183105bc287212856f4e01b98bc016934fd1deedf0c",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 604,
+        "changed": false,
+        "first_line": 211,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 230,
+        "name": "open_base",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "6241ab7409abf45eb7aa2bd958e10ad21a13e332a973f02952fb5a3ea56bb3e0",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 436,
+        "changed": false,
+        "first_line": 233,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 241,
+        "name": "file_state",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "e29f664b35b1adacbcd748fb56147efaabe72c2ad436d3decdcf8af72dc33145",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 1133,
+        "changed": false,
+        "first_line": 244,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 275,
+        "name": "read_fixed",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "78466d7040be8e1e249d7f1bcf40430752b2884d1315ac64c6642a2e6c9b8cc5",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 970,
+        "changed": false,
+        "first_line": 278,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 295,
+        "name": "clock_runtime",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "7556ef19bad2e7573b6270dd6c1e229dee0a86a3fad1e1c3981c8efc9c8503f4",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 1874,
+        "changed": false,
+        "first_line": 298,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 326,
+        "name": "parent_record",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "95c824b06d54ad24b358c2ac63c2d6265898c59b8b919c537529f541e4a332e9",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 1338,
+        "changed": false,
+        "first_line": 329,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 347,
+        "name": "request_record",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "36bc44cca98cc82810cdcc3c3e85ba3718d9496111a794f2d01f8639646bb0ff",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 3749,
+        "changed": true,
+        "first_line": 350,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 404,
+        "name": "transport_records",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "77663cebf83ccf112f03a2f71d76f484f887f0b47404bea13347eb8102b54bd4",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 1098,
+        "changed": false,
+        "first_line": 407,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 428,
+        "name": "stream_records",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "94ce072839db4773bbe4c3affd5360d63999766e13b05c8d2b4d0a8e7a5e1090",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 487,
+        "changed": false,
+        "first_line": 431,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 444,
+        "name": "retained_inputs",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "d314c0d523be2e9461d139518d78f47e6363d557066b5d04df7a4741b1fb0b73",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 1038,
+        "changed": false,
+        "first_line": 447,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 478,
+        "name": "publish",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "66ffc15f89a03b1d6cce556a96917ca37ff33d6c9e61f45597cf2933bb572203",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 484,
+        "changed": false,
+        "first_line": 481,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 493,
+        "name": "console_once",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "7d89c608f5c8603280f2fab5a2bd724626b194f37520eabd9e1fd291e1afce49",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 2928,
+        "changed": false,
+        "first_line": 496,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 550,
+        "name": "main",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "34999c65444fa31226827a89837dad96a02c216a4f3ac5f746e8571597652d48",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      }
+    ],
+    "collector": [
+      {
+        "bytes": 36,
+        "changed": false,
+        "first_line": 46,
+        "full_text_reviewed": true,
+        "kind": "ClassDef",
+        "last_line": 47,
+        "name": "Rejected",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "49a730fe8f0d6e145a716e79efd1d313adb3fff751e71df8a63272dd6d333a65",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 174,
+        "changed": false,
+        "first_line": 50,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 52,
+        "name": "canonical",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "e419bd331d2784052dc0ef02a3c28401a0dee30d07fbd7e1ceda0173b0934ef6",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 62,
+        "changed": false,
+        "first_line": 55,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 56,
+        "name": "digest",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "50b76bfffc27cbd7a792c95d031f6fd8e49777b6241b96ed8c4c4773edc356cb",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 957,
+        "changed": false,
+        "first_line": 59,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 76,
+        "name": "clock_descriptor",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "6d53309863ad527e72115a38b3508f75492a1f79deddc4e5c8aa4ae4d09885b0",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 842,
+        "changed": false,
+        "first_line": 79,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 98,
+        "name": "arguments",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "1fd53674cd076039e4b75e62a8eefcd74e53ad60f0a3988fd5daba06c1bfe4ab",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 816,
+        "changed": false,
+        "first_line": 101,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 119,
+        "name": "directory",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "4461be5df0079e88b76ee43f49e6b2345cda43f6e7a95834a59841a8f51eb0e2",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 166,
+        "changed": false,
+        "first_line": 122,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 126,
+        "name": "leaf",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "6ad86056c9ffd7c497969e43a1cfa3cf4fd8c2550596b1ebaa2828c594e17ec3",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 171,
+        "changed": false,
+        "first_line": 129,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 131,
+        "name": "identity",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "930b37739e4385b2525b2a0c8d115d4bd7bd08c2b073e39519ade5c6b29ca6fc",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 1305,
+        "changed": false,
+        "first_line": 134,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 165,
+        "name": "read_bound",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "3f999036c297a199ccff52d0712211c94b8de90d4debfe699dc7e19ecf6c5d77",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 192,
+        "changed": false,
+        "first_line": 168,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 174,
+        "name": "unique_object",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "9f03e4d922b56685581d765b4413675261a89932d57e28d6b8a996d5ec2e8721",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 2195,
+        "changed": false,
+        "first_line": 177,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 218,
+        "name": "profile_vector",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "a27fa1cbbe0a3975b99ceb4cdd0f6b7b60c375ba2450e04a8563105846852ee5",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 19416,
+        "changed": true,
+        "first_line": 221,
+        "full_text_reviewed": true,
+        "kind": "ClassDef",
+        "last_line": 613,
+        "name": "Collector",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "8effe73ca2ebdf09efedaa6f8823c2b9018bf6ad2c7a978c8e76a816fc632770",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 1504,
+        "changed": false,
+        "first_line": 222,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 255,
+        "name": "Collector.__init__",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "37eb991c3f414687c22fc31b056c136cc46dcb97c322adf28fcf6ddab0a131c1",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 206,
+        "changed": false,
+        "first_line": 257,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 260,
+        "name": "Collector.fail",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "99d2a8a97c5ae13590bb05453a3af0559406a987df2e9cdabb8403315870817f",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 184,
+        "changed": false,
+        "first_line": 262,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 266,
+        "name": "Collector.check",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "9db65cc62ce271161baa7db1d7cece7f3fd527c4566aa1270ea2bf211c61e1d6",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 74,
+        "changed": false,
+        "first_line": 268,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 269,
+        "name": "Collector.admission_clock",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "ff7d1367f1ec074310c4045f0a5fb811cb055a2f8879867453a236e0283eb906",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 360,
+        "changed": false,
+        "first_line": 271,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 277,
+        "name": "Collector.publication_failure",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "478b1c586b869bb0a8a495412d8459325b8f5444d02c00ad5d41b5ec2d604db0",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 184,
+        "changed": false,
+        "first_line": 279,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 281,
+        "name": "Collector.create",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "0c2532818f150ad521c6b59af7cc93851bcc967e4927dfa8eb3292c120117c21",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 513,
+        "changed": false,
+        "first_line": 283,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 294,
+        "name": "Collector.write",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "54d0da37c4ae12d200042b2fefa5c29a148e2cf6e47a12de6227a5ba3c3e1541",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 392,
+        "changed": false,
+        "first_line": 296,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 308,
+        "name": "Collector.put",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "68640cab80582aa14667d9b454d78d0a0c4188c05e631a51ea81102364f1a78d",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 827,
+        "changed": false,
+        "first_line": 310,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 324,
+        "name": "Collector.bindings",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "fadc510b32a68b735166e09df05285763529845296a7ec05c8d5e773dde40c02",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 389,
+        "changed": false,
+        "first_line": 326,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 332,
+        "name": "Collector.deadlines",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "7b9f8628ee119a06ebf19b6563a30d4373f92e1376babfd683c6005c4a856635",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 425,
+        "changed": false,
+        "first_line": 334,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 342,
+        "name": "Collector.observe_exit",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "35cc838d73f0d1baaf545738a958b0927020f2081cf2959dceb4984763227d13",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 2911,
+        "changed": false,
+        "first_line": 344,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 401,
+        "name": "Collector.capture",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "3eb7cafecba46cb55a0c8c8a2c35824a3c055ec3ed0647be5d24771c5df4a00e",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 2319,
+        "changed": true,
+        "first_line": 403,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 450,
+        "name": "Collector.settle",
+        "observation": "Fresh None/immediate sample/both strict ends precede one direct retained-child syscall; later actual reap required.",
+        "sha256": "f74dbf8de337edc2ab216ef54ab648f77e5b9e8b3f40c396c5b95aad2b50d2c4",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 9098,
+        "changed": false,
+        "first_line": 452,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 613,
+        "name": "Collector.run",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "77aacf50bd32114cdb174ce48d3317ac2c844e5fd5ae3c56e863f6508a25826c",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 277,
+        "changed": false,
+        "first_line": 616,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 623,
+        "name": "main",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "a3b873c22bf70f9f051ddeefeb74131a107cc6f9aa356288497eb465f35511a3",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      }
+    ],
+    "observer": [
+      {
+        "bytes": 136,
+        "changed": false,
+        "first_line": 16,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 17,
+        "name": "canonical",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "251a4eeb871e9316ec941578637c029e615194a10da44ab0ddd4f2d432a4e5be",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 122,
+        "changed": false,
+        "first_line": 19,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 20,
+        "name": "stamp",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "4eb0fb68b47e563e1195e9ecfacbee9fdeb8d034751515f7d94b5bc83e0af168",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 751,
+        "changed": false,
+        "first_line": 22,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 38,
+        "name": "read_bound",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "bc8a21c47863fec3a5819b1b2431d8852110108fb6b562519c11f781b6461fca",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 634,
+        "changed": false,
+        "first_line": 40,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 56,
+        "name": "save",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "da562daae5f72a3f189559b2e4dd16f236667e11d026b38b8164377c6472993d",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      },
+      {
+        "bytes": 5372,
+        "changed": true,
+        "first_line": 58,
+        "full_text_reviewed": true,
+        "kind": "FunctionDef",
+        "last_line": 119,
+        "name": "main",
+        "observation": "Complete body and inherited failure/interface effects reviewed; exact before/after byte binding retained.",
+        "sha256": "6c340b0d12217d63a10726bfa435801342863a972fef7b5c4c085ef1e00cc3b4",
+        "verdict": "NO_P1_P2_IN_EXACT_COMPOSITION"
+      }
+    ]
+  },
+  "driver_functions": [
+    {
+      "bytes": 104,
+      "calls": [
+        {
+          "callable": "ValueError",
+          "line": 108
+        }
+      ],
+      "first_line": 106,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 108,
+      "name": "require",
+      "observation": "Only exact True passes; rejection raises before dependent work.",
+      "sha256": "b1b602246e8d889a1532525699bd55807e2c35b165ed6e7ed55563ab4d9c7f9e",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 174,
+      "calls": [
+        {
+          "callable": "<BinOp>.encode",
+          "line": 112
+        },
+        {
+          "callable": "json.dumps",
+          "line": 112
+        }
+      ],
+      "first_line": 111,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 113,
+      "name": "canonical",
+      "observation": "Sorted compact finite ASCII JSON with exactly one LF; serialization errors fail closed.",
+      "sha256": "c7e20586dd39a473001c0f3b863310ea8a23a9518707c78310ce54bf30ef3b49",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 60,
+      "calls": [
+        {
+          "callable": "<Call>.hexdigest",
+          "line": 117
+        },
+        {
+          "callable": "hashlib.sha256",
+          "line": 117
+        }
+      ],
+      "first_line": 116,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 117,
+      "name": "digest",
+      "observation": "SHA-256 of supplied bytes; a digest does not attest provenance.",
+      "sha256": "884bb01e185f2d9d9430301d9fae0ad420aa9c9ab5ec6be9c82587a6bf0ed525",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 139,
+      "calls": [
+        {
+          "callable": "require",
+          "line": 123
+        }
+      ],
+      "first_line": 120,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 125,
+      "name": "unique",
+      "observation": "Rejects duplicate JSON keys at every parsed object.",
+      "sha256": "2c2699cdaa194baf370594d3ab2234f11c61b2226d7cc9d00f7a28695a7974ef",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 93,
+      "calls": [
+        {
+          "callable": "float",
+          "line": 129
+        },
+        {
+          "callable": "require",
+          "line": 130
+        },
+        {
+          "callable": "math.isfinite",
+          "line": 130
+        }
+      ],
+      "first_line": 128,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 131,
+      "name": "finite",
+      "observation": "Rejects float overflow/nonfinite values.",
+      "sha256": "672b7407ba626e7072fe54bdd8613dec357a648e3a2ee6da09b68cb764f53351",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 60,
+      "calls": [
+        {
+          "callable": "ValueError",
+          "line": 135
+        }
+      ],
+      "first_line": 134,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 135,
+      "name": "nonfinite",
+      "observation": "Rejects JSON NaN and Infinity constants.",
+      "sha256": "bb5f10d33bec9fad429f312cf174b562f90d303bebbd0cc59607d972586d6da4",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 152,
+      "calls": [
+        {
+          "callable": "json.loads",
+          "line": 139
+        },
+        {
+          "callable": "raw.decode",
+          "line": 139
+        }
+      ],
+      "first_line": 138,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 140,
+      "name": "load",
+      "observation": "ASCII unique-key finite JSON; no code evaluation.",
+      "sha256": "7c0b0c88aa65b3f325a64b4844314727ab4d5dc9ae69f10745b267badcfbdf98",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 86,
+      "calls": [
+        {
+          "callable": "require",
+          "line": 144
+        },
+        {
+          "callable": "type",
+          "line": 144
+        },
+        {
+          "callable": "set",
+          "line": 144
+        },
+        {
+          "callable": "set",
+          "line": 144
+        }
+      ],
+      "first_line": 143,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 144,
+      "name": "keys",
+      "observation": "Exact dictionary type and exact key set.",
+      "sha256": "76118bb4504d9fc14654a4161edbaafd3a899ce7bbf4c5d55b52defd336ca0db",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 416,
+      "calls": [
+        {
+          "callable": "require",
+          "line": 148
+        },
+        {
+          "callable": "type",
+          "line": 149
+        },
+        {
+          "callable": "keys",
+          "line": 150
+        },
+        {
+          "callable": "type",
+          "line": 148
+        },
+        {
+          "callable": "type",
+          "line": 148
+        },
+        {
+          "callable": "equal",
+          "line": 152
+        },
+        {
+          "callable": "type",
+          "line": 153
+        },
+        {
+          "callable": "require",
+          "line": 154
+        },
+        {
+          "callable": "zip",
+          "line": 155
+        },
+        {
+          "callable": "require",
+          "line": 158
+        },
+        {
+          "callable": "equal",
+          "line": 156
+        },
+        {
+          "callable": "len",
+          "line": 154
+        },
+        {
+          "callable": "len",
+          "line": 154
+        }
+      ],
+      "first_line": 147,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 158,
+      "name": "equal",
+      "observation": "Recursive exact type/key/list/value equality prevents Boolean-number equivalence.",
+      "sha256": "4408f13458ebb3f74bd64921ce6b043f497c21674b5cbc8622232e80c41cfeb0",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 127,
+      "calls": [
+        {
+          "callable": "require",
+          "line": 162
+        },
+        {
+          "callable": "type",
+          "line": 162
+        }
+      ],
+      "first_line": 161,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 163,
+      "name": "integer",
+      "observation": "Exact int within fixed finite domain; bool rejects.",
+      "sha256": "e3d6de2cad7ff149440a86e53c321fcebdef6241400665eb0ec0652e0bdbe3ae",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 146,
+      "calls": [
+        {
+          "callable": "require",
+          "line": 167
+        },
+        {
+          "callable": "all",
+          "line": 168
+        },
+        {
+          "callable": "type",
+          "line": 167
+        },
+        {
+          "callable": "len",
+          "line": 167
+        }
+      ],
+      "first_line": 166,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 168,
+      "name": "hexhash",
+      "observation": "Fixed lowercase hexadecimal width; shape alone is not proof.",
+      "sha256": "c854ce8ce715a029b4309a1f3da7009c7fb2be9ac3de2f84c39a0bafe5dc8a76",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 128,
+      "calls": [
+        {
+          "callable": "keys",
+          "line": 172
+        },
+        {
+          "callable": "integer",
+          "line": 173
+        },
+        {
+          "callable": "hexhash",
+          "line": 174
+        }
+      ],
+      "first_line": 171,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 174,
+      "name": "bytehash",
+      "observation": "Closed length/hash reference with fixed upper cap and positive exact length.",
+      "sha256": "0e77a13b882a7c0d1e305094188a64ff52bea18ce1734428abac424698a66b81",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 2784,
+      "calls": [
+        {
+          "callable": "load",
+          "line": 178
+        },
+        {
+          "callable": "keys",
+          "line": 179
+        },
+        {
+          "callable": "equal",
+          "line": 181
+        },
+        {
+          "callable": "bytehash",
+          "line": 182
+        },
+        {
+          "callable": "bytehash",
+          "line": 183
+        },
+        {
+          "callable": "keys",
+          "line": 184
+        },
+        {
+          "callable": "hexhash",
+          "line": 185
+        },
+        {
+          "callable": "hexhash",
+          "line": 186
+        },
+        {
+          "callable": "hexhash",
+          "line": 187
+        },
+        {
+          "callable": "require",
+          "line": 188
+        },
+        {
+          "callable": "keys",
+          "line": 190
+        },
+        {
+          "callable": "<Subscript>.values",
+          "line": 191
+        },
+        {
+          "callable": "require",
+          "line": 193
+        },
+        {
+          "callable": "keys",
+          "line": 194
+        },
+        {
+          "callable": "keys",
+          "line": 197
+        },
+        {
+          "callable": "keys",
+          "line": 215
+        },
+        {
+          "callable": "hexhash",
+          "line": 216
+        },
+        {
+          "callable": "hexhash",
+          "line": 217
+        },
+        {
+          "callable": "hexhash",
+          "line": 218
+        },
+        {
+          "callable": "equal",
+          "line": 219
+        },
+        {
+          "callable": "equal",
+          "line": 220
+        },
+        {
+          "callable": "hexhash",
+          "line": 222
+        },
+        {
+          "callable": "CONFIG_TEXT.encode",
+          "line": 178
+        },
+        {
+          "callable": "require",
+          "line": 192
+        },
+        {
+          "callable": "<Subscript>.startswith",
+          "line": 193
+        },
+        {
+          "callable": "bytehash",
+          "line": 196
+        },
+        {
+          "callable": "keys",
+          "line": 200
+        },
+        {
+          "callable": "hexhash",
+          "line": 201
+        },
+        {
+          "callable": "hexhash",
+          "line": 202
+        },
+        {
+          "callable": "hexhash",
+          "line": 203
+        },
+        {
+          "callable": "bytehash",
+          "line": 204
+        },
+        {
+          "callable": "equal",
+          "line": 205
+        },
+        {
+          "callable": "equal",
+          "line": 206
+        },
+        {
+          "callable": "require",
+          "line": 213
+        },
+        {
+          "callable": "type",
+          "line": 192
+        },
+        {
+          "callable": "len",
+          "line": 192
+        }
+      ],
+      "first_line": 177,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 223,
+      "name": "bind_config",
+      "observation": "Closed null42 boundary; exact8bde42c candidate and new source identities; real proof inspection remains external.",
+      "sha256": "8c48876c7650c527972e95f4239c51d3f63f62e335529b28c8dbfd66ceb02b14",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 145,
+      "calls": [
+        {
+          "callable": "time.monotonic_ns",
+          "line": 227
+        },
+        {
+          "callable": "require",
+          "line": 229
+        }
+      ],
+      "first_line": 226,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 230,
+      "name": "tick",
+      "observation": "Original stricter outer end only; no renewal; OS timing remains cooperative.",
+      "sha256": "8b970cbde5942cc3c21707d51cba8ba3612faa47d01dd603f7228f370de4739a",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 215,
+      "calls": [
+        {
+          "callable": "time.monotonic_ns",
+          "line": 237
+        },
+        {
+          "callable": "type",
+          "line": 236
+        }
+      ],
+      "first_line": 233,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 237,
+      "name": "latch",
+      "observation": "First observed failure survives secondary publication and close errors.",
+      "sha256": "e509195ec19bf11e32c76efe7ec0af3a64b5abe3f580374bed75e3cde76f3985",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 76,
+      "calls": [
+        {
+          "callable": "os.close",
+          "line": 242
+        },
+        {
+          "callable": "tick",
+          "line": 244
+        }
+      ],
+      "first_line": 240,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 244,
+      "name": "close_fd",
+      "observation": "Close attempted once and original end checked even when close raises.",
+      "sha256": "aa7acda7717fbcb04baa49758dcff78bc2540ff80531e9a61e7f1ae41febcd3a",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 172,
+      "calls": [],
+      "first_line": 247,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 249,
+      "name": "stamp",
+      "observation": "Full file metadata binding includes device/inode/mode/uid/gid/link/size/mtime/ctime.",
+      "sha256": "b2848e87c0ee6c3c9fb1cc84b6ecf8ab33b7787e754f5919661f1c1535709abf",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 102,
+      "calls": [],
+      "first_line": 252,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 253,
+      "name": "directory_id",
+      "observation": "Directory identity excludes expected content-size/time changes but retains device/inode/mode/owner/group.",
+      "sha256": "d6e3a74c19c48fcc6fb88c71bc61f1110a847e3c46448ec0dd1defacbfc8cd1d",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 199,
+      "calls": [
+        {
+          "callable": "os.fstat",
+          "line": 257
+        },
+        {
+          "callable": "tick",
+          "line": 258
+        },
+        {
+          "callable": "require",
+          "line": 259
+        },
+        {
+          "callable": "stat.S_ISDIR",
+          "line": 259
+        },
+        {
+          "callable": "os.getuid",
+          "line": 259
+        },
+        {
+          "callable": "stat.S_IMODE",
+          "line": 260
+        }
+      ],
+      "first_line": 256,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 261,
+      "name": "owned_directory",
+      "observation": "Retained directory requires owned0700 type/mode.",
+      "sha256": "33d87e52efea227cad26aae8a1723ac0e65323bafee1a9bf07934cc7d8c29eb6",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 943,
+      "calls": [
+        {
+          "callable": "os.open",
+          "line": 265
+        },
+        {
+          "callable": "directory_id",
+          "line": 281
+        },
+        {
+          "callable": "<Subscript>.split",
+          "line": 267
+        },
+        {
+          "callable": "owned_directory",
+          "line": 281
+        },
+        {
+          "callable": "os.open",
+          "line": 283
+        },
+        {
+          "callable": "tick",
+          "line": 285
+        },
+        {
+          "callable": "directory_id",
+          "line": 286
+        },
+        {
+          "callable": "os.open",
+          "line": 268
+        },
+        {
+          "callable": "close_fd",
+          "line": 279
+        },
+        {
+          "callable": "owned_directory",
+          "line": 286
+        },
+        {
+          "callable": "tick",
+          "line": 271
+        },
+        {
+          "callable": "close_fd",
+          "line": 272
+        },
+        {
+          "callable": "close_fd",
+          "line": 274
+        }
+      ],
+      "first_line": 264,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 286,
+      "name": "open_directories",
+      "observation": "Fixed nofollow absolute walk; owned base/tools/launch FDs retained; ancestor exclusivity remains a root duty.",
+      "sha256": "2122130febd4b3be51f4fdf6ab1edb44ac73e15900e8c8b55ad76a5b31e99449",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 438,
+      "calls": [
+        {
+          "callable": "os.fstat",
+          "line": 290
+        },
+        {
+          "callable": "tick",
+          "line": 291
+        },
+        {
+          "callable": "os.stat",
+          "line": 292
+        },
+        {
+          "callable": "tick",
+          "line": 293
+        },
+        {
+          "callable": "require",
+          "line": 294
+        },
+        {
+          "callable": "require",
+          "line": 297
+        },
+        {
+          "callable": "stat.S_ISREG",
+          "line": 294
+        },
+        {
+          "callable": "stamp",
+          "line": 297
+        },
+        {
+          "callable": "stamp",
+          "line": 297
+        },
+        {
+          "callable": "stamp",
+          "line": 297
+        },
+        {
+          "callable": "os.getuid",
+          "line": 294
+        },
+        {
+          "callable": "stat.S_IMODE",
+          "line": 295
+        }
+      ],
+      "first_line": 289,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 297,
+      "name": "file_state",
+      "observation": "Owned one-link regular file with exact fixed mode/cap; initial/current/nofollow-name stamps agree.",
+      "sha256": "f7d902a6d8cca26aff0eb4211db2b9e5234b05fa7d6854af6b6c4baa481cd489",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 1248,
+      "calls": [
+        {
+          "callable": "tick",
+          "line": 303
+        },
+        {
+          "callable": "os.open",
+          "line": 304
+        },
+        {
+          "callable": "tick",
+          "line": 306
+        },
+        {
+          "callable": "os.fstat",
+          "line": 307
+        },
+        {
+          "callable": "tick",
+          "line": 308
+        },
+        {
+          "callable": "file_state",
+          "line": 309
+        },
+        {
+          "callable": "<Constant>.join",
+          "line": 324
+        },
+        {
+          "callable": "require",
+          "line": 325
+        },
+        {
+          "callable": "stamp",
+          "line": 326
+        },
+        {
+          "callable": "tick",
+          "line": 330
+        },
+        {
+          "callable": "close_fd",
+          "line": 332
+        },
+        {
+          "callable": "equal",
+          "line": 311
+        },
+        {
+          "callable": "file_state",
+          "line": 314
+        },
+        {
+          "callable": "tick",
+          "line": 315
+        },
+        {
+          "callable": "os.read",
+          "line": 316
+        },
+        {
+          "callable": "tick",
+          "line": 317
+        },
+        {
+          "callable": "file_state",
+          "line": 318
+        },
+        {
+          "callable": "len",
+          "line": 319
+        },
+        {
+          "callable": "require",
+          "line": 320
+        },
+        {
+          "callable": "chunks.append",
+          "line": 323
+        },
+        {
+          "callable": "len",
+          "line": 329
+        },
+        {
+          "callable": "digest",
+          "line": 329
+        },
+        {
+          "callable": "list",
+          "line": 311
+        },
+        {
+          "callable": "list",
+          "line": 311
+        },
+        {
+          "callable": "min",
+          "line": 316
+        },
+        {
+          "callable": "len",
+          "line": 325
+        },
+        {
+          "callable": "stamp",
+          "line": 311
+        }
+      ],
+      "first_line": 300,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 333,
+      "name": "read_fixed",
+      "observation": "Only literal FILES entries; cap+one probe, stamp checks during reads, exact length/hash refs and close.",
+      "sha256": "7694c41c01bb42b661252e09ca1b1f745623985790d924b600a1bb61fe01186b",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 1518,
+      "calls": [
+        {
+          "callable": "DIRS.items",
+          "line": 337
+        },
+        {
+          "callable": "os.open",
+          "line": 345
+        },
+        {
+          "callable": "STAMPS.items",
+          "line": 361
+        },
+        {
+          "callable": "PUBLICATIONS.items",
+          "line": 366
+        },
+        {
+          "callable": "equal",
+          "line": 338
+        },
+        {
+          "callable": "tick",
+          "line": 347
+        },
+        {
+          "callable": "<Subscript>.split",
+          "line": 348
+        },
+        {
+          "callable": "equal",
+          "line": 358
+        },
+        {
+          "callable": "close_fd",
+          "line": 360
+        },
+        {
+          "callable": "os.stat",
+          "line": 363
+        },
+        {
+          "callable": "tick",
+          "line": 364
+        },
+        {
+          "callable": "equal",
+          "line": 365
+        },
+        {
+          "callable": "os.stat",
+          "line": 367
+        },
+        {
+          "callable": "tick",
+          "line": 368
+        },
+        {
+          "callable": "equal",
+          "line": 369
+        },
+        {
+          "callable": "list",
+          "line": 338
+        },
+        {
+          "callable": "list",
+          "line": 338
+        },
+        {
+          "callable": "os.stat",
+          "line": 341
+        },
+        {
+          "callable": "tick",
+          "line": 342
+        },
+        {
+          "callable": "equal",
+          "line": 343
+        },
+        {
+          "callable": "os.open",
+          "line": 349
+        },
+        {
+          "callable": "list",
+          "line": 358
+        },
+        {
+          "callable": "list",
+          "line": 358
+        },
+        {
+          "callable": "list",
+          "line": 365
+        },
+        {
+          "callable": "list",
+          "line": 365
+        },
+        {
+          "callable": "list",
+          "line": 369
+        },
+        {
+          "callable": "list",
+          "line": 369
+        },
+        {
+          "callable": "directory_id",
+          "line": 338
+        },
+        {
+          "callable": "list",
+          "line": 343
+        },
+        {
+          "callable": "list",
+          "line": 343
+        },
+        {
+          "callable": "tick",
+          "line": 352
+        },
+        {
+          "callable": "close_fd",
+          "line": 353
+        },
+        {
+          "callable": "directory_id",
+          "line": 358
+        },
+        {
+          "callable": "stamp",
+          "line": 365
+        },
+        {
+          "callable": "stamp",
+          "line": 369
+        },
+        {
+          "callable": "owned_directory",
+          "line": 338
+        },
+        {
+          "callable": "directory_id",
+          "line": 343
+        },
+        {
+          "callable": "close_fd",
+          "line": 355
+        },
+        {
+          "callable": "owned_directory",
+          "line": 358
+        }
+      ],
+      "first_line": 336,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 369,
+      "name": "retained_inputs",
+      "observation": "Rechecks retained directory relations, rewalked BASE, input stamps and published leaf stamps.",
+      "sha256": "d8e203970681dad591b70827fd7672eb25716963c5dbdc8c0a694fc81c16a55d",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 1217,
+      "calls": [
+        {
+          "callable": "require",
+          "line": 374
+        },
+        {
+          "callable": "retained_inputs",
+          "line": 375
+        },
+        {
+          "callable": "tick",
+          "line": 376
+        },
+        {
+          "callable": "os.open",
+          "line": 378
+        },
+        {
+          "callable": "os.fsync",
+          "line": 398
+        },
+        {
+          "callable": "tick",
+          "line": 399
+        },
+        {
+          "callable": "os.stat",
+          "line": 400
+        },
+        {
+          "callable": "tick",
+          "line": 401
+        },
+        {
+          "callable": "require",
+          "line": 402
+        },
+        {
+          "callable": "retained_inputs",
+          "line": 405
+        },
+        {
+          "callable": "tick",
+          "line": 381
+        },
+        {
+          "callable": "os.fstat",
+          "line": 382
+        },
+        {
+          "callable": "tick",
+          "line": 383
+        },
+        {
+          "callable": "file_state",
+          "line": 384
+        },
+        {
+          "callable": "require",
+          "line": 385
+        },
+        {
+          "callable": "tick",
+          "line": 386
+        },
+        {
+          "callable": "require",
+          "line": 387
+        },
+        {
+          "callable": "tick",
+          "line": 388
+        },
+        {
+          "callable": "os.fsync",
+          "line": 389
+        },
+        {
+          "callable": "tick",
+          "line": 390
+        },
+        {
+          "callable": "os.fstat",
+          "line": 391
+        },
+        {
+          "callable": "tick",
+          "line": 392
+        },
+        {
+          "callable": "file_state",
+          "line": 393
+        },
+        {
+          "callable": "require",
+          "line": 394
+        },
+        {
+          "callable": "close_fd",
+          "line": 397
+        },
+        {
+          "callable": "stamp",
+          "line": 403
+        },
+        {
+          "callable": "len",
+          "line": 404
+        },
+        {
+          "callable": "digest",
+          "line": 404
+        },
+        {
+          "callable": "len",
+          "line": 406
+        },
+        {
+          "callable": "digest",
+          "line": 406
+        },
+        {
+          "callable": "len",
+          "line": 374
+        },
+        {
+          "callable": "stamp",
+          "line": 402
+        },
+        {
+          "callable": "stamp",
+          "line": 402
+        },
+        {
+          "callable": "os.write",
+          "line": 387
+        },
+        {
+          "callable": "len",
+          "line": 387
+        },
+        {
+          "callable": "len",
+          "line": 394
+        }
+      ],
+      "first_line": 372,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 406,
+      "name": "publish",
+      "observation": "Fixed exclusive name, one full write, file/directory fsyncs, close and name/input postchecks; partial names burn.",
+      "sha256": "005644493566f76a32c25f9ca21365c3e5d0188ca43885adbcca359e0456e6cd",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 217,
+      "calls": [
+        {
+          "callable": "raw.splitlines",
+          "line": 410
+        },
+        {
+          "callable": "sum",
+          "line": 411
+        },
+        {
+          "callable": "sum",
+          "line": 412
+        },
+        {
+          "callable": "map",
+          "line": 411
+        },
+        {
+          "callable": "map",
+          "line": 412
+        }
+      ],
+      "first_line": 409,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 412,
+      "name": "token_span",
+      "observation": "ASCII byte offsets from AST locations; future target AST representation remains unverified.",
+      "sha256": "1dec748108d822d01c7e4e96b71394b8bbd664e7404a5344b2dd15caa7b6ee97",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 347,
+      "calls": [
+        {
+          "callable": "require",
+          "line": 419
+        },
+        {
+          "callable": "isinstance",
+          "line": 419
+        },
+        {
+          "callable": "isinstance",
+          "line": 416
+        },
+        {
+          "callable": "isinstance",
+          "line": 417
+        },
+        {
+          "callable": "len",
+          "line": 419
+        },
+        {
+          "callable": "len",
+          "line": 417
+        }
+      ],
+      "first_line": 415,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 420,
+      "name": "literal_assignment",
+      "observation": "Exactly one top-level single-target literal assignment; no executable expression substitute.",
+      "sha256": "e51cdd8583edb15740ebfdf2069fc577306cc4f7e0ff57c109704a3fa67e8c95",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 1561,
+      "calls": [
+        {
+          "callable": "ast.parse",
+          "line": 425
+        },
+        {
+          "callable": "literal_assignment",
+          "line": 426
+        },
+        {
+          "callable": "require",
+          "line": 427
+        },
+        {
+          "callable": "token_span",
+          "line": 428
+        },
+        {
+          "callable": "raw.splitlines",
+          "line": 430
+        },
+        {
+          "callable": "tokenize.tokenize",
+          "line": 431
+        },
+        {
+          "callable": "require",
+          "line": 437
+        },
+        {
+          "callable": "<Call>.encode",
+          "line": 439
+        },
+        {
+          "callable": "raw.decode",
+          "line": 425
+        },
+        {
+          "callable": "digest",
+          "line": 442
+        },
+        {
+          "callable": "digest",
+          "line": 443
+        },
+        {
+          "callable": "digest",
+          "line": 443
+        },
+        {
+          "callable": "digest",
+          "line": 444
+        },
+        {
+          "callable": "type",
+          "line": 427
+        },
+        {
+          "callable": "io.BytesIO",
+          "line": 431
+        },
+        {
+          "callable": "len",
+          "line": 437
+        },
+        {
+          "callable": "ast.dump",
+          "line": 439
+        },
+        {
+          "callable": "len",
+          "line": 441
+        },
+        {
+          "callable": "digest",
+          "line": 441
+        },
+        {
+          "callable": "sum",
+          "line": 433
+        },
+        {
+          "callable": "sum",
+          "line": 434
+        },
+        {
+          "callable": "strings.append",
+          "line": 436
+        },
+        {
+          "callable": "map",
+          "line": 433
+        },
+        {
+          "callable": "map",
+          "line": 434
+        }
+      ],
+      "first_line": 423,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 447,
+      "name": "config_method",
+      "observation": "Unique lexical string, whole normalized AST, prefix/suffix and token identity; no populated render or self-hash cycle.",
+      "sha256": "ec9397529bc259185d083630e844dd185e7ad332c3ddaf15661b19a4dbcbc527",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 935,
+      "calls": [
+        {
+          "callable": "<Call>.rstrip",
+          "line": 451
+        },
+        {
+          "callable": "<Call>.encode",
+          "line": 452
+        },
+        {
+          "callable": "require",
+          "line": 455
+        },
+        {
+          "callable": "ast.parse",
+          "line": 456
+        },
+        {
+          "callable": "literal_assignment",
+          "line": 457
+        },
+        {
+          "callable": "equal",
+          "line": 458
+        },
+        {
+          "callable": "token_span",
+          "line": 459
+        },
+        {
+          "callable": "require",
+          "line": 460
+        },
+        {
+          "callable": "require",
+          "line": 462
+        },
+        {
+          "callable": "equal",
+          "line": 464
+        },
+        {
+          "callable": "tick",
+          "line": 466
+        },
+        {
+          "callable": "rendered.decode",
+          "line": 456
+        },
+        {
+          "callable": "digest",
+          "line": 464
+        },
+        {
+          "callable": "<Call>.decode",
+          "line": 451
+        },
+        {
+          "callable": "json.dumps",
+          "line": 452
+        },
+        {
+          "callable": "len",
+          "line": 455
+        },
+        {
+          "callable": "<Call>.encode",
+          "line": 464
+        },
+        {
+          "callable": "canonical",
+          "line": 451
+        },
+        {
+          "callable": "ast.dump",
+          "line": 464
+        }
+      ],
+      "first_line": 450,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 467,
+      "name": "render_assessor",
+      "observation": "One JSON-generated Python STRING substitution; complete restoration/prefix/suffix/normalized-AST equality; actual future output not produced in review.",
+      "sha256": "58dc3eaca71f639d2bfec21bb1d4c868be59d3f3a41d1e093e7969d2fdc40797",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 1577,
+      "calls": [
+        {
+          "callable": "ast.parse",
+          "line": 471
+        },
+        {
+          "callable": "ast.parse",
+          "line": 472
+        },
+        {
+          "callable": "sorted",
+          "line": 493
+        },
+        {
+          "callable": "equal",
+          "line": 495
+        },
+        {
+          "callable": "equal",
+          "line": 496
+        },
+        {
+          "callable": "equal",
+          "line": 498
+        },
+        {
+          "callable": "tick",
+          "line": 499
+        },
+        {
+          "callable": "template.decode",
+          "line": 471
+        },
+        {
+          "callable": "actual.decode",
+          "line": 472
+        },
+        {
+          "callable": "literal_assignment",
+          "line": 476
+        },
+        {
+          "callable": "literal_assignment",
+          "line": 477
+        },
+        {
+          "callable": "require",
+          "line": 478
+        },
+        {
+          "callable": "equal",
+          "line": 479
+        },
+        {
+          "callable": "token_span",
+          "line": 480
+        },
+        {
+          "callable": "actual.splitlines",
+          "line": 481
+        },
+        {
+          "callable": "tokenize.tokenize",
+          "line": 483
+        },
+        {
+          "callable": "require",
+          "line": 488
+        },
+        {
+          "callable": "edits.append",
+          "line": 490
+        },
+        {
+          "callable": "ast.dump",
+          "line": 496
+        },
+        {
+          "callable": "ast.dump",
+          "line": 497
+        },
+        {
+          "callable": "len",
+          "line": 498
+        },
+        {
+          "callable": "digest",
+          "line": 498
+        },
+        {
+          "callable": "io.BytesIO",
+          "line": 483
+        },
+        {
+          "callable": "sum",
+          "line": 484
+        },
+        {
+          "callable": "sum",
+          "line": 485
+        },
+        {
+          "callable": "matches.append",
+          "line": 487
+        },
+        {
+          "callable": "map",
+          "line": 484
+        },
+        {
+          "callable": "map",
+          "line": 485
+        },
+        {
+          "callable": "len",
+          "line": 488
+        },
+        {
+          "callable": "token_span",
+          "line": 490
+        },
+        {
+          "callable": "slice",
+          "line": 490
+        },
+        {
+          "callable": "type",
+          "line": 489
+        },
+        {
+          "callable": "token_span",
+          "line": 490
+        }
+      ],
+      "first_line": 470,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 499,
+      "name": "verify_observer",
+      "observation": "Only two exact literal bindings; NUMBER/STRING lexical tokens; restored full template and normalized whole AST match.",
+      "sha256": "39df72ac1721da122fa0b19d9d89f621c7f14a5e042b701d2c5d4ba8c9dd00b1",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 1051,
+      "calls": [
+        {
+          "callable": "require",
+          "line": 503
+        },
+        {
+          "callable": "equal",
+          "line": 508
+        },
+        {
+          "callable": "equal",
+          "line": 509
+        },
+        {
+          "callable": "os.setpriority",
+          "line": 510
+        },
+        {
+          "callable": "require",
+          "line": 511
+        },
+        {
+          "callable": "time.get_clock_info",
+          "line": 512
+        },
+        {
+          "callable": "equal",
+          "line": 513
+        },
+        {
+          "callable": "equal",
+          "line": 514
+        },
+        {
+          "callable": "equal",
+          "line": 515
+        },
+        {
+          "callable": "equal",
+          "line": 516
+        },
+        {
+          "callable": "equal",
+          "line": 517
+        },
+        {
+          "callable": "os.fstat",
+          "line": 518
+        },
+        {
+          "callable": "require",
+          "line": 519
+        },
+        {
+          "callable": "os.set_blocking",
+          "line": 520
+        },
+        {
+          "callable": "os.umask",
+          "line": 521
+        },
+        {
+          "callable": "tick",
+          "line": 522
+        },
+        {
+          "callable": "os.path.realpath",
+          "line": 508
+        },
+        {
+          "callable": "digest",
+          "line": 517
+        },
+        {
+          "callable": "os.getpriority",
+          "line": 511
+        },
+        {
+          "callable": "canonical",
+          "line": 517
+        },
+        {
+          "callable": "stat.S_ISFIFO",
+          "line": 519
+        },
+        {
+          "callable": "os.getuid",
+          "line": 507
+        },
+        {
+          "callable": "os.geteuid",
+          "line": 507
+        },
+        {
+          "callable": "os.fpathconf",
+          "line": 519
+        }
+      ],
+      "first_line": 502,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 522,
+      "name": "qualify_runtime",
+      "observation": "Fixed Darwin CPython3.15 startup/uid/version/clock checks, ownNI15/umask077 and nonblocking FIFO; actual trusted runtime/topology remains external.",
+      "sha256": "480d9070b23c853f316c01309fdeb92ec3144310f500ccc7c43bd760369b41fa",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 3107,
+      "calls": [
+        {
+          "callable": "open_directories",
+          "line": 526
+        },
+        {
+          "callable": "read_fixed",
+          "line": 527
+        },
+        {
+          "callable": "literal_assignment",
+          "line": 528
+        },
+        {
+          "callable": "equal",
+          "line": 529
+        },
+        {
+          "callable": "read_fixed",
+          "line": 530
+        },
+        {
+          "callable": "read_fixed",
+          "line": 531
+        },
+        {
+          "callable": "equal",
+          "line": 532
+        },
+        {
+          "callable": "equal",
+          "line": 534
+        },
+        {
+          "callable": "verify_observer",
+          "line": 536
+        },
+        {
+          "callable": "read_fixed",
+          "line": 537
+        },
+        {
+          "callable": "equal",
+          "line": 538
+        },
+        {
+          "callable": "read_fixed",
+          "line": 539
+        },
+        {
+          "callable": "equal",
+          "line": 540
+        },
+        {
+          "callable": "config_method",
+          "line": 547
+        },
+        {
+          "callable": "equal",
+          "line": 548
+        },
+        {
+          "callable": "load",
+          "line": 551
+        },
+        {
+          "callable": "equal",
+          "line": 568
+        },
+        {
+          "callable": "equal",
+          "line": 569
+        },
+        {
+          "callable": "retained_inputs",
+          "line": 578
+        },
+        {
+          "callable": "ast.parse",
+          "line": 528
+        },
+        {
+          "callable": "read_fixed",
+          "line": 536
+        },
+        {
+          "callable": "read_fixed",
+          "line": 544
+        },
+        {
+          "callable": "equal",
+          "line": 545
+        },
+        {
+          "callable": "digest",
+          "line": 548
+        },
+        {
+          "callable": "canonical",
+          "line": 569
+        },
+        {
+          "callable": "tick",
+          "line": 577
+        },
+        {
+          "callable": "actual_driver.decode",
+          "line": 528
+        },
+        {
+          "callable": "len",
+          "line": 532
+        },
+        {
+          "callable": "digest",
+          "line": 532
+        },
+        {
+          "callable": "len",
+          "line": 534
+        },
+        {
+          "callable": "digest",
+          "line": 534
+        },
+        {
+          "callable": "len",
+          "line": 538
+        },
+        {
+          "callable": "digest",
+          "line": 538
+        },
+        {
+          "callable": "len",
+          "line": 540
+        },
+        {
+          "callable": "digest",
+          "line": 540
+        },
+        {
+          "callable": "canonical",
+          "line": 548
+        },
+        {
+          "callable": "config_method",
+          "line": 554
+        },
+        {
+          "callable": "os.stat",
+          "line": 572
+        },
+        {
+          "callable": "ValueError",
+          "line": 576
+        },
+        {
+          "callable": "len",
+          "line": 545
+        },
+        {
+          "callable": "digest",
+          "line": 545
+        }
+      ],
+      "first_line": 525,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 579,
+      "name": "preflight",
+      "observation": "Exact staged sources/proofs, root association and absent new names; source/review/host truth needs independent root inspection.",
+      "sha256": "73ff080e9045a11f106b790d9850a86ab5fcb12707389a3836c416b0a31ccb4f",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 895,
+      "calls": [],
+      "first_line": 582,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 594,
+      "name": "child_record",
+      "observation": "Separate actual exit, line, EOF, close, cap and unknown facts; no status inference.",
+      "sha256": "c5b521797da88aa1608476a5042dfccb6534c071b5883c87e989ef35c2e4d476",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 4415,
+      "calls": [
+        {
+          "callable": "require",
+          "line": 689
+        },
+        {
+          "callable": "tick",
+          "line": 690
+        },
+        {
+          "callable": "tick",
+          "line": 603
+        },
+        {
+          "callable": "selectors.DefaultSelector",
+          "line": 604
+        },
+        {
+          "callable": "tick",
+          "line": 605
+        },
+        {
+          "callable": "require",
+          "line": 664
+        },
+        {
+          "callable": "load",
+          "line": 665
+        },
+        {
+          "callable": "equal",
+          "line": 666
+        },
+        {
+          "callable": "getattr",
+          "line": 607
+        },
+        {
+          "callable": "require",
+          "line": 608
+        },
+        {
+          "callable": "require",
+          "line": 609
+        },
+        {
+          "callable": "os.set_blocking",
+          "line": 610
+        },
+        {
+          "callable": "tick",
+          "line": 611
+        },
+        {
+          "callable": "selector.register",
+          "line": 612
+        },
+        {
+          "callable": "tick",
+          "line": 613
+        },
+        {
+          "callable": "time.monotonic_ns",
+          "line": 615
+        },
+        {
+          "callable": "tick",
+          "line": 619
+        },
+        {
+          "callable": "require",
+          "line": 635
+        },
+        {
+          "callable": "selector.select",
+          "line": 636
+        },
+        {
+          "callable": "tick",
+          "line": 637
+        },
+        {
+          "callable": "canonical",
+          "line": 666
+        },
+        {
+          "callable": "latch",
+          "line": 669
+        },
+        {
+          "callable": "getattr",
+          "line": 673
+        },
+        {
+          "callable": "pipe.fileno",
+          "line": 610
+        },
+        {
+          "callable": "TimeoutError",
+          "line": 618
+        },
+        {
+          "callable": "handle.poll",
+          "line": 621
+        },
+        {
+          "callable": "time.monotonic_ns",
+          "line": 622
+        },
+        {
+          "callable": "tick",
+          "line": 627
+        },
+        {
+          "callable": "tick",
+          "line": 663
+        },
+        {
+          "callable": "selector.close",
+          "line": 684
+        },
+        {
+          "callable": "tick",
+          "line": 685
+        },
+        {
+          "callable": "stat.S_ISFIFO",
+          "line": 608
+        },
+        {
+          "callable": "os.fpathconf",
+          "line": 609
+        },
+        {
+          "callable": "require",
+          "line": 629
+        },
+        {
+          "callable": "tick",
+          "line": 634
+        },
+        {
+          "callable": "min",
+          "line": 636
+        },
+        {
+          "callable": "os.read",
+          "line": 641
+        },
+        {
+          "callable": "time.monotonic_ns",
+          "line": 642
+        },
+        {
+          "callable": "len",
+          "line": 647
+        },
+        {
+          "callable": "<Subscript>.hex",
+          "line": 649
+        },
+        {
+          "callable": "selector.unregister",
+          "line": 662
+        },
+        {
+          "callable": "pipe.close",
+          "line": 676
+        },
+        {
+          "callable": "time.monotonic_ns",
+          "line": 677
+        },
+        {
+          "callable": "tick",
+          "line": 678
+        },
+        {
+          "callable": "<Subscript>.append",
+          "line": 687
+        },
+        {
+          "callable": "latch",
+          "line": 688
+        },
+        {
+          "callable": "pipe.fileno",
+          "line": 609
+        },
+        {
+          "callable": "key.fileobj.fileno",
+          "line": 641
+        },
+        {
+          "callable": "tick",
+          "line": 644
+        },
+        {
+          "callable": "ValueError",
+          "line": 652
+        },
+        {
+          "callable": "require",
+          "line": 654
+        },
+        {
+          "callable": "<Subscript>.append",
+          "line": 680
+        },
+        {
+          "callable": "latch",
+          "line": 681
+        },
+        {
+          "callable": "os.fstat",
+          "line": 608
+        },
+        {
+          "callable": "len",
+          "line": 641
+        },
+        {
+          "callable": "require",
+          "line": 656
+        },
+        {
+          "callable": "pipe.fileno",
+          "line": 608
+        },
+        {
+          "callable": "type",
+          "line": 629
+        },
+        {
+          "callable": "<Subscript>.endswith",
+          "line": 656
+        },
+        {
+          "callable": "<Subscript>.count",
+          "line": 656
+        }
+      ],
+      "first_line": 597,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 691,
+      "name": "capture",
+      "observation": "Fixed per-child512/2048 caps, nonblocking selectors and original-end waits; real poll then immediate clock; no drain/signal and first-failure latch.",
+      "sha256": "336e564779371446d6aaf8b402d49d0a3af36ce79fa9c36c33e2e9704e64dc53",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 2258,
+      "calls": [
+        {
+          "callable": "read_fixed",
+          "line": 696
+        },
+        {
+          "callable": "load",
+          "line": 697
+        },
+        {
+          "callable": "keys",
+          "line": 698
+        },
+        {
+          "callable": "integer",
+          "line": 699
+        },
+        {
+          "callable": "integer",
+          "line": 700
+        },
+        {
+          "callable": "require",
+          "line": 701
+        },
+        {
+          "callable": "tick",
+          "line": 702
+        },
+        {
+          "callable": "expected.items",
+          "line": 716
+        },
+        {
+          "callable": "integer",
+          "line": 718
+        },
+        {
+          "callable": "integer",
+          "line": 719
+        },
+        {
+          "callable": "require",
+          "line": 721
+        },
+        {
+          "callable": "equal",
+          "line": 723
+        },
+        {
+          "callable": "read_fixed",
+          "line": 729
+        },
+        {
+          "callable": "tick",
+          "line": 730
+        },
+        {
+          "callable": "equal",
+          "line": 717
+        },
+        {
+          "callable": "load",
+          "line": 723
+        }
+      ],
+      "first_line": 694,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 731,
+      "name": "observer_parent",
+      "observation": "Only after actual observer0/reap/console/bothEOF/closes; exact parent24 and line/hash/time/S/A binding; request semantics delegated to sole assessor.",
+      "sha256": "f379a305dad6d915ccc0909d99d6bc6ce5042ffd8ad888e33f510e2408eb9d1b",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 1397,
+      "calls": [
+        {
+          "callable": "console.decode",
+          "line": 744
+        }
+      ],
+      "first_line": 734,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 751,
+      "name": "make_assessor_config",
+      "observation": "Unchanged24 slots use actual handle samples and measured/inspected refs; no fake future fields.",
+      "sha256": "f374a414c342e735882a5468fecaf3b0b4ba44212cdaf9fef7d6ac45675fc557",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 2929,
+      "calls": [
+        {
+          "callable": "load",
+          "line": 755
+        },
+        {
+          "callable": "os.open",
+          "line": 756
+        },
+        {
+          "callable": "tick",
+          "line": 758
+        },
+        {
+          "callable": "directory_id",
+          "line": 759
+        },
+        {
+          "callable": "load",
+          "line": 765
+        },
+        {
+          "callable": "keys",
+          "line": 766
+        },
+        {
+          "callable": "equal",
+          "line": 767
+        },
+        {
+          "callable": "equal",
+          "line": 768
+        },
+        {
+          "callable": "require",
+          "line": 769
+        },
+        {
+          "callable": "integer",
+          "line": 770
+        },
+        {
+          "callable": "hexhash",
+          "line": 771
+        },
+        {
+          "callable": "equal",
+          "line": 772
+        },
+        {
+          "callable": "require",
+          "line": 773
+        },
+        {
+          "callable": "equal",
+          "line": 774
+        },
+        {
+          "callable": "integer",
+          "line": 776
+        },
+        {
+          "callable": "integer",
+          "line": 777
+        },
+        {
+          "callable": "require",
+          "line": 779
+        },
+        {
+          "callable": "equal",
+          "line": 795
+        },
+        {
+          "callable": "equal",
+          "line": 796
+        },
+        {
+          "callable": "equal",
+          "line": 798
+        },
+        {
+          "callable": "retained_inputs",
+          "line": 801
+        },
+        {
+          "callable": "owned_directory",
+          "line": 759
+        },
+        {
+          "callable": "read_fixed",
+          "line": 763
+        },
+        {
+          "callable": "canonical",
+          "line": 772
+        },
+        {
+          "callable": "value.get",
+          "line": 776
+        },
+        {
+          "callable": "value.get",
+          "line": 777
+        },
+        {
+          "callable": "digest",
+          "line": 787
+        },
+        {
+          "callable": "canonical",
+          "line": 796
+        },
+        {
+          "callable": "len",
+          "line": 797
+        },
+        {
+          "callable": "digest",
+          "line": 797
+        },
+        {
+          "callable": "canonical",
+          "line": 798
+        },
+        {
+          "callable": "len",
+          "line": 774
+        },
+        {
+          "callable": "digest",
+          "line": 774
+        },
+        {
+          "callable": "config_text.encode",
+          "line": 787
+        },
+        {
+          "callable": "type",
+          "line": 769
+        },
+        {
+          "callable": "len",
+          "line": 769
+        },
+        {
+          "callable": "len",
+          "line": 773
+        },
+        {
+          "callable": "max",
+          "line": 779
+        }
+      ],
+      "first_line": 754,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 802,
+      "name": "qualify_assessment",
+      "observation": "Only after actual assessor0/EOF/closes; exact26 pending output, current seven input hashes/snapshot, full config and strict causal ordering.",
+      "sha256": "127aa235a0e76612a042c5913867cc19b44214fd73c27fb2b67a7201cd989e7d",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 5578,
+      "calls": [
+        {
+          "callable": "bind_config",
+          "line": 808
+        },
+        {
+          "callable": "qualify_runtime",
+          "line": 810
+        },
+        {
+          "callable": "preflight",
+          "line": 811
+        },
+        {
+          "callable": "time.monotonic_ns",
+          "line": 814
+        },
+        {
+          "callable": "publish",
+          "line": 817
+        },
+        {
+          "callable": "child_record",
+          "line": 826
+        },
+        {
+          "callable": "tick",
+          "line": 827
+        },
+        {
+          "callable": "subprocess.Popen",
+          "line": 829
+        },
+        {
+          "callable": "time.monotonic_ns",
+          "line": 833
+        },
+        {
+          "callable": "tick",
+          "line": 836
+        },
+        {
+          "callable": "capture",
+          "line": 837
+        },
+        {
+          "callable": "observer_parent",
+          "line": 839
+        },
+        {
+          "callable": "retained_inputs",
+          "line": 840
+        },
+        {
+          "callable": "publish",
+          "line": 841
+        },
+        {
+          "callable": "publish",
+          "line": 854
+        },
+        {
+          "callable": "publish",
+          "line": 862
+        },
+        {
+          "callable": "equal",
+          "line": 863
+        },
+        {
+          "callable": "make_assessor_config",
+          "line": 864
+        },
+        {
+          "callable": "render_assessor",
+          "line": 865
+        },
+        {
+          "callable": "publish",
+          "line": 866
+        },
+        {
+          "callable": "read_fixed",
+          "line": 867
+        },
+        {
+          "callable": "equal",
+          "line": 868
+        },
+        {
+          "callable": "equal",
+          "line": 869
+        },
+        {
+          "callable": "publish",
+          "line": 870
+        },
+        {
+          "callable": "retained_inputs",
+          "line": 878
+        },
+        {
+          "callable": "child_record",
+          "line": 880
+        },
+        {
+          "callable": "tick",
+          "line": 881
+        },
+        {
+          "callable": "subprocess.Popen",
+          "line": 883
+        },
+        {
+          "callable": "time.monotonic_ns",
+          "line": 887
+        },
+        {
+          "callable": "tick",
+          "line": 890
+        },
+        {
+          "callable": "capture",
+          "line": 891
+        },
+        {
+          "callable": "qualify_assessment",
+          "line": 893
+        },
+        {
+          "callable": "canonical",
+          "line": 817
+        },
+        {
+          "callable": "canonical",
+          "line": 841
+        },
+        {
+          "callable": "canonical",
+          "line": 854
+        },
+        {
+          "callable": "canonical",
+          "line": 862
+        },
+        {
+          "callable": "canonical",
+          "line": 870
+        },
+        {
+          "callable": "read_fixed",
+          "line": 893
+        },
+        {
+          "callable": "render_assessor",
+          "line": 869
+        },
+        {
+          "callable": "digest",
+          "line": 820
+        },
+        {
+          "callable": "os.getpid",
+          "line": 855
+        },
+        {
+          "callable": "len",
+          "line": 872
+        },
+        {
+          "callable": "digest",
+          "line": 873
+        },
+        {
+          "callable": "digest",
+          "line": 875
+        },
+        {
+          "callable": "tick",
+          "line": 877
+        },
+        {
+          "callable": "CONFIG_TEXT.encode",
+          "line": 820
+        },
+        {
+          "callable": "list",
+          "line": 844
+        },
+        {
+          "callable": "config_text.encode",
+          "line": 872
+        },
+        {
+          "callable": "config_text.encode",
+          "line": 873
+        },
+        {
+          "callable": "CONFIG_TEXT.encode",
+          "line": 875
+        }
+      ],
+      "first_line": 805,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 896,
+      "name": "main",
+      "observation": "One outer START before guard and literal observer then assessor calls; global retained handles, no retry/renewal; actual future renders remain external proof.",
+      "sha256": "1a64cde4b1377ae1deacd9f2f6dcf2c21a90c1c76e615c807fe1099539ca2ba7",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    },
+    {
+      "bytes": 2745,
+      "calls": [
+        {
+          "callable": "tick",
+          "line": 905
+        },
+        {
+          "callable": "retained_inputs",
+          "line": 906
+        },
+        {
+          "callable": "publish",
+          "line": 927
+        },
+        {
+          "callable": "retained_inputs",
+          "line": 928
+        },
+        {
+          "callable": "canonical",
+          "line": 934
+        },
+        {
+          "callable": "require",
+          "line": 936
+        },
+        {
+          "callable": "tick",
+          "line": 937
+        },
+        {
+          "callable": "os.fstat",
+          "line": 938
+        },
+        {
+          "callable": "tick",
+          "line": 939
+        },
+        {
+          "callable": "require",
+          "line": 940
+        },
+        {
+          "callable": "os.set_blocking",
+          "line": 941
+        },
+        {
+          "callable": "tick",
+          "line": 942
+        },
+        {
+          "callable": "require",
+          "line": 943
+        },
+        {
+          "callable": "tick",
+          "line": 944
+        },
+        {
+          "callable": "tick",
+          "line": 917
+        },
+        {
+          "callable": "digest",
+          "line": 918
+        },
+        {
+          "callable": "canonical",
+          "line": 927
+        },
+        {
+          "callable": "latch",
+          "line": 947
+        },
+        {
+          "callable": "CONFIG_TEXT.encode",
+          "line": 918
+        },
+        {
+          "callable": "list",
+          "line": 921
+        },
+        {
+          "callable": "DIRS.pop",
+          "line": 931
+        },
+        {
+          "callable": "close_fd",
+          "line": 932
+        },
+        {
+          "callable": "len",
+          "line": 936
+        },
+        {
+          "callable": "stat.S_ISFIFO",
+          "line": 940
+        },
+        {
+          "callable": "os.write",
+          "line": 943
+        },
+        {
+          "callable": "len",
+          "line": 943
+        },
+        {
+          "callable": "STAMPS.items",
+          "line": 921
+        },
+        {
+          "callable": "os.fpathconf",
+          "line": 940
+        }
+      ],
+      "first_line": 899,
+      "full_text_reviewed": true,
+      "kind": "FunctionDef",
+      "last_line": 948,
+      "name": "finish",
+      "observation": "One guarded result and console attempt after barriers/postchecks/closes; later failure can stale earlier bytes; external actual driver exit/EOF upper bound mandatory.",
+      "sha256": "4f96eb07950c57cf3e3c98983d77d43c29efba9395b7b6066ac15b21460cdac3",
+      "verdict": "NO_P1_P2_IN_BOUNDED_SOURCE_SLICE"
+    }
+  ],
+  "execution": false,
+  "schema": "independent-full-function-review-v1",
+  "source_verdict_does_not_qualify_runtime": true
+}

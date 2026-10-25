@@ -1,0 +1,658 @@
+{
+  "complete_partition": [
+    {
+      "bytes": 241,
+      "first_line": 1,
+      "kind": "Expr",
+      "last_line": 5,
+      "name": null,
+      "sha256": "678a0855e80e3c4118081ae3a2e0e4115058e0a85cfda2126a90c49f847471c1"
+    },
+    {
+      "bytes": 21,
+      "first_line": 6,
+      "kind": "ImportFrom",
+      "last_line": 6,
+      "name": null,
+      "sha256": "97361d2a28f3a026e97ad6b653831b7235471f953af53a815c57eca42ba046ff"
+    },
+    {
+      "bytes": 16,
+      "first_line": 7,
+      "kind": "Import",
+      "last_line": 7,
+      "name": null,
+      "sha256": "adb0d8b7f7e9b15c79f1e69e159626797b85f8ebc6ad58b0aa5895b302942ca2"
+    },
+    {
+      "bytes": 14,
+      "first_line": 8,
+      "kind": "Import",
+      "last_line": 8,
+      "name": null,
+      "sha256": "7002efbd1fd0861b54df3575e2921d2c259d2a8379c4d5fff5f8842a2552c143"
+    },
+    {
+      "bytes": 16,
+      "first_line": 9,
+      "kind": "Import",
+      "last_line": 9,
+      "name": null,
+      "sha256": "0578139baa8835231355e06f7fc51643ad48d2c6333bd0777e80b84a93b8aad7"
+    },
+    {
+      "bytes": 2,
+      "first_line": 10,
+      "kind": "gap",
+      "last_line": 11,
+      "sha256": "75a11da44c802486bc6f65640aa48a730f0f684c5c07a42ba3cd1735eb3fb070"
+    },
+    {
+      "bytes": 7237,
+      "first_line": 12,
+      "kind": "FunctionDef",
+      "last_line": 99,
+      "name": null,
+      "sha256": "2e761b6ca184f9927dd1c5d955cf18d7512c12b36f3928955a190b69dc2c7cb4"
+    },
+    {
+      "bytes": 2,
+      "first_line": 100,
+      "kind": "gap",
+      "last_line": 101,
+      "sha256": "75a11da44c802486bc6f65640aa48a730f0f684c5c07a42ba3cd1735eb3fb070"
+    },
+    {
+      "bytes": 4043,
+      "first_line": 102,
+      "kind": "FunctionDef",
+      "last_line": 156,
+      "name": null,
+      "sha256": "8061a8ac348358182151a16a19aba70b3ecec77beec4f2503c0757d910ab8973"
+    },
+    {
+      "bytes": 2,
+      "first_line": 157,
+      "kind": "gap",
+      "last_line": 158,
+      "sha256": "75a11da44c802486bc6f65640aa48a730f0f684c5c07a42ba3cd1735eb3fb070"
+    },
+    {
+      "bytes": 38,
+      "first_line": 159,
+      "kind": "If",
+      "last_line": 160,
+      "name": null,
+      "sha256": "e4cbd39e1b29ec6682215729d5320a700234cabbeaa7774cdac2e131f7d69414"
+    }
+  ],
+  "declarations": [
+    {
+      "bytes": 7237,
+      "calls": [
+        {
+          "callable": "load",
+          "line": 14
+        },
+        {
+          "callable": "load",
+          "line": 20
+        },
+        {
+          "callable": "any",
+          "line": 42
+        },
+        {
+          "callable": "load",
+          "line": 50
+        },
+        {
+          "callable": "load",
+          "line": 51
+        },
+        {
+          "callable": "load",
+          "line": 61
+        },
+        {
+          "callable": "load",
+          "line": 82
+        },
+        {
+          "callable": "load",
+          "line": 95
+        },
+        {
+          "callable": "dict",
+          "line": 98
+        },
+        {
+          "callable": "RuntimeError",
+          "line": 19
+        },
+        {
+          "callable": "RuntimeError",
+          "line": 27
+        },
+        {
+          "callable": "any",
+          "line": 30
+        },
+        {
+          "callable": "RuntimeError",
+          "line": 31
+        },
+        {
+          "callable": "set",
+          "line": 33
+        },
+        {
+          "callable": "set",
+          "line": 33
+        },
+        {
+          "callable": "RuntimeError",
+          "line": 34
+        },
+        {
+          "callable": "RuntimeError",
+          "line": 43
+        },
+        {
+          "callable": "list",
+          "line": 44
+        },
+        {
+          "callable": "Path",
+          "line": 45
+        },
+        {
+          "callable": "Path",
+          "line": 50
+        },
+        {
+          "callable": "Path",
+          "line": 51
+        },
+        {
+          "callable": "RuntimeError",
+          "line": 60
+        },
+        {
+          "callable": "Path",
+          "line": 61
+        },
+        {
+          "callable": "RuntimeError",
+          "line": 67
+        },
+        {
+          "callable": "Path",
+          "line": 69
+        },
+        {
+          "callable": "RuntimeError",
+          "line": 77
+        },
+        {
+          "callable": "RuntimeError",
+          "line": 81
+        },
+        {
+          "callable": "RuntimeError",
+          "line": 85
+        },
+        {
+          "callable": "io_until",
+          "line": 86
+        },
+        {
+          "callable": "Path",
+          "line": 95
+        },
+        {
+          "callable": "RuntimeError",
+          "line": 97
+        },
+        {
+          "callable": "set",
+          "line": 16
+        },
+        {
+          "callable": "sha",
+          "line": 18
+        },
+        {
+          "callable": "set",
+          "line": 29
+        },
+        {
+          "callable": "set",
+          "line": 29
+        },
+        {
+          "callable": "records.values",
+          "line": 44
+        },
+        {
+          "callable": "path.is_symlink",
+          "line": 46
+        },
+        {
+          "callable": "RuntimeError",
+          "line": 49
+        },
+        {
+          "callable": "RuntimeError",
+          "line": 71
+        },
+        {
+          "callable": "str",
+          "line": 73
+        },
+        {
+          "callable": "sha",
+          "line": 76
+        },
+        {
+          "callable": "sha",
+          "line": 79
+        },
+        {
+          "callable": "sha",
+          "line": 80
+        },
+        {
+          "callable": "len",
+          "line": 84
+        },
+        {
+          "callable": "str",
+          "line": 87
+        },
+        {
+          "callable": "RuntimeError",
+          "line": 89
+        },
+        {
+          "callable": "tree",
+          "line": 96
+        },
+        {
+          "callable": "current_records.items",
+          "line": 42
+        },
+        {
+          "callable": "path.is_absolute",
+          "line": 46
+        },
+        {
+          "callable": "path.is_file",
+          "line": 46
+        },
+        {
+          "callable": "sha",
+          "line": 48
+        },
+        {
+          "callable": "load",
+          "line": 59
+        },
+        {
+          "callable": "path.is_absolute",
+          "line": 70
+        },
+        {
+          "callable": "str",
+          "line": 70
+        },
+        {
+          "callable": "Path",
+          "line": 76
+        },
+        {
+          "callable": "p.relative_to",
+          "line": 87
+        },
+        {
+          "callable": "REPO.rglob",
+          "line": 87
+        },
+        {
+          "callable": "path.is_symlink",
+          "line": 92
+        },
+        {
+          "callable": "RuntimeError",
+          "line": 94
+        },
+        {
+          "callable": "Path",
+          "line": 96
+        },
+        {
+          "callable": "path.stat",
+          "line": 47
+        },
+        {
+          "callable": "Path",
+          "line": 59
+        },
+        {
+          "callable": "path.resolve",
+          "line": 70
+        },
+        {
+          "callable": "p.is_file",
+          "line": 87
+        },
+        {
+          "callable": "p.is_symlink",
+          "line": 87
+        },
+        {
+          "callable": "path.is_file",
+          "line": 92
+        },
+        {
+          "callable": "oct",
+          "line": 93
+        },
+        {
+          "callable": "sha",
+          "line": 93
+        },
+        {
+          "callable": "path.stat",
+          "line": 92
+        },
+        {
+          "callable": "path.stat",
+          "line": 93
+        }
+      ],
+      "first_line": 12,
+      "kind": "FunctionDef",
+      "last_line": 99,
+      "name": "bind_sources",
+      "sha256": "2e761b6ca184f9927dd1c5d955cf18d7512c12b36f3928955a190b69dc2c7cb4"
+    },
+    {
+      "bytes": 4043,
+      "calls": [
+        {
+          "callable": "nice15",
+          "line": 103
+        },
+        {
+          "callable": "time.monotonic",
+          "line": 104
+        },
+        {
+          "callable": "io_until",
+          "line": 105
+        },
+        {
+          "callable": "initialize_bytes",
+          "line": 106
+        },
+        {
+          "callable": "output.exists",
+          "line": 108
+        },
+        {
+          "callable": "save",
+          "line": 111
+        },
+        {
+          "callable": "bind_sources",
+          "line": 112
+        },
+        {
+          "callable": "<Call>.resolve",
+          "line": 115
+        },
+        {
+          "callable": "<Call>.resolve",
+          "line": 118
+        },
+        {
+          "callable": "private.chmod",
+          "line": 119
+        },
+        {
+          "callable": "shutil.copytree",
+          "line": 125
+        },
+        {
+          "callable": "plistlib.loads",
+          "line": 128
+        },
+        {
+          "callable": "sha",
+          "line": 133
+        },
+        {
+          "callable": "sha",
+          "line": 134
+        },
+        {
+          "callable": "dict",
+          "line": 137
+        },
+        {
+          "callable": "load",
+          "line": 143
+        },
+        {
+          "callable": "dict",
+          "line": 150
+        },
+        {
+          "callable": "save",
+          "line": 156
+        },
+        {
+          "callable": "RuntimeError",
+          "line": 109
+        },
+        {
+          "callable": "dict",
+          "line": 111
+        },
+        {
+          "callable": "load",
+          "line": 114
+        },
+        {
+          "callable": "tree",
+          "line": 116
+        },
+        {
+          "callable": "RuntimeError",
+          "line": 117
+        },
+        {
+          "callable": "<BinOp>.mkdir",
+          "line": 121
+        },
+        {
+          "callable": "RuntimeError",
+          "line": 123
+        },
+        {
+          "callable": "RuntimeError",
+          "line": 127
+        },
+        {
+          "callable": "read",
+          "line": 128
+        },
+        {
+          "callable": "<BinOp>.exists",
+          "line": 131
+        },
+        {
+          "callable": "RuntimeError",
+          "line": 132
+        },
+        {
+          "callable": "RuntimeError",
+          "line": 136
+        },
+        {
+          "callable": "Path",
+          "line": 114
+        },
+        {
+          "callable": "Path",
+          "line": 115
+        },
+        {
+          "callable": "Path",
+          "line": 118
+        },
+        {
+          "callable": "private.stat",
+          "line": 122
+        },
+        {
+          "callable": "HERE.stat",
+          "line": 122
+        },
+        {
+          "callable": "tree",
+          "line": 126
+        },
+        {
+          "callable": "tree",
+          "line": 126
+        },
+        {
+          "callable": "str",
+          "line": 137
+        },
+        {
+          "callable": "str",
+          "line": 138
+        },
+        {
+          "callable": "str",
+          "line": 139
+        },
+        {
+          "callable": "str",
+          "line": 139
+        },
+        {
+          "callable": "str",
+          "line": 142
+        },
+        {
+          "callable": "str",
+          "line": 150
+        },
+        {
+          "callable": "str",
+          "line": 150
+        },
+        {
+          "callable": "str",
+          "line": 153
+        },
+        {
+          "callable": "list",
+          "line": 153
+        },
+        {
+          "callable": "time.monotonic",
+          "line": 111
+        },
+        {
+          "callable": "tempfile.mkdtemp",
+          "line": 118
+        },
+        {
+          "callable": "str",
+          "line": 138
+        }
+      ],
+      "first_line": 102,
+      "kind": "FunctionDef",
+      "last_line": 156,
+      "name": "main",
+      "sha256": "8061a8ac348358182151a16a19aba70b3ecec77beec4f2503c0757d910ab8973"
+    }
+  ],
+  "module_statements": [
+    {
+      "bytes": 241,
+      "first_line": 1,
+      "kind": "Expr",
+      "last_line": 5,
+      "name": null,
+      "sha256": "678a0855e80e3c4118081ae3a2e0e4115058e0a85cfda2126a90c49f847471c1"
+    },
+    {
+      "bytes": 21,
+      "first_line": 6,
+      "kind": "ImportFrom",
+      "last_line": 6,
+      "name": null,
+      "sha256": "97361d2a28f3a026e97ad6b653831b7235471f953af53a815c57eca42ba046ff"
+    },
+    {
+      "bytes": 16,
+      "first_line": 7,
+      "kind": "Import",
+      "last_line": 7,
+      "name": null,
+      "sha256": "adb0d8b7f7e9b15c79f1e69e159626797b85f8ebc6ad58b0aa5895b302942ca2"
+    },
+    {
+      "bytes": 14,
+      "first_line": 8,
+      "kind": "Import",
+      "last_line": 8,
+      "name": null,
+      "sha256": "7002efbd1fd0861b54df3575e2921d2c259d2a8379c4d5fff5f8842a2552c143"
+    },
+    {
+      "bytes": 16,
+      "first_line": 9,
+      "kind": "Import",
+      "last_line": 9,
+      "name": null,
+      "sha256": "0578139baa8835231355e06f7fc51643ad48d2c6333bd0777e80b84a93b8aad7"
+    },
+    {
+      "bytes": 7237,
+      "first_line": 12,
+      "kind": "FunctionDef",
+      "last_line": 99,
+      "name": null,
+      "sha256": "2e761b6ca184f9927dd1c5d955cf18d7512c12b36f3928955a190b69dc2c7cb4"
+    },
+    {
+      "bytes": 4043,
+      "first_line": 102,
+      "kind": "FunctionDef",
+      "last_line": 156,
+      "name": null,
+      "sha256": "8061a8ac348358182151a16a19aba70b3ecec77beec4f2503c0757d910ab8973"
+    },
+    {
+      "bytes": 38,
+      "first_line": 159,
+      "kind": "If",
+      "last_line": 160,
+      "name": null,
+      "sha256": "e4cbd39e1b29ec6682215729d5320a700234cabbeaa7774cdac2e131f7d69414"
+    }
+  ],
+  "source": {
+    "bytes": 11632,
+    "lines": 160,
+    "sha256": "16f2c5d9dce3f3bce8a871bd53eea06ebf1818080de5f9bdaae3997b86304e9a"
+  }
+}
