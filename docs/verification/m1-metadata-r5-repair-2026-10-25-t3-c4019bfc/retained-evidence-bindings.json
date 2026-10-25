@@ -1,0 +1,99 @@
+{
+  "artifact_source_assessment": {
+    "record": {
+      "bytes": 13696,
+      "git_blob": "76207392d9799782fb3a9e8fe8f2f8a29dcb07ef",
+      "path": "docs/verification/m1-ordinary-data-source-assessment-2026-10-24-t3-a104ad9f/ASSESSMENT.md",
+      "ref": "a26871ad9fdae2d55ff53544aed26ae0cdf2620e",
+      "sha256": "034a5384e06e468a41d752496fd3bc8fe57a6af1715ca0fbbd92657aa913652e"
+    },
+    "scope": "bounded retained artifact/source assessment only; no new acceptance or raw/private reinspection"
+  },
+  "completed_source_runtime": "FILE_PASS_ONLY; no repeat; parent still inspects original records and guards causally",
+  "execution": false,
+  "manifest_sha256": "1761bb0f0a999d26ea27d2ebf656d554a083f0f017429d3ee76e8edd8ad26a26",
+  "metadata_basis_bridge": {
+    "caller_logic_clearance": false,
+    "commit": "ce7fe4a1af63af88e0b0b2cacab288e4a46a0d13",
+    "import_commit": "15e9f45",
+    "inputs": [
+      {
+        "bytes": 9315,
+        "path": "docs/verification/m1-metadata-basis-bridge-2026-10-25-t3-755a8865/REVIEW.md",
+        "ref": "ce7fe4a1af63af88e0b0b2cacab288e4a46a0d13",
+        "sha256": "c2ec19622014ddb0185a0c0408fe2af48a4b3ae6d41ab47da933e8bad32b0dd2"
+      },
+      {
+        "bytes": 2229,
+        "path": "docs/verification/m1-metadata-basis-bridge-2026-10-25-t3-755a8865/projection.json",
+        "ref": "ce7fe4a1af63af88e0b0b2cacab288e4a46a0d13",
+        "sha256": "8b472d931bbd8badae09dfde07ddeb733f0063948cb093f9041831a08e664be2"
+      },
+      {
+        "bytes": 8585,
+        "path": "docs/verification/m1-metadata-basis-bridge-2026-10-25-t3-755a8865/bridge-checks.json",
+        "ref": "ce7fe4a1af63af88e0b0b2cacab288e4a46a0d13",
+        "sha256": "2769ed303b2385e314355aa3945e52bab971f8346431f9b3010ffaab4d02b742"
+      }
+    ],
+    "projection": "wrapper[commands]",
+    "projection_canonical_sha256": "b46d03fec326f76748fb0e181a0bb607ad4cef58198efaa62e762c22336e30e0",
+    "read_here": "tracked public references only; no new bridge audit or private payload read",
+    "runtime": "UNVERIFIED",
+    "source_rows": 42,
+    "streams": 100,
+    "supplement_rows": 8,
+    "verdict": "BOUNDED_DATA_CLEAR",
+    "wrapper_canonical_sha256": "7fd71953cfbbb71bc194a17412840e4b2420a081e6615e2865cc7abf4103c159",
+    "wrapper_raw_sha256": "1670da99b768e01de3fc4ecd4d644fba7031ea09e55d97c1395290bfb681c05f"
+  },
+  "original_completed_source_record": {
+    "bytes": 2745,
+    "git_blob": "4334b843b78539a775134f98f06257d103d59a1a",
+    "path": "docs/verification/m1-metadata-clock-failure-repair-2026-10-25-t3-d1e829a9/completed-source-bindings.json",
+    "ref": "e4ec20bdc6058efaa2fdb272ca88b84a7519116c",
+    "sha256": "d69b7841a3e67fad86a07f26be170d4068d2e2267d11d195e19c478fa3496294"
+  },
+  "preserved_historical_states": "All FAILED/UNKNOWN and whole-flow NI15 UNVERIFIED unchanged",
+  "private_basis": {
+    "binding_to_full_historical_EXPECTED": "BOUNDED_DATA_CLEAR: entire wrapper.commands equals corrected historical EXPECTED, per ce7fe4a; unequal full-wrapper/raw digests remain distinct",
+    "bytes": 142587,
+    "read_by_this_task": false,
+    "sha256": "1670da99b768e01de3fc4ecd4d644fba7031ea09e55d97c1395290bfb681c05f"
+  },
+  "read_scope_this_task": "tracked public repository blobs only; no private read or new audit",
+  "retained_files": {
+    "qualification-source-files.json": {
+      "bytes": 406,
+      "sha256": "ebd466312ed346991a9cdd72c64535dbc0696af82b4061b9d79d91fcc937d192"
+    },
+    "source-files-once.guard": {
+      "bytes": 1563,
+      "sha256": "9e0b9a5afb47b7755d1ebaf5f50edf45cf0a7372baaa2f83b83d9255011aed4c"
+    },
+    "source-files-os-exit.json": {
+      "bytes": 926,
+      "sha256": "3e05e0315b0b608a19d7725286bc1becacc103e0650c4bb9760fad7ad06f4d13"
+    },
+    "source-files-parent-result.json": {
+      "bytes": 1778,
+      "sha256": "9b26841fbb4803ca3444bf84e90e9d0db32e0515a9d2da5052e7c7baf403b5e1"
+    },
+    "source-files.stderr.bin": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "source-files.stdout.bin": {
+      "bytes": 406,
+      "sha256": "ebd466312ed346991a9cdd72c64535dbc0696af82b4061b9d79d91fcc937d192"
+    },
+    "source-qualification-guard.json": {
+      "bytes": 426,
+      "sha256": "29cf75185b594bb760877bf8a297dcbbbb262d940bcc51c4a08ccdefa5233650"
+    }
+  },
+  "runtime": "UNVERIFIED",
+  "saved_audit_commit": "f7f9b10fc99cc2196d0fd88a5b93a35a39a9adc5",
+  "schema": "openergy.metadata-r5-retained-evidence-bindings.v1",
+  "whole_flow_NI15": "UNVERIFIED"
+}

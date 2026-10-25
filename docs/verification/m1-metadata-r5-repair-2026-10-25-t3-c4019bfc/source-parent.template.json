@@ -1,0 +1,68 @@
+{
+  "schema": "openergy.metadata-parent-boundary.v2",
+  "mode": "source",
+  "clock": {
+    "schema": "openergy.shared-clock.v1",
+    "platform": "darwin",
+    "api": "time.clock_gettime_ns",
+    "clock": "CLOCK_MONOTONIC",
+    "clock_id": 6,
+    "unit": "nanoseconds",
+    "scope": "same-host-same-boot"
+  },
+  "phase_started_ns": null,
+  "phase_deadline_ns": null,
+  "source_file_qualification": {
+    "schema": "openergy.completed-source-files.v1",
+    "saved_audit_commit": "f7f9b10fc99cc2196d0fd88a5b93a35a39a9adc5",
+    "retained_files": {
+      "source-files-parent-result.json": {
+        "bytes": 1778,
+        "sha256": "9b26841fbb4803ca3444bf84e90e9d0db32e0515a9d2da5052e7c7baf403b5e1"
+      },
+      "source-files-once.guard": {
+        "bytes": 1563,
+        "sha256": "9e0b9a5afb47b7755d1ebaf5f50edf45cf0a7372baaa2f83b83d9255011aed4c"
+      },
+      "qualification-source-files.json": {
+        "bytes": 406,
+        "sha256": "ebd466312ed346991a9cdd72c64535dbc0696af82b4061b9d79d91fcc937d192"
+      },
+      "source-files.stdout.bin": {
+        "bytes": 406,
+        "sha256": "ebd466312ed346991a9cdd72c64535dbc0696af82b4061b9d79d91fcc937d192"
+      },
+      "source-files.stderr.bin": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source-files-os-exit.json": {
+        "bytes": 926,
+        "sha256": "3e05e0315b0b608a19d7725286bc1becacc103e0650c4bb9760fad7ad06f4d13"
+      },
+      "source-qualification-guard.json": {
+        "bytes": 426,
+        "sha256": "29cf75185b594bb760877bf8a297dcbbbb262d940bcc51c4a08ccdefa5233650"
+      }
+    },
+    "parent_inspection": {
+      "schema": "openergy.source-files-parent-inspection.v1",
+      "clock": {
+        "schema": "openergy.shared-clock.v1",
+        "platform": "darwin",
+        "api": "time.clock_gettime_ns",
+        "clock": "CLOCK_MONOTONIC",
+        "clock_id": 6,
+        "unit": "nanoseconds",
+        "scope": "same-host-same-boot"
+      },
+      "inspected_ns": null,
+      "evidence_root": null,
+      "manifest_sha256": "1761bb0f0a999d26ea27d2ebf656d554a083f0f017429d3ee76e8edd8ad26a26",
+      "actual_helper_exit": null,
+      "actual_ssh_exit": null,
+      "inspected": null
+    }
+  },
+  "entry_authentication": null
+}
