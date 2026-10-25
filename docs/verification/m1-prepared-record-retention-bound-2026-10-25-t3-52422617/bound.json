@@ -1,0 +1,58 @@
+{
+  "abstract_upper_bound_model_sha256": "25f967ba839667bf9ae4635d6029c9e0dd74d03146c074b2229ad7e3a0916cd5",
+  "base64_upper_bound_bytes": 97160,
+  "bundle_tree_rows": 167,
+  "combined_bound_bytes": 113544,
+  "condition": "exact frozen14-field source semantics and exact retained inputs; one private-root leaf no more than255 bytes; actual path and raw bytes remain to be checked",
+  "encoded_prepared_upper_bound_bytes": 72870,
+  "environment_keys": 13,
+  "execution": false,
+  "existing_transport_stdout_cap_bytes": 131072,
+  "future_reader_implemented": false,
+  "independent_bound_review": null,
+  "inputs": [
+    {
+      "bytes": 11632,
+      "kind": "unchanged prepare source",
+      "path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/prepare.py.txt",
+      "sha256": "16f2c5d9dce3f3bce8a871bd53eea06ebf1818080de5f9bdaae3997b86304e9a"
+    },
+    {
+      "bytes": 12781,
+      "kind": "unchanged common encoder",
+      "path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/common.py.txt",
+      "sha256": "20a9c16030b2de53b99870f25bada68137bfc6fbc5b67cc29f8e878312d4129c"
+    },
+    {
+      "bytes": 876,
+      "kind": "unchanged limits",
+      "path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/limits.json",
+      "sha256": "cadd06e19607f5dbe0ad070072673c8e518d961b1554958d243a0d028243d733"
+    },
+    {
+      "bytes": 33785,
+      "kind": "actual retained artifact receipt",
+      "sha256": "67daf1812cd935ae420eb10a14755ed65aeb096cdd213ee0c2ea4886731abd53"
+    },
+    {
+      "bytes": 32734,
+      "kind": "retained build bundle inventory",
+      "sha256": "e8255fcb45e50be4ea11710e921f64d8a60368fde2f217a7044e07b0d490e78f"
+    }
+  ],
+  "leaf_byte_bound": 255,
+  "maximum_ASCII_JSON_bytes_per_leaf_byte": 6,
+  "model_is_real_prepared_data": false,
+  "new_prepare_copy_or_product_invocations": 0,
+  "new_remote_reads": 0,
+  "path_occurrences": 7,
+  "prepared_json_exists_or_inspected": false,
+  "prepared_keys": 14,
+  "private_path_prefix": "/private/tmp/",
+  "read_only_setup_miss_retained": "preceding source/limits.json lookup exited1; correct limits.json packet root verified here",
+  "runtime_acceptance": false,
+  "schema": "openergy.prepared-record-static-retention-bound.v1",
+  "selected_limits": 21,
+  "separate_reader_envelope_allowance_bytes": 16384,
+  "single_prepared_file_transport_fits": true
+}
