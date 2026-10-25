@@ -1,0 +1,33 @@
+{
+  "schema": "openergy.metadata-exit-deadline-route-plan.v1",
+  "execution": false,
+  "enabled": false,
+  "status": "SOURCE_PROPOSAL_NOT_RUN_UNVERIFIED",
+  "steps": [
+    {"order": 1, "action": "Parent reviews frozen source, patches, hashes, D4 rule and exact client prefix.", "execution": false},
+    {"order": 2, "action": "In a separately assigned parent task, run the full real local CLI once, with four fixed cases and a valid external envelope.", "execution": false, "max_invocations": 1, "max_cases": 4, "retries": 0},
+    {"order": 3, "action": "Retain exact source, private raw evidence, real reader and driver exits, both deadline checks and independent outer observation. Stop on failure; do not rewrite old evidence.", "execution": false}
+  ],
+  "clock_scope": "one Mac; same qualified CPython interpreter; direct parent/reader child; time.monotonic only",
+  "qualification_targets": {"local": "CPython 3.15 NOT_RUN_UNVERIFIED", "M1": "CPython 3.13.9 NOT_RUN_UNVERIFIED; separate future task, no cross-host clock comparison"},
+  "flow_seconds": 28,
+  "owned_reader_reap_reserve_seconds": 2,
+  "interpreter_startup_allowance_seconds": 1,
+  "remote_commands_authorized": 0,
+  "native_stop_requests": 0,
+  "new_watchdog_authorized": false,
+  "retry_or_recovery_authorized": false,
+  "old_query_window": "CLOSED",
+  "sparkle_window": "CLOSED",
+  "hard_os_preemption": false,
+  "external_envelope_required": true,
+  "preserved": {
+    "old_metadata": "TIMED_OUT_UNVERIFIED",
+    "first_failed_driver_flow": "FAILED_INCOMPLETE",
+    "windows_native_versions_effective_limits": "UNVERIFIED",
+    "historical_preservation": "UNVERIFIED",
+    "remote_exit_current_state": "UNVERIFIED",
+    "remote_cleanup_proved": false,
+    "full_goal": "INCOMPLETE"
+  }
+}

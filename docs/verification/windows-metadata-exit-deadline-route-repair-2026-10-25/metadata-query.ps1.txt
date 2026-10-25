@@ -1,0 +1,87 @@
+# Inert source proposal. Six fixed installed files; no product or child launch.
+$ErrorActionPreference='Stop';$ProgressPreference='SilentlyContinue'
+[Console]::OutputEncoding=[Text.UTF8Encoding]::new($false,$true)
+$deadline=[Diagnostics.Stopwatch]::GetTimestamp()+20L*[Diagnostics.Stopwatch]::Frequency
+$totalRead=0L;$totalOutput=0L
+function Before {if([Diagnostics.Stopwatch]::GetTimestamp() -ge $deadline){throw 'metadata deadline'}}
+function Emit($record){
+ Before
+ # All records are flat scalars. Six bytes per UTF-16 unit bounds JSON escaping
+ # and UTF-8 before allocating the serialized line. Non-string scalars fit 32.
+ $bound=3L
+ foreach($key in $record.Keys){
+  $bound+=6L*([string]$key).Length+4L
+  $value=$record[$key]
+  if($value -is [string]){$bound+=6L*$value.Length+2L}else{$bound+=32L}
+ }
+ if($bound -gt 262144 -or $script:totalOutput+$bound -gt 524288){throw 'metadata serialization cap'}
+ $line=ConvertTo-Json -InputObject $record -Depth 12 -Compress
+ $bytes=[Text.Encoding]::UTF8.GetByteCount($line)+1
+ if($bytes -gt 262144 -or $script:totalOutput+$bytes -gt 524288){throw 'metadata output cap'}
+ $script:totalOutput+=$bytes
+ [Console]::Out.Write($line+"`n");[Console]::Out.Flush()
+ Before
+}
+$paths=@(
+ 'C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe',
+ 'c:\program files\powershell\7\pwsh.exe',
+ 'C:\WINDOWS\System32\OpenSSH\sshd.exe',
+ 'c:\program files\powershell\7\System.Diagnostics.Process.dll',
+ 'c:\program files\powershell\7\System.Private.CoreLib.dll',
+ 'c:\program files\powershell\7\pwsh.runtimeconfig.json'
+)
+$self=$null;$code=1
+try{
+ $self=[Diagnostics.Process]::GetCurrentProcess();$self.PriorityClass='BelowNormal'
+ Emit ([ordered]@{schema='openergy.windows-installed-metadata.ndjson.v1';kind='begin';metadata_only=$true;files_expected=6})
+ for($index=0;$index -lt $paths.Count;$index++){
+  Before
+  $path=$paths[$index];$f=Get-Item -LiteralPath $path -ErrorAction Stop
+  if($f.PSIsContainer -or $f.Length -gt 268435456){throw 'metadata file size/type cap'}
+  $isConfig=($index -eq 5)
+  if($isConfig -and $f.Length -gt 65536){throw 'runtimeconfig cap'}
+  $v=$f.VersionInfo;$fileVersion=$v.FileVersion;$productVersion=$v.ProductVersion
+  if(($null -ne $fileVersion -and $fileVersion.Length -gt 4096) -or ($null -ne $productVersion -and $productVersion.Length -gt 4096)){throw 'metadata version field cap'}
+  $stream=$null;$hash=$null;$config=$null;$decoder=$null
+  try{
+   Before
+   $stream=[IO.FileStream]::new($f.FullName,[IO.FileMode]::Open,[IO.FileAccess]::Read,([IO.FileShare]::ReadWrite -bor [IO.FileShare]::Delete),65536)
+   $length=$stream.Length
+   if($length -ne $f.Length -or $length -gt 268435456 -or ($isConfig -and $length -gt 65536) -or $totalRead+$length -gt 536870912){throw 'metadata aggregate/changed length cap'}
+   $hash=[Security.Cryptography.SHA256]::Create();$buffer=New-Object byte[] 65536;$read=0L
+   if($isConfig){$config=[IO.MemoryStream]::new()}
+   while($true){
+    Before
+    # At most one sentinel byte beyond the initial length, never an unbounded read.
+    $request=[int][Math]::Min(65536,$length-$read+1)
+    $count=$stream.Read($buffer,0,$request)
+    Before
+    if($count -eq 0){break}
+    if($read+$count -gt $length -or $totalRead+$count -gt 536870912){throw 'metadata read cap/changed file'}
+    $null=$hash.TransformBlock($buffer,0,$count,$buffer,0)
+    if($isConfig){$config.Write($buffer,0,$count)}
+    $read+=$count;$totalRead+=$count
+   }
+   if($read -ne $length -or $stream.Length -ne $length){throw 'metadata incomplete hash'}
+   $null=$hash.TransformFinalBlock((New-Object byte[] 0),0,0)
+   $digest=([BitConverter]::ToString($hash.Hash)).Replace('-','').ToLowerInvariant()
+   $runtime=$null
+   if($isConfig){
+    $config.Position=0
+    $decoder=[IO.StreamReader]::new($config,[Text.UTF8Encoding]::new($false,$true),$true,4096,$true)
+    $runtime=$decoder.ReadToEnd()
+   }
+   Before
+   Emit ([ordered]@{kind='file';index=($index+1);requested_path=$path;path=$f.FullName;length=$length;file_version=$fileVersion;product_version=$productVersion;sha256=$digest;runtime_config=$runtime})
+  }finally{
+   foreach($resource in @($decoder,$config,$hash,$stream)){if($null -ne $resource){$resource.Dispose()}}
+  }
+ }
+ Before
+ Emit ([ordered]@{kind='complete';files=6;metadata_only=$true;priority=$self.PriorityClass.ToString();session=$self.SessionId;bytes_hashed=$totalRead})
+ $code=0
+}catch{
+ # Keep error text fixed. Partial records already flushed stay on stdout.
+ [Console]::Error.WriteLine('METADATA_INCOMPLETE');[Console]::Error.Flush()
+}finally{if($null -ne $self){$self.Dispose()}}
+exit $code
