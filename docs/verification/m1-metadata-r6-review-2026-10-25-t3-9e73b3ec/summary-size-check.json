@@ -1,0 +1,28 @@
+{
+  "additional_copy_parent_authentication": "one SYSTEM entry before private caller, inside COPY phase",
+  "caller_sha256": "ba757e7a03d890f3b3ad5e9b72c1580bbc4839543a746f81516bc962983de650",
+  "capacity_example": {
+    "immediately_available": 65536,
+    "minimum_remaining_prefix_bytes": 143580
+  },
+  "capacity_example_scope": "arithmetic witness for a finite pipe/no reader progress during write; not an observed or qualified target capacity",
+  "copy_caller_command_total": 52,
+  "execution": false,
+  "independent_shape_reconstruction_exact": true,
+  "local_transport": "131072-byte stdout cap applies only to separate SOURCE-launcher receipt, per parent task; not direct caller stdout",
+  "native_records": 50,
+  "omitted": "auxiliary records, most process/status/clock fields, outer result fields, active command, direct child stream references and nonzero byte lengths",
+  "parent_shape_bytes": 209116,
+  "parent_shape_path": "docs/verification/m1-source-transport-size-binding-2026-10-25/minimum-shape.json",
+  "parent_shape_sha256": "b0b8fc94cf7b1c44fc31128aee173e192798cb552726d8909c422c1170b50c13",
+  "proposed_source_capture": "1MiB full caller capture, under separate implementation; capture cap does not enlarge pipe",
+  "runtime": "UNVERIFIED",
+  "schema": "openergy.metadata-r6-summary-static-size.v1",
+  "shape_fields": [
+    "actual_direct_children",
+    "collected_commands",
+    "native_records"
+  ],
+  "source_command_total": 53,
+  "writer": "one nonblocking os.write(1,data), exact full count required; partial returns1 then os._exit"
+}

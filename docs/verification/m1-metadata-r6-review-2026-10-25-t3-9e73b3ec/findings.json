@@ -1,0 +1,80 @@
+{
+  "artifact_or_execution_authority": false,
+  "execution": false,
+  "findings": [
+    {
+      "capture_cap_distinction": "The proposed SOURCE payload 1MiB capture cap is reader storage, not a pipe-size guarantee. The separate local 128KiB cap applies to launcher receipt only.",
+      "consequence_locations": [
+        {
+          "line_end": 751,
+          "line_start": 731,
+          "path": "docs/verification/m1-metadata-r5-repair-2026-10-25-t3-c4019bfc/metadata-caller.py.txt"
+        },
+        {
+          "line_end": 761,
+          "line_start": 754,
+          "path": "docs/verification/m1-metadata-r5-repair-2026-10-25-t3-c4019bfc/metadata-caller.py.txt"
+        }
+      ],
+      "id": "R6-P2-1",
+      "limits": "No claim that every target schedule must fail. Actual target pipe capacity, delivery and final parent/payload integration are UNVERIFIED. This is a source liveness regression for an ordinary allowed pipe schedule, not a measured runtime failure.",
+      "minimal_repair": "For successful durable result publication, retain its exact reference and emit a separately closed compact success receipt within a justified one-write pipe allowance. Bind its semantics in parent handling and retain all full records, failure details, actual exits/EOF and original phase/caps. Do not grant success from a result file alone. Do not add a second writer, retry a partial summary, add time or change common/startup flags.",
+      "minimum_success_summary_bytes": 209116,
+      "normal_capacity_example": "65536 immediately writable bytes with no reader progress leaves at least143580 bytes unsent. This is an arithmetic/static pipe witness, not an observed target capacity or runtime result.",
+      "primary_location": {
+        "line_end": 640,
+        "line_start": 632,
+        "path": "docs/verification/m1-metadata-r5-repair-2026-10-25-t3-c4019bfc/metadata-caller.py.txt"
+      },
+      "priority": "P2",
+      "size_construction_locations": [
+        {
+          "line_end": 563,
+          "line_start": 536,
+          "path": "docs/verification/m1-metadata-r5-repair-2026-10-25-t3-c4019bfc/metadata-caller.py.txt"
+        },
+        {
+          "line_end": 629,
+          "line_start": 624,
+          "path": "docs/verification/m1-metadata-r5-repair-2026-10-25-t3-c4019bfc/metadata-caller.py.txt"
+        },
+        {
+          "line_end": 736,
+          "line_start": 719,
+          "path": "docs/verification/m1-metadata-r5-repair-2026-10-25-t3-c4019bfc/metadata-caller.py.txt"
+        }
+      ],
+      "static_path": "emit_summary sets fd1 nonblocking, attempts the full result once, rejects a partial count, main returns1 and the entry block uses os._exit(1). The omitted tail is never sent. Parent then gets partial JSON and actual failure even though command/data work succeeded.",
+      "status": "OPEN_SOURCE",
+      "title": "Keep the normal full-result summary out of a single nonblocking pipe write",
+      "trigger": "All finite commands and the durable result succeed; normal bounded pipe stdout has less immediately writable space than the full encoded result, and its reader makes no progress during the nonblocking write."
+    }
+  ],
+  "new_human_gate": false,
+  "p1_count": 0,
+  "p2_count": 1,
+  "prior_disposition": [
+    {
+      "id": "original-R1",
+      "locations": "caller35-38,65-115,307-354,357-381,650-653",
+      "reason": "Explicit integer clock6 domain and conservative local conversion remain AST-exact; no old absolute time is retagged; parent causal inspection remains external.",
+      "status": "CLOSED_SOURCE_ONLY"
+    },
+    {
+      "id": "original-R2",
+      "locations": "caller536-595,719-742",
+      "reason": "Failed collected COMMAND status is latched before raw publication; comparator follows durable raw/status; publication errors and null/partial facts remain separate.",
+      "status": "CLOSED_SOURCE_ONLY"
+    },
+    {
+      "id": "R4-R3",
+      "locations": "caller194-226,632-640,754-761",
+      "reason": "No caller-owned buffered source/stdout payload remains; explicit raw close has no Python payload to flush and is not retried; os._exit bypasses finalization. No new clearance of unchanged common cleanup or OS-stall behavior.",
+      "status": "CLOSED_CALLER_OWNED_SOURCE_ONLY"
+    }
+  ],
+  "runtime": "UNVERIFIED",
+  "schema": "openergy.metadata-r6-findings.v1",
+  "startup_disposition": "Closed source contract matches exact observed six-name SYSTEM3.9.6 set, original required inputs and COPY strict map; pre-entry startup effects and private3.13 startup stay UNVERIFIED.",
+  "verdict": "HOLD_SOURCE_FINDING"
+}
