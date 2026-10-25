@@ -1,0 +1,1864 @@
+"""INERT SOURCE ONLY. IMPLEMENTED_UNREVIEWED. No execution grant.
+Fixed SYSTEM stdin parent for exactly one unchanged file-only prepare.
+No transport, COPY qualification, controller, product or watchdog entry.
+"""
+import os
+import sys
+import time
+
+# One original remote envelope. No process-relative clock crosses a process.
+try:
+    if sys.platform != 'darwin' or getattr(time, 'CLOCK_MONOTONIC', None) != 6:
+        os._exit(1)
+    REMOTE_START = time.clock_gettime_ns(6)
+    if type(REMOTE_START) is not int or not 0 <= REMOTE_START < 10 ** 20:
+        os._exit(1)
+    REMOTE_END = REMOTE_START + 128000000000
+    if time.clock_gettime_ns(6) >= REMOTE_END:
+        os._exit(1)
+    NICE_BEFORE = os.getpriority(os.PRIO_PROCESS, 0)
+    os.setpriority(os.PRIO_PROCESS, 0, 15)
+    OWN_NICE = os.getpriority(os.PRIO_PROCESS, 0)
+    if OWN_NICE != 15 or time.clock_gettime_ns(6) >= REMOTE_END:
+        os._exit(1)
+except BaseException:
+    os._exit(1)
+
+try:
+    import contextlib
+    import hashlib
+    import importlib.util
+    import json
+    import math
+    from pathlib import Path
+    import selectors
+    import signal
+    import stat
+    import subprocess
+except BaseException:
+    os._exit(1)
+
+# BEGIN CLOSED CONFIG -- replace only this ONE constant JSON-string token.
+CONFIG_TEXT = '{"artifact_publication":{"artifact-binding-once.guard":null,"artifact-binding-receipt.json":null},"completed_SOURCE":{"metadata-source-parent.json":null,"source-caller-os.json":null,"source-caller.stderr.bin":null,"source-caller.stdout.bin":null,"source-launch-once.json":null,"source-launch-receipt.json":null},"evidence_root":"/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503","execution":false,"parent":{"actual_all53_source_statuses_and50_comparisons_and212_raws_inspected":null,"actual_prepare_exit_EOF_and_full_receipt_retention_owned":null,"actual_rendered_payload_le_1MiB_bound":null,"actual_source_boundary_and_all_seven_originals_inspected":null,"actual_source_collector0_ssh0_eof_D4_inspected":null,"all_final_source_and_review_payloads_bound":null,"all_supporting_raw_refs_and_build_ABI_plist_no_transfer_inspected":null,"artifact_data_independent_clear_bound":null,"console_single_writer_live_reader_bound":null,"exact29token_route_and_SYSTEM_stdin_entry_authenticated":null,"exact_single_CONFIG_token_restore_prefix_suffix_AST_hash_verified":null,"exclusive_root_no_other_mutators_through_exit":null,"full_artifact_schema_and_receipt_contract_satisfied":null,"original_local135_work130_and_remote_enclosure_owned":null,"publisher_actual_collector0_ssh0_eof_D4_inspected":null,"publisher_full_receipt_all8_actual_bytes_modes_inspected":null,"publisher_independent_clear_bound":null},"reviews":{"artifact_data":{"candidate_commit":null,"review_commit":null,"review_sha256":null,"source_sha256":null,"verdict":null},"capsule":{"candidate_commit":null,"review_commit":null,"review_sha256":null,"source_sha256":null,"verdict":null},"publisher":{"candidate_commit":null,"review_commit":null,"review_sha256":null,"source_sha256":null,"verdict":null}},"schema":"openergy.prepare-parent-config.v1","template_sha256":null}'
+# END CLOSED CONFIG
+
+ROOT = '/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503'
+SYSTEM = '/usr/bin/python3'
+PRIVATE_PYTHON = '/Users/m1-dev/.local/state/openergy-verification/m1-prerequisite-data-20261024-d896c0b3636a/extracted-data/python/bin/python3.13'
+SOURCE_ROOT = '/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/repo'
+NS = 1000000000
+FILE_CAP = 8388608
+TOTAL_CAP = 33554432
+INITIAL_CAP = 12517376
+RAW_CAP = 1048576
+CONSOLE_CAP = 512
+ENTRY_CAP = 4096
+DEPTH_CAP = 4
+STATUS_CAP = 16384
+RECEIPT_CAP = 262144
+CLOCK = {'api': 'time.clock_gettime_ns',
+ 'clock': 'CLOCK_MONOTONIC',
+ 'clock_id': 6,
+ 'platform': 'darwin',
+ 'schema': 'openergy.shared-clock.v1',
+ 'scope': 'same-host-same-boot',
+ 'unit': 'nanoseconds'}
+COMPLETED = {'qualification-source-files.json': {'bytes': 406,
+                                     'sha256': 'ebd466312ed346991a9cdd72c64535dbc0696af82b4061b9d79d91fcc937d192'},
+ 'source-files-once.guard': {'bytes': 1563,
+                             'sha256': '9e0b9a5afb47b7755d1ebaf5f50edf45cf0a7372baaa2f83b83d9255011aed4c'},
+ 'source-files-os-exit.json': {'bytes': 926,
+                               'sha256': '3e05e0315b0b608a19d7725286bc1becacc103e0650c4bb9760fad7ad06f4d13'},
+ 'source-files-parent-result.json': {'bytes': 1778,
+                                     'sha256': '9b26841fbb4803ca3444bf84e90e9d0db32e0515a9d2da5052e7c7baf403b5e1'},
+ 'source-files.stderr.bin': {'bytes': 0,
+                             'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ 'source-files.stdout.bin': {'bytes': 406,
+                             'sha256': 'ebd466312ed346991a9cdd72c64535dbc0696af82b4061b9d79d91fcc937d192'},
+ 'source-qualification-guard.json': {'bytes': 426,
+                                     'sha256': '29cf75185b594bb760877bf8a297dcbbbb262d940bcc51c4a08ccdefa5233650'}}
+INITIAL_INPUTS = {'artifact-receipt.template.json': {'bytes': 3496,
+                                    'sha256': '6250a8698664c757af9f9bdb5ef191f3604d82725282ae860741eae2529939d3'},
+ 'build-source-bindings.json': {'bytes': 151287,
+                                'sha256': '20e011251151cec81f69c4b80b0072d9fd0a98c1eaaf0e6c74d83ff752546617'},
+ 'command-vectors.json': {'bytes': 12370,
+                          'sha256': 'e3ff5756ab3b35a5c815e50ac1fad6520117836e080849260de87592bd327fa0'},
+ 'common.py': {'bytes': 12781,
+               'sha256': '20a9c16030b2de53b99870f25bada68137bfc6fbc5b67cc29f8e878312d4129c'},
+ 'controller.py': {'bytes': 36307,
+                   'sha256': '08f1bbea8aeb5852b4aaddd0f3f693c7717c69e5e898462baa90b49cba41e3a4'},
+ 'coverage.py': {'bytes': 11382,
+                 'sha256': 'd154561f7f256e41b32c90941f7ce18ffa79d5284d23eecea9be88cc1c48f747'},
+ 'exec_owned.py': {'bytes': 2219,
+                   'sha256': 'e7d9a755eed1fadfd04b43b3b96dbd0663cabdf07cc5aa7808ce006183859af2'},
+ 'expected-source-metadata.json': {'bytes': 142587,
+                                   'sha256': '1670da99b768e01de3fc4ecd4d644fba7031ea09e55d97c1395290bfb681c05f'},
+ 'file-qualification.recipe.py.txt': {'bytes': 7381,
+                                      'sha256': 'bf2ddd03f00bedbf799b4eee518a2b7b25d1eb9a6df06a2f55c419252f6fa428'},
+ 'input-pins.json': {'bytes': 4920,
+                     'sha256': '31a17c129e0af6c8c0437458c01fa8c28cffb89f29ee327648a31fed96608352'},
+ 'limits.json': {'bytes': 876,
+                 'sha256': 'cadd06e19607f5dbe0ad070072673c8e518d961b1554958d243a0d028243d733'},
+ 'macproc.py': {'bytes': 8075,
+                'sha256': 'd4f6fe358bd9af786fc4c2cba61f1a47f3f4015c918aae85cf8e6aa1c6d3e6c7'},
+ 'metadata.recipe.json': {'bytes': 7915,
+                          'sha256': 'f97b12054aceb745cadcd3159d25f4693b3570a44d216ffdd96d9c1ddf05701e'},
+ 'ownership.py': {'bytes': 35975,
+                  'sha256': '3ac4bab54db909beb236d0d9caa4ee83084ad9b566aa19d97c5b6d26c356b091'},
+ 'port_diagnostic.py': {'bytes': 10096,
+                        'sha256': '9d35bf1adbde9209562d9b4cfa211b75574a0fb1922dc0297761880c2d6d3985'},
+ 'prepare.py': {'bytes': 11632,
+                'sha256': '16f2c5d9dce3f3bce8a871bd53eea06ebf1818080de5f9bdaae3997b86304e9a'},
+ 'probe.py': {'bytes': 699,
+              'sha256': 'd65d17246bbd9057576e32454014b00afed6988dfead7899251435302a651efd'},
+ 'qualification.recipe.json': {'bytes': 7671,
+                               'sha256': 'd90586546d6b3127dca26147b9d090544d29d7a8b229479966dae68ef25d3b11'},
+ 'source-checks.json': {'bytes': 2932,
+                        'sha256': '2bde5cf1f9396df5c7d8518caaadcdd69eafc5ff2f39117158efaf87e8d080f5'},
+ 'watchdog.py': {'bytes': 18760,
+                 'sha256': '5efe2cd41f9339463187dfc3d5b11ec8d14f1a159a58787e9b3e01fe60db158d'}}
+MANIFEST_HASH = '1761bb0f0a999d26ea27d2ebf656d554a083f0f017429d3ee76e8edd8ad26a26'
+AUDIT = 'f7f9b10fc99cc2196d0fd88a5b93a35a39a9adc5'
+PINS = {'artifact-receipt.template.json': {'bytes': 3496,
+                                    'sha256': '6250a8698664c757af9f9bdb5ef191f3604d82725282ae860741eae2529939d3'},
+ 'build-source-bindings.json': {'bytes': 151287,
+                                'sha256': '20e011251151cec81f69c4b80b0072d9fd0a98c1eaaf0e6c74d83ff752546617'},
+ 'common.py': {'bytes': 12781,
+               'sha256': '20a9c16030b2de53b99870f25bada68137bfc6fbc5b67cc29f8e878312d4129c'},
+ 'controller.py': {'bytes': 36307,
+                   'sha256': '08f1bbea8aeb5852b4aaddd0f3f693c7717c69e5e898462baa90b49cba41e3a4'},
+ 'coverage.py': {'bytes': 11382,
+                 'sha256': 'd154561f7f256e41b32c90941f7ce18ffa79d5284d23eecea9be88cc1c48f747'},
+ 'exec_owned.py': {'bytes': 2219,
+                   'sha256': 'e7d9a755eed1fadfd04b43b3b96dbd0663cabdf07cc5aa7808ce006183859af2'},
+ 'file-qualification.recipe.py.txt': {'bytes': 7381,
+                                      'sha256': 'bf2ddd03f00bedbf799b4eee518a2b7b25d1eb9a6df06a2f55c419252f6fa428'},
+ 'limits.json': {'bytes': 876,
+                 'sha256': 'cadd06e19607f5dbe0ad070072673c8e518d961b1554958d243a0d028243d733'},
+ 'macproc.py': {'bytes': 8075,
+                'sha256': 'd4f6fe358bd9af786fc4c2cba61f1a47f3f4015c918aae85cf8e6aa1c6d3e6c7'},
+ 'metadata.recipe.json': {'bytes': 7915,
+                          'sha256': 'f97b12054aceb745cadcd3159d25f4693b3570a44d216ffdd96d9c1ddf05701e'},
+ 'ownership.py': {'bytes': 35975,
+                  'sha256': '3ac4bab54db909beb236d0d9caa4ee83084ad9b566aa19d97c5b6d26c356b091'},
+ 'port_diagnostic.py': {'bytes': 10096,
+                        'sha256': '9d35bf1adbde9209562d9b4cfa211b75574a0fb1922dc0297761880c2d6d3985'},
+ 'prepare.py': {'bytes': 11632,
+                'sha256': '16f2c5d9dce3f3bce8a871bd53eea06ebf1818080de5f9bdaae3997b86304e9a'},
+ 'probe.py': {'bytes': 699,
+              'sha256': 'd65d17246bbd9057576e32454014b00afed6988dfead7899251435302a651efd'},
+ 'qualification.recipe.json': {'bytes': 7671,
+                               'sha256': 'd90586546d6b3127dca26147b9d090544d29d7a8b229479966dae68ef25d3b11'},
+ 'source-checks.json': {'bytes': 2932,
+                        'sha256': '2bde5cf1f9396df5c7d8518caaadcdd69eafc5ff2f39117158efaf87e8d080f5'},
+ 'watchdog.py': {'bytes': 18760,
+                 'sha256': '5efe2cd41f9339463187dfc3d5b11ec8d14f1a159a58787e9b3e01fe60db158d'}}
+EIGHT = {'abi-source-assessment.md': {'bytes': 13696,
+                              'sha256': '034a5384e06e468a41d752496fd3bc8fe57a6af1715ca0fbbd92657aa913652e'},
+ 'artifact-receipt.json': {'bytes': 33785,
+                           'sha256': '67daf1812cd935ae420eb10a14755ed65aeb096cdd213ee0c2ea4886731abd53'},
+ 'operation.bound.json': {'bytes': 157,
+                          'sha256': '79365864068890381b0cd142d43571aeab62904c3fadb200b8f8767823d28a9d'},
+ 'qualification-abi.json': {'bytes': 8684,
+                            'sha256': '56a155e929e88e8ae1e1cf333520d2313534a3d78dbe45ce0005dec626f4d131'},
+ 'qualification-artifact-observations.json': {'bytes': 72362,
+                                              'sha256': '0aa904b5502ac04e072fe2029c5ee74b84cf16adb5aa0fd1e1afed4fe958b952'},
+ 'qualification-python.json': {'bytes': 4574,
+                               'sha256': 'fa6fd0066bf6bd32564907541cd0b68c5298e31a688af5eff47cf87994008a35'},
+ 'qualification-transfer.json': {'bytes': 1451,
+                                 'sha256': '465f91e45fe676770929eb17018ae8e7b7fe7163a1bf2493fb29b4c410b508fa'},
+ 'source-transport-parent-exit.json': {'bytes': 1651,
+                                       'sha256': 'c4d25a531a2692551dd94b7b502ec7f9cbf61e1d675218549aa3235ff816d597'}}
+SOURCE_RAWS = [{'bytes': 361,
+  'leaf': 'metadata-source-entry-template.stdout',
+  'sha256': '5d560a386fc026ba249c32894681b03196fddb390f232832511bf569e7ebc84b'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-entry-template.stderr',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1486,
+  'leaf': 'metadata-source-entry-template-os.json',
+  'sha256': 'ed6484aa3ce44b7948e9ffd4811d75f4248339452430d85b0c6ff8b346833a23'},
+ {'bytes': 381,
+  'leaf': 'metadata-source-entry-template-comparison.json',
+  'sha256': 'ffbb5216a3dc736d53eb90917da8990bfbfb0016bd20e51a51b886ff7291ab27'},
+ {'bytes': 14,
+  'leaf': 'metadata-source-python-version.stdout',
+  'sha256': '0df0c6930540e62de799e38c975aeb099e8c87be01ebcb3ac156bdee0d2c02f7'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-python-version.stderr',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1360,
+  'leaf': 'metadata-source-python-version-os.json',
+  'sha256': 'ac554b21bebaaecf8c86faf9b333e12fc59429f73aff33deba4cca40769bb744'},
+ {'bytes': 386,
+  'leaf': 'metadata-source-python-version-comparison.json',
+  'sha256': '41c4e65aee776817d483fe0c0b9a0a20387d2630db53b932de79b33470ac9af1'},
+ {'bytes': 6,
+  'leaf': 'metadata-source-python-architecture.stdout',
+  'sha256': 'c1669e1d8edca98769c37d494b76442a1d6e5ffffd7b4da1fb63aef8ebaf6f01'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-python-architecture.stderr',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1371,
+  'leaf': 'metadata-source-python-architecture-os.json',
+  'sha256': 'd1e37fcddfb66ff60c0d1c1faa767279f6d015a4e694114e4dd792bde02a0496'},
+ {'bytes': 396,
+  'leaf': 'metadata-source-python-architecture-comparison.json',
+  'sha256': 'a736788970b1216e8a723525eef029ed13569470d6472ff27a1c008d62710765'},
+ {'bytes': 13,
+  'leaf': 'metadata-source-object-0-arch.stdout',
+  'sha256': '9cb483fd3739db2602d4c5bf672f4af954dc6dad82b36e8642b034af58f11c11'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-0-arch.stderr',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1392,
+  'leaf': 'metadata-source-object-0-arch-os.json',
+  'sha256': 'e121f830b82d9320ba8b08b5e51e0c4aad256aff4b62b483808492c435e96a7d'},
+ {'bytes': 374,
+  'leaf': 'metadata-source-object-0-arch-comparison.json',
+  'sha256': '6842ad733b4d96c7e0783f464b3e53047f9de7932c916598a8ad4d59b84bd083'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-0-verify.stdout',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 385,
+  'leaf': 'metadata-source-object-0-verify.stderr',
+  'sha256': '8c76b7d97982fc57e56be17544e22e4e417673b5bee78b2a8ee0f2ef6a001b00'},
+ {'bytes': 1453,
+  'leaf': 'metadata-source-object-0-verify-os.json',
+  'sha256': '73b836b36f025d174f18cf160431fdef9d6ace90fcae289e6b55a938f5ff8161'},
+ {'bytes': 378,
+  'leaf': 'metadata-source-object-0-verify-comparison.json',
+  'sha256': '738a022bf0592ab6c91e65823529a6d429492b67486b7f738a904a843dfa90ee'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-0-display.stdout',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1002,
+  'leaf': 'metadata-source-object-0-display.stderr',
+  'sha256': '0a1a5d8a7ece15947a90ad52864bbfc7986e020f5f9825e2dc68afafd68a82a7'},
+ {'bytes': 1443,
+  'leaf': 'metadata-source-object-0-display-os.json',
+  'sha256': '66579bbcf80342aa9968b87ed795b62e8df7cf821165cd51511e05d20b796281'},
+ {'bytes': 380,
+  'leaf': 'metadata-source-object-0-display-comparison.json',
+  'sha256': 'bf06b059a78aed2aaaadbc0c1c07658f1efde71278ef67218a70137e400b55b9'},
+ {'bytes': 282,
+  'leaf': 'metadata-source-object-0-entitlements.stdout',
+  'sha256': '6f215ad37abcdd5161e53cadad9cb48972d347d3c4424ac8b9febbfe053f7586'},
+ {'bytes': 265,
+  'leaf': 'metadata-source-object-0-entitlements.stderr',
+  'sha256': 'af3181521335fb16b8459e85f068ebd092bd5c78eab6a036d91d15b063f1789e'},
+ {'bytes': 1466,
+  'leaf': 'metadata-source-object-0-entitlements-os.json',
+  'sha256': 'f464a36194dc3dd38b35be283f66eb8dc85b66b450bd3246e5e0d1e450e46151'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-0-entitlements-comparison.json',
+  'sha256': '4fd8fc9d7c77748119172a56f9b83e6b1c64b29a802a42899c382703f39ba740'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-0-requirements.stdout',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 177,
+  'leaf': 'metadata-source-object-0-requirements.stderr',
+  'sha256': '078ef5780898071eeefd173a6ade1683a5b2d98491a6122c3e74c028e1d54333'},
+ {'bytes': 1464,
+  'leaf': 'metadata-source-object-0-requirements-os.json',
+  'sha256': 'c41eae98de9b03fee723bdfd58f0ff2a688c694370c5ea54d9cdcc24ec783cb4'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-0-requirements-comparison.json',
+  'sha256': '71a8b17c024a690a809c89f19b1ec11af915563595d9955c6705c5fe500cbf54'},
+ {'bytes': 1175,
+  'leaf': 'metadata-source-object-0-dependencies.stdout',
+  'sha256': 'a5a70a0873c2494a1b3e64ce4cf9febf4d2162b83e0aa8c61fb4bbec2044400b'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-0-dependencies.stderr',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1433,
+  'leaf': 'metadata-source-object-0-dependencies-os.json',
+  'sha256': 'bb6ca391bd8af9a52cf41a891d7ebfa9e1e7433cf8de41a8617502b18495770c'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-0-dependencies-comparison.json',
+  'sha256': 'bab5d457c2ec5242e579bd46db5f53d107117d0b6f44f7ee6449171ea461158d'},
+ {'bytes': 12043,
+  'leaf': 'metadata-source-object-0-loadcommands.stdout',
+  'sha256': '9939ef9249c0b300c79166cd4e72abbe58a69b720f248f6c7824183a41a1e723'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-0-loadcommands.stderr',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1435,
+  'leaf': 'metadata-source-object-0-loadcommands-os.json',
+  'sha256': '2b965a55756a25f1f6bea656dd11a9449c61d8bb744283ce787dec59e78f35b6'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-0-loadcommands-comparison.json',
+  'sha256': 'be5478a47faa326d6f33e5569531935aab86995a1189d165b4f898be447896f6'},
+ {'bytes': 13,
+  'leaf': 'metadata-source-object-1-arch.stdout',
+  'sha256': '9cb483fd3739db2602d4c5bf672f4af954dc6dad82b36e8642b034af58f11c11'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-1-arch.stderr',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1389,
+  'leaf': 'metadata-source-object-1-arch-os.json',
+  'sha256': '1d31ec47ff3beb957eb5b908a772174db87ef5baf051d217e1804851d22e431c'},
+ {'bytes': 374,
+  'leaf': 'metadata-source-object-1-arch-comparison.json',
+  'sha256': '4cd699708bfe836333edf0476434cd859217499b5fd5ea5b3eb27bb01456d18b'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-1-verify.stdout',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1873,
+  'leaf': 'metadata-source-object-1-verify.stderr',
+  'sha256': '51184af46e5c19927a4f0a825c76da1ebb301536bd8ee058de762a00e26ed037'},
+ {'bytes': 1433,
+  'leaf': 'metadata-source-object-1-verify-os.json',
+  'sha256': '7a826b24d7f1beb61f37901e3a4ecbb5e739276a2e31395468d936a6d0213a34'},
+ {'bytes': 378,
+  'leaf': 'metadata-source-object-1-verify-comparison.json',
+  'sha256': '04021719ef7bc8b16924a3787321e7381ea0012d32046c2189889e4f76fe8655'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-1-display.stdout',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1017,
+  'leaf': 'metadata-source-object-1-display.stderr',
+  'sha256': '50b00a87df9dcae9b98340ba2e98a5b758656f713848f93d80a78ef7e0abcb40'},
+ {'bytes': 1421,
+  'leaf': 'metadata-source-object-1-display-os.json',
+  'sha256': '499a9a5c07a0ddce6cf086d0510459d2cf56d0113586bf40b2142705f2b97b07'},
+ {'bytes': 380,
+  'leaf': 'metadata-source-object-1-display-comparison.json',
+  'sha256': 'ba7c58780d62cecdbedcce1e69de140fda1c5f48b4bc0c6e8866a4da3857014e'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-1-entitlements.stdout',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 268,
+  'leaf': 'metadata-source-object-1-entitlements.stderr',
+  'sha256': '08f4fcbe7eeac29d06b6810c172f656240116cc235a6dcef3f58393f22606158'},
+ {'bytes': 1442,
+  'leaf': 'metadata-source-object-1-entitlements-os.json',
+  'sha256': '77ec44e5b4365cec8da13a915307584b48844b0415f72f1f3f7e26a3a998e5ae'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-1-entitlements-comparison.json',
+  'sha256': '40da114857be8b6f69f58ba11f4c374b660f28c74f675ffe1e116e74e041fe5b'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-1-requirements.stdout',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 180,
+  'leaf': 'metadata-source-object-1-requirements.stderr',
+  'sha256': '0103fe9b3f09e015f8be9930f40040a5663aaff4b1e8eb8d1a75327b570ee836'},
+ {'bytes': 1442,
+  'leaf': 'metadata-source-object-1-requirements-os.json',
+  'sha256': 'b4e4788a26be9f9ddf978491edcd9f6fe47d040a4299574530b75d010ad712c6'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-1-requirements-comparison.json',
+  'sha256': 'e8d79fe01013254d6eaee2e585aafe95882c344dd7bf81f612e2085d5f847c85'},
+ {'bytes': 1685,
+  'leaf': 'metadata-source-object-1-dependencies.stdout',
+  'sha256': '93e76cc2f85571be197bd1ac7a7c45eb7f563d220a051c9eedb09e4184f4ec29'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-1-dependencies.stderr',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1430,
+  'leaf': 'metadata-source-object-1-dependencies-os.json',
+  'sha256': '44e6928cacb9f1dc3c783033596683f8d8b43c6c8cd591f50a2cf9e9e4d1ef31'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-1-dependencies-comparison.json',
+  'sha256': 'f1ef21907ecaec2f1374ccd68c5dec3ee79152628687c964a9b7e002ac76affb'},
+ {'bytes': 12759,
+  'leaf': 'metadata-source-object-1-loadcommands.stdout',
+  'sha256': '549390b93ab02e4a6a15a403bfb603bd189fd07867852f3c00d6fb7c0de0ac02'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-1-loadcommands.stderr',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1432,
+  'leaf': 'metadata-source-object-1-loadcommands-os.json',
+  'sha256': '3c963d6f9d745e07f468f66b9c5b995d833f5f76a2ed4c5ae8c543ffb489ff92'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-1-loadcommands-comparison.json',
+  'sha256': 'ef2dd2effb002c2aa21499220f3141a131f4145b2968b8542d8ea908cc5ceddf'},
+ {'bytes': 13,
+  'leaf': 'metadata-source-object-2-arch.stdout',
+  'sha256': '9cb483fd3739db2602d4c5bf672f4af954dc6dad82b36e8642b034af58f11c11'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-2-arch.stderr',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1416,
+  'leaf': 'metadata-source-object-2-arch-os.json',
+  'sha256': 'a114a779b67517bcb946b6205a516feca5f32677834edbfb17411d6b3661a780'},
+ {'bytes': 374,
+  'leaf': 'metadata-source-object-2-arch-comparison.json',
+  'sha256': '51789adb4dffc62ffec49460c4a18ae8f038eb06cac983da45f15c73275d4283'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-2-verify.stdout',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 387,
+  'leaf': 'metadata-source-object-2-verify.stderr',
+  'sha256': '8299b1ef14114d041bcf12096dc6070ad98f4ae8432d7979160ddc37f00008aa'},
+ {'bytes': 1454,
+  'leaf': 'metadata-source-object-2-verify-os.json',
+  'sha256': '57e6e5231333f2a3bd29ab0b49b1dcaada58182589452b14870d6b50aae723a1'},
+ {'bytes': 378,
+  'leaf': 'metadata-source-object-2-verify-comparison.json',
+  'sha256': '161f2f5463912452b5c2448413e44ee4463542e62173ef07925c367996bfcde8'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-2-display.stdout',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1046,
+  'leaf': 'metadata-source-object-2-display.stderr',
+  'sha256': '5c25a94ebfb06db733789fffd416b0ec55ab50a8d0da1942d1d184fbc92c9ac9'},
+ {'bytes': 1444,
+  'leaf': 'metadata-source-object-2-display-os.json',
+  'sha256': 'e76bed92890a7c717d80c828be363e2b7410cad807cd3dd557af760dc4d64742'},
+ {'bytes': 380,
+  'leaf': 'metadata-source-object-2-display-comparison.json',
+  'sha256': 'a91abe2914ed92c7761d8f42daa0f8bd28f0c436a627b40a2d53dc6f511b5e47'},
+ {'bytes': 184,
+  'leaf': 'metadata-source-object-2-entitlements.stdout',
+  'sha256': '00491886daae07a5296c8bad50f116bf006b0004d7bf7338ad46669fbd903a4a'},
+ {'bytes': 289,
+  'leaf': 'metadata-source-object-2-entitlements.stderr',
+  'sha256': '8ae6da8a9be7740bceb9b33367d06052ea42168c1fcce7529de846b44398625d'},
+ {'bytes': 1467,
+  'leaf': 'metadata-source-object-2-entitlements-os.json',
+  'sha256': '5bee6028b35ac277e5b0830d1d31297370acb3a0b9cf1533a3e8d0ee9d7ba8ff'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-2-entitlements-comparison.json',
+  'sha256': '420dc576f0e1a212b2daae478a1636f3f40d225bea30238af8403229c806d9e5'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-2-requirements.stdout',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 201,
+  'leaf': 'metadata-source-object-2-requirements.stderr',
+  'sha256': 'fe36f10e1960467cb0236a0c61c6d8d266eeb3890c274c9cff35b98826d6779d'},
+ {'bytes': 1465,
+  'leaf': 'metadata-source-object-2-requirements-os.json',
+  'sha256': '3daf49f7e576fdf31d71abece8fc347b521a83a530c40d6c62afb41de509163f'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-2-requirements-comparison.json',
+  'sha256': 'f7674d50b7e08965e9c07131a122a04571cdbe9363df2e1c6cce09f66ee51de0'},
+ {'bytes': 987,
+  'leaf': 'metadata-source-object-2-dependencies.stdout',
+  'sha256': '99381782161eb9e87184f50fb2c045e4d607823a6b753f99c83884534cfd61ce'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-2-dependencies.stderr',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1455,
+  'leaf': 'metadata-source-object-2-dependencies-os.json',
+  'sha256': 'c5776a19b2ee843ea294ef6544871d0c4448d2d6e79ca5a7dcb6e784d4959861'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-2-dependencies-comparison.json',
+  'sha256': '235b17e644131c58f0afb053af3a3b9934230656e400fe9061d7541b0c816cde'},
+ {'bytes': 11657,
+  'leaf': 'metadata-source-object-2-loadcommands.stdout',
+  'sha256': 'b3336a883032dfe942e2d015852cdec6ef911f404d71f390cdc2746e97215041'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-2-loadcommands.stderr',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1459,
+  'leaf': 'metadata-source-object-2-loadcommands-os.json',
+  'sha256': '4c92458b21f9f2c5742f6bf4976cf779f7838a5a9a054d447199c31f81965fdb'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-2-loadcommands-comparison.json',
+  'sha256': '51a414bdb1e2fb1212e3796b04f97c0690a5ca4734e5714cc09d9c9bdc372e2e'},
+ {'bytes': 13,
+  'leaf': 'metadata-source-object-3-arch.stdout',
+  'sha256': '9cb483fd3739db2602d4c5bf672f4af954dc6dad82b36e8642b034af58f11c11'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-3-arch.stderr',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1434,
+  'leaf': 'metadata-source-object-3-arch-os.json',
+  'sha256': '5b15f9a88b4aa41009d8dc8461d471bcbb3d40ec865f10b572c7b72b2101fe5d'},
+ {'bytes': 374,
+  'leaf': 'metadata-source-object-3-arch-comparison.json',
+  'sha256': 'e4ad2c236984c98319b81a662838c1b18d948f6b3f01468853ba2319e01201c3'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-3-verify.stdout',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 417,
+  'leaf': 'metadata-source-object-3-verify.stderr',
+  'sha256': '0099a2875b8d11eda93a3cb6065f5b189c358c65b1c565c2b8115b478afffd05'},
+ {'bytes': 1469,
+  'leaf': 'metadata-source-object-3-verify-os.json',
+  'sha256': '76769bcfb5a84c92e52693b7289e0ea9d893e80ade3c0704c369deff16f76e55'},
+ {'bytes': 378,
+  'leaf': 'metadata-source-object-3-verify-comparison.json',
+  'sha256': '08e54cc067d6779accc1c2002745b7781de24cc8def3fd032616b89b5a6b2f3b'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-3-display.stdout',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1062,
+  'leaf': 'metadata-source-object-3-display.stderr',
+  'sha256': 'b5551280e54e43a92f06680fb58826eef13fddbb006ba6ceb69514db00168142'},
+ {'bytes': 1459,
+  'leaf': 'metadata-source-object-3-display-os.json',
+  'sha256': '85402833ed0fdf4b643c2efc866bdde157fc2c2cff8eb2f46d7134c1b5a9330a'},
+ {'bytes': 380,
+  'leaf': 'metadata-source-object-3-display-comparison.json',
+  'sha256': 'dd62b5d0b30b7d9d690f6ec33e0e35c145e7121d6ba725d43ecfec400224bdf7'},
+ {'bytes': 184,
+  'leaf': 'metadata-source-object-3-entitlements.stdout',
+  'sha256': '00491886daae07a5296c8bad50f116bf006b0004d7bf7338ad46669fbd903a4a'},
+ {'bytes': 307,
+  'leaf': 'metadata-source-object-3-entitlements.stderr',
+  'sha256': 'ac69b97bc9e1e81430c29af5644345bebe6004f96b822806b98c0701767d02e9'},
+ {'bytes': 1482,
+  'leaf': 'metadata-source-object-3-entitlements-os.json',
+  'sha256': '2c0c8e1fa0ecf154a4a0922fe8ba288dcea20f5b8f373d6a99870d7d579e5f0f'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-3-entitlements-comparison.json',
+  'sha256': 'da7c230ac117643d332b35b55f95d8997969643ac5b9e0892a5372d6ad4a177e'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-3-requirements.stdout',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 219,
+  'leaf': 'metadata-source-object-3-requirements.stderr',
+  'sha256': '3ad84f6136b466e838da7553c6413dde26ff6a6e8ba2ccf2acae24f4ed96accd'},
+ {'bytes': 1480,
+  'leaf': 'metadata-source-object-3-requirements-os.json',
+  'sha256': '4fbb6c5dc45d9cc5907ae0d38b6b174cb7234324e0a1053e841efadf72cfcfb2'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-3-requirements-comparison.json',
+  'sha256': '35c9774b9663afbfb1ac0f0a20be2624a2e366b7c10e5fc55361b0eac0e86f07'},
+ {'bytes': 767,
+  'leaf': 'metadata-source-object-3-dependencies.stdout',
+  'sha256': 'e47d1418424dcf8ffa142d282c1e5cb3d62c749d351306dc91a6dd06d02cf113'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-3-dependencies.stderr',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1473,
+  'leaf': 'metadata-source-object-3-dependencies-os.json',
+  'sha256': '70354d9f72a2ae0fb6afe4911ef773b4331414df2f675e898ea8e33629052fd5'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-3-dependencies-comparison.json',
+  'sha256': '729bc93c61744a2ebefbe291ac9e1bf1fa3caee27b1365253449945e281efc81'},
+ {'bytes': 10709,
+  'leaf': 'metadata-source-object-3-loadcommands.stdout',
+  'sha256': 'a7930b6ed9b044f94651898eb6db1c2fed0a4c7eaf28e62b44059b052d115a71'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-3-loadcommands.stderr',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1477,
+  'leaf': 'metadata-source-object-3-loadcommands-os.json',
+  'sha256': '25f6f6a38d63db006ad31684d53ba75dafbedfdab4e308b3d946d0a107101b50'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-3-loadcommands-comparison.json',
+  'sha256': '122f9cce8ffdb24f83b05fd66b26919ac957f620dc6d5abb9f1a52a45ee729a5'},
+ {'bytes': 13,
+  'leaf': 'metadata-source-object-4-arch.stdout',
+  'sha256': '9cb483fd3739db2602d4c5bf672f4af954dc6dad82b36e8642b034af58f11c11'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-4-arch.stderr',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1432,
+  'leaf': 'metadata-source-object-4-arch-os.json',
+  'sha256': '3806bce12fe18418ecd2b19232060e4f86034661e8237e2f6589d6f3947c464a'},
+ {'bytes': 374,
+  'leaf': 'metadata-source-object-4-arch-comparison.json',
+  'sha256': 'bfb8203bf3920060220e09998bd34fe77670a2440ab2ad6c8dce0466b614ba9c'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-4-verify.stdout',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 415,
+  'leaf': 'metadata-source-object-4-verify.stderr',
+  'sha256': 'cc4d467ba1d41950093b5a9d30006a5548d351b1f5e00b1a2e2188a33f68f77f'},
+ {'bytes': 1468,
+  'leaf': 'metadata-source-object-4-verify-os.json',
+  'sha256': 'e7367c98e9af15755c1ec682ce669240219a1ec33eca3ebc30f2050555e99822'},
+ {'bytes': 378,
+  'leaf': 'metadata-source-object-4-verify-comparison.json',
+  'sha256': '7de29dd1a78f29e3adac86dee74411109db7c587dcdddb66ece9098c55e01157'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-4-display.stdout',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1060,
+  'leaf': 'metadata-source-object-4-display.stderr',
+  'sha256': '264eb8c69e5d2ccd134e5b0ede2b64f772df9a6642ad45d66ba57c65af6e471e'},
+ {'bytes': 1458,
+  'leaf': 'metadata-source-object-4-display-os.json',
+  'sha256': '1d2c11011f2f4f1dbe32c77075798a3a4b3fea9f830b2b251fd9d4cb293d5c52'},
+ {'bytes': 380,
+  'leaf': 'metadata-source-object-4-display-comparison.json',
+  'sha256': 'cf9e6738e88ac977436292610eae930cb302f252586312b92cdef530eab356f9'},
+ {'bytes': 184,
+  'leaf': 'metadata-source-object-4-entitlements.stdout',
+  'sha256': '00491886daae07a5296c8bad50f116bf006b0004d7bf7338ad46669fbd903a4a'},
+ {'bytes': 305,
+  'leaf': 'metadata-source-object-4-entitlements.stderr',
+  'sha256': '438af3ae5afe394a1850af4e68da45a3580ed8b546544e0a169e0cc418565ce5'},
+ {'bytes': 1481,
+  'leaf': 'metadata-source-object-4-entitlements-os.json',
+  'sha256': 'ca09a426908ec7f9bbe1a90a6faa36c33172e3ab6ce18ec10ffe3e42196a4ff2'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-4-entitlements-comparison.json',
+  'sha256': 'cad1077d32a7896267cc524e91bf8a939d74c87d03b33855f17d7548f8d61455'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-4-requirements.stdout',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 217,
+  'leaf': 'metadata-source-object-4-requirements.stderr',
+  'sha256': 'b7c1c71e95e37f5fc0a03f3a68af01ade1646c21fdc923a1522e07f805b8755c'},
+ {'bytes': 1479,
+  'leaf': 'metadata-source-object-4-requirements-os.json',
+  'sha256': 'fe1526399f855e19cb923edc04ed1fb5fa3000b0ec96c81690f8abe0555c4d43'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-4-requirements-comparison.json',
+  'sha256': '70c2c35e2444bc7b9b6c9f6c9b5a5a6249693286f9f4ebee02c4b0b390c3d3e6'},
+ {'bytes': 1310,
+  'leaf': 'metadata-source-object-4-dependencies.stdout',
+  'sha256': '63d76ee8246835f8e915729e2ab415ccaf3ac4455612769405801791470e8d29'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-4-dependencies.stderr',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1473,
+  'leaf': 'metadata-source-object-4-dependencies-os.json',
+  'sha256': 'd7d7c007c34987839d8f806c90791863f71ff9048a22dbe88176d3a57147d202'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-4-dependencies-comparison.json',
+  'sha256': '69a3cbb252cc4caa1d3625bfeb27b94143b55cf9ddfb0e2a67b55ebe919f4b75'},
+ {'bytes': 11780,
+  'leaf': 'metadata-source-object-4-loadcommands.stdout',
+  'sha256': 'bb7206fa7e72bd0866fd35b1327b82be1c8983f2d22d4f7e4b7a1fad3de53147'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-4-loadcommands.stderr',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1475,
+  'leaf': 'metadata-source-object-4-loadcommands-os.json',
+  'sha256': 'da71b23b795229b8695848e2d7c19aeb4638e4e8079e182470288b8b53776fca'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-4-loadcommands-comparison.json',
+  'sha256': '4c14956ba6aa2dbae36c72a459d2cfa3dcfffc129ab5b2818f05a28eadabe540'},
+ {'bytes': 6,
+  'leaf': 'metadata-source-object-5-arch.stdout',
+  'sha256': 'c1669e1d8edca98769c37d494b76442a1d6e5ffffd7b4da1fb63aef8ebaf6f01'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-5-arch.stderr',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1356,
+  'leaf': 'metadata-source-object-5-arch-os.json',
+  'sha256': 'd6a69d71048ca9bfd8f715f7316b6f60e0c3326418028a3ab6916c3f46658618'},
+ {'bytes': 374,
+  'leaf': 'metadata-source-object-5-arch-comparison.json',
+  'sha256': '1bb01aad89ed597e8f2ce00fe647df90d96c63205247ac02e46fa6a42c16e730'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-5-verify.stdout',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 317,
+  'leaf': 'metadata-source-object-5-verify.stderr',
+  'sha256': 'f763e4532c153ef30f8c3ba6f82d714441d79b28b19eb724cd360265b6773647'},
+ {'bytes': 1419,
+  'leaf': 'metadata-source-object-5-verify-os.json',
+  'sha256': 'eb1128f5b72f805f4613115d54db0cb68b86309825b53f8980f80c3833b00458'},
+ {'bytes': 378,
+  'leaf': 'metadata-source-object-5-verify-comparison.json',
+  'sha256': 'd0d6a576ed7cc50f15124ef3235b85b9aba9aaf86d34d4e5be5a7818802a259a'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-5-display.stdout',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 938,
+  'leaf': 'metadata-source-object-5-display.stderr',
+  'sha256': 'e8691d469abecefac9f4f89a41c8ae1f947d6dec9071e0ad904828e527eb6066'},
+ {'bytes': 1407,
+  'leaf': 'metadata-source-object-5-display-os.json',
+  'sha256': 'affb5e52fdffcf16c3d198ad23c2942f76b8f1bc6778f9c170a5f5b065180d70'},
+ {'bytes': 380,
+  'leaf': 'metadata-source-object-5-display-comparison.json',
+  'sha256': '8e43afbc237857b8b469f8127de99c44a4a02ca49a4355d1ea8b5f44c19a7f9b'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-5-entitlements.stdout',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 231,
+  'leaf': 'metadata-source-object-5-entitlements.stderr',
+  'sha256': 'c9bdc95decc6c872c86533329037430125f73d9ae9788039732457eaca81a18b'},
+ {'bytes': 1430,
+  'leaf': 'metadata-source-object-5-entitlements-os.json',
+  'sha256': 'b48e6ea362a3d072a67345fac42e7da6246cfa9c0fa478e1925c824af756a539'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-5-entitlements-comparison.json',
+  'sha256': 'f056796424cc2a238724fa94b6423087b0a5286e9f9c7c7650e96f16793e53bd'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-5-requirements.stdout',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 143,
+  'leaf': 'metadata-source-object-5-requirements.stderr',
+  'sha256': '5ec014f6d39a826af5efd7fcc25e51f905894b780879c5db550d55eefeb69f4d'},
+ {'bytes': 1430,
+  'leaf': 'metadata-source-object-5-requirements-os.json',
+  'sha256': '0d51c731100e74815b40838f04ad46b5c2ce8299b069676a19f339857eafb013'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-5-requirements-comparison.json',
+  'sha256': '2cece1f68b71af21f54cfb2de5282e6004814a5e0df33b794b3e5fe857648774'},
+ {'bytes': 1527,
+  'leaf': 'metadata-source-object-5-dependencies.stdout',
+  'sha256': '2c78699264f48cfe62511a9c9f69813ab88904db59122ea5ee478ad18307db3a'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-5-dependencies.stderr',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1399,
+  'leaf': 'metadata-source-object-5-dependencies-os.json',
+  'sha256': '58742941f951107e85c97d5334be48ebb56c083479646eb25c7ccb45027e9eaa'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-5-dependencies-comparison.json',
+  'sha256': '7f2730fe694b3385bc29e381a2da2c4123124070e64300069b07d488d9a33e0b'},
+ {'bytes': 9070,
+  'leaf': 'metadata-source-object-5-loadcommands.stdout',
+  'sha256': '98e0fd33643bf47648f4b268364274c565676e1c7abaf76056a0cb444dc33a2a'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-5-loadcommands.stderr',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1399,
+  'leaf': 'metadata-source-object-5-loadcommands-os.json',
+  'sha256': 'c2dbe9107a9af77440723fde6e646702a4c9e41fb5160968e3dc2265c4506a7f'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-5-loadcommands-comparison.json',
+  'sha256': '3bedc5cf4beec8a489f00345ebd4edb31877ca11871688e0202ea8624e82494d'},
+ {'bytes': 6,
+  'leaf': 'metadata-source-object-6-arch.stdout',
+  'sha256': 'c1669e1d8edca98769c37d494b76442a1d6e5ffffd7b4da1fb63aef8ebaf6f01'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-6-arch.stderr',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1354,
+  'leaf': 'metadata-source-object-6-arch-os.json',
+  'sha256': '31374cd20460db074c923e4dd2d2268973e10e65fd1952a45178e939d004852d'},
+ {'bytes': 374,
+  'leaf': 'metadata-source-object-6-arch-comparison.json',
+  'sha256': '6ca82f98905817f687172d04500d21598b532d3ebbfe5466a4ed5f06221e58e8'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-6-verify.stdout',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 901,
+  'leaf': 'metadata-source-object-6-verify.stderr',
+  'sha256': '0b33625566c015ce0246044aaff7d43fe6cfe3331710820b3f7d85fe2b0128c0'},
+ {'bytes': 1393,
+  'leaf': 'metadata-source-object-6-verify-os.json',
+  'sha256': '3fe88a9089fef7d2e57695096f791b83e7c0cf563e297d8a5f9a1615267a0264'},
+ {'bytes': 378,
+  'leaf': 'metadata-source-object-6-verify-comparison.json',
+  'sha256': '729dbfd802abede0de96e772cf2dc2b436a807a5f1495c4634274cf8b1731a11'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-6-display.stdout',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 970,
+  'leaf': 'metadata-source-object-6-display.stderr',
+  'sha256': '3d3a6d76a11fc9602ace92635ada2b8a0ef5074f3a0e06ba1d5b91fba80cbf47'},
+ {'bytes': 1381,
+  'leaf': 'metadata-source-object-6-display-os.json',
+  'sha256': 'bf583649a5c4980c189e5811e67016ac2eac94d66946c6c9a5c3245e1190487f'},
+ {'bytes': 380,
+  'leaf': 'metadata-source-object-6-display-comparison.json',
+  'sha256': '6bacb81145f4530f2523f150654014e29ec28344a5b72dd40c4ae9ee786300cd'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-6-entitlements.stdout',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 229,
+  'leaf': 'metadata-source-object-6-entitlements.stderr',
+  'sha256': 'c88af3f6fe57846cd3bf982c77adfd755a45b62d5848c6fe1d438f53a2c789fa'},
+ {'bytes': 1404,
+  'leaf': 'metadata-source-object-6-entitlements-os.json',
+  'sha256': 'fa77ed309723fb01e17275efa7cb8f0b255a7c58abeaee0012197e640e0729cd'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-6-entitlements-comparison.json',
+  'sha256': 'b046a185ffca2748978d28460b333fa6ba0c429891732db88f7d3198ef2d9b57'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-6-requirements.stdout',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 141,
+  'leaf': 'metadata-source-object-6-requirements.stderr',
+  'sha256': '88f3c3822baa137616f13520f4f9199d6996f43361ee7afcfb9757c058fffbdf'},
+ {'bytes': 1404,
+  'leaf': 'metadata-source-object-6-requirements-os.json',
+  'sha256': '61258d06864b2b322e99ff02cdfd85a9a23151d9809e9710cf3e155ba66aaa2a'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-6-requirements-comparison.json',
+  'sha256': '72c077c5758e1976a5588e661fae5ab8a915bd662b61a025ad33853be79a4023'},
+ {'bytes': 3528,
+  'leaf': 'metadata-source-object-6-dependencies.stdout',
+  'sha256': 'f09e4c0e3a95bd94f1ee5c90cb1c3698b965d7aa248101c1fca8f0d416bf18dc'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-6-dependencies.stderr',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1397,
+  'leaf': 'metadata-source-object-6-dependencies-os.json',
+  'sha256': '0e7b0c5945cdb0c5ed7d3e916d9a6e7bf9f96f86152bcde8cdf64b2ab90fff70'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-6-dependencies-comparison.json',
+  'sha256': '1077611414baa8e6cecc9381fc474bc209c0c118c1a2f13348c00a7be79c0c7a'},
+ {'bytes': 19257,
+  'leaf': 'metadata-source-object-6-loadcommands.stdout',
+  'sha256': '54d332adaf4f1e1067acab9325ecceb85cc1950b4e9e982210f165d1a4a70d15'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-object-6-loadcommands.stderr',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 1399,
+  'leaf': 'metadata-source-object-6-loadcommands-os.json',
+  'sha256': '2e67c02825fd22aee404696715968da1496a2a6a5923e3b515cc384464bae3be'},
+ {'bytes': 390,
+  'leaf': 'metadata-source-object-6-loadcommands-comparison.json',
+  'sha256': '5631da3c11d2e6b8ec2e246b93062a25916987fb6c17c38dcc57753f364e8e95'},
+ {'bytes': 0,
+  'leaf': 'metadata-source-full-bundle-deep-verify.stdout',
+  'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'},
+ {'bytes': 2433,
+  'leaf': 'metadata-source-full-bundle-deep-verify.stderr',
+  'sha256': '310a4844c74bdada46b22a5b43524ff92f7ef7b8ed76d40b4d9cd62f6793f4f4'},
+ {'bytes': 1428,
+  'leaf': 'metadata-source-full-bundle-deep-verify-os.json',
+  'sha256': '3e28b015106e884a5de909dd5a1507f92015d518cdbd1d21805258acb6e4ccd6'},
+ {'bytes': 394,
+  'leaf': 'metadata-source-full-bundle-deep-verify-comparison.json',
+  'sha256': '103dd27db183cb43a56486ab63b7fa05d99e43adb851fa09e8650a8cf7bde190'}]
+SOURCE_RESULT = {'bytes': 327813, 'sha256': '7482a637159e0389c5cd4c505778919bb49354437bc9feb1cf008d9db395712d'}
+SOURCE_BOUNDARY = ('metadata-source-parent.json',
+ 'source-launch-once.json',
+ 'source-caller.stdout.bin',
+ 'source-caller.stderr.bin',
+ 'source-caller-os.json',
+ 'source-launch-receipt.json')
+ARTIFACT_PUBLICATION = ('artifact-binding-once.guard', 'artifact-binding-receipt.json')
+PARENT_DUTIES = ('actual_all53_source_statuses_and50_comparisons_and212_raws_inspected',
+ 'actual_source_boundary_and_all_seven_originals_inspected',
+ 'actual_source_collector0_ssh0_eof_D4_inspected',
+ 'artifact_data_independent_clear_bound',
+ 'publisher_independent_clear_bound',
+ 'publisher_full_receipt_all8_actual_bytes_modes_inspected',
+ 'publisher_actual_collector0_ssh0_eof_D4_inspected',
+ 'full_artifact_schema_and_receipt_contract_satisfied',
+ 'all_supporting_raw_refs_and_build_ABI_plist_no_transfer_inspected',
+ 'all_final_source_and_review_payloads_bound',
+ 'exact29token_route_and_SYSTEM_stdin_entry_authenticated',
+ 'exact_single_CONFIG_token_restore_prefix_suffix_AST_hash_verified',
+ 'actual_rendered_payload_le_1MiB_bound',
+ 'exclusive_root_no_other_mutators_through_exit',
+ 'console_single_writer_live_reader_bound',
+ 'original_local135_work130_and_remote_enclosure_owned',
+ 'actual_prepare_exit_EOF_and_full_receipt_retention_owned')
+ARTIFACT_SHAPE = {'app_sha256': '094d02b3831ee6565ae1628407756ad48053a0268f2a489c65bbde28b768d775',
+ 'build_bundle_path': '/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/dist/Openergy.app',
+ 'build_candidate': '7f20c9cdd97c1dc313f007b879babc726acbb914',
+ 'build_review': 'fb7b0d97ba4842021d8315956800c9aa8ec20dfe',
+ 'daemon_sha256': '17065c334290b34c7a1b69483f409655e072eb0505ff2a0cc0bf6ed5f77a7bb2',
+ 'evidence': {'abi_qualification': {'bytes': None, 'path': None, 'sha256': None},
+              'artifact_qualification': {'bytes': None, 'path': None, 'sha256': None},
+              'build_bundle_exit': {'bytes': 51,
+                                    'path': '/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/bundle-exit.json',
+                                    'sha256': 'be1977b47f6eec5c82700af3087008509b19920e7038191ce6db6b69ea441acb'},
+              'build_operation': {'bytes': 1416,
+                                  'path': '/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/bound-operation.json',
+                                  'sha256': '99759a37cf8fa251d1f400c2db15b6f62bfd387bc9a99fd32e0cb50c6186a039'},
+              'build_result': {'bytes': 545,
+                               'path': '/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/result.json',
+                               'sha256': '8129b6c6874fd56e1a4dab83c84114bdafa7a519923efeefbe0c7b733e8ee6f3'},
+              'build_worker': {'bytes': 57,
+                               'path': '/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/worker-result.json',
+                               'sha256': 'd169b2bf627d906f0df714d4300457e4cd0b8b7239c7db9ab602d58a97f40053'},
+              'bundle_files': {'bytes': 32734,
+                               'path': '/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/bundle-files.json',
+                               'sha256': 'e8255fcb45e50be4ea11710e921f64d8a60368fde2f217a7044e07b0d490e78f'},
+              'python_qualification': {'bytes': None, 'path': None, 'sha256': None},
+              'transfer_qualification': {'bytes': None, 'path': None, 'sha256': None}},
+ 'python': {'executable_sha256': 'd81701904d7a58f6abb3ab339c1d38d48cd24a39b37645cf7338c07a1e8e70e6',
+            'launch_path': '/Users/m1-dev/.local/state/openergy-verification/m1-prerequisite-data-20261024-d896c0b3636a/extracted-data/python/bin/python3.13',
+            'prefix_root': '/Users/m1-dev/.local/state/openergy-verification/m1-prerequisite-data-20261024-d896c0b3636a/extracted-data/python',
+            'prefix_sha256': 'c46c9234c07785e90b66774ca161f20c7ef72c0a87323f52583fa4edb1186e67',
+            'version': '3.13.9'},
+ 'qualification_gates': {'archive_transfer_integrity': False,
+                         'arm64_app_daemon_and_embedded_slice': False,
+                         'm1_process_abi': False,
+                         'ordinary_info_no_fixture_no_launcher': False,
+                         'qualified_private_python': False,
+                         'runtime_artifacts_bytes_modes_symlinks': False,
+                         'signatures_entitlements_unchanged': False,
+                         'source_702_raw_git_bytes_modes': False,
+                         'sparkle_pinned_updates_disabled': False,
+                         'successful_current_build': False},
+ 'schema': 'openergy.m1-ordinary-artifact.v1',
+ 'source_bundle': '/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/dist/Openergy.app',
+ 'source_commit': 'ed7d96bf53da1a539fa2acde3b7133613221fd4b',
+ 'source_root': '/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/repo',
+ 'supporting_evidence': []}
+BUILD_INPUTS = {'build_bundle_exit': {'bytes': 51,
+                       'path': '/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/bundle-exit.json',
+                       'sha256': 'be1977b47f6eec5c82700af3087008509b19920e7038191ce6db6b69ea441acb'},
+ 'build_operation': {'bytes': 1416,
+                     'path': '/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/bound-operation.json',
+                     'sha256': '99759a37cf8fa251d1f400c2db15b6f62bfd387bc9a99fd32e0cb50c6186a039'},
+ 'build_result': {'bytes': 545,
+                  'path': '/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/result.json',
+                  'sha256': '8129b6c6874fd56e1a4dab83c84114bdafa7a519923efeefbe0c7b733e8ee6f3'},
+ 'build_worker': {'bytes': 57,
+                  'path': '/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/worker-result.json',
+                  'sha256': 'd169b2bf627d906f0df714d4300457e4cd0b8b7239c7db9ab602d58a97f40053'},
+ 'bundle_files': {'bytes': 32734,
+                  'path': '/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/bundle-files.json',
+                  'sha256': 'e8255fcb45e50be4ea11710e921f64d8a60368fde2f217a7044e07b0d490e78f'}}
+LIMIT_VALUES = {'cli_seconds': 5,
+ 'exit_contract': 'No new one-second process-exit bound',
+ 'flow_watchdog_seconds': 120,
+ 'flows': 1,
+ 'ipc_max_frame_bytes': 16777216,
+ 'max_evidence_bytes': 33554432,
+ 'max_log_bytes': 8388608,
+ 'max_process_samples': 24000,
+ 'max_sample_rounds': 6000,
+ 'no_retry': True,
+ 'owned_cleanup_seconds': 60,
+ 'peer_readiness_seconds': 15,
+ 'routine': 'unchanged default AppEndToEnd with --require-peer, no optional mode',
+ 'routine_responsiveness_seconds': 1,
+ 'routine_stalled_bound_seconds': 2,
+ 'routine_stalled_padding_bytes': 1000000,
+ 'routine_stalled_request_ms': 300,
+ 'routine_step_wait_seconds': [3, 5, 10, 15],
+ 'routine_supervisor_stop_seconds': 1.5,
+ 'sample_interval_seconds': 0.02,
+ 'scope': 'ordinary packaged model/IPC only; no rendering, fixture launcher, updater, native input or '
+          'trusted release'}
+
+OUTPUTS = ('prepare-parent-once.guard', 'prepare-parent-entry.stdout.bin',
+           'prepare-parent-entry.stderr.bin', 'prepare-parent-entry-os.json',
+           'prepare-parent-stdout.bin', 'prepare-parent-stderr.bin',
+           'prepare-parent-os.json', 'prepare-parent-receipt.json')
+HANDLES = []  # Exact direct helper/prepare handles survive until os._exit.
+CONFIG = None
+FIRST_ERROR = None
+PUBLICATIONS = {}
+PUBLICATION_ERRORS = []
+STAGE = 'admission'
+
+REVIEWED_INPUTS = {'artifact_data': {'candidate_commit': '2f2f711a8df3821ab0eeb355ef7b7268e74a84ec', 'source_sha256': '476d89d06e809a02a88f72bd7cb66a4b24643ea6eed45d3fed2361e292b87fc5'}, 'publisher': {'candidate_commit': '95404dc224579ac1dbbea9847e4639673273bfb4', 'source_sha256': '9f8be3a095c9adb34ec82b79e7297061fb41dc33c99fdec3501c528e2876ab28'}}
+FIXED_BINDINGS = {'metadata_caller': {'source': {'bytes': 46908, 'sha256': '01623cd4759f96cd0066a9456a2680bff476bc37b5b1acb61ec40388582a5e9f'}, 'review_commit': '1c0e4bcdc2dddcb64a3277db34d5ccd5e872fab2', 'review_sha256': 'ad868577561145dcba9e74db7138e5118544e721ca3629f5c0c4f1808203c496', 'verdict': 'CLEAR_SOURCE_ONLY'}, 'source_payload': {'source': {'bytes': 37775, 'sha256': '8d7844a20ce347b7be52c07a516b8d9136bdb5c067e450bea24eb3453441afa6'}, 'review_commit': '98a7ecab421ca64b67ac7f57db153be54b70f989', 'review_sha256': '3b04ce2543a07325bf5ae114002806064d0b01cd63206837976d04bc1e079dfd', 'verdict': 'CLEAR_SOURCE_ONLY'}, 'file_helper': {'source': {'bytes': 7381, 'sha256': 'bf2ddd03f00bedbf799b4eee518a2b7b25d1eb9a6df06a2f55c419252f6fa428'}, 'review_commit': '20187fe1b286851f1416437c40cc27108269b542', 'review_sha256': 'c7de1f4dcec5f045282e9a5c656aac9d798ba71bf72e969132716bfef4736efb', 'verdict': 'CLEAR_SOURCE_ONLY'}, 'transport': {'source': {'bytes': 28060, 'sha256': '695dc01461b31e04eb7b8c4a12848350f26a45731f05b0ddca971c05749e4df6'}, 'review_commit': '98b403d1902ac4d0651c230fb7ec28c4cc154035', 'review_sha256': '0c3b311ebff23145ecebd1b64ed38f0e6feaaff46c80c0b1d7a8ecc92d769a3c', 'verdict': 'CLEAR_SOURCE_ONLY'}}
+
+class Stop(RuntimeError):
+    pass
+
+
+def require(ok, label):
+    if not ok:
+        raise Stop(label)
+
+
+def clock_ns():
+    require(sys.platform == 'darwin' and getattr(time, 'CLOCK_MONOTONIC', None) == 6
+            and hasattr(time, 'clock_gettime_ns'), 'closed SYSTEM clock unavailable')
+    value = time.clock_gettime_ns(time.CLOCK_MONOTONIC)
+    require(type(value) is int and 0 <= value < 10 ** 20, 'shared clock integer')
+    return value
+
+
+def remaining(end):
+    left = end - clock_ns()
+    require(left > 0, 'shared phase expired')
+    return math.nextafter(left / NS, -math.inf)
+
+
+@contextlib.contextmanager
+def until(end):
+    # Absolute ceilings only. No restoration of an expired budget as new time.
+    duration = remaining(end)
+    old_handler = signal.getsignal(signal.SIGALRM)
+    old_timer = signal.getitimer(signal.ITIMER_REAL)
+    require(old_timer == (0.0, 0.0), 'no inherited/nested alarm')
+    def expired(_signum, _frame):
+        raise TimeoutError('shared absolute ceiling')
+    signal.signal(signal.SIGALRM, expired)
+    try:
+        signal.setitimer(signal.ITIMER_REAL, duration)
+        yield
+        remaining(end)
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
+        signal.signal(signal.SIGALRM, old_handler)
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def encoded(value):
+    return (json.dumps(value, sort_keys=True, separators=(',', ':'),
+                       ensure_ascii=True, allow_nan=False) + '\n').encode('ascii')
+
+
+def hex_string(value, width):
+    return (type(value) is str and len(value) == width
+            and all(c in '0123456789abcdef' for c in value))
+
+
+def same_data(left, right):
+    # Python bool/int equality must not weaken closed JSON binding types.
+    if type(left) is not type(right):
+        return False
+    if type(right) is dict:
+        return set(left) == set(right) and all(same_data(left[k], right[k]) for k in right)
+    if type(right) is list:
+        return len(left) == len(right) and all(same_data(a, b) for a, b in zip(left, right))
+    return left == right
+
+
+def stamp(st):
+    return (st.st_dev, st.st_ino, st.st_mode, st.st_uid, st.st_gid, st.st_nlink,
+            st.st_size, st.st_mtime_ns, st.st_ctime_ns)
+
+
+def open_root():
+    # Exact path only. No root creation, fallback, search or canonical rewrite.
+    fd = os.open('/', os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        for component in ROOT.split('/')[1:]:
+            child = os.open(component, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                            dir_fd=fd)
+            os.close(fd)
+            fd = child
+        info = os.fstat(fd)
+        require(info.st_uid == os.getuid() and stat.S_IMODE(info.st_mode) == 0o700
+                and info.st_dev == os.stat('/private/tmp').st_dev, 'exact root owner/mode/device')
+        require(stamp(info) == stamp(os.stat(ROOT, follow_symlinks=False)), 'root linked identity')
+        return fd
+    except BaseException:
+        os.close(fd)
+        raise
+
+
+def read_leaf(rootfd, name, binding):
+    require('/' not in name and name not in ('', '.', '..'), 'fixed initial leaf')
+    fd = os.open(name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=rootfd)
+    try:
+        before = os.fstat(fd)
+        require(stat.S_ISREG(before.st_mode) and before.st_uid == os.getuid()
+                and stat.S_IMODE(before.st_mode) == 0o600 and before.st_nlink == 1
+                and before.st_size == binding['bytes'] <= FILE_CAP, 'initial leaf metadata')
+        data = bytearray()
+        while len(data) <= binding['bytes']:
+            chunk = os.read(fd, min(65536, binding['bytes'] + 1 - len(data)))
+            if not chunk:
+                break
+            data.extend(chunk)
+        require(len(data) == binding['bytes'] and sha(data) == binding['sha256'], 'initial raw bytes/hash')
+        require(stamp(before) == stamp(os.fstat(fd))
+                == stamp(os.stat(name, dir_fd=rootfd, follow_symlinks=False)), 'stable linked initial leaf')
+        return bytes(data)
+    finally:
+        os.close(fd)
+
+
+def inspect_remote(rootfd):
+    # Exactly five retained remote files; local two originals stay with parent.
+    raw = {name: read_leaf(rootfd, name, COMPLETED[name]) for name in (
+        'qualification-source-files.json', 'source-files.stdout.bin',
+        'source-files.stderr.bin', 'source-files-os-exit.json',
+        'source-qualification-guard.json')}
+    facts = closed_json(raw['qualification-source-files.json'])
+    actual = closed_json(raw['source-files-os-exit.json'])
+    guard = closed_json(raw['source-qualification-guard.json'])
+    require(raw['qualification-source-files.json'] == raw['source-files.stdout.bin']
+            and raw['source-files.stderr.bin'] == b'' and actual['facts'] == facts,
+            'original raw/facts agreement')
+    expected = dict(schema='openergy.file-qualification-observation.v1', mode='source',
+                    prefix_sha256='c46c9234c07785e90b66774ca161f20c7ef72c0a87323f52583fa4edb1186e67',
+                    prefix_entries=2006, prefix_regular_bytes=46504040,
+                    prefix_root_mode='0o700', modules=10, source_files=702,
+                    bundle_records=167, sdk_headers=10, product_invocations=0,
+                    runtime='UNVERIFIED', elapsed_seconds=0.4378145)
+    require(facts == expected, 'original file-only facts')
+    require(type(actual['actual_helper_exit']) is int and actual['actual_helper_exit'] == 0
+            and actual['eof'] == {'stdout': True, 'stderr': True}
+            and actual['first_error'] is None and actual['local_helper_kill_called'] is False
+            and actual['before_deadline'] is True and actual['own_nice'] == 15
+            and actual['product_invocations'] == 0
+            and actual['status'] == 'SOURCE_FILES_QUALIFIED_RUNTIME_UNVERIFIED', 'original helper status')
+    require(guard['one_attempt'] is True and guard['argv'] == [SYSTEM, '-I', '-S', '-B',
+            ROOT + '/file-qualification.recipe.py.txt', ROOT, 'source']
+            and guard['started_monotonic'] == actual['started_monotonic']
+            and guard['deadline_monotonic'] == actual['deadline_monotonic'], 'completed guard/root/vector')
+    old_start, old_end, old_exit = (actual[k] for k in (
+        'started_monotonic', 'deadline_monotonic', 'exit_observed_monotonic'))
+    require(all(type(v) in (int, float) and math.isfinite(v)
+                for v in (old_start, old_end, old_exit))
+            and old_end == old_start + 120 and old_start <= old_exit <= old_end,
+            'original same-process relative deadline only')
+
+
+def inventory(rootfd):
+    # Finite complete count below ROOT only. No followed links; no output listing.
+    count, total = 0, 0
+    def walk(fd, depth):
+        nonlocal count, total
+        require(depth <= DEPTH_CAP, 'initial directory depth cap')
+        before = os.fstat(fd)
+        require(stat.S_ISDIR(before.st_mode) and before.st_uid == os.getuid()
+                and stat.S_IMODE(before.st_mode) == 0o700, 'initial directory owner/mode')
+        with os.scandir(fd) as entries:
+            for entry in entries:
+                count += 1
+                require(count <= ENTRY_CAP and len(entry.name.encode('utf-8')) <= 255,
+                        'initial entry/name cap')
+                require(entry.name not in ('bytes.json', 'bytes.lock'), 'SOURCE before ledger')
+                info = entry.stat(follow_symlinks=False)
+                require(info.st_uid == os.getuid() and info.st_dev == before.st_dev,
+                        'initial owner/device')
+                if stat.S_ISDIR(info.st_mode):
+                    child = os.open(entry.name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=fd)
+                    try:
+                        require(stamp(info) == stamp(os.fstat(child)), 'linked directory')
+                        walk(child, depth + 1)
+                        require(stamp(info) == stamp(os.stat(entry.name, dir_fd=fd, follow_symlinks=False)),
+                                'stable linked directory')
+                    finally:
+                        os.close(child)
+                else:
+                    require(stat.S_ISREG(info.st_mode) and stat.S_IMODE(info.st_mode) == 0o600
+                            and info.st_nlink == 1 and info.st_size <= FILE_CAP,
+                            'initial regular file/mode/cap')
+                    total += info.st_size
+                    require(total <= INITIAL_CAP, 'initial aggregate reservation')
+        require(stamp(before) == stamp(os.fstat(fd)), 'no concurrent directory mutation')
+    walk(rootfd, 0)
+    return dict(entries=count, bytes=total)
+
+
+def startup():
+    # Exactly next-operation's ten keys. No bootstrap extras/global-env rewrite.
+    return dict(HOME=ROOT, LANG='C', MACOSX_DEPLOYMENT_TARGET='15.0',
+                OPENERGY_DISABLE_UPDATES='1', OPENERGY_ORDINARY_PYTHON=PRIVATE_PYTHON,
+                OPENERGY_ORDINARY_SOURCE_ROOT=SOURCE_ROOT, PATH='/usr/bin:/bin',
+                PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1', TMPDIR=ROOT + '/')
+
+
+def latch(status, stage, exc):
+    if status['first_error'] is None:
+        status['first_error'] = dict(stage=stage, error=type(exc).__name__)
+
+
+def observe_exit(proc, status, code):
+    # Called immediately after each successful actual poll/wait, before any writes.
+    if code is not None and status['actual_exit'] is None:
+        status['actual_exit'] = code
+        status['reaped'] = True
+        status['actual_exit_observed_ns'] = clock_ns()
+        return status['actual_exit_observed_ns']
+    return clock_ns()  # Sample even a real poll result of None; do not infer exit.
+
+
+def collection_complete(status):
+    return (status is not None and status['first_error'] is None
+            and type(status['actual_exit']) is int and status['actual_exit'] == 0
+            and status['reaped'] is True and status['eof'] == {'stdout': True, 'stderr': True}
+            and status['overflow'] is False and status['dropped_known_bytes'] == 0
+            and status['unread_or_dropped_unknown'] is False and status['timed_out'] is False
+            and status['deadline_loss'] is False and status['kill_attempted'] is False
+            and status['kill_or_reap_error'] is None and status['close_errors'] == []
+            and type(status['actual_exit_observed_ns']) is int
+            and status['phase_started_ns'] <= status['actual_exit_observed_ns'] < status['phase_deadline_ns'])
+
+
+def closed_json(data):
+    def pairs(items):
+        out = {}
+        for key, value in items:
+            require(key not in out, 'duplicate JSON key')
+            out[key] = value
+        return out
+    def nonfinite(_value):
+        raise Stop('nonfinite JSON constant')
+    def finite_float(value):
+        result = float(value)
+        require(math.isfinite(result), 'nonfinite JSON number')
+        return result
+    return json.loads(data, object_pairs_hook=pairs, parse_constant=nonfinite, parse_float=finite_float)
+
+
+def bind_config():
+    config = closed_json(CONFIG_TEXT)
+    require(type(config) is dict and set(config) == {
+        'schema', 'execution', 'evidence_root', 'template_sha256', 'reviews',
+        'parent', 'completed_SOURCE', 'artifact_publication'}, 'closed CONFIG')
+    require(config['schema'] == 'openergy.prepare-parent-config.v1'
+            and config['execution'] is False and config['evidence_root'] == ROOT,
+            'fixed inert prepare CONFIG')
+    require(hex_string(config['template_sha256'], 64), 'pending template binding')
+    require(type(config['reviews']) is dict and set(config['reviews']) == {
+        'capsule', 'artifact_data', 'publisher'}, 'closed independent reviews')
+    for label, review in config['reviews'].items():
+        require(type(review) is dict and set(review) == {
+            'candidate_commit', 'source_sha256', 'review_commit', 'review_sha256', 'verdict'},
+            'closed review record')
+        require(hex_string(review['candidate_commit'], 40)
+                and hex_string(review['source_sha256'], 64)
+                and hex_string(review['review_commit'], 40)
+                and hex_string(review['review_sha256'], 64)
+                and review['verdict'] == 'CLEAR', 'pending actual independent review: ' + label)
+    require(config['reviews']['capsule']['source_sha256'] == config['template_sha256'],
+            'review must bind unrendered capsule bytes')
+    for label in ('artifact_data', 'publisher'):
+        require(config['reviews'][label]['candidate_commit'] == REVIEWED_INPUTS[label]['candidate_commit']
+                and config['reviews'][label]['source_sha256'] == REVIEWED_INPUTS[label]['source_sha256'],
+                'exact pending candidate remains fixed')
+    require(same_data(config['parent'], {k: True for k in PARENT_DUTIES}),
+            'actual EXTERNAL parent inspection prerequisites remain mandatory')
+    for key, names, cap in (('completed_SOURCE', SOURCE_BOUNDARY, 65536),
+                            ('artifact_publication', ARTIFACT_PUBLICATION, 16384)):
+        require(type(config[key]) is dict and set(config[key]) == set(names), 'closed boundary names')
+        for binding in config[key].values():
+            require(type(binding) is dict and set(binding) == {'bytes', 'sha256'}
+                    and type(binding['bytes']) is int and 0 <= binding['bytes'] <= cap
+                    and hex_string(binding['sha256'], 64), 'pending actual boundary raw binding')
+    require(config['completed_SOURCE']['source-caller.stdout.bin']['bytes'] <= 512
+            and config['completed_SOURCE']['source-caller.stderr.bin'] ==
+                {'bytes': 0, 'sha256': sha(b'')}, 'source compact raw bounds')
+    return config, dict(template_sha256=config['template_sha256'],
+                        config_canonical_sha256=sha(encoded(config)[:-1]),
+                        reviews=config['reviews'], fixed_source_bindings=FIXED_BINDINGS)
+
+
+def fail(stage, exc):
+    global FIRST_ERROR
+    if FIRST_ERROR is None:
+        FIRST_ERROR = dict(stage=stage, error=type(exc).__name__)
+
+
+def absent(rootfd, name):
+    try:
+        os.stat(name, dir_fd=rootfd, follow_symlinks=False)
+    except FileNotFoundError:
+        return
+    raise Stop('must remain absent: ' + name)
+
+
+def console_admission():
+    require(stat.S_ISFIFO(os.fstat(1).st_mode), 'console must be actual FIFO')
+    allowance = os.fpathconf(1, 'PC_PIPE_BUF')
+    require(type(allowance) is int and allowance >= CONSOLE_CAP, 'actual atomic pipe allowance')
+    require(CONFIG['parent']['console_single_writer_live_reader_bound'] is True,
+            'external actual one-writer/live-reader topology')
+    os.set_blocking(1, False)
+    require(os.get_blocking(1) is False, 'nonblocking console before ANY target write')
+    remaining(REMOTE_END)
+    return dict(fifo=True, pipe_buf=allowance, single_writer_live_reader='external-parent-bound',
+                nonblocking=True)
+
+
+def read_new_leaf(rootfd, name, cap):
+    # New fixed output only; raw bytes retained before interpretation.
+    require('/' not in name and name not in ('', '.', '..'), 'output leaf')
+    fd = os.open(name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=rootfd)
+    try:
+        info = os.fstat(fd)
+        require(stat.S_ISREG(info.st_mode) and info.st_uid == os.getuid()
+                and stat.S_IMODE(info.st_mode) == 0o600 and info.st_nlink == 1
+                and 0 <= info.st_size <= cap, 'new output metadata/cap')
+        data = bytearray()
+        while len(data) <= info.st_size:
+            chunk = os.read(fd, min(65536, info.st_size + 1 - len(data)))
+            if not chunk:
+                break
+            data.extend(chunk)
+        require(len(data) == info.st_size and stamp(info) == stamp(os.fstat(fd))
+                == stamp(os.stat(name, dir_fd=rootfd, follow_symlinks=False)), 'stable new raw output')
+        return bytes(data), dict(path=ROOT + '/' + name, bytes=len(data), sha256=sha(data))
+    finally:
+        os.close(fd)
+
+
+def read_build_record(rootfd, label):
+    # The five exact saved public-contract paths only. No receipt-supplied reader path.
+    record = BUILD_INPUTS[label]
+    parent, name = record['path'].rsplit('/', 1)
+    fd = os.open('/', os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        for part in parent.split('/')[1:]:
+            child = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=fd)
+            os.close(fd)
+            fd = child
+        require(os.fstat(fd).st_dev == os.fstat(rootfd).st_dev, 'saved build same filesystem')
+        return read_leaf(fd, name, record)
+    finally:
+        os.close(fd)
+
+
+def reference(record):
+    require(type(record) is dict and set(record) == {'path', 'bytes', 'sha256'}
+            and type(record['path']) is str and record['path'].startswith('/')
+            and '..' not in Path(record['path']).parts and '${' not in record['path']
+            and type(record['bytes']) is int and 0 <= record['bytes'] <= FILE_CAP
+            and hex_string(record['sha256'], 64), 'closed raw reference')
+
+
+def inspect_artifact(rootfd):
+    raw = {name: read_leaf(rootfd, name, binding) for name, binding in EIGHT.items()}
+    require(sum(len(v) for v in raw.values()) == 136360, 'exact eight pending bytes')
+    artifact = closed_json(raw['artifact-receipt.json'])
+    operation = closed_json(raw['operation.bound.json'])
+    require(same_data(operation, dict(schema='openergy.m1-ordinary-operation.v1',
+            execution=True, artifact_receipt_sha256=EIGHT['artifact-receipt.json']['sha256'])),
+            'fixed operation binds exact actual receipt bytes')
+    require(type(artifact) is dict and set(artifact) == set(ARTIFACT_SHAPE), 'closed artifact keys')
+    for key in ('schema', 'build_candidate', 'build_review', 'source_commit', 'source_root',
+                'source_bundle', 'build_bundle_path', 'app_sha256', 'daemon_sha256', 'python'):
+        require(same_data(artifact[key], ARTIFACT_SHAPE[key]), 'fixed artifact identity: ' + key)
+    require(same_data(artifact['qualification_gates'],
+                     {k: True for k in ARTIFACT_SHAPE['qualification_gates']}), 'all ten static artifact gates')
+    require(type(artifact['evidence']) is dict and set(artifact['evidence']) == set(ARTIFACT_SHAPE['evidence']),
+            'closed nine artifact references')
+    qualifiers = {'artifact_qualification': 'qualification-artifact-observations.json',
+                  'python_qualification': 'qualification-python.json',
+                  'abi_qualification': 'qualification-abi.json',
+                  'transfer_qualification': 'qualification-transfer.json'}
+    for label, record in artifact['evidence'].items():
+        reference(record)
+        expected = BUILD_INPUTS[label] if label in BUILD_INPUTS else dict(
+            path=ROOT + '/' + qualifiers[label], **EIGHT[qualifiers[label]])
+        require(same_data(record, expected), 'artifact exact evidence binding')
+    support = artifact['supporting_evidence']
+    require(type(support) is list and 1 <= len(support) <= 128, 'supporting evidence unchanged cap')
+    for record in support:
+        reference(record)  # No reads selected by these data paths.
+    require(len({r['path'] for r in support}) == len(support), 'unique support references')
+    return artifact
+
+
+def inspect_frozen(rootfd):
+    inspect_remote(rootfd)  # Original five retained leaves; seven actual originals remain parent-owned.
+    for name, binding in INITIAL_INPUTS.items():
+        read_leaf(rootfd, name, binding)
+    pinraw = read_leaf(rootfd, 'input-pins.json', INITIAL_INPUTS['input-pins.json'])
+    pins = closed_json(pinraw)
+    require(set(pins) == {'schema', 'execution', 'files'} and pins['execution'] is False
+            and pins['schema'] == 'openergy.metadata-caller-pins.v1'
+            and set(pins['files']) == set(PINS) and len(PINS) == 17, 'frozen17 pin closure')
+    for name, expected in PINS.items():
+        require(pins['files'][name]['bytes'] == expected['bytes']
+                and pins['files'][name]['sha256'] == expected['sha256'], 'exact original pin record')
+        read_leaf(rootfd, name, expected)
+    read_leaf(rootfd, 'metadata-caller.py.txt', FIXED_BINDINGS['metadata_caller']['source'])
+    source = closed_json(read_leaf(rootfd, 'metadata-source-result.json', SOURCE_RESULT))
+    require(source['schema'] == 'openergy.metadata-observations.v2' and source['mode'] == 'source'
+            and same_data(source['clock'], CLOCK) and source['completed_native_commands'] == 50
+            and len(source['native_records']) == 50 and len(source['auxiliary_records']) == 3
+            and source['observation_sequence_complete'] is True and source['first_error'] is None
+            and source['first_failed_command'] is None and source['first_failed_comparison'] is None
+            and source['publication_errors'] == [] and len(source['actual_direct_children']) == 53,
+            'exact completed SOURCE result; full semantic/raw assessment remains EXTERNAL')
+    for row in SOURCE_RAWS:
+        read_leaf(rootfd, row['leaf'], row)
+    boundary = {name: read_leaf(rootfd, name, binding)
+                for name, binding in CONFIG['completed_SOURCE'].items()}
+    actual = closed_json(boundary['source-caller-os.json'])
+    require(collection_complete(actual), 'actual completed SOURCE child status')
+    require(boundary['source-caller.stderr.bin'] == b'', 'SOURCE empty stderr')
+    publication = {name: read_leaf(rootfd, name, binding)
+                   for name, binding in CONFIG['artifact_publication'].items()}
+    published = closed_json(publication['artifact-binding-receipt.json'])
+    require(published['schema'] == 'openergy.eight-artifact-data-binding.v1'
+            and published['evidence_root'] == ROOT and published['execution'] is False
+            and published['first_error'] is None
+            and published['eight_files_state'] == 'durable_barriers_returned'
+            and set(published['files']) == set(EIGHT), 'actual publisher full receipt')
+    for name, binding in EIGHT.items():
+        require(same_data(published['files'][name], dict(path=ROOT + '/' + name,
+                      mode='0o600', **binding)), 'publisher actual8 raw references')
+    # Receipt text/hash is insufficient: all EXTERNAL actual OS/D4/raw predicates
+    # were required by CONFIG before root access. No new publication is inferred.
+    artifact = inspect_artifact(rootfd)
+    build = {label: closed_json(read_build_record(rootfd, label)) for label in BUILD_INPUTS}
+    require(len(build['bundle_files']['files']) == 167
+            and build['bundle_files']['app'] == ARTIFACT_SHAPE['build_bundle_path'], 'saved bundle inventory')
+    return artifact, build['bundle_files']['files']
+
+
+def initial_put(rootfd, name, data, budget):
+    require(name in OUTPUTS[:4] and len(data) <= FILE_CAP, 'only pre-primary INITIAL outputs')
+    item = dict(path=ROOT + '/' + name, state='attempted', ref=None)
+    PUBLICATIONS[name] = item
+    fd = None
+    try:
+        with until(REMOTE_END):
+            absent(rootfd, 'bytes.json')
+            absent(rootfd, 'bytes.lock')
+            # Reserve the exact growth before exclusive create; never refund a partial.
+            require(budget['bytes'] + len(data) <= INITIAL_CAP
+                    and budget['entries'] + 1 <= ENTRY_CAP, 'INITIAL pre-write reservation')
+            budget['bytes'] += len(data)
+            budget['entries'] += 1
+            fd = os.open(name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+                         0o600, dir_fd=rootfd)
+            os.fchmod(fd, 0o600)
+            require(os.write(fd, data) == len(data), 'short raw INITIAL write; no retry')
+            os.fsync(fd)
+            closing, fd = fd, None
+            os.close(closing)
+            os.fsync(rootfd)
+        item.update(state='durable', mode='0o600', ref=dict(path=ROOT + '/' + name,
+                                             bytes=len(data), sha256=sha(data)))
+        return item['ref']
+    except BaseException as exc:
+        fail('initial-publication', exc)
+        item['state'] = 'failed_or_partial_unverified'
+        PUBLICATION_ERRORS.append(dict(name=name, error=type(exc).__name__))
+        raise
+    finally:
+        if fd is not None:
+            closing, fd = fd, None
+            try:
+                os.close(closing)
+            except BaseException as exc:
+                fail('initial-close', exc)
+                PUBLICATION_ERRORS.append(dict(name=name, error=type(exc).__name__, stage='close'))
+
+
+def inspect_entry(status, stdout, stderr):
+    require(collection_complete(status) and stderr == b'', 'actual SYSTEM entry0/reap/EOF/noerrors')
+    require(status['argv'] == [SYSTEM, '-I', '-S', '-B',
+            ROOT + '/file-qualification.recipe.py.txt', ROOT, 'entry'], 'exact trusted entry helper')
+    facts = closed_json(stdout)
+    require(set(facts) == {'mode', 'prefix_entries', 'prefix_regular_bytes', 'prefix_sha256',
+            'modules', 'prefix_root_mode', 'schema', 'elapsed_seconds', 'product_invocations', 'runtime'},
+            'complete entry observation')
+    expected = dict(mode='entry', prefix_entries=2006, prefix_regular_bytes=46504040,
+                    prefix_sha256=ARTIFACT_SHAPE['python']['prefix_sha256'], modules=10,
+                    prefix_root_mode='0o700', schema='openergy.file-qualification-observation.v1',
+                    product_invocations=0, runtime='UNVERIFIED')
+    require(all(same_data(facts[k], v) for k, v in expected.items()), 'full prefix/exe/modules observation')
+    require(type(facts['elapsed_seconds']) in (int, float)
+            and math.isfinite(facts['elapsed_seconds']) and 0 <= facts['elapsed_seconds'] <= 10,
+            'helper OWN duration only; no clock retagging')
+    require(status['finished_ns'] <= status['phase_started_ns'] + 10 * NS,
+            'actual helper work/reap/EOF/close within original10')
+    return dict(facts=facts, raw_stdout_sha256=sha(stdout), raw_stderr_sha256=sha(stderr),
+                helper_sha256=PINS['file-qualification.recipe.py.txt']['sha256'],
+                system_python=SYSTEM, inspected_ns=clock_ns(), actual_collection=status)
+
+
+def import_common(rootfd, authentication):
+    require(authentication is not None and FIRST_ERROR is None, 'authenticate before module use')
+    # Repeat exact pins immediately before the only supplied-module import.
+    for name, binding in PINS.items():
+        read_leaf(rootfd, name, binding)
+    require('common' not in sys.modules, 'no prior common module')
+    os.environ['OPENERGY_ORDINARY_SOURCE_ROOT'] = SOURCE_ROOT
+    os.environ['OPENERGY_ORDINARY_PYTHON'] = PRIVATE_PYTHON
+    with until(REMOTE_END):
+        spec = importlib.util.spec_from_file_location('common', ROOT + '/common.py')
+        module = importlib.util.module_from_spec(spec)
+        sys.modules['common'] = module
+        spec.loader.exec_module(module)  # Exact pinned common ONLY, after SYSTEM authentication.
+        require(module.HERE == Path(ROOT) and str(module.REPO) == SOURCE_ROOT
+                and module.PYTHON == PRIVATE_PYTHON
+                and module.LOG_CAP == FILE_CAP and module.EVIDENCE_CAP == TOTAL_CAP
+                and module.PRODUCT_RESERVE == 16777216 and module.CLEANUP_RESERVE == 4194304
+                and module.ACCOUNTING_RESERVE == 65536, 'unchanged SYSTEM common binding/constants')
+    return module
+
+
+def common_deadline(common, deadline, conversions):
+    # Cleared R1 method: common local FIRST, shared AFTER; discard the gap.
+    shared_before = clock_ns()
+    local_before = common.time.monotonic()
+    shared_after = clock_ns()
+    budget = deadline - shared_after - 1000000
+    require(shared_before <= shared_after and budget > 0 and math.isfinite(local_before),
+            'conservative common before/after bounds')
+    duration = math.nextafter(budget / NS, -math.inf)
+    local_end = math.nextafter(local_before + duration, -math.inf)
+    require(math.isfinite(local_end) and local_end > local_before, 'common safe local deadline')
+    remaining(deadline)
+    conversions.append(dict(shared_before_ns=shared_before, local_before=local_before,
+                            shared_after_ns=shared_after, shared_end_ns=deadline,
+                            discarded_ns=1000000, local_end=local_end))
+    return local_end
+
+
+def existing_ledger(rootfd):
+    # No initialization, reconstruction, recovery, or fallback writer.
+    data, ref = read_new_leaf(rootfd, 'bytes.json', 4096)
+    lock, lock_ref = read_new_leaf(rootfd, 'bytes.lock', 0)
+    ledger = closed_json(data)
+    require(type(ledger) is dict and set(ledger) == {'charged', 'regular', 'product_reserved',
+            'cleanup_reserved', 'infrastructure_reserved'}
+            and all(type(v) is int for v in ledger.values())
+            and 0 <= ledger['regular'] <= ledger['charged'] <= TOTAL_CAP
+            and ledger['product_reserved'] == 16777216 and ledger['cleanup_reserved'] == 4194304
+            and ledger['infrastructure_reserved'] == 65536, 'only valid prepare-created ledger')
+    return dict(ledger=ref, lock=lock_ref, observed=ledger)
+
+
+def reserved_put(rootfd, common, name, data, conversions):
+    require(name in OUTPUTS[4:] and (type(data) is dict or len(data) <= FILE_CAP),
+            'fixed reserved output names/cap')
+    item = dict(path=ROOT + '/' + name, state='attempted', ref=None)
+    PUBLICATIONS[name] = item
+    try:
+        with until(REMOTE_END):
+            existing_ledger(rootfd)
+            deadline = common_deadline(common, REMOTE_END, conversions)
+            if type(data) is dict:
+                require(name == OUTPUTS[7], 'dictionary only for full receipt')
+                data['common_clock_conversions_including_receipt'] = list(conversions)
+                data = encoded(data)
+                require(len(data) <= RECEIPT_CAP, 'actual full receipt byte cap')
+            common.write_bytes(Path(ROOT) / name, data, deadline, critical=False)
+            # All barriers and verification use the SAME original shared end.
+            fd = os.open(name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=rootfd)
+            try:
+                os.fsync(fd)
+            finally:
+                os.close(fd)
+            os.fsync(rootfd)
+            read_leaf(rootfd, name, dict(bytes=len(data), sha256=sha(data)))
+            remaining(REMOTE_END)
+        item.update(state='durable', mode='0o600', ref=dict(path=ROOT + '/' + name,
+                                             bytes=len(data), sha256=sha(data)))
+        return item['ref']
+    except BaseException as exc:
+        fail('reserved-publication', exc)
+        item['state'] = 'failed_or_partial_unverified'
+        PUBLICATION_ERRORS.append(dict(name=name, error=type(exc).__name__))
+        raise  # No retry, second Writer, fallback INITIAL write or receipt repair.
+
+
+def canonical_prepared_directory(value, rootfd):
+    require(type(value) is str and value.startswith('/') and '..' not in Path(value).parts,
+            'new prepared canonical path')
+    fd = os.open('/', os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        for part in value.split('/')[1:]:
+            child = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=fd)
+            os.close(fd)
+            fd = child
+        info = os.fstat(fd)
+        require(info.st_uid == os.getuid() and stat.S_IMODE(info.st_mode) == 0o700
+                and info.st_dev == os.fstat(rootfd).st_dev
+                and stamp(info) == stamp(os.stat(value, follow_symlinks=False)),
+                'new prepared directory owner/mode/filesystem')
+        require(str(Path(value).resolve(strict=True)) == value, 'canonical prepared directory')
+    finally:
+        os.close(fd)
+
+
+def inspect_prepared(rootfd, artifact, bundle_tree):
+    raw, ref = read_new_leaf(rootfd, 'prepared.json', FILE_CAP)
+    prepared = closed_json(raw)
+    require(type(prepared) is dict and set(prepared) == {'private_root', 'bundle', 'environment',
+            'bundle_tree', 'app_sha256', 'daemon_sha256', 'source_bindings', 'original_commit',
+            'source_bundle', 'product_invocations', 'ports', 'baseline', 'source_commit', 'limits'},
+            'exact new prepared record keys')
+    private, bundle = prepared['private_root'], prepared['bundle']
+    require(type(private) is str and Path(private).parent == Path('/private/tmp')
+            and Path(private).name.startswith('oe-m1-ordinary-fresh-')
+            and len(Path(private).name) > len('oe-m1-ordinary-fresh-')
+            and bundle == private + '/Openergy.app', 'bundle ONLY from new prepared bytes')
+    canonical_prepared_directory(private, rootfd)
+    canonical_prepared_directory(bundle, rootfd)
+    expected_env = dict(PATH='/usr/bin:/bin', LANG='C', HOME=private + '/home',
+        CFFIXED_USER_HOME=private + '/home', TMPDIR=private + '/tmp/',
+        XDG_CONFIG_HOME=private + '/home', XDG_CACHE_HOME=private + '/cache',
+        MACOSX_DEPLOYMENT_TARGET='15.0', PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1',
+        OPENERGY_DISABLE_UPDATES='1', OPENERGY_ORDINARY_SOURCE_ROOT=SOURCE_ROOT,
+        OPENERGY_ORDINARY_PYTHON=PRIVATE_PYTHON)
+    require(same_data(prepared['environment'], expected_env)
+            and same_data(prepared['bundle_tree'], bundle_tree)
+            and prepared['app_sha256'] == artifact['app_sha256']
+            and prepared['daemon_sha256'] == artifact['daemon_sha256']
+            and prepared['source_bundle'] == ARTIFACT_SHAPE['source_bundle']
+            and prepared['source_commit'] == artifact['source_commit']
+            and prepared['original_commit'] == '498190feb00f51039f500ae618ac7de5fb113d86'
+            and prepared['baseline'] == 'fresh-m1' and same_data(prepared['ports'], [65431, 65432])
+            and type(prepared['product_invocations']) is int and prepared['product_invocations'] == 0,
+            'prepared fixed source/paths/tree/data bindings')
+    expected_bindings = dict(artifact=artifact,
+        artifact_receipt_sha256=EIGHT['artifact-receipt.json']['sha256'],
+        source_bindings_sha256=INITIAL_INPUTS['build-source-bindings.json']['sha256'],
+        limits_sha256=INITIAL_INPUTS['limits.json']['sha256'])
+    require(same_data(prepared['source_bindings'], expected_bindings), 'prepared complete source bindings')
+    names = ('flows', 'routine', 'flow_watchdog_seconds', 'owned_cleanup_seconds',
+        'peer_readiness_seconds', 'cli_seconds', 'sample_interval_seconds', 'max_process_samples',
+        'max_sample_rounds', 'max_log_bytes', 'max_evidence_bytes', 'ipc_max_frame_bytes',
+        'routine_stalled_padding_bytes', 'routine_stalled_request_ms', 'routine_responsiveness_seconds',
+        'routine_stalled_bound_seconds', 'routine_step_wait_seconds', 'routine_supervisor_stop_seconds',
+        'exit_contract', 'no_retry', 'scope')
+    require(same_data(prepared['limits'], {k: LIMIT_VALUES[k] for k in names}), 'unchanged prepare limits')
+    return dict(raw=ref, private_root=private, bundle=bundle, canonical_owner0700_sameFS=True,
+                source_bindings_verified=True, copied_tree_signature_native_qualification='STILL_REQUIRED',
+                runtime='UNVERIFIED')
+def collect(label):
+    # Only these two vectors exist. Helpers have10s including capture/reap/close.
+    # The prepare child keeps its own unchanged120s file budget. No renewed phase.
+    started = clock_ns()
+    require(label in ('entry', 'prepare'), 'closed file-only child kind')
+    if label == 'entry':
+        argv = [SYSTEM, '-I', '-S', '-B', ROOT + '/file-qualification.recipe.py.txt', ROOT, 'entry']
+        end = min(started + 10 * NS, REMOTE_END - 2 * NS)
+        work_end, reap_end = end - 500000000, end
+    else:
+        argv = [PRIVATE_PYTHON, '-B', ROOT + '/prepare.py']
+        end = REMOTE_END
+        work_end, reap_end = end - 2 * NS, end - 1500000000
+    buffers = {'stdout': bytearray(), 'stderr': bytearray()}
+    status = dict(schema='openergy.prepare-file-child.v1', label=label, clock=CLOCK,
+        argv=argv, cwd=ROOT, environment=startup(), phase_started_ns=started,
+        phase_deadline_ns=end, remote_started_ns=REMOTE_START, remote_deadline_ns=REMOTE_END,
+        collection_end_ns=work_end, reap_end_ns=reap_end, launch_started_ns=None,
+        launch_returned_ns=None, pid_from_retained_handle=None, handle_retained=False,
+        actual_exit=None, actual_exit_observed_ns=None, reaped=False,
+        eof={'stdout': False, 'stderr': False}, observed_bytes=0, dropped_known_bytes=0,
+        unread_or_dropped_unknown=False, overflow=False, timed_out=False, deadline_loss=False,
+        kill_attempted=False, kill_delivered=False, kill_or_reap_error=None,
+        kill_eligibility_exit=None, kill_eligibility_observed_ns=None,
+        first_error=None, close_errors=[], finished_ns=None)
+    proc, selector = None, None
+    retained = dict(label=label, handle=None, status=status)
+    HANDLES.append(retained)
+    try:
+        with until(work_end):
+            if label == 'prepare':
+                require(started + 120 * NS + 500000000 < work_end,
+                        'late admission cannot fit original prepare120; no spawn')
+            else:
+                require(started + 750000000 < work_end, 'helper remaining admission')
+            status['launch_started_ns'] = clock_ns()
+            proc = subprocess.Popen(argv, stdin=subprocess.DEVNULL,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=ROOT,
+                env=startup(), shell=False, close_fds=True, bufsize=0)
+            retained['handle'] = proc
+            status['handle_retained'] = True
+            status['pid_from_retained_handle'] = proc.pid
+            status['launch_returned_ns'] = clock_ns()
+            require(status['launch_returned_ns'] < work_end, 'late spawn return')
+            selector = selectors.DefaultSelector()
+            for name in ('stdout', 'stderr'):
+                stream = getattr(proc, name)
+                os.set_blocking(stream.fileno(), False)
+                selector.register(stream, selectors.EVENT_READ, name)
+            while True:
+                code = proc.poll()
+                observe_exit(proc, status, code)
+                if code is not None and all(status['eof'].values()):
+                    break
+                require(clock_ns() < work_end, 'original child work ceiling')
+                for key, _ in selector.select(min(0.05, remaining(work_end))):
+                    allowance = RAW_CAP - sum(len(v) for v in buffers.values())
+                    try:
+                        chunk = os.read(key.fd, min(65536, allowance + 1))
+                    except BlockingIOError:
+                        continue
+                    if not chunk:
+                        status['eof'][key.data] = True
+                        selector.unregister(key.fileobj)
+                        continue
+                    status['observed_bytes'] += len(chunk)
+                    buffers[key.data].extend(chunk[:allowance])
+                    if len(chunk) > allowance:
+                        status['overflow'] = True
+                        status['dropped_known_bytes'] += len(chunk) - allowance
+                        status['unread_or_dropped_unknown'] = True
+                        raise Stop('combined1MiB while-read cap; no drain')
+    except BaseException as exc:
+        latch(status, 'collect', exc)
+        fail(label + '-collection', exc)  # FIRST actual failure BEFORE any publication.
+        if isinstance(exc, (TimeoutError, subprocess.TimeoutExpired)):
+            status['timed_out'] = True
+        try:
+            if clock_ns() >= work_end:
+                status['timed_out'] = True
+        except BaseException:
+            status['deadline_loss'] = True
+    finally:
+        if proc is not None and not status['reaped']:
+            try:
+                # Actual code is retained even if late. No prior timeout assertion
+                # can skip this final nonblocking poll or manufacture reap.
+                code = proc.poll()
+                observed_ns = observe_exit(proc, status, code)
+                status['kill_eligibility_exit'] = code
+                status['kill_eligibility_observed_ns'] = observed_ns
+                if code is None:
+                    if not (observed_ns < reap_end and observed_ns < REMOTE_END):
+                        status['timed_out'] = True
+                        status['unread_or_dropped_unknown'] = True
+                        raise TimeoutError('late post-poll sample; no signal/wait extension')
+                    if status['overflow'] or status['timed_out']:
+                        # Fresh actual None and its immediate clock are both retained.
+                        # No intervening OS call before the sole direct KILL.
+                        status['kill_attempted'] = True
+                        proc.kill()
+                        status['kill_delivered'] = True
+                    with until(reap_end):
+                        code = proc.wait(timeout=remaining(reap_end))
+                        observe_exit(proc, status, code)
+            except BaseException as exc:
+                status['kill_or_reap_error'] = type(exc).__name__
+                latch(status, 'kill-or-reap', exc)
+                fail(label + '-kill-or-reap', exc)
+        if proc is not None:
+            for name in ('stdout', 'stderr'):
+                stream = getattr(proc, name)
+                if stream is not None:
+                    try:
+                        stream.close()
+                    except BaseException as exc:
+                        status['close_errors'].append(dict(stream=name, error=type(exc).__name__))
+                        latch(status, 'pipe-close', exc)
+                        fail(label + '-pipe-close', exc)
+        if selector is not None:
+            try:
+                selector.close()
+            except BaseException as exc:
+                status['close_errors'].append(dict(stream='selector', error=type(exc).__name__))
+                latch(status, 'selector-close', exc)
+                fail(label + '-selector-close', exc)
+    status['unread_or_dropped_unknown'] |= not all(status['eof'].values())
+    status['retained_bytes'] = {name: len(data) for name, data in buffers.items()}
+    status['finished_ns'] = clock_ns()
+    status['deadline_loss'] |= status['finished_ns'] >= end
+    if not collection_complete(status):
+        latch(status, 'incomplete-actual-collection', Stop('incomplete'))
+        fail(label + '-actual-status', Stop('incomplete'))
+    # Completed status/raw buffers live on retained handle record BEFORE writers.
+    return status, bytes(buffers['stdout']), bytes(buffers['stderr'])
+
+
+def emit_once(receipt_ref, complete):
+    # One <=512 atomic nonblocking raw write; no retry, flush or shutdown output.
+    value = dict(v='prepare-parent.v1', state=('PREPARED_DATA_COMPLETE' if complete else 'FAILED_UNVERIFIED'),
+                 r=([receipt_ref['bytes'], receipt_ref['sha256']] if receipt_ref else None))
+    data = encoded(value)
+    require(len(data) <= CONSOLE_CAP, 'compact console cap')
+    with until(REMOTE_END):
+        require(stat.S_ISFIFO(os.fstat(1).st_mode) and os.get_blocking(1) is False
+                and os.fpathconf(1, 'PC_PIPE_BUF') >= CONSOLE_CAP, 'same admitted console FIFO')
+        remaining(REMOTE_END)
+        require(os.write(1, data) == len(data), 'single console write failed; no retry')
+
+
+def main():
+    global CONFIG, STAGE
+    rootfd, common, identity, initial, budget = None, None, None, None, None
+    auth, primary, prepared, receipt_ref = None, None, None, None
+    conversions, ledger = [], None
+    final_nice, console = None, None
+    primary_attempted = False
+    complete = False
+    try:
+        require(sys.argv == ['-'] and sys.version_info[:3] == (3, 9, 6)
+                and sys.flags.isolated and sys.flags.no_site and sys.flags.dont_write_bytecode
+                and not sys.flags.optimize, 'fixed trusted SYSTEM3.9.6 stdin -I -S -B')
+        require(os.getuid() == os.geteuid(), 'same real/effective owner')
+        os.umask(0o077)
+        with until(REMOTE_END):
+            CONFIG, identity = bind_config()  # Null-closed BEFORE private root access.
+            console = console_admission()  # BEFORE ANY target writes.
+            rootfd = open_root()
+            STAGE = 'fixed-source-artifact-boundaries'
+            artifact, bundle_tree = inspect_frozen(rootfd)
+            for name in OUTPUTS + ('bytes.json', 'bytes.lock', 'prepared.json', 'prepare-guard.json'):
+                absent(rootfd, name)
+            initial = inventory(rootfd)  # Complete count BEFORE first growth.
+            budget = dict(initial)
+            guard_data = encoded(dict(schema='openergy.prepare-parent-once.v1', identity=identity,
+                clock=CLOCK, remote_started_ns=REMOTE_START, remote_deadline_ns=REMOTE_END,
+                guard_before_all_spawns=True, helper_maximum=1, primary_maximum=1,
+                primary_argv=[PRIVATE_PYTHON, '-B', ROOT + '/prepare.py'],
+                environment=startup(), nice_before=NICE_BEFORE, own_nice=OWN_NICE,
+                execution=False, flow_started=False))
+            require(len(guard_data) <= STATUS_CAP and initial['entries'] + 4 <= ENTRY_CAP
+                    and initial['bytes'] + len(guard_data) + RAW_CAP + STATUS_CAP <= INITIAL_CAP,
+                    'reserve guard+combined helper raw+status BEFORE first write')
+        STAGE = 'exclusive-once-guard'
+        initial_put(rootfd, OUTPUTS[0], guard_data, budget)
+        STAGE = 'SYSTEM-entry-helper'
+        status, stdout, stderr = collect('entry')
+        require(status['reaped'] is True, 'unreaped helper: no later writes')
+        # Even a failed helper keeps exact bounded raw/status if safe. Its first
+        # actual failure is already latched. No private entry follows any error.
+        initial_put(rootfd, OUTPUTS[1], stdout, budget)
+        initial_put(rootfd, OUTPUTS[2], stderr, budget)
+        require(len(encoded(status)) <= STATUS_CAP, 'helper status reserved bound')
+        initial_put(rootfd, OUTPUTS[3], encoded(status), budget)
+        with until(REMOTE_END):
+            auth = inspect_entry(status, stdout, stderr)
+            require(FIRST_ERROR is None, 'failed helper is not authentication')
+        STAGE = 'authenticated-SYSTEM-common'
+        common = import_common(rootfd, auth)
+        with until(REMOTE_END):
+            # Rebind fixed operation/artifact and modules just before private entry.
+            inspect_artifact(rootfd)
+            for name, binding in PINS.items():
+                read_leaf(rootfd, name, binding)
+            absent(rootfd, 'bytes.json')
+            absent(rootfd, 'bytes.lock')
+        STAGE = 'one-private-prepare'
+        primary_attempted = True  # Irreversible mode boundary, even spawn failure.
+        primary, stdout, stderr = collect('prepare')
+        # No post-child writer touches ROOT until exact actual status is closed.
+        require(primary['reaped'] is True and type(primary['actual_exit']) is int,
+                'unreaped prepare: raw unpublished/unknown; no writer')
+        # FIRST_ERROR and the full primary record were fixed BEFORE all calls below.
+        STAGE = 'existing-R9-reserved-publication'
+        with until(REMOTE_END):
+            ledger = existing_ledger(rootfd)
+        reserved_put(rootfd, common, OUTPUTS[4], stdout, conversions)
+        reserved_put(rootfd, common, OUTPUTS[5], stderr, conversions)
+        reserved_put(rootfd, common, OUTPUTS[6], encoded(primary), conversions)
+        if collection_complete(primary) and FIRST_ERROR is None:
+            STAGE = 'new-prepared-data-binding'
+            try:
+                with until(REMOTE_END):
+                    prepared = inspect_prepared(rootfd, artifact, bundle_tree)
+            except BaseException as exc:
+                fail(STAGE, exc)
+        with until(REMOTE_END):
+            final_nice = os.getpriority(os.PRIO_PROCESS, 0)
+            require(final_nice == 15, 'own NI15 final observation')
+        complete = (collection_complete(primary) and FIRST_ERROR is None and prepared is not None
+                    and not PUBLICATION_ERRORS)
+        STAGE = 'full-R9-receipt'
+        receipt = dict(schema='openergy.prepare-parent-receipt.v1', identity=identity,
+            evidence_root=ROOT, clock=CLOCK, remote_started_ns=REMOTE_START,
+            caps=dict(file=FILE_CAP, aggregate=TOTAL_CAP, INITIAL=INITIAL_CAP,
+                      combined_each_child=RAW_CAP, console=CONSOLE_CAP, full_receipt=RECEIPT_CAP,
+                      product_reserve=16777216, cleanup_reserve=4194304, accounting_reserve=65536),
+            remote_deadline_ns=REMOTE_END, remote_collection_end_ns=REMOTE_END - 2 * NS,
+            remote_reap_end_ns=REMOTE_END - 1500000000, helper=auth,
+            primary=primary, primary_attempted=primary_attempted, actual_handles=[
+                dict(label=e['label'], pid_from_retained_handle=(e['handle'].pid if e['handle'] else None),
+                     actual_exit=(e['handle'].returncode if e['handle'] else None), status=e['status'])
+                for e in HANDLES],
+            first_error=FIRST_ERROR, publication_errors=PUBLICATION_ERRORS,
+            publications=PUBLICATIONS, prepared=prepared, initial_tally=initial,
+            preprimary_INITIAL_charged_by_unchanged_prepare=budget, ledger_before_parent_writes=ledger,
+            common_clock_conversions_before_receipt=list(conversions),
+            receipt_writer_boundary='same conservative conversion at reserved_put; outer end unchanged',
+            fixed_artifact_files=EIGHT, frozen17=PINS,
+            source_result=SOURCE_RESULT, source_raw_manifest_sha256=sha(encoded(SOURCE_RAWS)),
+            source_boundaries=CONFIG['completed_SOURCE'], artifact_publication=CONFIG['artifact_publication'],
+            own_nice_before=NICE_BEFORE, own_nice_entry=OWN_NICE, own_nice_final=final_nice,
+            console_admission=console, state=('PREPARED_DATA_COMPLETE' if complete else 'FAILED_UNVERIFIED'),
+            execution=False, flow_started=False, copy_qualification='STILL_REQUIRED',
+            artifact_runtime_acceptance=False, runtime='UNVERIFIED',
+            own_exit_EOF_SSH_collector_D4_and_final_barriers='external actual parent duty')
+        receipt_ref = reserved_put(rootfd, common, OUTPUTS[7], receipt, conversions)
+    except BaseException as exc:
+        fail(STAGE, exc)
+        complete = False
+    # No second writer or failure-path file publication. Existing partial outputs
+    # remain. Missing receipt/raw/ledger/exit is declared FAILED_UNVERIFIED below.
+    if rootfd is not None:
+        try:
+            closing, rootfd = rootfd, None
+            with until(REMOTE_END):
+                os.close(closing)
+        except BaseException as exc:
+            fail('root-close', exc)
+            complete = False
+    try:
+        require(CONFIG is not None and console is not None, 'no admitted console')
+        emit_once(receipt_ref, complete and FIRST_ERROR is None)
+        remaining(REMOTE_END)
+    except BaseException:
+        return 1
+    return 0 if complete and FIRST_ERROR is None else 1
+
+
+if __name__ == '__main__':
+    try:
+        exit_code = main()
+    except BaseException:
+        exit_code = 1
+    os._exit(exit_code)  # No finalization, buffered flush, traceback or retry.

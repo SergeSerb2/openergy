@@ -1,0 +1,35 @@
+{
+  "changed_since_prior_static_read": [
+    "initial_put",
+    "reserved_put",
+    "main"
+  ],
+  "execution": false,
+  "failed": 0,
+  "focused_final_checks": {
+    "actual final template less than1MiB": true,
+    "actual prepare closure before common writer unchanged": true,
+    "all other whole function hashes exact to first197-check source": true,
+    "capsule code AST execution count zero": true,
+    "changed functions since first197 checks restricted to main and two publishers": true,
+    "exact full patch reconstruction final": true,
+    "final Python3.9 AST parsed as data": true,
+    "guard and auth order before primary unchanged": true,
+    "initial and reserved durable metadata include0600": true,
+    "no INITIAL after primary attempt unchanged": true,
+    "publication before root close before console unchanged": true,
+    "receipt includes all unchanged caps": true,
+    "remaining imports catch BaseException with raw os._exit": true,
+    "single Popen and direct KILL and common.write_bytes remain": true,
+    "single literal restore and AST equality final": true
+  },
+  "passed": 15,
+  "patch_hunks": 41,
+  "prior_static_checks": 197,
+  "prior_static_source_sha256": "f4504594cddebd3218f89e7f1bc98ee996d4b5dadcbc5605c400d47d8911476b",
+  "proof_scope": "Static source/data only. No capsule, supplied checker, module, AST, child, native, target, network or test execution.",
+  "source_bytes": 105367,
+  "source_lines": 1864,
+  "source_sha256": "3c7c6e639ee64ca2e8ec49b27c993921ee4e7abff90928fd2f498135f2b20135",
+  "status": "IMPLEMENTED_UNREVIEWED"
+}

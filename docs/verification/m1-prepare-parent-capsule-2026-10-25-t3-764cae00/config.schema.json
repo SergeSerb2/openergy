@@ -1,0 +1,577 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Inert closed template shape. Nulls document missing proof and always reject bind_config. Actual semantic admission, exact input identities and parent causal acts remain mandatory.",
+  "properties": {
+    "artifact_publication": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact-binding-once.guard": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "bytes": {
+                  "maximum": 16384,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "bytes",
+                "sha256"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "artifact-binding-receipt.json": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "bytes": {
+                  "maximum": 16384,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "bytes",
+                "sha256"
+              ],
+              "type": "object"
+            }
+          ]
+        }
+      },
+      "required": [
+        "artifact-binding-once.guard",
+        "artifact-binding-receipt.json"
+      ],
+      "type": "object"
+    },
+    "completed_SOURCE": {
+      "additionalProperties": false,
+      "properties": {
+        "metadata-source-parent.json": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "bytes": {
+                  "maximum": 65536,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "bytes",
+                "sha256"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "source-caller-os.json": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "bytes": {
+                  "maximum": 65536,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "bytes",
+                "sha256"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "source-caller.stderr.bin": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "bytes": {
+                  "maximum": 65536,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "bytes",
+                "sha256"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "source-caller.stdout.bin": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "bytes": {
+                  "maximum": 65536,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "bytes",
+                "sha256"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "source-launch-once.json": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "bytes": {
+                  "maximum": 65536,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "bytes",
+                "sha256"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "source-launch-receipt.json": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "bytes": {
+                  "maximum": 65536,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "bytes",
+                "sha256"
+              ],
+              "type": "object"
+            }
+          ]
+        }
+      },
+      "required": [
+        "metadata-source-parent.json",
+        "source-launch-once.json",
+        "source-caller.stdout.bin",
+        "source-caller.stderr.bin",
+        "source-caller-os.json",
+        "source-launch-receipt.json"
+      ],
+      "type": "object"
+    },
+    "evidence_root": {
+      "const": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503"
+    },
+    "execution": {
+      "const": false
+    },
+    "parent": {
+      "additionalProperties": false,
+      "properties": {
+        "actual_all53_source_statuses_and50_comparisons_and212_raws_inspected": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "actual_prepare_exit_EOF_and_full_receipt_retention_owned": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "actual_rendered_payload_le_1MiB_bound": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "actual_source_boundary_and_all_seven_originals_inspected": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "actual_source_collector0_ssh0_eof_D4_inspected": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "all_final_source_and_review_payloads_bound": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "all_supporting_raw_refs_and_build_ABI_plist_no_transfer_inspected": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "artifact_data_independent_clear_bound": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "console_single_writer_live_reader_bound": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "exact29token_route_and_SYSTEM_stdin_entry_authenticated": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "exact_single_CONFIG_token_restore_prefix_suffix_AST_hash_verified": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "exclusive_root_no_other_mutators_through_exit": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "full_artifact_schema_and_receipt_contract_satisfied": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "original_local135_work130_and_remote_enclosure_owned": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "publisher_actual_collector0_ssh0_eof_D4_inspected": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "publisher_full_receipt_all8_actual_bytes_modes_inspected": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "publisher_independent_clear_bound": {
+          "enum": [
+            null,
+            true
+          ]
+        }
+      },
+      "required": [
+        "actual_all53_source_statuses_and50_comparisons_and212_raws_inspected",
+        "actual_source_boundary_and_all_seven_originals_inspected",
+        "actual_source_collector0_ssh0_eof_D4_inspected",
+        "artifact_data_independent_clear_bound",
+        "publisher_independent_clear_bound",
+        "publisher_full_receipt_all8_actual_bytes_modes_inspected",
+        "publisher_actual_collector0_ssh0_eof_D4_inspected",
+        "full_artifact_schema_and_receipt_contract_satisfied",
+        "all_supporting_raw_refs_and_build_ABI_plist_no_transfer_inspected",
+        "all_final_source_and_review_payloads_bound",
+        "exact29token_route_and_SYSTEM_stdin_entry_authenticated",
+        "exact_single_CONFIG_token_restore_prefix_suffix_AST_hash_verified",
+        "actual_rendered_payload_le_1MiB_bound",
+        "exclusive_root_no_other_mutators_through_exit",
+        "console_single_writer_live_reader_bound",
+        "original_local135_work130_and_remote_enclosure_owned",
+        "actual_prepare_exit_EOF_and_full_receipt_retention_owned"
+      ],
+      "type": "object"
+    },
+    "reviews": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_data": {
+          "additionalProperties": false,
+          "properties": {
+            "candidate_commit": {
+              "enum": [
+                null,
+                "2f2f711a8df3821ab0eeb355ef7b7268e74a84ec"
+              ]
+            },
+            "review_commit": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "pattern": "^[0-9a-f]{40}$",
+                  "type": "string"
+                }
+              ]
+            },
+            "review_sha256": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              ]
+            },
+            "source_sha256": {
+              "enum": [
+                null,
+                "476d89d06e809a02a88f72bd7cb66a4b24643ea6eed45d3fed2361e292b87fc5"
+              ]
+            },
+            "verdict": {
+              "enum": [
+                null,
+                "CLEAR"
+              ]
+            }
+          },
+          "required": [
+            "candidate_commit",
+            "source_sha256",
+            "review_commit",
+            "review_sha256",
+            "verdict"
+          ],
+          "type": "object"
+        },
+        "capsule": {
+          "additionalProperties": false,
+          "properties": {
+            "candidate_commit": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "pattern": "^[0-9a-f]{40}$",
+                  "type": "string"
+                }
+              ]
+            },
+            "review_commit": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "pattern": "^[0-9a-f]{40}$",
+                  "type": "string"
+                }
+              ]
+            },
+            "review_sha256": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              ]
+            },
+            "source_sha256": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              ]
+            },
+            "verdict": {
+              "enum": [
+                null,
+                "CLEAR"
+              ]
+            }
+          },
+          "required": [
+            "candidate_commit",
+            "source_sha256",
+            "review_commit",
+            "review_sha256",
+            "verdict"
+          ],
+          "type": "object"
+        },
+        "publisher": {
+          "additionalProperties": false,
+          "properties": {
+            "candidate_commit": {
+              "enum": [
+                null,
+                "95404dc224579ac1dbbea9847e4639673273bfb4"
+              ]
+            },
+            "review_commit": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "pattern": "^[0-9a-f]{40}$",
+                  "type": "string"
+                }
+              ]
+            },
+            "review_sha256": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              ]
+            },
+            "source_sha256": {
+              "enum": [
+                null,
+                "9f8be3a095c9adb34ec82b79e7297061fb41dc33c99fdec3501c528e2876ab28"
+              ]
+            },
+            "verdict": {
+              "enum": [
+                null,
+                "CLEAR"
+              ]
+            }
+          },
+          "required": [
+            "candidate_commit",
+            "source_sha256",
+            "review_commit",
+            "review_sha256",
+            "verdict"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "capsule",
+        "artifact_data",
+        "publisher"
+      ],
+      "type": "object"
+    },
+    "schema": {
+      "const": "openergy.prepare-parent-config.v1"
+    },
+    "template_sha256": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema",
+    "execution",
+    "evidence_root",
+    "template_sha256",
+    "reviews",
+    "parent",
+    "completed_SOURCE",
+    "artifact_publication"
+  ],
+  "type": "object"
+}

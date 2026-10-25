@@ -1,0 +1,814 @@
+{
+  "Python_AST_feature_version": "3.9",
+  "checks": [
+    {
+      "check": "exact parent HEAD",
+      "passed": true
+    },
+    {
+      "check": "unchanged original tracked delta",
+      "passed": true
+    },
+    {
+      "check": "Python3.9 AST data parsed",
+      "passed": true
+    },
+    {
+      "check": "payload less than1MiB",
+      "passed": true
+    },
+    {
+      "check": "frozen source baseline hash",
+      "passed": true
+    },
+    {
+      "check": "source fixed prepare hash",
+      "passed": true
+    },
+    {
+      "check": "source fixed common hash",
+      "passed": true
+    },
+    {
+      "check": "one Popen site",
+      "passed": true
+    },
+    {
+      "check": "one direct kill site",
+      "passed": true
+    },
+    {
+      "check": "one common reserved writer call",
+      "passed": true
+    },
+    {
+      "check": "no supplied byte ledger initializer call",
+      "passed": true
+    },
+    {
+      "check": "forbidden action calls absent",
+      "passed": true
+    },
+    {
+      "check": "no source COPY/controller launch strings",
+      "passed": true
+    },
+    {
+      "check": "one fixed entry and primary collect calls",
+      "passed": true
+    },
+    {
+      "check": "exact primary vector",
+      "passed": true
+    },
+    {
+      "check": "fixed helper entry vector",
+      "passed": true
+    },
+    {
+      "check": "prepare environment call only fixed startup",
+      "passed": true
+    },
+    {
+      "check": "clock6 shared only",
+      "passed": true
+    },
+    {
+      "check": "unchanged initial allowance",
+      "passed": true
+    },
+    {
+      "check": "raw1MiB and console512",
+      "passed": true
+    },
+    {
+      "check": "guard before all child collect calls",
+      "passed": true
+    },
+    {
+      "check": "auth before common and private entry",
+      "passed": true
+    },
+    {
+      "check": "actual primary reap before first reserved put",
+      "passed": true
+    },
+    {
+      "check": "no initial publication after primary attempt",
+      "passed": true
+    },
+    {
+      "check": "collection failure latch before publication",
+      "passed": true
+    },
+    {
+      "check": "postpoll clock retained before KILL",
+      "passed": true
+    },
+    {
+      "check": "cap/deadline only KILL branch",
+      "passed": true
+    },
+    {
+      "check": "sole bounded wait remainder",
+      "passed": true
+    },
+    {
+      "check": "while-read remaining cap plus one",
+      "passed": true
+    },
+    {
+      "check": "COMMON uses critical False",
+      "passed": true
+    },
+    {
+      "check": "R1 common local sample before shared sample",
+      "passed": true
+    },
+    {
+      "check": "R1 conservative subtraction/rounding",
+      "passed": true
+    },
+    {
+      "check": "publication includes receipt own conversion",
+      "passed": true
+    },
+    {
+      "check": "new bundle path from prepared file",
+      "passed": true
+    },
+    {
+      "check": "data status follows actual complete and prepared binding",
+      "passed": true
+    },
+    {
+      "check": "console after durable receipt and root close",
+      "passed": true
+    },
+    {
+      "check": "only one raw console write",
+      "passed": true
+    },
+    {
+      "check": "nonfinite constants and exponent overflow reject as data",
+      "passed": true
+    },
+    {
+      "check": "closed template raw agreement",
+      "passed": true
+    },
+    {
+      "check": "false plan and null template remains nonadmitting",
+      "passed": true
+    },
+    {
+      "check": "all three reviews unresolved",
+      "passed": true
+    },
+    {
+      "check": "fixed8 totals and receipt hash",
+      "passed": true
+    },
+    {
+      "check": "212 source raw identities and bytes",
+      "passed": true
+    },
+    {
+      "check": "source raw canonical manifest hash",
+      "passed": true
+    },
+    {
+      "check": "exact17 pins",
+      "passed": true
+    },
+    {
+      "check": "pin raw bytes artifact-receipt.template.json",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/artifact-receipt.template.json",
+      "passed": true
+    },
+    {
+      "check": "pin raw bytes build-source-bindings.json",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/m1-sampler-source-repair-r3-2026-10-24/source-bindings.json",
+      "passed": true
+    },
+    {
+      "check": "pin raw bytes common.py",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/common.py.txt",
+      "passed": true
+    },
+    {
+      "check": "pin raw bytes controller.py",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/source/controller.py.txt",
+      "passed": true
+    },
+    {
+      "check": "pin raw bytes coverage.py",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/coverage.py.txt",
+      "passed": true
+    },
+    {
+      "check": "pin raw bytes exec_owned.py",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/exec_owned.py.txt",
+      "passed": true
+    },
+    {
+      "check": "pin raw bytes file-qualification.recipe.py.txt",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/file-qualification.recipe.py.txt",
+      "passed": true
+    },
+    {
+      "check": "pin raw bytes limits.json",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/limits.json",
+      "passed": true
+    },
+    {
+      "check": "pin raw bytes macproc.py",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/macproc.py.txt",
+      "passed": true
+    },
+    {
+      "check": "pin raw bytes metadata.recipe.json",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/metadata.recipe.json",
+      "passed": true
+    },
+    {
+      "check": "pin raw bytes ownership.py",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/ownership.py.txt",
+      "passed": true
+    },
+    {
+      "check": "pin raw bytes port_diagnostic.py",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/port_diagnostic.py.txt",
+      "passed": true
+    },
+    {
+      "check": "pin raw bytes prepare.py",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/prepare.py.txt",
+      "passed": true
+    },
+    {
+      "check": "pin raw bytes probe.py",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/probe.py.txt",
+      "passed": true
+    },
+    {
+      "check": "pin raw bytes qualification.recipe.json",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/m1-sdk-canonical-path-repair-2026-10-25/qualification.recipe.json",
+      "passed": true
+    },
+    {
+      "check": "pin raw bytes source-checks.json",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/source-checks.json",
+      "passed": true
+    },
+    {
+      "check": "pin raw bytes watchdog.py",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/watchdog.py.txt",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/m1-source-stdin-payload-kill-gate-repair-2026-10-25-t3-da89534d/source-payload.py.txt",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/m1-source-stdin-payload-kill-gate-review-2026-10-25-t3-a96986f4/REVIEW.md",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/m1-metadata-r9-repair-2026-10-25-t3-9b2c2354/metadata-caller.py.txt",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/m1-metadata-r10-review-2026-10-25-t3-a1a624d3/REVIEW.md",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/m1-file-qualification-review-2026-10-25-t3-a6524d66/REVIEW.md",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/m1-transport-phase-budget-review-2026-10-25-t3-04f3d533/REVIEW.md",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/transport-collector.py.txt",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/parent-observer.contract.json",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/m1-ordinary-fresh-flow-plan-2026-10-24-t3-5463ce44/operator-plan.md",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/m1-ordinary-fresh-flow-plan-2026-10-24-t3-5463ce44/receipt-contract.md",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/m1-ordinary-fresh-flow-plan-2026-10-24-t3-5463ce44/receipt.schema.json",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/README.md",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/next-operation.json",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/materialization.json",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/m1-source-metadata-observed-2026-10-25-t3-52422617/validation.json",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/m1-source-metadata-observed-2026-10-25-t3-52422617/bindings.json",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/m1-artifact-pending-receipt-2026-10-25-t3-52422617/pending-manifest.json",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/m1-artifact-pending-receipt-2026-10-25-t3-52422617/README.md",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/m1-artifact-data-materializer-2026-10-25-t3-f0b1e4d1/materializer.py.txt",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/m1-artifact-data-materializer-2026-10-25-t3-f0b1e4d1/PARENT-CONTRACT.md",
+      "passed": true
+    },
+    {
+      "check": "public Git binding docs/verification/m1-artifact-data-materializer-2026-10-25-t3-f0b1e4d1/README.md",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 2",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 0",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 10",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 6",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 17",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 9",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 27",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 11",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 30",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 18",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 32",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 20",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 34",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 24",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 43",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 38",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 46",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 40",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 49",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 43",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 52",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 106",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 876",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 175",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 887",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 199",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 924",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 318",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 933",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 366",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 982",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 437",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1441",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 443",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1467",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 458",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1470",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 460",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1477",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 462",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1487",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 468",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1491",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 478",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1494",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 495",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1497",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 498",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1501",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 500",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1507",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 503",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1532",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 514",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1535",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 516",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1537",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 520",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1541",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 529",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1545",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 535",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1549",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 539",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1564",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 551",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1583",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 566",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1595",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 574",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1606",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 578",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1614",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 582",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1740",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 618",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1760",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 635",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1765",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 637",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1772",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 642",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1779",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 647",
+      "passed": true
+    },
+    {
+      "check": "patch hunk header 1782",
+      "passed": true
+    },
+    {
+      "check": "patch old-range identity 655",
+      "passed": true
+    },
+    {
+      "check": "patch reconstructs full exact candidate",
+      "passed": true
+    },
+    {
+      "check": "same-value alternate token AST exact",
+      "passed": true
+    },
+    {
+      "check": "token restoration exact",
+      "passed": true
+    },
+    {
+      "check": "strict unique-key finite JSON config.template.json",
+      "passed": true
+    },
+    {
+      "check": "strict unique-key finite JSON finite-plan.json",
+      "passed": true
+    },
+    {
+      "check": "strict unique-key finite JSON pin-bindings.json",
+      "passed": true
+    },
+    {
+      "check": "strict unique-key finite JSON function-inventory.json",
+      "passed": true
+    },
+    {
+      "check": "strict unique-key finite JSON template-proof.json",
+      "passed": true
+    },
+    {
+      "check": "strict unique-key finite JSON input-bindings.json",
+      "passed": true
+    },
+    {
+      "check": "strict unique-key finite JSON config.schema.json",
+      "passed": true
+    },
+    {
+      "check": "strict unique-key finite JSON construction-data.json",
+      "passed": true
+    }
+  ],
+  "children": 0,
+  "execution": false,
+  "failed": 0,
+  "known_reader_or_lookup_issue": "Requested publisher import fragment de85e did not resolve; exact original95404dc object used without claiming import identity.",
+  "methods": [
+    "public Git/files",
+    "raw bytes/SHA256/modes",
+    "strict JSON data",
+    "Python AST data",
+    "exact diff and in-memory patch reconstruction",
+    "static ordering and call-site observations"
+  ],
+  "not_run": "No E2E/native/build/signing/typecheck applies or is authorized; no TypeScript changed.",
+  "passed": 197,
+  "private_reads": 0,
+  "proof_scope": "STATIC DATA ONLY; no behavior or runtime acceptance",
+  "source_sha256": "f4504594cddebd3218f89e7f1bc98ee996d4b5dadcbc5605c400d47d8911476b",
+  "status": "IMPLEMENTED_UNREVIEWED",
+  "supplied_source_or_AST_executions": 0,
+  "target_or_network_actions": 0,
+  "tests_or_mocks": 0
+}
