@@ -1,0 +1,86 @@
+{
+  "schema": "openergy.windows-admission-repair-source-bindings.v1",
+  "execution": false,
+  "base_r3_commit": "23b41681e4019f086f1f760c9817553d79acff04",
+  "files": [
+    {
+      "path": "source/build.ps1.txt",
+      "bytes": 18259,
+      "sha256": "3cdd135dd806e511fc68278e85cca7d34bc83f2efcafea86106d2e3950af6c33",
+      "r3_bytes": 18259,
+      "r3_sha256": "3cdd135dd806e511fc68278e85cca7d34bc83f2efcafea86106d2e3950af6c33",
+      "byte_equal_r3": true
+    },
+    {
+      "path": "source/common.ps1.txt",
+      "bytes": 7121,
+      "sha256": "7c343002754725567dbfba5c66d0a3c81f2a3f05490d77b5933e895ef89218c9",
+      "r3_bytes": 7121,
+      "r3_sha256": "7c343002754725567dbfba5c66d0a3c81f2a3f05490d77b5933e895ef89218c9",
+      "byte_equal_r3": true
+    },
+    {
+      "path": "source/controller.py.txt",
+      "bytes": 39798,
+      "sha256": "2241d7b8c99d5b0e6cb827149cb3e31b91d0e29009e45e6fbff23dac5b9bb995",
+      "r3_bytes": 38670,
+      "r3_sha256": "1406633c2e098432f118b3a5904ba10183f216f8f99b81b0032137621a6dbd60",
+      "byte_equal_r3": false
+    },
+    {
+      "path": "source/observer.cs.txt",
+      "bytes": 12054,
+      "sha256": "8559ecbca18de3b896407df1048c278633c927134858cc99124ae883e816f5e2",
+      "r3_bytes": 12054,
+      "r3_sha256": "8559ecbca18de3b896407df1048c278633c927134858cc99124ae883e816f5e2",
+      "byte_equal_r3": true
+    },
+    {
+      "path": "source/postflight.ps1.txt",
+      "bytes": 4857,
+      "sha256": "615104a7027f547dcbee574c1bdf8a504fb06492a579d365db6ebaccf116532b",
+      "r3_bytes": 4857,
+      "r3_sha256": "615104a7027f547dcbee574c1bdf8a504fb06492a579d365db6ebaccf116532b",
+      "byte_equal_r3": true
+    },
+    {
+      "path": "source/qualify.ps1.txt",
+      "bytes": 4218,
+      "sha256": "d0da8fecdec0ae2c31ea99e938306b59d7a2e45085685ca0d4cb0b2029d6c953",
+      "r3_bytes": 4218,
+      "r3_sha256": "d0da8fecdec0ae2c31ea99e938306b59d7a2e45085685ca0d4cb0b2029d6c953",
+      "byte_equal_r3": true
+    },
+    {
+      "path": "source/runtime.ps1.txt",
+      "bytes": 21465,
+      "sha256": "2540d09a2840cc0b0c84ce0c2a0a7b874d75de35da3b12af46832b0c3bdd370d",
+      "r3_bytes": 21465,
+      "r3_sha256": "2540d09a2840cc0b0c84ce0c2a0a7b874d75de35da3b12af46832b0c3bdd370d",
+      "byte_equal_r3": true
+    },
+    {
+      "path": "source/safety.ps1.txt",
+      "bytes": 5332,
+      "sha256": "26741118315aa23853d58b9701821496ac21aa9bc868632141e9658b05ecb610",
+      "r3_bytes": 5332,
+      "r3_sha256": "26741118315aa23853d58b9701821496ac21aa9bc868632141e9658b05ecb610",
+      "byte_equal_r3": true
+    }
+  ],
+  "diff_from_r3": {
+    "path": "diff-from-r3.patch",
+    "bytes": 33739,
+    "sha256": "963754095b36034281e22429104dd22a0bc8675afd3bf7c6a22f4353c3f26a39",
+    "changed_carried_paths": [
+      "source/controller.py.txt",
+      "input-contracts.json",
+      "COMMAND-BOUNDS.md",
+      "NEXT-RUN.md",
+      "plan.json",
+      "README.md"
+    ],
+    "unchanged_native_paths_omitted_from_patch": true,
+    "scope": "six changed carried R3 files; new evidence is separately enumerated in manifest"
+  }
+}

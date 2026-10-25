@@ -1,0 +1,81 @@
+{
+  "schema": "openergy.windows-admission-contract-repair-input-contracts.v1",
+  "execution": false,
+  "actual_private_inputs_materialized": false,
+  "preparation.json": {
+    "required_fields": {
+      "repo": "absolute path to future exact clean parent checkout; DATA must be outside checkout",
+      "selector_sha256": "existing private selector file hash; never publish its value",
+      "fresh_baseline_selection_sha256": "actual hash of new operator-bound selection file",
+      "current_source_binding": {
+        "commit": "exact future clean HEAD; 40 lowercase hex; not historical e1ef124",
+        "tree": "full HEAD Git tree",
+        "clean_checkout": true,
+        "archive_sha256": "actual new source.tar SHA-256",
+        "manifest_sha256": "actual new source-manifest.json SHA-256"
+      },
+      "windows_launch_binding": {
+        "schema": "openergy.windows-existing-launch-binding.v2",
+        "selector_sha256": "must equal preparation.selector_sha256; no selector or hash value supplied here",
+        "independently_reviewed": "required literal true only after fresh independent review; no assertion materialized here",
+        "all_windows_command_layers_bound": "required literal true only after every actual complete child/shell/wrapper construction and effective limit is bound; no assertion materialized here",
+        "command_layers": "1..4 entries; every actual complete child/shell/wrapper layer represented once, in privately documented order; each entry selects exactly one of the two closed shapes below",
+        "closed_entry_shapes": {
+          "literal_native": {
+            "construction": "literal_native",
+            "prefix": "exact serialized text before the complete unchanged submitted native line",
+            "suffix": "exact serialized text after that line",
+            "limit_including_nul": "actual positive integer effective limit <=32767; bind any smaller implementation limit"
+          },
+          "resolved_executable": {
+            "construction": "resolved_executable",
+            "executable": "exact observed full path spelling of resolved powershell.exe; normalized absolute local drive path, ASCII drive letter, backslash root, one colon, no quote/NUL/CR/LF; leaf powershell.exe under case folding; no guessed default or path supplied here",
+            "limit_including_nul": "actual positive integer effective limit <=32767; bind any smaller implementation limit"
+          }
+        },
+        "rendering": "literal_native = prefix + native_line + suffix. resolved_executable = opening double quote + executable + closing double quote + native_line[len(native[0]):]. native[0] is the fixed unquoted powershell.exe token. The entire leading space/options/encoded-payload tail stays exact. No generic replacement, nesting, evaluation, placeholder substitution, callback, or encoder is supported.",
+        "entry_validation": "exact keys of the selected shape; unknown construction or extra keys refuse; resolved path must equal ntpath.normpath of itself; no NUL or invalid UTF16 in complete lines; every complete line measured with one NUL",
+        "review_binding": "fresh independent review must bind the same existing selector, actual executable spelling, installed launcher/PowerShell implementation versions, configuration/argument construction, every complete layer and effective limit; retained short-query sizes alone do not establish limits",
+        "materialized_here": false
+      }
+    },
+    "private_mode": "0700 directory; private regular data only"
+  },
+  "fresh-baseline-selection.json": {
+    "schema": "openergy.windows-fresh-baseline-selection.v1",
+    "operation": "NEW_FRESH_BASELINE",
+    "historical_preservation": "UNVERIFIED",
+    "operator_bound": true,
+    "roots": "1..16 explicit entries, NOT an empty default or historical mapping",
+    "entry_shape": {
+      "id": "1..32 ASCII letters/digits; distinct case-insensitively",
+      "child": "1..48 ASCII letters/digits/underscore/hyphen, starts with letter, not reserved Windows device name, one component; distinct case-insensitively"
+    },
+    "root_derivation": "new setup creates normalized-TEMP/unique-owned-root/preservation/child; no existing tree input allowed",
+    "file_or_root_created_here": false
+  },
+  "source-inputs/source-manifest.json": {
+    "schema": "openergy.windows-current-source.v2",
+    "source_commit": "same future current_source_binding.commit",
+    "source_tree": "same full Git tree",
+    "export_paths": [
+      "Cargo.toml",
+      "Cargo.lock",
+      "rust-toolchain.toml",
+      "rustfmt.toml",
+      "crates",
+      "tools/e2e",
+      "vendor"
+    ],
+    "archive_bytes": "actual bytes of new uncompressed source.tar",
+    "archive_sha256": "same actual archive SHA-256 as preparation",
+    "files": "complete unique export file set; records path/bytes/sha256/git_blob/lf_bytes/crlf_pairs, exact immutable Git bytes",
+    "archive_rules": "safe unique regular members and expected directory entries only; reject links/escape/case aliases; files exact Git export"
+  },
+  "current_source_snapshot": "current-source-manifest.json in this package is a static ed7d96bf reference, not private source-input material or a future parent binding",
+  "transport": "existing selector/config/key/credential files were not accessed; previously saved launcher metadata/argv/receipt were read only as data, with no new query or route change",
+  "target_temp": "absolute normalized non-root local drive path, no reparse ancestor; fixed legacy scp requires ASCII letters/digits/underscore/dot/hyphen/backslash only after drive; spaces and shell metacharacters refuse before root creation",
+  "old_baseline_selection": "not read, not created, not required by this new operation",
+  "command_size": "unchanged complete submitted native argv plus each exact structured child/shell/wrapper line, UTF16 including NUL; BOTH main and recovery before original launch; separate nested pwsh admission unchanged; no cleanup authority follows from sizes",
+  "private_launch_binding_materialized": false
+}

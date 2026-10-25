@@ -1,0 +1,473 @@
+--- a/source/controller.py.txt
++++ b/source/controller.py.txt
+@@ -74,8 +74,13 @@
+     native=['powershell.exe','-NoLogo','-NoProfile','-NonInteractive','-EncodedCommand',encoded]
+     units=windows_command_units(native)
+     native_line=subprocess.list2cmdline(native);launch_units=[]
+-    for layer in binding['literal_command_layers']:
+-        line=layer['prefix']+native_line+layer['suffix']
++    for layer in binding['command_layers']:
++        if layer['construction']=='literal_native':
++            line=layer['prefix']+native_line+layer['suffix']
++        elif layer['construction']=='resolved_executable':
++            # Only the fixed leading executable token changes; preserve the entire tail.
++            line='"'+layer['executable']+'"'+native_line[len(native[0]):]
++        else:raise ValueError('unsupported Windows command-layer construction')
+         if '\0' in line:raise ValueError('NUL in bound Windows launcher')
+         count=len(line.encode('utf-16le'))//2+1
+         if count>layer['limit_including_nul']:raise ValueError('complete bound Windows launcher command exceeds its limit')
+@@ -134,14 +139,23 @@
+         # Fresh source review must bind the EXISTING launch route, including any shell.
+         # This data cannot authorize a shell change or supply a guessed host default.
+         self.launch_binding=PREPARATION['windows_launch_binding']
+-        assert self.launch_binding['schema']=='openergy.windows-existing-launch-binding.v1'
++        assert self.launch_binding['schema']=='openergy.windows-existing-launch-binding.v2'
+         assert self.launch_binding['selector_sha256']==PREPARATION['selector_sha256']
+         assert self.launch_binding['independently_reviewed'] is True
+         assert self.launch_binding['all_windows_command_layers_bound'] is True
+-        layers=self.launch_binding['literal_command_layers'];assert isinstance(layers,list) and 1<=len(layers)<=4
++        layers=self.launch_binding['command_layers'];assert isinstance(layers,list) and 1<=len(layers)<=4
+         for layer in layers:
+-            assert set(layer)=={'prefix','suffix','limit_including_nul'}
+-            assert isinstance(layer['prefix'],str) and isinstance(layer['suffix'],str)
++            if layer['construction']=='literal_native':
++                assert set(layer)=={'construction','prefix','suffix','limit_including_nul'}
++                assert isinstance(layer['prefix'],str) and isinstance(layer['suffix'],str)
++            elif layer['construction']=='resolved_executable':
++                assert set(layer)=={'construction','executable','limit_including_nul'}
++                executable=layer['executable'];assert isinstance(executable,str)
++                path=PureWindowsPath(executable)
++                assert len(path.drive)==2 and path.drive[0].isascii() and path.drive[0].isalpha() and path.drive[1]==':' and path.root=='\\'
++                assert ntpath.normpath(executable)==executable and executable.count(':')==1
++                assert not any(c in executable for c in '"\0\r\n') and path.name.casefold()=='powershell.exe'
++            else:raise ValueError('unsupported Windows command-layer construction')
+             assert type(layer['limit_including_nul']) is int and 1<=layer['limit_including_nul']<=32767
+         selection_data=(DATA/'fresh-baseline-selection.json').read_bytes()
+         assert sha(selection_data)==PREPARATION['fresh_baseline_selection_sha256']
+--- a/input-contracts.json
++++ b/input-contracts.json
+@@ -1,5 +1,5 @@
+ {
+-  "schema": "openergy.windows-fresh-command-repair-input-contracts.v1",
++  "schema": "openergy.windows-admission-contract-repair-input-contracts.v1",
+   "execution": false,
+   "actual_private_inputs_materialized": false,
+   "preparation.json": {
+@@ -15,17 +15,27 @@
+         "manifest_sha256": "actual new source-manifest.json SHA-256"
+       },
+       "windows_launch_binding": {
+-        "schema": "openergy.windows-existing-launch-binding.v1",
++        "schema": "openergy.windows-existing-launch-binding.v2",
+         "selector_sha256": "must equal preparation.selector_sha256; no selector or hash value supplied here",
+-        "independently_reviewed": true,
+-        "all_windows_command_layers_bound": true,
+-        "literal_command_layers": "1..4 exact prefix/suffix templates for the EXISTING launch route; every complete Windows shell/wrapper layer must be represented once; unsupported/nonliteral encoding or unknown route refuses execution",
+-        "entry_shape": {
+-          "prefix": "exact serialized command-line text before the unchanged full native PowerShell command; includes actual quoted executable path/options/opening quotes if any",
+-          "suffix": "exact serialized command-line text after the full native PowerShell command; includes closing quotes if any",
+-          "limit_including_nul": "actual positive integer limit for that layer, at most32767; use any smaller actual shell limit"
++        "independently_reviewed": "required literal true only after fresh independent review; no assertion materialized here",
++        "all_windows_command_layers_bound": "required literal true only after every actual complete child/shell/wrapper construction and effective limit is bound; no assertion materialized here",
++        "command_layers": "1..4 entries; every actual complete child/shell/wrapper layer represented once, in privately documented order; each entry selects exactly one of the two closed shapes below",
++        "closed_entry_shapes": {
++          "literal_native": {
++            "construction": "literal_native",
++            "prefix": "exact serialized text before the complete unchanged submitted native line",
++            "suffix": "exact serialized text after that line",
++            "limit_including_nul": "actual positive integer effective limit <=32767; bind any smaller implementation limit"
++          },
++          "resolved_executable": {
++            "construction": "resolved_executable",
++            "executable": "exact observed full path spelling of resolved powershell.exe; normalized absolute local drive path, ASCII drive letter, backslash root, one colon, no quote/NUL/CR/LF; leaf powershell.exe under case folding; no guessed default or path supplied here",
++            "limit_including_nul": "actual positive integer effective limit <=32767; bind any smaller implementation limit"
++          }
+         },
+-        "review_binding": "fresh independent review must verify the existing selector, actual launcher/config/argument construction, full paths and all layer limits; the boolean is an admission assertion, not proof; retain private binding evidence with preparation",
++        "rendering": "literal_native = prefix + native_line + suffix. resolved_executable = opening double quote + executable + closing double quote + native_line[len(native[0]):]. native[0] is the fixed unquoted powershell.exe token. The entire leading space/options/encoded-payload tail stays exact. No generic replacement, nesting, evaluation, placeholder substitution, callback, or encoder is supported.",
++        "entry_validation": "exact keys of the selected shape; unknown construction or extra keys refuse; resolved path must equal ntpath.normpath of itself; no NUL or invalid UTF16 in complete lines; every complete line measured with one NUL",
++        "review_binding": "fresh independent review must bind the same existing selector, actual executable spelling, installed launcher/PowerShell implementation versions, configuration/argument construction, every complete layer and effective limit; retained short-query sizes alone do not establish limits",
+         "materialized_here": false
+       }
+     },
+@@ -63,8 +73,9 @@
+     "archive_rules": "safe unique regular members and expected directory entries only; reject links/escape/case aliases; files exact Git export"
+   },
+   "current_source_snapshot": "current-source-manifest.json in this package is a static ed7d96bf reference, not private source-input material or a future parent binding",
+-  "transport": "existing private selector may be read only by a separately tasked future execution; no selector/config/key/credential was inspected here",
++  "transport": "existing selector/config/key/credential files were not accessed; previously saved launcher metadata/argv/receipt were read only as data, with no new query or route change",
+   "target_temp": "absolute normalized non-root local drive path, no reparse ancestor; fixed legacy scp requires ASCII letters/digits/underscore/dot/hyphen/backslash only after drive; spaces and shell metacharacters refuse before root creation",
+   "old_baseline_selection": "not read, not created, not required by this new operation",
+-  "command_size": "controller admits both exact complete native and all bound shell command lines before each original launch; separate nested pwsh admission; caps do not grant cleanup authority"
++  "command_size": "unchanged complete submitted native argv plus each exact structured child/shell/wrapper line, UTF16 including NUL; BOTH main and recovery before original launch; separate nested pwsh admission unchanged; no cleanup authority follows from sizes",
++  "private_launch_binding_materialized": false
+ }
+--- a/COMMAND-BOUNDS.md
++++ b/COMMAND-BOUNDS.md
+@@ -77,24 +77,62 @@
+ and compiler-generated commands remain unchanged by this repair; no new size or
+ native acceptance claim is made for those independent paths.
+ 
+-The target OpenSSH/default-shell implementation is not known in this task. A
+-shell can impose a smaller limit or different quoting. `prepare_inputs` therefore
+-requires a fresh independently reviewed `windows_launch_binding` tied to the
+-existing selector hash. Its 1..4 exact literal command-layer templates must cover
+-every Windows shell/wrapper command, with exact serialized prefix/suffix and each
+-actual limit (positive, at most 32,767). `transport_argv` measures each complete
+-`prefix + native_line + suffix` as UTF-16LE plus NUL for BOTH commands before the
+-original launch, and refuses any excess. Quotes, spaces, non-ASCII launcher paths
+-and numeric flags are part of those exact strings. Unknown or nonliteral launch
+-construction is unsupported. The binding must be backed by fresh review evidence;
+-its admission booleans are not host observations or proof of the actual route.
++The existing saved metadata identifies one literal PowerShell 7 wrapper and one
++Windows PowerShell child with a quoted resolved executable path. This repair
++adds an exact representation of the latter. It does not change any launched argv.
++The v2 binding has 1..4 `command_layers`, with only these closed constructions:
+ 
+-No template or private binding was created here. This report does not infer a
+-default shell or claim observed command lines. Fresh independent review must
+-establish that these templates describe the existing launch implementation and
+-cover all layers and smaller shell limits before execution. Refuse unknown or
+-unrepresentable routes; do not probe, change the shell, retry, truncate, or weaken
+-owner selection to make them fit. These bounds close the reported unconditional
+-37,920-character source defect. They do not supply missing host/transport or
+-runtime proof. A valid baseline selection can still be refused by command-size
+-admission; there is no assertion that every selection/path fits every shell.
++- `literal_native`: `prefix + native_line + suffix`, as in R3. The actual wrapper
++  uses this construction. Prefix and suffix are exact serialized strings.
++- `resolved_executable`: `"` + exact bound executable + `"` + the unchanged tail
++  of `native_line` after its fixed `powershell.exe` token. This represents the
++  actual child. It preserves the leading space, every option and the entire
++  encoded argument. It has no prefix/suffix fields or other replacement rules.
++
++The source validates exact keys and rejects other construction types. The resolved
++path must be a normalized absolute local drive path with an ASCII drive letter,
++backslash root, one colon, and leaf `powershell.exe` under case folding. Quotes,
++NUL, CR and LF refuse. The source preserves the supplied path spelling; it does
++not obtain, normalize, discover or select an executable for launch. The path is
++admission data only. It is not substituted into SSH or native argv.
++
++For BOTH main and recovery, `transport_argv` measures each complete constructed
++line as UTF-16LE plus one NUL, and refuses encoding, NUL or effective-limit errors
++before the main launch. Each limit must be a positive integer <=32,767 and must
++include any smaller applicable launcher or shell limit. Each actual complete
++child/shell/wrapper line must occur once in the private binding. No entry can be
++padding, an approximate line, or a guessed limit. The unchanged native argv has
++its separate 32,767-unit gate. The two v2 construction types are not composable;
++unknown nested transformations require another source review, not a callback.
++
++The retained query's native line is 2,415 units including NUL. Its child is exactly
++a quoted 57-unit executable followed by the unchanged tail, 2,460 units including
++NUL. Its wrapper is exactly a 45-unit prefix, unchanged native line without NUL,
++and one-unit suffix, 2,461 units including NUL. The child does not contain the
++complete unchanged native line, which explains why R3 could not represent it.
++The observed executable spelling comes from the saved child, not a registry
++spelling assumption. The three sshd ancestor lines contain no payload; they are
++not invented as payload wrappers.
++
++Conditional on this observed construction remaining unchanged, the capped encoded
++argument yields these complete maxima for BOTH main and recovery:
++
++- submitted native: `66 + 32,068 + 1 = 32,135`;
++- quoted resolved child: `(2 + 57 + (66 - 13)) + 32,068 + 1 = 32,180`;
++- literal outer wrapper: `45 + 66 + 32,068 + 1 + 1 = 32,181`.
++
++These leave 632, 587 and 586 units below the 32,767 API ceiling. The wrapper is
++one unit longer than the child for this exact relation. Admission does not rely
++on that inequality: v2 can represent and measure both actual lines independently.
++No candidate payload, compressor, decoder or renderer was executed for these
++counts. Static string comparisons use only the already saved query as data.
++
++The saved query does not bind installed implementation versions or prove effective
++limits for near-ceiling commands. The parent must separately bind those facts,
++the same exact selector, unchanged route/configuration/argument construction,
++all layers and their effective limits. No private preparation/binding or true
++admission assertions were materialized here. Independent review of this exact
++repair is pending. The previous source clearance applies only to R3.
++Unknown, changed, unbound or unrepresentable routes must refuse admission. No
++query, route/default/configuration change, retry, truncation or relaxed owner
++selection is part of this repair. All runtime acceptance remains UNVERIFIED.
+--- a/NEXT-RUN.md
++++ b/NEXT-RUN.md
+@@ -1,7 +1,7 @@
+ # Finite future operation — no execution in this task
+ 
+ This plan is inert. `execution=false`. It requires independent review of all eight
+-exact R3 sources, the minimal R1 diff, command bounds and launcher contracts. It creates no new human approval gate for the
++exact repaired sources, the exact R3 delta, command bounds and v2 launcher contract. It creates no new human approval gate for the
+ already-authorized virtual CLI scope. The parent must assign a separate future
+ execution task; this source-only handoff does not start one.
+ 
+@@ -60,10 +60,14 @@
+    source-input files or a clean future parent receipt.
+ 
+ 7. Before any remote launch, bind `preparation.windows_launch_binding` as specified
+-   in the R3 input contracts. Fresh independent review must establish the existing
+-   selector's actual launch route, every complete literal shell command layer,
+-   exact prefix/suffix quoting and smaller shell limits. No default or example
+-   template is supplied here. Unknown, unbound or nonliteral routes refuse execution.
++   in this package's v2 input contracts. Fresh independent review must establish
++   the existing selector's actual unchanged launch route and every complete child,
++   shell and wrapper command. Use only exact `literal_native` or quoted fixed
++   `resolved_executable` constructions. Bind the observed executable spelling,
++   installed implementation versions and each effective limit, including smaller
++   shell limits. The retained short query supplies shape evidence, not these limit
++   bindings. No actual private binding or true assertions are supplied here.
++   Unknown, unbound, changed or unrepresentable routes refuse execution.
+    Retain this evidence privately. This gate does not authorize a new probe or shell
+    change. The controller admits both actual complete commands and all bound layers
+    before the original launch, plus the nested PowerShell 7 command for each stage.
+--- a/plan.json
++++ b/plan.json
+@@ -1,9 +1,9 @@
+ {
+-  "schema": "openergy.windows-fresh-command-repair-r3.v1",
++  "schema": "openergy.windows-admission-contract-repair.v1",
+   "execution": false,
+   "operation": "NEW_FRESH_BASELINE",
+-  "root_commit": "9a540b5ef78bedf9cf10e43eb66cdb359adcdbbc",
+-  "independent_source_review": "PENDING_FOR_THIS_EXACT_R3_PACKAGE",
++  "root_commit": "152f0d25223a635e7490c2ab4353a087a443e9c6",
++  "independent_source_review": "PENDING_FOR_THIS_EXACT_PACKAGE",
+   "native_syntax": "UNVERIFIED",
+   "runtime": "UNVERIFIED",
+   "approval_receipt_created": false,
+@@ -27,7 +27,7 @@
+     "source": "future parent exact clean HEAD/tree plus newly bound exact current archive and v2 manifest; historical e1ef124 refused",
+     "execution_route": "ONE_FRESH_NATIVE_RELEASE_BUILD",
+     "current_source_snapshot_is_future_execution_binding": false,
+-    "windows_launch_binding": "new required preparation field; absent here; bind actual existing authenticated-selector launch route and every Windows shell command layer before execution; no invented template"
++    "windows_launch_binding": "v2 REQUIRED_ABSENT; exact closed literal_native / resolved_executable constructions for the unchanged existing selector route; installed implementation and each effective limit remain for parent binding"
+   },
+   "baseline": {
+     "kind": "NEW_FRESH_BASELINE",
+@@ -123,13 +123,10 @@
+     "runtime": "one source-commit admission expression changed; all bytes from $binary= to EOF exact R9",
+     "transport_methods": {
+       "changed": [
+-        "command recovery handoff and receipt description",
+-        "remote construction and admission",
+-        "recover_transport_owner precomputed launch",
+-        "stage nested Windows argv admission",
+-        "prepare_inputs fresh existing-launch binding"
++        "transport_argv command-layer construction only",
++        "prepare_inputs v2 closed command-layer validation only"
+       ],
+-      "unchanged": "all original remote safety/failure bodies, transport recovery PowerShell literal and owner checks, timers, guards, EOF, SSH options, one attempt"
++      "unchanged": "all other controller methods and module statements; SSH/native argv and protocol; compression/decoder; both-command preadmission; precomputed recovery; all native literals, generation/handle/owner checks, command-size caps, timers, guards, EOF, SSH options and one attempt"
+     },
+     "flow": [
+       "actual version",
+@@ -171,9 +168,10 @@
+     "unit_tests_or_mocks": false,
+     "credentials_or_selector_access": false,
+     "delegation": false,
+-    "push_or_publication": false
+-  },
+-  "next": "fresh independent source-only whole-R3-package review, then exact future clean source/input/transport/command binding; operation remains unexecuted",
++    "push_or_publication": false,
++    "retained_launcher_metadata_read_only": true
++  },
++  "next": "fresh independent source-only whole-package review; parent separately binds installed implementations/effective limits and exact future clean source/private inputs; no execution here",
+   "repair_base_candidate": "9911db75fa07d0383b81366d319475ded016c066",
+   "authoritative_review_commit": "2c8e67ea85dadd2046cf98c9a8cafc75fcc3afbe",
+   "transport_repair": {
+@@ -188,8 +186,48 @@
+     "precomputed_recovery_reused_without_recompression": true,
+     "external_recovery_script_read": false,
+     "nested_pwsh_complete_command_admission": true,
+-    "existing_launcher_binding": "REQUIRED_ABSENT; independently reviewed exact literal command layers for the existing selector; cap each actual complete layer by its own bound <=32767; unknown or nonliteral route refused",
++    "existing_launcher_binding": "v2 REQUIRED_ABSENT; closed exact literal_native and quoted resolved_executable constructions; each actual complete layer must pass its independently established effective limit <=32767; unknown/unrepresentable route refused",
+     "no_new_transport_protocol": true,
+     "unrepresentable_or_over_cap": "fail before original launch; no truncation, retry, relaxed owner, or guard reset"
++  },
++  "repair_base_r3_commit": "23b41681e4019f086f1f760c9817553d79acff04",
++  "r3_source_review_commit": "b5e93a2fafbf6850798abc8d6018851b3c68d648",
++  "exact_route_review_commit": "a6552ba88a3c96063f558a5edc4cdb80a5234778",
++  "private_launch_binding_materialized": false,
++  "admission_assertions_materialized": false,
++  "installed_implementation_and_effective_limits_bound": false,
++  "command_layer_repair": {
++    "constructions": [
++      "literal_native",
++      "resolved_executable"
++    ],
++    "layer_count_min": 1,
++    "layer_count_max": 4,
++    "literal_native_relation": "prefix + full unchanged submitted native line + suffix",
++    "resolved_executable_relation": "quoted fixed resolved powershell.exe full path + unchanged serialized tail after the fixed bare executable token",
++    "retained_route_shape_representable_as_data": true,
++    "retained_query_only": true,
++    "conditional_maxima_utf16_including_nul": {
++      "submitted": 32135,
++      "resolved_child": 32180,
++      "literal_wrapper": 32181
++    },
++    "conditional_maxima_require_unchanged_observed_construction": true,
++    "sizes_do_not_prove_effective_limits": true,
++    "execution": false
++  },
++  "parent_installed_implementation_query_first_failure": {
++    "label": "m1-resume-private-20261024/windows-installed-launcher-implementation-924301bc961c/first-failure.json",
++    "sha256": "1a340873cdaa1d4c92707364d780c02013ea9fdd514333b872931c4ad99ce434",
++    "retained_file_hash_verified": true,
++    "parent_reported_attempts": 1,
++    "parent_reported_operation": "read-only installed launcher VersionInfo/GetFileHash metadata query",
++    "parent_reported_outcome": "SSH_PARENT_TIMED_OUT_30_SECONDS_BEFORE_OUTPUT",
++    "implementation_versions": "UNVERIFIED",
++    "effective_limits": "UNVERIFIED",
++    "retry": false,
++    "candidate_build_daemon_stop_attempt": false,
++    "child_remote_query": false,
++    "private_binding_materialized": false
+   }
+ }
+--- a/README.md
++++ b/README.md
+@@ -1,59 +1,95 @@
+-# Windows fresh baseline command repair R3
++# Windows command-layer admission repair
+ 
+-`execution=false`. This package proposes one source repair for P2-1 in the
+-[authoritative review](../windows-fresh-baseline-review-2026-10-24-e2250943/REVIEW.md),
+-commit `2c8e67ea85dadd2046cf98c9a8cafc75fcc3afbe`. The exact base candidate R1 is
+-`9911db75fa07d0383b81366d319475ded016c066`,
+-[fresh baseline package](../windows-fresh-baseline-plan-2026-10-24-a7b99aef/README.md).
+-This is an implementation response. Independent review of this exact R3 package
+-is pending. No approval, private input, fixture, guard, or remote root was created.
++`execution=false`. This is an implementation handoff. Fresh independent review of
++this exact package is **PENDING**. Native syntax and runtime remain **UNVERIFIED**.
++No private launch binding, true admission assertions or approval receipt was
++created. Only this new folder is owned by this task.
+ 
+-All [eight complete sources](source/) are inert text. Only `controller.py.txt`
+-changes. The seven native source texts are byte-identical to R1, including the
+-entire safety module. The [minimal R1 diff](diff-from-candidate-r1.patch) and
+-[source bindings](source-bindings.json) identify every changed byte.
++The exact base is R3 commit `23b41681e4019f086f1f760c9817553d79acff04`,
++[original package](../windows-fresh-command-repair-r3-2026-10-24-4d078c08/README.md).
++Both full independent reports were read and bound to their immutable Git bytes:
+ 
+-The existing SSH `powershell.exe -EncodedCommand` protocol stays. Each normal
+-script and its precomputed exact-owner recovery script use a bounded in-memory
+-raw-DEFLATE literal. The wrapper checks the full expanded UTF-8 byte length and
+-SHA-256 before creating the script block. It keeps the first error and attempts
+-each memory/hash resource disposal. Recovery reads no external script file.
+-It selects the complete original encoded argument with the exact unchanged
+-selector and retains all original generation, handle, descendant, and kill gates.
++- [R3 source review](/Users/serge/.t3/worktrees/openergy/t3-821487e9/docs/verification/windows-fresh-command-r3-review-2026-10-24-821487e9/REVIEW.md),
++  commit `b5e93a2fafbf6850798abc8d6018851b3c68d648`: source CLEAR with no P1/P2 for
++  R3 only. Its compressed-literal caps cover main and recovery. The seven native
++  files remain unchanged, and no native flow was executed.
++- [Exact-route review](/Users/serge/.t3/worktrees/openergy/t3-b1fe3a1f/docs/verification/windows-launch-binding-review-2026-10-24-b1fe3a1f/README.md)
++  and its [data](/Users/serge/.t3/worktrees/openergy/t3-b1fe3a1f/docs/verification/windows-launch-binding-review-2026-10-24-b1fe3a1f/review.json),
++  commit `a6552ba88a3c96063f558a5edc4cdb80a5234778`: UNSATISFIED for the exact R3
++  contract. The actual child's quoted full-path replacement cannot be expressed
++  as a prefix and suffix around the unchanged submitted native line. Installed
++  implementation versions and effective limits also remain unbound.
+ 
+-Both complete outer commands must pass size admission before the original can
+-launch. Each admitted outer command has at most **32,135 UTF-16 units including
+-the executable, options, spaces, and NUL**, below 32,767. A separate check admits
+-the complete nested PowerShell 7 command, including the quoted executable path
+-and encoded root paths. See [command bounds and limits](COMMAND-BOUNDS.md).
+-Oversized, malformed, incompressible, or unrepresentable inputs fail before launch.
+-No compression ratio, convenient TEMP path, or trusted root path is assumed.
++The new `openergy.windows-existing-launch-binding.v2` contract has a bounded
++`command_layers` list with two closed construction types. `literal_native` keeps
++R3's exact prefix + unchanged full native line + suffix. `resolved_executable`
++places the exact bound executable path inside double quotes and retains the
++entire serialized tail after the fixed bare `powershell.exe` token. It has no
++other replacement, nesting or evaluation feature. Exact keys and normalized
++absolute local-drive path constraints fail closed. No executable path is supplied
++or discovered by this package.
+ 
+-The [finite plan](plan.json), [next-run instructions](NEXT-RUN.md), and
+-[responses](RESPONSES.md) retain all work, settlement, and collection budgets.
+-The build remains one locked/offline Rust/Cargo 1.99.1 release build, jobs 2,
+-with zero Clippy repeats. The real R2 CLI flow, FileShare.ReadWrite|Delete reader,
+-and full ten-second normal-stop allowance remain exact R1 bytes.
++This change affects admission only. The actual SSH argv, native argv and protocol
++stay exact R3. Each main command and its precomputed recovery still pass all
++complete-command gates before the main command can launch. Each rendered layer
++uses its own independently established effective limit, including NUL and any
++smaller implementation limit. No line is padded and no limit is invented.
++The separate nested PowerShell 7 gate is unchanged.
+ 
+-The original runtime remains **FAILED / UNVERIFIED**, with **zero daemon.stop
+-requests**. Historical preservation remains **UNVERIFIED**, with **0/9** qualified
+-bindings after the closed 160-retrieval search. No old binding or result was
+-reconstructed, reopened, or changed. A future new pass cannot change those facts.
++Read [the command bounds](COMMAND-BOUNDS.md) and [the input contract](input-contracts.json).
++Saved metadata was read only as data. Its query has complete sizes of 2,415
++submitted, 2,460 child and 2,461 wrapper units including NUL. Conditional on the
++observed unchanged construction and the R3 cap, the corresponding maxima remain
++32,135, 32,180 and 32,181. The two actual saved command lines each match their
++closed construction exactly. This proves representability of the retained
++observation. It does not prove installed versions, effective limits or a future
++near-ceiling launch. No actual private preparation object was materialized.
++The parent later reported one read-only installed-launcher VersionInfo/GetFileHash
++query. Its SSH parent timed out after 30 seconds before output. The first-failure
++record is hash-bound in the static evidence. No retry ran. Missing versions and
++effective limits remain UNVERIFIED; no candidate/build/daemon/stop was attempted.
++The public package omits saved private path literals, alias, selector hash and
++query payload.
+ 
+-[Static checks](static-checks.json), [input bindings](input-bindings.json), and
+-[package manifest](manifest.json) retain data-only evidence. Checks use file/Git
+-bytes, JSON, Python AST as data, string arithmetic, diffs, and checksums. No task
+-helper or AST was imported, evaluated, compiled, or executed. No compression or
+-decompression helper was exercised. No PowerShell/C# parser, test, mock,
+-simulation, native check, fixture setup, product/build, signing, OS/process probe,
+-network, remote command, credential/selector/private-recovery access, delegation,
+-push, or publication ran. The delivery commit disables hooks and signing.
++All [eight complete inert source texts](source/) are present. Only
++`source/controller.py.txt` changes. Its only changed functions are
++`transport_argv` and `Controller.prepare_inputs`. The seven native sources,
++all other controller functions, all nine original multiline literals, and the
++result schema are byte-exact R3. Thus ownership, generation/handle checks,
++recovery, one-shot guards, all caps/budgets, first errors, defaults and signaling
++retain their R3 source. No route/default/configuration change is made.
+ 
+-Native syntax, decoder interoperability, launcher behavior, actual ACL/reparse
+-and process behavior, cleanup, collection, and stop remain UNVERIFIED. The
+-unknown remote shell can impose another limit. Same-user races, arbitrary
+-OS-call preemption, unsampled generations, external SSH/job/handle state,
+-release-linker sampling, uncapped output, and total memory/disk remain proof
+-limits. This operation stays unexecuted until fresh whole-package source review
+-and exact future source, input, transport, and command binding. The required fresh
+-`preparation.windows_launch_binding` is absent here. Unknown routes fail admission.
++[The exact R3 delta](diff-from-r3.patch) covers the six changed carried files:
++controller, input contract, command bounds, next-run instructions, finite plan
++and this README. It has no native-source hunks. New binding/check documents are
++package evidence and are enumerated by the manifest. The result schema and
++.gitattributes are also carried byte-exact. R3's older review/error artifacts are
++retained at their original paths; they are not copied as current validation.
++
++[The finite plan](plan.json) and [future instructions](NEXT-RUN.md) remain inert.
++The parent must first obtain fresh independent review of all eight exact sources,
++the delta and contract. It separately binds the installed implementation versions,
++unchanged configuration/construction, all actual layers and their effective
++limits. Private binding and admission assertions remain unmaterialized until
++that evidence exists. This source-only task starts no future operation and adds
++no human approval gate. No new query is needed to solve representability.
++
++[Static evidence](static-checks.json), [input bindings](input-bindings.json),
++[source bindings](source-bindings.json), [reader limits](STATIC-CHECKS.md),
++[manifest](manifest.json) and [hash list](SHA256SUMS) make this handoff inspectable.
++One broad reader predicate failed because the new path guard adds a four-character
++string containing a newline. The false whole-list comparison and traceback remain
++in [static-reader-errors.json](static-reader-errors.json). All nine original
++multiline literals remain exact; no source was changed to hide the failed check.
++
++The old Windows result remains **FAILED / UNVERIFIED**, with **zero daemon.stop
++requests**. Historical preservation remains **UNVERIFIED**, **0/9** bindings after
++the closed 160-retrieval search. The expired Sparkle window stays **CLOSED**.
++No historical file or result was changed.
++
++Work used static file/Git/JSON/AST/string/hash readers only. No supplied code,
++helper, checker, import, AST evaluation, compression/decoder exercise, candidate
++renderer execution, test/mock/simulation, native parser, host/process/OS query,
++remote probe, network, private write, fixture, build, product, signing or child
++agent was used. No executable workflow or approval receipt was made. Delivery
++uses Git hooks and signing disabled. There is no integration, push or publication.
