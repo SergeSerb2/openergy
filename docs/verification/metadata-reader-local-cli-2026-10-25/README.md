@@ -30,6 +30,15 @@ retained file by relative label, length, mode and hash. The corrected invocation
 provides local reader CLI evidence. Independent review remains **PENDING**;
 Windows metadata, native stop and installed limits remain **UNVERIFIED**.
 
+The subsequent independent review `f9aaf96` found a terminal deadline gap in
+the original driver and reader. The current driver now records absolute case
+and whole-flow deadlines, permits one explicit second for interpreter startup,
+and rejects late observations after waits, evidence reads and validation. Its
+final CLI exit also checks the whole-flow deadline. The current deadline
+revision has not run; the two retained results above bind earlier revisions.
+The matching reader repair is in
+[the terminal deadline package](../windows-metadata-terminal-deadline-repair-2026-10-25/README.md).
+
 The caller supplies an absent output path below an owned private mode-0700
 directory. Raw command bindings, output and receipts stay there. The driver
 runs at nice15 and has a 28-second work envelope plus at most two seconds for

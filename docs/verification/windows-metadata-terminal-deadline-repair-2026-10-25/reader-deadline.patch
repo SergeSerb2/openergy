@@ -1,0 +1,19 @@
+--- a/metadata_reader.py.txt
++++ b/metadata_reader.py.txt
+@@ -314,6 +314,7 @@
+                 entry['bytes'] += count
+                 pending = pending[count:]
+         observe()
++        before(deadline)  # A late final poll cannot consume settlement time as capture.
+ 
+     try:
+         run = Path(args.run_dir)
+@@ -360,6 +361,8 @@
+         phase = 'capture'
+         while mux.get_map() or not report['local_exit_observed']:
+             pump(work_end)
++        report['work_completion_observed_monotonic'] = time.monotonic()
++        before(work_end)  # Recheck after all capture/exit observations.
+     except BaseException as error:
+         fail(error)
+         if any(x['bytes_read'] != x['bytes'] for x in report['streams'].values()):

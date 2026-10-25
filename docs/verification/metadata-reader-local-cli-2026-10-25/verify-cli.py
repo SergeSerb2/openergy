@@ -37,8 +37,11 @@ def main():
     args.output.mkdir(mode=0o700)
     os.umask(0o077)
     started = time.monotonic()
+    outer_deadline = started + 28
+    interpreter_startup_allowance = 1.0
     result = dict(schema='openergy.metadata-reader-local-cli.v1',
                   status='INCOMPLETE', reader_sha256=actual, cases=[],
+                  result_requires_actual_driver_exit_zero=True,
                   windows_contacted=False, windows_qualification=False,
                   historical_attempt_reopened=False, retries=0)
     cases = (
@@ -50,7 +53,7 @@ def main():
     )
     try:
         for label, argv, work, cap, expected in cases:
-            if time.monotonic() - started >= 28:
+            if time.monotonic() >= outer_deadline:
                 raise TimeoutError('whole local command-flow budget exhausted')
             binding = args.output / (label + '-command.json')
             encoded = (json.dumps(dict(schema='openergy.metadata-reader-command.v1',
@@ -65,12 +68,17 @@ def main():
                        '--stderr-cap', str(cap), '--aggregate-cap', str(cap)]
             record = dict(label=label, command=command, expected_reader_exit=expected,
                           started_monotonic=time.monotonic(), accepted=False)
+            invocation_deadline = min(outer_deadline,
+                                      record['started_monotonic'] + work + 1 + interpreter_startup_allowance)
+            record.update(invocation_deadline=invocation_deadline,
+                          outer_deadline=outer_deadline,
+                          interpreter_startup_allowance_seconds=interpreter_startup_allowance)
             result['cases'].append(record)
             process = subprocess.Popen(command, stdin=subprocess.DEVNULL,
                                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             record['reader_pid'] = process.pid
             try:
-                code = process.wait(timeout=min(8, 28 - (time.monotonic() - started)))
+                code = process.wait(timeout=max(0, invocation_deadline - time.monotonic()))
             except subprocess.TimeoutExpired:
                 # This retained, unreaped direct handle cannot have its PID reused.
                 # No group/remote signal, retry, or descendant-cleanup claim.
@@ -80,10 +88,14 @@ def main():
                 record['reader_child_state'] = 'UNVERIFIED'
                 raise
             record.update(reader_exit=code, ended_monotonic=time.monotonic())
+            if time.monotonic() >= invocation_deadline:
+                raise TimeoutError('reader exit observed after its outer deadline')
             receipt_data = (run_dir / 'receipt.json').read_bytes()
             receipt = json.loads(receipt_data)
             stdout = (run_dir / 'stdout.bin').read_bytes()
             stderr = (run_dir / 'stderr.bin').read_bytes()
+            if time.monotonic() >= invocation_deadline:
+                raise TimeoutError('reader evidence read after its outer deadline')
             if code != expected or not receipt['local_exit_observed']:
                 raise RuntimeError(label + ': reader exit or actual child exit missing')
             if len(stdout) + len(stderr) > cap:
@@ -115,15 +127,19 @@ def main():
                          receipt['first_error']['class'] == 'OverflowError' and settled)
             if not valid:
                 raise RuntimeError(label + ': full CLI result differs from required outcome')
+            if time.monotonic() >= invocation_deadline:
+                raise TimeoutError('case validation after its outer deadline')
             record.update(accepted=True, receipt_sha256=hashlib.sha256(receipt_data).hexdigest(),
                           local_child_returncode=receipt['local_child_returncode'])
+        if time.monotonic() >= outer_deadline:
+            raise TimeoutError('whole command flow completed after its outer deadline')
         result['status'] = 'LOCAL_CLI_CASES_PASSED'
     except BaseException as error:
         result['first_failure'] = dict(type=type(error).__name__)
     finally:
         result['elapsed_seconds'] = time.monotonic() - started
         (args.output / 'result.json').write_text(json.dumps(result, indent=2, sort_keys=True) + '\n')
-    return 0 if result['status'] == 'LOCAL_CLI_CASES_PASSED' else 1
+    return 0 if result['status'] == 'LOCAL_CLI_CASES_PASSED' and time.monotonic() < outer_deadline else 1
 
 
 if __name__ == '__main__':
