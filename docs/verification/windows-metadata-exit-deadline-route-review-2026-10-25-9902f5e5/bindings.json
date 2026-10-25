@@ -1,0 +1,438 @@
+{
+  "schema": "openergy.metadata-d4-independent-source-data-review.v1",
+  "review_date": "2026-10-25",
+  "review_timezone": "America/Vancouver",
+  "review_worktree": "/Users/serge/.t3/worktrees/openergy/t3-9902f5e5",
+  "parent_worktree": "/Users/serge/.t3/worktrees/openergy/t3-52422617",
+  "review_base": "bd0319df37abcbccfce302e435ff4f125c3b2e96",
+  "candidate": "891a443fa29513bc9747e74f6981b8aaebd000e2",
+  "review_base_tree": "f3d835dd8ff86747e59b0cd8c67f93a66544903f",
+  "candidate_tree": "ad6ef5e529729e88a5a1de0f1eec881d64191ed3",
+  "execution": false,
+  "result": {
+    "verdict": "BOUNDED_SOURCE_DATA_CLEAR",
+    "D4": "ADDRESSED_IN_SOURCE_FIXED_SAME_MAC_DIRECT_CHILD_TOPOLOGY",
+    "p1_findings": 0,
+    "p2_findings": 0,
+    "approval": false,
+    "executable_receipt": false,
+    "runtime_acceptance": false,
+    "candidate_runtime": "NOT_RUN_UNVERIFIED"
+  },
+  "report": {
+    "path": "REVIEW.md",
+    "bytes": 6988,
+    "sha256": "d1390941a11e7e508025ad2145848af9cc12a10f6cf2d031e5a27447acacfa38"
+  },
+  "candidate_files": [
+    {
+      "bytes": 4953,
+      "equals_candidate_import_parent": true,
+      "git_blob": "7f9138e75352c57bc9eb48b174f7c42f51394679",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-exit-deadline-route-repair-2026-10-25/CLI.md",
+      "sha256": "960fc9a102b135f7105fa250eee9f10f5c3abda5316603060af22979995aa6c0"
+    },
+    {
+      "bytes": 5750,
+      "equals_candidate_import_parent": true,
+      "git_blob": "4bc3f866de48d2713c757f9cd5adc2e43f71f929",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-exit-deadline-route-repair-2026-10-25/README.md",
+      "sha256": "5fac71900b5882ad591e10c9dc75b094268e681f34c1746720d0979e60838dd4"
+    },
+    {
+      "bytes": 844,
+      "equals_candidate_import_parent": true,
+      "git_blob": "d7f34ff4cbb4692f39f95425b969345ee2e2e23b",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-exit-deadline-route-repair-2026-10-25/SHA256SUMS",
+      "sha256": "57b4dd4c7150dc12f07aecd895c9bde3c0781755153eb5878ce817c662204cf7"
+    },
+    {
+      "bytes": 9458,
+      "equals_candidate_import_parent": true,
+      "git_blob": "72c90d446dffc9cb62d5f3d932d0f7d817834373",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-exit-deadline-route-repair-2026-10-25/bindings.json",
+      "sha256": "713d066679e4d3500a8165ee0960392c1d06597724e9cce5f4a9ec77ebb2b66f"
+    },
+    {
+      "bytes": 3987,
+      "equals_candidate_import_parent": true,
+      "git_blob": "902bc284403899e05d180de807b3ff1830f75c04",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-exit-deadline-route-repair-2026-10-25/driver-from-93cd2e6.patch.txt",
+      "sha256": "14939b13f396e22b8133b0e903acea81ae640198cd3b0ca8b2728d6dfd601f40"
+    },
+    {
+      "bytes": 4586,
+      "equals_candidate_import_parent": true,
+      "git_blob": "e385a50f78d8e2af5b3783afedd2d6666af40c02",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-exit-deadline-route-repair-2026-10-25/metadata-query.ps1.txt",
+      "sha256": "3404c46e256d41c17c1c7efaea1364216075f7988e1e5d38f588b43c92358443"
+    },
+    {
+      "bytes": 22658,
+      "equals_candidate_import_parent": true,
+      "git_blob": "f1e691bafef85928bac6d79cea01afa23d842803",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-exit-deadline-route-repair-2026-10-25/metadata_reader.py.txt",
+      "sha256": "15d2a6275d70135857db059bdf1982f5071dd819c3c73ea3ea27e08cd9802bc4"
+    },
+    {
+      "bytes": 1762,
+      "equals_candidate_import_parent": true,
+      "git_blob": "c3f4923be2cd524b60d873b6dc96a8db84706062",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-exit-deadline-route-repair-2026-10-25/plan.json",
+      "sha256": "7788f98c6cfbec42e0b04bb4a2229cf669362435eb9dd29edf7c297cac7ca8bf"
+    },
+    {
+      "bytes": 1500,
+      "equals_candidate_import_parent": true,
+      "git_blob": "ec41f4d73c64ae5885baf22199b34e7ace7bf726",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-exit-deadline-route-repair-2026-10-25/reader-from-97cc8f9.patch.txt",
+      "sha256": "913a87e3332b1302c0aab38d96f618df4677baaf00534eec945fa1f4a698df6f"
+    },
+    {
+      "bytes": 3226,
+      "equals_candidate_import_parent": true,
+      "git_blob": "df4e925f28a59640028efeaeb18b423fcfcd4592",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-exit-deadline-route-repair-2026-10-25/static-checks.json",
+      "sha256": "9edadeae7a3c64abb8e95550f4834c87599f6913b3a04e38f43bbdf69ff0fecc"
+    },
+    {
+      "bytes": 12426,
+      "equals_candidate_import_parent": true,
+      "git_blob": "d7593882fba6b839082d45af1329e2ca64b696f6",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-exit-deadline-route-repair-2026-10-25/verify-cli.py.txt",
+      "sha256": "59ba17b43e4414998cc171b897f173a8282c7277908a23636e1d086e8a4f9b59"
+    }
+  ],
+  "public_inputs": [
+    {
+      "bytes": 21740,
+      "git_blob": "d02586222827e4bcbb39a24ed909c03ce5d27206",
+      "immutable_base_parent_equal": true,
+      "path": "docs/verification/windows-metadata-terminal-deadline-repair-2026-10-25/metadata_reader.py.txt",
+      "revision": "97cc8f9930d0548c2d0c4d6b1a3ec56a18e14283",
+      "sha256": "8f55fbb7c930989f0ad7327536eb61a1330eb741c108992784f37b54af68086c"
+    },
+    {
+      "bytes": 4586,
+      "git_blob": "e385a50f78d8e2af5b3783afedd2d6666af40c02",
+      "immutable_base_parent_equal": true,
+      "path": "docs/verification/windows-metadata-terminal-deadline-repair-2026-10-25/metadata-query.ps1.txt",
+      "revision": "97cc8f9930d0548c2d0c4d6b1a3ec56a18e14283",
+      "sha256": "3404c46e256d41c17c1c7efaea1364216075f7988e1e5d38f588b43c92358443"
+    },
+    {
+      "bytes": 8792,
+      "git_blob": "61518aee79ffb8218e3cc7b52aa4c05a31588ddc",
+      "immutable_base_parent_equal": true,
+      "path": "docs/verification/metadata-reader-local-cli-2026-10-25/verify-cli.py",
+      "revision": "93cd2e6634535d3d22464eaa9eb42d2ccf2ab3e9",
+      "sha256": "8f4f95f0178e0f249fa3b44804d23d10090822c6d30c3ca92e7fb2e1930a642f"
+    },
+    {
+      "bytes": 9389,
+      "git_blob": "4d577df661060ca444c35d856158679e7fa1d380",
+      "immutable_base_parent_equal": true,
+      "path": "docs/verification/windows-metadata-reader-review-2026-10-25-9d61c036/REVIEW.md",
+      "revision": "f9aaf96ba4ef2b48c44367edba9bc6c7242e0376",
+      "sha256": "e36fd84e2bd896bd058a7447cb084a8b16d68ebdeca61c54f320599b8569ed97"
+    },
+    {
+      "bytes": 75094,
+      "git_blob": "cafad3f82884770298de605dbda9d53127601544",
+      "immutable_base_parent_equal": true,
+      "path": "docs/verification/windows-metadata-reader-review-2026-10-25-9d61c036/bindings.json",
+      "revision": "f9aaf96ba4ef2b48c44367edba9bc6c7242e0376",
+      "sha256": "64dc6ea6a54d522ab4fa0ac0988b54872bc2354fcf9e14bca5c668dbf71ede15"
+    },
+    {
+      "bytes": 11103,
+      "git_blob": "e6206c88d8da0a912265b799403bc5fea9dabb78",
+      "immutable_base_parent_equal": true,
+      "path": "docs/verification/windows-metadata-deadline-review-2026-10-25-fb965bd1/REVIEW.md",
+      "revision": "ef9a635feebc4e03b36b68392c60165457ffe478",
+      "sha256": "e37ab0ac5f019ac4987796a47fda29700d0b21ac706e7fca6694ee7094fcf8c9"
+    },
+    {
+      "bytes": 28786,
+      "git_blob": "abbb177f51f9ad8cb4a9d1168e6c4c3055fbbb00",
+      "immutable_base_parent_equal": true,
+      "path": "docs/verification/windows-metadata-deadline-review-2026-10-25-fb965bd1/bindings.json",
+      "revision": "ef9a635feebc4e03b36b68392c60165457ffe478",
+      "sha256": "45128cafb0bdbc1d363c4c41554a9d39a896b384a27c35bfcd9097a34b6c13b9"
+    },
+    {
+      "bytes": 6575,
+      "git_blob": "d36c5e493d95e7cf5f72a8dba9051de295dce687",
+      "immutable_base_parent_equal": true,
+      "path": "docs/verification/windows-metadata-d3-review-2026-10-25-2f06beb5/REVIEW.md",
+      "revision": "6df8c389ee898f76da35e968b97ec24365f4f885",
+      "sha256": "26d0bd0fdbe4c3dd8316cef8c8c94cc40bccc54581dc0df1a4f6291c68c19d0c"
+    },
+    {
+      "bytes": 10121,
+      "git_blob": "57b727043c3b76c850b7f8e4f99272efbc83f045",
+      "immutable_base_parent_equal": true,
+      "path": "docs/verification/windows-metadata-d3-review-2026-10-25-2f06beb5/bindings.json",
+      "revision": "6df8c389ee898f76da35e968b97ec24365f4f885",
+      "sha256": "d4947b3eca83d57ee4651279a7b2735a6a88ab6405272cbaef2cf428a1c2050c"
+    },
+    {
+      "bytes": 2062,
+      "git_blob": "0e525260773a67eb344c0bf9bea5fd982fa4c30f",
+      "immutable_base_parent_equal": true,
+      "path": "docs/verification/metadata-reader-deadline-cli-validation-2026-10-25/README.md",
+      "revision": "3c52f5320c7ad8f434f06fadbbd4520565dd0b9b",
+      "sha256": "742e172d46691017583284fe2dd5705f5b86c2c0cb2b1d0093b65d9262ac0b9c"
+    },
+    {
+      "bytes": 10511,
+      "git_blob": "fcac33a552052bf5ed3bd8266f935a289cd8ee36",
+      "immutable_base_parent_equal": true,
+      "path": "docs/verification/metadata-reader-deadline-cli-validation-2026-10-25/results.json",
+      "revision": "3c52f5320c7ad8f434f06fadbbd4520565dd0b9b",
+      "sha256": "70ee61795c59e2361f0d6a3a800471d174dccdcafeac1d73d3e5505fa9d93452"
+    },
+    {
+      "bytes": 15170,
+      "git_blob": "c9d8972c30c3f63144748fc97accceef93a886c7",
+      "immutable_base_parent_equal": true,
+      "path": "docs/verification/metadata-reader-deadline-cli-validation-2026-10-25/private-evidence-index.json",
+      "revision": "3c52f5320c7ad8f434f06fadbbd4520565dd0b9b",
+      "sha256": "3c30a0bdb3018bf24e0a68af799fd0452a06a67fe102d5e72ec3be3896241f71"
+    },
+    {
+      "bytes": 249,
+      "git_blob": "d07c794f98cae4a5d13eeb47dd1f8967bace8249",
+      "immutable_base_parent_equal": true,
+      "path": "docs/verification/metadata-reader-deadline-cli-validation-2026-10-25/SHA256SUMS",
+      "revision": "3c52f5320c7ad8f434f06fadbbd4520565dd0b9b",
+      "sha256": "f8c9c94c0b04163b5b8343a92b4c307d35badf22f257978462fb9446ebde7839"
+    },
+    {
+      "bytes": 10432,
+      "git_blob": "167ec36ddc59104e89999244945c001e6ab951d7",
+      "immutable_base_parent_equal": true,
+      "path": "docs/verification/metadata-reader-local-cli-2026-10-25/results.json",
+      "revision": "93cd2e6634535d3d22464eaa9eb42d2ccf2ab3e9",
+      "sha256": "d696f6829fa07284982a45edaf3b4e536be07748fbd8f9a0ff46d00cee095eee"
+    },
+    {
+      "bytes": 13079,
+      "git_blob": "d97fd4d3466d2af1376c2d1bfce5b41150731dc3",
+      "immutable_base_parent_equal": true,
+      "path": "docs/verification/metadata-reader-local-cli-2026-10-25/private-evidence-index.json",
+      "revision": "93cd2e6634535d3d22464eaa9eb42d2ccf2ab3e9",
+      "sha256": "2e96761dac23b789cf875dbf14a7891293689ea7a20d8824996f7f6d9b39cdef"
+    },
+    {
+      "bytes": 5613,
+      "git_blob": "b5a48d26b969d1ea9b1ae3932eb572b66f556d7a",
+      "immutable_base_parent_equal": true,
+      "path": "docs/verification/windows-metadata-reader-repair-2026-10-25-588e28c3/CLI.md",
+      "revision": "78759877392af3e41bb4d51fb5f40470c33ff6f9",
+      "sha256": "2056c780c04f442b81b25e8384fa9133fbc9e43ab080f989b56c617e98b63fe9"
+    },
+    {
+      "bytes": 2837,
+      "git_blob": "8fc5c7e60aa875b30279d23772898b4eaef76d61",
+      "immutable_base_parent_equal": true,
+      "path": "docs/verification/windows-metadata-reader-repair-2026-10-25-588e28c3/input-contract.json",
+      "revision": "78759877392af3e41bb4d51fb5f40470c33ff6f9",
+      "sha256": "ea6fc64e1b6f272bc0928c07af37301f891d0b4a0a17c8b326f73edb1c7b5421"
+    },
+    {
+      "bytes": 3273,
+      "git_blob": "fdb121ce604b022183108bb02a38dcc4410053ea",
+      "immutable_base_parent_equal": true,
+      "path": "docs/verification/windows-metadata-reader-repair-2026-10-25-588e28c3/plan.json",
+      "revision": "78759877392af3e41bb4d51fb5f40470c33ff6f9",
+      "sha256": "4137655a0fb9afd8bc9e789f55763df367bab7bc3bf795e4eb9c642c128518b3"
+    }
+  ],
+  "prior_review_packages": [
+    {
+      "files": 7,
+      "full_report_package_byte_exact": true,
+      "path": "docs/verification/windows-metadata-reader-review-2026-10-25-9d61c036",
+      "revision": "f9aaf96ba4ef2b48c44367edba9bc6c7242e0376"
+    },
+    {
+      "files": 5,
+      "full_report_package_byte_exact": true,
+      "path": "docs/verification/windows-metadata-deadline-review-2026-10-25-fb965bd1",
+      "revision": "ef9a635feebc4e03b36b68392c60165457ffe478"
+    },
+    {
+      "files": 3,
+      "full_report_package_byte_exact": true,
+      "path": "docs/verification/windows-metadata-d3-review-2026-10-25-2f06beb5",
+      "revision": "6df8c389ee898f76da35e968b97ec24365f4f885"
+    }
+  ],
+  "checksum_lists": [
+    {
+      "all_match": true,
+      "entries": 10,
+      "path": "docs/verification/windows-metadata-exit-deadline-route-repair-2026-10-25/SHA256SUMS"
+    },
+    {
+      "all_match": true,
+      "entries": 6,
+      "path": "docs/verification/windows-metadata-reader-review-2026-10-25-9d61c036/SHA256SUMS"
+    },
+    {
+      "all_match": true,
+      "entries": 4,
+      "path": "docs/verification/windows-metadata-deadline-review-2026-10-25-fb965bd1/SHA256SUMS"
+    },
+    {
+      "all_match": true,
+      "entries": 2,
+      "path": "docs/verification/windows-metadata-d3-review-2026-10-25-2f06beb5/SHA256SUMS"
+    }
+  ],
+  "patches": [
+    {
+      "applied": false,
+      "bytes": 1500,
+      "hunks": 4,
+      "path": "reader-from-97cc8f9.patch.txt",
+      "reconstructs_exact_source": true,
+      "sha256": "913a87e3332b1302c0aab38d96f618df4677baaf00534eec945fa1f4a698df6f"
+    },
+    {
+      "applied": false,
+      "bytes": 3987,
+      "hunks": 6,
+      "path": "driver-from-93cd2e6.patch.txt",
+      "reconstructs_exact_source": true,
+      "sha256": "14939b13f396e22b8133b0e903acea81ae640198cd3b0ca8b2728d6dfd601f40"
+    }
+  ],
+  "full_index_binary_package_patch": {
+    "bytes": 77274,
+    "sha256": "6dfc7d844b3b8f9460dd3e5335be5503d9f40ac9b153bc9af7d56d2031c3c6c9"
+  },
+  "source_checks": {
+    "admission_and_windows_constructors_unchanged": true,
+    "case_tuple_byte_exact": true,
+    "d1_d3_predicates_byte_exact": true,
+    "driver_validation_tail_and_return_gates_byte_exact": true,
+    "python_asts_parsed_as_data": true,
+    "query_byte_exact": true,
+    "query_lines": 87,
+    "reader_self_binding_cap_pass": true,
+    "six_paths_unchanged": true,
+    "supplied_import_or_execution": false,
+    "unchanged_reader_functions": [
+      "require",
+      "digest",
+      "hex64",
+      "read_bound",
+      "strict_json",
+      "admit",
+      "metadata_complete",
+      "cli"
+    ],
+    "candidate_only_11_added_package_files": true,
+    "import_patch_byte_exact": true,
+    "initial_tree_clean": true,
+    "plan_disabled_all_steps_remote_zero": true,
+    "source_prefix_only_declared_delta": true,
+    "d4": {
+      "reader_fields": "metadata_reader.py.txt:208-234",
+      "initial_checkpoint_and_fsync_before_spawn": "metadata_reader.py.txt:258-275,345-367",
+      "qualified_mac_cpython_and_same_interpreter": "verify-cli.py.txt:26-38,80-95,130-140",
+      "finite_types_budgets_arithmetic_startup_and_order": "verify-cli.py.txt:121-140",
+      "actual_reader_wait_then_parent_exit_timestamp_before_receipt_reads": "verify-cli.py.txt:98-119",
+      "all_cases_must_observe_exit_before_both_deadlines": "verify-cli.py.txt:141-142",
+      "source_command_purpose_cap_and_actual_exits": "verify-cli.py.txt:143-155",
+      "earlier_elapsed_and_boolean_not_used_for_acceptance": true,
+      "outer_checks_and_actual_driver_exit_still_required": true,
+      "hard_preemption_or_storage_fault_proof": false
+    }
+  },
+  "private_route": {
+    "inputs": [
+      {
+        "bytes": 2809,
+        "label": "argv.json",
+        "sha256": "986c3626f482bb6fee04d71f6306a1d3ffd51812c457b192d1959add13d0b498"
+      },
+      {
+        "bytes": 559,
+        "label": "receipt.json",
+        "sha256": "5fd1f40dc8caf85226a9ce047862d5c72a34ef0d6ab68aa02f96775ffc2a2c00"
+      },
+      {
+        "bytes": 6748,
+        "label": "metadata.json",
+        "sha256": "18ca5007de306e208bf5d7e7e04ccfd9ba9880b07e57b0b4f33f88df9f073f88"
+      }
+    ],
+    "native_tokens": 6,
+    "new_query_payload_differs": true,
+    "old_native_five_fixed_tokens_match": true,
+    "prefix_before_private_selector_and_native_matches": true,
+    "prefix_sha256": "a4ef670901c7134708c08ab63d17cf0617817507ac1fbd841dcca9dd63f8e6e9",
+    "prefix_tokens": 21,
+    "private_values_published": false,
+    "receipt_command_serialization_linkage": "NOT_ESTABLISHED",
+    "whole_argv_equality": false
+  },
+  "reuse": {
+    "historical_full_audit": "INHERITED_ONLY",
+    "historical_paths_unchanged": 179,
+    "latest_private_58_file_audit": "INHERITED_ONLY_NOT_REOPENED",
+    "old_private_50_file_audit": "INHERITED_ONLY_NOT_REOPENED"
+  },
+  "clock_authority": {
+    "source": "https://docs.python.org/3.13/library/time.html#time.monotonic",
+    "basis": "Parent-verified documentation supplied in brief; all processes share clock; macOS since 3.10",
+    "reviewer_network_fetch": false,
+    "scope": "same Mac; same qualified CPython executable; direct parent and reader child",
+    "cross_host_origin_comparison": false,
+    "descriptor_equality_is_clock_attestation": false
+  },
+  "limits": {
+    "source_module_or_ast_execution": false,
+    "supplied_module_import": false,
+    "tests_mocks_fixtures_helpers_native_parser": false,
+    "runtime_remote_network": false,
+    "os_process_port_queries": false,
+    "private_writes": false,
+    "private_json_files_read": 3,
+    "build_sign_product_credentials": false,
+    "child_agents": 0,
+    "current_candidate": "NOT_RUN_UNVERIFIED",
+    "old_failed_local_flow": "FAILED_INCOMPLETE_PRESERVED",
+    "latest_3c52f53": "EARLIER_HASHES_ONLY_NOT_D4_PROOF",
+    "old_metadata": "TIMED_OUT_UNVERIFIED",
+    "windows_native_parser_runtime_stop": "UNVERIFIED",
+    "versions_effective_limits": "UNVERIFIED",
+    "historical_preservation": "UNVERIFIED",
+    "remote_exit_current_state": "UNVERIFIED",
+    "remote_cleanup_proved": false,
+    "native_stop_requests": 0,
+    "local_python_3_15": "UNVERIFIED",
+    "separate_m1_python_3_13_9": "UNVERIFIED",
+    "storage_faults_hard_preemption": "UNPROVED"
+  },
+  "write_scope": "this new review folder only",
+  "commit_procedure": {
+    "hooksPath": "/dev/null",
+    "commit_gpgsign": false,
+    "no_gpg_sign": true
+  }
+}
