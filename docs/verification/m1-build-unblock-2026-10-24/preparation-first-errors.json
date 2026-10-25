@@ -1,0 +1,17 @@
+{
+  "product_or_build_attempt": false,
+  "errors": [
+    {
+      "stage": "local metadata reader",
+      "error": "ModuleNotFoundError: No module named 'tomllib'",
+      "cause": "Unqualified python3 selected system Python 3.9.",
+      "correction": "Use existing /opt/homebrew/bin/python3.15 explicitly."
+    },
+    {
+      "stage": "local data snapshot preflight",
+      "error": "AssertionError at state-parent 0700 predicate",
+      "archive_or_private_output_created": false,
+      "correction": "Create a fresh task-owned 0700 parent. Preserve the shared state parent permissions."
+    }
+  ]
+}
