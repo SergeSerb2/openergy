@@ -1,0 +1,43 @@
+{
+  "candidate_attempts": 0,
+  "declared_profile_schema": "openergy.m1-bound-ssh-profile.v1",
+  "directory_mode": "0700",
+  "exclusive_profile_file_and_directory_fsynced": true,
+  "execution": false,
+  "final_caller_review": null,
+  "final_collector_hash": null,
+  "final_payload_hash": null,
+  "fixed_public_option_order_checked": true,
+  "local_clock_prerequisite_commit": "190e11f",
+  "local_preparation_parent_fsynced": true,
+  "original_guard_hash_and_metadata_unchanged": true,
+  "private_prepared_directory_basename": "m1-source-metadata-launch-prepared-20261025-7ae23486940a",
+  "private_slot_grammars_checked": true,
+  "profile_bytes": 821,
+  "profile_leaf": "m1-profile.json",
+  "profile_mode": "0400",
+  "profile_sha256": "dc9ff86519970ad740961012b0740b1b1a7aab3135a6fe79e47aa0de071acf4f",
+  "profile_source_guard_reads": {
+    "content_bytes": 3126,
+    "first_pass_result": "schema spelling mismatch rejected before any preparation directory or file write",
+    "maximum_bytes_per_read": 1564,
+    "no_directory_inventory": true,
+    "passes": 2,
+    "regular_opens": 2,
+    "second_pass_result": "declared schema used; exact profile bound"
+  },
+  "remote_connections": 0,
+  "root_current_inspection_plus_profile_read_ledger": {
+    "content_bytes": 14136,
+    "regular_opens": 16,
+    "scope": "seven-original parent inspection492f067 plus these two source-guard data reads only; not a global or other-agent ledger"
+  },
+  "run_directory_created": false,
+  "run_directory_leaf": "run",
+  "runtime": "UNVERIFIED",
+  "schema": "openergy.m1-source-profile-binding-evidence.v1",
+  "source_guard_bytes": 1563,
+  "source_guard_sha256": "9e0b9a5afb47b7755d1ebaf5f50edf45cf0a7372baaa2f83b83d9255011aed4c",
+  "status": "PROFILE_BOUND_EXECUTION_DISABLED",
+  "whole_29_token_argv_equal_to_original_guard": true
+}
