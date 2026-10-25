@@ -1,0 +1,162 @@
+--- a/source/controller.py.txt
++++ b/source/controller.py.txt
+@@ -14,8 +14,9 @@
+ import subprocess
+ import tarfile
+ import time
+ import traceback
++import zlib
+ 
+ HERE = Path(__file__).resolve().parent
+ DATA = HERE.parent
+ PREPARATION = json.loads((DATA/'preparation.json').read_text())
+@@ -29,8 +30,59 @@
+ OPTIONS = ['-o','BatchMode=yes','-o','ConnectTimeout=8','-o','StrictHostKeyChecking=yes','-o','UpdateHostKeys=no','-o','ControlMaster=no','-o','ServerAliveInterval=10','-o','ServerAliveCountMax=2','-o','ForwardAgent=no']
+ def sha(data): return hashlib.sha256(data).hexdigest()
+ def save(path,obj): path.write_text(json.dumps(obj,indent=2)+'\n')
+ def now(): return datetime.datetime.now().astimezone().isoformat()
++def windows_command_units(argv):
++    # Complete Windows argv serialization: executable, quotes, spaces, UTF-16 and NUL.
++    if any(not isinstance(a,str) or '\0' in a for a in argv):raise ValueError('invalid Windows argv')
++    units=len(subprocess.list2cmdline(argv).encode('utf-16le'))//2+1
++    if units>32767:raise ValueError('complete Windows command line exceeds 32767 UTF-16 units including NUL')
++    return units
++
++def transport_payload(script):
++    # Raw DEFLATE, fixed parameters, exact UTF-8 length/hash; no remote script file.
++    data=script.encode('utf-8')
++    if '\0' in script or not 1<=len(data)<=65536:raise ValueError('transport source size/encoding refused')
++    compressor=zlib.compressobj(9,zlib.DEFLATED,-15)
++    literal=base64.b64encode(compressor.compress(data)+compressor.flush()).decode('ascii')
++    if len(literal)>10400:raise ValueError('compressed transport literal exceeds 10400 ASCII characters')
++    wrapper=r'''$ErrorActionPreference='Stop';(Get-Process -Id $PID).PriorityClass='BelowNormal'
++$transportStream=$null;$transportInflater=$null;$transportOutput=$null;$transportHash=$null;$transportFirstError=$null
++try{
++ $transportBytes=[Convert]::FromBase64String('__LITERAL__')
++ $transportStream=[IO.MemoryStream]::new($transportBytes,$false)
++ $transportInflater=[IO.Compression.DeflateStream]::new($transportStream,[IO.Compression.CompressionMode]::Decompress)
++ $transportOutput=[IO.MemoryStream]::new();$transportHash=[Security.Cryptography.SHA256]::Create()
++ $transportBuffer=New-Object byte[] 4096
++ while(($transportCount=$transportInflater.Read($transportBuffer,0,$transportBuffer.Length)) -gt 0){
++  if($transportOutput.Length+$transportCount -gt __BYTES__){throw 'transport expansion length exceeded'}
++  $transportOutput.Write($transportBuffer,0,$transportCount)
++ }
++ $transportPlain=$transportOutput.ToArray()
++ if($transportPlain.Length -ne __BYTES__ -or ([BitConverter]::ToString($transportHash.ComputeHash($transportPlain))).Replace('-','').ToLowerInvariant() -cne '__HASH__'){throw 'transport literal binding mismatch'}
++ $transportText=[Text.UTF8Encoding]::new($false,$true).GetString($transportPlain)
++}catch{$transportFirstError=$_}finally{
++ foreach($transportResource in @($transportHash,$transportOutput,$transportInflater,$transportStream)){
++  if($null -ne $transportResource){try{$transportResource.Dispose()}catch{if($null -eq $transportFirstError){$transportFirstError=$_}}}
++ }
++}
++if($null -ne $transportFirstError){throw $transportFirstError}
++& ([ScriptBlock]::Create($transportText))
++'''.replace('__LITERAL__',literal).replace('__BYTES__',str(len(data))).replace('__HASH__',sha(data))
++    return wrapper,base64.b64encode(wrapper.encode('utf-16le')).decode('ascii')
++
++def transport_argv(alias,encoded,binding):
++    native=['powershell.exe','-NoLogo','-NoProfile','-NonInteractive','-EncodedCommand',encoded]
++    units=windows_command_units(native)
++    native_line=subprocess.list2cmdline(native);launch_units=[]
++    for layer in binding['literal_command_layers']:
++        line=layer['prefix']+native_line+layer['suffix']
++        if '\0' in line:raise ValueError('NUL in bound Windows launcher')
++        count=len(line.encode('utf-16le'))//2+1
++        if count>layer['limit_including_nul']:raise ValueError('complete bound Windows launcher command exceeds its limit')
++        launch_units.append(count)
++    return ['/usr/bin/ssh',*OPTIONS,alias,*native],units,launch_units
++
+ def git(*args):
+     left=GIT_DEADLINE-time.monotonic();assert left>0, 'overall Git binding budget reached'
+     return subprocess.check_output(['git','-C',str(REPO),*args],cwd=REPO,timeout=min(15,left))
+ 
+@@ -78,8 +130,20 @@
+         assert sha(transport_data)==PREPARATION['selector_sha256']
+         transport=json.loads(transport_data)
+         assert transport['exact_historical_selector'] is True
+         self.alias=transport['ssh_alias'];assert isinstance(self.alias,str) and self.alias
++        # Fresh source review must bind the EXISTING launch route, including any shell.
++        # This data cannot authorize a shell change or supply a guessed host default.
++        self.launch_binding=PREPARATION['windows_launch_binding']
++        assert self.launch_binding['schema']=='openergy.windows-existing-launch-binding.v1'
++        assert self.launch_binding['selector_sha256']==PREPARATION['selector_sha256']
++        assert self.launch_binding['independently_reviewed'] is True
++        assert self.launch_binding['all_windows_command_layers_bound'] is True
++        layers=self.launch_binding['literal_command_layers'];assert isinstance(layers,list) and 1<=len(layers)<=4
++        for layer in layers:
++            assert set(layer)=={'prefix','suffix','limit_including_nul'}
++            assert isinstance(layer['prefix'],str) and isinstance(layer['suffix'],str)
++            assert type(layer['limit_including_nul']) is int and 1<=layer['limit_including_nul']<=32767
+         selection_data=(DATA/'fresh-baseline-selection.json').read_bytes()
+         assert sha(selection_data)==PREPARATION['fresh_baseline_selection_sha256']
+         contract=json.loads(selection_data)
+         assert contract['schema']=='openergy.windows-fresh-baseline-selection.v1'
+@@ -100,9 +164,9 @@
+         assert len({e['child'].casefold() for e in self.selection})==len(self.selection)
+         self.nonce=os.urandom(16).hex();self.remote_name='oe-stop-fresh-'+self.nonce
+         self.prior=local_prior();save(self.private/'local-prior-before.json',self.prior)
+ 
+-    def command(self,label,argv,timeout,script=None):
++    def command(self,label,argv,timeout,script=None,recovery=None):
+         with (self.raw/(label+'.once.guard')).open('x') as guard:guard.write(now()+'\n')
+         limit=self.deadline if label=='transport-owned-recovery' else self.deadline-30
+         timeout=min(timeout,max(1,int(limit-time.monotonic())))
+         assert time.monotonic()<limit,'total workflow bound reached'
+@@ -115,20 +179,27 @@
+             out,err,code=p.stdout,p.stderr,p.returncode
+         except subprocess.TimeoutExpired as e:out,err,code,timedout=e.stdout or b'',e.stderr or b'',None,True
+         (self.raw/(label+'.stdout')).write_bytes(out);(self.raw/(label+'.stderr')).write_bytes(err)
+         shown=[x.replace(self.alias,'<SSH_TRANSPORT>').replace(str(self.private),'<LOCAL_PRIVATE>') for x in argv]
+-        if script is not None:shown[-1]='<UTF16LE_BASE64_OF_'+label+'.ps1>'
++        if script is not None:shown[-1]='<UTF16LE_BASE64_OF_BOUND_DEFLATE_WRAPPER_FOR_'+label+'.ps1>'
+         receipt={'command':shown,'signature':sha(json.dumps(argv).encode()),'controller_sha256':identity,'started_local':started,'ended_local':now(),'elapsed_seconds':time.monotonic()-clock,'timeout_seconds':timeout,'exit_code':code,'timed_out':timedout,'stdin':'DEVNULL immediate EOF','script_sha256':sha(script.encode()) if script else None,'stdout_sha256':sha(out),'stderr_sha256':sha(err)}
+         save(self.raw/(label+'.json'),receipt);print(label,'exit=',code,'timed_out=',timedout,flush=True)
+-        if timedout and script is not None and label != 'transport-owned-recovery':self.recover_transport_owner(script)
++        if timedout and script is not None and label != 'transport-owned-recovery':self.recover_transport_owner(*recovery)
+         return receipt,out
+ 
+     def remote(self,label,script,timeout=45):
+-        encoded=base64.b64encode(script.encode('utf-16le')).decode()
+-        return self.command(label,['/usr/bin/ssh',*OPTIONS,self.alias,'powershell.exe','-NoLogo','-NoProfile','-NonInteractive','-EncodedCommand',encoded],timeout,script)
+-
+-    def recover_transport_owner(self,original):
+-        encoded=base64.b64encode(original.encode('utf-16le')).decode()
++        wrapper,encoded=transport_payload(script)
++        argv,units,launch_units=transport_argv(self.alias,encoded,self.launch_binding)
++        recovery_script=self.transport_owner_recovery_script(encoded)
++        recovery_wrapper,recovery_encoded=transport_payload(recovery_script)
++        recovery_argv,recovery_units,recovery_launch_units=transport_argv(self.alias,recovery_encoded,self.launch_binding)
++        # Admit BOTH exact complete commands before launching the original command.
++        for suffix,text in (('.transport.ps1',wrapper),('.recovery.ps1',recovery_script),('.recovery.transport.ps1',recovery_wrapper)):
++            (self.raw/(label+suffix)).write_text(text)
++        save(self.raw/(label+'.admission.json'),{'windows_command_utf16_units_including_nul':units,'recovery_windows_command_utf16_units_including_nul':recovery_units,'bound_launcher_utf16_units_including_nul':launch_units,'recovery_bound_launcher_utf16_units_including_nul':recovery_launch_units,'launch_binding_sha256':sha(json.dumps(self.launch_binding,sort_keys=True).encode()),'script_sha256':sha(script.encode()),'wrapper_sha256':sha(wrapper.encode()),'recovery_sha256':sha(recovery_script.encode()),'recovery_wrapper_sha256':sha(recovery_wrapper.encode()),'original_argv_sha256':sha(json.dumps(argv).encode()),'recovery_argv_sha256':sha(json.dumps(recovery_argv).encode()),'admitted_before_original_launch':True})
++        return self.command(label,argv,timeout,script,(recovery_script,recovery_argv))
++
++    def transport_owner_recovery_script(self,encoded):
+         script=r'''$ErrorActionPreference='Stop';(Get-Process -Id $PID).PriorityClass='BelowNormal'
+ $all=@(Get-CimInstance Win32_Process)
+ $owners=@($all|Where-Object {$_.Name -eq 'powershell.exe' -and $_.CommandLine -and $_.CommandLine.EndsWith('__ENCODED__')})
+ if($owners.Count -eq 0){Write-Output 'NO_EXACT_TRANSPORT_OWNER_REMAINS';exit 0}
+@@ -153,17 +224,21 @@
+  }
+ })
+ $stopped|ConvertTo-Json -Depth 8 -Compress
+ '''.replace('__ENCODED__',encoded)
+-        rec,_=self.remote('transport-owned-recovery',script,30)
++        return script
++
++    def recover_transport_owner(self,script,argv):
++        rec,_=self.command('transport-owned-recovery',argv,30,script)
+         assert rec['exit_code']==0,'bounded owned transport recovery unverified'
+ 
+     def stage(self,name,timeout):
+         assert name in ('qualify','build','runtime','postflight')
+         if name=='build':
+             assert time.monotonic()+660 < self.deadline-30, 'insufficient overall time for build, owned settlement and receipts'
+         inner="try { & '"+self.root+'\\'+name+".ps1' } catch { [IO.File]::WriteAllText('"+self.root+'\\'+name+"-first-stage-failure.stderr', ($_|Out-String)); exit 1 }"
+         inner64=base64.b64encode(inner.encode('utf-16le')).decode()
++        windows_command_units(['C:\\Program Files\\PowerShell\\7\\pwsh.exe','-NoLogo','-NoProfile','-NonInteractive','-EncodedCommand',inner64])
+         script="$ErrorActionPreference='Stop';(Get-Process -Id $PID).PriorityClass='BelowNormal'; & 'C:\\Program Files\\PowerShell\\7\\pwsh.exe' -NoLogo -NoProfile -NonInteractive -EncodedCommand "+inner64+"; exit $LASTEXITCODE"
+         return self.remote(name,script,timeout)
+ 
+     def bind_source(self):

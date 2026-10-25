@@ -1,0 +1,73 @@
+{
+  "schema": "openergy.windows-fresh-r3-inert-source-bindings.v1",
+  "execution": false,
+  "candidate_commit": "9911db75fa07d0383b81366d319475ded016c066",
+  "authoritative_review_commit": "2c8e67ea85dadd2046cf98c9a8cafc75fcc3afbe",
+  "files": [
+    {
+      "path": "source/build.ps1.txt",
+      "bytes": 18259,
+      "sha256": "3cdd135dd806e511fc68278e85cca7d34bc83f2efcafea86106d2e3950af6c33",
+      "candidate_bytes": 18259,
+      "candidate_sha256": "3cdd135dd806e511fc68278e85cca7d34bc83f2efcafea86106d2e3950af6c33",
+      "byte_equal_candidate": true
+    },
+    {
+      "path": "source/common.ps1.txt",
+      "bytes": 7121,
+      "sha256": "7c343002754725567dbfba5c66d0a3c81f2a3f05490d77b5933e895ef89218c9",
+      "candidate_bytes": 7121,
+      "candidate_sha256": "7c343002754725567dbfba5c66d0a3c81f2a3f05490d77b5933e895ef89218c9",
+      "byte_equal_candidate": true
+    },
+    {
+      "path": "source/controller.py.txt",
+      "bytes": 38670,
+      "sha256": "1406633c2e098432f118b3a5904ba10183f216f8f99b81b0032137621a6dbd60",
+      "candidate_bytes": 32815,
+      "candidate_sha256": "2852b0a592d87510d066ca3803535a64ac176780880eba8b1328a4f6d939a764",
+      "byte_equal_candidate": false
+    },
+    {
+      "path": "source/observer.cs.txt",
+      "bytes": 12054,
+      "sha256": "8559ecbca18de3b896407df1048c278633c927134858cc99124ae883e816f5e2",
+      "candidate_bytes": 12054,
+      "candidate_sha256": "8559ecbca18de3b896407df1048c278633c927134858cc99124ae883e816f5e2",
+      "byte_equal_candidate": true
+    },
+    {
+      "path": "source/postflight.ps1.txt",
+      "bytes": 4857,
+      "sha256": "615104a7027f547dcbee574c1bdf8a504fb06492a579d365db6ebaccf116532b",
+      "candidate_bytes": 4857,
+      "candidate_sha256": "615104a7027f547dcbee574c1bdf8a504fb06492a579d365db6ebaccf116532b",
+      "byte_equal_candidate": true
+    },
+    {
+      "path": "source/qualify.ps1.txt",
+      "bytes": 4218,
+      "sha256": "d0da8fecdec0ae2c31ea99e938306b59d7a2e45085685ca0d4cb0b2029d6c953",
+      "candidate_bytes": 4218,
+      "candidate_sha256": "d0da8fecdec0ae2c31ea99e938306b59d7a2e45085685ca0d4cb0b2029d6c953",
+      "byte_equal_candidate": true
+    },
+    {
+      "path": "source/runtime.ps1.txt",
+      "bytes": 21465,
+      "sha256": "2540d09a2840cc0b0c84ce0c2a0a7b874d75de35da3b12af46832b0c3bdd370d",
+      "candidate_bytes": 21465,
+      "candidate_sha256": "2540d09a2840cc0b0c84ce0c2a0a7b874d75de35da3b12af46832b0c3bdd370d",
+      "byte_equal_candidate": true
+    },
+    {
+      "path": "source/safety.ps1.txt",
+      "bytes": 5332,
+      "sha256": "26741118315aa23853d58b9701821496ac21aa9bc868632141e9658b05ecb610",
+      "candidate_bytes": 5332,
+      "candidate_sha256": "26741118315aa23853d58b9701821496ac21aa9bc868632141e9658b05ecb610",
+      "byte_equal_candidate": true
+    }
+  ],
+  "diff_sha256": "a9db31295da536ddd0d1711171b8d547c87f2651e8016ff90b08ae982c547020"
+}

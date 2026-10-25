@@ -1,0 +1,21 @@
+{
+  "execution": false,
+  "errors": [
+    {
+      "reader": "additional data-only source/patch/link reader",
+      "first_error": "AssertionError at <stdin> line13",
+      "predicate": "stage source equals R1 after removal of the single new inner-argv admission line",
+      "cause": "reader constructed the expected source line with the wrong Python backslash escaping; no task helper or native code was run",
+      "resolution": "inspect the gate as Python AST data, verify its exact constant argv, then remove its exact source line for byte comparison",
+      "original_predicate_retained": true
+    },
+    {
+      "reader": "corrected additional data-only source/patch/link reader",
+      "first_error": "AssertionError at <stdin> line61: README.md target manifest.json",
+      "cause": "link validation ran before the final package manifest existed; all source and patch predicates before that line had passed",
+      "resolution": "finish the static report and manifest, then run complete link and package validation",
+      "original_predicate_retained": true
+    }
+  ],
+  "tests_or_native_execution": false
+}
