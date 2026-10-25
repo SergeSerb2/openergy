@@ -1,0 +1,57 @@
+{
+  "caller_review": "1c0e4bcdc2dddcb64a3277db34d5ccd5e872fab2",
+  "caller_review_sha256": "ad868577561145dcba9e74db7138e5118544e721ca3629f5c0c4f1808203c496",
+  "files": {
+    "command-vectors.json": {
+      "bytes": 12370,
+      "sha256": "e3ff5756ab3b35a5c815e50ac1fad6520117836e080849260de87592bd327fa0"
+    },
+    "expected-source-metadata.json": {
+      "bytes": 142587,
+      "sha256": "1670da99b768e01de3fc4ecd4d644fba7031ea09e55d97c1395290bfb681c05f"
+    },
+    "input-pins.json": {
+      "bytes": 4920,
+      "sha256": "31a17c129e0af6c8c0437458c01fa8c28cffb89f29ee327648a31fed96608352"
+    },
+    "materializer-config.pending.json": {
+      "bytes": 277109,
+      "sha256": "f331c69ed1b67bba162589ed675039927762642af82e845fc8cba035e2a5ce84"
+    },
+    "metadata-caller.py.txt": {
+      "bytes": 46908,
+      "sha256": "01623cd4759f96cd0066a9456a2680bff476bc37b5b1acb61ec40388582a5e9f"
+    },
+    "source-launcher-config.pending.json": {
+      "bytes": 4536,
+      "sha256": "749dc73129e8cfa486431c2e4b695e70f8c657022ec2d336f8f8d327f7c0272b"
+    }
+  },
+  "input_folder": "inputs-01623cd4",
+  "launcher_pending_nulls": [
+    "/prerequisites/exact_config_substitution_verified",
+    "/prerequisites/exclusive_root_no_other_mutators",
+    "/prerequisites/raw_caller_verified_before_entry"
+  ],
+  "materializer_pending_nulls": [
+    "/materializer_review/commit",
+    "/materializer_review/sha256",
+    "/materializer_review/verdict",
+    "/parent_duties/console_pipe_single_writer_reader_and_atomicity_bound",
+    "/parent_duties/exact_single_token_reconstruction_verified",
+    "/parent_duties/exact_system_stdin_entry_authenticated",
+    "/parent_duties/exclusive_root_no_concurrent_mutator",
+    "/parent_duties/full_rendered_payload_within_1MiB",
+    "/parent_duties/materializer_independent_clear_bound",
+    "/parent_duties/transport_135s_outer_and_actual_exit_eof_owned"
+  ],
+  "new_private_content_bytes": 159877,
+  "new_private_regular_reads": 3,
+  "private_prepared_directory_basename": "m1-source-metadata-launch-prepared-20261025-7ae23486940a",
+  "raw_four_input_bytes": 206785,
+  "remote_connections": 0,
+  "rendered_payload_created": false,
+  "runtime": "UNVERIFIED",
+  "schema": "openergy.cleared-source-local-inputs.v1",
+  "source120_started": false
+}
