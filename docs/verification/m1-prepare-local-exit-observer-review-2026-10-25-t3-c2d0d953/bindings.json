@@ -1,0 +1,188 @@
+{
+  "baseline_provenance_limit": "The retained public baseline is bound. No private original was opened, so private-origin identity is not independently attested.",
+  "candidate": "41bf91daf3f6756179437c5ab652ffeb040ca759",
+  "candidate_parent": "078ced42f232509118e038cd3abbc80225e80929",
+  "candidate_tree": "06669465afd8d41ee1c25bd203cd99e3600ba262",
+  "git_identities": {
+    "06634b58f1b4795684b9139de716b4fe8f6430e0": "06634b58f1b4795684b9139de716b4fe8f6430e0 05b056cdc25a137f820efb59ae5004ce98781770 ecc7ee6dd92908cf5072d420c608965ac82ba9b4",
+    "078ced42f232509118e038cd3abbc80225e80929": "078ced42f232509118e038cd3abbc80225e80929 9379e2b50b566e3346ec934b322ef142db2ade39 e01e57966e971c751355c4bb02cf5fb070588463",
+    "41bf91daf3f6756179437c5ab652ffeb040ca759": "41bf91daf3f6756179437c5ab652ffeb040ca759 078ced42f232509118e038cd3abbc80225e80929 06669465afd8d41ee1c25bd203cd99e3600ba262",
+    "4fbf8f0f32c08fcdfc1f02b3cb2a37b9b79a56ed": "4fbf8f0f32c08fcdfc1f02b3cb2a37b9b79a56ed 86b42716f9a38fe8aa9ee69a2dda5818fa34e52e faa70f9a27decdf2b22322ddb313b3fcea95884f",
+    "98b403d1902ac4d0651c230fb7ec28c4cc154035": "98b403d1902ac4d0651c230fb7ec28c4cc154035 684400fc45f1ecaf032e79b350abb49a7c6df696 cdb958c944c1c6fb315db60ddfb0f52ba44581f8",
+    "c591ea5941020e556d878ffef0349625ec42be9f": "c591ea5941020e556d878ffef0349625ec42be9f 04444ec2dce5dd96334d807f9c2caff86aefae64 3f4aa2fc93b472328fce37b939ae0480f7ad89c8",
+    "f6e15d0803d52905636f9b916b50e0c0a23ef05a": "f6e15d0803d52905636f9b916b50e0c0a23ef05a 9379e2b50b566e3346ec934b322ef142db2ade39 e01e57966e971c751355c4bb02cf5fb070588463"
+  },
+  "opening_tracked_tree": {
+    "all_old_parent_blobs_and_modes_preserved": true,
+    "count": 4306,
+    "ls_tree_sha256": "78e70259b84d5cf01542bfb20d3f9078200981ab8c96814639a2e696926abc5f"
+  },
+  "packet_files": [
+    {
+      "bytes": 3617,
+      "commit": "41bf91daf3f6756179437c5ab652ffeb040ca759",
+      "git_blob": "a933f25f7eba21641dd28a232399e087973967e9",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/README.md",
+      "sha256": "68ec747e6a54f27b40e911dd8078cf88969da7d447534bd726ba256353b00b75",
+      "worktree_bytes_equal": true
+    },
+    {
+      "bytes": 605,
+      "commit": "41bf91daf3f6756179437c5ab652ffeb040ca759",
+      "git_blob": "64fbd00a68583e1e893a1ef6be8f3fb50fc2306b",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/SHA256SUMS",
+      "sha256": "fca0d6bf2a03ea68177b322376c5380e9b38294eb267d5b5472a53f591681fd8",
+      "worktree_bytes_equal": true
+    },
+    {
+      "bytes": 1774,
+      "commit": "41bf91daf3f6756179437c5ab652ffeb040ca759",
+      "git_blob": "d99244637647ecb41b1cd7d217e92010213e1e12",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/bindings.json",
+      "sha256": "c7d2fe1c092180814e24f99129486ed7d8c38b5a18693c638e345e5a93c58e90",
+      "worktree_bytes_equal": true
+    },
+    {
+      "bytes": 961,
+      "commit": "41bf91daf3f6756179437c5ab652ffeb040ca759",
+      "git_blob": "b879207fe711b01739f2760ace0536c244128c1d",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/function-inventory.json",
+      "sha256": "237ad0b1705a1c2a7f3c46ebbaed16437b125b7e017b1d301b5468ad4830c31a",
+      "worktree_bytes_equal": true
+    },
+    {
+      "bytes": 7530,
+      "commit": "41bf91daf3f6756179437c5ab652ffeb040ca759",
+      "git_blob": "b7e1027bfdd07264aa5a6a79ef3d1af881c560b6",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/observer-before.py.txt",
+      "sha256": "44ba0094d6b879a8ffc93d393b9d30f35390eb413df97a6c936a1ecc6dcf25e6",
+      "worktree_bytes_equal": true
+    },
+    {
+      "bytes": 758,
+      "commit": "41bf91daf3f6756179437c5ab652ffeb040ca759",
+      "git_blob": "646c82efca56f4bfdf683f42fd6370632c944046",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/observer-from-private-template.patch",
+      "sha256": "a965635dc2e5ed5119fc0690048823ca5b93ed98ed4b1d9a28499f54b633be79",
+      "worktree_bytes_equal": true
+    },
+    {
+      "bytes": 7673,
+      "commit": "41bf91daf3f6756179437c5ab652ffeb040ca759",
+      "git_blob": "8df64440d914e0214db4c7f8612b8ccd6a5fdaa0",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/observer.py.txt",
+      "sha256": "845d90024ad47f6b76d6d6e646b679d00bb97b8ca0478d0fa86523de3dbec60f",
+      "worktree_bytes_equal": true
+    },
+    {
+      "bytes": 354,
+      "commit": "41bf91daf3f6756179437c5ab652ffeb040ca759",
+      "git_blob": "32f25420dcfac703cc15dc44ae546c3cdd5d73a6",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/static-checks.json",
+      "sha256": "9378ec0c67ba3de99ec764ce27782da3700a2e4074773cf5dc6e64d04a7653d9",
+      "worktree_bytes_equal": true
+    }
+  ],
+  "private_original_baseline_read": false,
+  "public_dependencies": [
+    {
+      "bytes": 28060,
+      "commit": "c591ea5941020e556d878ffef0349625ec42be9f",
+      "git_blob": "2e112f113a592190fc3e269790b4ecef404d5a10",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/transport-collector.py.txt",
+      "sha256": "695dc01461b31e04eb7b8c4a12848350f26a45731f05b0ddca971c05749e4df6",
+      "worktree_bytes_equal": true
+    },
+    {
+      "bytes": 8036,
+      "commit": "c591ea5941020e556d878ffef0349625ec42be9f",
+      "git_blob": "557b41ff8489c8a38d19a2ae4e4ae4d4506b0885",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/parent-observer.contract.json",
+      "sha256": "f17a8455b2cef9eb35bfe49a3fe91bbb6ae988787a22ca533103a970f36b9fe6",
+      "worktree_bytes_equal": true
+    },
+    {
+      "bytes": 11722,
+      "commit": "c591ea5941020e556d878ffef0349625ec42be9f",
+      "git_blob": "c1f9879dd36e27cbaff79e316caaa8f5a4dc43bc",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/phase-budget.contract.json",
+      "sha256": "c2055e24923df08126cd796792a319df774cb87d9925842717acaaf40242f377",
+      "worktree_bytes_equal": true
+    },
+    {
+      "bytes": 18008,
+      "commit": "98b403d1902ac4d0651c230fb7ec28c4cc154035",
+      "git_blob": "62556ce68c276e2ca166ee65108a539d04256036",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-transport-phase-budget-review-2026-10-25-t3-04f3d533/REVIEW.md",
+      "sha256": "0c3b311ebff23145ecebd1b64ed38f0e6feaaff46c80c0b1d7a8ecc92d769a3c",
+      "worktree_bytes_equal": true
+    },
+    {
+      "bytes": 17029,
+      "commit": "f6e15d0803d52905636f9b916b50e0c0a23ef05a",
+      "git_blob": "9477eb9fdc9d752268c37102aa8e1998da3cd02b",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-prepare-parent-full-review-2026-10-25-t3-1b3fcbf5/REVIEW.md",
+      "sha256": "e50e67ef33aa690525f821fb3d77bf7601a1138740e9ee7c4910b1cfc1129981",
+      "worktree_bytes_equal": true
+    },
+    {
+      "bytes": 3137,
+      "commit": "f6e15d0803d52905636f9b916b50e0c0a23ef05a",
+      "git_blob": "59d5875f8bb6788f40997a4a238b8f7bb1fd2eb4",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-prepare-parent-full-review-2026-10-25-t3-1b3fcbf5/findings.json",
+      "sha256": "16e0f65d7b5df370d47bd37c333fb59ab1a208f77af5e566432a38eb1703a300",
+      "worktree_bytes_equal": true
+    },
+    {
+      "bytes": 1816,
+      "commit": "41bf91daf3f6756179437c5ab652ffeb040ca759",
+      "git_blob": "0f36f6de8b935dcd6a5941772195cbb414ae533d",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-source-profile-binding-2026-10-25/binding.json",
+      "sha256": "204bae80f194951ab76f73531084b0ad0f1a8fd4386649493db85e95f152fa7a",
+      "worktree_bytes_equal": true
+    },
+    {
+      "bytes": 3910,
+      "commit": "4fbf8f0f32c08fcdfc1f02b3cb2a37b9b79a56ed",
+      "git_blob": "8c2098816beefec321604e39ea781e61b8f6416b",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-artifact-data-observed-2026-10-25-t3-52422617/validation.json",
+      "sha256": "759e44f21fca0627c9a391aaa93bd148898e7c7e68950765f70ade6aebdd285d",
+      "worktree_bytes_equal": true
+    },
+    {
+      "bytes": 1677,
+      "commit": "4fbf8f0f32c08fcdfc1f02b3cb2a37b9b79a56ed",
+      "git_blob": "fd3aa89ec90e0fdf3f11adfb0f694243819ed68e",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-artifact-data-observed-2026-10-25-t3-52422617/parent-exit.json",
+      "sha256": "efd79bf48813d921ad9a8fa07ce66e04a2bcc1a9d18161eac399c066cb50a07c",
+      "worktree_bytes_equal": true
+    },
+    {
+      "bytes": 6510,
+      "commit": "41bf91daf3f6756179437c5ab652ffeb040ca759",
+      "git_blob": "996845d27cb752f59afb41da4e237874a0378929",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/README.md",
+      "sha256": "1d84f9e4c29bc9d4511823d16f57d958a0e77ea12d5b0b3ef35c4f09223a3272",
+      "worktree_bytes_equal": true
+    }
+  ],
+  "schema": "openergy.prepare-local-exit-observer-review-bindings.v1"
+}

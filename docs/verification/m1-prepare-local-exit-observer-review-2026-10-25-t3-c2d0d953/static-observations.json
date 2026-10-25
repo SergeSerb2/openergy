@@ -1,0 +1,590 @@
+{
+  "actual_runtime_clock_queried": false,
+  "all_passed": true,
+  "baseline_lines": 121,
+  "check_count": 130,
+  "checks": [
+    {
+      "name": "candidate is exact current parent",
+      "passed": true
+    },
+    {
+      "name": "checkout starts clean",
+      "passed": true
+    },
+    {
+      "name": "review folder is new",
+      "passed": true
+    },
+    {
+      "name": "candidate preserves every exact-parent old blob/mode",
+      "passed": true
+    },
+    {
+      "name": "packet has exactly eight files",
+      "passed": true
+    },
+    {
+      "name": "public Git/worktree byte agreement: docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/README.md",
+      "passed": true
+    },
+    {
+      "name": "public Git blob integrity: docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/README.md",
+      "passed": true
+    },
+    {
+      "name": "packet mode100644: docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/README.md",
+      "passed": true
+    },
+    {
+      "name": "public Git/worktree byte agreement: docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/SHA256SUMS",
+      "passed": true
+    },
+    {
+      "name": "public Git blob integrity: docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/SHA256SUMS",
+      "passed": true
+    },
+    {
+      "name": "packet mode100644: docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/SHA256SUMS",
+      "passed": true
+    },
+    {
+      "name": "public Git/worktree byte agreement: docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/bindings.json",
+      "passed": true
+    },
+    {
+      "name": "public Git blob integrity: docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/bindings.json",
+      "passed": true
+    },
+    {
+      "name": "packet mode100644: docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/bindings.json",
+      "passed": true
+    },
+    {
+      "name": "public Git/worktree byte agreement: docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/function-inventory.json",
+      "passed": true
+    },
+    {
+      "name": "public Git blob integrity: docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/function-inventory.json",
+      "passed": true
+    },
+    {
+      "name": "packet mode100644: docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/function-inventory.json",
+      "passed": true
+    },
+    {
+      "name": "public Git/worktree byte agreement: docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/observer-before.py.txt",
+      "passed": true
+    },
+    {
+      "name": "public Git blob integrity: docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/observer-before.py.txt",
+      "passed": true
+    },
+    {
+      "name": "packet mode100644: docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/observer-before.py.txt",
+      "passed": true
+    },
+    {
+      "name": "public Git/worktree byte agreement: docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/observer-from-private-template.patch",
+      "passed": true
+    },
+    {
+      "name": "public Git blob integrity: docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/observer-from-private-template.patch",
+      "passed": true
+    },
+    {
+      "name": "packet mode100644: docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/observer-from-private-template.patch",
+      "passed": true
+    },
+    {
+      "name": "public Git/worktree byte agreement: docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/observer.py.txt",
+      "passed": true
+    },
+    {
+      "name": "public Git blob integrity: docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/observer.py.txt",
+      "passed": true
+    },
+    {
+      "name": "packet mode100644: docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/observer.py.txt",
+      "passed": true
+    },
+    {
+      "name": "public Git/worktree byte agreement: docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/static-checks.json",
+      "passed": true
+    },
+    {
+      "name": "public Git blob integrity: docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/static-checks.json",
+      "passed": true
+    },
+    {
+      "name": "packet mode100644: docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/static-checks.json",
+      "passed": true
+    },
+    {
+      "name": "manifest hash: README.md",
+      "passed": true
+    },
+    {
+      "name": "manifest hash: bindings.json",
+      "passed": true
+    },
+    {
+      "name": "manifest hash: function-inventory.json",
+      "passed": true
+    },
+    {
+      "name": "manifest hash: observer-before.py.txt",
+      "passed": true
+    },
+    {
+      "name": "manifest hash: observer-from-private-template.patch",
+      "passed": true
+    },
+    {
+      "name": "manifest hash: observer.py.txt",
+      "passed": true
+    },
+    {
+      "name": "manifest hash: static-checks.json",
+      "passed": true
+    },
+    {
+      "name": "manifest exact seven non-self files",
+      "passed": true
+    },
+    {
+      "name": "packet JSON documents strictly parsed",
+      "passed": true
+    },
+    {
+      "name": "full source expected bytes/hash",
+      "passed": true
+    },
+    {
+      "name": "baseline expected bytes/hash",
+      "passed": true
+    },
+    {
+      "name": "full source125/baseline121 lines",
+      "passed": true
+    },
+    {
+      "name": "independent whole diff equals retained patch",
+      "passed": true
+    },
+    {
+      "name": "patch exact two file headers",
+      "passed": true
+    },
+    {
+      "name": "patch hunk header",
+      "passed": true
+    },
+    {
+      "name": "patch new-position exact",
+      "passed": true
+    },
+    {
+      "name": "patch data operation valid",
+      "passed": true
+    },
+    {
+      "name": "patch exact old line 108",
+      "passed": true
+    },
+    {
+      "name": "patch data operation valid",
+      "passed": true
+    },
+    {
+      "name": "patch exact old line 109",
+      "passed": true
+    },
+    {
+      "name": "patch data operation valid",
+      "passed": true
+    },
+    {
+      "name": "patch exact old line 110",
+      "passed": true
+    },
+    {
+      "name": "patch data operation valid",
+      "passed": true
+    },
+    {
+      "name": "patch data operation valid",
+      "passed": true
+    },
+    {
+      "name": "patch exact old line 111",
+      "passed": true
+    },
+    {
+      "name": "patch data operation valid",
+      "passed": true
+    },
+    {
+      "name": "patch exact old line 112",
+      "passed": true
+    },
+    {
+      "name": "patch data operation valid",
+      "passed": true
+    },
+    {
+      "name": "patch exact old line 113",
+      "passed": true
+    },
+    {
+      "name": "patch data operation valid",
+      "passed": true
+    },
+    {
+      "name": "patch data operation valid",
+      "passed": true
+    },
+    {
+      "name": "patch data operation valid",
+      "passed": true
+    },
+    {
+      "name": "patch data operation valid",
+      "passed": true
+    },
+    {
+      "name": "patch data operation valid",
+      "passed": true
+    },
+    {
+      "name": "patch exact old line 114",
+      "passed": true
+    },
+    {
+      "name": "patch data operation valid",
+      "passed": true
+    },
+    {
+      "name": "patch exact old line 115",
+      "passed": true
+    },
+    {
+      "name": "patch data operation valid",
+      "passed": true
+    },
+    {
+      "name": "patch exact old line 116",
+      "passed": true
+    },
+    {
+      "name": "patch exact old/new counts",
+      "passed": true
+    },
+    {
+      "name": "complete patch reconstructs exact source",
+      "passed": true
+    },
+    {
+      "name": "exact five full functions",
+      "passed": true
+    },
+    {
+      "name": "full function inventory: canonical",
+      "passed": true
+    },
+    {
+      "name": "full function inventory: stamp",
+      "passed": true
+    },
+    {
+      "name": "full function inventory: read_bound",
+      "passed": true
+    },
+    {
+      "name": "full function inventory: save",
+      "passed": true
+    },
+    {
+      "name": "full function inventory: main",
+      "passed": true
+    },
+    {
+      "name": "only main changed",
+      "passed": true
+    },
+    {
+      "name": "module prefix unchanged",
+      "passed": true
+    },
+    {
+      "name": "entry and all outside-main bytes unchanged",
+      "passed": true
+    },
+    {
+      "name": "full entry block identical",
+      "passed": true
+    },
+    {
+      "name": "both payload slots remain None",
+      "passed": true
+    },
+    {
+      "name": "closed phase and budget",
+      "passed": true
+    },
+    {
+      "name": "fixed trusted interpreter path",
+      "passed": true
+    },
+    {
+      "name": "canonical data suffix is one LF",
+      "passed": true
+    },
+    {
+      "name": "record exact24 unique keys and declared order",
+      "passed": true
+    },
+    {
+      "name": "record assessment and acceptance remain false",
+      "passed": true
+    },
+    {
+      "name": "source call site count subprocess.Popen",
+      "passed": true
+    },
+    {
+      "name": "source call site count PROCESS.wait",
+      "passed": true
+    },
+    {
+      "name": "source call site count PROCESS.poll",
+      "passed": true
+    },
+    {
+      "name": "source call site count os._exit",
+      "passed": true
+    },
+    {
+      "name": "no observer signal, shell, receipt reader or reset calls",
+      "passed": true
+    },
+    {
+      "name": "no observer receipt or guard leaf strings",
+      "passed": true
+    },
+    {
+      "name": "public Git/worktree byte agreement: docs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/transport-collector.py.txt",
+      "passed": true
+    },
+    {
+      "name": "public Git blob integrity: docs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/transport-collector.py.txt",
+      "passed": true
+    },
+    {
+      "name": "public Git/worktree byte agreement: docs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/parent-observer.contract.json",
+      "passed": true
+    },
+    {
+      "name": "public Git blob integrity: docs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/parent-observer.contract.json",
+      "passed": true
+    },
+    {
+      "name": "public Git/worktree byte agreement: docs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/phase-budget.contract.json",
+      "passed": true
+    },
+    {
+      "name": "public Git blob integrity: docs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/phase-budget.contract.json",
+      "passed": true
+    },
+    {
+      "name": "public Git/worktree byte agreement: docs/verification/m1-transport-phase-budget-review-2026-10-25-t3-04f3d533/REVIEW.md",
+      "passed": true
+    },
+    {
+      "name": "public Git blob integrity: docs/verification/m1-transport-phase-budget-review-2026-10-25-t3-04f3d533/REVIEW.md",
+      "passed": true
+    },
+    {
+      "name": "public Git/worktree byte agreement: docs/verification/m1-prepare-parent-full-review-2026-10-25-t3-1b3fcbf5/REVIEW.md",
+      "passed": true
+    },
+    {
+      "name": "public Git blob integrity: docs/verification/m1-prepare-parent-full-review-2026-10-25-t3-1b3fcbf5/REVIEW.md",
+      "passed": true
+    },
+    {
+      "name": "public Git/worktree byte agreement: docs/verification/m1-prepare-parent-full-review-2026-10-25-t3-1b3fcbf5/findings.json",
+      "passed": true
+    },
+    {
+      "name": "public Git blob integrity: docs/verification/m1-prepare-parent-full-review-2026-10-25-t3-1b3fcbf5/findings.json",
+      "passed": true
+    },
+    {
+      "name": "public Git/worktree byte agreement: docs/verification/m1-source-profile-binding-2026-10-25/binding.json",
+      "passed": true
+    },
+    {
+      "name": "public Git blob integrity: docs/verification/m1-source-profile-binding-2026-10-25/binding.json",
+      "passed": true
+    },
+    {
+      "name": "public Git/worktree byte agreement: docs/verification/m1-artifact-data-observed-2026-10-25-t3-52422617/validation.json",
+      "passed": true
+    },
+    {
+      "name": "public Git blob integrity: docs/verification/m1-artifact-data-observed-2026-10-25-t3-52422617/validation.json",
+      "passed": true
+    },
+    {
+      "name": "public Git/worktree byte agreement: docs/verification/m1-artifact-data-observed-2026-10-25-t3-52422617/parent-exit.json",
+      "passed": true
+    },
+    {
+      "name": "public Git blob integrity: docs/verification/m1-artifact-data-observed-2026-10-25-t3-52422617/parent-exit.json",
+      "passed": true
+    },
+    {
+      "name": "collector expected exact bytes/hash",
+      "passed": true
+    },
+    {
+      "name": "dependency full-review exact hash",
+      "passed": true
+    },
+    {
+      "name": "record exact contract24 keys",
+      "passed": true
+    },
+    {
+      "name": "budget agrees both contracts",
+      "passed": true
+    },
+    {
+      "name": "exact nine flags in contract order",
+      "passed": true
+    },
+    {
+      "name": "argv isolated flags prefix",
+      "passed": true
+    },
+    {
+      "name": "public profile length/hash/mode binding agrees",
+      "passed": true
+    },
+    {
+      "name": "public actual clock descriptor hash agrees",
+      "passed": true
+    },
+    {
+      "name": "clock is exact full contract descriptor with actual public resolution",
+      "passed": true
+    },
+    {
+      "name": "no acceptance granted by public DATA",
+      "passed": true
+    },
+    {
+      "name": "capsule hold report same exact tree at parent import",
+      "passed": true
+    },
+    {
+      "name": "two retained capsule P2 findings",
+      "passed": true
+    },
+    {
+      "name": "author static record remains false: execution",
+      "passed": true
+    },
+    {
+      "name": "author static record remains false: runtime_acceptance",
+      "passed": true
+    },
+    {
+      "name": "author static record count claims agree",
+      "passed": true
+    },
+    {
+      "name": "binding final and baseline identities agree",
+      "passed": true
+    },
+    {
+      "name": "binding collector identity agrees",
+      "passed": true
+    },
+    {
+      "name": "dependency review has bounded SOURCE CLEAR only",
+      "passed": true
+    },
+    {
+      "name": "capsule review retains HOLD_SOURCE",
+      "passed": true
+    },
+    {
+      "name": "all old tracked files remain clean before report writes",
+      "passed": true
+    }
+  ],
+  "child_agents": 0,
+  "cli_flags": [
+    "--phase",
+    "--profile",
+    "--profile-sha256",
+    "--payload",
+    "--payload-sha256",
+    "--run-dir",
+    "--collector-sha256",
+    "--envelope-start-ns",
+    "--clock-sha256"
+  ],
+  "execution": false,
+  "method": "Reviewer-owned public Git/raw-byte/hash/strict-JSON readers and AST-as-data. No supplied program/checker/AST evaluation, import or bytecode generation.",
+  "network_operations": 0,
+  "payload_bytes": null,
+  "payload_sha256": null,
+  "private_state_reads": 0,
+  "public_clock_canonical_bytes": 340,
+  "public_clock_descriptor": {
+    "adjustable": false,
+    "clock": "time.monotonic_ns",
+    "cross_host_comparison": false,
+    "implementation": "mach_absolute_time()",
+    "monotonic": true,
+    "origin": "macOS Mach absolute clock",
+    "resolution_seconds": 4.166666666666666e-08,
+    "schema": "openergy.local-macos-clock.v1",
+    "scope": "same running local Mac only; CPython >=3.10",
+    "unit": "integer_nanoseconds"
+  },
+  "public_clock_sha256": "67e4f9525b2d1b1496689808d08ab625fc88698bb1e2b049e463868f08e5303d",
+  "record_keys": [
+    "schema",
+    "observer_resolved_python",
+    "observer_full_version",
+    "clock_descriptor",
+    "same_local_host_and_boot_bound",
+    "collector_source_sha256",
+    "profile_sha256",
+    "payload_sha256",
+    "run_directory",
+    "started_ns",
+    "absolute_until_ns",
+    "actual_collector_pid_from_retained_handle",
+    "actual_collector_exit",
+    "actual_wait_or_poll_returned",
+    "post_actual_exit_observed_ns",
+    "strictly_before_absolute",
+    "timeout",
+    "receipt_assessed",
+    "artifact_accepted",
+    "phase",
+    "selected_work_seconds",
+    "selected_settle_seconds",
+    "selected_final_seconds",
+    "selected_total_seconds"
+  ],
+  "reviewer_data_reader_errors": [],
+  "schema": "openergy.prepare-local-observer-independent-static.v1",
+  "source_lines": 125,
+  "supplied_code_executions": 0
+}
