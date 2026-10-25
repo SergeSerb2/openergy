@@ -1,0 +1,45 @@
+{
+  "schema": "openergy.windows-metadata-reader-finite-plan.v1",
+  "execution": false,
+  "parent_commit": "b221d9807cbc4c3db5a30f2114399ce20942dcf1",
+  "status": "SOURCE_PROPOSAL_INDEPENDENT_REVIEW_PENDING",
+  "future_steps": [
+    "Review exact Python/PowerShell source, input binding, byte/time caps, failure/settlement paths and proof limits as source/data only.",
+    "In a separately scoped future parent task, bind this exact source and an already-authorized external execution envelope. Keep all raw inputs and outputs in a new private durable location outside the checkout.",
+    "Parent plans four real local full CLI flows: success, nonzero child exit, actual timeout, and output-cap failure. Use real child commands, no unit tests, mocks, source imports or Windows retry. Bind each exact argv and use a separate exclusive new run directory. Retain actual reader/local-child exits, both raw streams, receipts and external elapsed time. Do not infer Windows qualification from these local flows.",
+    "Any later remote metadata operation requires a separately assigned scope and the same parent-prebound selector/argv/actual layers. This plan authorizes zero remote commands. It supplies no new discovery, retry, fallback, cleanup or watchdog authority.",
+    "Before any separately authorized operation, measure all actual complete native layers. Missing effective limits remain UNVERIFIED. A complete six-file metadata response cannot establish effective launcher limits or satisfy R6 qualification by itself.",
+    "On failure retain the first failure and exact raw prefix. Do not reset a guard, delete evidence, infer remote death from local SSH settlement or retry the old remote query. Missing receipt/exit, overflow, late work or OS stall remains INCOMPLETE/UNVERIFIED."
+  ],
+  "source_only_performed": {
+    "file_git_json_ast_hash_patch_checks": true,
+    "reader_or_query_execution": false,
+    "native_parser": false,
+    "local_child_flow": false,
+    "remote_commands": 0,
+    "os_process_port_query": false,
+    "network": false,
+    "private_writes": false,
+    "auth_secret_selector_access": false,
+    "tests_helpers_fixtures_build_product_signing": false,
+    "child_delegation": false
+  },
+  "preserved_status": {
+    "old_metadata_query": "TIMED_OUT_UNVERIFIED",
+    "old_windows_native_result": "FAILED_UNVERIFIED",
+    "historical_preservation": "UNVERIFIED",
+    "native_stop_requests": 0,
+    "old_records_changed": false,
+    "installed_versions": "UNVERIFIED",
+    "effective_limits": "UNVERIFIED",
+    "native_syntax_runtime_acceptance": "UNVERIFIED"
+  },
+  "proof_limits": [
+    "No source or native behavior was executed; static predicates are not runtime proof.",
+    "Cooperative deadline checks do not interrupt stuck OS calls. External parent envelope is a prerequisite, not implemented or proved here.",
+    "A missing/late CLI exit invalidates success even if a prior receipt says COMPLETE.",
+    "Output/input allocation caps do not prove available RAM/disk or crash durability.",
+    "Unknown local exit remains null; remote exit/current state always remains UNVERIFIED.",
+    "No provenance, atomic multi-file snapshot, route coverage, effective-limit, native build/stop, signing, release or deployment claim follows."
+  ]
+}
