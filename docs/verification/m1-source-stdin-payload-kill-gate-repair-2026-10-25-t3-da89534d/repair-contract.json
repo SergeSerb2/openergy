@@ -1,0 +1,41 @@
+{
+  "schema": "openergy.inert-source-payload-kill-gate-repair.v1",
+  "execution": false,
+  "finding": "PAYLOAD-P2-1",
+  "changed_functions": ["observe_exit", "collect"],
+  "other_functions_byte_exact": 26,
+  "all_bytes_outside_changed_functions_exact": true,
+  "eligibility_order": [
+    "Retain actual code from the existing direct handle's poll.",
+    "Immediately call observe_exit, which samples the shared clock even for None.",
+    "A first real exit retains actual code and reap before sampling, and retains its observation when sampling succeeds.",
+    "Retain eligibility code and sample in status before deciding whether to signal.",
+    "Only for None, require sample strictly less than unchanged reap_end AND unchanged phase end.",
+    "A late None sets timed_out and unread_or_dropped_unknown, then raises TimeoutError before any KILL attempt.",
+    "The existing handler retains kill_or_reap_error and latches first failure without replacing an earlier cause.",
+    "An eligible None keeps the existing single direct KILL and remaining(reap_end)-bounded actual wait."
+  ],
+  "initial_null_status_fields": ["kill_eligibility_exit", "kill_eligibility_observed_ns"],
+  "phase_seconds": 120,
+  "work_end": "original phase end - 2000000000ns",
+  "reap_end": "original phase end - 1500000000ns",
+  "publication_budget": "remaining original phase only; at most final1500000000ns",
+  "source_clock": "unchanged darwin CLOCK_MONOTONIC6 shared ns",
+  "extra_time_ns": 0,
+  "new_poll_or_wait_sites": 0,
+  "new_caller_or_signal_targets": 0,
+  "actual_exit_rule": "Only real actual poll/wait return code; None never implies exit or reap.",
+  "post_reap_accounting": "Unreaped caller forbids every later wrapper file write. Actual reap precedes a fresh bounded root-only count before every later write.",
+  "opaque_stdout": true,
+  "limits": [
+    "No OS-preemption or scheduling-stall bound is established by a sample and source predicate.",
+    "A clock failure cannot establish a timestamp or timely reap; retained null and failure rules apply.",
+    "Runtime, signal delivery, timely reap, pipe delivery and durability remain UNVERIFIED.",
+    "Parent causal inspection, exclusive temporal ownership and final caller/transport/interface reviews remain external duties."
+  ],
+  "independent_review": null,
+  "review_verdict": null,
+  "source_clear": false,
+  "runtime_acceptance": false,
+  "human_gate_created": false
+}

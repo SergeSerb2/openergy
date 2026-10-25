@@ -1,0 +1,35 @@
+--- a/docs/verification/m1-source-stdin-payload-template-2026-10-25-t3-65b09134/source-payload.py.txt
++++ b/docs/verification/m1-source-stdin-payload-kill-gate-repair-2026-10-25-t3-da89534d/source-payload.py.txt
+@@ -431,6 +431,8 @@
+         status['actual_exit'] = code
+         status['reaped'] = True
+         status['actual_exit_observed_ns'] = clock_ns()
++        return status['actual_exit_observed_ns']
++    return clock_ns()  # Sample even a real poll result of None; do not infer exit.
+ 
+ 
+ def collect(started, end, parent_sha):
+@@ -451,6 +453,7 @@
+                   dropped_known_bytes=0, unread_or_dropped_unknown=False,
+                   overflow=False, timed_out=False, deadline_loss=False,
+                   kill_attempted=False, kill_delivered=False, kill_or_reap_error=None,
++                  kill_eligibility_exit=None, kill_eligibility_observed_ns=None,
+                   first_error=None, close_errors=[], finished_ns=None)
+     proc, selector = None, None
+     try:
+@@ -500,8 +503,14 @@
+             try:
+                 with until(reap_end):
+                     code = proc.poll()
+-                    observe_exit(proc, status, code)
++                    observed_ns = observe_exit(proc, status, code)
++                    status['kill_eligibility_exit'] = code
++                    status['kill_eligibility_observed_ns'] = observed_ns
+                     if code is None:
++                        if not (observed_ns < reap_end and observed_ns < end):
++                            status['timed_out'] = True
++                            status['unread_or_dropped_unknown'] = True
++                            raise TimeoutError('late KILL eligibility poll; no signal')
+                         status['kill_attempted'] = True
+                         proc.kill()  # Retained direct SYSTEM caller ONLY; no group/PID sweep.
+                         status['kill_delivered'] = True
