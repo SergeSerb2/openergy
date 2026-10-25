@@ -1,0 +1,233 @@
+{
+  "$id": "openergy:system-stdin-materializer-config:v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Exact inert template OR fully bound closed CONFIG. A schema match alone is not independent review or parent reconstruction proof.",
+  "oneOf": [
+    {
+      "const": {
+        "caller": {
+          "bytes": null,
+          "candidate_commit": null,
+          "review_commit": null,
+          "review_sha256": null,
+          "review_verdict": null,
+          "sha256": null
+        },
+        "evidence_root": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+        "execution": false,
+        "inputs": {
+          "command-vectors.json": null,
+          "expected-source-metadata.json": null,
+          "input-pins.json": null,
+          "metadata-caller.py.txt": null
+        },
+        "materializer_review": {
+          "commit": null,
+          "sha256": null,
+          "verdict": null
+        },
+        "parent_duties": {
+          "all_seven_originals_and_actual_exits_inspected": null,
+          "completed_eof_errors_kills_deadlines_inspected": null,
+          "completed_guard_root_and_vector_inspected": null,
+          "console_pipe_single_writer_reader_and_atomicity_bound": null,
+          "exact_single_token_reconstruction_verified": null,
+          "exact_system_stdin_entry_authenticated": null,
+          "exclusive_root_no_concurrent_mutator": null,
+          "final_caller_independent_clear_bound": null,
+          "full_rendered_payload_within_1MiB": null,
+          "materializer_independent_clear_bound": null,
+          "source120_not_started_or_renewed": null,
+          "transport_135s_outer_and_actual_exit_eof_owned": null
+        },
+        "schema": "openergy.system-stdin-materializer-config.v1",
+        "template_sha256": null
+      }
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "caller": {
+          "additionalProperties": false,
+          "properties": {
+            "bytes": {
+              "maximum": 524288,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "candidate_commit": {
+              "pattern": "^[0-9a-f]{40}$",
+              "type": "string"
+            },
+            "review_commit": {
+              "pattern": "^[0-9a-f]{40}$",
+              "type": "string"
+            },
+            "review_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "review_verdict": {
+              "const": "CLEAR"
+            },
+            "sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "bytes",
+            "candidate_commit",
+            "review_commit",
+            "review_sha256",
+            "review_verdict",
+            "sha256"
+          ],
+          "type": "object"
+        },
+        "evidence_root": {
+          "const": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503"
+        },
+        "execution": {
+          "const": false
+        },
+        "inputs": {
+          "additionalProperties": false,
+          "properties": {
+            "command-vectors.json": {
+              "description": "Canonical standard base64 of exact pre-bound bytes; runtime verifies padding, length and SHA-256.",
+              "maxLength": 16496,
+              "minLength": 16496,
+              "pattern": "^[A-Za-z0-9+/]*={0,2}$",
+              "type": "string"
+            },
+            "expected-source-metadata.json": {
+              "description": "Canonical standard base64 of exact pre-bound bytes; runtime verifies padding, length and SHA-256.",
+              "maxLength": 190116,
+              "minLength": 190116,
+              "pattern": "^[A-Za-z0-9+/]*={0,2}$",
+              "type": "string"
+            },
+            "input-pins.json": {
+              "description": "Canonical standard base64 of exact pre-bound bytes; runtime verifies padding, length and SHA-256.",
+              "maxLength": 6560,
+              "minLength": 6560,
+              "pattern": "^[A-Za-z0-9+/]*={0,2}$",
+              "type": "string"
+            },
+            "metadata-caller.py.txt": {
+              "description": "Canonical standard base64 of exact pre-bound bytes; runtime verifies padding, length and SHA-256.",
+              "maxLength": 699052,
+              "minLength": 4,
+              "pattern": "^[A-Za-z0-9+/]*={0,2}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "command-vectors.json",
+            "expected-source-metadata.json",
+            "input-pins.json",
+            "metadata-caller.py.txt"
+          ],
+          "type": "object"
+        },
+        "materializer_review": {
+          "additionalProperties": false,
+          "properties": {
+            "commit": {
+              "pattern": "^[0-9a-f]{40}$",
+              "type": "string"
+            },
+            "sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "verdict": {
+              "const": "CLEAR"
+            }
+          },
+          "required": [
+            "commit",
+            "sha256",
+            "verdict"
+          ],
+          "type": "object"
+        },
+        "parent_duties": {
+          "additionalProperties": false,
+          "properties": {
+            "all_seven_originals_and_actual_exits_inspected": {
+              "const": true
+            },
+            "completed_eof_errors_kills_deadlines_inspected": {
+              "const": true
+            },
+            "completed_guard_root_and_vector_inspected": {
+              "const": true
+            },
+            "console_pipe_single_writer_reader_and_atomicity_bound": {
+              "const": true
+            },
+            "exact_single_token_reconstruction_verified": {
+              "const": true
+            },
+            "exact_system_stdin_entry_authenticated": {
+              "const": true
+            },
+            "exclusive_root_no_concurrent_mutator": {
+              "const": true
+            },
+            "final_caller_independent_clear_bound": {
+              "const": true
+            },
+            "full_rendered_payload_within_1MiB": {
+              "const": true
+            },
+            "materializer_independent_clear_bound": {
+              "const": true
+            },
+            "source120_not_started_or_renewed": {
+              "const": true
+            },
+            "transport_135s_outer_and_actual_exit_eof_owned": {
+              "const": true
+            }
+          },
+          "required": [
+            "all_seven_originals_and_actual_exits_inspected",
+            "completed_eof_errors_kills_deadlines_inspected",
+            "completed_guard_root_and_vector_inspected",
+            "console_pipe_single_writer_reader_and_atomicity_bound",
+            "exact_single_token_reconstruction_verified",
+            "exact_system_stdin_entry_authenticated",
+            "exclusive_root_no_concurrent_mutator",
+            "final_caller_independent_clear_bound",
+            "full_rendered_payload_within_1MiB",
+            "materializer_independent_clear_bound",
+            "source120_not_started_or_renewed",
+            "transport_135s_outer_and_actual_exit_eof_owned"
+          ],
+          "type": "object"
+        },
+        "schema": {
+          "const": "openergy.system-stdin-materializer-config.v1"
+        },
+        "template_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "caller",
+        "evidence_root",
+        "execution",
+        "inputs",
+        "materializer_review",
+        "parent_duties",
+        "schema",
+        "template_sha256"
+      ],
+      "type": "object"
+    }
+  ]
+}
