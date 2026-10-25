@@ -39,6 +39,13 @@ revision has not run; the two retained results above bind earlier revisions.
 The matching reader repair is in
 [the terminal deadline package](../windows-metadata-terminal-deadline-repair-2026-10-25/README.md).
 
+Review `ef9a635` clears the deadline-fixed reader source with its stated limits.
+It found driver D3: nonzero-child validation also accepted a reader timeout.
+The current predicate now requires no reader error, complete EOF capture, no
+overflow or discarded bytes, and no local kill. Exact child exit1 and empty
+streams remain required. This last driver revision has not run yet; the earlier
+recorded nonzero cases had no reader error and remain unchanged.
+
 The caller supplies an absent output path below an owned private mode-0700
 directory. Raw command bindings, output and receipts stay there. The driver
 runs at nice15 and has a 28-second work envelope plus at most two seconds for

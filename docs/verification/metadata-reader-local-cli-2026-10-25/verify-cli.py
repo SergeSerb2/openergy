@@ -107,7 +107,11 @@ def main():
             if label == 'success':
                 valid = receipt['status'] == 'COMPLETE' and receipt['local_child_returncode'] == 0 and stdout == b'Darwin\n' and not stderr
             elif label == 'nonzero':
-                valid = receipt['status'] == 'INCOMPLETE' and receipt['local_child_returncode'] == 1 and not stdout and not stderr
+                valid = (receipt['status'] == 'INCOMPLETE' and receipt['local_child_returncode'] == 1 and
+                         receipt['first_error'] is None and receipt['secondary_error_count'] == 0 and
+                         not receipt['local_kill_called'] and not stdout and not stderr and
+                         all(entry['eof'] and not entry['overflow_observed'] and
+                             entry['bytes_not_preserved'] == 0 for entry in receipt['streams'].values()))
             elif label == 'partial-timeout':
                 valid = (receipt['status'] == 'INCOMPLETE' and stdout == b'prefix\n' and
                          receipt['local_kill_called'] and receipt['local_child_returncode'] == -signal.SIGKILL and
