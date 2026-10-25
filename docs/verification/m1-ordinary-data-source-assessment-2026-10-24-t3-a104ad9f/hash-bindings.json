@@ -1,0 +1,926 @@
+{
+  "assessment_scope": "Saved DATA/SOURCE only; no task-source execution/import/AST, OS metadata query, probe, remote, native parser, product, signing, build, test, or network",
+  "embedded_headers": [
+    {
+      "bytes": 31262,
+      "container": "sdk-process-headers.json",
+      "json_pointer": "/headers/0",
+      "path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk/usr/include/sys/proc_info.h",
+      "sha256": "e427fa96b348537b21552b9de71e01039410bcad2cedee5584c5e5fddafd70fc",
+      "text_hash_matches": true
+    },
+    {
+      "bytes": 7575,
+      "container": "sdk-process-headers.json",
+      "json_pointer": "/headers/1",
+      "path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk/usr/include/libproc.h",
+      "sha256": "246d87709fc6b9157ce5cf3c475656ac48e0e1ae8bbdc46cf45acd34294448cd",
+      "text_hash_matches": true
+    },
+    {
+      "bytes": 37975,
+      "container": "sdk-process-headers.json",
+      "json_pointer": "/headers/2",
+      "path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk/usr/include/sys/sysctl.h",
+      "sha256": "d6d627d3353607f4078079051e09ea0e9a3b32a6771934be1ac5d89fbe93b1c7",
+      "text_hash_matches": true
+    },
+    {
+      "bytes": 11852,
+      "container": "sdk-process-headers.json",
+      "json_pointer": "/headers/3",
+      "path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk/usr/include/sys/proc.h",
+      "sha256": "593af71b2740ba6248995691280bcb15f8900d46b1d9868f7345084aa0692949",
+      "text_hash_matches": true
+    },
+    {
+      "bytes": 9948,
+      "container": "supplement.json",
+      "json_pointer": "/abi_type_headers/0",
+      "path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk/usr/include/sys/param.h",
+      "sha256": "10d7a9553d341c5bc0b473444802920a7ec2e6222281eeaeb61b32dfff29c4b4",
+      "text_hash_matches": true
+    },
+    {
+      "bytes": 8391,
+      "container": "supplement.json",
+      "json_pointer": "/abi_type_headers/1",
+      "path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk/usr/include/sys/types.h",
+      "sha256": "82111e1f1d0262bee191b4679842e5ff51de57310ce4da9f48d39af0d8e10284",
+      "text_hash_matches": true
+    },
+    {
+      "bytes": 4133,
+      "container": "supplement.json",
+      "json_pointer": "/abi_type_headers/2",
+      "path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk/usr/include/sys/_types.h",
+      "sha256": "863c4f07045775002b63b7e616742d9f746e4a02da4441442d8fe1138bbd0ff9",
+      "text_hash_matches": true
+    },
+    {
+      "bytes": 1458,
+      "container": "supplement.json",
+      "json_pointer": "/abi_type_headers/3",
+      "path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk/usr/include/sys/_types/_uid_t.h",
+      "sha256": "d2140a65a17943a857381757c0b73a920f35ade41dc9809437c168be457c276a",
+      "text_hash_matches": true
+    },
+    {
+      "bytes": 1438,
+      "container": "supplement.json",
+      "json_pointer": "/abi_type_headers/4",
+      "path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk/usr/include/sys/_types/_gid_t.h",
+      "sha256": "e687ad58c03701c132a02ebf20699c8cacfd34c3a67271bd2a415a5a8e4a9ea7",
+      "text_hash_matches": true
+    },
+    {
+      "bytes": 4470,
+      "container": "supplement.json",
+      "json_pointer": "/abi_type_headers/5",
+      "path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk/usr/include/arm/_types.h",
+      "sha256": "4f0bde85f9a41cc7d30fff22ebd7e8f4eb206a55a926eda012a2e7481e3524fa",
+      "text_hash_matches": true
+    }
+  ],
+  "limits": [
+    "Header layout is source-derived under Darwin arm64 ABI, not compiled sizeof or live ctypes evidence.",
+    "KERN_PROCARGS2 headers do not specify complete returned serialization; decoding agreement is an interface inference pending actual rows.",
+    "Detailed metadata is arm64; strict verification covers all architectures.",
+    "Embedded Sparkle resolution candidate is qualified; earlier rpath candidates and actual dyld choice are not observed.",
+    "Same-machine original input only; future prepared-copy qualification and run receipts remain required by the existing contract.",
+    "No trust, Gatekeeper, notarization, release, or runtime acceptance."
+  ],
+  "non_executable_assessment": true,
+  "objects": [
+    {
+      "architectures": [
+        "x86_64",
+        "arm64"
+      ],
+      "arm64_entitlements_stdout": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"https://www.apple.com/DTDs/PropertyList-1.0.dtd\"><plist version=\"1.0\"><dict><key>com.apple.application-identifier</key><string>org.sparkle-project.Sparkle.Autoupdate</string></dict></plist>\n",
+      "arm64_load_commands": [
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/libz.1.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/CoreServices.framework/Versions/A/CoreServices"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/libcompression.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/libbz2.1.0.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/libxar.1.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/Security.framework/Versions/A/Security"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/libobjc.A.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/libSystem.B.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation"
+        }
+      ],
+      "arm64_requirements_stdout": "",
+      "arm64_signature_display": {
+        "CDHash": "62f4c0cdc10f828fddb18badc84fe943810c30ef",
+        "CodeDirectory": "CodeDirectory v=20400 size=1004 flags=0x2(adhoc) hashes=20+7 location=embedded",
+        "Identifier": "Autoupdate-55554944f723d84042cd352fbb0485760ff7597a",
+        "Internal": "Internal requirements count=0 size=12",
+        "Signature": "adhoc",
+        "TeamIdentifier": "not set"
+      },
+      "corrected_signature_source": {
+        "container": "supplement.json",
+        "display": "/individual_objects/5",
+        "entitlements": "/individual_objects/6",
+        "requirements": "/individual_objects/7",
+        "verify": "/individual_objects/4"
+      },
+      "mode": "0o755",
+      "otool_L_and_l_names_agree": true,
+      "relative_binary": "Contents/Frameworks/Sparkle.framework/Versions/B/Autoupdate",
+      "sha256": "f96b14a5173a00febe7dc9f7a0107499a9d66977f6c82c92a0dbd0bc43fccbb4"
+    },
+    {
+      "architectures": [
+        "x86_64",
+        "arm64"
+      ],
+      "arm64_entitlements_stdout": "",
+      "arm64_load_commands": [
+        {
+          "command": "LC_ID_DYLIB",
+          "name": "@rpath/Sparkle.framework/Versions/B/Sparkle"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/libcompression.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/libobjc.A.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/libSystem.B.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/IOKit.framework/Versions/A/IOKit"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/Security.framework/Versions/A/Security"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/ServiceManagement.framework/Versions/A/ServiceManagement"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/SystemConfiguration"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/WebKit.framework/Versions/A/WebKit"
+        }
+      ],
+      "arm64_requirements_stdout": "",
+      "arm64_signature_display": {
+        "CDHash": "3f3e05da4485ba252a1177c7c26e8e6d369d01ba",
+        "CodeDirectory": "CodeDirectory v=20400 size=1108 flags=0x2(adhoc) hashes=28+3 location=embedded",
+        "Identifier": "org.sparkle-project.Sparkle",
+        "Internal": "Internal requirements count=0 size=12",
+        "Signature": "adhoc",
+        "TeamIdentifier": "not set"
+      },
+      "corrected_signature_source": {
+        "container": "artifact-observations.json",
+        "labels": [
+          "object-1-verify",
+          "object-1-display",
+          "object-1-entitlements",
+          "object-1-requirements"
+        ]
+      },
+      "mode": "0o755",
+      "otool_L_and_l_names_agree": true,
+      "relative_binary": "Contents/Frameworks/Sparkle.framework/Versions/B/Sparkle",
+      "sha256": "9d1b1133403817aa9414e5d672d3181d0f24c1af0122a7ae29b8fa8564ec8389"
+    },
+    {
+      "architectures": [
+        "x86_64",
+        "arm64"
+      ],
+      "arm64_entitlements_stdout": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"https://www.apple.com/DTDs/PropertyList-1.0.dtd\"><plist version=\"1.0\"><dict></dict></plist>\n",
+      "arm64_load_commands": [
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/Cocoa.framework/Versions/A/Cocoa"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/Security.framework/Versions/A/Security"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/libobjc.A.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/libSystem.B.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation"
+        }
+      ],
+      "arm64_requirements_stdout": "",
+      "arm64_signature_display": {
+        "CDHash": "36c117bb659fa53238129deebac0cd3a6e033157",
+        "CodeDirectory": "CodeDirectory v=20400 size=636 flags=0x2(adhoc) hashes=9+7 location=embedded",
+        "Identifier": "org.sparkle-project.Sparkle.Updater",
+        "Internal": "Internal requirements count=0 size=12",
+        "Signature": "adhoc",
+        "TeamIdentifier": "not set"
+      },
+      "corrected_signature_source": {
+        "container": "artifact-observations.json",
+        "labels": [
+          "object-2-verify",
+          "object-2-display",
+          "object-2-entitlements",
+          "object-2-requirements"
+        ]
+      },
+      "mode": "0o755",
+      "otool_L_and_l_names_agree": true,
+      "relative_binary": "Contents/Frameworks/Sparkle.framework/Versions/B/Updater.app/Contents/MacOS/Updater",
+      "sha256": "6b49df23f97d01967926b9cdee4b2e88b5540770fa572ed9ca88c9fd9c00dd53"
+    },
+    {
+      "architectures": [
+        "x86_64",
+        "arm64"
+      ],
+      "arm64_entitlements_stdout": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"https://www.apple.com/DTDs/PropertyList-1.0.dtd\"><plist version=\"1.0\"><dict></dict></plist>\n",
+      "arm64_load_commands": [
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/Security.framework/Versions/A/Security"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/libobjc.A.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/libSystem.B.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation"
+        }
+      ],
+      "arm64_requirements_stdout": "",
+      "arm64_signature_display": {
+        "CDHash": "ae3b5c6eafba74a880a6380ca264c8f283e548d7",
+        "CodeDirectory": "CodeDirectory v=20400 size=510 flags=0x2(adhoc) hashes=5+7 location=embedded",
+        "Identifier": "org.sparkle-project.DownloaderService",
+        "Internal": "Internal requirements count=0 size=12",
+        "Signature": "adhoc",
+        "TeamIdentifier": "not set"
+      },
+      "corrected_signature_source": {
+        "container": "artifact-observations.json",
+        "labels": [
+          "object-3-verify",
+          "object-3-display",
+          "object-3-entitlements",
+          "object-3-requirements"
+        ]
+      },
+      "mode": "0o755",
+      "otool_L_and_l_names_agree": true,
+      "relative_binary": "Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Downloader.xpc/Contents/MacOS/Downloader",
+      "sha256": "a2ac3e145291a8f539a2c41b20ea3d7b92a8523105c2802295237b5fd5a1bd0f"
+    },
+    {
+      "architectures": [
+        "x86_64",
+        "arm64"
+      ],
+      "arm64_entitlements_stdout": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"https://www.apple.com/DTDs/PropertyList-1.0.dtd\"><plist version=\"1.0\"><dict></dict></plist>\n",
+      "arm64_load_commands": [
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/CoreServices.framework/Versions/A/CoreServices"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/ServiceManagement.framework/Versions/A/ServiceManagement"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/SystemConfiguration"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/Security.framework/Versions/A/Security"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/libobjc.A.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/libSystem.B.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation"
+        }
+      ],
+      "arm64_requirements_stdout": "",
+      "arm64_signature_display": {
+        "CDHash": "9f978435a99227740bf22c9eea775cf5d2e9d653",
+        "CodeDirectory": "CodeDirectory v=20400 size=542 flags=0x2(adhoc) hashes=6+7 location=embedded",
+        "Identifier": "org.sparkle-project.InstallerLauncher",
+        "Internal": "Internal requirements count=0 size=12",
+        "Signature": "adhoc",
+        "TeamIdentifier": "not set"
+      },
+      "corrected_signature_source": {
+        "container": "artifact-observations.json",
+        "labels": [
+          "object-4-verify",
+          "object-4-display",
+          "object-4-entitlements",
+          "object-4-requirements"
+        ]
+      },
+      "mode": "0o755",
+      "otool_L_and_l_names_agree": true,
+      "relative_binary": "Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Installer.xpc/Contents/MacOS/Installer",
+      "sha256": "2fb1b5709111825801670b0553f7d3af918a4fcea5f4e7a558602b0ecd86d437"
+    },
+    {
+      "architectures": [
+        "arm64"
+      ],
+      "arm64_entitlements_stdout": "",
+      "arm64_load_commands": [
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/Carbon.framework/Versions/A/Carbon"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/ApplicationServices.framework/Versions/A/ApplicationServices"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/ImageIO.framework/Versions/A/ImageIO"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/libobjc.A.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/IOKit.framework/Versions/A/IOKit"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/libiconv.2.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/libSystem.B.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/CoreServices.framework/Versions/A/CoreServices"
+        }
+      ],
+      "arm64_requirements_stdout": "",
+      "arm64_signature_display": {
+        "CDHash": "7a22fc8bdf7d7e91593fdec6b1791a3f7f549f7d",
+        "CodeDirectory": "CodeDirectory v=20400 size=8908 flags=0x2(adhoc) hashes=273+2 location=embedded",
+        "Identifier": "dev.openergy.daemon",
+        "Internal": "Internal requirements count=0 size=12",
+        "Signature": "adhoc",
+        "TeamIdentifier": "not set"
+      },
+      "corrected_signature_source": {
+        "container": "supplement.json",
+        "display": "/individual_objects/1",
+        "entitlements": "/individual_objects/2",
+        "requirements": "/individual_objects/3",
+        "verify": "/individual_objects/0"
+      },
+      "mode": "0o700",
+      "otool_L_and_l_names_agree": true,
+      "relative_binary": "Contents/Helpers/openergy",
+      "sha256": "17065c334290b34c7a1b69483f409655e072eb0505ff2a0cc0bf6ed5f77a7bb2"
+    },
+    {
+      "architectures": [
+        "arm64"
+      ],
+      "arm64_entitlements_stdout": "",
+      "arm64_load_commands": [
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "@rpath/Sparkle.framework/Versions/B/Sparkle"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/libobjc.A.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/libSystem.B.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/CoreTransferable.framework/Versions/A/CoreTransferable"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/ServiceManagement.framework/Versions/A/ServiceManagement"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/SwiftUI.framework/Versions/A/SwiftUI"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/Symbols.framework/Versions/A/Symbols"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/SystemConfiguration"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/swift/libswiftCore.dylib"
+        },
+        {
+          "command": "LC_LOAD_WEAK_DYLIB",
+          "name": "/usr/lib/swift/libswiftCoreAudio.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/swift/libswiftCoreFoundation.dylib"
+        },
+        {
+          "command": "LC_LOAD_WEAK_DYLIB",
+          "name": "/usr/lib/swift/libswiftCoreImage.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/swift/libswiftDarwin.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/swift/libswiftDispatch.dylib"
+        },
+        {
+          "command": "LC_LOAD_WEAK_DYLIB",
+          "name": "/usr/lib/swift/libswiftIOKit.dylib"
+        },
+        {
+          "command": "LC_LOAD_WEAK_DYLIB",
+          "name": "/usr/lib/swift/libswiftMetal.dylib"
+        },
+        {
+          "command": "LC_LOAD_WEAK_DYLIB",
+          "name": "/usr/lib/swift/libswiftOSLog.dylib"
+        },
+        {
+          "command": "LC_LOAD_WEAK_DYLIB",
+          "name": "/usr/lib/swift/libswiftObjectiveC.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/swift/libswiftObservation.dylib"
+        },
+        {
+          "command": "LC_LOAD_WEAK_DYLIB",
+          "name": "/usr/lib/swift/libswiftQuartzCore.dylib"
+        },
+        {
+          "command": "LC_LOAD_WEAK_DYLIB",
+          "name": "/usr/lib/swift/libswiftSpatial.dylib"
+        },
+        {
+          "command": "LC_LOAD_WEAK_DYLIB",
+          "name": "/usr/lib/swift/libswiftUniformTypeIdentifiers.dylib"
+        },
+        {
+          "command": "LC_LOAD_WEAK_DYLIB",
+          "name": "/usr/lib/swift/libswiftXPC.dylib"
+        },
+        {
+          "command": "LC_LOAD_WEAK_DYLIB",
+          "name": "/usr/lib/swift/libswift_Builtin_float.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/swift/libswift_Concurrency.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/swift/libswiftos.dylib"
+        },
+        {
+          "command": "LC_LOAD_WEAK_DYLIB",
+          "name": "/usr/lib/swift/libswiftsimd.dylib"
+        },
+        {
+          "command": "LC_LOAD_DYLIB",
+          "name": "/usr/lib/swift/libswift_errno.dylib"
+        },
+        {
+          "command": "LC_RPATH",
+          "name": "/usr/lib/swift"
+        },
+        {
+          "command": "LC_RPATH",
+          "name": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-6.2/macosx"
+        },
+        {
+          "command": "LC_RPATH",
+          "name": "@executable_path/../Frameworks"
+        }
+      ],
+      "arm64_requirements_stdout": "",
+      "arm64_signature_display": {
+        "CDHash": "07f9138c67bb59ebdc8c04536fc0c9cb108b0fb0",
+        "CodeDirectory": "CodeDirectory v=20400 size=3273 flags=0x2(adhoc) hashes=96+3 location=embedded",
+        "Identifier": "dev.openergy.app",
+        "Internal": "Internal requirements count=0 size=12",
+        "Signature": "adhoc",
+        "TeamIdentifier": "not set"
+      },
+      "corrected_signature_source": {
+        "container": "artifact-observations.json",
+        "labels": [
+          "object-6-verify",
+          "object-6-display",
+          "object-6-entitlements",
+          "object-6-requirements"
+        ]
+      },
+      "mode": "0o700",
+      "otool_L_and_l_names_agree": true,
+      "relative_binary": "Contents/MacOS/Openergy",
+      "sha256": "094d02b3831ee6565ae1628407756ad48053a0268f2a489c65bbde28b768d775"
+    }
+  ],
+  "parent_receipt_unchanged": true,
+  "private_inputs": [
+    {
+      "local": {
+        "bytes": 3144,
+        "path": "/Users/serge/.local/state/openergy-verification/m1-resume-private-20261024/ordinary-artifact-qualification-8d1e4fee522f/receipt.json",
+        "sha256": "e2c6bb772848e1a8136d485468812c2f58e93b047e5a35243333892f240b9531"
+      },
+      "role": "collection_receipt"
+    },
+    {
+      "local": {
+        "bytes": 238,
+        "path": "/Users/serge/.local/state/openergy-verification/m1-resume-private-20261024/ordinary-artifact-qualification-8d1e4fee522f/supplement-reference.json",
+        "sha256": "7709535f34a90186b25654f5b0570ed5c8ae6035aa49646457a63c00b9e00bd2"
+      },
+      "role": "supplement_reference"
+    },
+    {
+      "exact_bytes_match": true,
+      "local": {
+        "bytes": 93070,
+        "path": "/Users/serge/.local/state/openergy-verification/m1-resume-private-20261024/ordinary-artifact-qualification-8d1e4fee522f/retained/sdk-process-headers.json",
+        "sha256": "542732b93c4ace07bff79fd4a1bf55cfd3e17aab02a711da83c4ebafe556564f"
+      },
+      "recorded_remote": {
+        "bytes": 93070,
+        "path": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-artifact-qualification-20261024-c37e3381ecde/sdk-process-headers.json",
+        "sha256": "542732b93c4ace07bff79fd4a1bf55cfd3e17aab02a711da83c4ebafe556564f"
+      },
+      "role": "abi_header_evidence"
+    },
+    {
+      "exact_bytes_match": true,
+      "local": {
+        "bytes": 151715,
+        "path": "/Users/serge/.local/state/openergy-verification/m1-resume-private-20261024/ordinary-artifact-qualification-8d1e4fee522f/retained/artifact-observations.json",
+        "sha256": "6f7531f7dd28ca9672bc206bf1c511fe706005904f1cfd5ffa9694dfa8b8c48a"
+      },
+      "recorded_remote": {
+        "bytes": 151715,
+        "path": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-artifact-qualification-20261024-c37e3381ecde/artifact-observations.json",
+        "sha256": "6f7531f7dd28ca9672bc206bf1c511fe706005904f1cfd5ffa9694dfa8b8c48a"
+      },
+      "role": "artifact_observations"
+    },
+    {
+      "exact_bytes_match": true,
+      "local": {
+        "bytes": 1163,
+        "path": "/Users/serge/.local/state/openergy-verification/m1-resume-private-20261024/ordinary-artifact-qualification-8d1e4fee522f/retained/ordinary-metadata.json",
+        "sha256": "a5705a99e0bf20d4e3acdc5917b29140d67ebb24435192b834b4e3d3145bc8fb"
+      },
+      "recorded_remote": {
+        "bytes": 1163,
+        "path": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-artifact-qualification-20261024-c37e3381ecde/ordinary-metadata.json",
+        "sha256": "a5705a99e0bf20d4e3acdc5917b29140d67ebb24435192b834b4e3d3145bc8fb"
+      },
+      "role": "ordinary_metadata"
+    },
+    {
+      "exact_bytes_match": true,
+      "local": {
+        "bytes": 721,
+        "path": "/Users/serge/.local/state/openergy-verification/m1-resume-private-20261024/ordinary-artifact-qualification-8d1e4fee522f/retained/python-qualification.json",
+        "sha256": "c95b10704747a908bcf673e3725b8defbfdfa4e61a492bd55bfcea090a9de01a"
+      },
+      "recorded_remote": {
+        "bytes": 721,
+        "path": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-artifact-qualification-20261024-c37e3381ecde/python-qualification.json",
+        "sha256": "c95b10704747a908bcf673e3725b8defbfdfa4e61a492bd55bfcea090a9de01a"
+      },
+      "role": "python_qualification"
+    },
+    {
+      "exact_bytes_match": true,
+      "local": {
+        "bytes": 32648,
+        "path": "/Users/serge/.local/state/openergy-verification/m1-resume-private-20261024/ordinary-artifact-qualification-8d1e4fee522f/retained/source-bundle-inventory.json",
+        "sha256": "9406519dabf9aaeb09fe15615382dedf18bebe172d5f7745ae0abdedcc38a9c4"
+      },
+      "recorded_remote": {
+        "bytes": 32648,
+        "path": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-artifact-qualification-20261024-c37e3381ecde/source-bundle-inventory.json",
+        "sha256": "9406519dabf9aaeb09fe15615382dedf18bebe172d5f7745ae0abdedcc38a9c4"
+      },
+      "role": "source_bundle_inventory"
+    },
+    {
+      "exact_bytes_match": true,
+      "local": {
+        "bytes": 336,
+        "path": "/Users/serge/.local/state/openergy-verification/m1-resume-private-20261024/ordinary-artifact-qualification-8d1e4fee522f/retained/transfer-qualification.json",
+        "sha256": "fb247be8e1224307e6c14f6fada2f0aa36548e5310f2f15be6289b5e348883b2"
+      },
+      "recorded_remote": {
+        "bytes": 336,
+        "path": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-artifact-qualification-20261024-c37e3381ecde/transfer-qualification.json",
+        "sha256": "fb247be8e1224307e6c14f6fada2f0aa36548e5310f2f15be6289b5e348883b2"
+      },
+      "role": "transfer_qualification"
+    },
+    {
+      "exact_bytes_match": true,
+      "local": {
+        "bytes": 2130,
+        "path": "/Users/serge/.local/state/openergy-verification/m1-resume-private-20261024/ordinary-artifact-qualification-8d1e4fee522f/retained/readback.json",
+        "sha256": "d072e4534664a9c8dd3bf907a2daef72125d99b26189399dbfe6fa274ddc7b49"
+      },
+      "recorded_remote": {
+        "bytes": 2130,
+        "path": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-artifact-qualification-20261024-c37e3381ecde/readback.json",
+        "sha256": "d072e4534664a9c8dd3bf907a2daef72125d99b26189399dbfe6fa274ddc7b49"
+      },
+      "role": "readback"
+    },
+    {
+      "exact_bytes_match": true,
+      "local": {
+        "bytes": 40212,
+        "path": "/Users/serge/.local/state/openergy-verification/m1-resume-private-20261024/ordinary-artifact-qualification-8d1e4fee522f/retained/supplement.json",
+        "sha256": "c541d45f40e85e7ec7d652a8b98a34d151e9e8bd133aed58f99ba5090cfad15a"
+      },
+      "recorded_remote": {
+        "bytes": 40212,
+        "path": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-qualification-supplement-20261024-6d22b99e4db6/supplement.json",
+        "sha256": "c541d45f40e85e7ec7d652a8b98a34d151e9e8bd133aed58f99ba5090cfad15a"
+      },
+      "role": "supplement"
+    }
+  ],
+  "recorded_command_counts": {
+    "all_recorded_exits_zero": true,
+    "original": 52,
+    "supplement_architecture": 1,
+    "supplement_codesign": 8
+  },
+  "report": {
+    "bytes": 13696,
+    "path": "/Users/serge/.t3/worktrees/openergy/t3-a104ad9f/docs/verification/m1-ordinary-data-source-assessment-2026-10-24-t3-a104ad9f/ASSESSMENT.md",
+    "sha256": "034a5384e06e468a41d752496fd3bc8fe57a6af1715ca0fbbd92657aa913652e"
+  },
+  "runtime_result": "UNVERIFIED / NOT ACCEPTED",
+  "saved_build_kernel_context": {
+    "layout_source": {
+      "bytes": 33950,
+      "path": "/Users/serge/.t3/worktrees/openergy/t3-a104ad9f/docs/verification/m1-sampler-source-repair-r3-2026-10-24/controller.py",
+      "sha256": "cd5dc620e6adbec09798e600a99f55c0368b8eeff10d1117e1f7793ca1baf4ee"
+    },
+    "nice_values": [
+      15
+    ],
+    "no_new_kernel_read": true,
+    "not_future_R9_argv_or_runtime_proof": true,
+    "pid_start_identities": 90,
+    "processes": {
+      "bytes": 259937,
+      "path": "/Users/serge/.local/state/openergy-verification/m1-resume-private-20261024/completed-build-aa30bb8df0bd/raw/build/processes.jsonl",
+      "sha256": "d93547dd19882ae876f14d5506a8f4bdf01a088ee564ef564befcc672f390987"
+    },
+    "rows": 2008
+  },
+  "schema": "openergy.m1-ordinary-data-source-assessment.v1",
+  "source_admission_context": {
+    "bytes": 15568,
+    "commit": "08ac9ae4eff90099c83f5314eba0482f8b3f9cbe",
+    "git_blob": "b1d9a982fc012582211928007cba7b406bced872",
+    "not_an_independent_repeat_review": true,
+    "parent_reports_R2_clear": true,
+    "path": "docs/verification/m1-ordinary-admission-review-2026-10-24-t3-af8da74b/REVIEW.md",
+    "sha256": "df860b486be1dcc300c2608f7d582703ea13360d93830eac6c6ea917bd32a938"
+  },
+  "source_and_contract_inputs": [
+    {
+      "bytes": 8075,
+      "path": "/Users/serge/.t3/worktrees/openergy/t3-a104ad9f/docs/verification/ordinary-controller-uncertainty-handoff-r9-2026-10-24-t3-79efd32e/macproc.py",
+      "sha256": "d4f6fe358bd9af786fc4c2cba61f1a47f3f4015c918aae85cf8e6aa1c6d3e6c7"
+    },
+    {
+      "bytes": 10673,
+      "path": "/Users/serge/.t3/worktrees/openergy/t3-a104ad9f/docs/verification/m1-ordinary-fresh-flow-plan-2026-10-24-t3-5463ce44/receipt-contract.md",
+      "sha256": "2e9d4cb5440fe5feed0411886b36774e4acce0155e0082412f671f6df19d26e4"
+    },
+    {
+      "bytes": 10270,
+      "path": "/Users/serge/.t3/worktrees/openergy/t3-a104ad9f/docs/verification/m1-ordinary-fresh-flow-plan-2026-10-24-t3-5463ce44/receipt.schema.json",
+      "sha256": "14a031f3a110bdd6f3ab6b0e37b57195f2333c5f5422299880fed246ab70ae0a"
+    },
+    {
+      "bytes": 3496,
+      "path": "/Users/serge/.t3/worktrees/openergy/t3-a104ad9f/docs/verification/m1-ordinary-fresh-flow-plan-2026-10-24-t3-5463ce44/artifact-receipt.template.json",
+      "sha256": "6250a8698664c757af9f9bdb5ef191f3604d82725282ae860741eae2529939d3"
+    },
+    {
+      "bytes": 5599,
+      "path": "/Users/serge/.t3/worktrees/openergy/t3-a104ad9f/docs/verification/m1-ordinary-fresh-flow-plan-2026-10-24-t3-5463ce44/README.md",
+      "sha256": "48a9e27a4d0b6c78586e733d05400a5eb6d85bf18554ff02de08bad8a0bf5ea7"
+    },
+    {
+      "bytes": 8565,
+      "path": "/Users/serge/.t3/worktrees/openergy/t3-a104ad9f/docs/verification/m1-ordinary-fresh-flow-plan-2026-10-24-t3-5463ce44/operator-plan.md",
+      "sha256": "c305b38ea83d40994a7f346e5815522050ae1fe833bf84e04b3b471134253dc4"
+    },
+    {
+      "bytes": 9010,
+      "path": "/Users/serge/.t3/worktrees/openergy/t3-a104ad9f/docs/verification/m1-ordinary-fresh-flow-plan-2026-10-24-t3-5463ce44/retained-build-bindings.json",
+      "sha256": "ff809b390e4e9f250091c7cad6ee1777cafa637e13c91ed2c37aff3b0216af97"
+    },
+    {
+      "bytes": 11682,
+      "path": "/Users/serge/.t3/worktrees/openergy/t3-a104ad9f/docs/verification/m1-ordinary-fresh-flow-plan-2026-10-24-t3-5463ce44/bindings.json",
+      "sha256": "71437cdd62469dac18face017af3ea167771e747ffc6ac8e14dd948320f258ab"
+    },
+    {
+      "bytes": 1618,
+      "path": "/Users/serge/.t3/worktrees/openergy/t3-a104ad9f/docs/verification/m1-ordinary-fresh-flow-plan-2026-10-24-t3-5463ce44/source-checks.json",
+      "sha256": "dbcbf013fc3a267f4bb6b9f1676dd9af8b2840e4f493ad3c19048acac5ff778b"
+    },
+    {
+      "bytes": 4140,
+      "path": "/Users/serge/.t3/worktrees/openergy/t3-a104ad9f/docs/verification/m1-ordinary-fresh-flow-plan-2026-10-24-t3-5463ce44/static-checks.json",
+      "sha256": "a6a97f49a5e858a26e6c08785e73b05278537974aa3f3cc8b83a3e05a1467c3a"
+    },
+    {
+      "bytes": 151287,
+      "path": "/Users/serge/.t3/worktrees/openergy/t3-a104ad9f/docs/verification/m1-sampler-source-repair-r3-2026-10-24/source-bindings.json",
+      "sha256": "20e011251151cec81f69c4b80b0072d9fd0a98c1eaaf0e6c74d83ff752546617"
+    },
+    {
+      "bytes": 677,
+      "path": "/Users/serge/.t3/worktrees/openergy/t3-a104ad9f/apps/macos/Package.swift",
+      "sha256": "ce093f04ed71f2f7fb806ac19633c9c41a6d7d1aaf245341c9ed6b367788e505"
+    },
+    {
+      "bytes": 388,
+      "path": "/Users/serge/.t3/worktrees/openergy/t3-a104ad9f/apps/macos/Package.resolved",
+      "sha256": "c797ae9a0970d8225f66f11736f94a1a8337d68a55f65bb34e5a47d4edc94282"
+    },
+    {
+      "bytes": 23101,
+      "path": "/Users/serge/.t3/worktrees/openergy/t3-a104ad9f/tools/release/sparkle.py",
+      "sha256": "28a7eba2edc3c7676422c50ce904be2383126e6777bc910a881fd281e739fe35"
+    },
+    {
+      "bytes": 1827,
+      "path": "/Users/serge/.t3/worktrees/openergy/t3-a104ad9f/apps/macos/Support/Info.plist",
+      "sha256": "4300cad741fb7e2d7b14d41897f78a2631a1ebf93bff2e45484878d25a3573a2"
+    },
+    {
+      "bytes": 33950,
+      "path": "/Users/serge/.t3/worktrees/openergy/t3-a104ad9f/docs/verification/m1-sampler-source-repair-r3-2026-10-24/controller.py",
+      "sha256": "cd5dc620e6adbec09798e600a99f55c0368b8eeff10d1117e1f7793ca1baf4ee"
+    }
+  ],
+  "static_conclusion": "Requested static artifact gates supported by saved parent facts and corrected arm64 records; detailed limits are in ASSESSMENT.md"
+}
