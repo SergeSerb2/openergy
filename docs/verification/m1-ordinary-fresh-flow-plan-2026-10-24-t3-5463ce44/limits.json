@@ -1,0 +1,28 @@
+{
+  "cli_seconds": 5,
+  "exit_contract": "No new one-second process-exit bound",
+  "flow_watchdog_seconds": 120,
+  "flows": 1,
+  "ipc_max_frame_bytes": 16777216,
+  "max_evidence_bytes": 33554432,
+  "max_log_bytes": 8388608,
+  "max_process_samples": 24000,
+  "max_sample_rounds": 6000,
+  "no_retry": true,
+  "owned_cleanup_seconds": 60,
+  "peer_readiness_seconds": 15,
+  "routine": "unchanged default AppEndToEnd with --require-peer, no optional mode",
+  "routine_responsiveness_seconds": 1,
+  "routine_stalled_bound_seconds": 2,
+  "routine_stalled_padding_bytes": 1000000,
+  "routine_stalled_request_ms": 300,
+  "routine_step_wait_seconds": [
+    3,
+    5,
+    10,
+    15
+  ],
+  "routine_supervisor_stop_seconds": 1.5,
+  "sample_interval_seconds": 0.02,
+  "scope": "ordinary packaged model/IPC only; no rendering, fixture launcher, updater, native input or trusted release"
+}
