@@ -1,0 +1,389 @@
+{
+  "all50_vectors_equal_independent_recipe_expansion": true,
+  "all_other_module_nodes_and_entry_byte_exact": true,
+  "candidate_bytes": 47491,
+  "candidate_lines": 796,
+  "candidate_sha256": "43415cd864f2e163eb053ec9a6999ce849a477cb4bc980a00591ec3ddb9ba0a1",
+  "changed_declarations": [
+    "collect",
+    "main"
+  ],
+  "collect_process_call_sites": [
+    {
+      "call": "proc.poll()",
+      "line": 437
+    },
+    {
+      "call": "proc.wait(timeout=remaining(work_end))",
+      "line": 447
+    },
+    {
+      "call": "proc.poll()",
+      "line": 478
+    },
+    {
+      "call": "os.kill(proc.pid, signal.SIGKILL)",
+      "line": 490
+    },
+    {
+      "call": "proc.wait(timeout=remaining(deadline))",
+      "line": 494
+    }
+  ],
+  "copy_startup_keys": 10,
+  "copy_stdin_keys": 7,
+  "declarations": [
+    {
+      "changed": false,
+      "lines": [
+        60,
+        61
+      ],
+      "name": "Stop",
+      "sha256": "fd5f0e9e870ae08920c1d407fc73b253c407fdd0aef25c908048f181025ae7f5"
+    },
+    {
+      "changed": false,
+      "lines": [
+        64,
+        66
+      ],
+      "name": "require",
+      "sha256": "6ef959878382451c0b225e80099ab95a81c4eac1833d8c4491535311715258da"
+    },
+    {
+      "changed": false,
+      "lines": [
+        69,
+        75
+      ],
+      "name": "clock_ns",
+      "sha256": "618797e0bef0062898439b9127a02d6f1c26918def10b278688183eadc551964"
+    },
+    {
+      "changed": false,
+      "lines": [
+        78,
+        82
+      ],
+      "name": "remaining",
+      "sha256": "3a6bb9b420865435d5d166067641ff763f2ea02aab5f56189a7b20f07cba94dd"
+    },
+    {
+      "changed": false,
+      "lines": [
+        85,
+        103
+      ],
+      "name": "until",
+      "sha256": "64be8d58aeb7edc2c04ebaaaae0ce4b8708ea7b715c866829b02c0f2bc690f54"
+    },
+    {
+      "changed": false,
+      "lines": [
+        92,
+        93
+      ],
+      "name": "until.expired",
+      "sha256": "902795f7baa85b941e4c1118cc87af52f7894304bf8b739fe1e86b5fbea05c15"
+    },
+    {
+      "changed": false,
+      "lines": [
+        106,
+        119
+      ],
+      "name": "common_deadline",
+      "sha256": "e32347d7d5d128f34f604928b47a3a2df800116ca4f688ea55c7d8cdb7328f82"
+    },
+    {
+      "changed": false,
+      "lines": [
+        122,
+        125
+      ],
+      "name": "canonical",
+      "sha256": "78200a2d3a146d86da1c5faf58af8016983290812c0b9f4730620eed016e6966"
+    },
+    {
+      "changed": false,
+      "lines": [
+        128,
+        136
+      ],
+      "name": "read",
+      "sha256": "bbf271d38d0c7f800019bb936f1bb8ec164c1d4c78303db05aae0f844d5d0103"
+    },
+    {
+      "changed": false,
+      "lines": [
+        139,
+        140
+      ],
+      "name": "sha",
+      "sha256": "4e627faf4b903521e935f7c6f3ae93545856f821d0e2565ba7ea6cf97d3d0e6c"
+    },
+    {
+      "changed": false,
+      "lines": [
+        143,
+        146
+      ],
+      "name": "bound",
+      "sha256": "3d1eccb79dd764deafb170f57d4cea31936511972f4b010edd5577b3df76c3fe"
+    },
+    {
+      "changed": false,
+      "lines": [
+        149,
+        152
+      ],
+      "name": "encoded",
+      "sha256": "c7e263e311773600714630005d6f3a93d8ef1783ed83e82e8513af100b61bb06"
+    },
+    {
+      "changed": false,
+      "lines": [
+        155,
+        166
+      ],
+      "name": "sync_file",
+      "sha256": "7b20404d95ba100ad1552171f6c37b06d98735bc42e10c7c4bdb3a71b5a26d78"
+    },
+    {
+      "changed": false,
+      "lines": [
+        169,
+        246
+      ],
+      "name": "Writer",
+      "sha256": "4d3734bc754a1c908730ecd21bd46d45052d2e880a1239d4676c6a119081bd96"
+    },
+    {
+      "changed": false,
+      "lines": [
+        170,
+        196
+      ],
+      "name": "Writer.__init__",
+      "sha256": "f5348b8ebc6352a2a04c6405afd80aae62d221cc76a0b023debade6b22942684"
+    },
+    {
+      "changed": false,
+      "lines": [
+        198,
+        230
+      ],
+      "name": "Writer._put",
+      "sha256": "e18f876fcafea72413cc166e25c3c22cf299ca36d0fdb62709031437856acf10"
+    },
+    {
+      "changed": false,
+      "lines": [
+        232,
+        237
+      ],
+      "name": "Writer.put",
+      "sha256": "696ec3a8f6e281859ee5d957fd9cafa17ce693a6415414cb6b95e42af9e2805d"
+    },
+    {
+      "changed": false,
+      "lines": [
+        239,
+        246
+      ],
+      "name": "Writer.save",
+      "sha256": "06a40043a0d6c666815b8c6da9422edd033370e9a1c262365b321090b45c9b3c"
+    },
+    {
+      "changed": false,
+      "lines": [
+        249,
+        253
+      ],
+      "name": "startup",
+      "sha256": "b2e2da5d5bbf4d190a72f20145dcd5e68cd1eb77925199545ebe5166bb9d9153"
+    },
+    {
+      "changed": false,
+      "lines": [
+        256,
+        272
+      ],
+      "name": "normalize_startup",
+      "sha256": "80e5fba7591a29e84112904ed36cd7a349da7fb354bde96f4d07008b04912062"
+    },
+    {
+      "changed": false,
+      "lines": [
+        275,
+        278
+      ],
+      "name": "native_environment",
+      "sha256": "0db06e81d20013b00344fbdfaf4bfd50b67d0fa70d44799ccd66bcb0344c37ec"
+    },
+    {
+      "changed": false,
+      "lines": [
+        281,
+        296
+      ],
+      "name": "pin_inputs",
+      "sha256": "3d94480eb932edac29b81ab49803a2146405a86910d46ca821ab647b7f5cea96"
+    },
+    {
+      "changed": false,
+      "lines": [
+        299,
+        301
+      ],
+      "name": "expand",
+      "sha256": "1dd5ed1c5fb3cfb443979a94eafa65cfa1814f2caa42042b0aba761e48bfe588"
+    },
+    {
+      "changed": false,
+      "lines": [
+        304,
+        308
+      ],
+      "name": "parent_reference",
+      "sha256": "aaf1a4fc17027f9223b9758bbb0516f886bf75bf012c24598f2d727e64be2827"
+    },
+    {
+      "changed": false,
+      "lines": [
+        311,
+        358
+      ],
+      "name": "inspect_completed_source",
+      "sha256": "f389d708a19283a1cbe81b602e1a0c8b16262cbb440374d4ce0e352f81964534"
+    },
+    {
+      "changed": false,
+      "lines": [
+        361,
+        385
+      ],
+      "name": "inspect_parent_helper",
+      "sha256": "2618f5bbc86c814c492a15eab3b863f1c18dab454c9ed4337b6b91ce8ccc1d74"
+    },
+    {
+      "changed": false,
+      "lines": [
+        388,
+        398
+      ],
+      "name": "import_common",
+      "sha256": "14a2ee0f4b67928137f44b7471bb763453df35c957effceba1d15701ae54a7ec"
+    },
+    {
+      "changed": false,
+      "lines": [
+        401,
+        409
+      ],
+      "name": "copy_bundle",
+      "sha256": "ec8ff6c689adfe75380fa23f8bb4828f7e959c84cd34ffa19a83d1777dc0d019"
+    },
+    {
+      "changed": true,
+      "lines": [
+        412,
+        534
+      ],
+      "name": "collect",
+      "sha256": "95399650025321f6432fbf359950dd9cd94eb77f56b69b8d1e1ab0dacaf28d16"
+    },
+    {
+      "changed": false,
+      "lines": [
+        537,
+        547
+      ],
+      "name": "complete",
+      "sha256": "fd34f223cac22394bc4209e5db3450bc8245d2499fce10e5da8b33eca8a15a88"
+    },
+    {
+      "changed": false,
+      "lines": [
+        550,
+        552
+      ],
+      "name": "normalize",
+      "sha256": "d3ae5bc996755673f7dbed4729bb323544ee45ba5f952ddf835b3427b69ede9d"
+    },
+    {
+      "changed": false,
+      "lines": [
+        555,
+        615
+      ],
+      "name": "perform",
+      "sha256": "248f9ba33ceb1f57376147d16bd6d0d34a0bf04f99624514c23943008211d698"
+    },
+    {
+      "changed": false,
+      "lines": [
+        618,
+        640
+      ],
+      "name": "fresh_source",
+      "sha256": "3c97b83606b24ce34344e8dd09c54ae7a50c4703a74bd45446aecef84c2d413d"
+    },
+    {
+      "changed": false,
+      "lines": [
+        643,
+        648
+      ],
+      "name": "direct_children",
+      "sha256": "c0b90123ffd93bba0a085ff2a423d80153ab19fa6a5090114b038e4bcbe91f2e"
+    },
+    {
+      "changed": false,
+      "lines": [
+        651,
+        673
+      ],
+      "name": "emit_summary",
+      "sha256": "b057ff1f16a45846212b252bfbdfac69c58dd239f43b8a07388428b0f861dadc"
+    },
+    {
+      "changed": true,
+      "lines": [
+        676,
+        786
+      ],
+      "name": "main",
+      "sha256": "5e3c5cca559d1bca4d48d7b32f537f1565acb6710ad6b70f6718b33aaf9586f1"
+    }
+  ],
+  "entry_authentication_keys": 19,
+  "exact_parent_composition": "BLOCKED",
+  "forward_every_byte_equal": true,
+  "full_changed_function_excerpts_equal": true,
+  "globals_forward_reverse_equal": true,
+  "materialization_all10_equal": true,
+  "modules": 10,
+  "original_candidate_delta": "20 additions in the candidate folder only",
+  "original_import_worktree_equal": true,
+  "packet_checksum_entries": 19,
+  "packet_files": 20,
+  "patch_hunks": 7,
+  "pins": 17,
+  "private_raw_reads": 0,
+  "reverse_every_byte_equal": true,
+  "schema_actual_keys_equal": true,
+  "source_boundary_bindings_sha256": "3376bf786d29aa3478c21741d8aa3a100c2073c812157fa4a38d0579fa82722b",
+  "source_public_raw_refs": 212,
+  "source_public_records": 53,
+  "source_raw_manifest_sha256": "2baea069155b633485b1e8aed8fe72f3bf746f67de83a84f07a2daf0648fe4ee",
+  "source_result_binding": {
+    "bytes": 327813,
+    "sha256": "7482a637159e0389c5cd4c505778919bb49354437bc9feb1cf008d9db395712d"
+  },
+  "supplied_readers_executed": false,
+  "supplied_source_executed_imported_evaluated_compiled": false,
+  "unchanged_declarations": 34,
+  "vectors": 50
+}
