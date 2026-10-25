@@ -1,0 +1,325 @@
+# bind_config
+def bind_config():
+    require(type(CONFIG_TEXT) is str and len(CONFIG_TEXT) <= PAYLOAD_CAP, 'CONFIG text cap')
+    config = strict_json(CONFIG_TEXT)
+    require(type(config) is dict and set(config) == {
+        'schema', 'execution', 'evidence_root', 'template_sha256', 'caller',
+        'materializer_review', 'parent_duties', 'inputs', 'completed_SOURCE',
+        'source_result', 'raw_manifest', 'build_inputs', 'external_source_records'},
+        'closed CONFIG keys')
+    require(config['schema'] == 'openergy.artifact-data-materializer-config.v1'
+            and config['execution'] is False and config['evidence_root'] == ROOT,
+            'fixed inert CONFIG')
+    require(encoded(config)[:-1].decode('ascii') == CONFIG_TEXT, 'canonical CONFIG only')
+    require(hex_string(config['template_sha256'], 64), 'pending template identity')
+    caller = config['caller']
+    require(type(caller) is dict and set(caller) == {
+        'bytes', 'sha256', 'candidate_commit', 'review_commit', 'review_sha256',
+        'review_verdict'}, 'closed final caller metadata')
+    require(type(caller['bytes']) is int and caller['bytes'] == 46908
+            and caller['sha256'] == FIXED_INPUTS['metadata-caller.py.txt']['sha256']
+            and hex_string(caller['candidate_commit'], 40)
+            and hex_string(caller['review_commit'], 40)
+            and hex_string(caller['review_sha256'], 64)
+            and caller['review_verdict'] == 'CLEAR', 'pending independently cleared saved caller')
+    review = config['materializer_review']
+    require(type(review) is dict and set(review) == {'commit', 'sha256', 'verdict'}
+            and hex_string(review['commit'], 40) and hex_string(review['sha256'], 64)
+            and review['verdict'] == 'CLEAR', 'pending independent materializer review')
+    require(same_data(config['parent_duties'], PARENT_DUTIES), 'pending real parent duties')
+    require(type(config['inputs']) is list and len(config['inputs']) == 8,
+            'exact eight ordered opaque data slots')
+    total = 0
+    for name, item in zip(INPUTS, config['inputs']):
+        check()
+        require(type(item) is dict and set(item) == {'name', 'bytes', 'sha256', 'base64'}
+                and item['name'] == name, 'fixed input order/keys')
+        bound_ref({'bytes': item['bytes'], 'sha256': item['sha256']}, DATA_CAP)
+        total += item['bytes']
+        require(total <= DATA_CAP, 'collective artifact DATA cap')
+    completed = config['completed_SOURCE']
+    require(type(completed) is dict and set(completed) == set(SOURCE_BOUNDARY),
+            'six completed SOURCE boundary leaves only')
+    for name in SOURCE_BOUNDARY:
+        bound_ref(completed[name], BOUNDARY_CAP)
+    require(same_data(config['source_result'], SOURCE_RESULT)
+            and same_data(config['build_inputs'], BUILD_INPUTS)
+            and same_data(config['external_source_records'], EXTERNAL_SOURCE_RECORDS),
+            'fixed source/build/external parent identities')
+    manifest = config['raw_manifest']
+    require(type(manifest) is list and len(manifest) == 212, 'exact212 raw manifest')
+    total = 0
+    for name, ref in zip(RAW_NAMES, manifest):
+        check()
+        require(type(ref) is dict and set(ref) == {'leaf', 'bytes', 'sha256'}
+                and ref['leaf'] == name, 'literal ordered safe raw leaf')
+        bound_ref({'bytes': ref['bytes'], 'sha256': ref['sha256']}, RAW_CAP)
+        total += ref['bytes']
+        require(total <= 213334, 'saved raw collective cap before reads')
+    require(total == 213334 and sha(encoded(manifest)) == RAW_MANIFEST_SHA256,
+            'exact public manifest; actual authentication remains parent duty')
+    identity = dict(template_sha256=config['template_sha256'],
+                    config_canonical_sha256=sha(CONFIG_TEXT.encode('ascii')),
+                    caller=caller, materializer_review=review)
+    return config, identity
+
+
+# decode_inputs
+def decode_inputs(config):
+    result = {}
+    for name, binding in zip(INPUTS, config['inputs']):
+        check()
+        text = binding['base64']
+        expected_length = 4 * ((binding['bytes'] + 2) // 3)
+        require(type(text) is str and len(text) == expected_length, 'exact base64 length')
+        data = call(base64.b64decode, text, validate=True)
+        require(len(data) == binding['bytes'] <= DATA_CAP <= FILE_CAP
+                and sha(data) == binding['sha256'], 'pre-bound opaque bytes/hash')
+        require(call(base64.b64encode, data).decode('ascii') == text, 'canonical base64 only')
+        result[name] = data  # Never parse, execute, import or authorize these bytes.
+    require(sum(map(len, result.values())) <= DATA_CAP, 'collective decoded cap')
+    return result
+
+
+# emit_once
+def emit_once(receipt_ref):
+    # All eight refs bind transitively through the full durable receipt only.
+    data = encoded({'v': 1, 'r': [receipt_ref['bytes'], receipt_ref['sha256']]})
+    require(len(data) <= CONSOLE_CAP, 'compact console cap')
+    written = call(os.write, 1, data)  # <=512 <= PIPE_BUF; EAGAIN/EPIPE/short fails.
+    require(written == len(data), 'console short write; no retry/flush')
+
+
+# main
+def main():
+    global STAGE, OWNER_UID
+    check()
+    require(sys.argv == ['-'] and sys.flags.isolated
+            and sys.flags.no_site and sys.flags.dont_write_bytecode and not sys.flags.optimize,
+            'exact SYSTEM stdin -I -S -B entry')
+    OWNER_UID = call(os.getuid)
+    require(OWNER_UID == call(os.geteuid), 'same real and effective owner')
+    call(os.umask, 0o077)
+    config, identity = bind_config()  # Nulls reject before any private root access.
+    STAGE = 'decode-bound-data'
+    data = decode_inputs(config)
+    console_admission()
+    STAGE = 'existing-root-and-completed-facts'
+    rootfd, device = open_root()
+    inspect_completed(rootfd, device)
+    source_inputs = inspect_source(rootfd, device, config)
+    build_inputs = inspect_build(device)
+    STAGE = 'preflight-all-absent-and-initial-count'
+    for name in NEW_NAMES + ('bytes.json', 'bytes.lock'):
+        absent(rootfd, name)
+    initial = inventory(rootfd, device)
+    budget = dict(initial)
+    # Reserve all ten new entries and full receipt BEFORE the first write.
+    guard_data = encoded(dict(schema='openergy.artifact-binding-once.v1',
+        identity=identity, clock=CLOCK, data_started_ns=DATA_START, data_deadline_ns=DATA_END,
+        evidence_root=ROOT, inputs=list(INPUTS), one_attempt=True, source120_started=False))
+    require(initial['entries'] + len(NEW_NAMES) <= ENTRY_CAP
+            and initial['bytes'] + len(guard_data) + sum(map(len, data.values())) + RECEIPT_CAP <= INITIAL_CAP,
+            'preflight all INITIAL growth including receipt')
+    STAGE = 'exclusive-once-guard'
+    guard_ref = put(rootfd, device, GUARD, guard_data, budget)
+    STAGE = 'eight-fixed-artifact-data-leaves'
+    refs = {name: put(rootfd, device, name, data[name], budget) for name in INPUTS}
+    STAGE = 'full-materialization-receipt'
+    receipt_data = encoded(dict(schema='openergy.eight-artifact-data-binding.v1',
+        evidence_root=ROOT, identity=identity, clock=CLOCK, own_nice=OWN_NICE,
+        data_started_ns=DATA_START, data_deadline_ns=DATA_END, before_receipt_ns=check(),
+        guard=dict(guard_ref, mode='0o600'),
+        files={name: dict(refs[name], mode='0o600') for name in INPUTS}, initial_tally=initial,
+        initial_entries_before_receipt=budget['entries'], new_entries_reserved=len(NEW_NAMES),
+        initial_bytes_before_receipt=budget['bytes'], receipt_bytes_reserved=RECEIPT_CAP,
+        saved_audit_commit=AUDIT, parent_inspection_commit=PARENT_INSPECTION,
+        completed_files=COMPLETED, completed_manifest_sha256=COMPLETED_MANIFEST_SHA256,
+        remote_completed_files_authenticated=5, parent_duties=config['parent_duties'],
+        source_inputs=source_inputs, build_inputs=build_inputs,
+        eight_files_state='durable_barriers_returned', first_error=None,
+        execution=False, operation_bound_data_authorizes_nothing_here=True,
+        source120_started=False, qualification=False, artifact_gate_authority=False,
+        runtime='UNVERIFIED', console_and_actual_exit='external_parent_duty'))
+    require(len(receipt_data) <= RECEIPT_CAP, 'full receipt cap')
+    receipt_ref = put(rootfd, device, RECEIPT, receipt_data, budget)
+    call(os.close, rootfd)
+    STAGE = 'compact-console'
+    emit_once(receipt_ref)
+    check()
+
+
+# bound_ref
+def bound_ref(ref, cap):
+    require(type(ref) is dict and set(ref) == {'bytes', 'sha256'}
+            and type(ref['bytes']) is int and 0 <= ref['bytes'] <= cap <= FILE_CAP
+            and hex_string(ref['sha256'], 64), 'closed bounded raw reference')
+
+
+# inspect_source
+def inspect_source(rootfd, device, config):
+    # Saved data compatibility only. No SOURCE repeat or native output parser.
+    for name, binding in FIXED_INPUTS.items():
+        raw = read_leaf(rootfd, device, name, binding)
+        if name == 'command-vectors.json':
+            vectors = strict_json(raw)['commands']
+    require(type(vectors) is list and len(vectors) == 50
+            and [v['label'] for v in vectors] == list(LABELS[3:]), 'pinned vector order')
+    raw = read_leaf(rootfd, device, 'metadata-source-result.json', SOURCE_RESULT)
+    result = strict_json(raw)
+    require(encoded(result) == raw and result['schema'] == 'openergy.metadata-observations.v2'
+            and result['mode'] == 'source' and same_data(result['clock'], CLOCK)
+            and result['expected_basis_sha256'] ==
+                '1670da99b768e01de3fc4ecd4d644fba7031ea09e55d97c1395290bfb681c05f'
+            and type(result['completed_native_commands']) is int
+            and result['completed_native_commands'] == 50
+            and result['observation_sequence_complete'] is True
+            and all(result[k] is None for k in (
+                'first_error', 'first_failed_command', 'first_failed_comparison'))
+            and result['publication_errors'] == [] and result['artifact_gate_authority'] is False,
+            'exact successful saved SOURCE result')
+    require(type(result['started_ns']) is int and result['started_ns'] == SOURCE_START
+            and type(result['phase_deadline_ns']) is int
+            and result['phase_deadline_ns'] == SOURCE_END == SOURCE_START + 120000000000
+            and type(result['observations_finished_ns']) is int
+            and SOURCE_START <= result['observations_finished_ns'] < SOURCE_END,
+            'old SOURCE clock only; never renewed or compared with DATA')
+    require(all(type(result[k]) is list and len(result[k]) == count for k, count in (
+        ('auxiliary_records', 3), ('native_records', 50),
+        ('collected_commands', 53), ('actual_direct_children', 53))), 'normal saved counts')
+    items = result['auxiliary_records'] + result['native_records']
+    require([item['label'] for item in items] == list(LABELS), 'closed53 label order')
+    # Fixed names come from pinned labels, never from a supplied path or output.
+    manifest = config['raw_manifest']
+    for index, (item, collected, child) in enumerate(zip(
+            items, result['collected_commands'], result['actual_direct_children'])):
+        check()
+        label = LABELS[index]
+        require(collected['label'] == child['label'] == label
+                and collected['comparison_state'] == 'durable', 'saved ordered collection')
+        records = {}
+        for offset, (key, _suffix) in enumerate(RAW_SUFFIXES):
+            binding = manifest[4 * index + offset]
+            name = RAW_NAMES[4 * index + offset]
+            ref = dict(path=ROOT + '/' + name, bytes=binding['bytes'], sha256=binding['sha256'])
+            require(same_data(item[key], ref) and same_data(collected[key], ref),
+                    'manifest/result/collection exact raw binding')
+            if key != 'comparison':
+                require(collected['publication'][key]['state'] == 'durable'
+                        and same_data(collected['publication'][key]['ref'], ref),
+                        'saved raw publication binding')
+            records[key] = read_leaf(rootfd, device, name, binding)
+        status = strict_json(records['os_record'])
+        require(status['label'] == label and type(status['actual_exit']) is int
+                and status['actual_exit'] == 0 and status['reaped'] is True
+                and status['handle_retained'] is True
+                and status['stdout_eof'] is True and status['stderr_eof'] is True
+                and all(status[k] is False for k in ('overflow', 'timed_out', 'deadline_loss',
+                    'unread_or_dropped_unknown', 'kill_attempted', 'kill_delivered'))
+                and type(status['dropped_observed_bytes']) is int
+                and status['dropped_observed_bytes'] == 0
+                and status['error'] is None and status['kill_or_reap_error'] is None
+                and same_data(status['clock'], CLOCK), 'saved actual child0/EOF/no errors')
+        require(all(type(status[k]) is int for k in (
+                'started_ns', 'finished_ns', 'command_deadline_ns', 'kill_eligibility_observed_ns'))
+                and SOURCE_START <= status['started_ns'] <= status['finished_ns']
+                <= status['command_deadline_ns'] <= min(
+                    status['started_ns'] + 10000000000, SOURCE_END)
+                and status['finished_ns'] <= result['observations_finished_ns']
+                and type(status['kill_eligibility_exit']) is int
+                and status['kill_eligibility_exit'] == 0
+                and status['started_ns'] <= status['kill_eligibility_observed_ns']
+                    <= status['finished_ns'], 'saved bounded child clocks')
+        require(same_data(status['stdout'], item['stdout'])
+                and same_data(status['stderr'], item['stderr']), 'saved status/raw refs')
+        collector_status = dict(status)
+        del collector_status['stdout'], collector_status['stderr']
+        require(same_data(collector_status, collected['collector_status'])
+                and type(child['actual_exit']) is int and child['actual_exit'] == 0
+                and child['handle_retained'] is True and child['pid'] == status['pid']
+                and same_data(child['argv'], status['argv'])
+                and same_data(child['collector_status'], status), 'all53 direct status identities')
+        comparison = strict_json(records['comparison'])
+        require(comparison['label'] == label and comparison['match'] is True
+                and comparison['observations_complete'] is True
+                and comparison['comparison_error'] is None
+                and same_data(comparison['os_record'], item['os_record']),
+                'saved comparator status; full native semantics remain parent duty')
+    require(same_data(result['active_command'], result['collected_commands'][-1]),
+            'saved final active record')
+    boundary = {name: read_leaf(rootfd, device, name, config['completed_SOURCE'][name])
+                for name in SOURCE_BOUNDARY}
+    parent = strict_json(boundary['metadata-source-parent.json'])
+    guard = strict_json(boundary['source-launch-once.json'])
+    status = strict_json(boundary['source-caller-os.json'])
+    receipt = strict_json(boundary['source-launch-receipt.json'])
+    compact = strict_json(boundary['source-caller.stdout.bin'])
+    require(len(boundary['source-caller.stdout.bin']) <= 512
+            and boundary['source-caller.stderr.bin'] == b''
+            and same_data(compact, dict(schema='openergy.metadata-success.v1', mode='source',
+                phase_started_ns=SOURCE_START, phase_deadline_ns=SOURCE_END,
+                result=dict(path=ROOT + '/metadata-source-result.json', **SOURCE_RESULT))),
+            'saved caller raw success binding')
+    require(parent['schema'] == 'openergy.metadata-parent-boundary.v2'
+            and parent['mode'] == 'source' and parent['entry_authentication'] is None
+            and guard['schema'] == 'openergy.source-launch-once.v1'
+            and receipt['schema'] == 'openergy.source-launch-receipt.v1'
+            and same_data(guard['identity'], receipt['identity'])
+            and same_data(guard['identity']['caller'], config['caller'])
+            and type(guard['caller_attempts_maximum']) is int
+            and guard['caller_attempts_maximum'] == 1
+            and guard['parent_record_sha256'] == receipt['parent_record_sha256']
+                == sha(boundary['metadata-source-parent.json'])
+            and all(same_data(obj['clock'], CLOCK)
+                and type(obj['phase_started_ns']) is int and obj['phase_started_ns'] == SOURCE_START
+                and type(obj['phase_deadline_ns']) is int and obj['phase_deadline_ns'] == SOURCE_END
+                for obj in (parent, guard, status)), 'saved SOURCE boundary identities/clocks')
+    require(same_data(status, receipt['collection']) and receipt['collection_complete'] is True
+            and receipt['artifact_gate_authority'] is False
+            and status['schema'] == 'openergy.source-caller-collection.v1'
+            and type(status['actual_exit']) is int and status['actual_exit'] == 0
+            and status['handle_retained'] is True and status['reaped'] is True
+            and same_data(status['eof'], {'stdout': True, 'stderr': True})
+            and status['first_error'] is None and status['close_errors'] == []
+            and status['kill_or_reap_error'] is None
+            and all(status[k] is False for k in ('overflow', 'timed_out', 'deadline_loss',
+                'unread_or_dropped_unknown', 'kill_attempted', 'kill_delivered'))
+            and type(status['dropped_known_bytes']) is int and status['dropped_known_bytes'] == 0,
+            'saved actual caller0/EOF/no errors; external OS record remains separate')
+    require(all(type(status[k]) is int for k in ('launch_started_ns',
+                'actual_exit_observed_ns', 'finished_ns', 'collection_end_ns', 'reap_end_ns'))
+            and SOURCE_START <= status['launch_started_ns'] <= result['observations_finished_ns']
+            <= status['actual_exit_observed_ns'] <= status['finished_ns'] < SOURCE_END
+            and status['collection_end_ns'] == SOURCE_END - 2000000000
+            and status['reap_end_ns'] == SOURCE_END - 1500000000
+            and status['cwd'] == ROOT
+            and status['argv'] == [SYSTEM, '-I', '-S', '-B', ROOT + '/metadata-caller.py.txt',
+                'source', ROOT, str(SOURCE_START), sha(boundary['metadata-source-parent.json'])],
+            'saved caller direct argv and original clocks')
+    for stream, key in (('stdout', 'raw_stdout'), ('stderr', 'raw_stderr')):
+        name = 'source-caller.' + stream + '.bin'
+        require(same_data(receipt[key], dict(path=ROOT + '/' + name,
+                    **config['completed_SOURCE'][name])), 'saved boundary raw receipt refs')
+    return dict(result=dict(path=ROOT + '/metadata-source-result.json', **SOURCE_RESULT),
+                boundary=config['completed_SOURCE'], fixed_inputs=FIXED_INPUTS,
+                raw_manifest=dict(bytes=len(encoded(manifest)), sha256=RAW_MANIFEST_SHA256,
+                    entries=212, raw_bytes=213334), external_parent_records=EXTERNAL_SOURCE_RECORDS)
+
+
+# inspect_build
+def inspect_build(device):
+    # Only five literal known read-only paths outside ROOT. No directory search.
+    # The parent owns their saved local counterparts and semantic assessment.
+    for binding in BUILD_INPUTS.values():
+        path = binding['path']
+        require(call(os.path.realpath, path) == path, 'fixed canonical build record')
+        fd = call(os.open, '/', os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        components = path.split('/')[1:]
+        for component in components[:-1]:
+            child = call(os.open, component, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                         dir_fd=fd)
+            call(os.close, fd)
+            fd = child
+        read_leaf(fd, device, components[-1], binding)
+        call(os.close, fd)
+    return BUILD_INPUTS

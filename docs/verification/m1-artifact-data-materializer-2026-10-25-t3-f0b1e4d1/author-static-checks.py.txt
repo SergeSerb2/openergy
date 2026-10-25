@@ -1,0 +1,260 @@
+"""Author-owned static data reader. Never execute/import the materializer or AST.
+Only tracked public repository bytes and this owned documentation folder are read.
+No runtime fixtures, unit tests, mocks, supplied readers or private inputs.
+"""
+from pathlib import Path
+import ast
+import difflib
+import hashlib
+import json
+import re
+import stat
+import tokenize
+import io
+
+OUT = Path('docs/verification/m1-artifact-data-materializer-2026-10-25-t3-f0b1e4d1')
+BASE = Path('docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/materializer.py.txt')
+NEW = OUT / 'materializer.py.txt'
+observations = []
+
+def require(ok, label):
+    if not ok:
+        raise AssertionError(label)
+    observations.append(label)
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+def pairs(rows):
+    result = {}
+    for key, value in rows:
+        if key in result:
+            raise ValueError('duplicate JSON key')
+        result[key] = value
+    return result
+
+def strict(raw):
+    def invalid(value):
+        raise ValueError(value)
+    return json.loads(raw, object_pairs_hook=pairs, parse_constant=invalid)
+
+def canonical(value):
+    return (json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=True,
+                       allow_nan=False) + '\n').encode('ascii')
+
+def save(name, value):
+    (OUT / name).write_bytes((json.dumps(value, sort_keys=True, indent=2,
+                                       ensure_ascii=True, allow_nan=False) + '\n').encode('ascii'))
+
+def literal(node):
+    # Decode literal DATA nodes only. No eval, compile, import or AST execution.
+    if isinstance(node, ast.Constant):
+        return node.value
+    if isinstance(node, (ast.List, ast.Tuple)):
+        values = [literal(n) for n in node.elts]
+        return tuple(values) if isinstance(node, ast.Tuple) else values
+    if isinstance(node, ast.Dict):
+        return dict(zip([literal(n) for n in node.keys], [literal(n) for n in node.values]))
+    raise ValueError(type(node).__name__)
+
+def assignment(tree, name):
+    nodes = [n for n in tree.body if isinstance(n, ast.Assign)
+             and any(isinstance(t, ast.Name) and t.id == name for t in n.targets)]
+    require(len(nodes) == 1, 'one assignment: ' + name)
+    return nodes[0].value
+
+def inventory(raw, tree):
+    lines = raw.splitlines(keepends=True)
+    rows = {}
+    def walk(node, prefix):
+        for child in ast.iter_child_nodes(node):
+            if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                name = prefix + child.name
+                data = b''.join(lines[child.lineno - 1:child.end_lineno])
+                rows[name] = dict(first_line=child.lineno, last_line=child.end_lineno,
+                                  bytes=len(data), sha256=sha(data), raw=data)
+                walk(child, name + '.')
+            else:
+                walk(child, prefix)
+    walk(tree, '')
+    return rows
+
+old, new = BASE.read_bytes(), NEW.read_bytes()
+require(len(old) == 24324 and sha(old) == '7905eed61e558313e620d1427032984ead0bc0e4723d697d3b066194ec5b0e1b', 'exact pinned baseline bytes/hash')
+ot = ast.parse(old.decode('ascii'), feature_version=(3, 9))
+nt = ast.parse(new.decode('ascii'), feature_version=(3, 9))
+require(isinstance(nt, ast.Module), 'full new source parses as Python3.9 AST DATA only')
+bi, ni = inventory(old, ot), inventory(new, nt)
+changed = [n for n in bi if bi[n]['raw'] != ni[n]['raw']]
+added = [n for n in ni if n not in bi]
+require(changed == ['bind_config', 'decode_inputs', 'emit_once', 'main'], 'exact four changed original functions')
+require(added == ['bound_ref', 'inspect_source', 'inspect_build'], 'exact three added functions')
+unchanged = [n for n in bi if n not in changed]
+require(len(bi) == 23 and len(ni) == 26 and len(unchanged) == 19, 'complete 23-to-26 function inventory with19 unchanged hashes')
+for name in unchanged:
+    require(bi[name]['sha256'] == ni[name]['sha256'], 'unchanged full function: ' + name)
+for key, rows, names in [('before', bi, changed), ('after', ni, changed + added)]:
+    raw = b''
+    for name in names:
+        raw += ('# ' + name + '\n').encode('ascii') + rows[name]['raw'] + b'\n\n'
+    (OUT / ('changed-functions.' + key + '.py.txt')).write_bytes(raw.rstrip(b'\n') + b'\n')
+save('function-inventory.json', {'changed': changed, 'added': added, 'unchanged': unchanged,
+    'before': {n: {k: v for k, v in row.items() if k != 'raw'} for n, row in bi.items()},
+    'after': {n: {k: v for k, v in row.items() if k != 'raw'} for n, row in ni.items()}})
+patch = ''.join(difflib.unified_diff(old.decode().splitlines(True), new.decode().splitlines(True),
+    fromfile=BASE.as_posix(), tofile=NEW.as_posix(), n=0)).encode('ascii')
+(OUT / 'materializer.patch').write_bytes(patch)
+# Independently consume unified hunks as text; no patch/source execution.
+lines = patch.decode().splitlines(True)
+pos, rebuilt, i = 0, [], 2
+oldlines = old.decode().splitlines(True)
+while i < len(lines):
+    match = re.fullmatch(r'@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@\n', lines[i])
+    require(match is not None, 'exact unified patch hunk header')
+    start = int(match.group(1)) - (0 if int(match.group(2) or 1) == 0 else 1)
+    rebuilt.extend(oldlines[pos:start]); pos = start; i += 1
+    removed = inserted = 0
+    while i < len(lines) and not lines[i].startswith('@@ '):
+        line = lines[i]; i += 1
+        if line[0] in ' -':
+            require(oldlines[pos] == line[1:], 'exact patch preimage/context line')
+            pos += 1; removed += 1
+        if line[0] in ' +':
+            rebuilt.append(line[1:]); inserted += 1
+    require(removed == int(match.group(2) or 1) and inserted == int(match.group(4) or 1), 'exact patch hunk counts')
+rebuilt.extend(oldlines[pos:])
+require(''.join(rebuilt).encode('ascii') == new, 'exact baseline-to-new patch reconstruction')
+require(new[new.index(b"if __name__ == '__main__':"):] == old[old.index(b"if __name__ == '__main__':"):], 'unchanged first-error/os._exit tail')
+require(new[new.index(b'import os\n'):new.index(b'# BEGIN CLOSED CONFIG')] == old[old.index(b'import os\n'):old.index(b'# BEGIN CLOSED CONFIG')], 'unchanged first-sample/NI15/import admission')
+config = strict((OUT / 'config.template.json').read_bytes())
+config_node = assignment(nt, 'CONFIG_TEXT')
+require(isinstance(config_node, ast.Constant) and isinstance(config_node.value, str), 'one literal CONFIG_TEXT string token')
+require(config_node.value.encode('ascii') == canonical(config)[:-1], 'canonical embedded CONFIG equals template')
+source_lines = new.splitlines(keepends=True)
+offset = sum(map(len, source_lines[:config_node.lineno - 1])) + config_node.col_offset
+end = sum(map(len, source_lines[:config_node.end_lineno - 1])) + config_node.end_col_offset
+token = new[offset:end]
+require(token == json.dumps(config_node.value, ensure_ascii=True).encode('ascii'), 'exact JSON-string CONFIG token encoding')
+require(len([t for t in tokenize.tokenize(io.BytesIO(new).readline) if t.type == tokenize.STRING and t.start == (config_node.lineno, config_node.col_offset)]) == 1, 'CONFIG range is exactly one tokenizer string')
+require(config['execution'] is False and all(v is None for v in config['parent_duties'].values()), 'inert execution false and all parent duties null')
+require(all(x[k] is None for x in config['inputs'] for k in ('bytes','sha256','base64')) and all(v is None for v in config['completed_SOURCE'].values()), 'eight payload identities and six unavailable boundary identities remain null')
+inputs = literal(assignment(nt, 'INPUTS'))
+labels = literal(assignment(nt, 'LABELS'))
+raw_names = literal(assignment(nt, 'RAW_NAMES'))
+suffixes = literal(assignment(nt, 'RAW_SUFFIXES'))
+require(tuple(x['name'] for x in config['inputs']) == inputs and len(inputs) == 8, 'exact eight ordered input slots')
+vecpath = Path('docs/verification/m1-metadata-r9-repair-2026-10-25-t3-9b2c2354/command-vectors.json')
+vecraw = vecpath.read_bytes()
+require(len(vecraw) == 12370 and sha(vecraw) == 'e3ff5756ab3b35a5c815e50ac1fad6520117836e080849260de87592bd327fa0', 'exact pinned command-vector bytes/hash')
+require(labels == ('entry-template','python-version','python-architecture') + tuple(v['label'] for v in strict(vecraw)['commands']), 'literal53 labels equal pinned3aux+50 vector order')
+require(raw_names == tuple('metadata-source-' + label + suffix for label in labels for _, suffix in suffixes), 'literal212 leaves equal exact label/suffix expansion')
+require(len(set(raw_names)) == 212 and all(re.fullmatch(r'[a-z0-9.-]+', n) and '/' not in n and len(n.encode()) <= 255 for n in raw_names), 'all212 literal leaf names unique safe and bounded')
+observed = strict(Path('docs/verification/m1-source-metadata-observed-2026-10-25-t3-52422617/validation.json').read_bytes())
+manifest = config['raw_manifest']
+require(manifest == observed['record_files'] and [x['leaf'] for x in manifest] == list(raw_names), 'full public manifest copied without identity changes')
+require(len(manifest) == 212 and sum(x['bytes'] for x in manifest) == 213334 and sha(canonical(manifest)) == observed['raw_records_manifest_sha256'] == literal(assignment(nt,'RAW_MANIFEST_SHA256')), 'exact212 manifest/count/total/hash')
+require((OUT/'observed-raw-manifest.json').read_bytes() == canonical(manifest), 'canonical public manifest bytes exact')
+artpath = Path('docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/artifact-receipt.template.json')
+artifact = strict(artpath.read_bytes())
+build = literal(assignment(nt, 'BUILD_INPUTS'))
+require(build == config['build_inputs'] == {k:artifact['evidence'][k] for k in ('build_result','build_worker','build_bundle_exit','build_operation','bundle_files')}, 'exact five original immutable build refs only')
+require(all(v['path'].startswith('/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/') for v in build.values()), 'all outside-root reads fixed to five named public build references')
+require(literal(assignment(nt,'SOURCE_RESULT')) == config['source_result'] == {'bytes':327813,'sha256':'7482a637159e0389c5cd4c505778919bb49354437bc9feb1cf008d9db395712d'}, 'fixed current source-result identity')
+require(literal(assignment(nt,'COMPLETED')) == literal(assignment(ot,'COMPLETED')), 'original seven-file immutable manifest unchanged')
+require(literal(assignment(nt,'PARENT_DUTIES')) == {k:True for k in config['parent_duties']}, 'parent duty requirements match closed null template domain')
+require(literal(assignment(nt,'ROOT')) == config['evidence_root'], 'fixed root exact')
+imports = [n.names[0].name for n in ast.walk(nt) if isinstance(n,ast.Import)]
+require(imports == ['os','sys','time','base64','hashlib','json','math','stat'], 'unchanged SYSTEM stdlib imports only')
+require(not any(isinstance(n,ast.ImportFrom) for n in ast.walk(nt)), 'no supplied module import')
+require(not any(isinstance(n,ast.Call) and isinstance(n.func,ast.Name) and n.func.id in ('eval','exec','compile','__import__') for n in ast.walk(nt)), 'no execution/eval/compile/dynamic import surface')
+attrs = {n.func.attr for n in ast.walk(nt) if isinstance(n,ast.Call) and isinstance(n.func,ast.Attribute)}
+require(not attrs.intersection({'Popen','system','spawn','fork','execv','unlink','rename','remove','replace','mkdir'}), 'no process/cleanup/rename/overwrite/root-creation methods')
+require(new.count(b'DATA_END = ') == 1 and b'DATA_END = DATA_START + 20000000000' in new, 'one unchanged20s DATA end assignment')
+main = ni['main']['raw'].decode()
+order = [main.index(s) for s in ('bind_config()', 'decode_inputs(config)', 'console_admission()', 'open_root()', 'inspect_completed(', 'inspect_source(', 'inspect_build(', 'absent(', 'inventory(', 'preflight all INITIAL growth including receipt', 'guard_ref = put(', 'refs = {name: put(', 'receipt_ref = put(', 'call(os.close, rootfd)', 'emit_once(receipt_ref)')]
+require(order == sorted(order), 'complete fixed admission/read/reservation/guard/eight/receipt/rootclose/console order')
+require("NEW_NAMES + ('bytes.json', 'bytes.lock')" in main and b'NEW_NAMES = (GUARD,) + INPUTS + (RECEIPT,)' in new, 'ten fixed names plus both ledger leaves preflight absent')
+require("'f':" not in ni['emit_once']['raw'].decode() and "{'v': 1, 'r':" in ni['emit_once']['raw'].decode(), 'console closed version/full-receipt binding only')
+# Width arithmetic only. These objects contain symbolic widths, not mock data,
+# a bound config, a rendered future payload or runtime input.
+class Width:
+    def __init__(self, canonical_width, token_width=None):
+        self.c = canonical_width
+        self.t = canonical_width if token_width is None else token_width
+
+def size(value, token=False):
+    if isinstance(value, Width):
+        return value.t if token else value.c
+    if isinstance(value, dict):
+        return 2 + max(0,len(value)-1) + sum(size(k,token)+1+size(v,token) for k,v in value.items())
+    if isinstance(value, (tuple,list)):
+        return 2 + max(0,len(value)-1) + sum(size(v,token) for v in value)
+    raw = json.dumps(value, ensure_ascii=True, separators=(',',':'), allow_nan=False)
+    return len(json.dumps(raw,ensure_ascii=True))-2 if token else len(raw)
+
+string = lambda n: Width(n+2,n+4)
+number = lambda n: Width(n)
+model = strict((OUT/'config.template.json').read_bytes())
+model['template_sha256'] = string(64)
+model['caller'] = {'bytes':number(5),'sha256':string(64),'candidate_commit':string(40),'review_commit':string(40),'review_sha256':string(64),'review_verdict':'CLEAR'}
+model['materializer_review'] = {'commit':string(40),'sha256':string(64),'verdict':'CLEAR'}
+model['parent_duties'] = {k:True for k in model['parent_duties']}
+model['completed_SOURCE'] = {n:{'bytes':number(5),'sha256':string(64)} for n in model['completed_SOURCE']}
+for row in model['inputs']:
+    row.update(bytes=number(6),sha256=string(64),base64=string(0))
+# Sum ceil(bytes_i/3) <= floor((524288 + 2*8)/3).
+base64_max = 4 * ((524288 + 2*8)//3)
+config_max = size(model) + base64_max
+token_max = 2 + size(model, True) + base64_max
+rendered_max = len(new) - len(token) + token_max
+console_max = len('{"r":[16384,"' + '0'*64 + '"],"v":1}\n')
+require(base64_max == 699072 and rendered_max <= 1048576 and console_max <= 512, 'analytical collective base64/rendered/console bounds under unchanged caps')
+# Conservative full receipt structural bound: literal source identifiers,
+# all fixed input/root/ref names, fixed build records, each variable ref at its
+# maximum decimal/hash/mode width, bounded clock/count fields. No receipt bytes
+# or simulated runtime values are constructed.
+refwidth = lambda path: {'path':path,'bytes':number(8),'sha256':string(64)}
+identity = {'template_sha256':string(64),'config_canonical_sha256':string(64),
+            'caller':model['caller'],'materializer_review':model['materializer_review']}
+source_ids = {'result':dict(path=config['evidence_root']+'/metadata-source-result.json',**config['source_result']),
+    'boundary':model['completed_SOURCE'],'fixed_inputs':literal(assignment(nt,'FIXED_INPUTS')),
+    'raw_manifest':{'bytes':number(5),'sha256':string(64),'entries':212,'raw_bytes':213334},
+    'external_parent_records':config['external_source_records']}
+receipt_model = {'schema':'openergy.eight-artifact-data-binding.v1','evidence_root':config['evidence_root'],
+    'identity':identity,'clock':literal(assignment(nt,'CLOCK')),'own_nice':15,
+    'data_started_ns':number(20),'data_deadline_ns':number(21),'before_receipt_ns':number(21),
+    'guard':dict(refwidth(config['evidence_root']+'/artifact-binding-once.guard'),mode='0o600'),
+    'files':{n:dict(refwidth(config['evidence_root']+'/'+n),mode='0o600') for n in inputs},
+    'initial_tally':{'entries':number(4),'bytes':number(8)},'initial_entries_before_receipt':number(4),
+    'new_entries_reserved':10,'initial_bytes_before_receipt':number(8),'receipt_bytes_reserved':16384,
+    'saved_audit_commit':literal(assignment(nt,'AUDIT')),'parent_inspection_commit':literal(assignment(nt,'PARENT_INSPECTION')),
+    'completed_files':literal(assignment(nt,'COMPLETED')),'completed_manifest_sha256':literal(assignment(nt,'COMPLETED_MANIFEST_SHA256')),
+    'remote_completed_files_authenticated':5,'parent_duties':model['parent_duties'],
+    'source_inputs':source_ids,'build_inputs':build,'eight_files_state':'durable_barriers_returned',
+    'first_error':None,'execution':False,'operation_bound_data_authorizes_nothing_here':True,
+    'source120_started':False,'qualification':False,'artifact_gate_authority':False,'runtime':'UNVERIFIED',
+    'console_and_actual_exit':'external_parent_duty'}
+receipt_max = size(receipt_model)+1
+require(receipt_max <= 16384, 'analytical full receipt structural bound below unchanged16384 reservation')
+for path in sorted(OUT.glob('*.json')):
+    strict(path.read_bytes())
+    require(True, 'strict packet JSON parse: '+path.name)
+schema = strict((OUT/'config.schema.json').read_bytes())
+require(schema['oneOf'][0]['const'] == config and schema['oneOf'][1]['additionalProperties'] is False, 'closed schema inert branch equals exact template')
+require(schema['oneOf'][1]['properties']['inputs']['maxItems'] == 8 and schema['oneOf'][1]['properties']['inputs']['items'] is False, 'closed schema exact eight ordered bound input slots')
+plan = strict((OUT/'plan.json').read_bytes())
+require(plan['execution'] is False and all(s['execution'] is False and s['maximum']==1 for s in plan['steps']), 'finite plan all steps disabled and once only')
+report = {'schema':'openergy.artifact-data-author-static-checks.v1','status':'IMPLEMENTED_UNREVIEWED',
+    'execution':False,'runtime_acceptance':False,'independent_review':None,
+    'observations':observations,'observation_count':len(observations),
+    'baseline':{'bytes':len(old),'sha256':sha(old)},'source':{'bytes':len(new),'lines':len(new.splitlines()),'sha256':sha(new)},
+    'patch':{'bytes':len(patch),'sha256':sha(patch)},'changed_functions':changed,'added_functions':added,'unchanged_function_count':len(unchanged),
+    'config_token':{'start':offset,'end_exclusive':end,'bytes':len(token),'sha256':sha(token),
+        'prefix_sha256':sha(new[:offset]),'suffix_sha256':sha(new[end:]),'canonical_config_sha256':sha(canonical(config)[:-1])},
+    'static_width_bounds':{'base64_collective':base64_max,'canonical_CONFIG':config_max,'CONFIG_string_token':token_max,
+        'full_rendered_payload':rendered_max,'payload_spare':1048576-rendered_max,'console_including_LF':console_max,
+        'full_receipt_including_LF':receipt_max,'actual_rendered_payload':None,'actual_render_proof':None},
+    'raw_manifest':{'bytes':len(canonical(manifest)),'sha256':sha(canonical(manifest)),'entries':212,'raw_bytes':213334},
+    'limits':'Only author-owned static data checks ran. No materializer, supplied source/AST/helper/static-reader execution or import; no runtime, tests, mocks, children, private/state/network/native/process/port/build/signing/UI/credential action.'}
+save('static-checks.json', report)
+print(json.dumps({k:report[k] for k in ('status','observation_count','source','patch','static_width_bounds','changed_functions','added_functions','unchanged_function_count')},indent=2))

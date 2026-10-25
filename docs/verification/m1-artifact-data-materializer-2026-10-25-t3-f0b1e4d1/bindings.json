@@ -1,0 +1,294 @@
+{
+  "actual_eight_data_bindings": null,
+  "actual_parent_duties": null,
+  "actual_render_proof": null,
+  "actual_rendered_payload": null,
+  "added_functions": [
+    "bound_ref",
+    "inspect_source",
+    "inspect_build"
+  ],
+  "baseline_review_commit": "ba54c70d4b087d2121d591b9adcdc18cf52dcc98",
+  "baseline_review_sha256": "6d421562fa04f9b2c0028b5101e018d8de13e65ef879f30bfec05a276a5b0b08",
+  "baseline_to_new_patch": {
+    "bytes": 74186,
+    "git_blob": "fc1ff0bd3e7647252aafbf4cd00733b41ebffc69",
+    "mode": "0o644",
+    "path": "docs/verification/m1-artifact-data-materializer-2026-10-25-t3-f0b1e4d1/materializer.patch",
+    "read_as": "public tracked repository data only; never executed/imported",
+    "sha256": "263d3adbac1775c0874e8c8a678ffcf72ed76753bb5588ed0eb32b614d6cff66"
+  },
+  "changed_functions": [
+    "bind_config",
+    "decode_inputs",
+    "emit_once",
+    "main"
+  ],
+  "completed_SOURCE_boundary_raw_bindings": {
+    "metadata-source-parent.json": null,
+    "source-caller-os.json": null,
+    "source-caller.stderr.bin": null,
+    "source-caller.stdout.bin": null,
+    "source-launch-once.json": null,
+    "source-launch-receipt.json": null
+  },
+  "execution": false,
+  "external_source_parent_identities": {
+    "SOURCE-envelope.json": {
+      "bytes": 5292,
+      "sha256": "39123e6ee7e7859de7ae09659ea5ec1a521e3532be62546d3273e296d33b2a01"
+    },
+    "SOURCE-full-validation.json": {
+      "bytes": 41432,
+      "sha256": "8f7c57fe678b396a205ae2bcf0695dd4ed9c229696ab100ecd0bbd95cc4146a8"
+    },
+    "SOURCE-parent-exit.json": {
+      "bytes": 1651,
+      "sha256": "c4d25a531a2692551dd94b7b502ec7f9cbf61e1d675218549aa3235ff816d597"
+    },
+    "SOURCE-transport-receipt.json": {
+      "bytes": 3175,
+      "sha256": "72d155c7c1fad4ee80e5cd6facf5033f223ef15e80650ecab31ab214bbf990cc"
+    }
+  },
+  "inert_config_canonical_sha256": "dac3095e818dd53ebc48605693ccd06834e9451fd1a1de21711b9fa2b35161cc",
+  "materializer_independent_review": null,
+  "new_human_approval_gate": false,
+  "original_build_records": {
+    "build_bundle_exit": {
+      "bytes": 51,
+      "path": "/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/bundle-exit.json",
+      "sha256": "be1977b47f6eec5c82700af3087008509b19920e7038191ce6db6b69ea441acb"
+    },
+    "build_operation": {
+      "bytes": 1416,
+      "path": "/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/bound-operation.json",
+      "sha256": "99759a37cf8fa251d1f400c2db15b6f62bfd387bc9a99fd32e0cb50c6186a039"
+    },
+    "build_result": {
+      "bytes": 545,
+      "path": "/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/result.json",
+      "sha256": "8129b6c6874fd56e1a4dab83c84114bdafa7a519923efeefbe0c7b733e8ee6f3"
+    },
+    "build_worker": {
+      "bytes": 57,
+      "path": "/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/worker-result.json",
+      "sha256": "d169b2bf627d906f0df714d4300457e4cd0b8b7239c7db9ab602d58a97f40053"
+    },
+    "bundle_files": {
+      "bytes": 32734,
+      "path": "/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/bundle-files.json",
+      "sha256": "e8255fcb45e50be4ea11710e921f64d8a60368fde2f217a7044e07b0d490e78f"
+    }
+  },
+  "owned_folder": "docs/verification/m1-artifact-data-materializer-2026-10-25-t3-f0b1e4d1",
+  "parent_commit": "04444ec2dce5dd96334d807f9c2caff86aefae64",
+  "parent_tree": "e4d5f0c844a8600eb83ecdedcb383e5201183691",
+  "private_inputs_opened": false,
+  "proof_limits": "Static source/data implementation only. Parent authenticates actual OS/source/raw/build inputs, unchanged artifact contract, final renderer and separate real authorization. All historical FAILED/UNKNOWN/UNVERIFIED and closed updater remain.",
+  "public_inputs": [
+    {
+      "bytes": 24324,
+      "git_blob": "b1939cfce55166387a84a2a4441adc619fa10131",
+      "mode": "0o644",
+      "path": "docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/materializer.py.txt",
+      "read_as": "public tracked repository data only; never executed/imported",
+      "sha256": "7905eed61e558313e620d1427032984ead0bc0e4723d697d3b066194ec5b0e1b"
+    },
+    {
+      "bytes": 10711,
+      "git_blob": "1d28e4ac95260e591d64a6779e7c5d26f3ad50d2",
+      "mode": "0o644",
+      "path": "docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/bindings.json",
+      "read_as": "public tracked repository data only; never executed/imported",
+      "sha256": "47d50c34083ba4d717a539f444f0af3e6012153e0e99b6181b720a3d9415b529"
+    },
+    {
+      "bytes": 7909,
+      "git_blob": "e2c55c72c01ec990f898005e8602feffd23d5a9a",
+      "mode": "0o644",
+      "path": "docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/config.schema.json",
+      "read_as": "public tracked repository data only; never executed/imported",
+      "sha256": "e118681b0016df7d966bfd0a9f5003834cd4e872c89eb2a9e6bb1db37542684a"
+    },
+    {
+      "bytes": 17336,
+      "git_blob": "5f3b83227ca026e5da8d8d6c9f8a7f6e4316b7ce",
+      "mode": "0o644",
+      "path": "docs/verification/m1-system-stdin-materializer-full-review-2026-10-25-t3-7b665012/REVIEW.md",
+      "read_as": "public tracked repository data only; never executed/imported",
+      "sha256": "6d421562fa04f9b2c0028b5101e018d8de13e65ef879f30bfec05a276a5b0b08"
+    },
+    {
+      "bytes": 37009,
+      "git_blob": "8cd2621b0b6c232139dd8034d961e60915f86ce6",
+      "mode": "0o644",
+      "path": "docs/verification/m1-system-stdin-materializer-full-review-2026-10-25-t3-7b665012/bindings.json",
+      "read_as": "public tracked repository data only; never executed/imported",
+      "sha256": "069d0c89c45bc8beb9290f8a45dfbf63d840ec1f1153dfbe94c38bcaa9792cf0"
+    },
+    {
+      "bytes": 4853,
+      "git_blob": "47e31e319505f61a2a0d2e26a3de48f3ddf2b0d8",
+      "mode": "0o644",
+      "path": "docs/verification/m1-source-metadata-observed-2026-10-25-t3-52422617/README.md",
+      "read_as": "public tracked repository data only; never executed/imported",
+      "sha256": "94703032271e77874b178a6f619ba8f168b119d3cef7ee7dfbd059248e084af5"
+    },
+    {
+      "bytes": 41432,
+      "git_blob": "b2d6a3a9bb3fb4bb389c2a3eb2105f756f1b8c88",
+      "mode": "0o644",
+      "path": "docs/verification/m1-source-metadata-observed-2026-10-25-t3-52422617/validation.json",
+      "read_as": "public tracked repository data only; never executed/imported",
+      "sha256": "8f7c57fe678b396a205ae2bcf0695dd4ed9c229696ab100ecd0bbd95cc4146a8"
+    },
+    {
+      "bytes": 15549,
+      "git_blob": "d1586184b977cb4f63ec99d5a0e0c1af7bb3e19f",
+      "mode": "0o644",
+      "path": "docs/verification/m1-source-metadata-observed-2026-10-25-t3-52422617/bindings.json",
+      "read_as": "public tracked repository data only; never executed/imported",
+      "sha256": "731e5c1180c61c5b526778e25a2db6b12a6a18067114448fcf41aa0080f17d9f"
+    },
+    {
+      "bytes": 11148,
+      "git_blob": "82191b8850047710e347df19d60333688669598f",
+      "mode": "0o644",
+      "path": "docs/verification/m1-source-metadata-observed-2026-10-25-t3-52422617/parent-data-reader.py.txt",
+      "read_as": "public tracked repository data only; never executed/imported",
+      "sha256": "4872704a5e0b1a938a3dfb0f75c4f57752ab7e9e9a88c1b43f05d7050be5c3aa"
+    },
+    {
+      "bytes": 10502,
+      "git_blob": "3edcd3a325b27d223a21ff61ff8ac8330b471779",
+      "mode": "0o644",
+      "path": "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/README.md",
+      "read_as": "public tracked repository data only; never executed/imported",
+      "sha256": "9e13558a6198bfedec46b4a8887d7b8ec2122a281f90d00ae6933d929b650422"
+    },
+    {
+      "bytes": 10703,
+      "git_blob": "c3f052f16cdf8b56719673013f79e157f22c2cf5",
+      "mode": "0o644",
+      "path": "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/next-operation.json",
+      "read_as": "public tracked repository data only; never executed/imported",
+      "sha256": "f4b6eea1ad6dab12db27227a0eb8945c22c7c3aebb3f0fc854122aac84fb74b1"
+    },
+    {
+      "bytes": 3496,
+      "git_blob": "7827702d8344d191016c80bbc217bb11dad3e435",
+      "mode": "0o644",
+      "path": "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/artifact-receipt.template.json",
+      "read_as": "public tracked repository data only; never executed/imported",
+      "sha256": "6250a8698664c757af9f9bdb5ef191f3604d82725282ae860741eae2529939d3"
+    },
+    {
+      "bytes": 10673,
+      "git_blob": "b127b136063960b649bc20ba9d4d93b0e0d81915",
+      "mode": "0o644",
+      "path": "docs/verification/m1-ordinary-fresh-flow-plan-2026-10-24-t3-5463ce44/receipt-contract.md",
+      "read_as": "public tracked repository data only; never executed/imported",
+      "sha256": "2e9d4cb5440fe5feed0411886b36774e4acce0155e0082412f671f6df19d26e4"
+    },
+    {
+      "bytes": 10270,
+      "git_blob": "d749cad451984b454c410b7399bbb959c9f92f24",
+      "mode": "0o644",
+      "path": "docs/verification/m1-ordinary-fresh-flow-plan-2026-10-24-t3-5463ce44/receipt.schema.json",
+      "read_as": "public tracked repository data only; never executed/imported",
+      "sha256": "14a031f3a110bdd6f3ab6b0e37b57195f2333c5f5422299880fed246ab70ae0a"
+    },
+    {
+      "bytes": 12370,
+      "git_blob": "52b21bffa515c5b1a6f8de85b7a6c70ddf5c93b5",
+      "mode": "0o644",
+      "path": "docs/verification/m1-metadata-r9-repair-2026-10-25-t3-9b2c2354/command-vectors.json",
+      "read_as": "public tracked repository data only; never executed/imported",
+      "sha256": "e3ff5756ab3b35a5c815e50ac1fad6520117836e080849260de87592bd327fa0"
+    },
+    {
+      "bytes": 46908,
+      "git_blob": "b85b788e771d9064de1bb9dabf5c4b941db5b01f",
+      "mode": "0o644",
+      "path": "docs/verification/m1-metadata-r9-repair-2026-10-25-t3-9b2c2354/metadata-caller.py.txt",
+      "read_as": "public tracked repository data only; never executed/imported",
+      "sha256": "01623cd4759f96cd0066a9456a2680bff476bc37b5b1acb61ec40388582a5e9f"
+    },
+    {
+      "bytes": 37775,
+      "git_blob": "b5425f6d3c3856933053c13dc093199b4eadc8c2",
+      "mode": "0o644",
+      "path": "docs/verification/m1-source-stdin-payload-kill-gate-repair-2026-10-25-t3-da89534d/source-payload.py.txt",
+      "read_as": "public tracked repository data only; never executed/imported",
+      "sha256": "8d7844a20ce347b7be52c07a516b8d9136bdb5c067e450bea24eb3453441afa6"
+    },
+    {
+      "bytes": 8875,
+      "git_blob": "5ec1ac3fefd219cd948a8fca0db5e8fd5ae2cced",
+      "mode": "0o644",
+      "path": "docs/verification/m1-metadata-transport-r4-2026-10-25-t3-53ab1856/README.md",
+      "read_as": "public tracked repository data only; never executed/imported",
+      "sha256": "1a2ad5ea3c5347a827a3c2bfe4dd6734f378a31c93bc2fa9ad9ccfe0764b29ea"
+    },
+    {
+      "bytes": 663,
+      "git_blob": "e85d7243d898152228986fa7b9e4d69061e853eb",
+      "mode": "0o644",
+      "path": "docs/verification/m1-metadata-transport-r4-2026-10-25-t3-53ab1856/profile.template.json",
+      "read_as": "public tracked repository data only; never executed/imported",
+      "sha256": "28a7f1fb527247e6f33bd837d0bdaec1397b4e6b4c03cd06c28a59d48b9d9a45"
+    },
+    {
+      "bytes": 5533,
+      "git_blob": "f0f87a43a002fc2974eed3ed69476af2e98d6d77",
+      "mode": "0o644",
+      "path": "docs/verification/m1-metadata-transport-r4-2026-10-25-t3-53ab1856/parent-observer.contract.json",
+      "read_as": "public tracked repository data only; never executed/imported",
+      "sha256": "82bd2b3d460eb9166e7805b114a02a10e56685f93c088aa351b6ba5f2eaf48dd"
+    },
+    {
+      "bytes": 27834,
+      "git_blob": "3061d20729d5114530a27900a0938c7cf384415e",
+      "mode": "0o644",
+      "path": "docs/verification/m1-metadata-transport-r4-2026-10-25-t3-53ab1856/transport-collector.py.txt",
+      "read_as": "public tracked repository data only; never executed/imported",
+      "sha256": "d312814e74c6f42e2a86d56648450dc145531df6292ea8c79ccf1768f34b14e4"
+    }
+  ],
+  "raw_manifest": {
+    "bytes": 30440,
+    "entries": 212,
+    "raw_bytes": 213334,
+    "sha256": "2baea069155b633485b1e8aed8fe72f3bf746f67de83a84f07a2daf0648fe4ee"
+  },
+  "runtime_acceptance": false,
+  "runtime_actions": false,
+  "schema": "openergy.artifact-data-materializer-pinbindings.v1",
+  "source": {
+    "bytes": 88512,
+    "git_blob": "d6a6675ae60b44aebd2fcddf4853474d6ec6a273",
+    "mode": "0o644",
+    "path": "docs/verification/m1-artifact-data-materializer-2026-10-25-t3-f0b1e4d1/materializer.py.txt",
+    "read_as": "public tracked repository data only; never executed/imported",
+    "sha256": "9f8be3a095c9adb34ec82b79e7297061fb41dc33c99fdec3501c528e2876ab28"
+  },
+  "source_lineage": {
+    "basis_bridge": "ce7fe4a1af63af88e0b0b2cacab288e4a46a0d13",
+    "caller_candidate": "9b50dd7e3a672eafe319be33141cb875d54a471e",
+    "caller_review": "1c0e4bcdc2dddcb64a3277db34d5ccd5e872fab2",
+    "caller_review_sha256": "ad868577561145dcba9e74db7138e5118544e721ca3629f5c0c4f1808203c496",
+    "note": "Dependency review identities retained from the full baseline review, not fresh reviews or causal acts by this author.",
+    "source_payload": "f78f2be0fe14e5e4cf81990156cb18a1abb5ff62",
+    "source_review": "98a7ecab421ca64b67ac7f57db153be54b70f989",
+    "transport": "1c46c16b225924d6664d33c06382a3cd05581272",
+    "transport_review": "a7e22725cbbf07b5e6ac7e7aa7e7fb0d3dff93b4"
+  },
+  "source_result": {
+    "bytes": 327813,
+    "sha256": "7482a637159e0389c5cd4c505778919bb49354437bc9feb1cf008d9db395712d"
+  },
+  "status": "IMPLEMENTED_UNREVIEWED",
+  "supplied_source_or_AST_executed": false,
+  "unchanged_function_count": 19
+}
