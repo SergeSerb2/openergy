@@ -1,0 +1,26 @@
+--- a/docs/verification/m1-metadata-r7-repair-2026-10-25-t3-5ce08973/metadata-caller.py.txt
++++ b/docs/verification/m1-metadata-r9-repair-2026-10-25-t3-9b2c2354/metadata-caller.py.txt
+@@ -420,0 +421 @@
++    kill_eligibility_exit, kill_eligibility_observed_ns = None, None
+@@ -473,4 +474,14 @@
+-                    if proc.poll() is None:
+-                        kill_attempted = True
+-                        proc.kill()  # Only this retained, unreaped direct child.
+-                        kill_delivered = True
++                    kill_eligibility_exit = proc.poll()
++                    try:
++                        kill_eligibility_observed_ns = clock_ns()
++                    finally:
++                        # A real poll exit remains reaped even if the clock raises.
++                        if kill_eligibility_exit is not None:
++                            reaped = True
++                    if kill_eligibility_exit is None:
++                        if kill_eligibility_observed_ns < deadline and kill_eligibility_observed_ns < phase_deadline:
++                            kill_attempted = True
++                            proc.kill()  # Only this retained, unreaped direct child.
++                            kill_delivered = True
++                        else:
++                            timed_out = deadline_loss = True
+@@ -510,0 +522,2 @@
++                  kill_eligibility_exit=kill_eligibility_exit,
++                  kill_eligibility_observed_ns=kill_eligibility_observed_ns,

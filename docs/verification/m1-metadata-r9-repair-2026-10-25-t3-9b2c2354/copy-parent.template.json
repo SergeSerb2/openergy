@@ -1,0 +1,45 @@
+{
+  "schema": "openergy.metadata-parent-boundary.v2",
+  "mode": "copy",
+  "clock": {
+    "schema": "openergy.shared-clock.v1",
+    "platform": "darwin",
+    "api": "time.clock_gettime_ns",
+    "clock": "CLOCK_MONOTONIC",
+    "clock_id": 6,
+    "unit": "nanoseconds",
+    "scope": "same-host-same-boot"
+  },
+  "phase_started_ns": null,
+  "phase_deadline_ns": null,
+  "source_file_qualification": null,
+  "entry_authentication": {
+    "schema": "openergy.metadata-entry-observation.v2",
+    "clock": {
+      "schema": "openergy.shared-clock.v1",
+      "platform": "darwin",
+      "api": "time.clock_gettime_ns",
+      "clock": "CLOCK_MONOTONIC",
+      "clock_id": 6,
+      "unit": "nanoseconds",
+      "scope": "same-host-same-boot"
+    },
+    "actual_exit": null,
+    "reaped": false,
+    "both_eof": false,
+    "overflow": false,
+    "deadline_loss": false,
+    "timed_out": false,
+    "unread_or_dropped_unknown": false,
+    "kill_attempted": false,
+    "error": null,
+    "kill_or_reap_error": null,
+    "stdout": null,
+    "stderr": null,
+    "system_python": "/usr/bin/python3",
+    "helper_sha256": "bf2ddd03f00bedbf799b4eee518a2b7b25d1eb9a6df06a2f55c419252f6fa428",
+    "started_ns": null,
+    "finished_ns": null,
+    "parent_inspected_ns": null
+  }
+}

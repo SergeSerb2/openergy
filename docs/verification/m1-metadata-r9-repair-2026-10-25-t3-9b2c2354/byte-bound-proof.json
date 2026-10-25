@@ -1,0 +1,47 @@
+{
+  "analysis": "static canonical JSON serialization and byte arithmetic only; no caller/source/AST execution, no pipe experiment, no mock",
+  "canonical_encoding": "sort_keys=True,separators=(comma,colon),ensure_ascii=True; UTF-8 plus one LF",
+  "ceiling_including_newline": 512,
+  "delivery_scope": "For a conforming pipe with enough available space, <=PIPE_BUF writes atomically. Empty conforming pipe has room; full/insufficient pipe can EAGAIN. Target PC_PIPE_BUF/capacity/schedule/delivery not measured. No universal one-write success guarantee.",
+  "execution": false,
+  "fixed_root": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+  "fixed_root_ascii_bytes": 96,
+  "general_bound": "Let E be the byte length of JSON-escaped root content, without its two quote bytes. SOURCE <=281+E; COPY <=277+E. The fixed root has E=96. Bounds use maximum CLI integer width, conservative21-digit end and maximum7-digit file length. Actual encoded length is checked; longer/escaped roots that exceed512 fail without attempting success stdout. No earlier root admission changes.",
+  "maximum_width_data": {
+    "deadline_ns": 100000000119999999999,
+    "result_bytes": 8388608,
+    "sha256_characters": 64,
+    "started_ns": 99999999999999999999
+  },
+  "pipe_predicates": "success only: FIFO fstat; actual fpathconf(1,PC_PIPE_BUF) integer>=512; encoded bytes<=512; single nonblocking write exact-count check",
+  "prior_full_summary_lower_bound": {
+    "bytes": 209116,
+    "omits": "auxiliary commands and most status/clock/full result fields",
+    "path": "docs/verification/m1-source-transport-size-binding-2026-10-25/minimum-shape.json",
+    "sha256": "b0b8fc94cf7b1c44fc31128aee173e192798cb552726d8909c422c1170b50c13"
+  },
+  "runtime": "UNVERIFIED",
+  "schema": "openergy.metadata-r7-compact-byte-bound.v1",
+  "shapes": [
+    {
+      "bytes": 377,
+      "fixed_overhead_bytes": 281,
+      "headroom_bytes": 135,
+      "maximum_escaped_root_content_bytes": 231,
+      "mode": "source",
+      "path": "success-source-max-shape.json",
+      "root_bytes": 96,
+      "sha256": "f7b30ffde216714390e80ff5f60a2d86de3c0ee4edbf4e097fb55ae6f936cd33"
+    },
+    {
+      "bytes": 373,
+      "fixed_overhead_bytes": 277,
+      "headroom_bytes": 139,
+      "maximum_escaped_root_content_bytes": 235,
+      "mode": "copy",
+      "path": "success-copy-max-shape.json",
+      "root_bytes": 96,
+      "sha256": "be5c80be5160d11fd5df69e72a09107cf76d52a87505e734fb2c747e3f1f65c8"
+    }
+  ]
+}

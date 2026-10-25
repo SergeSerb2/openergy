@@ -1,0 +1,64 @@
+{
+  "arbitrary_argv": false,
+  "argument_count_after_script": 4,
+  "clock": {
+    "api": "time.clock_gettime_ns",
+    "clock": "CLOCK_MONOTONIC",
+    "clock_id": 6,
+    "platform": "darwin",
+    "schema": "openergy.shared-clock.v1",
+    "scope": "same-host-same-boot",
+    "unit": "nanoseconds"
+  },
+  "completion_passes": 0,
+  "controller": false,
+  "copy": {
+    "launcher": [
+      "${PINNED_PRIVATE_PYTHON}",
+      "-B",
+      "${EVIDENCE}/metadata-caller.py.txt",
+      "copy",
+      "${EVIDENCE}",
+      "${START_CLOCK_MONOTONIC_NS}",
+      "${PARENT_RECORD_SHA256}"
+    ],
+    "parent_input": "bounded stdin, close after exact bytes, at most1048576 bytes",
+    "precondition": "shared phase start BEFORE full SYSTEM helper entry authentication; actual helper collection10s; parent raw/facts/exit inspection BEFORE single private-B entry",
+    "template": "copy-parent.template.json"
+  },
+  "cwd": "EVIDENCE",
+  "environment": "unchanged exact next-operation.json#/parent_startup input; SOURCE closed local SYSTEM3.9.6 bootstrap normalization; COPY exact ten-key startup; see startup-contract.json",
+  "execution": false,
+  "native_environment": "unchanged metadata.recipe.json#/environment",
+  "parent_hash": "lowercase raw SHA-256 of exact source parent file or copy stdin bytes",
+  "positional_arguments": [
+    "source|copy",
+    "EVIDENCE",
+    "START_CLOCK_MONOTONIC_NS",
+    "PARENT_RECORD_SHA256"
+  ],
+  "prepare": false,
+  "product": false,
+  "retries": 0,
+  "root": "generic bound existing completed-source EVIDENCE; no literal fresh root selected here",
+  "schema": "openergy.closed-metadata-caller-cli.v3",
+  "script": "metadata-caller.py.txt",
+  "source": {
+    "launcher": [
+      "/usr/bin/python3",
+      "-I",
+      "-S",
+      "-B",
+      "${EVIDENCE}/metadata-caller.py.txt",
+      "source",
+      "${EVIDENCE}",
+      "${START_CLOCK_MONOTONIC_NS}",
+      "${PARENT_RECORD_SHA256}"
+    ],
+    "parent_input": "${EVIDENCE}/metadata-source-parent.json",
+    "precondition": "parent inspect seven exact completed evidence files, actual exits and guards; then shared inspected_ns; then new shared phase_started_ns; never repeat source qualification",
+    "template": "source-parent.template.json"
+  },
+  "start_encoding": "canonical unsigned ASCII decimal integer, at most20 digits, no sign/leading zeros except0",
+  "startup_contract": "startup-contract.json"
+}
