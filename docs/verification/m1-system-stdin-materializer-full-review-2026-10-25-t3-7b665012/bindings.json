@@ -1,0 +1,813 @@
+{
+  "additional_pin_vector_bindings": [
+    {
+      "bytes": 4920,
+      "git_blob": "17968926ced4a4ef7efcf7ab6e7a6c330f6ea8a1",
+      "path": "docs/verification/m1-metadata-r9-repair-2026-10-25-t3-9b2c2354/input-pins.json",
+      "ref": "9b50dd7e3a672eafe319be33141cb875d54a471e",
+      "sha256": "31a17c129e0af6c8c0437458c01fa8c28cffb89f29ee327648a31fed96608352"
+    },
+    {
+      "bytes": 12370,
+      "git_blob": "52b21bffa515c5b1a6f8de85b7a6c70ddf5c93b5",
+      "path": "docs/verification/m1-metadata-r9-repair-2026-10-25-t3-9b2c2354/command-vectors.json",
+      "ref": "9b50dd7e3a672eafe319be33141cb875d54a471e",
+      "sha256": "e3ff5756ab3b35a5c815e50ac1fad6520117836e080849260de87592bd327fa0"
+    },
+    {
+      "bytes": 3496,
+      "destination": "artifact-receipt.template.json",
+      "git_blob": "7827702d8344d191016c80bbc217bb11dad3e435",
+      "git_path": "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/artifact-receipt.template.json",
+      "path": "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/artifact-receipt.template.json",
+      "ref": "4230f4c608580cd60f3321207aa8b07ea0ea9b5c",
+      "sha256": "6250a8698664c757af9f9bdb5ef191f3604d82725282ae860741eae2529939d3"
+    },
+    {
+      "bytes": 151287,
+      "destination": "build-source-bindings.json",
+      "git_blob": "9a4b41af7c0c6b8665ccdd86ac7ad94d6d66195f",
+      "git_path": "docs/verification/m1-sampler-source-repair-r3-2026-10-24/source-bindings.json",
+      "path": "docs/verification/m1-sampler-source-repair-r3-2026-10-24/source-bindings.json",
+      "ref": "4230f4c608580cd60f3321207aa8b07ea0ea9b5c",
+      "sha256": "20e011251151cec81f69c4b80b0072d9fd0a98c1eaaf0e6c74d83ff752546617"
+    },
+    {
+      "bytes": 12781,
+      "destination": "common.py",
+      "git_blob": "c3fd4b4524111bdad0d75ecf149d4b775da69cda",
+      "git_path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/common.py.txt",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/common.py.txt",
+      "ref": "4230f4c608580cd60f3321207aa8b07ea0ea9b5c",
+      "sha256": "20a9c16030b2de53b99870f25bada68137bfc6fbc5b67cc29f8e878312d4129c"
+    },
+    {
+      "bytes": 36307,
+      "destination": "controller.py",
+      "git_blob": "2d2394581ee63405d5bc41ba6b1d5f42fb810718",
+      "git_path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/source/controller.py.txt",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/source/controller.py.txt",
+      "ref": "4230f4c608580cd60f3321207aa8b07ea0ea9b5c",
+      "sha256": "08f1bbea8aeb5852b4aaddd0f3f693c7717c69e5e898462baa90b49cba41e3a4"
+    },
+    {
+      "bytes": 11382,
+      "destination": "coverage.py",
+      "git_blob": "99d5d3e9f34d2d1318cc45597b6f488d8063ff52",
+      "git_path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/coverage.py.txt",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/coverage.py.txt",
+      "ref": "4230f4c608580cd60f3321207aa8b07ea0ea9b5c",
+      "sha256": "d154561f7f256e41b32c90941f7ce18ffa79d5284d23eecea9be88cc1c48f747"
+    },
+    {
+      "bytes": 2219,
+      "destination": "exec_owned.py",
+      "git_blob": "609d61182684dcb8aed6c3121727fd57a8a96603",
+      "git_path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/exec_owned.py.txt",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/exec_owned.py.txt",
+      "ref": "4230f4c608580cd60f3321207aa8b07ea0ea9b5c",
+      "sha256": "e7d9a755eed1fadfd04b43b3b96dbd0663cabdf07cc5aa7808ce006183859af2"
+    },
+    {
+      "bytes": 7381,
+      "destination": "file-qualification.recipe.py.txt",
+      "git_blob": "df331874224a87ce0335335b3fc79d5160e5cbd1",
+      "git_path": "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/file-qualification.recipe.py.txt",
+      "path": "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/file-qualification.recipe.py.txt",
+      "ref": "4230f4c608580cd60f3321207aa8b07ea0ea9b5c",
+      "sha256": "bf2ddd03f00bedbf799b4eee518a2b7b25d1eb9a6df06a2f55c419252f6fa428"
+    },
+    {
+      "bytes": 876,
+      "destination": "limits.json",
+      "git_blob": "06b351179fdaa936ee25d35d6f8478d9d987308d",
+      "git_path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/limits.json",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/limits.json",
+      "ref": "4230f4c608580cd60f3321207aa8b07ea0ea9b5c",
+      "sha256": "cadd06e19607f5dbe0ad070072673c8e518d961b1554958d243a0d028243d733"
+    },
+    {
+      "bytes": 8075,
+      "destination": "macproc.py",
+      "git_blob": "6be48d0c8f3ff92a71965eebc4dd449b7149f8d2",
+      "git_path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/macproc.py.txt",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/macproc.py.txt",
+      "ref": "4230f4c608580cd60f3321207aa8b07ea0ea9b5c",
+      "sha256": "d4f6fe358bd9af786fc4c2cba61f1a47f3f4015c918aae85cf8e6aa1c6d3e6c7"
+    },
+    {
+      "bytes": 7915,
+      "destination": "metadata.recipe.json",
+      "git_blob": "e1c3fc853eb3493fe4cc09fe9b551d06c1328b83",
+      "git_path": "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/metadata.recipe.json",
+      "path": "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/metadata.recipe.json",
+      "ref": "4230f4c608580cd60f3321207aa8b07ea0ea9b5c",
+      "sha256": "f97b12054aceb745cadcd3159d25f4693b3570a44d216ffdd96d9c1ddf05701e"
+    },
+    {
+      "bytes": 35975,
+      "destination": "ownership.py",
+      "git_blob": "c1d39953f4e4c6a89591af694506fd7ab5fe800a",
+      "git_path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/ownership.py.txt",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/ownership.py.txt",
+      "ref": "4230f4c608580cd60f3321207aa8b07ea0ea9b5c",
+      "sha256": "3ac4bab54db909beb236d0d9caa4ee83084ad9b566aa19d97c5b6d26c356b091"
+    },
+    {
+      "bytes": 10096,
+      "destination": "port_diagnostic.py",
+      "git_blob": "1642e2d94dc6efd570a6f6fa04f0841332c07f1d",
+      "git_path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/port_diagnostic.py.txt",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/port_diagnostic.py.txt",
+      "ref": "4230f4c608580cd60f3321207aa8b07ea0ea9b5c",
+      "sha256": "9d35bf1adbde9209562d9b4cfa211b75574a0fb1922dc0297761880c2d6d3985"
+    },
+    {
+      "bytes": 11632,
+      "destination": "prepare.py",
+      "git_blob": "b3491c6f70c853b750c9395ea659749beec6b6c0",
+      "git_path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/prepare.py.txt",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/prepare.py.txt",
+      "ref": "4230f4c608580cd60f3321207aa8b07ea0ea9b5c",
+      "sha256": "16f2c5d9dce3f3bce8a871bd53eea06ebf1818080de5f9bdaae3997b86304e9a"
+    },
+    {
+      "bytes": 699,
+      "destination": "probe.py",
+      "git_blob": "35236510f157b8475fef3da4f09276efba31d89b",
+      "git_path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/probe.py.txt",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/probe.py.txt",
+      "ref": "4230f4c608580cd60f3321207aa8b07ea0ea9b5c",
+      "sha256": "d65d17246bbd9057576e32454014b00afed6988dfead7899251435302a651efd"
+    },
+    {
+      "bytes": 7671,
+      "destination": "qualification.recipe.json",
+      "git_blob": "4b0ee745d03c7a393ce8d86301406b65b415f98a",
+      "git_path": "docs/verification/m1-sdk-canonical-path-repair-2026-10-25/qualification.recipe.json",
+      "path": "docs/verification/m1-sdk-canonical-path-repair-2026-10-25/qualification.recipe.json",
+      "ref": "4230f4c608580cd60f3321207aa8b07ea0ea9b5c",
+      "sha256": "d90586546d6b3127dca26147b9d090544d29d7a8b229479966dae68ef25d3b11"
+    },
+    {
+      "bytes": 2932,
+      "destination": "source-checks.json",
+      "git_blob": "cc5e7ab5387152ae0d7096a27d3c327f8a52b127",
+      "git_path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/source-checks.json",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/source-checks.json",
+      "ref": "4230f4c608580cd60f3321207aa8b07ea0ea9b5c",
+      "sha256": "2bde5cf1f9396df5c7d8518caaadcdd69eafc5ff2f39117158efaf87e8d080f5"
+    },
+    {
+      "bytes": 18760,
+      "destination": "watchdog.py",
+      "git_blob": "70624a8282c4771875a1497660de7c7c09deb9e8",
+      "git_path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/watchdog.py.txt",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/watchdog.py.txt",
+      "ref": "4230f4c608580cd60f3321207aa8b07ea0ea9b5c",
+      "sha256": "5efe2cd41f9339463187dfc3d5b11ec8d14f1a159a58787e9b3e01fe60db158d"
+    }
+  ],
+  "bounds": {
+    "canonical_live_CONFIG_quotes": 96,
+    "console_cap_bytes": 512,
+    "full_receipt_reserved_bytes": 16384,
+    "maximum_canonical_live_CONFIG_bytes": 913720,
+    "maximum_console_bytes_including_LF": 394,
+    "maximum_four_decoded_input_bytes": 684165,
+    "maximum_full_rendered_payload_bytes": 936936,
+    "maximum_single_string_token_bytes": 913818,
+    "rendered_spare_bytes": 111640,
+    "transport_payload_cap_bytes": 1048576
+  },
+  "candidate": "25ddb8e91fe594c20f567fbd01d7e56a744413df",
+  "candidate_files": [
+    {
+      "bytes": 14881,
+      "git_blob": "b214e5ffd4fbc14ef49c6f696ec4c84f635a406b",
+      "kind": "blob",
+      "mode": "100644",
+      "path": "docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/README.md",
+      "sha256": "6fba8ff48aa3781c2427d2b60e636e8035388963e3dda1cafc5d9144d6acbfce"
+    },
+    {
+      "bytes": 936,
+      "git_blob": "53d6d7af2112ae3a6430d93042b17a6b07526252",
+      "kind": "blob",
+      "mode": "100644",
+      "path": "docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/SHA256SUMS",
+      "sha256": "2d37be1bac27ff03ef3140bf7d8a12c6799cad972dc4b44425e7fa18c2406eaf"
+    },
+    {
+      "bytes": 10711,
+      "git_blob": "1d28e4ac95260e591d64a6779e7c5d26f3ad50d2",
+      "kind": "blob",
+      "mode": "100644",
+      "path": "docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/bindings.json",
+      "sha256": "47d50c34083ba4d717a539f444f0af3e6012153e0e99b6181b720a3d9415b529"
+    },
+    {
+      "bytes": 7909,
+      "git_blob": "e2c55c72c01ec990f898005e8602feffd23d5a9a",
+      "kind": "blob",
+      "mode": "100644",
+      "path": "docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/config.schema.json",
+      "sha256": "e118681b0016df7d966bfd0a9f5003834cd4e872c89eb2a9e6bb1db37542684a"
+    },
+    {
+      "bytes": 1330,
+      "git_blob": "34744b2ff810ca18a45af90d12db8783ee99c269",
+      "kind": "blob",
+      "mode": "100644",
+      "path": "docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/config.template.json",
+      "sha256": "e3b9aeec2a5a855a4b503a9af3d000a00f7fde72630eefc669a8238c6897d36f"
+    },
+    {
+      "bytes": 1996,
+      "git_blob": "99f4cf9d8450b41c8c9c908dab899ad63e32680c",
+      "kind": "blob",
+      "mode": "100644",
+      "path": "docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/finite-plan.json",
+      "sha256": "5361dd0f7b64c2934ba8f550db1c4c6329fb1a96a5ccbc538be6a674ce21da19"
+    },
+    {
+      "bytes": 6711,
+      "git_blob": "0f4a10e34e673c5c8d39ceb5911d3e7ff322ada3",
+      "kind": "blob",
+      "mode": "100644",
+      "path": "docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/function-inventory.json",
+      "sha256": "1a149a260776c2ed6bd4f4bc4420ab4ad01a41c2cf01d7713a9fa48c0ae06ff3"
+    },
+    {
+      "bytes": 4008,
+      "git_blob": "fa9421b2537b992dc025190f4cba3f0925c7dcb0",
+      "kind": "blob",
+      "mode": "100644",
+      "path": "docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/materialization.contract.json",
+      "sha256": "6991bc759ea3d9efa330e91ee88f631b779ac7e12fc1a2f937a0a45d21505414"
+    },
+    {
+      "bytes": 24935,
+      "git_blob": "15929cf117ade266cfcfe23d4dac236cb411f4dd",
+      "kind": "blob",
+      "mode": "100644",
+      "path": "docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/materializer.patch",
+      "sha256": "55632b43d244bb96f8b55e3bf6f35606df7783407e6730f4254964e7973f56f2"
+    },
+    {
+      "bytes": 24324,
+      "git_blob": "b1939cfce55166387a84a2a4441adc619fa10131",
+      "kind": "blob",
+      "mode": "100644",
+      "path": "docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/materializer.py.txt",
+      "sha256": "7905eed61e558313e620d1427032984ead0bc0e4723d697d3b066194ec5b0e1b"
+    },
+    {
+      "bytes": 3650,
+      "git_blob": "ad8535080164ebbdc7d7d4b3f017485fea9f4cf8",
+      "kind": "blob",
+      "mode": "100644",
+      "path": "docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/static-checks.json",
+      "sha256": "00d5e23c3affa57fcd706ae7680e1870c0f39f139604e82eee90a712998e2fd3"
+    },
+    {
+      "bytes": 19878,
+      "git_blob": "a9f7864c0209c3e90b6ef649b6db7df4fee12995",
+      "kind": "blob",
+      "mode": "100644",
+      "path": "docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/static-reader.py",
+      "sha256": "c1b70df4fb2e33a2390de18b3f197789c3d0377dc7fc06a24285a0aef1c91c1a"
+    }
+  ],
+  "candidate_parent": "81252214f7c391c465510193acf48115ec3d95db",
+  "completed7_public_bindings": {
+    "qualification-source-files.json": {
+      "bytes": 406,
+      "sha256": "ebd466312ed346991a9cdd72c64535dbc0696af82b4061b9d79d91fcc937d192"
+    },
+    "source-files-once.guard": {
+      "bytes": 1563,
+      "sha256": "9e0b9a5afb47b7755d1ebaf5f50edf45cf0a7372baaa2f83b83d9255011aed4c"
+    },
+    "source-files-os-exit.json": {
+      "bytes": 926,
+      "sha256": "3e05e0315b0b608a19d7725286bc1becacc103e0650c4bb9760fad7ad06f4d13"
+    },
+    "source-files-parent-result.json": {
+      "bytes": 1778,
+      "sha256": "9b26841fbb4803ca3444bf84e90e9d0db32e0515a9d2da5052e7c7baf403b5e1"
+    },
+    "source-files.stderr.bin": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "source-files.stdout.bin": {
+      "bytes": 406,
+      "sha256": "ebd466312ed346991a9cdd72c64535dbc0696af82b4061b9d79d91fcc937d192"
+    },
+    "source-qualification-guard.json": {
+      "bytes": 426,
+      "sha256": "29cf75185b594bb760877bf8a297dcbbbb262d940bcc51c4a08ccdefa5233650"
+    }
+  },
+  "completed_manifest_sha256": "1761bb0f0a999d26ea27d2ebf656d554a083f0f017429d3ee76e8edd8ad26a26",
+  "configuration": {
+    "actual_rendered_payload_sha256": null,
+    "all_final_slots_null": true,
+    "inert_canonical_config_sha256": "c458f552e57fe7661a2f53fe87000d5c3c02c339dba09bbdb0f73d5813963a47",
+    "token_end_ascii": 2951,
+    "token_start_ascii": 1745,
+    "unrendered_template_sha256": "7905eed61e558313e620d1427032984ead0bc0e4723d697d3b066194ec5b0e1b"
+  },
+  "current_dependency_bindings": [
+    {
+      "bytes": 46908,
+      "git_blob": "b85b788e771d9064de1bb9dabf5c4b941db5b01f",
+      "path": "docs/verification/m1-metadata-r9-repair-2026-10-25-t3-9b2c2354/metadata-caller.py.txt",
+      "ref": "9b50dd7e3a672eafe319be33141cb875d54a471e",
+      "sha256": "01623cd4759f96cd0066a9456a2680bff476bc37b5b1acb61ec40388582a5e9f"
+    },
+    {
+      "bytes": 18399,
+      "git_blob": "0ec490f6037ddb6ab7dacf742dd7614a4f18b976",
+      "path": "docs/verification/m1-metadata-r10-review-2026-10-25-t3-a1a624d3/REVIEW.md",
+      "ref": "1c0e4bcdc2dddcb64a3277db34d5ccd5e872fab2",
+      "review_import": "a9ba3a2a797415d89336e8d1f1db4e8087e36a37",
+      "review_import_exact": true,
+      "sha256": "ad868577561145dcba9e74db7138e5118544e721ca3629f5c0c4f1808203c496"
+    },
+    {
+      "bytes": 15482,
+      "git_blob": "d4977bcc5d04194e8938543a60b7523163ffb731",
+      "path": "docs/verification/m1-source-stdin-payload-kill-gate-review-2026-10-25-t3-a96986f4/REVIEW.md",
+      "ref": "98a7ecab421ca64b67ac7f57db153be54b70f989",
+      "review_import": "c4c8b585eb43795bf733d4260ecc77ce439a6eb9",
+      "review_import_exact": true,
+      "sha256": "3b04ce2543a07325bf5ae114002806064d0b01cd63206837976d04bc1e079dfd"
+    },
+    {
+      "bytes": 14800,
+      "git_blob": "1cbe854709e785f2eadc7fd1a86c94d0db162f5f",
+      "path": "docs/verification/m1-metadata-transport-r5-review-2026-10-25-t3-2901f30d/REVIEW.md",
+      "ref": "a7e22725cbbf07b5e6ac7e7aa7e7fb0d3dff93b4",
+      "review_import": "81252214f7c391c465510193acf48115ec3d95db",
+      "review_import_exact": true,
+      "sha256": "dcde08acc89cdf374c9b5a50e71df33f080c3bead7615fa81bb0bac280c71b3c"
+    },
+    {
+      "bytes": 973,
+      "git_blob": "4ab198a2234196903bafbeb3606cf438964d33ef",
+      "path": "docs/verification/local-transport-empty-cli-2026-10-25/observation.json",
+      "ref": "263c75859ab643ef0e5b435b3f81bd9ffe6739c4",
+      "sha256": "d8e664f3d6b84b461d367e949f4f7a05c652fde20a5a2fddf525b3f8abb93517"
+    },
+    {
+      "bytes": 1816,
+      "git_blob": "0f36f6de8b935dcd6a5941772195cbb414ae533d",
+      "path": "docs/verification/m1-source-profile-binding-2026-10-25/binding.json",
+      "ref": "75ef628876013ea882472bbfa0a392439fe3e03d",
+      "sha256": "204bae80f194951ab76f73531084b0ad0f1a8fd4386649493db85e95f152fa7a"
+    },
+    {
+      "bytes": 956,
+      "git_blob": "227bd40e541f33a070ac8e449e8ebafa7997aadd",
+      "path": "docs/verification/local-metadata-coordinator-prerequisite-2026-10-25/receipt.json",
+      "ref": "190e11f2477c0a68b8980a154dcf934ea0363882",
+      "sha256": "d9ed3eb6d9c6716a343d3f0c7acbe48cf6a74e2e65d6bbe8df8edc444c6cc1fc"
+    }
+  ],
+  "direct_call_names": [
+    "<expression>.decode",
+    "<expression>.encode",
+    "<expression>.hexdigest",
+    "<expression>.update",
+    "CONFIG_TEXT.encode",
+    "ROOT.split",
+    "Stop",
+    "absent",
+    "all",
+    "bind_config",
+    "bytearray",
+    "bytes",
+    "call",
+    "check",
+    "console_admission",
+    "data.extend",
+    "data.values",
+    "decode_inputs",
+    "dict",
+    "emit_once",
+    "encoded",
+    "fn",
+    "hashlib.sha256",
+    "hex_string",
+    "inspect_completed",
+    "inventory",
+    "json.dumps",
+    "len",
+    "list",
+    "main",
+    "map",
+    "math.isfinite",
+    "min",
+    "next",
+    "open_root",
+    "os._exit",
+    "os.fsencode",
+    "os.getpriority",
+    "os.setpriority",
+    "os.stat",
+    "put",
+    "read_leaf",
+    "require",
+    "same_data",
+    "set",
+    "sha",
+    "stamp",
+    "stat.S_IMODE",
+    "stat.S_ISDIR",
+    "stat.S_ISFIFO",
+    "stat.S_ISREG",
+    "strict_json",
+    "sum",
+    "time.clock_gettime_ns",
+    "type",
+    "walk",
+    "zip"
+  ],
+  "execution": false,
+  "findings": [],
+  "fixed_input_bindings": {
+    "command-vectors.json": {
+      "bytes": 12370,
+      "sha256": "e3ff5756ab3b35a5c815e50ac1fad6520117836e080849260de87592bd327fa0"
+    },
+    "expected-source-metadata.json": {
+      "bytes": 142587,
+      "sha256": "1670da99b768e01de3fc4ecd4d644fba7031ea09e55d97c1395290bfb681c05f"
+    },
+    "input-pins.json": {
+      "bytes": 4920,
+      "sha256": "31a17c129e0af6c8c0437458c01fa8c28cffb89f29ee327648a31fed96608352"
+    }
+  },
+  "folder_tree": "473946bb88e8707fc44656be70f6f95b377e6e55",
+  "full_index_binary_folder_delta": {
+    "bytes": 128969,
+    "original_import_exact": true,
+    "sha256": "782f5716d1063e0ade210628c3a58ff23504a385360e935678a3258f067a9f60"
+  },
+  "future_execution_approval_created": false,
+  "human_gate_created": false,
+  "import_parent": "a9ba3a2a797415d89336e8d1f1db4e8087e36a37",
+  "imported": "4230f4c608580cd60f3321207aa8b07ea0ea9b5c",
+  "imports": [
+    "base64",
+    "hashlib",
+    "json",
+    "math",
+    "os",
+    "stat",
+    "sys",
+    "time"
+  ],
+  "independent_static_check_count": 108,
+  "independent_static_checks": {
+    "12_files_original_import_tree_entries_equal": true,
+    "actual50_unique_ordered_vectors_equal_recipe": true,
+    "all12_worktree_regular_nonexecutable0644": true,
+    "all17_declared_public_inputs_checked": true,
+    "all23_function_bindings_independently_exact": true,
+    "complete_add_file_patch_exact_from_empty": true,
+    "completed7_exact_public_contracts": true,
+    "completed_manifest_exact": true,
+    "current_clear_review_import_exact:8125221": true,
+    "current_clear_review_import_exact:a9ba3a2": true,
+    "current_clear_review_import_exact:c4c8b58": true,
+    "embedded_config_exact_canonical_template": true,
+    "exact17_pin_destinations": true,
+    "final_caller_and_review_exact_user_bindings": true,
+    "final_caller_fixed_data_binding:command-vectors.json": true,
+    "final_caller_fixed_data_binding:input-pins.json": true,
+    "fixed3_exact_f78_initial_bindings": true,
+    "fixed_root_exact_across_configs": true,
+    "folder_tree_identity": true,
+    "full_index_binary_folder_diffs_equal": true,
+    "immutable_and_worktree:docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/README.md": true,
+    "immutable_and_worktree:docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/SHA256SUMS": true,
+    "immutable_and_worktree:docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/bindings.json": true,
+    "immutable_and_worktree:docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/config.schema.json": true,
+    "immutable_and_worktree:docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/config.template.json": true,
+    "immutable_and_worktree:docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/finite-plan.json": true,
+    "immutable_and_worktree:docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/function-inventory.json": true,
+    "immutable_and_worktree:docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/materialization.contract.json": true,
+    "immutable_and_worktree:docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/materializer.patch": true,
+    "immutable_and_worktree:docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/materializer.py.txt": true,
+    "immutable_and_worktree:docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/static-checks.json": true,
+    "immutable_and_worktree:docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/static-reader.py": true,
+    "inert_config_canonical_hash_exact": true,
+    "initial_capacity_arithmetic": true,
+    "manifest:README.md": true,
+    "manifest:bindings.json": true,
+    "manifest:config.schema.json": true,
+    "manifest:config.template.json": true,
+    "manifest:finite-plan.json": true,
+    "manifest:function-inventory.json": true,
+    "manifest:materialization.contract.json": true,
+    "manifest:materializer.patch": true,
+    "manifest:materializer.py.txt": true,
+    "manifest:static-checks.json": true,
+    "manifest:static-reader.py": true,
+    "manifest_exact_other11": true,
+    "new_review_folder_absent": true,
+    "no_exec_eval_compile_import_launcher_or_mutation_calls": true,
+    "no_explicit_finally": true,
+    "only2_raw_write_sites": true,
+    "owned_binding:README.md": true,
+    "owned_binding:config.schema.json": true,
+    "owned_binding:config.template.json": true,
+    "owned_binding:finite-plan.json": true,
+    "owned_binding:function-inventory.json": true,
+    "owned_binding:materialization.contract.json": true,
+    "owned_binding:materializer.patch": true,
+    "owned_binding:materializer.py.txt": true,
+    "owned_binding:static-reader.py": true,
+    "parent_duties_exact_keys_and_true": true,
+    "pin_raw_hash:artifact-receipt.template.json": true,
+    "pin_raw_hash:build-source-bindings.json": true,
+    "pin_raw_hash:common.py": true,
+    "pin_raw_hash:controller.py": true,
+    "pin_raw_hash:coverage.py": true,
+    "pin_raw_hash:exec_owned.py": true,
+    "pin_raw_hash:file-qualification.recipe.py.txt": true,
+    "pin_raw_hash:limits.json": true,
+    "pin_raw_hash:macproc.py": true,
+    "pin_raw_hash:metadata.recipe.json": true,
+    "pin_raw_hash:ownership.py": true,
+    "pin_raw_hash:port_diagnostic.py": true,
+    "pin_raw_hash:prepare.py": true,
+    "pin_raw_hash:probe.py": true,
+    "pin_raw_hash:qualification.recipe.json": true,
+    "pin_raw_hash:source-checks.json": true,
+    "pin_raw_hash:watchdog.py": true,
+    "prep_support_git_identity:docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/common.py.txt": true,
+    "prep_support_git_identity:docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/prepare.py.txt": true,
+    "public_binding:basis_bridge_projection": true,
+    "public_binding:f78_config": true,
+    "public_binding:f78_contract": true,
+    "public_binding:f78_source": true,
+    "public_binding:fa72_contract": true,
+    "public_binding:fa72_source": true,
+    "public_binding:metadata_recipe": true,
+    "public_binding:next_reviewed_flow": true,
+    "public_binding:operator_plan": true,
+    "public_binding:original_18_input_index": true,
+    "public_binding:parent_inspection": true,
+    "public_binding:receipt_contract": true,
+    "public_binding:transport_R4_parent_interface": true,
+    "public_binding:transport_R4_private_template": true,
+    "public_binding:transport_R4_profile": true,
+    "public_binding:transport_R4_readme": true,
+    "public_binding:transport_independent_clear": true,
+    "schema_all_objects_closed": true,
+    "schema_inert_const_exact": true,
+    "schema_top_and_input_keys_closed": true,
+    "seven_packet_JSON_files_strict": true,
+    "single_config_markers": true,
+    "single_string_token_original_exact": true,
+    "size_arithmetic_exact_retained_values": true,
+    "sole_deadline_assignment": true,
+    "source_exact_supplied_identity": true,
+    "stdlib_only_import_surface": true,
+    "template_all_final_slots_null_execution_false": true,
+    "working_packet_file_set_exact": true
+  },
+  "limits": [
+    "No actual final CONFIG or rendered payload was constructed.",
+    "No private original or basis bytes were read.",
+    "No runtime behavior, timing, faults, pipe delivery, OS exits/EOF/D4, NI15 continuity, durability, native qualification or approval proven."
+  ],
+  "packet_folder": "docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759",
+  "parser_version": "3.9.6 (default, Aug 17 2026, 12:07:42) \n[Clang 21.0.0 (clang-2100.3.34.1)]",
+  "parsing_only": "AST/strict JSON/hash/Git/patch data; supplied materializer and static reader were not executed/imported; no executable source code object produced",
+  "patch": {
+    "bytes": 24935,
+    "reconstructed_from_empty_exact": true,
+    "sha256": "55632b43d244bb96f8b55e3bf6f35606df7783407e6730f4254964e7973f56f2"
+  },
+  "preparation_contract_sources": [
+    {
+      "bytes": 11632,
+      "git_blob": "b3491c6f70c853b750c9395ea659749beec6b6c0",
+      "path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/prepare.py.txt",
+      "ref": "4230f4c608580cd60f3321207aa8b07ea0ea9b5c",
+      "sha256": "16f2c5d9dce3f3bce8a871bd53eea06ebf1818080de5f9bdaae3997b86304e9a"
+    },
+    {
+      "bytes": 12781,
+      "git_blob": "c3fd4b4524111bdad0d75ecf149d4b775da69cda",
+      "path": "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/common.py.txt",
+      "ref": "4230f4c608580cd60f3321207aa8b07ea0ea9b5c",
+      "sha256": "20a9c16030b2de53b99870f25bada68137bfc6fbc5b67cc29f8e878312d4129c"
+    }
+  ],
+  "public_declared_inputs": [
+    {
+      "bytes": 10502,
+      "git_blob": "3edcd3a325b27d223a21ff61ff8ac8330b471779",
+      "path": "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/README.md",
+      "read_as": "tracked public source/data only",
+      "ref": "81252214f7c391c465510193acf48115ec3d95db",
+      "role": "next_reviewed_flow",
+      "sha256": "9e13558a6198bfedec46b4a8887d7b8ec2122a281f90d00ae6933d929b650422"
+    },
+    {
+      "bytes": 7915,
+      "git_blob": "e1c3fc853eb3493fe4cc09fe9b551d06c1328b83",
+      "path": "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/metadata.recipe.json",
+      "read_as": "tracked public source/data only",
+      "ref": "81252214f7c391c465510193acf48115ec3d95db",
+      "role": "metadata_recipe",
+      "sha256": "f97b12054aceb745cadcd3159d25f4693b3570a44d216ffdd96d9c1ddf05701e"
+    },
+    {
+      "bytes": 8565,
+      "git_blob": "b8ecc82798008fba8a372144203996e9a9ccaf3f",
+      "path": "docs/verification/m1-ordinary-fresh-flow-plan-2026-10-24-t3-5463ce44/operator-plan.md",
+      "read_as": "tracked public source/data only",
+      "ref": "81252214f7c391c465510193acf48115ec3d95db",
+      "role": "operator_plan",
+      "sha256": "c305b38ea83d40994a7f346e5815522050ae1fe833bf84e04b3b471134253dc4"
+    },
+    {
+      "bytes": 10673,
+      "git_blob": "b127b136063960b649bc20ba9d4d93b0e0d81915",
+      "path": "docs/verification/m1-ordinary-fresh-flow-plan-2026-10-24-t3-5463ce44/receipt-contract.md",
+      "read_as": "tracked public source/data only",
+      "ref": "81252214f7c391c465510193acf48115ec3d95db",
+      "role": "receipt_contract",
+      "sha256": "2e9d4cb5440fe5feed0411886b36774e4acce0155e0082412f671f6df19d26e4"
+    },
+    {
+      "bytes": 15156,
+      "git_blob": "ad8d46a020df30ec42ee052d0775ff713668ec0b",
+      "path": "docs/verification/m1-source-stdin-payload-template-2026-10-25-t3-65b09134/README.md",
+      "read_as": "tracked public source/data only",
+      "ref": "81252214f7c391c465510193acf48115ec3d95db",
+      "role": "fa72_contract",
+      "sha256": "80d6492d0321c659faa692e80ce2d0f0d54c1ee87f47675ddc2829936456bbff"
+    },
+    {
+      "bytes": 37122,
+      "git_blob": "7b6b689fff1b6eb69fbf8f62cc17410ec3a9e1cb",
+      "path": "docs/verification/m1-source-stdin-payload-template-2026-10-25-t3-65b09134/source-payload.py.txt",
+      "read_as": "tracked public source/data only",
+      "ref": "81252214f7c391c465510193acf48115ec3d95db",
+      "role": "fa72_source",
+      "sha256": "dc208d02222c92418046139ecf622c797881af46b3edc1b8a891742b22f9fd9f"
+    },
+    {
+      "bytes": 37775,
+      "git_blob": "b5425f6d3c3856933053c13dc093199b4eadc8c2",
+      "path": "docs/verification/m1-source-stdin-payload-kill-gate-repair-2026-10-25-t3-da89534d/source-payload.py.txt",
+      "read_as": "tracked public source/data only",
+      "ref": "81252214f7c391c465510193acf48115ec3d95db",
+      "role": "f78_source",
+      "sha256": "8d7844a20ce347b7be52c07a516b8d9136bdb5c067e450bea24eb3453441afa6"
+    },
+    {
+      "bytes": 5032,
+      "git_blob": "058b2a59175e5caa863292fa4e1c9e577d5b5ce3",
+      "path": "docs/verification/m1-source-stdin-payload-kill-gate-repair-2026-10-25-t3-da89534d/config.template.json",
+      "read_as": "tracked public source/data only",
+      "ref": "81252214f7c391c465510193acf48115ec3d95db",
+      "role": "f78_config",
+      "sha256": "60aca1372651fb04c396fff887b0518a3e9b26ee10746df94ae510357074b493"
+    },
+    {
+      "bytes": 2423,
+      "git_blob": "09b6c929c0ad3fc7a1e38c02154857619facd00a",
+      "path": "docs/verification/m1-source-stdin-payload-kill-gate-repair-2026-10-25-t3-da89534d/repair-contract.json",
+      "read_as": "tracked public source/data only",
+      "ref": "81252214f7c391c465510193acf48115ec3d95db",
+      "role": "f78_contract",
+      "sha256": "b49e4080411babb69f7410d3426d5fae0dc25b0631b785b861d371068997aaf9"
+    },
+    {
+      "bytes": 2827,
+      "git_blob": "bd8b718575b1081641bc377c8bc287c5276a98b9",
+      "path": "docs/verification/m1-completed-source-parent-inspection-2026-10-25/inspection.json",
+      "read_as": "tracked public source/data only",
+      "ref": "81252214f7c391c465510193acf48115ec3d95db",
+      "role": "parent_inspection",
+      "sha256": "1b2656682abcda27143e5fbdde378077c6afa040b7daae3428347ec6f8d55e33"
+    },
+    {
+      "bytes": 2557,
+      "git_blob": "d47d90019b803f4e491d923a9a83f6569e6a0978",
+      "path": "docs/verification/m1-canonical-source-file-audit-2026-10-25-t3-ee636b1e/input-index.json",
+      "read_as": "tracked public source/data only",
+      "ref": "81252214f7c391c465510193acf48115ec3d95db",
+      "role": "original_18_input_index",
+      "sha256": "b133c01791f148089cbb7bc303597a812871c11d1f3b6ee8979c047a923995a3"
+    },
+    {
+      "bytes": 2229,
+      "git_blob": "97605fd09008f77d07db37849c24d340f0828fa2",
+      "path": "docs/verification/m1-metadata-basis-bridge-2026-10-25-t3-755a8865/projection.json",
+      "read_as": "tracked public source/data only",
+      "ref": "81252214f7c391c465510193acf48115ec3d95db",
+      "role": "basis_bridge_projection",
+      "sha256": "8b472d931bbd8badae09dfde07ddeb733f0063948cb093f9041831a08e664be2"
+    },
+    {
+      "bytes": 8875,
+      "git_blob": "5ec1ac3fefd219cd948a8fca0db5e8fd5ae2cced",
+      "path": "docs/verification/m1-metadata-transport-r4-2026-10-25-t3-53ab1856/README.md",
+      "read_as": "tracked public source/data only",
+      "ref": "81252214f7c391c465510193acf48115ec3d95db",
+      "role": "transport_R4_readme",
+      "sha256": "1a2ad5ea3c5347a827a3c2bfe4dd6734f378a31c93bc2fa9ad9ccfe0764b29ea"
+    },
+    {
+      "bytes": 663,
+      "git_blob": "e85d7243d898152228986fa7b9e4d69061e853eb",
+      "path": "docs/verification/m1-metadata-transport-r4-2026-10-25-t3-53ab1856/profile.template.json",
+      "read_as": "tracked public source/data only",
+      "ref": "81252214f7c391c465510193acf48115ec3d95db",
+      "role": "transport_R4_profile",
+      "sha256": "28a7f1fb527247e6f33bd837d0bdaec1397b4e6b4c03cd06c28a59d48b9d9a45"
+    },
+    {
+      "bytes": 1374,
+      "git_blob": "9633026389248f692bc3859fbb89b6db4e86691c",
+      "path": "docs/verification/m1-metadata-transport-r4-2026-10-25-t3-53ab1856/bindings.template.json",
+      "read_as": "tracked public source/data only",
+      "ref": "81252214f7c391c465510193acf48115ec3d95db",
+      "role": "transport_R4_private_template",
+      "sha256": "44c4cf033c40d5f20586dc47cb9eecbec84941e5eb74cb42a7626cfc8d22f92e"
+    },
+    {
+      "bytes": 5533,
+      "git_blob": "f0f87a43a002fc2974eed3ed69476af2e98d6d77",
+      "path": "docs/verification/m1-metadata-transport-r4-2026-10-25-t3-53ab1856/parent-observer.contract.json",
+      "read_as": "tracked public source/data only",
+      "ref": "81252214f7c391c465510193acf48115ec3d95db",
+      "role": "transport_R4_parent_interface",
+      "sha256": "82bd2b3d460eb9166e7805b114a02a10e56685f93c088aa351b6ba5f2eaf48dd"
+    },
+    {
+      "bytes": 14800,
+      "git_blob": "1cbe854709e785f2eadc7fd1a86c94d0db162f5f",
+      "path": "docs/verification/m1-metadata-transport-r5-review-2026-10-25-t3-2901f30d/REVIEW.md",
+      "read_as": "tracked public source/data only",
+      "ref": "81252214f7c391c465510193acf48115ec3d95db",
+      "role": "transport_independent_clear",
+      "sha256": "dcde08acc89cdf374c9b5a50e71df33f080c3bead7615fa81bb0bac280c71b3c"
+    }
+  ],
+  "review_base": "4230f4c608580cd60f3321207aa8b07ea0ea9b5c",
+  "reviewer_reader_errors": [
+    {
+      "candidate_changed": false,
+      "correction": "Normalize only the reviewer Git object path with posixpath.normpath; retain original declared path and compare exact immutable raw bytes.",
+      "error": "Git rev-parse rejected a repository input path containing literal /../; exit128",
+      "raw_error": "fatal: path 'docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/common.py.txt' exists on disk, but not in '4230f4c608580cd60f3321207aa8b07ea0ea9b5c'",
+      "stage": "additional pin Git lookup before any write",
+      "supplied_code_entered": false
+    }
+  ],
+  "runtime": "UNVERIFIED",
+  "runtime_acceptance": false,
+  "schema": "openergy.independent-materializer-review-bindings.v1",
+  "source": {
+    "bytes": 24324,
+    "lines": 483,
+    "sha256": "7905eed61e558313e620d1427032984ead0bc0e4723d697d3b066194ec5b0e1b"
+  },
+  "verdict": "SOURCE CLEAR",
+  "whole_commit_trees_equal": false,
+  "wrapped_operation_names": [
+    "<expression>",
+    "base64.b64decode",
+    "base64.b64encode",
+    "entries.close",
+    "entry.stat",
+    "json.loads",
+    "os.close",
+    "os.fpathconf",
+    "os.fstat",
+    "os.fsync",
+    "os.get_blocking",
+    "os.geteuid",
+    "os.getuid",
+    "os.open",
+    "os.path.realpath",
+    "os.read",
+    "os.scandir",
+    "os.set_blocking",
+    "os.stat",
+    "os.umask",
+    "os.write"
+  ]
+}
