@@ -1,0 +1,562 @@
+diff --git a/docs/verification/m1-prepare-transport-assessor-2026-10-25-t3-c696c14b/assessor.py.txt b/docs/verification/m1-prepare-transport-assessor-2026-10-25-t3-c696c14b/assessor.py.txt
+new file mode 100644
+--- /dev/null
++++ b/docs/verification/m1-prepare-transport-assessor-2026-10-25-t3-c696c14b/assessor.py.txt
+@@ -0,0 +1,557 @@
++"""INERT SOURCE TEMPLATE. SOURCE/DATA ONLY; execution=false.
++
++Future use requires independent review and exact constant-only rendering.
++Only CONFIG_TEXT may change. Null bindings reject before filesystem access.
++External evidence references are parent-supplied receipts, not proof by flags.
++"""
++import time
++
++ENTRY_NS = time.monotonic_ns()
++
++import hashlib
++import json
++import math
++import os
++import stat
++import sys
++
++CONFIG_TEXT = r'''{"schema":"openergy.prepare-transport-assessor-config.v1","payload":{"bytes":null,"sha256":null},"observer_rendered":{"bytes":null,"sha256":null},"capsule":{"candidate":null,"review":null,"review_sha256":null},"runtime":{"resolved_python":null,"full_version":null},"external":{"original_started_ns":null,"original_absolute_until_ns":null,"observer_pid":null,"observer_exit":null,"observer_exit_observed_ns":null,"observer_console_complete_ns":null,"observer_console_eof_ns":null,"observer_console_text":null,"same_local_host_boot_evidence_sha256":null,"observer_handle_source_evidence_sha256":null,"observer_render_proof_sha256":null,"payload_render_proof_sha256":null,"profile_guard_qualification_sha256":null,"assessor_review_sha256":null,"assessor_render_proof_sha256":null}}'''
++
++BASE = '/Users/serge/.local/state/openergy-verification/m1-source-metadata-launch-prepared-20261025-7ae23486940a'
++PYTHON = '/opt/homebrew/bin/python3.15'
++OBSERVER = BASE + '/prepare-launch/prepare-local-exit-observer.py'
++ASSESSOR = BASE + '/tools/prepare-transport-assessor.py'
++COLLECTOR = BASE + '/tools/transport-phase-budgets.py'
++PROFILE = BASE + '/m1-profile.json'
++PAYLOAD = BASE + '/prepare-launch/prepare.payload.py'
++RUN = BASE + '/prepare-run'
++OUTPUT = 'prepare-transport-assessment.json'
++COLLECTOR_HASH = '695dc01461b31e04eb7b8c4a12848350f26a45731f05b0ddca971c05749e4df6'
++PROFILE_HASH = 'dc9ff86519970ad740961012b0740b1b1a7aab3135a6fe79e47aa0de071acf4f'
++CLOCK_HASH = '67e4f9525b2d1b1496689808d08ab625fc88698bb1e2b049e463868f08e5303d'
++SECOND = 1000000000
++STREAM_CAPS = {'stdout': 131072, 'stderr': 65536}
++INPUT_CAPS = {'profile': 131072, 'payload': 1048576, 'collector': 131072}
++CLOCK = {'schema': 'openergy.local-macos-clock.v1', 'clock': 'time.monotonic_ns',
++         'implementation': 'mach_absolute_time()', 'monotonic': True,
++         'adjustable': False, 'resolution_seconds': 4.166666666666666e-08,
++         'unit': 'integer_nanoseconds', 'origin': 'macOS Mach absolute clock',
++         'scope': 'same running local Mac only; CPython >=3.10',
++         'cross_host_comparison': False}
++PARENT_KEYS = ('schema observer_resolved_python observer_full_version clock_descriptor '
++               'same_local_host_and_boot_bound collector_source_sha256 profile_sha256 '
++               'payload_sha256 run_directory started_ns absolute_until_ns '
++               'actual_collector_pid_from_retained_handle actual_collector_exit '
++               'actual_wait_or_poll_returned post_actual_exit_observed_ns '
++               'strictly_before_absolute timeout receipt_assessed artifact_accepted phase '
++               'selected_work_seconds selected_settle_seconds selected_final_seconds '
++               'selected_total_seconds').split()
++REQUEST_KEYS = ('schema operation phase selected_work_seconds selected_settle_seconds '
++                'selected_final_seconds selected_total_seconds observer_source_sha256 '
++                'own_priority_before clock same_local_host_and_boot_bound_by_direct_topology '
++                'started_ns work_until_ns absolute_until_ns argv retries '
++                'exclusive_target_root_owned_for_serial_attempt remote_enclosure').split()
++GUARD_KEYS = ('schema phase bindings clock deadlines python caps retries remote_state '
++              'remote_child_exit').split()
++RECEIPT_KEYS = ('schema status phase bindings clock deadlines python guard_durable '
++                'spawn_started_ns spawn_returned_ns settle_stop_ns final_stop_ns '
++                'actual_local_ssh_pid actual_local_ssh_exit actual_exit_observed_ns '
++                'handle_retained kill timeout streams first_observed_failure '
++                'secondary_publication_failures publication_failure_count caps retries '
++                'completion_passes remote_child_exit remote_current_state '
++                'payload_receipt_assessed artifact_accepted r9_reserved_publisher '
++                'own_cli_exit_observed independent_parent_observation_required '
++                'receipt_prewrite_ns').split()
++# Closed read table: no caller path, phase, cap or time selector.
++READS = {'parent': (False, 'prepare-parent-exit.json', 16384, 0o600),
++         'request': (False, 'prepare-parent-request.json', 16384, 0o600),
++         'receipt': (True, 'receipt.json', 32768, 0o600),
++         'guard': (True, 'once.guard.json', 16384, 0o600),
++         'stdout': (True, 'stdout.prefix.bin', 131072, 0o600),
++         'stderr': (True, 'stderr.prefix.bin', 65536, 0o600),
++         'snapshot': (True, 'payload.stdin', 1048576, 0o400)}
++S = A = None
++ROOT = RUNFD = None
++READ_REFS = {}
++READ_STAMPS = {}
++
++
++def require(value):
++    if value is not True:
++        raise ValueError('closed assessor rejection')
++
++
++def canonical(value):
++    return (json.dumps(value, sort_keys=True, separators=(',', ':'),
++                       ensure_ascii=True, allow_nan=False) + '\n').encode('ascii')
++
++
++def digest(raw):
++    return hashlib.sha256(raw).hexdigest()
++
++
++def unique(pairs):
++    result = {}
++    for key, value in pairs:
++        require(key not in result)
++        result[key] = value
++    return result
++
++
++def finite_float(text):
++    value = float(text)
++    require(math.isfinite(value))
++    return value
++
++
++def nonfinite(text):
++    raise ValueError('nonfinite JSON')
++
++
++def load(raw):
++    return json.loads(raw.decode('ascii'), object_pairs_hook=unique,
++                      parse_float=finite_float, parse_constant=nonfinite)
++
++
++def keys(value, names):
++    require(type(value) is dict and set(value) == set(names))
++
++
++def equal(actual, expected):
++    # Python's True == 1 must never admit a number or a flag.
++    require(type(actual) is type(expected))
++    if type(expected) is dict:
++        keys(actual, expected)
++        for key in expected:
++            equal(actual[key], expected[key])
++    elif type(expected) is list:
++        require(len(actual) == len(expected))
++        for left, right in zip(actual, expected):
++            equal(left, right)
++    else:
++        require(actual == expected)
++
++
++def integer(value, minimum=0, maximum=9223372036854775807):
++    require(type(value) is int and minimum <= value <= maximum)
++    return value
++
++
++def hexhash(value, length=64):
++    require(type(value) is str and len(value) == length
++            and all(c in '0123456789abcdef' for c in value))
++
++
++def bind_config():
++    value = load(CONFIG_TEXT.encode('ascii'))
++    keys(value, ['schema', 'payload', 'observer_rendered', 'capsule', 'runtime', 'external'])
++    equal(value['schema'], 'openergy.prepare-transport-assessor-config.v1')
++    for name, cap in [('payload', 1048576), ('observer_rendered', 16384)]:
++        keys(value[name], ['bytes', 'sha256'])
++        integer(value[name]['bytes'], 1, cap)
++        hexhash(value[name]['sha256'])
++    keys(value['capsule'], ['candidate', 'review', 'review_sha256'])
++    for name in ['candidate', 'review']:
++        hexhash(value['capsule'][name], 40)
++    hexhash(value['capsule']['review_sha256'])
++    require(value['capsule']['candidate'] != '06634b58f1b4795684b9139de716b4fe8f6430e0'
++            and value['capsule']['review'] != 'f6e15d0803d52905636f9b916b50e0c0a23ef05a')
++    keys(value['runtime'], ['resolved_python', 'full_version'])
++    for item in value['runtime'].values():
++        require(type(item) is str and 0 < len(item) <= 1024 and '\x00' not in item)
++    require(value['runtime']['resolved_python'].startswith('/'))
++    ext = value['external']
++    keys(ext, ['original_started_ns', 'original_absolute_until_ns', 'observer_pid',
++               'observer_exit', 'observer_exit_observed_ns', 'observer_console_complete_ns',
++               'observer_console_eof_ns', 'observer_console_text',
++               'same_local_host_boot_evidence_sha256', 'observer_handle_source_evidence_sha256',
++               'observer_render_proof_sha256', 'payload_render_proof_sha256',
++               'profile_guard_qualification_sha256', 'assessor_review_sha256',
++               'assessor_render_proof_sha256'])
++    for name in ['original_started_ns', 'original_absolute_until_ns', 'observer_pid',
++                 'observer_exit_observed_ns', 'observer_console_complete_ns',
++                 'observer_console_eof_ns']:
++        integer(ext[name], 1)
++    equal(ext['observer_exit'], 0)
++    require(type(ext['observer_console_text']) is str)
++    console = ext['observer_console_text'].encode('ascii')
++    require(0 < len(console) <= 512)
++    for name in ext:
++        if name.endswith('_sha256'):
++            hexhash(ext[name])
++    return value
++
++
++def before():
++    now = time.monotonic_ns()
++    require(type(A) is int and S <= ENTRY_NS <= now < A)
++    return now
++
++
++def close(fd):
++    try:
++        os.close(fd)
++    finally:
++        before()
++
++
++def stamp(info):
++    return (info.st_dev, info.st_ino, info.st_mode, info.st_uid, info.st_gid,
++            info.st_nlink, info.st_size, info.st_mtime_ns, info.st_ctime_ns)
++
++
++def owned_directory(fd):
++    info = os.fstat(fd)
++    before()
++    require(stat.S_ISDIR(info.st_mode) and info.st_uid == os.getuid()
++            and stat.S_IMODE(info.st_mode) == 0o700)
++    return info
++
++
++def open_base():
++    before()
++    fd = os.open('/', os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_NONBLOCK)
++    try:
++        before()
++        for part in BASE[1:].split('/'):
++            next_fd = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
++                              | os.O_NONBLOCK, dir_fd=fd)
++            try:
++                before()
++                close(fd)
++            except BaseException:
++                close(next_fd)
++                raise
++            fd = next_fd
++        owned_directory(fd)
++        return fd
++    except BaseException:
++        close(fd)
++        raise
++
++
++def file_state(fd, parent, name, initial, cap, mode):
++    current = os.fstat(fd)
++    before()
++    linked = os.stat(name, dir_fd=parent, follow_symlinks=False)
++    before()
++    require(stat.S_ISREG(current.st_mode) and current.st_uid == os.getuid()
++            and current.st_nlink == 1 and stat.S_IMODE(current.st_mode) == mode
++            and 0 <= current.st_size <= cap)
++    require(stamp(initial) == stamp(current) == stamp(linked))
++
++
++def read_fixed(label):
++    in_run, name, cap, mode = READS[label]
++    parent = RUNFD if in_run else ROOT
++    before()
++    fd = os.open(name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=parent)
++    try:
++        before()
++        initial = os.fstat(fd)
++        before()
++        file_state(fd, parent, name, initial, cap, mode)
++        parts, seen = [], 0
++        while True:
++            file_state(fd, parent, name, initial, cap, mode)
++            before()
++            chunk = os.read(fd, min(16384, cap + 1 - seen))
++            before()
++            file_state(fd, parent, name, initial, cap, mode)
++            seen += len(chunk)
++            require(seen <= cap)
++            if not chunk:
++                break
++            parts.append(chunk)
++        raw = b''.join(parts)
++        require(len(raw) == initial.st_size)
++        file_state(fd, parent, name, initial, cap, mode)
++        READ_STAMPS[label] = stamp(initial)
++        READ_REFS[label] = {'path': (RUN if in_run else BASE) + '/' + name,
++                            'bytes': len(raw), 'sha256': digest(raw)}
++        before()
++    finally:
++        close(fd)
++    return raw
++
++
++def clock_runtime(config):
++    require(sys.argv == [ASSESSOR] and sys.platform == 'darwin'
++            and sys.implementation.name == 'cpython' and sys.version_info[:2] == (3, 15)
++            and sys.flags.isolated == 1 and sys.flags.no_site == 1
++            and sys.flags.dont_write_bytecode == 1 and sys.flags.optimize == 0
++            and os.getuid() == os.geteuid())
++    equal(os.path.realpath(sys.executable), config['runtime']['resolved_python'])
++    equal(sys.version, config['runtime']['full_version'])
++    # Exact launch executable and its trusted contents remain external duties.
++    os.setpriority(os.PRIO_PROCESS, 0, 15)
++    require(os.getpriority(os.PRIO_PROCESS, 0) == 15)
++    info = time.get_clock_info('monotonic')
++    equal(info.implementation, CLOCK['implementation'])
++    equal(info.monotonic, True)
++    equal(info.adjustable, False)
++    equal(info.resolution, CLOCK['resolution_seconds'])
++    equal(digest(canonical(CLOCK)), CLOCK_HASH)
++    before()
++
++
++def parent_record(value, config):
++    keys(value, PARENT_KEYS)
++    wanted = {'schema': 'openergy.metadata-transport-independent-exit.v1',
++              'observer_resolved_python': config['runtime']['resolved_python'],
++              'observer_full_version': config['runtime']['full_version'],
++              'clock_descriptor': CLOCK, 'same_local_host_and_boot_bound': True,
++              'collector_source_sha256': COLLECTOR_HASH, 'profile_sha256': PROFILE_HASH,
++              'payload_sha256': config['payload']['sha256'], 'run_directory': RUN,
++              'started_ns': S, 'absolute_until_ns': A, 'actual_collector_exit': 0,
++              'actual_wait_or_poll_returned': True, 'strictly_before_absolute': True,
++              'timeout': False, 'receipt_assessed': False, 'artifact_accepted': False,
++              'phase': 'prepare', 'selected_work_seconds': 130, 'selected_settle_seconds': 2,
++              'selected_final_seconds': 3, 'selected_total_seconds': 135}
++    for key in wanted:
++        equal(value[key], wanted[key])
++    integer(value['actual_collector_pid_from_retained_handle'], 1)
++    T = integer(value['post_actual_exit_observed_ns'], 1)
++    require(S <= T < A)
++    ext = config['external']
++    require(T <= ext['observer_console_complete_ns'] <= ext['observer_console_eof_ns']
++            < ENTRY_NS and T <= ext['observer_exit_observed_ns'] < ENTRY_NS)
++    console = load(ext['observer_console_text'].encode('ascii'))
++    equal(console, {'actual_collector_exit': 0, 'D4_before_original135': True,
++                    'phase': 'prepare', 'elapsed_seconds': (T - S) / SECOND,
++                    'observer_record': {k: READ_REFS['parent'][k] for k in ['bytes', 'sha256']},
++                    'receipt_reads': 0, 'remote_or_artifact_acceptance': False})
++    equal(canonical(console), ext['observer_console_text'].encode('ascii'))
++    before()
++    return T
++
++
++def request_record(value, config):
++    keys(value, REQUEST_KEYS)
++    argv = [PYTHON, '-I', '-S', '-B', COLLECTOR, '--phase', 'prepare',
++            '--profile', PROFILE, '--profile-sha256', PROFILE_HASH, '--payload', PAYLOAD,
++            '--payload-sha256', config['payload']['sha256'], '--run-dir', RUN,
++            '--collector-sha256', COLLECTOR_HASH, '--envelope-start-ns', str(S),
++            '--clock-sha256', CLOCK_HASH]
++    equal(value, {'schema': 'openergy.phase-parent-once.v1',
++                  'operation': 'one-file-only-prepare', 'phase': 'prepare',
++                  'selected_work_seconds': 130, 'selected_settle_seconds': 2,
++                  'selected_final_seconds': 3, 'selected_total_seconds': 135,
++                  'observer_source_sha256': config['observer_rendered']['sha256'],
++                  'own_priority_before': 15, 'clock': CLOCK,
++                  'same_local_host_and_boot_bound_by_direct_topology': True,
++                  'started_ns': S, 'work_until_ns': S + 130 * SECOND,
++                  'absolute_until_ns': A, 'argv': argv, 'retries': 0,
++                  'exclusive_target_root_owned_for_serial_attempt': True,
++                  'remote_enclosure': 'actual completed activity must be proved within original local envelope; no cross-host timestamp comparison or assumed latency'})
++    before()
++
++
++def transport_records(receipt, guard, config, T):
++    keys(receipt, RECEIPT_KEYS)
++    keys(guard, GUARD_KEYS)
++    bindings = {name: {'path': path, 'sha256': sha, 'verified': True, 'bytes': size}
++                for name, path, sha, size in [
++                    ('collector', COLLECTOR, COLLECTOR_HASH, 28060),
++                    ('profile', PROFILE, PROFILE_HASH, 821),
++                    ('payload', PAYLOAD, config['payload']['sha256'], config['payload']['bytes'])]}
++    keys(receipt['deadlines'], ['started_ns', 'entry_ns', 'work_until_ns',
++                                'settle_until_ns', 'absolute_until_ns', 'work_seconds',
++                                'settle_seconds', 'final_seconds', 'total_seconds'])
++    entry = integer(receipt['deadlines']['entry_ns'], 1)
++    deadlines = {'started_ns': S, 'entry_ns': entry, 'work_until_ns': S + 130 * SECOND,
++                 'settle_until_ns': S + 132 * SECOND, 'absolute_until_ns': A,
++                 'work_seconds': 130, 'settle_seconds': 2, 'final_seconds': 3,
++                 'total_seconds': 135}
++    python = {'resolved_executable': config['runtime']['resolved_python'],
++              'version': config['runtime']['full_version'], 'implementation': 'cpython'}
++    for record in [receipt, guard]:
++        for key, wanted in [('phase', 'prepare'), ('bindings', bindings), ('clock', CLOCK),
++                            ('deadlines', deadlines), ('python', python), ('retries', 0)]:
++            equal(record[key], wanted)
++    guard_caps = {'streams': STREAM_CAPS, 'combined': 196608, 'inputs': INPUT_CAPS}
++    equal(guard, {'schema': 'openergy.metadata-transport-once.v1', 'phase': 'prepare',
++                  'bindings': bindings, 'clock': CLOCK, 'deadlines': deadlines,
++                  'python': python, 'caps': guard_caps, 'retries': 0,
++                  'remote_state': 'UNVERIFIED', 'remote_child_exit': None})
++    expected = {'schema': 'openergy.metadata-transport-receipt.v1',
++                'status': 'TRANSPORT_COMPLETE', 'guard_durable': True,
++                'actual_local_ssh_exit': 0, 'handle_retained': True, 'timeout': False,
++                'kill': {'attempted': False, 'returned': False, 'observed_ns': None,
++                         'policy': 'exact retained local SSH only; cap or deadline'},
++                'first_observed_failure': None, 'secondary_publication_failures': [],
++                'publication_failure_count': 0, 'completion_passes': 0,
++                'remote_child_exit': None, 'remote_current_state': 'UNVERIFIED',
++                'payload_receipt_assessed': False, 'artifact_accepted': False,
++                'r9_reserved_publisher': False, 'own_cli_exit_observed': False,
++                'independent_parent_observation_required': True,
++                'caps': dict(guard_caps, guard=16384, receipt=32768)}
++    for key in expected:
++        equal(receipt[key], expected[key])
++    integer(receipt['actual_local_ssh_pid'], 1)
++    for key in ['spawn_started_ns', 'spawn_returned_ns', 'actual_exit_observed_ns',
++                'settle_stop_ns', 'final_stop_ns', 'receipt_prewrite_ns']:
++        integer(receipt[key], 1)
++    spawn, returned, exit_ns, settle, final, prewrite = [receipt[k] for k in
++        ['spawn_started_ns', 'spawn_returned_ns', 'actual_exit_observed_ns',
++         'settle_stop_ns', 'final_stop_ns', 'receipt_prewrite_ns']]
++    require(S <= entry <= spawn <= returned <= exit_ns < S + 130 * SECOND)
++    # Stops are deadlines, not observations of completed settle/final stages.
++    require(exit_ns <= prewrite <= T < A and exit_ns < settle <= S + 132 * SECOND)
++    require(prewrite < final <= A and settle <= final
++            and settle - 2 * SECOND <= final - 3 * SECOND
++            and final - 3 * SECOND <= prewrite)
++    before()
++
++
++def stream_records(receipt, stdout, stderr, snapshot, config):
++    keys(receipt['streams'], ['stdout', 'stderr'])
++    require(len(stdout) + len(stderr) <= 196608 and stderr == b'')
++    for name, raw in [('stdout', stdout), ('stderr', stderr)]:
++        equal(receipt['streams'][name], {'observed_bytes': len(raw),
++              'written_bytes': len(raw), 'eof': True, 'overflow': False,
++              'read_drop': False, 'unknown_unread_bytes': 0, 'fsynced': True,
++              'prefix_sha256': digest(raw), 'read_dropped_bytes': 0})
++        require(len(raw) <= STREAM_CAPS[name])
++    equal(len(snapshot), config['payload']['bytes'])
++    equal(digest(snapshot), config['payload']['sha256'])
++    require(0 < len(stdout) <= 512)
++    compact = load(stdout)
++    keys(compact, ['v', 'state', 'r'])
++    equal(compact['v'], 'prepare-parent.v1')
++    equal(compact['state'], 'PREPARED_DATA_COMPLETE')
++    require(type(compact['r']) is list and len(compact['r']) == 2)
++    integer(compact['r'][0], 1, 262144)
++    hexhash(compact['r'][1])
++    equal(canonical(compact), stdout)
++    before()
++    return compact
++
++
++def retained_inputs():
++    owned_directory(ROOT)
++    owned_directory(RUNFD)
++    linked = os.stat('prepare-run', dir_fd=ROOT, follow_symlinks=False)
++    before()
++    current = os.fstat(RUNFD)
++    before()
++    require(stamp(linked) == stamp(current))
++    for label in READS:
++        in_run, name, cap, mode = READS[label]
++        info = os.stat(name, dir_fd=RUNFD if in_run else ROOT, follow_symlinks=False)
++        before()
++        require(stamp(info) == READ_STAMPS[label])
++    before()
++
++
++def publish(value):
++    raw = canonical(value)
++    require(len(raw) <= 16384)
++    retained_inputs()
++    before()
++    fd = os.open(OUTPUT, os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW
++                 | os.O_NONBLOCK, 0o600, dir_fd=ROOT)
++    try:
++        before()
++        initial = os.fstat(fd)
++        before()
++        file_state(fd, ROOT, OUTPUT, initial, 16384, 0o600)
++        require(initial.st_size == 0)
++        before()
++        require(os.write(fd, raw) == len(raw))
++        before()
++        os.fsync(fd)
++        before()
++        written = os.fstat(fd)
++        before()
++        file_state(fd, ROOT, OUTPUT, written, 16384, 0o600)
++        require(written.st_size == len(raw)
++                and (written.st_dev, written.st_ino) == (initial.st_dev, initial.st_ino))
++    finally:
++        close(fd)
++    os.fsync(ROOT)
++    before()
++    linked = os.stat(OUTPUT, dir_fd=ROOT, follow_symlinks=False)
++    before()
++    require(stamp(linked) == stamp(written))
++    retained_inputs()
++    return {'bytes': len(raw), 'sha256': digest(raw)}
++
++
++def console_once(reference):
++    raw = canonical({'v': 'prepare-transport-assessment.v1',
++                     'state': 'TRANSPORT_ONLY_PENDING_FULL_PREPARE', 'r': reference,
++                     'artifact_accepted': False})
++    require(len(raw) <= 512)
++    before()
++    info = os.fstat(1)
++    before()
++    require(stat.S_ISFIFO(info.st_mode) and os.fpathconf(1, 'PC_PIPE_BUF') >= 512)
++    os.set_blocking(1, False)
++    before()
++    require(os.write(1, raw) == len(raw))
++    before()
++
++
++def main():
++    global S, A, ROOT, RUNFD
++    config = bind_config()  # All null slots reject BEFORE any file access/write.
++    ext = config['external']
++    S, A = ext['original_started_ns'], ext['original_absolute_until_ns']
++    require(A == S + 135 * SECOND)
++    before()
++    clock_runtime(config)
++    os.umask(0o077)
++    ROOT = open_base()
++    try:
++        parent = load(read_fixed('parent'))  # First record, <=16KiB during reads.
++        require(ENTRY_NS < parent['absolute_until_ns'])
++        before()  # Immediate current sample after initial parent read/parse.
++        T = parent_record(parent, config)
++        request_record(load(read_fixed('request')), config)
++        before()
++        RUNFD = os.open('prepare-run', os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
++                        | os.O_NONBLOCK, dir_fd=ROOT)
++        try:
++            before()
++            owned_directory(RUNFD)
++            receipt = load(read_fixed('receipt'))
++            guard = load(read_fixed('guard'))
++            transport_records(receipt, guard, config, T)
++            compact = stream_records(receipt, read_fixed('stdout'), read_fixed('stderr'),
++                                     read_fixed('snapshot'), config)
++            end = before()  # Assessment end BEFORE publication, never a self-exit claim.
++            value = {'schema': 'openergy.prepare-transport-assessment.v1',
++                     'status': 'TRANSPORT_ONLY_PENDING_FULL_PREPARE',
++                     'phase': 'prepare', 'original_started_ns': S, 'original_absolute_until_ns': A,
++                     'assess_entry_ns': ENTRY_NS, 'assess_end_ns': end,
++                     'inputs': READ_REFS, 'config_sha256': digest(CONFIG_TEXT.encode('ascii')),
++                     'observer_rendered': config['observer_rendered'],
++                     'observer_fixed_path': OBSERVER, 'payload': config['payload'],
++                     'capsule': config['capsule'], 'external': ext,
++                     'compact_reference': compact, 'full_prepare_receipt_assessed': False,
++                     'full_prepare_raws_retained_locally': False,
++                     'pending': ['full prepare receipt and raw retention',
++                                 'actual completed remote/local causal enclosure',
++                                 'full prepare, copy and artifact predicates'],
++                     'remote_child_exit': None, 'remote_current_state': 'UNVERIFIED',
++                     'prepare_accepted': False, 'copy_accepted': False,
++                     'artifact_accepted': False, 'product_accepted': False,
++                     'r9_reserved_publisher': False, 'own_exit_observed': False}
++            reference = publish(value)
++        finally:
++            close(RUNFD)
++            RUNFD = None
++    finally:
++        close(ROOT)
++        ROOT = None
++    # No success line until publication barriers, input postchecks and closes return.
++    console_once(reference)
++    return 0
++
++
++try:
++    RESULT = main()
++except BaseException:
++    RESULT = 1  # Silent failure, including partial publication or a late return.
++os._exit(RESULT)

@@ -1,0 +1,391 @@
+{
+  "all_objects_closed": true,
+  "execution": false,
+  "records": {
+    "assessment": {
+      "additional_keys": false,
+      "key_count": 26,
+      "keys_in_source_order": [
+        "schema",
+        "status",
+        "phase",
+        "original_started_ns",
+        "original_absolute_until_ns",
+        "assess_entry_ns",
+        "assess_end_ns",
+        "inputs",
+        "config_sha256",
+        "observer_rendered",
+        "observer_fixed_path",
+        "payload",
+        "capsule",
+        "external",
+        "compact_reference",
+        "full_prepare_receipt_assessed",
+        "full_prepare_raws_retained_locally",
+        "pending",
+        "remote_child_exit",
+        "remote_current_state",
+        "prepare_accepted",
+        "copy_accepted",
+        "artifact_accepted",
+        "product_accepted",
+        "r9_reserved_publisher",
+        "own_exit_observed"
+      ],
+      "max_bytes": 16384,
+      "types": {
+        "artifact_accepted": "false_exact",
+        "assess_end_ns": "int_exact",
+        "assess_entry_ns": "int_exact",
+        "capsule": "closed_config_capsule_binding",
+        "compact_reference": "compact_closed",
+        "config_sha256": "hex64",
+        "copy_accepted": "false_exact",
+        "external": "closed_config_external_binding",
+        "full_prepare_raws_retained_locally": "false_exact",
+        "full_prepare_receipt_assessed": "false_exact",
+        "inputs": "exact_seven_fixed_input_refs",
+        "observer_fixed_path": "fixed_string_exact",
+        "observer_rendered": "closed_config_byte_hash_binding",
+        "original_absolute_until_ns": "int_exact",
+        "original_started_ns": "int_exact",
+        "own_exit_observed": "false_exact",
+        "payload": "closed_config_byte_hash_binding",
+        "pending": "exact_three_string_list",
+        "phase": "fixed_string_exact",
+        "prepare_accepted": "false_exact",
+        "product_accepted": "false_exact",
+        "r9_reserved_publisher": "false_exact",
+        "remote_child_exit": "null_exact",
+        "remote_current_state": "UNVERIFIED",
+        "schema": "fixed_string_exact",
+        "status": "fixed_string_exact"
+      }
+    },
+    "assessor_console": {
+      "artifact_accepted": false,
+      "r": {
+        "bytes": "actual_int_exact",
+        "sha256": "actual_sha256"
+      },
+      "state": "TRANSPORT_ONLY_PENDING_FULL_PREPARE",
+      "v": "prepare-transport-assessment.v1"
+    },
+    "binding": {
+      "bytes": "int_exact",
+      "path": "fixed_string",
+      "sha256": "exact_hash",
+      "verified": "true_exact"
+    },
+    "bindings": {
+      "collector": "binding",
+      "payload": "binding",
+      "profile": "binding"
+    },
+    "clock": {
+      "adjustable": false,
+      "clock": "time.monotonic_ns",
+      "cross_host_comparison": false,
+      "implementation": "mach_absolute_time()",
+      "monotonic": true,
+      "origin": "macOS Mach absolute clock",
+      "resolution_seconds": 4.166666666666666e-08,
+      "schema": "openergy.local-macos-clock.v1",
+      "scope": "same running local Mac only; CPython >=3.10",
+      "unit": "integer_nanoseconds"
+    },
+    "compact": {
+      "r": [
+        "int_exact 1..262144",
+        "hex64"
+      ],
+      "state": "PREPARED_DATA_COMPLETE",
+      "v": "prepare-parent.v1"
+    },
+    "deadlines": {
+      "absolute_until_ns": "int_exact",
+      "entry_ns": "int_exact",
+      "final_seconds": "int_exact",
+      "settle_seconds": "int_exact",
+      "settle_until_ns": "int_exact",
+      "started_ns": "int_exact",
+      "total_seconds": "int_exact",
+      "work_seconds": "int_exact",
+      "work_until_ns": "int_exact"
+    },
+    "guard": {
+      "additional_keys": false,
+      "key_count": 10,
+      "keys_in_source_order": [
+        "schema",
+        "phase",
+        "bindings",
+        "clock",
+        "deadlines",
+        "python",
+        "caps",
+        "retries",
+        "remote_state",
+        "remote_child_exit"
+      ],
+      "types": {
+        "bindings": "bindings_closed",
+        "caps": "guard_caps_closed",
+        "clock": "clock_closed",
+        "deadlines": "deadlines_closed",
+        "phase": "string",
+        "python": "python_closed",
+        "remote_child_exit": "null_exact",
+        "remote_state": "string",
+        "retries": "int_exact",
+        "schema": "string"
+      }
+    },
+    "guard_caps": {
+      "combined": 196608,
+      "inputs": {
+        "collector": 131072,
+        "payload": 1048576,
+        "profile": 131072
+      },
+      "streams": {
+        "stderr": 65536,
+        "stdout": 131072
+      }
+    },
+    "input_ref": {
+      "bytes": "int_exact",
+      "path": "fixed_string",
+      "sha256": "actual_sha256"
+    },
+    "kill": {
+      "attempted": "false_exact",
+      "observed_ns": "null_exact",
+      "policy": "exact retained local SSH only; cap or deadline",
+      "returned": "false_exact"
+    },
+    "observer_console": {
+      "D4_before_original135": true,
+      "actual_collector_exit": 0,
+      "elapsed_seconds": "exact_float (T-S)/1000000000",
+      "observer_record": {
+        "bytes": "actual_parent_bytes_int_exact",
+        "sha256": "actual_parent_sha256"
+      },
+      "phase": "prepare",
+      "receipt_reads": 0,
+      "remote_or_artifact_acceptance": false
+    },
+    "parent": {
+      "additional_keys": false,
+      "key_count": 24,
+      "keys_in_source_order": [
+        "schema",
+        "observer_resolved_python",
+        "observer_full_version",
+        "clock_descriptor",
+        "same_local_host_and_boot_bound",
+        "collector_source_sha256",
+        "profile_sha256",
+        "payload_sha256",
+        "run_directory",
+        "started_ns",
+        "absolute_until_ns",
+        "actual_collector_pid_from_retained_handle",
+        "actual_collector_exit",
+        "actual_wait_or_poll_returned",
+        "post_actual_exit_observed_ns",
+        "strictly_before_absolute",
+        "timeout",
+        "receipt_assessed",
+        "artifact_accepted",
+        "phase",
+        "selected_work_seconds",
+        "selected_settle_seconds",
+        "selected_final_seconds",
+        "selected_total_seconds"
+      ],
+      "types": {
+        "absolute_until_ns": "int_exact",
+        "actual_collector_exit": "int_exact",
+        "actual_collector_pid_from_retained_handle": "int_exact",
+        "actual_wait_or_poll_returned": "bool_exact",
+        "artifact_accepted": "bool_exact",
+        "clock_descriptor": "clock_closed",
+        "collector_source_sha256": "string",
+        "observer_full_version": "string",
+        "observer_resolved_python": "string",
+        "payload_sha256": "string",
+        "phase": "string",
+        "post_actual_exit_observed_ns": "int_exact",
+        "profile_sha256": "string",
+        "receipt_assessed": "bool_exact",
+        "run_directory": "string",
+        "same_local_host_and_boot_bound": "bool_exact",
+        "schema": "string",
+        "selected_final_seconds": "int_exact",
+        "selected_settle_seconds": "int_exact",
+        "selected_total_seconds": "int_exact",
+        "selected_work_seconds": "int_exact",
+        "started_ns": "int_exact",
+        "strictly_before_absolute": "bool_exact",
+        "timeout": "bool_exact"
+      }
+    },
+    "python": {
+      "implementation": "cpython",
+      "resolved_executable": "bound_string",
+      "version": "bound_string"
+    },
+    "receipt": {
+      "additional_keys": false,
+      "key_count": 33,
+      "keys_in_source_order": [
+        "schema",
+        "status",
+        "phase",
+        "bindings",
+        "clock",
+        "deadlines",
+        "python",
+        "guard_durable",
+        "spawn_started_ns",
+        "spawn_returned_ns",
+        "settle_stop_ns",
+        "final_stop_ns",
+        "actual_local_ssh_pid",
+        "actual_local_ssh_exit",
+        "actual_exit_observed_ns",
+        "handle_retained",
+        "kill",
+        "timeout",
+        "streams",
+        "first_observed_failure",
+        "secondary_publication_failures",
+        "publication_failure_count",
+        "caps",
+        "retries",
+        "completion_passes",
+        "remote_child_exit",
+        "remote_current_state",
+        "payload_receipt_assessed",
+        "artifact_accepted",
+        "r9_reserved_publisher",
+        "own_cli_exit_observed",
+        "independent_parent_observation_required",
+        "receipt_prewrite_ns"
+      ],
+      "types": {
+        "actual_exit_observed_ns": "int_exact",
+        "actual_local_ssh_exit": "int_exact",
+        "actual_local_ssh_pid": "int_exact",
+        "artifact_accepted": "bool_exact",
+        "bindings": "bindings_closed",
+        "caps": "receipt_caps_closed",
+        "clock": "clock_closed",
+        "completion_passes": "int_exact",
+        "deadlines": "deadlines_closed",
+        "final_stop_ns": "int_exact",
+        "first_observed_failure": "null_exact",
+        "guard_durable": "bool_exact",
+        "handle_retained": "bool_exact",
+        "independent_parent_observation_required": "bool_exact",
+        "kill": "kill_closed",
+        "own_cli_exit_observed": "bool_exact",
+        "payload_receipt_assessed": "bool_exact",
+        "phase": "string",
+        "publication_failure_count": "int_exact",
+        "python": "python_closed",
+        "r9_reserved_publisher": "bool_exact",
+        "receipt_prewrite_ns": "int_exact",
+        "remote_child_exit": "null_exact",
+        "remote_current_state": "string",
+        "retries": "int_exact",
+        "schema": "string",
+        "secondary_publication_failures": "empty_list_exact",
+        "settle_stop_ns": "int_exact",
+        "spawn_returned_ns": "int_exact",
+        "spawn_started_ns": "int_exact",
+        "status": "string",
+        "streams": "streams_closed",
+        "timeout": "bool_exact"
+      }
+    },
+    "receipt_caps": {
+      "combined": 196608,
+      "guard": 16384,
+      "inputs": {
+        "collector": 131072,
+        "payload": 1048576,
+        "profile": 131072
+      },
+      "receipt": 32768,
+      "streams": {
+        "stderr": 65536,
+        "stdout": 131072
+      }
+    },
+    "request": {
+      "additional_keys": false,
+      "key_count": 18,
+      "keys_in_source_order": [
+        "schema",
+        "operation",
+        "phase",
+        "selected_work_seconds",
+        "selected_settle_seconds",
+        "selected_final_seconds",
+        "selected_total_seconds",
+        "observer_source_sha256",
+        "own_priority_before",
+        "clock",
+        "same_local_host_and_boot_bound_by_direct_topology",
+        "started_ns",
+        "work_until_ns",
+        "absolute_until_ns",
+        "argv",
+        "retries",
+        "exclusive_target_root_owned_for_serial_attempt",
+        "remote_enclosure"
+      ],
+      "types": {
+        "absolute_until_ns": "int_exact",
+        "argv": "exact_23_string_vector",
+        "clock": "clock_closed",
+        "exclusive_target_root_owned_for_serial_attempt": "bool_exact",
+        "observer_source_sha256": "string",
+        "operation": "string",
+        "own_priority_before": "int_exact",
+        "phase": "string",
+        "remote_enclosure": "string",
+        "retries": "int_exact",
+        "same_local_host_and_boot_bound_by_direct_topology": "bool_exact",
+        "schema": "string",
+        "selected_final_seconds": "int_exact",
+        "selected_settle_seconds": "int_exact",
+        "selected_total_seconds": "int_exact",
+        "selected_work_seconds": "int_exact",
+        "started_ns": "int_exact",
+        "work_until_ns": "int_exact"
+      }
+    },
+    "stream": {
+      "eof": "true_exact",
+      "fsynced": "true_exact",
+      "observed_bytes": "int_exact",
+      "overflow": "false_exact",
+      "prefix_sha256": "actual_raw_hash",
+      "read_drop": "false_exact",
+      "read_dropped_bytes": "zero_int_exact",
+      "unknown_unread_bytes": "zero_int_exact",
+      "written_bytes": "int_exact"
+    },
+    "streams": {
+      "stderr": "stream",
+      "stdout": "stream"
+    }
+  },
+  "schema": "openergy.prepare-transport-assessor-record-shapes.v1",
+  "type_rule": "Exact Python types recursively; bool never passes int. Only successful fixed values qualify. Source is authoritative for cross-field equality/order."
+}

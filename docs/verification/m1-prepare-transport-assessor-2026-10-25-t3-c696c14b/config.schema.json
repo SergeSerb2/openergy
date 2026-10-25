@@ -1,0 +1,255 @@
+{
+  "$defs": {
+    "bound": {
+      "additionalProperties": false,
+      "properties": {
+        "capsule": {
+          "additionalProperties": false,
+          "properties": {
+            "candidate": {
+              "not": {
+                "const": "06634b58f1b4795684b9139de716b4fe8f6430e0"
+              },
+              "pattern": "^[0-9a-f]{40}$",
+              "type": "string"
+            },
+            "review": {
+              "not": {
+                "const": "f6e15d0803d52905636f9b916b50e0c0a23ef05a"
+              },
+              "pattern": "^[0-9a-f]{40}$",
+              "type": "string"
+            },
+            "review_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "candidate",
+            "review",
+            "review_sha256"
+          ],
+          "type": "object"
+        },
+        "external": {
+          "additionalProperties": false,
+          "properties": {
+            "assessor_render_proof_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "assessor_review_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "observer_console_complete_ns": {
+              "maximum": 9223372036854775807,
+              "minimum": 1,
+              "type": "integer",
+              "x-python-exact-type": "int"
+            },
+            "observer_console_eof_ns": {
+              "maximum": 9223372036854775807,
+              "minimum": 1,
+              "type": "integer",
+              "x-python-exact-type": "int"
+            },
+            "observer_console_text": {
+              "maxLength": 512,
+              "minLength": 1,
+              "pattern": "^[\\x00-\\x7f]+$",
+              "type": "string"
+            },
+            "observer_exit": {
+              "const": 0,
+              "x-python-exact-type": "int"
+            },
+            "observer_exit_observed_ns": {
+              "maximum": 9223372036854775807,
+              "minimum": 1,
+              "type": "integer",
+              "x-python-exact-type": "int"
+            },
+            "observer_handle_source_evidence_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "observer_pid": {
+              "maximum": 9223372036854775807,
+              "minimum": 1,
+              "type": "integer",
+              "x-python-exact-type": "int"
+            },
+            "observer_render_proof_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "original_absolute_until_ns": {
+              "maximum": 9223372036854775807,
+              "minimum": 1,
+              "type": "integer",
+              "x-python-exact-type": "int"
+            },
+            "original_started_ns": {
+              "maximum": 9223372036854775807,
+              "minimum": 1,
+              "type": "integer",
+              "x-python-exact-type": "int"
+            },
+            "payload_render_proof_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "profile_guard_qualification_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "same_local_host_boot_evidence_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "original_started_ns",
+            "original_absolute_until_ns",
+            "observer_pid",
+            "observer_exit",
+            "observer_exit_observed_ns",
+            "observer_console_complete_ns",
+            "observer_console_eof_ns",
+            "observer_console_text",
+            "same_local_host_boot_evidence_sha256",
+            "observer_handle_source_evidence_sha256",
+            "observer_render_proof_sha256",
+            "payload_render_proof_sha256",
+            "profile_guard_qualification_sha256",
+            "assessor_review_sha256",
+            "assessor_render_proof_sha256"
+          ],
+          "type": "object"
+        },
+        "observer_rendered": {
+          "additionalProperties": false,
+          "properties": {
+            "bytes": {
+              "maximum": 16384,
+              "minimum": 1,
+              "type": "integer",
+              "x-python-exact-type": "int"
+            },
+            "sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "bytes",
+            "sha256"
+          ],
+          "type": "object"
+        },
+        "payload": {
+          "additionalProperties": false,
+          "properties": {
+            "bytes": {
+              "maximum": 1048576,
+              "minimum": 1,
+              "type": "integer",
+              "x-python-exact-type": "int"
+            },
+            "sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "bytes",
+            "sha256"
+          ],
+          "type": "object"
+        },
+        "runtime": {
+          "additionalProperties": false,
+          "properties": {
+            "full_version": {
+              "maxLength": 1024,
+              "minLength": 1,
+              "type": "string"
+            },
+            "resolved_python": {
+              "maxLength": 1024,
+              "minLength": 1,
+              "pattern": "^/",
+              "type": "string"
+            }
+          },
+          "required": [
+            "resolved_python",
+            "full_version"
+          ],
+          "type": "object"
+        },
+        "schema": {
+          "const": "openergy.prepare-transport-assessor-config.v1"
+        }
+      },
+      "required": [
+        "schema",
+        "payload",
+        "observer_rendered",
+        "capsule",
+        "runtime",
+        "external"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "openergy.prepare-transport-assessor-config.schema.v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Closed all-null inert template OR fully bound data. Assessor admits only fully bound data. Exact Python types, finite JSON, cross-field equalities and causal duties are enforced by source/parent contract. Runtime strings must contain no NUL; console ASCII/canonical encoding is checked by source.",
+  "oneOf": [
+    {
+      "const": {
+        "capsule": {
+          "candidate": null,
+          "review": null,
+          "review_sha256": null
+        },
+        "external": {
+          "assessor_render_proof_sha256": null,
+          "assessor_review_sha256": null,
+          "observer_console_complete_ns": null,
+          "observer_console_eof_ns": null,
+          "observer_console_text": null,
+          "observer_exit": null,
+          "observer_exit_observed_ns": null,
+          "observer_handle_source_evidence_sha256": null,
+          "observer_pid": null,
+          "observer_render_proof_sha256": null,
+          "original_absolute_until_ns": null,
+          "original_started_ns": null,
+          "payload_render_proof_sha256": null,
+          "profile_guard_qualification_sha256": null,
+          "same_local_host_boot_evidence_sha256": null
+        },
+        "observer_rendered": {
+          "bytes": null,
+          "sha256": null
+        },
+        "payload": {
+          "bytes": null,
+          "sha256": null
+        },
+        "runtime": {
+          "full_version": null,
+          "resolved_python": null
+        },
+        "schema": "openergy.prepare-transport-assessor-config.v1"
+      }
+    },
+    {
+      "$ref": "#/$defs/bound"
+    }
+  ]
+}
