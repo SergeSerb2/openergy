@@ -1,0 +1,275 @@
+{
+  "Popen_lines": [
+    824,
+    878
+  ],
+  "all_function_hash_ranges_equal": true,
+  "all_json_read_as_strict_unique_key_finite_data": true,
+  "all_module_statement_hashes_and_AST_data_equal": true,
+  "author_source_correction": "EOF bookkeeping now marks unread remainder known on both actual EOF before later console validation. Static source correction only; no runtime or synthetic input.",
+  "checker_errors": [],
+  "closed_schema_objects": 21,
+  "config_string_equals_template": true,
+  "driver_normalized_full_AST_sha256": "4ecb0e31602c9c0a291b8c61407a871b94dae71f1e5123263140d30bc47a1ff7",
+  "driver_null_leaf_count": 42,
+  "exact_added_patch_reconstructs_source": true,
+  "execution": false,
+  "fixed_read_table": {
+    "assessment": [
+      "base",
+      "prepare-transport-assessment.json",
+      16384,
+      384
+    ],
+    "assessor_review": [
+      "launch",
+      "assessor-full-review.txt",
+      262144,
+      256
+    ],
+    "assessor_source": [
+      "tools",
+      "prepare-transport-assessor.py",
+      65536,
+      256
+    ],
+    "assessor_template": [
+      "tools",
+      "prepare-transport-assessor.direct-signal.template.py.txt",
+      65536,
+      256
+    ],
+    "collector": [
+      "tools",
+      "transport-direct-signal.py",
+      131072,
+      256
+    ],
+    "dependency_composition": [
+      "launch",
+      "dependency-composition.proof.json",
+      16384,
+      256
+    ],
+    "driver": [
+      "launch",
+      "prepare-local-parent-driver.py",
+      131072,
+      256
+    ],
+    "driver_review": [
+      "launch",
+      "driver-full-review.txt",
+      262144,
+      256
+    ],
+    "guard": [
+      "run",
+      "once.guard.json",
+      16384,
+      384
+    ],
+    "observer_render": [
+      "launch",
+      "observer-render.proof.json",
+      16384,
+      256
+    ],
+    "observer_source": [
+      "launch",
+      "prepare-local-exit-observer.py",
+      16384,
+      256
+    ],
+    "observer_template": [
+      "launch",
+      "observer.direct-signal.template.py.txt",
+      16384,
+      256
+    ],
+    "parent": [
+      "base",
+      "prepare-parent-exit.json",
+      16384,
+      384
+    ],
+    "payload": [
+      "launch",
+      "prepare.payload.py",
+      1048576,
+      256
+    ],
+    "payload_render": [
+      "launch",
+      "payload-render.proof.json",
+      16384,
+      256
+    ],
+    "profile_guard": [
+      "launch",
+      "whole-profile-guard.proof.json",
+      16384,
+      256
+    ],
+    "receipt": [
+      "run",
+      "receipt.json",
+      32768,
+      384
+    ],
+    "request": [
+      "base",
+      "prepare-parent-request.json",
+      16384,
+      384
+    ],
+    "root_source_association": [
+      "launch",
+      "root-source-association.proof.json",
+      16384,
+      256
+    ],
+    "snapshot": [
+      "run",
+      "payload.stdin",
+      1048576,
+      256
+    ],
+    "stderr": [
+      "run",
+      "stderr.prefix.bin",
+      65536,
+      384
+    ],
+    "stdout": [
+      "run",
+      "stdout.prefix.bin",
+      131072,
+      384
+    ]
+  },
+  "fixed_write_table": {
+    "assessor": [
+      "tools",
+      "prepare-transport-assessor.py",
+      65536,
+      256
+    ],
+    "handle": [
+      "base",
+      "prepare-observer-handle-source.json",
+      16384,
+      384
+    ],
+    "method": [
+      "tools",
+      "prepare-assessor-render-method.json",
+      16384,
+      256
+    ],
+    "once": [
+      "base",
+      "prepare-local-parent-once.json",
+      16384,
+      384
+    ],
+    "render": [
+      "tools",
+      "prepare-assessor-render-proof.json",
+      16384,
+      256
+    ],
+    "result": [
+      "base",
+      "prepare-local-parent-result.json",
+      16384,
+      384
+    ],
+    "topology": [
+      "base",
+      "prepare-local-direct-topology.json",
+      16384,
+      384
+    ]
+  },
+  "functions": 38,
+  "future_dependency_compatibility_and_review": "UNRESOLVED; exact future public packet not supplied",
+  "future_direct_signal_dependency_identities_all_null": true,
+  "future_render_method_sha256": null,
+  "historical_assessor_method_canonical_bytes": 809,
+  "historical_assessor_method_canonical_sha256": "e62688e97873b9315da2bb2a7264fa8a930899675930699c4247f97fd701cad9",
+  "kind": "author-owned public text/Git/strict JSON/hash/token/AST DATA reader; no supplied checker",
+  "literal_Popen_calls": 2,
+  "no_signal_wait_discovery_retry_overwrite_callables_in_AST": true,
+  "null_leaf_paths": [
+    "/payload/bytes",
+    "/payload/sha256",
+    "/observer_rendered/bytes",
+    "/observer_rendered/sha256",
+    "/capsule/candidate",
+    "/capsule/review",
+    "/capsule/review_sha256",
+    "/runtime/resolved_python",
+    "/runtime/full_version",
+    "/proofs/payload_render/bytes",
+    "/proofs/payload_render/sha256",
+    "/proofs/observer_render/bytes",
+    "/proofs/observer_render/sha256",
+    "/proofs/profile_guard/bytes",
+    "/proofs/profile_guard/sha256",
+    "/proofs/driver_review/bytes",
+    "/proofs/driver_review/sha256",
+    "/proofs/assessor_review/bytes",
+    "/proofs/assessor_review/sha256",
+    "/proofs/dependency_composition/bytes",
+    "/proofs/dependency_composition/sha256",
+    "/proofs/root_source_association/bytes",
+    "/proofs/root_source_association/sha256",
+    "/assessor_method_sha256",
+    "/dependencies/observer/candidate",
+    "/dependencies/observer/review",
+    "/dependencies/observer/review_sha256",
+    "/dependencies/observer/template/bytes",
+    "/dependencies/observer/template/sha256",
+    "/dependencies/assessor/candidate",
+    "/dependencies/assessor/review",
+    "/dependencies/assessor/review_sha256",
+    "/dependencies/assessor/template/bytes",
+    "/dependencies/assessor/template/sha256",
+    "/dependencies/collector/candidate",
+    "/dependencies/collector/review",
+    "/dependencies/collector/review_sha256",
+    "/dependencies/collector/template/bytes",
+    "/dependencies/collector/template/sha256",
+    "/dependencies/composition/candidate",
+    "/dependencies/composition/review",
+    "/dependencies/composition/review_sha256"
+  ],
+  "old_index_and_working_preserved": true,
+  "old_staged_observer_template_read_absent": true,
+  "only_owned_folder_new": true,
+  "prior_tracked_count": 4422,
+  "publish_call_labels": [
+    "once",
+    "handle",
+    "topology",
+    "method",
+    "assessor",
+    "render",
+    "result"
+  ],
+  "retained_handle_poll_call_sites": 1,
+  "runtime_process_private_network_tests_mocks_builds_children": false,
+  "schema": "openergy.local-parent-static-data-observations.v1",
+  "schema_all_objects_closed": true,
+  "single_CONFIG_TEXT_STRING_token": true,
+  "source": {
+    "bytes": 46430,
+    "lines": 952,
+    "sha256": "1663021e19041afd3257c9d3bb6139debe147d861e27c445854243ed018f0609"
+  },
+  "source_operation_caveat": "Static observations of exact code/data are not execution, runtime acceptance, or an independent full review. Host/boot and review/provenance contents require real root inspection.",
+  "supplied_source_import_execute_compile": false,
+  "vectors_and_options_fixed": true,
+  "whole_profile_private_body_read_absent": true
+}

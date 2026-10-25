@@ -1,0 +1,20 @@
+{
+  "excludes": [
+    "own reference",
+    "bound config",
+    "future full rendered source hash"
+  ],
+  "normalization": "ast.dump annotate_fields=True include_attributes=False; CONFIG_TEXT value=<CONFIG_TEXT>",
+  "normalized_ast_sha256": "9cb17eb879d5d956aadf4ff9e25a67b36dff1db9fcfdd20402c29e23ac8216be",
+  "prefix_sha256": "99b0571285fc239a4347f26d87abafe5631f9160caa846bed78d5ba5a759d03a",
+  "render": "one ASCII Python STRING via json.dumps(JSON-text,ensure_ascii=True); exact restore",
+  "schema": "openergy.single-config-render-method.v1",
+  "suffix_sha256": "dfad53263d9ef6ecaaade9f3042d851a93527c69fcb0dd92d48f465c01a2c84c",
+  "template": {
+    "bytes": 25746,
+    "sha256": "1e52486a991886c0dbaa463ef3203695cabcd61aeedb841bb45275850541cbd9"
+  },
+  "token_end": 1212,
+  "token_sha256": "875fed11ad869d831cf7a74ec8077aa485afa173708394360faefb9aa323c60d",
+  "token_start": 427
+}

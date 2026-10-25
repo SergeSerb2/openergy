@@ -1,0 +1,259 @@
+{
+  "base_commit": "7e5de706e7457de5f4880cdef180b27536dc0d5e",
+  "coordination": {
+    "author_read_installed_runtime": false,
+    "collector_issue": "POSIX kill -> send_signal -> poll -> waitpid before os.kill can cross signal deadline",
+    "final_dependency_composition_review": "PENDING",
+    "future_collector_fixed_path": "BASE/tools/transport-direct-signal.py",
+    "future_packet_commit": null,
+    "future_template_paths": [
+      "BASE/prepare-launch/observer.direct-signal.template.py.txt",
+      "BASE/tools/prepare-transport-assessor.direct-signal.template.py.txt"
+    ],
+    "old_zero_KILL_success_records": "PRESERVED",
+    "source": "user/root supplied source coordination, 2026-10-25 09:05 America/Vancouver"
+  },
+  "execution": false,
+  "future_clear_capsule": {
+    "candidate": null,
+    "review": null,
+    "review_sha256": null
+  },
+  "future_dependencies": {
+    "assessor": {
+      "candidate": null,
+      "review": null,
+      "review_sha256": null,
+      "template": {
+        "bytes": null,
+        "sha256": null
+      }
+    },
+    "collector": {
+      "candidate": null,
+      "review": null,
+      "review_sha256": null,
+      "template": {
+        "bytes": null,
+        "sha256": null
+      }
+    },
+    "composition": {
+      "candidate": null,
+      "review": null,
+      "review_sha256": null
+    },
+    "observer": {
+      "candidate": null,
+      "review": null,
+      "review_sha256": null,
+      "template": {
+        "bytes": null,
+        "sha256": null
+      }
+    }
+  },
+  "future_driver_review": {
+    "bytes": null,
+    "sha256": null
+  },
+  "future_method_sha256": null,
+  "future_observer_rendered": {
+    "bytes": null,
+    "sha256": null
+  },
+  "future_payload": {
+    "bytes": null,
+    "sha256": null
+  },
+  "inputs": [
+    {
+      "active_future_dependency": false,
+      "blob": "8df64440d914e0214db4c7f8612b8ccd6a5fdaa0",
+      "bytes": 7673,
+      "commit": "41bf91daf3f6756179437c5ab652ffeb040ca759",
+      "head_working_bytes_equal": true,
+      "mode": "100644",
+      "path": "docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/observer.py.txt",
+      "read_scope": "complete historical observer source",
+      "sha256": "845d90024ad47f6b76d6d6e646b679d00bb97b8ca0478d0fa86523de3dbec60f"
+    },
+    {
+      "active_future_dependency": false,
+      "blob": "16edb417883357f705806c574bbe2610e7c9a7d8",
+      "bytes": 15389,
+      "commit": "91f7c8a1f3359d4a322c936712b3ebe9d451901d",
+      "head_working_bytes_equal": true,
+      "mode": "100644",
+      "path": "docs/verification/m1-prepare-local-exit-observer-review-2026-10-25-t3-c2d0d953/REVIEW.md",
+      "read_scope": "complete historical observer independent review",
+      "sha256": "bb8ed39275540eabc116cca932a40d42246c939c7245f8c04eaba03c87c97ed1"
+    },
+    {
+      "active_future_dependency": false,
+      "blob": "29cf35dcad428562f3df33f1b8a50273dd99dac5",
+      "bytes": 25746,
+      "commit": "89f62e6269dd3f7f3011c86938a761d6b63dc2cb",
+      "head_working_bytes_equal": true,
+      "mode": "100644",
+      "path": "docs/verification/m1-prepare-transport-assessor-2026-10-25-t3-c696c14b/assessor.py.txt",
+      "read_scope": "complete historical assessor source",
+      "sha256": "1e52486a991886c0dbaa463ef3203695cabcd61aeedb841bb45275850541cbd9"
+    },
+    {
+      "active_future_dependency": false,
+      "blob": "77f47d012cd4ad1f0e44a73f6b8061c2949e0740",
+      "bytes": 19280,
+      "commit": "8d9494216ca01ef5258ee104b04cf58cab7073cb",
+      "head_working_bytes_equal": true,
+      "mode": "100644",
+      "path": "docs/verification/m1-prepare-transport-assessor-full-review-2026-10-25-t3-0b5fe49c/REVIEW.md",
+      "read_scope": "complete historical assessor independent review",
+      "sha256": "d4c126c625ec04dd7f523599496a565413ce691d0797f6a069b4a8ec46aa0f62"
+    },
+    {
+      "active_future_dependency": false,
+      "blob": "6135f42b7e2fb7fe2f1da187b0aedfba0610c58d",
+      "bytes": 7767,
+      "commit": "89f62e6269dd3f7f3011c86938a761d6b63dc2cb",
+      "head_working_bytes_equal": true,
+      "mode": "100644",
+      "path": "docs/verification/m1-prepare-transport-assessor-2026-10-25-t3-c696c14b/config.schema.json",
+      "read_scope": "complete historical closed schema",
+      "sha256": "d6e11a59f70d2ac873ff6a13911f307f7cdd17a99e80b65bd5168ade4b453428"
+    },
+    {
+      "active_future_dependency": false,
+      "blob": "d0850961f9068030a771a889362c84697cf16649",
+      "bytes": 963,
+      "commit": "89f62e6269dd3f7f3011c86938a761d6b63dc2cb",
+      "head_working_bytes_equal": true,
+      "mode": "100644",
+      "path": "docs/verification/m1-prepare-transport-assessor-2026-10-25-t3-c696c14b/config.template.json",
+      "read_scope": "complete historical null24 config",
+      "sha256": "9c81a193add3f6b690cb18be4bff4f73794cf5519ce87dcac7bba77feb4911b0"
+    },
+    {
+      "active_future_dependency": false,
+      "blob": "f1a96154f2c1bcf91ac1a5eb7b5be9fc801b423a",
+      "bytes": 11698,
+      "commit": "89f62e6269dd3f7f3011c86938a761d6b63dc2cb",
+      "head_working_bytes_equal": true,
+      "mode": "100644",
+      "path": "docs/verification/m1-prepare-transport-assessor-2026-10-25-t3-c696c14b/PARENT-CONTRACT.md",
+      "read_scope": "complete historical parent contract",
+      "sha256": "fb6868454bde4d436908138b9def463c02da43cf2a425f0090941eb8e5f810f9"
+    },
+    {
+      "active_future_dependency": false,
+      "blob": "d19b52f69d7590d12096a9e08519a85e6497d636",
+      "bytes": 12120,
+      "commit": "89f62e6269dd3f7f3011c86938a761d6b63dc2cb",
+      "head_working_bytes_equal": true,
+      "mode": "100644",
+      "path": "docs/verification/m1-prepare-transport-assessor-2026-10-25-t3-c696c14b/record-shapes.json",
+      "read_scope": "complete historical closed producer/consumer shapes",
+      "sha256": "2e12fb9267eebb86be01e071667bb35a40098a0c2855f781b7950188d77f2552"
+    },
+    {
+      "active_future_dependency": false,
+      "blob": "01e84400ec0c249f533c7e4119257f9bf22f7c8c",
+      "bytes": 4950,
+      "commit": "89f62e6269dd3f7f3011c86938a761d6b63dc2cb",
+      "head_working_bytes_equal": true,
+      "mode": "100644",
+      "path": "docs/verification/m1-prepare-transport-assessor-2026-10-25-t3-c696c14b/README.md",
+      "read_scope": "complete historical implementation scope",
+      "sha256": "c4d55ba83c3bb29ff77e687da1d680516708fd955ce0f12a46358ab7a0df04c3"
+    },
+    {
+      "active_future_dependency": false,
+      "blob": "fbfa847a6d0085b4a0cfbdccc418eaa15759d339",
+      "bytes": 4263,
+      "commit": "89f62e6269dd3f7f3011c86938a761d6b63dc2cb",
+      "head_working_bytes_equal": true,
+      "mode": "100644",
+      "path": "docs/verification/m1-prepare-transport-assessor-2026-10-25-t3-c696c14b/input-bindings.json",
+      "read_scope": "complete historical dependency bindings",
+      "sha256": "01a29f7fb50c857d94131b481e063334acabbe27f5e457145ddba4fccf901a9f"
+    },
+    {
+      "active_future_dependency": false,
+      "blob": "06372ffa3cc35b14ada7a710251807c4cb381988",
+      "bytes": 1538,
+      "commit": "89f62e6269dd3f7f3011c86938a761d6b63dc2cb",
+      "head_working_bytes_equal": true,
+      "mode": "100644",
+      "path": "docs/verification/m1-prepare-transport-assessor-2026-10-25-t3-c696c14b/finite-plan.json",
+      "read_scope": "complete historical null/false plan",
+      "sha256": "2ee9396e48aca1dc0b2aa2b13628966537beb769e17a615c8e3b6b34a149691c"
+    },
+    {
+      "active_future_dependency": false,
+      "blob": "a933f25f7eba21641dd28a232399e087973967e9",
+      "bytes": 3617,
+      "commit": "41bf91daf3f6756179437c5ab652ffeb040ca759",
+      "head_working_bytes_equal": true,
+      "mode": "100644",
+      "path": "docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/README.md",
+      "read_scope": "complete historical observer scope",
+      "sha256": "68ec747e6a54f27b40e911dd8078cf88969da7d447534bd726ba256353b00b75"
+    },
+    {
+      "active_future_dependency": false,
+      "blob": "d99244637647ecb41b1cd7d217e92010213e1e12",
+      "bytes": 1774,
+      "commit": "41bf91daf3f6756179437c5ab652ffeb040ca759",
+      "head_working_bytes_equal": true,
+      "mode": "100644",
+      "path": "docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/bindings.json",
+      "read_scope": "complete historical observer binding interface",
+      "sha256": "c7d2fe1c092180814e24f99129486ed7d8c38b5a18693c638e345e5a93c58e90"
+    },
+    {
+      "active_future_dependency": false,
+      "blob": "2e112f113a592190fc3e269790b4ecef404d5a10",
+      "bytes": 28060,
+      "commit": "c591ea5941020e556d878ffef0349625ec42be9f",
+      "head_working_bytes_equal": true,
+      "mode": "100644",
+      "path": "docs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/transport-collector.py.txt",
+      "read_scope": "source1..165 and435..626 for fixed runtime/CLI and producer records; entire bytes hashed, no new full collector verdict",
+      "sha256": "695dc01461b31e04eb7b8c4a12848350f26a45731f05b0ddca971c05749e4df6"
+    },
+    {
+      "active_future_dependency": false,
+      "blob": "557b41ff8489c8a38d19a2ae4e4ae4d4506b0885",
+      "bytes": 8036,
+      "commit": "c591ea5941020e556d878ffef0349625ec42be9f",
+      "head_working_bytes_equal": true,
+      "mode": "100644",
+      "path": "docs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/parent-observer.contract.json",
+      "read_scope": "complete original parent/observer contract",
+      "sha256": "f17a8455b2cef9eb35bfe49a3fe91bbb6ae988787a22ca533103a970f36b9fe6"
+    },
+    {
+      "active_future_dependency": false,
+      "blob": "c1f9879dd36e27cbaff79e316caaa8f5a4dc43bc",
+      "bytes": 11722,
+      "commit": "c591ea5941020e556d878ffef0349625ec42be9f",
+      "head_working_bytes_equal": true,
+      "mode": "100644",
+      "path": "docs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/phase-budget.contract.json",
+      "read_scope": "complete closed phase-budget contract",
+      "sha256": "c2055e24923df08126cd796792a319df774cb87d9925842717acaaf40242f377"
+    },
+    {
+      "active_future_dependency": false,
+      "blob": "539abe65ac24a30fb5d55b629cc60512371e1995",
+      "bytes": 105367,
+      "commit": "06634b58f1b4795684b9139de716b4fe8f6430e0",
+      "head_working_bytes_equal": true,
+      "mode": "100644",
+      "path": "docs/verification/m1-prepare-parent-capsule-2026-10-25-t3-764cae00/prepare-parent.py.txt",
+      "read_scope": "only encoding970..982 and compact producer1710..1732; entire bytes hashed, no capsule verdict",
+      "sha256": "3c7c6e639ee64ca2e8ec49b27c993921ee4e7abff90928fd2f498135f2b20135"
+    }
+  ],
+  "schema": "openergy.local-parent-frozen-inputs.v1"
+}
