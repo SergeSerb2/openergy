@@ -27,8 +27,14 @@ sockets absent, no unresolved candidates, no overflow or lost handoff, and no
 recovery TERM/KILL deliveries. The watchdog itself exited 0 and its independent
 absence check passed. These records support observed owned-process cleanup;
 they do not turn the strict port failure into acceptance or prove its cause.
-Full priority/identity coverage and all source contracts are under independent
-saved-data audit. Do not infer universal containment or host restoration.
+The [independent saved-attempt audit](../m1-ordinary-saved-attempt-review-2026-10-24-t3-c23ea32e/REVIEW.md)
+verifies recovery closure and the app-first peer teardown. It found no concrete
+source P1/P2. Whole-flow NI15 remains UNVERIFIED: both short CLI product stages
+and late controller/watchdog detail coverage are missing. There are 36 main
+packets/81 rows, seven watchdog packets/five rows and one cleanup packet/two
+rows, totaling 44 rounds/88 selected rows. All retained selected rows have
+nice15/15; these samples do not fill the missing stages or periods. Do not infer
+universal containment, continuous priority or host restoration.
 
 Preparation ran once and returned OS exit0. The source admission was cleared by
 [the independent R2 review](../m1-ordinary-admission-review-2026-10-24-t3-af8da74b/REVIEW.md).
@@ -58,3 +64,9 @@ isolation failures and their unknown cause remain unchanged. Windows native
 stop remains unverified; its new source fixes have no native acceptance. The
 expired Sparkle one-shot stays closed. Native UI/input, trusted signing,
 notarization and matched performance comparison remain open.
+
+The final post-audit local receipt binds the 13 expected evidence slots, retaining
+null for the missing original bundle-after and outcome. Its private hash is in
+result.json. This is an inert handoff over retained data, with FAILED / NOT
+ACCEPTED status and explicit false/null gates. It does not publish an executable
+receipt, reopen the attempt, resume a timer or supply absent evidence.
