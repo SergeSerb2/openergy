@@ -1,0 +1,36 @@
+"""Local trusted-interpreter prerequisite observation, not a candidate run."""
+import os
+import sys
+import time
+import json
+
+os.setpriority(os.PRIO_PROCESS, 0, 15)
+assert os.getpriority(os.PRIO_PROCESS, 0) == 15
+assert sys.platform == 'darwin' and sys.implementation.name == 'cpython'
+assert sys.version_info[:2] == (3, 15)
+assert sys.flags.isolated and sys.flags.no_site and sys.flags.dont_write_bytecode
+assert not sys.flags.optimize
+info = time.get_clock_info('monotonic')
+assert info.monotonic and not info.adjustable
+assert info.implementation == 'mach_absolute_time()'
+descriptor = dict(schema='openergy.local-macos-clock.v1', clock='time.monotonic_ns',
+                  implementation=info.implementation, monotonic=info.monotonic,
+                  adjustable=info.adjustable, resolution_seconds=info.resolution,
+                  unit='integer_nanoseconds', origin='macOS Mach absolute clock',
+                  scope='same running local Mac only; CPython >=3.10',
+                  cross_host_comparison=False)
+readings = [time.monotonic_ns() for _ in range(3)]
+assert all(type(value) is int and value >= 0 for value in readings)
+assert readings == sorted(readings)
+result = dict(schema='openergy.local-coordinator-observation.v1',
+              resolved_executable=os.path.realpath(sys.executable), version=sys.version,
+              version_info=list(sys.version_info), own_nice=15, clock=descriptor,
+              flags=dict(isolated=sys.flags.isolated, no_site=sys.flags.no_site,
+                         dont_write_bytecode=sys.flags.dont_write_bytecode,
+                         optimize=sys.flags.optimize), readings_ns=readings,
+              candidate_invocations=0, remote_connections=0, runtime='UNVERIFIED')
+data = (json.dumps(result, sort_keys=True, separators=(',', ':'), ensure_ascii=True,
+                   allow_nan=False) + '\n').encode('ascii')
+assert len(data) <= 4096
+assert os.write(1, data) == len(data)
+os._exit(0)
