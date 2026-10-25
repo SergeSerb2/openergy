@@ -1,0 +1,14 @@
+{
+  "schema": "independent-copy-parent-reader-notes.v1",
+  "errors": [
+    {
+      "action": "Expanded independent AST data reader",
+      "error": "StopIteration in returned_dict_keys('copy_parent_stdin')",
+      "cause": "Reviewer reader expected a direct return dict call. The supplied function assigns value = dict(...), then returns encoded raw bytes.",
+      "correction": "Read that local dict constructor as AST data when there is no direct return dict constructor.",
+      "effect": "The earlier completed binding observations remained on disk. The expanded reader stopped before its final observations write. Only reviewer outputs were written. No supplied implementation or checker ran and no candidate bytes changed.",
+      "candidate_changed": false,
+      "execution": false
+    }
+  ]
+}
