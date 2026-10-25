@@ -1,0 +1,289 @@
+--- a/controller.py
++++ b/controller.py
+@@ -11,6 +11,9 @@
+ from watchdog import Recovery, app_role
+ from coverage import require, audit
+ import re
++import errno
++from port_diagnostic import (query, ARGV, QUERY_SECONDS, PUBLICATION_SECONDS,
++                             MIN_QUERY_SECONDS, RECORD_CAP)
+ import select
+ import socket
+ import subprocess
+@@ -253,27 +256,80 @@
+         return output
+ 
+     def port(self, port, label, retain, deadline):
+-        # Only the two declared literal ports. First bind only, no SO_REUSE*.
++        # Original pre-bind snapshot, first bind and literal ports stay unchanged.
+         raw = command(['/usr/sbin/netstat', '-an', '-p', 'tcp'], deadline,
+-                      coverage=(self.runtime, 'main' if label == 'pre' else 'postflight', self.spec)).decode()
++                      coverage=(self.runtime, 'main' if label == 'pre' else 'postflight')).decode()
+         scoped = [line for line in raw.splitlines() if re.search(r'\.' + str(port) + r'\s', line)]
+         state = dict(filter_port=port, scoped_rows=scoped, monotonic=time.monotonic())
+         handle = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
++        bind_entered, bind_returned, bind_succeeded = None, None, False
+         try:
+             with io_until(deadline):
+                 handle.settimeout(remaining(deadline))
++                bind_entered = time.monotonic()
+                 handle.bind(('127.0.0.1', port))
++                bind_returned = time.monotonic()
++                bind_succeeded = True
+             save(self.runtime / f'port-{port}-{label}.json',
+                  dict(success=True, state_before_first_bind=state, no_reuse=True, no_retry=True,
+                       held_until_launch=retain, bound=handle.getsockname()), deadline)
+             if retain:
+                 self.reservations[port] = handle
+                 handle = None
+-        except Exception:
+-            first(self.runtime / f'port-{port}-{label}.json',
+-                  dict(success=False, state_before_first_bind=state, error=traceback.format_exc(),
+-                       no_reuse=True, no_retry=True), deadline)
+-            raise
++        except Exception as error:
++            # Retain the original exception and failure in memory BEFORE any sink.
++            failed_at = time.monotonic()
++            error_number = getattr(error, 'errno', None)
++            self.failed = True
++            failure = dict(success=False, status='FAILED', state_before_first_bind=state,
++                           errno=error_number, exception_type=type(error).__name__,
++                           bind_entered_monotonic=bind_entered,
++                           bind_returned_monotonic=bind_returned,
++                           failure_handler_monotonic=failed_at, bind_succeeded=bind_succeeded,
++                           requested_address=['127.0.0.1', port], no_reuse=True, no_retry=True,
++                           bind_failure_bracket=[bind_entered, failed_at],
++                           error=traceback.format_exc()[:8192])
++            if not hasattr(self, 'first_port_failure'):
++                self.first_port_failure = failure
++            # Same exclusive filename and cleanup charge class as the original.
++            # A failed receipt cannot replace the bind exception or stop recovery.
++            self.evidence.attempt(first, self.runtime / f'port-{port}-{label}.json', failure,
++                                  min(deadline, time.monotonic() + PUBLICATION_SECONDS))
++            if label == 'post' and not bind_succeeded and error_number == errno.EADDRINUSE:
++                diagnostic = dict(schema='openergy.strict-bind-diagnostic.v1',
++                                  status='INCOMPLETE', first_bind_status='FAILED',
++                                  bind_failure=failure, cause='UNKNOWN', query={})
++                self.first_port_diagnostic = diagnostic  # Before query/publication.
++                if not hasattr(self, 'port_diagnostic_handles'):
++                    self.port_diagnostic_handles = {}
++                query_deadline = min(deadline - PUBLICATION_SECONDS,
++                                     time.monotonic() + QUERY_SECONDS)
++                try:
++                    if query_deadline - time.monotonic() >= MIN_QUERY_SECONDS:
++                        with io_until(query_deadline):
++                            query(port, query_deadline, self.port_diagnostic_handles, diagnostic['query'])
++                        diagnostic['status'] = diagnostic['query']['status']
++                    else:
++                        diagnostic['query'].update(attempted=False, argv=list(ARGV),
++                            status='INCOMPLETE', skip_reason='insufficient existing port budget',
++                            absolute_deadline=query_deadline, observed_monotonic=time.monotonic())
++                except BaseException as diagnostic_error:
++                    diagnostic['diagnostic_error'] = dict(type=type(diagnostic_error).__name__,
++                                                         error=str(diagnostic_error)[:1024])
++                try:
++                    publication_deadline = min(deadline, time.monotonic() + PUBLICATION_SECONDS)
++                    with io_until(publication_deadline):
++                        if len(encoded(diagnostic)) > RECORD_CAP:
++                            raise RuntimeError('bounded diagnostic record cap exceeded')
++                        # Regular capacity only: never spend cleanup or terminal reserves.
++                        publication_errors_before = self.evidence.count
++                        self.evidence.attempt(first, self.runtime / f'port-{port}-{label}-diagnostic.json',
++                                              diagnostic, publication_deadline, critical=False)
++                        diagnostic['publication_failed'] = self.evidence.count != publication_errors_before
++                except BaseException as publication_error:
++                    diagnostic['publication_error'] = type(publication_error).__name__
++                # No new outcome, bind, port iteration, archival, or recovery action.
++            raise  # Always the original bind/publication exception, never a diagnostic error.
+         finally:
+             if handle is not None:
+                 handle.close()
+--- /dev/null
++++ b/port_diagnostic.py
+@@ -0,0 +1,186 @@
++"""INERT SOURCE PROPOSAL. One failure-only TCP query; never a bind retry."""
++from common import DeadlineError, PORTS, REPO, io_until, remaining
++import re
++import os
++import select
++import subprocess
++import time
++
++
++ARGV = ('/usr/sbin/netstat', '-AanW', '-p', 'tcp')
++QUERY_SECONDS = 0.5
++PUBLICATION_SECONDS = 0.05
++MIN_QUERY_SECONDS = 0.05
++OUTPUT_CAP = 262144  # Combined bytes read, not an unbounded communicate buffer.
++ROW_CAP = 64
++ROW_BYTES = 1024
++STDERR_CAP = 4096
++RECORD_CAP = 98304
++
++
++def socket_rows(stdout, port):
++    """Select either endpoint by exact numeric port; never filter by TCP state.
++
++    -A can add leading PCB columns. Find the protocol token instead of assuming
++    that it is column zero. Keep local and remote matches distinct. No PCB or
++    PID field becomes an owner, absence certificate, or rejection cause.
++    """
++    try:
++        text = stdout.decode('utf-8', errors='strict')
++        decoding_error = False
++    except UnicodeDecodeError:
++        text = stdout.decode('utf-8', errors='replace')
++        decoding_error = True
++    rows, unparsed = [], []
++    matched, malformed, clipped = 0, 0, False
++    header = False
++    for line in text.splitlines():
++        if 'Local Address' in line and 'Foreign Address' in line:
++            header = True
++        fields = line.split()
++        indices = [i for i, value in enumerate(fields[:3])
++                   if value in ('tcp', 'tcp4', 'tcp6', 'tcp46')]
++        if not indices:
++            if re.search(r'\.' + str(port) + r'(?=\s|$)', line):
++                malformed += 1
++                if len(unparsed) < 4:
++                    unparsed.append(line.encode('utf-8')[:ROW_BYTES].decode('utf-8', errors='replace'))
++            continue
++        values = fields[indices[0]:]
++        if (len(values) < 6 or not values[1].isdigit() or not values[2].isdigit() or
++                not re.fullmatch(r'.+\.(?:\d+|\*)', values[3]) or
++                not re.fullmatch(r'.+\.(?:\d+|\*)', values[4])):
++            malformed += 1
++            if re.search(r'\.' + str(port) + r'(?=\s|$)', line) and len(unparsed) < 4:
++                unparsed.append(line.encode('utf-8')[:ROW_BYTES].decode('utf-8', errors='replace'))
++            continue
++        local_match = values[3].rsplit('.', 1)[1] == str(port)
++        remote_match = values[4].rsplit('.', 1)[1] == str(port)
++        if not (local_match or remote_match):
++            continue
++        matched += 1
++        if len(rows) >= ROW_CAP:
++            continue
++        clipped = clipped or len(line.encode('utf-8')) > ROW_BYTES
++        if len(line.encode('utf-8')) > ROW_BYTES:
++            rows.append(dict(matches_local_port=local_match, matches_remote_port=remote_match,
++                             incomplete_row=True,
++                             raw_scoped_row=line.encode('utf-8')[:ROW_BYTES].decode('utf-8', errors='replace')))
++            continue
++        rows.append(dict(protocol=values[0], recv_q=values[1], send_q=values[2],
++                         local_endpoint=values[3], foreign_endpoint=values[4],
++                         state=values[5], matches_local_port=local_match,
++                         matches_remote_port=remote_match,
++                         raw_scoped_row=line.encode('utf-8')[:ROW_BYTES].decode('utf-8', errors='replace')))
++    return dict(rows=rows, matched_rows_seen=matched, row_limit_exceeded=matched > ROW_CAP,
++                selected_row_truncated=clipped, malformed_tcp_rows_seen=malformed,
++                unparsed_matching_lines=unparsed, expected_header_seen=header,
++                decoding_error=decoding_error,
++                parse_complete=header and not (decoding_error or malformed or clipped or matched > ROW_CAP))
++
++
++def query(port, deadline, retained_handles, result):
++    """One fixed direct helper, with the existing owned kill/reap timeout policy.
++
++    The caller supplies a SUBSET of its existing port deadline. No product or
++    group signals, native ABI, shell, lsof, second command, sleep, or retry.
++    An exceptional unreaped handle stays in the caller's diagnostic-only map;
++    it is never inserted into product intent/exit or ownership ledgers.
++    """
++    started = time.monotonic()
++    result.update(argv=list(ARGV), filter_port=port, cwd=str(REPO),
++                  locale=dict(LANG='C', LC_ALL='C'), started_monotonic=started,
++                  absolute_deadline=deadline, attempted=False, pid=None, returncode=None,
++                  reaped=False, timed_out=False, output_cap=OUTPUT_CAP,
++                  stdout_bytes_read=0, stderr_bytes_read=0, stdout_eof=False,
++                  stderr_eof=False, output_cap_reached=False, output_truncated=True,
++                  kill_requested=False, kill_returned=False, errors=[],
++                  status='INCOMPLETE', cause='UNKNOWN', snapshot_is_atomic_with_bind=False)
++    if port not in PORTS or deadline - started < MIN_QUERY_SECONDS:
++        result.update(skip_reason='undeclared port or insufficient existing budget',
++                      ended_monotonic=time.monotonic())
++        return result
++    process, stdout, stderr = None, bytearray(), bytearray()
++    # Keep the same 80/20 read-versus-owned-kill/reap partition as common.command.
++    read_deadline = started + (deadline - started) * 0.8
++    result['read_deadline'] = read_deadline
++    try:
++        with io_until(read_deadline):
++            result['attempted'] = True
++            process = subprocess.Popen(list(ARGV), cwd=REPO,
++                env=dict(os.environ, LANG='C', LC_ALL='C'), stdin=subprocess.DEVNULL,
++                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
++            retained_handles[port] = process  # Before all later I/O and formatting.
++            result.update(pid=process.pid, spawned_monotonic=time.monotonic())
++            streams = {process.stdout: ('stdout', stdout), process.stderr: ('stderr', stderr)}
++            for stream in streams:
++                os.set_blocking(stream.fileno(), False)
++            while streams:
++                ready, _, _ = select.select(list(streams), [], [], remaining(read_deadline))
++                for stream in ready:
++                    name, output = streams[stream]
++                    capacity = OUTPUT_CAP - len(stdout) - len(stderr)
++                    if capacity <= 0:
++                        result['output_cap_reached'] = result['output_truncated'] = True
++                        raise RuntimeError('diagnostic output cap reached; no further read')
++                    try:
++                        chunk = os.read(stream.fileno(), min(16384, capacity))
++                    except BlockingIOError:
++                        continue
++                    if not chunk:
++                        result[name + '_eof'] = True
++                        del streams[stream]
++                    else:
++                        output.extend(chunk)
++                        result[name + '_bytes_read'] = len(output)
++                        result['last_read_monotonic'] = time.monotonic()
++            process.wait(timeout=remaining(read_deadline))
++    except (DeadlineError, subprocess.TimeoutExpired) as error:
++        result['timed_out'] = True
++        result['errors'].append(dict(stage='query', type=type(error).__name__, error=str(error)[:1024]))
++    except BaseException as error:
++        result['errors'].append(dict(stage='query', type=type(error).__name__, error=str(error)[:1024]))
++    finally:
++        if process is not None:
++            try:
++                with io_until(deadline):
++                    if process.poll() is None:
++                        result['kill_requested'] = True
++                        result['kill_requested_monotonic'] = time.monotonic()
++                        process.kill()  # Only this retained, unreaped direct tool child.
++                        result['kill_returned'] = True
++                    process.wait(timeout=remaining(deadline))
++                    result.update(returncode=process.returncode, reaped=True,
++                                  reaped_monotonic=time.monotonic())
++                    del retained_handles[port]
++            except BaseException as error:
++                if isinstance(error, (DeadlineError, subprocess.TimeoutExpired)):
++                    result['timed_out'] = True
++                result['errors'].append(dict(stage='owned-helper-reap', type=type(error).__name__,
++                                             error=str(error)[:1024]))
++            finally:
++                if process.returncode is not None:
++                    # poll/wait may have reaped just before an I/O alarm. Retain
++                    # that actual result even when the surrounding scope fails.
++                    result.update(returncode=process.returncode, reaped=True)
++                    retained_handles.pop(port, None)
++                for stream in (process.stdout, process.stderr):
++                    if stream is not None:
++                        try:
++                            stream.close()
++                        except BaseException as error:
++                            result['errors'].append(dict(stage='pipe-close', type=type(error).__name__))
++        result.update(stdout_bytes_read=len(stdout), stderr_bytes_read=len(stderr),
++                      ended_monotonic=time.monotonic())
++    # Never claim total emitted bytes when EOF was not observed. Discard all
++    # unrelated TCP rows; there is no raw host stdout file or process inventory.
++    result['output_truncated'] = (result['output_cap_reached'] or
++                                 not (result['stdout_eof'] and result['stderr_eof']))
++    result['stderr'] = bytes(stderr[:STDERR_CAP]).decode('utf-8', errors='replace')
++    result['stderr_retention_truncated'] = len(stderr) > STDERR_CAP
++    result['socket_rows'] = socket_rows(bytes(stdout), port)
++    complete = (result['reaped'] and result['returncode'] == 0 and not result['timed_out'] and
++                not result['errors'] and not result['output_truncated'] and
++                not result['stderr_retention_truncated'] and result['socket_rows']['parse_complete'])
++    result['status'] = 'COLLECTED_CONTEXT_ONLY' if complete else 'INCOMPLETE'
++    return result

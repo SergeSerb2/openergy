@@ -1,0 +1,174 @@
+{
+  "admission_and_abort": {
+    "actual_acquisition_change": "Prompt known-PID product acquisition in serialized Inventory journal before full helper and normal pause; actual helper-child detail acquisition before communicate waits.",
+    "continuous_priority_proved": false,
+    "coverage_status_not_acceptance": "REQUIRED_SAMPLES_PRESENT does not prove continuous NI15 or fill another missing gate.",
+    "missing_short_product_or_helper": "UNVERIFIED; never manufacture product evidence or retry launch. Missing main launch coverage aborts; cleanup continues app-first and final coverage fails."
+  },
+  "budgets": {
+    "aggregate_bytes": 33554432,
+    "cleanup_bytes": 4194304,
+    "cleanup_round_reserve": 1024,
+    "cleanup_row_reserve": 4096,
+    "cli_seconds": 5,
+    "helper_query_charge": {
+      "rounds": 1,
+      "rows": 2
+    },
+    "infrastructure_bytes": 65536,
+    "initialization_charge": {
+      "rounds": 1,
+      "rows": 0
+    },
+    "later_advance_before_KILL": true,
+    "peer_readiness_seconds": 15,
+    "per_file_bytes": 8388608,
+    "post_KILL_absence_seconds": 5,
+    "product_file_slot_bytes": 2097152,
+    "product_file_slots": 8,
+    "prompt_query_charge": {
+      "rounds": 1,
+      "rows": 2
+    },
+    "rounds_global": 6000,
+    "rounds_main": 4976,
+    "rows_global": 24000,
+    "rows_main": 19904,
+    "successful_TERM_grace_seconds": 5,
+    "terminal_bytes_within_cleanup": 1048576,
+    "uncertain_read_attempts": 8,
+    "uncertainty_seconds_original_clock": 2
+  },
+  "controlled_environment": {
+    "OPENERGY_DISABLE_UPDATES": "1",
+    "OPENERGY_ORDINARY_PYTHON": "${PYTHON}",
+    "OPENERGY_ORDINARY_SOURCE_ROOT": "${SOURCE_ROOT}",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONNOUSERSITE": "1",
+    "startup": "Parent authenticates prefix/executable before entry; no user PYTHONPATH/PYTHONHOME/startup injection; do not use -I because sibling imports are required."
+  },
+  "execution": false,
+  "historical_m1_result": "FAILED_NOT_ACCEPTED",
+  "inputs": {
+    "admission_candidate": "02c9b174c8e13d4eaa6bf7692f20cbb44c93ae57",
+    "app_sha256": "094d02b3831ee6565ae1628407756ad48053a0268f2a489c65bbde28b768d775",
+    "daemon_peer_sha256": "17065c334290b34c7a1b69483f409655e072eb0505ff2a0cc0bf6ed5f77a7bb2",
+    "materialization": "materialization.json",
+    "port_commit": "2aefaf4056a8d35a005f38e7856ffad89d771a82",
+    "port_source_review": "90a221bf01aa8359488913ff567ca11d7e77fa47",
+    "priority_commit": "43446949beac4dd445dfce980da9cd7f9a869ceb",
+    "product_source": "ed7d96bf53da1a539fa2acde3b7133613221fd4b",
+    "qualification_contract": "Use exact operator-plan.md and receipt-contract.md pinned in input-bindings.json, including source/destination/private-copy qualification. Stop if exact inputs are missing. No rebuild/signing/substitution.",
+    "r9": "e34401c8842c2a93b5c355f4c515a79ee05cfa72"
+  },
+  "new_human_approval_gate": false,
+  "no_retry": true,
+  "parent_bound_paths": {
+    "EVIDENCE": "fresh canonical 0700 evidence directory on /private/tmp filesystem",
+    "PYTHON": "exact authenticated canonical private interpreter from artifact receipt",
+    "SOURCE_ROOT": "complete exact 702-file raw Git product source root"
+  },
+  "port_cause": "UNKNOWN",
+  "reuse_old_attempt": false,
+  "runtime": "UNVERIFIED",
+  "schema": "openergy.ordinary-composed-future-full-flow.v1",
+  "scope_exclusions": [
+    "runtime under this task",
+    "new build/signing",
+    "private run reopening",
+    "source/program execution under this task",
+    "computer-use testing",
+    "unit tests or mocks",
+    "remote/process/port queries under this task",
+    "credentials",
+    "child agents",
+    "product source changes",
+    "product delays or hidden switches",
+    "unsupported Darwin ABI",
+    "unknown port cause repair",
+    "expired Sparkle scope reopening"
+  ],
+  "source_review": "PENDING_COMPOSED_REVIEW",
+  "steps": [
+    {
+      "action": "Parent independently reviews the full priority repair plus composed port diagnostic, exact ten source texts, both deltas, immutable inputs and hashes; materialize once into fresh EVIDENCE. No source execution during materialization.",
+      "execution": false,
+      "kind": "static-data-only",
+      "maximum": 1,
+      "order": 1
+    },
+    {
+      "action": "Apply the existing exact artifact receipt contract to the retained build/source/bundle/Python/ABI inputs. Read-only qualification once per required object; failed metadata remains failed. Bind new immutable artifact-receipt and operation.bound only after all concrete gates. No product invocation.",
+      "execution": false,
+      "kind": "artifact-qualification",
+      "maximum_qualification_passes": 1,
+      "new_builds": 0,
+      "new_signatures": 0,
+      "order": 2,
+      "retry": false
+    },
+    {
+      "argv": [
+        "${PYTHON}",
+        "${EVIDENCE}/prepare.py"
+      ],
+      "deadline_seconds": 120,
+      "execution": false,
+      "failure": "Retain exclusive guard and partial evidence; stop. No second prepare.",
+      "kind": "prepare-command",
+      "max_invocations": 1,
+      "order": 3,
+      "product_invocations": 0
+    },
+    {
+      "action": "Qualify the one private copied bundle once under the existing receipt contract, publish prepared-copy-qualification with reserved writer. Parent operator gate; controller does not consume this receipt.",
+      "execution": false,
+      "failure": "No controller launch.",
+      "kind": "private-copy-qualification",
+      "maximum_passes": 1,
+      "order": 4,
+      "retry": false
+    },
+    {
+      "absolute_product_end": "flow_start+180 seconds",
+      "app_argv_suffix": [
+        "--e2e",
+        "<new-private-app-directory>",
+        "--join",
+        "127.0.0.1:65431",
+        "--host-port",
+        "65432",
+        "--require-peer"
+      ],
+      "argv": [
+        "${PYTHON}",
+        "${EVIDENCE}/controller.py"
+      ],
+      "cleanup_seconds": 60,
+      "direct_product_order": [
+        "peer",
+        "peer-status",
+        "app",
+        "peer-stop only after guarded app/tree absence"
+      ],
+      "execution": false,
+      "file_only_preflight_seconds": 120,
+      "kind": "controller-command",
+      "max_invocations": 1,
+      "max_launches_per_role": 1,
+      "order": 5,
+      "ordinary_checks": 25,
+      "outer_collection": "Retain actual OS exit and bounded output through original evidence reservations; no unmetered shell redirection.",
+      "product_flow_seconds": 120,
+      "retry": false
+    },
+    {
+      "action": "Bind original outer OS exit and all first failures, actual app/direct/helper/control exits, prompt/full/helper rows and counters, late control coverage, uncertainty and guarded peer ordering, both first postflight binds, unchanged bundle/source, move-only archival and full25 report. Missing facts remain null/UNVERIFIED; inspect all gates rather than outcome flag alone. If the first strict postflight bind fails with EADDRINUSE, retain its FAILED verdict and only the one bounded failure-context diagnostic. Cause remains UNKNOWN; no second bind or repeated flow.",
+      "additional_process_or_port_queries": 0,
+      "execution": false,
+      "kind": "final-data-assessment",
+      "maximum": 1,
+      "order": 6
+    }
+  ]
+}
