@@ -1,0 +1,19 @@
+{
+  "events": [
+    {
+      "cause": "Reader looked for argv=; saved executor assigns the literal vector to ssh=.",
+      "disposition": "Corrected reviewer token reader. No supplied code ran. All 37 reads remain charged.",
+      "error": "StopIteration",
+      "pass": "second full snapshot, then analysis"
+    },
+    {
+      "cause": "Reviewer compared an auxiliary metadata wrapper to the declared digest of a different full historical EXPECTED object.",
+      "disposition": "Retained unequal digest as informational proof limit. The source-file helper does not consume this wrapper. No source qualification predicate changed. Full metadata binding stays UNVERIFIED.",
+      "observed": false,
+      "pass": "first follow-up analysis",
+      "required_check_at_that_time": "saved_expected_canonical_digest"
+    }
+  ],
+  "private_read_budget_reset": false,
+  "supplied_execution": false
+}
