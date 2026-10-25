@@ -1,0 +1,319 @@
+{
+  "closed_pipe_timeout": "EXPECTED_INCOMPLETE_WITH_ACTUAL_CHILD_EXIT",
+  "final_driver_scope": "full real local CLI command path",
+  "final_driver_source_commit": "93cd2e6",
+  "flows": [
+    {
+      "cases": [
+        {
+          "actual_child_exit": 0,
+          "actual_child_exit_observed": true,
+          "driver_accepted": true,
+          "first_error": null,
+          "label": "success",
+          "reader_exit": 0,
+          "secondary_error_count": 0,
+          "status": "COMPLETE",
+          "streams": {
+            "stderr": {
+              "bytes": 0,
+              "bytes_not_preserved": 0,
+              "bytes_read": 0,
+              "eof": true,
+              "overflow_observed": false,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 7,
+              "bytes_not_preserved": 0,
+              "bytes_read": 7,
+              "eof": true,
+              "overflow_observed": false,
+              "sha256": "d4431c5127a04a3695bb810b98d7385b306f1c3617771f50c0e191ad7b954eb2"
+            }
+          }
+        },
+        {
+          "actual_child_exit": 1,
+          "actual_child_exit_observed": true,
+          "driver_accepted": true,
+          "first_error": null,
+          "label": "nonzero",
+          "reader_exit": 1,
+          "secondary_error_count": 0,
+          "status": "INCOMPLETE",
+          "streams": {
+            "stderr": {
+              "bytes": 0,
+              "bytes_not_preserved": 0,
+              "bytes_read": 0,
+              "eof": true,
+              "overflow_observed": false,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 0,
+              "bytes_not_preserved": 0,
+              "bytes_read": 0,
+              "eof": true,
+              "overflow_observed": false,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        {
+          "actual_child_exit": -9,
+          "actual_child_exit_observed": true,
+          "driver_accepted": true,
+          "first_error": {
+            "class": "TimeoutError",
+            "phase": "capture"
+          },
+          "label": "partial-timeout",
+          "reader_exit": 1,
+          "secondary_error_count": 0,
+          "status": "INCOMPLETE",
+          "streams": {
+            "stderr": {
+              "bytes": 0,
+              "bytes_not_preserved": 0,
+              "bytes_read": 0,
+              "eof": true,
+              "overflow_observed": false,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 7,
+              "bytes_not_preserved": 0,
+              "bytes_read": 7,
+              "eof": true,
+              "overflow_observed": false,
+              "sha256": "5a958fd0cb0435992ec0b7afb3255dbe976078447b0fe2830119c083b9eae082"
+            }
+          }
+        },
+        {
+          "actual_child_exit": -13,
+          "actual_child_exit_observed": true,
+          "driver_accepted": true,
+          "first_error": {
+            "class": "OverflowError",
+            "phase": "capture"
+          },
+          "label": "output-cap",
+          "reader_exit": 1,
+          "secondary_error_count": 0,
+          "status": "INCOMPLETE",
+          "streams": {
+            "stderr": {
+              "bytes": 0,
+              "bytes_not_preserved": 0,
+              "bytes_read": 0,
+              "eof": false,
+              "overflow_observed": false,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 128,
+              "bytes_not_preserved": 1,
+              "bytes_read": 129,
+              "eof": false,
+              "overflow_observed": true,
+              "sha256": "9d6ef848784352df50e182a9ab91ddfa588d245d01112e7e1d1b1cc22b250d68"
+            }
+          }
+        }
+      ],
+      "closed_pipes_case": {
+        "accepted": true,
+        "both_output_streams_eof": true,
+        "bytes_captured": 0,
+        "child_exit": -9,
+        "elapsed_seconds": 0.34383945900026447,
+        "first_error": {
+          "class": "TimeoutError",
+          "phase": "capture"
+        },
+        "reader_exit": 1,
+        "receipt_sha256": "451db015f138a072c92e277369568d720594786f4d962e6ddd513783448f9b20"
+      },
+      "driver_exit": 0,
+      "outer_elapsed_seconds": 0.4729475000003731,
+      "outer_timeout": false,
+      "private_label": "metadata-reader-deadline-cli-20261025-fbe6698f12bd",
+      "source_records": [
+        {
+          "bytes": 21740,
+          "name": "metadata_reader.py.txt",
+          "sha256": "8f55fbb7c930989f0ad7327536eb61a1330eb741c108992784f37b54af68086c"
+        },
+        {
+          "bytes": 4586,
+          "name": "metadata-query.ps1.txt",
+          "sha256": "3404c46e256d41c17c1c7efaea1364216075f7988e1e5d38f588b43c92358443"
+        },
+        {
+          "bytes": 8436,
+          "name": "verify-cli.py",
+          "sha256": "5f174d77b138d1b3b9a27d6cd6810d24cfb87c32c1f70dc079091d1d41c4bd27"
+        }
+      ],
+      "status": "LOCAL_CLI_CASES_PASSED"
+    },
+    {
+      "cases": [
+        {
+          "actual_child_exit": 0,
+          "actual_child_exit_observed": true,
+          "driver_accepted": true,
+          "first_error": null,
+          "label": "success",
+          "reader_exit": 0,
+          "secondary_error_count": 0,
+          "status": "COMPLETE",
+          "streams": {
+            "stderr": {
+              "bytes": 0,
+              "bytes_not_preserved": 0,
+              "bytes_read": 0,
+              "eof": true,
+              "overflow_observed": false,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 7,
+              "bytes_not_preserved": 0,
+              "bytes_read": 7,
+              "eof": true,
+              "overflow_observed": false,
+              "sha256": "d4431c5127a04a3695bb810b98d7385b306f1c3617771f50c0e191ad7b954eb2"
+            }
+          }
+        },
+        {
+          "actual_child_exit": 1,
+          "actual_child_exit_observed": true,
+          "driver_accepted": true,
+          "first_error": null,
+          "label": "nonzero",
+          "reader_exit": 1,
+          "secondary_error_count": 0,
+          "status": "INCOMPLETE",
+          "streams": {
+            "stderr": {
+              "bytes": 0,
+              "bytes_not_preserved": 0,
+              "bytes_read": 0,
+              "eof": true,
+              "overflow_observed": false,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 0,
+              "bytes_not_preserved": 0,
+              "bytes_read": 0,
+              "eof": true,
+              "overflow_observed": false,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        },
+        {
+          "actual_child_exit": -9,
+          "actual_child_exit_observed": true,
+          "driver_accepted": true,
+          "first_error": {
+            "class": "TimeoutError",
+            "phase": "capture"
+          },
+          "label": "partial-timeout",
+          "reader_exit": 1,
+          "secondary_error_count": 0,
+          "status": "INCOMPLETE",
+          "streams": {
+            "stderr": {
+              "bytes": 0,
+              "bytes_not_preserved": 0,
+              "bytes_read": 0,
+              "eof": true,
+              "overflow_observed": false,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 7,
+              "bytes_not_preserved": 0,
+              "bytes_read": 7,
+              "eof": true,
+              "overflow_observed": false,
+              "sha256": "5a958fd0cb0435992ec0b7afb3255dbe976078447b0fe2830119c083b9eae082"
+            }
+          }
+        },
+        {
+          "actual_child_exit": -13,
+          "actual_child_exit_observed": true,
+          "driver_accepted": true,
+          "first_error": {
+            "class": "OverflowError",
+            "phase": "capture"
+          },
+          "label": "output-cap",
+          "reader_exit": 1,
+          "secondary_error_count": 0,
+          "status": "INCOMPLETE",
+          "streams": {
+            "stderr": {
+              "bytes": 0,
+              "bytes_not_preserved": 0,
+              "bytes_read": 0,
+              "eof": false,
+              "overflow_observed": false,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 128,
+              "bytes_not_preserved": 1,
+              "bytes_read": 129,
+              "eof": false,
+              "overflow_observed": true,
+              "sha256": "9d6ef848784352df50e182a9ab91ddfa588d245d01112e7e1d1b1cc22b250d68"
+            }
+          }
+        }
+      ],
+      "closed_pipes_case": null,
+      "driver_exit": 0,
+      "outer_elapsed_seconds": 0.6333484589995351,
+      "outer_timeout": false,
+      "private_label": "metadata-reader-final-driver-cli-20261025-bd441052a700",
+      "source_records": [
+        {
+          "bytes": 21740,
+          "name": "metadata_reader.py.txt",
+          "sha256": "8f55fbb7c930989f0ad7327536eb61a1330eb741c108992784f37b54af68086c"
+        },
+        {
+          "bytes": 4586,
+          "name": "metadata-query.ps1.txt",
+          "sha256": "3404c46e256d41c17c1c7efaea1364216075f7988e1e5d38f588b43c92358443"
+        },
+        {
+          "bytes": 8792,
+          "name": "verify-cli.py",
+          "sha256": "8f4f95f0178e0f249fa3b44804d23d10090822c6d30c3ca92e7fb2e1930a642f"
+        }
+      ],
+      "status": "LOCAL_CLI_CASES_PASSED"
+    }
+  ],
+  "independent_final_driver_review": "PENDING",
+  "latest_four_case_flow": "LOCAL_CLI_CASES_PASSED",
+  "old_50_evidence_files_byte_exact": true,
+  "old_failed_flow_preserved": true,
+  "reader_sha256": "8f55fbb7c930989f0ad7327536eb61a1330eb741c108992784f37b54af68086c",
+  "reader_source_commit": "97cc8f9",
+  "schema": "openergy.metadata-deadline-cli-validation.v1",
+  "terminal_scheduling_race_reproduced": false,
+  "windows_contacted": false,
+  "windows_native_acceptance": "UNVERIFIED"
+}
