@@ -1,0 +1,39 @@
+{
+  "opening": {
+    "head": "64bcde791ea95472b796fab623519a124ee553d0",
+    "tree": "76cd29c956e8fbf20484ca905be08a12ae19ddc7",
+    "tracked_count": 4655,
+    "raw_ls_tree_sha256": "f81adfd26f22939855fca7499ed713d837736cc54f2cd554c6c6d20cc9d346eb",
+    "index_stage_sha256": "e74e712483962dc8eeb91138cd717599fc61610d6e3ec9a8f58f95e96e371433",
+    "canonical_format": "UTF-8 compact JSON plus LF; Git ls-tree order; [path, Git mode, blob OID, full permission mode octal, raw byte length, raw SHA256]",
+    "canonical_digest_sha256": "fd548cc3cadba87f5569964435d8b2025f0236da82e4826ed228e63f3c4760a2",
+    "tree_index_mismatches": [],
+    "raw_working_blob_differences": [
+      {
+        "path": "tools/windows/openergy-run.cmd",
+        "raw_blob_oid": "e008c1b665bc7957df748ac31a5e9e0c02ac1385",
+        "tree_blob_oid": "9cd6f37ce26dde4edcad6f808492171f8daf3462"
+      }
+    ],
+    "opening_status": "CLEAN (before owned folder creation)"
+  },
+  "closing_before_commit": {
+    "actual_per_entry_checks": 4655,
+    "tree_blob_modes_equal": true,
+    "entire_original_index_stage_records_equal": true,
+    "raw_working_bytes_lengths_hashes_and_full_modes_equal": true,
+    "canonical_digest_sha256": "fd548cc3cadba87f5569964435d8b2025f0236da82e4826ed228e63f3c4760a2",
+    "mismatch_paths": [],
+    "duplicate_inventory_committed": false,
+    "temporary_opening_rows_and_index": "Held untracked only until actual post-commit comparisons, then removed."
+  },
+  "commit_policy": {
+    "owned_folder": "docs/verification/m1-ordinary-helper-signal-full-review-2026-10-25-t3-f3950be4",
+    "only_new_folder": true,
+    "hooks": "core.hooksPath=/dev/null",
+    "signing": "commit.gpgsign=false and --no-gpg-sign",
+    "fsmonitor": "core.fsmonitor=false",
+    "final_commit": "Reported outside its own committed bytes",
+    "post_commit": "Actual old per-entry, tree/index and clean-status checks; console result reported separately."
+  }
+}

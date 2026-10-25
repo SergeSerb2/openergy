@@ -1,0 +1,740 @@
+{
+  "schema": "independent-ordinary-helper-data-review.v1",
+  "execution": false,
+  "runtime_acceptance": false,
+  "binding_row_format": [
+    "path",
+    "revision",
+    "Git mode",
+    "blob OID",
+    "bytes",
+    "raw SHA256"
+  ],
+  "candidate": "d405da38eabc4d1a7a008c2c267b4cebf6a1afe4",
+  "candidate_parent": "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+  "candidate_tree": "36fd8d4af45458e236dab6a413d5953d35a46eba",
+  "import": "64bcde791ea95472b796fab623519a124ee553d0",
+  "packet_only_candidate_delta": true,
+  "candidate_import_packet_tree_records_equal": true,
+  "packet_files": [
+    [
+      "docs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/README.md",
+      "d405da38eabc4d1a7a008c2c267b4cebf6a1afe4",
+      "100644",
+      "781deee8ffd5518c5d45e36c7cea67b8d52cb8fc",
+      5627,
+      "54f611ad09cad675697fe3de00410dddfdf93a906859c12555a604718dffc7ca"
+    ],
+    [
+      "docs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/SHA256SUMS",
+      "d405da38eabc4d1a7a008c2c267b4cebf6a1afe4",
+      "100644",
+      "6c13e22b15c2ef33677b1f81ffd7b0ec244079d8",
+      1244,
+      "697a2b9b3e3861e5614d9a40bba78f38eae8dad28eefae1940aaaa234948aab7"
+    ],
+    [
+      "docs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/bindings.json",
+      "d405da38eabc4d1a7a008c2c267b4cebf6a1afe4",
+      "100644",
+      "868de15801bf4e6668fb79f24ffc087cca3c1862",
+      20443,
+      "3d5941e3e23ea932ae349e5712fc769e4601a554f6852a0351007f67004a8c67"
+    ],
+    [
+      "docs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/changed-functions.after.txt",
+      "d405da38eabc4d1a7a008c2c267b4cebf6a1afe4",
+      "100644",
+      "0216b0205dc6f86618d3a6b92f06e37906aca07d",
+      11676,
+      "ad8d36cac21ff7cac0f3b7589c240c214f2a1781fd4c81777203537e2dada5af"
+    ],
+    [
+      "docs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/changed-functions.before.txt",
+      "d405da38eabc4d1a7a008c2c267b4cebf6a1afe4",
+      "100644",
+      "f7614f60c48d6be93b46b65ecdf75648a915c2bb",
+      8748,
+      "1bbbe4ac1ed9edfa5b5800ced198acbe9e816a510340f8b27d68f9a64ee48a50"
+    ],
+    [
+      "docs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/common-from-frozen.patch",
+      "d405da38eabc4d1a7a008c2c267b4cebf6a1afe4",
+      "100644",
+      "f73acfa053031aba66eaac9460c69233b2fdf678",
+      6858,
+      "f30997f782e5b9c082e0b83229a2d70d4e8571a09bc0b1292579d9c38c66bb83"
+    ],
+    [
+      "docs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/function-bindings.json",
+      "d405da38eabc4d1a7a008c2c267b4cebf6a1afe4",
+      "100644",
+      "d0bd8f500505bdd8a92b221c8e4d254cfe7e4283",
+      11852,
+      "2025b5618c0a2eda079571f322376471002f91640ee22d191a27283552db04da"
+    ],
+    [
+      "docs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/future-composition.json",
+      "d405da38eabc4d1a7a008c2c267b4cebf6a1afe4",
+      "100644",
+      "ebfe1ee56993841f58a23d5c73a7d0e3d10064dd",
+      2574,
+      "b2adee8052a9a8a2c6ee34a3f9dad7a05b74583cc7fd08e129e724872e572a1f"
+    ],
+    [
+      "docs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/global-diff.patch",
+      "d405da38eabc4d1a7a008c2c267b4cebf6a1afe4",
+      "100644",
+      "f70af4ed58885fa18b33dfc02025ac7f95e8a723",
+      171,
+      "0a03a8ad0caa70ec6431f16c668bab19a8e0bb9004a9717f24ef53711efaee3c"
+    ],
+    [
+      "docs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/port_diagnostic-from-frozen.patch",
+      "d405da38eabc4d1a7a008c2c267b4cebf6a1afe4",
+      "100644",
+      "fc2ff6e0c150d3789632866a7cf088c3f52c7d41",
+      2819,
+      "c888ecc51c284f99d68ad54428837cfc9fd12040ec0ec21316a9096f460b39cd"
+    ],
+    [
+      "docs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/preservation.json",
+      "d405da38eabc4d1a7a008c2c267b4cebf6a1afe4",
+      "100644",
+      "91931c39501aae5fd9fa60adde90d90e77598b90",
+      3050,
+      "d045eb831cfb35a2b6d161726e561b76980e254c0853fb254ce2e7e12ae0b9e8"
+    ],
+    [
+      "docs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/source/common.py.txt",
+      "d405da38eabc4d1a7a008c2c267b4cebf6a1afe4",
+      "100644",
+      "314b375cffb82b957276e029235d6a0dbf6a2c97",
+      14797,
+      "da670bf1bf1e135ddf2d8340d3c8cb1362ff2b1e9cc551659b4dfe9106461061"
+    ],
+    [
+      "docs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/source/port_diagnostic.py.txt",
+      "d405da38eabc4d1a7a008c2c267b4cebf6a1afe4",
+      "100644",
+      "1b0a6737e337faddc9ad8c73b72ddc53fac94bb3",
+      11022,
+      "1b2d744d0c2f2a9334a392413ce10257d8e4a069eba1357844c3ab30af70627e"
+    ],
+    [
+      "docs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/static-observations.json",
+      "d405da38eabc4d1a7a008c2c267b4cebf6a1afe4",
+      "100644",
+      "f37b87f5a9abc0e067cca6db024207ff23ff6f64",
+      15344,
+      "2a4ad42c910a36972b16ecde1b6993ac0d8e08c00aa6c438de03e21bf4e083de"
+    ],
+    [
+      "docs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/status-contract.json",
+      "d405da38eabc4d1a7a008c2c267b4cebf6a1afe4",
+      "100644",
+      "fb5d8c1050ed2e781981939b32b1bd2afe98ddad",
+      7020,
+      "c6b75f9ad0f96aa78e2e840b51a42a14791db257f4b94f1038d89b17987e971b"
+    ]
+  ],
+  "checksum_entries_checked": 14,
+  "strict_unique_key_JSON_files": 6,
+  "public_input_records_checked": 28,
+  "historical_module_records_checked": 10,
+  "historical_pins_checked": 17,
+  "dependencies": [
+    [
+      "docs/verification/m1-copy-parent-full-review-2026-10-25-t3-9edf92e5/REVIEW.md",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "0ca18dfa0608d6af2c14666a1d9cf64d256036e8",
+      21224,
+      "33550d9e4fca61a4425eadfe095b8a8234a825a1978b1a263852e3dac365d53f"
+    ],
+    [
+      "docs/verification/m1-copy-parent-full-review-2026-10-25-t3-9edf92e5/public-stdlib-source-evidence.json",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "907694c4e769cdb7413000ffd39e99f60c7f6cac",
+      6371,
+      "6e3bef7b4e9a5b1ace7229fdb62e212e17d1e57ed58a785931699385ff075cb0"
+    ],
+    [
+      "docs/verification/m1-local-direct-signal-composition-2026-10-25-t3-52422617/README.md",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "492b1963e4ef1b76185d64d3e5d1f135550b048b",
+      4473,
+      "8d66a22b8ef6fad10a3425156350a052e978fd61944f216c2589c7c85933f25b"
+    ],
+    [
+      "docs/verification/m1-local-direct-signal-composition-2026-10-25-t3-52422617/bindings.json",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "f64c2c30da634d34469796bcb4f2548d4e49facf",
+      4578,
+      "c238cc5cc6b9581c3a6531d8865af98b90de055f13c5837712fddc0734a88c6b"
+    ],
+    [
+      "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/artifact-receipt.template.json",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "7827702d8344d191016c80bbc217bb11dad3e435",
+      3496,
+      "6250a8698664c757af9f9bdb5ef191f3604d82725282ae860741eae2529939d3"
+    ],
+    [
+      "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/file-qualification.recipe.py.txt",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "df331874224a87ce0335335b3fc79d5160e5cbd1",
+      7381,
+      "bf2ddd03f00bedbf799b4eee518a2b7b25d1eb9a6df06a2f55c419252f6fa428"
+    ],
+    [
+      "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/metadata.recipe.json",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "e1c3fc853eb3493fe4cc09fe9b551d06c1328b83",
+      7915,
+      "f97b12054aceb745cadcd3159d25f4693b3570a44d216ffdd96d9c1ddf05701e"
+    ],
+    [
+      "docs/verification/m1-ordinary-fresh-flow-plan-2026-10-24-t3-5463ce44/receipt-contract.md",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "b127b136063960b649bc20ba9d4d93b0e0d81915",
+      10673,
+      "2e9d4cb5440fe5feed0411886b36774e4acce0155e0082412f671f6df19d26e4"
+    ],
+    [
+      "docs/verification/m1-prepare-parent-root-layout-repair-2026-10-25-t3-1f8914f8/frozen-dependency-signal-audit.json",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "7625d927f3ac95449e2b168d782f1cd61c6fd027",
+      2991,
+      "a4afc0a4f23a2f587d15ee0d35ce604772347f26a3b161dfa0624959b3f38437"
+    ],
+    [
+      "docs/verification/m1-prepare-parent-root-layout-repair-2026-10-25-t3-1f8914f8/pin-bindings.json",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "d5a818eabbc2ee2e39cab10c951a9a18bf8c6b14",
+      15433,
+      "e0cf795afe12fc76e0a750600eeaab3d9d6432abccd628912e0d7aedeaa51090"
+    ],
+    [
+      "docs/verification/m1-prepare-parent-root-layout-repair-2026-10-25-t3-1f8914f8/prepare-parent.py.txt",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "1fba47722b783043c625fc485ad3402a854f9d9a",
+      109444,
+      "b3fbd793a0709c7857e34efca667a081a0486accfd0f3ad13a8068484b7eb8d9"
+    ],
+    [
+      "docs/verification/m1-prepare-parent-root-layout-review-2026-10-25-t3-98186f1b/REVIEW.md",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "7239acf369ce9a7a51d03bc6b9bdf50ecc76f6fd",
+      22839,
+      "dc8e986c6a3e914b65a13686fc9f1a7e15702e8548e545075d6967f340541c4e"
+    ],
+    [
+      "docs/verification/m1-sampler-source-repair-r3-2026-10-24/source-bindings.json",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "9a4b41af7c0c6b8665ccdd86ac7ad94d6d66195f",
+      151287,
+      "20e011251151cec81f69c4b80b0072d9fd0a98c1eaaf0e6c74d83ff752546617"
+    ],
+    [
+      "docs/verification/m1-sdk-canonical-path-repair-2026-10-25/qualification.recipe.json",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "4b0ee745d03c7a393ce8d86301406b65b415f98a",
+      7671,
+      "d90586546d6b3127dca26147b9d090544d29d7a8b229479966dae68ef25d3b11"
+    ],
+    [
+      "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/coverage-policy.json",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "9c4f4032fdd94dcae0934eebee766bea30d97776",
+      1864,
+      "35516fa08202a4ccd26ece557daecc5bf4e1e8f8e690f18b59d5cc70c3d30d36"
+    ],
+    [
+      "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/limits.json",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "06b351179fdaa936ee25d35d6f8478d9d987308d",
+      876,
+      "cadd06e19607f5dbe0ad070072673c8e518d961b1554958d243a0d028243d733"
+    ],
+    [
+      "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/materialization.json",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "5fb952cfa6f7a720a65f49a5bbca5e2a32e4e93c",
+      2743,
+      "aee494d76e674bf5c8f292bdab210a284bc4c8e42edc4189a6892af618b8dc7d"
+    ],
+    [
+      "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/source-checks.json",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "cc5e7ab5387152ae0d7096a27d3c327f8a52b127",
+      2932,
+      "2bde5cf1f9396df5c7d8518caaadcdd69eafc5ff2f39117158efaf87e8d080f5"
+    ],
+    [
+      "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/source/controller.py.txt",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "2d2394581ee63405d5bc41ba6b1d5f42fb810718",
+      36307,
+      "08f1bbea8aeb5852b4aaddd0f3f693c7717c69e5e898462baa90b49cba41e3a4"
+    ],
+    [
+      "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/common.py.txt",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "c3fd4b4524111bdad0d75ecf149d4b775da69cda",
+      12781,
+      "20a9c16030b2de53b99870f25bada68137bfc6fbc5b67cc29f8e878312d4129c"
+    ],
+    [
+      "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/coverage.py.txt",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "99d5d3e9f34d2d1318cc45597b6f488d8063ff52",
+      11382,
+      "d154561f7f256e41b32c90941f7ce18ffa79d5284d23eecea9be88cc1c48f747"
+    ],
+    [
+      "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/exec_owned.py.txt",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "609d61182684dcb8aed6c3121727fd57a8a96603",
+      2219,
+      "e7d9a755eed1fadfd04b43b3b96dbd0663cabdf07cc5aa7808ce006183859af2"
+    ],
+    [
+      "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/macproc.py.txt",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "6be48d0c8f3ff92a71965eebc4dd449b7149f8d2",
+      8075,
+      "d4f6fe358bd9af786fc4c2cba61f1a47f3f4015c918aae85cf8e6aa1c6d3e6c7"
+    ],
+    [
+      "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/ownership.py.txt",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "c1d39953f4e4c6a89591af694506fd7ab5fe800a",
+      35975,
+      "3ac4bab54db909beb236d0d9caa4ee83084ad9b566aa19d97c5b6d26c356b091"
+    ],
+    [
+      "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/port_diagnostic.py.txt",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "1642e2d94dc6efd570a6f6fa04f0841332c07f1d",
+      10096,
+      "9d35bf1adbde9209562d9b4cfa211b75574a0fb1922dc0297761880c2d6d3985"
+    ],
+    [
+      "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/prepare.py.txt",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "b3491c6f70c853b750c9395ea659749beec6b6c0",
+      11632,
+      "16f2c5d9dce3f3bce8a871bd53eea06ebf1818080de5f9bdaae3997b86304e9a"
+    ],
+    [
+      "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/probe.py.txt",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "35236510f157b8475fef3da4f09276efba31d89b",
+      699,
+      "d65d17246bbd9057576e32454014b00afed6988dfead7899251435302a651efd"
+    ],
+    [
+      "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/watchdog.py.txt",
+      "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+      "100644",
+      "70624a8282c4771875a1497660de7c7c09deb9e8",
+      18760,
+      "5efe2cd41f9339463187dfc3d5b11ec8d14f1a159a58787e9b3e01fe60db158d"
+    ],
+    [
+      "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/artifact-receipt.template.json",
+      "05b056cdc25a137f820efb59ae5004ce98781770",
+      "100644",
+      "7827702d8344d191016c80bbc217bb11dad3e435",
+      3496,
+      "6250a8698664c757af9f9bdb5ef191f3604d82725282ae860741eae2529939d3"
+    ],
+    [
+      "docs/verification/m1-sampler-source-repair-r3-2026-10-24/source-bindings.json",
+      "05b056cdc25a137f820efb59ae5004ce98781770",
+      "100644",
+      "9a4b41af7c0c6b8665ccdd86ac7ad94d6d66195f",
+      151287,
+      "20e011251151cec81f69c4b80b0072d9fd0a98c1eaaf0e6c74d83ff752546617"
+    ],
+    [
+      "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/common.py.txt",
+      "05b056cdc25a137f820efb59ae5004ce98781770",
+      "100644",
+      "c3fd4b4524111bdad0d75ecf149d4b775da69cda",
+      12781,
+      "20a9c16030b2de53b99870f25bada68137bfc6fbc5b67cc29f8e878312d4129c"
+    ],
+    [
+      "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/source/controller.py.txt",
+      "05b056cdc25a137f820efb59ae5004ce98781770",
+      "100644",
+      "2d2394581ee63405d5bc41ba6b1d5f42fb810718",
+      36307,
+      "08f1bbea8aeb5852b4aaddd0f3f693c7717c69e5e898462baa90b49cba41e3a4"
+    ],
+    [
+      "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/coverage.py.txt",
+      "05b056cdc25a137f820efb59ae5004ce98781770",
+      "100644",
+      "99d5d3e9f34d2d1318cc45597b6f488d8063ff52",
+      11382,
+      "d154561f7f256e41b32c90941f7ce18ffa79d5284d23eecea9be88cc1c48f747"
+    ],
+    [
+      "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/exec_owned.py.txt",
+      "05b056cdc25a137f820efb59ae5004ce98781770",
+      "100644",
+      "609d61182684dcb8aed6c3121727fd57a8a96603",
+      2219,
+      "e7d9a755eed1fadfd04b43b3b96dbd0663cabdf07cc5aa7808ce006183859af2"
+    ],
+    [
+      "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/file-qualification.recipe.py.txt",
+      "05b056cdc25a137f820efb59ae5004ce98781770",
+      "100644",
+      "df331874224a87ce0335335b3fc79d5160e5cbd1",
+      7381,
+      "bf2ddd03f00bedbf799b4eee518a2b7b25d1eb9a6df06a2f55c419252f6fa428"
+    ],
+    [
+      "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/limits.json",
+      "05b056cdc25a137f820efb59ae5004ce98781770",
+      "100644",
+      "06b351179fdaa936ee25d35d6f8478d9d987308d",
+      876,
+      "cadd06e19607f5dbe0ad070072673c8e518d961b1554958d243a0d028243d733"
+    ],
+    [
+      "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/macproc.py.txt",
+      "05b056cdc25a137f820efb59ae5004ce98781770",
+      "100644",
+      "6be48d0c8f3ff92a71965eebc4dd449b7149f8d2",
+      8075,
+      "d4f6fe358bd9af786fc4c2cba61f1a47f3f4015c918aae85cf8e6aa1c6d3e6c7"
+    ],
+    [
+      "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/metadata.recipe.json",
+      "05b056cdc25a137f820efb59ae5004ce98781770",
+      "100644",
+      "e1c3fc853eb3493fe4cc09fe9b551d06c1328b83",
+      7915,
+      "f97b12054aceb745cadcd3159d25f4693b3570a44d216ffdd96d9c1ddf05701e"
+    ],
+    [
+      "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/ownership.py.txt",
+      "05b056cdc25a137f820efb59ae5004ce98781770",
+      "100644",
+      "c1d39953f4e4c6a89591af694506fd7ab5fe800a",
+      35975,
+      "3ac4bab54db909beb236d0d9caa4ee83084ad9b566aa19d97c5b6d26c356b091"
+    ],
+    [
+      "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/port_diagnostic.py.txt",
+      "05b056cdc25a137f820efb59ae5004ce98781770",
+      "100644",
+      "1642e2d94dc6efd570a6f6fa04f0841332c07f1d",
+      10096,
+      "9d35bf1adbde9209562d9b4cfa211b75574a0fb1922dc0297761880c2d6d3985"
+    ],
+    [
+      "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/prepare.py.txt",
+      "05b056cdc25a137f820efb59ae5004ce98781770",
+      "100644",
+      "b3491c6f70c853b750c9395ea659749beec6b6c0",
+      11632,
+      "16f2c5d9dce3f3bce8a871bd53eea06ebf1818080de5f9bdaae3997b86304e9a"
+    ],
+    [
+      "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/probe.py.txt",
+      "05b056cdc25a137f820efb59ae5004ce98781770",
+      "100644",
+      "35236510f157b8475fef3da4f09276efba31d89b",
+      699,
+      "d65d17246bbd9057576e32454014b00afed6988dfead7899251435302a651efd"
+    ],
+    [
+      "docs/verification/m1-sdk-canonical-path-repair-2026-10-25/qualification.recipe.json",
+      "05b056cdc25a137f820efb59ae5004ce98781770",
+      "100644",
+      "4b0ee745d03c7a393ce8d86301406b65b415f98a",
+      7671,
+      "d90586546d6b3127dca26147b9d090544d29d7a8b229479966dae68ef25d3b11"
+    ],
+    [
+      "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/source-checks.json",
+      "05b056cdc25a137f820efb59ae5004ce98781770",
+      "100644",
+      "cc5e7ab5387152ae0d7096a27d3c327f8a52b127",
+      2932,
+      "2bde5cf1f9396df5c7d8518caaadcdd69eafc5ff2f39117158efaf87e8d080f5"
+    ],
+    [
+      "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/watchdog.py.txt",
+      "05b056cdc25a137f820efb59ae5004ce98781770",
+      "100644",
+      "70624a8282c4771875a1497660de7c7c09deb9e8",
+      18760,
+      "5efe2cd41f9339463187dfc3d5b11ec8d14f1a159a58787e9b3e01fe60db158d"
+    ]
+  ],
+  "modules": {
+    "common": {
+      "before": [
+        "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/common.py.txt",
+        "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+        "100644",
+        "c3fd4b4524111bdad0d75ecf149d4b775da69cda",
+        12781,
+        "20a9c16030b2de53b99870f25bada68137bfc6fbc5b67cc29f8e878312d4129c"
+      ],
+      "after": [
+        "docs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/source/common.py.txt",
+        "d405da38eabc4d1a7a008c2c267b4cebf6a1afe4",
+        "100644",
+        "314b375cffb82b957276e029235d6a0dbf6a2c97",
+        14797,
+        "da670bf1bf1e135ddf2d8340d3c8cb1362ff2b1e9cc551659b4dfe9106461061"
+      ],
+      "declarations_including_nested": 25,
+      "unchanged_including_nested": 24,
+      "changed": [
+        "command"
+      ],
+      "global_remainder_before_sha256": "64eec5206bf0c7ebafc09ed8600bfa012c6b7b24b7b7b8f8ff34a375a1cfdfb5",
+      "global_remainder_after_sha256": "64eec5206bf0c7ebafc09ed8600bfa012c6b7b24b7b7b8f8ff34a375a1cfdfb5",
+      "global_change": "none"
+    },
+    "port_diagnostic": {
+      "before": [
+        "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/port_diagnostic.py.txt",
+        "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+        "100644",
+        "1642e2d94dc6efd570a6f6fa04f0841332c07f1d",
+        10096,
+        "9d35bf1adbde9209562d9b4cfa211b75574a0fb1922dc0297761880c2d6d3985"
+      ],
+      "after": [
+        "docs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/source/port_diagnostic.py.txt",
+        "d405da38eabc4d1a7a008c2c267b4cebf6a1afe4",
+        "100644",
+        "1b0a6737e337faddc9ad8c73b72ddc53fac94bb3",
+        11022,
+        "1b2d744d0c2f2a9334a392413ce10257d8e4a069eba1357844c3ab30af70627e"
+      ],
+      "declarations_including_nested": 2,
+      "unchanged_including_nested": 1,
+      "changed": [
+        "query"
+      ],
+      "global_remainder_before_sha256": "d9784c215adb653ceb2825652340f7f3dcd168dc9e67f8f4af7b58c261dc49fa",
+      "global_remainder_after_sha256": "eaf01fda060502adda7d613d493210f0ec925ffb5ccb2c4e2eccd08a4ec11583",
+      "global_change": "import signal only"
+    }
+  },
+  "patches": {
+    "common": {
+      "path": "docs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/common-from-frozen.patch",
+      "sha256": "f30997f782e5b9c082e0b83229a2d70d4e8571a09bc0b1292579d9c38c66bb83",
+      "hunks": [
+        {
+          "old_start": 261,
+          "old_count": 48,
+          "new_start": 261,
+          "new_count": 81,
+          "context": 7,
+          "deleted": 41,
+          "added": 74
+        }
+      ],
+      "all_old_rows_and_new_positions_compared": true,
+      "reconstructed_bytes": 14797,
+      "reconstructed_sha256": "da670bf1bf1e135ddf2d8340d3c8cb1362ff2b1e9cc551659b4dfe9106461061"
+    },
+    "port_diagnostic": {
+      "path": "docs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/port_diagnostic-from-frozen.patch",
+      "sha256": "c888ecc51c284f99d68ad54428837cfc9fd12040ec0ec21316a9096f460b39cd",
+      "hunks": [
+        {
+          "old_start": 3,
+          "old_count": 6,
+          "new_start": 3,
+          "new_count": 7,
+          "context": 6,
+          "deleted": 0,
+          "added": 1
+        },
+        {
+          "old_start": 94,
+          "old_count": 7,
+          "new_start": 95,
+          "new_count": 9,
+          "context": 6,
+          "deleted": 1,
+          "added": 3
+        },
+        {
+          "old_start": 144,
+          "old_count": 11,
+          "new_start": 147,
+          "new_count": 23,
+          "context": 7,
+          "deleted": 4,
+          "added": 16
+        }
+      ],
+      "all_old_rows_and_new_positions_compared": true,
+      "reconstructed_bytes": 11022,
+      "reconstructed_sha256": "1b2d744d0c2f2a9334a392413ce10257d8e4a069eba1357844c3ab30af70627e"
+    },
+    "globals": {
+      "sha256": "0a03a8ad0caa70ec6431f16c668bab19a8e0bb9004a9717f24ef53711efaee3c",
+      "hunks": [
+        {
+          "old_start": 3,
+          "old_count": 6,
+          "new_start": 3,
+          "new_count": 7,
+          "context": 6,
+          "deleted": 0,
+          "added": 1
+        }
+      ],
+      "exact_reconstruction": true
+    }
+  },
+  "author_binding_notes": [
+    [
+      "common",
+      "io_until",
+      "before",
+      "listed range starts at def; hashed bytes include decorator",
+      43,
+      44,
+      65
+    ],
+    [
+      "common",
+      "io_until",
+      "after",
+      "listed range starts at def; hashed bytes include decorator",
+      43,
+      44,
+      65
+    ],
+    [
+      "common",
+      "byte_lock",
+      "before",
+      "listed range starts at def; hashed bytes include decorator",
+      104,
+      105,
+      115
+    ],
+    [
+      "common",
+      "byte_lock",
+      "after",
+      "listed range starts at def; hashed bytes include decorator",
+      104,
+      105,
+      115
+    ]
+  ],
+  "before_after_documents_contain_complete_exact_functions": true,
+  "future_null_fields": [
+    "actual_future_materialization",
+    "actual_future_paths",
+    "controller_watchdog_composition",
+    "independent_composition_review",
+    "independent_source_review",
+    "new_active_code_and_import_surface",
+    "new_full_source_checks",
+    "new_versioned_module_map",
+    "operator_runtime_authorization",
+    "parent_ROOT_pre_entry_authentication",
+    "parent_private_prefix_pre_entry_authentication",
+    "runtime_evidence"
+  ],
+  "signed_integer_null_status_domains": 3,
+  "author_pass_flags_used_as_behavior_evidence": false,
+  "reader_note": "First independent comparison stopped because it expected hash coverage to equal listed def-only range for decorated functions. It wrote no final evidence. Corrected comparison checks decorator-inclusive bytes and def-only listed lines separately; the exact physical ranges are recorded independently.",
+  "independent_author_baseline_recheck": {
+    "parent": "4ea32a7538aa1b996e60fe7dd185497cbba75356",
+    "tree": "c7f4e2071504be7aa62db964e4af055f503346ea",
+    "per_entry_comparisons": 4566,
+    "canonical_digest_sha256": "2b1d63db1e54743a45e4998c0bdf6e86502c61434e9396f4f73db572dee1c21b",
+    "old_tree_index_and_raw_working_facts_preserved": true,
+    "duplicate_inventory_retained": false
+  },
+  "whitespace_checks": [
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.fsmonitor=false",
+        "diff",
+        "--check",
+        "d405da38^",
+        "d405da38",
+        "--",
+        "docs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93"
+      ],
+      "exit_code": 2,
+      "stdout": "docs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/common-from-frozen.patch:4: trailing whitespace.\n+ \ndocs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/common-from-frozen.patch:5: trailing whitespace.\n+ \ndocs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/common-from-frozen.patch:123: trailing whitespace.\n+ \ndocs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/common-from-frozen.patch:124: trailing whitespace.\n+ \ndocs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/global-diff.patch:10: trailing whitespace.\n+ \ndocs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/global-diff.patch:10: new blank line at EOF.\ndocs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93/port_diagnostic-from-frozen.patch:10: trailing whitespace.\n+ \n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.fsmonitor=false",
+        "diff",
+        "--check",
+        "d405da38^",
+        "d405da38",
+        "--",
+        "docs/verification/m1-ordinary-helper-signal-repair-2026-10-25-t3-552c8d93",
+        ":!*.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "author_global_digest_status": {
+    "status": "UNVERIFIED_SERIALIZATION_UNSPECIFIED",
+    "fields": "bindings.json proposals.*.globals_before_sha256 and globals_after_sha256",
+    "used_as_proof": false,
+    "independent_replacement_proof": "Full raw global remainders and exact global import patch are bound and compared independently. Common global bytes are exact; port adds only import signal.",
+    "reader_note": "Direct raw-prefix, statement-slice, source-segment and AST-dump serializations did not reproduce the four opaque author digests. No source or acceptance predicate was changed."
+  },
+  "reader_display_note": "One metadata display had a SyntaxError before reads or writes; its corrected display succeeded."
+}
