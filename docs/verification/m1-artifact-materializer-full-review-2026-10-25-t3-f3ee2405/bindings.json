@@ -1,0 +1,356 @@
+{
+  "additional_inputs": [
+    {
+      "bytes": 14800,
+      "git_blob": "1cbe854709e785f2eadc7fd1a86c94d0db162f5f",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-metadata-transport-r5-review-2026-10-25-t3-2901f30d/REVIEW.md",
+      "sha256": "dcde08acc89cdf374c9b5a50e71df33f080c3bead7615fa81bb0bac280c71b3c"
+    },
+    {
+      "bytes": 3846,
+      "git_blob": "5e116aa3d5955b44dc0f6477a98dde86c7cab9d6",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-artifact-pending-receipt-2026-10-25-t3-52422617/README.md",
+      "sha256": "65149efe48a29afa202046fca97025410a5c5d3cd32a33dee823ba3f055725c2"
+    },
+    {
+      "bytes": 3286,
+      "git_blob": "1d03820e8c7473c6dd820a5d0637d7ca710ddbef",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-artifact-pending-receipt-2026-10-25-t3-52422617/pending-manifest.json",
+      "sha256": "476d89d06e809a02a88f72bd7cb66a4b24643ea6eed45d3fed2361e292b87fc5"
+    },
+    {
+      "bytes": 85746,
+      "git_blob": "bb759fedf0347dbc06d1e47f3a862656f5299740",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-artifact-pending-receipt-2026-10-25-t3-52422617/private-evidence-index.json",
+      "sha256": "68a30853167c899b1d78d3baa13f415858fc8fc6fbc7a8f4efa39ebbab03fe28"
+    },
+    {
+      "bytes": 1714,
+      "git_blob": "4832460ea4f290da74da4cfa54ea9b98f41553bf",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-artifact-external-input-recheck-2026-10-25-t3-52422617/README.md",
+      "sha256": "e7b1e083b836b4175c12ff26d5f02e76c6bbb337cb88dd69e5f1a9fa81b75e51"
+    }
+  ],
+  "bounded_P1_P2_findings": [],
+  "candidate_commit": "95404dc224579ac1dbbea9847e4639673273bfb4",
+  "candidate_parent": "04444ec2dce5dd96334d807f9c2caff86aefae64",
+  "execution": false,
+  "folder_deltas": [
+    {
+      "bytes": 474637,
+      "commit": "95404dc224579ac1dbbea9847e4639673273bfb4",
+      "sha256": "47ef2bbee27b8f1527ef5bc6813a837f454124ac85a02a59a56c733b3455aa90"
+    },
+    {
+      "bytes": 474637,
+      "commit": "edde85e8f740f6d33f156ce9795cf1232e3266f2",
+      "sha256": "47ef2bbee27b8f1527ef5bc6813a837f454124ac85a02a59a56c733b3455aa90"
+    }
+  ],
+  "future_execution_approval_created": false,
+  "import_commit": "edde85e8f740f6d33f156ce9795cf1232e3266f2",
+  "import_parent": "2f2f711a8df3821ab0eeb355ef7b7268e74a84ec",
+  "opening_status": "clean before creating the sole owned folder",
+  "opening_tracked_inventory": {
+    "bytes": 593227,
+    "entries": 4242,
+    "format": "git ls-tree -r start_parent, raw stdout",
+    "sha256": "0c5d3bed89e138a6c656b649cd3f575ad964819bd5cb6d8aa8bf9fe796422319"
+  },
+  "owned_folder": "docs/verification/m1-artifact-materializer-full-review-2026-10-25-t3-f3ee2405",
+  "packet": [
+    {
+      "bytes": 9513,
+      "git_blob": "7163c7123e198e1af34aff036ad6d85441a07525",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-artifact-data-materializer-2026-10-25-t3-f0b1e4d1/PARENT-CONTRACT.md",
+      "sha256": "0454966461af93491905ebe715c9d7c0a153a3d8bdf088a33d693a5a4cceffed"
+    },
+    {
+      "bytes": 7797,
+      "git_blob": "a7444bd1653b4f371f82f5e902505fd8bd07b728",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-artifact-data-materializer-2026-10-25-t3-f0b1e4d1/README.md",
+      "sha256": "251233a4da8312ad376f82399d7709bac156f41a38e8ca75a5168538980d530b"
+    },
+    {
+      "bytes": 1404,
+      "git_blob": "ac8447d6fb57888ab6e07e652ca9aff046480ac5",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-artifact-data-materializer-2026-10-25-t3-f0b1e4d1/SHA256SUMS",
+      "sha256": "5b6a4f47285f69b274d24d8cb229f994c76c7fa078ef42f1df5bd1425caf0618"
+    },
+    {
+      "bytes": 19114,
+      "git_blob": "856addc2e3917650e67a1858c7d70ccf413a8cff",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-artifact-data-materializer-2026-10-25-t3-f0b1e4d1/author-static-checks.py.txt",
+      "sha256": "da397bca5865b2a65b56a4374b62983dc78fe8ce85ab2bcab23f36fda6d9dc7b"
+    },
+    {
+      "bytes": 1108,
+      "git_blob": "82daea55dd305aa60387093448e0e703a8d2900a",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-artifact-data-materializer-2026-10-25-t3-f0b1e4d1/author-static-notes.json",
+      "sha256": "f3d24137928ac1a8d4c17f7db17a5279a6b60d95724a6e929604657e03b28670"
+    },
+    {
+      "bytes": 13683,
+      "git_blob": "26de1ae76a542323aef62f60e7628f904db97426",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-artifact-data-materializer-2026-10-25-t3-f0b1e4d1/bindings.json",
+      "sha256": "99571b298daa2ec37378fd942ef1530f5d050973fcb5d33254e06de4eec94f49"
+    },
+    {
+      "bytes": 19994,
+      "git_blob": "49efee336f509d67d6b5c4b35826d3a48ee67007",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-artifact-data-materializer-2026-10-25-t3-f0b1e4d1/changed-functions.after.py.txt",
+      "sha256": "80c0385838a139e807bea3ce68683649aa4b1ce1c6844bece92bd05cf6255325"
+    },
+    {
+      "bytes": 6446,
+      "git_blob": "02adc8455412d3865467483dcf175f6aa3307727",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-artifact-data-materializer-2026-10-25-t3-f0b1e4d1/changed-functions.before.py.txt",
+      "sha256": "871d1b0dec89f979f4e3739a082543df12698bb254060a0ba3f0b6d47eb4e664"
+    },
+    {
+      "bytes": 116287,
+      "git_blob": "66395de6c964080d4fd735f05a15e9693aa6a19e",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-artifact-data-materializer-2026-10-25-t3-f0b1e4d1/config.schema.json",
+      "sha256": "e0a7af46b52760efe9749b728b5d26b63e7ed1d1890d287b0b6ce42caaf95e5d"
+    },
+    {
+      "bytes": 34675,
+      "git_blob": "649ed7a1f0981865f73cc9642e1d2b8e226343d7",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-artifact-data-materializer-2026-10-25-t3-f0b1e4d1/config.template.json",
+      "sha256": "8ff604eadc2c52e99cd88f31a27c492ec89a3e60d1edbab5dd792d215ef0007c"
+    },
+    {
+      "bytes": 9318,
+      "git_blob": "5dd02d20b316b7027f1fb33e2e2c1a80e3d92708",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-artifact-data-materializer-2026-10-25-t3-f0b1e4d1/function-inventory.json",
+      "sha256": "d159c4a9124ad4a23af56e73cbba2d3b0915f0fcb396e1d8f2a6e002796b04af"
+    },
+    {
+      "bytes": 74186,
+      "git_blob": "fc1ff0bd3e7647252aafbf4cd00733b41ebffc69",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-artifact-data-materializer-2026-10-25-t3-f0b1e4d1/materializer.patch",
+      "sha256": "263d3adbac1775c0874e8c8a678ffcf72ed76753bb5588ed0eb32b614d6cff66"
+    },
+    {
+      "bytes": 88512,
+      "git_blob": "d6a6675ae60b44aebd2fcddf4853474d6ec6a273",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-artifact-data-materializer-2026-10-25-t3-f0b1e4d1/materializer.py.txt",
+      "sha256": "9f8be3a095c9adb34ec82b79e7297061fb41dc33c99fdec3501c528e2876ab28"
+    },
+    {
+      "bytes": 30440,
+      "git_blob": "3bb3d201089ac396a3089e1d170fc1aee676e01a",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-artifact-data-materializer-2026-10-25-t3-f0b1e4d1/observed-raw-manifest.json",
+      "sha256": "2baea069155b633485b1e8aed8fe72f3bf746f67de83a84f07a2daf0648fe4ee"
+    },
+    {
+      "bytes": 3994,
+      "git_blob": "235a47c4b52f0606df46db1afa28939993639a31",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-artifact-data-materializer-2026-10-25-t3-f0b1e4d1/plan.json",
+      "sha256": "2b8a2ca63aebb40099c42e12eee6a94a144962b5bcaaa9075ab2f0dae3edba5c"
+    },
+    {
+      "bytes": 10120,
+      "git_blob": "04b894f17af465369be518ae4a71b942076036f9",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-artifact-data-materializer-2026-10-25-t3-f0b1e4d1/static-checks.json",
+      "sha256": "6551b5bd9c190e3efe2350953177f63c7452ca435cba9f1705b6e2ca7de40f86"
+    },
+    {
+      "bytes": 14047,
+      "git_blob": "aa167116c50b6374ddc4db865d637f23ff295034",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-artifact-data-materializer-2026-10-25-t3-f0b1e4d1/static-construction-data.json",
+      "sha256": "3b602636f2a6a82aad4d167ac09dd7c601a2ff83a8ee2dcc6e29c9229219e35e"
+    }
+  ],
+  "packet_tree": "632e294ac86ba1fcc3182bba143dbf832bdeb8f7",
+  "pending_artifact_data_review": "Separate scope; not cleared here",
+  "private_access": {
+    "bytes_read": 548707,
+    "directory_opens": 8,
+    "file_opens": 219,
+    "total_opens": 227
+  },
+  "public_inputs": [
+    {
+      "bytes": 24324,
+      "git_blob": "b1939cfce55166387a84a2a4441adc619fa10131",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/materializer.py.txt",
+      "sha256": "7905eed61e558313e620d1427032984ead0bc0e4723d697d3b066194ec5b0e1b"
+    },
+    {
+      "bytes": 10711,
+      "git_blob": "1d28e4ac95260e591d64a6779e7c5d26f3ad50d2",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/bindings.json",
+      "sha256": "47d50c34083ba4d717a539f444f0af3e6012153e0e99b6181b720a3d9415b529"
+    },
+    {
+      "bytes": 7909,
+      "git_blob": "e2c55c72c01ec990f898005e8602feffd23d5a9a",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-system-stdin-materializer-2026-10-25-t3-4878b759/config.schema.json",
+      "sha256": "e118681b0016df7d966bfd0a9f5003834cd4e872c89eb2a9e6bb1db37542684a"
+    },
+    {
+      "bytes": 17336,
+      "git_blob": "5f3b83227ca026e5da8d8d6c9f8a7f6e4316b7ce",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-system-stdin-materializer-full-review-2026-10-25-t3-7b665012/REVIEW.md",
+      "sha256": "6d421562fa04f9b2c0028b5101e018d8de13e65ef879f30bfec05a276a5b0b08"
+    },
+    {
+      "bytes": 37009,
+      "git_blob": "8cd2621b0b6c232139dd8034d961e60915f86ce6",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-system-stdin-materializer-full-review-2026-10-25-t3-7b665012/bindings.json",
+      "sha256": "069d0c89c45bc8beb9290f8a45dfbf63d840ec1f1153dfbe94c38bcaa9792cf0"
+    },
+    {
+      "bytes": 4853,
+      "git_blob": "47e31e319505f61a2a0d2e26a3de48f3ddf2b0d8",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-source-metadata-observed-2026-10-25-t3-52422617/README.md",
+      "sha256": "94703032271e77874b178a6f619ba8f168b119d3cef7ee7dfbd059248e084af5"
+    },
+    {
+      "bytes": 41432,
+      "git_blob": "b2d6a3a9bb3fb4bb389c2a3eb2105f756f1b8c88",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-source-metadata-observed-2026-10-25-t3-52422617/validation.json",
+      "sha256": "8f7c57fe678b396a205ae2bcf0695dd4ed9c229696ab100ecd0bbd95cc4146a8"
+    },
+    {
+      "bytes": 15549,
+      "git_blob": "d1586184b977cb4f63ec99d5a0e0c1af7bb3e19f",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-source-metadata-observed-2026-10-25-t3-52422617/bindings.json",
+      "sha256": "731e5c1180c61c5b526778e25a2db6b12a6a18067114448fcf41aa0080f17d9f"
+    },
+    {
+      "bytes": 11148,
+      "git_blob": "82191b8850047710e347df19d60333688669598f",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-source-metadata-observed-2026-10-25-t3-52422617/parent-data-reader.py.txt",
+      "sha256": "4872704a5e0b1a938a3dfb0f75c4f57752ab7e9e9a88c1b43f05d7050be5c3aa"
+    },
+    {
+      "bytes": 10502,
+      "git_blob": "3edcd3a325b27d223a21ff61ff8ac8330b471779",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/README.md",
+      "sha256": "9e13558a6198bfedec46b4a8887d7b8ec2122a281f90d00ae6933d929b650422"
+    },
+    {
+      "bytes": 10703,
+      "git_blob": "c3f052f16cdf8b56719673013f79e157f22c2cf5",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/next-operation.json",
+      "sha256": "f4b6eea1ad6dab12db27227a0eb8945c22c7c3aebb3f0fc854122aac84fb74b1"
+    },
+    {
+      "bytes": 3496,
+      "git_blob": "7827702d8344d191016c80bbc217bb11dad3e435",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/artifact-receipt.template.json",
+      "sha256": "6250a8698664c757af9f9bdb5ef191f3604d82725282ae860741eae2529939d3"
+    },
+    {
+      "bytes": 10673,
+      "git_blob": "b127b136063960b649bc20ba9d4d93b0e0d81915",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-ordinary-fresh-flow-plan-2026-10-24-t3-5463ce44/receipt-contract.md",
+      "sha256": "2e9d4cb5440fe5feed0411886b36774e4acce0155e0082412f671f6df19d26e4"
+    },
+    {
+      "bytes": 10270,
+      "git_blob": "d749cad451984b454c410b7399bbb959c9f92f24",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-ordinary-fresh-flow-plan-2026-10-24-t3-5463ce44/receipt.schema.json",
+      "sha256": "14a031f3a110bdd6f3ab6b0e37b57195f2333c5f5422299880fed246ab70ae0a"
+    },
+    {
+      "bytes": 12370,
+      "git_blob": "52b21bffa515c5b1a6f8de85b7a6c70ddf5c93b5",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-metadata-r9-repair-2026-10-25-t3-9b2c2354/command-vectors.json",
+      "sha256": "e3ff5756ab3b35a5c815e50ac1fad6520117836e080849260de87592bd327fa0"
+    },
+    {
+      "bytes": 46908,
+      "git_blob": "b85b788e771d9064de1bb9dabf5c4b941db5b01f",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-metadata-r9-repair-2026-10-25-t3-9b2c2354/metadata-caller.py.txt",
+      "sha256": "01623cd4759f96cd0066a9456a2680bff476bc37b5b1acb61ec40388582a5e9f"
+    },
+    {
+      "bytes": 37775,
+      "git_blob": "b5425f6d3c3856933053c13dc093199b4eadc8c2",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-source-stdin-payload-kill-gate-repair-2026-10-25-t3-da89534d/source-payload.py.txt",
+      "sha256": "8d7844a20ce347b7be52c07a516b8d9136bdb5c067e450bea24eb3453441afa6"
+    },
+    {
+      "bytes": 8875,
+      "git_blob": "5ec1ac3fefd219cd948a8fca0db5e8fd5ae2cced",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-metadata-transport-r4-2026-10-25-t3-53ab1856/README.md",
+      "sha256": "1a2ad5ea3c5347a827a3c2bfe4dd6734f378a31c93bc2fa9ad9ccfe0764b29ea"
+    },
+    {
+      "bytes": 663,
+      "git_blob": "e85d7243d898152228986fa7b9e4d69061e853eb",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-metadata-transport-r4-2026-10-25-t3-53ab1856/profile.template.json",
+      "sha256": "28a7f1fb527247e6f33bd837d0bdaec1397b4e6b4c03cd06c28a59d48b9d9a45"
+    },
+    {
+      "bytes": 5533,
+      "git_blob": "f0f87a43a002fc2974eed3ed69476af2e98d6d77",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-metadata-transport-r4-2026-10-25-t3-53ab1856/parent-observer.contract.json",
+      "sha256": "82bd2b3d460eb9166e7805b114a02a10e56685f93c088aa351b6ba5f2eaf48dd"
+    },
+    {
+      "bytes": 27834,
+      "git_blob": "3061d20729d5114530a27900a0938c7cf384415e",
+      "git_mode": "100644",
+      "path": "docs/verification/m1-metadata-transport-r4-2026-10-25-t3-53ab1856/transport-collector.py.txt",
+      "sha256": "d312814e74c6f42e2a86d56648450dc145531df6292ea8c79ccf1768f34b14e4"
+    }
+  ],
+  "report": {
+    "bytes": 18407,
+    "path": "docs/verification/m1-artifact-materializer-full-review-2026-10-25-t3-f3ee2405/REVIEW.md",
+    "sha256": "3d4eab6e164b9d59a683fcb5ba1a7abb42c2ed43dcfd37c5dea7fbbe39b5f98c"
+  },
+  "review_verdict": "SOURCE CLEAR",
+  "runtime_acceptance": false,
+  "schema": "openergy.independent-full-artifact-materializer-review-bindings.v1",
+  "scope_rule": "Only new files under owned_folder; every start-parent tracked blob and mode must remain identical. No private or target writes.",
+  "start_parent": "d228d9781080b1b90c25b76180e7af0aa82d97b6",
+  "start_tree": "d242e5844ea41f45ff9f0831ca1115b733025a86",
+  "supplied_source_or_AST_executed": false
+}
