@@ -18,9 +18,17 @@ local kill followed by actual SIGKILL termination for that output-cap case. It
 also requires the exact 128-byte expected prefix, the single overflow sentinel,
 OverflowError and the saved stream hashes. No missing exit is accepted. This
 does not change any product predicate or accept the first driver invocation.
-Python AST parsing passed; the corrected revision is **NOT RUN**. Its fresh
-review and full CLI validation remain pending. Keep exact source unchanged
-during verification and supply the final reader hash explicitly.
+The corrected revision `02ca76e` then ran one full flow in a separate fresh
+private directory. All four cases passed their CLI checks; the driver exited0.
+The reader exited0 for success and1 for each failure case. The actual collected
+child exits were0,1,-9,-13 respectively. The same reader bytes were used in
+both flows. No previous guard, case or saved result was rewritten.
+
+[results.json](results.json) retains both invocations and their distinct
+verdicts. [private-evidence-index.json](private-evidence-index.json) binds every
+retained file by relative label, length, mode and hash. The corrected invocation
+provides local reader CLI evidence. Independent review remains **PENDING**;
+Windows metadata, native stop and installed limits remain **UNVERIFIED**.
 
 The caller supplies an absent output path below an owned private mode-0700
 directory. Raw command bindings, output and receipts stay there. The driver
