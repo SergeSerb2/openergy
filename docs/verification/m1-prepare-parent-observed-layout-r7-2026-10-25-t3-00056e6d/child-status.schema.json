@@ -1,0 +1,316 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "anyOf": [
+    {
+      "properties": {
+        "argv": {
+          "const": [
+            "/usr/bin/python3",
+            "-I",
+            "-S",
+            "-B",
+            "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/file-qualification.recipe.py.txt",
+            "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+            "entry"
+          ]
+        },
+        "label": {
+          "const": "entry"
+        }
+      }
+    },
+    {
+      "properties": {
+        "argv": {
+          "const": [
+            "/Users/m1-dev/.local/state/openergy-verification/m1-prerequisite-data-20261024-d896c0b3636a/extracted-data/python/bin/python3.13",
+            "-B",
+            "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/prepare.py"
+          ]
+        },
+        "label": {
+          "const": "prepare"
+        }
+      }
+    }
+  ],
+  "properties": {
+    "actual_exit": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "actual_exit_observed_ns": {
+      "minimum": 0,
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "argv": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "clock": {
+      "const": {
+        "api": "time.clock_gettime_ns",
+        "clock": "CLOCK_MONOTONIC",
+        "clock_id": 6,
+        "platform": "darwin",
+        "schema": "openergy.shared-clock.v1",
+        "scope": "same-host-same-boot",
+        "unit": "nanoseconds"
+      }
+    },
+    "close_errors": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "stream": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "stream",
+          "error"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "collection_end_ns": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "cwd": {
+      "const": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503"
+    },
+    "deadline_loss": {
+      "type": "boolean"
+    },
+    "dropped_known_bytes": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "environment": {
+      "const": {
+        "HOME": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+        "LANG": "C",
+        "MACOSX_DEPLOYMENT_TARGET": "15.0",
+        "OPENERGY_DISABLE_UPDATES": "1",
+        "OPENERGY_ORDINARY_PYTHON": "/Users/m1-dev/.local/state/openergy-verification/m1-prerequisite-data-20261024-d896c0b3636a/extracted-data/python/bin/python3.13",
+        "OPENERGY_ORDINARY_SOURCE_ROOT": "/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/repo",
+        "PATH": "/usr/bin:/bin",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONNOUSERSITE": "1",
+        "TMPDIR": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/"
+      }
+    },
+    "eof": {
+      "additionalProperties": false,
+      "properties": {
+        "stderr": {
+          "type": "boolean"
+        },
+        "stdout": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "stdout",
+        "stderr"
+      ],
+      "type": "object"
+    },
+    "finished_ns": {
+      "minimum": 0,
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "first_error": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "error": {
+              "type": "string"
+            },
+            "stage": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "stage",
+            "error"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "handle_retained": {
+      "type": "boolean"
+    },
+    "kill_attempted": {
+      "type": "boolean"
+    },
+    "kill_eligibility_exit": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "kill_eligibility_observed_ns": {
+      "minimum": 0,
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "kill_or_reap_error": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "kill_syscall_returned": {
+      "description": "True only after os.kill returns; proves no signal delivery or actual exit/reap. False also covers syscall error.",
+      "type": "boolean"
+    },
+    "label": {
+      "enum": [
+        "entry",
+        "prepare"
+      ]
+    },
+    "launch_returned_ns": {
+      "minimum": 0,
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "launch_started_ns": {
+      "minimum": 0,
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "observed_bytes": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "overflow": {
+      "type": "boolean"
+    },
+    "phase_deadline_ns": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "phase_started_ns": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "pid_from_retained_handle": {
+      "minimum": 1,
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "reap_end_ns": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "reaped": {
+      "type": "boolean"
+    },
+    "remote_deadline_ns": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "remote_started_ns": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "retained_bytes": {
+      "additionalProperties": false,
+      "properties": {
+        "stderr": {
+          "maximum": 1048576,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "stdout": {
+          "maximum": 1048576,
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "stdout",
+        "stderr"
+      ],
+      "type": "object"
+    },
+    "schema": {
+      "const": "openergy.prepare-file-child.v1"
+    },
+    "timed_out": {
+      "type": "boolean"
+    },
+    "unread_or_dropped_unknown": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema",
+    "label",
+    "clock",
+    "argv",
+    "cwd",
+    "environment",
+    "phase_started_ns",
+    "phase_deadline_ns",
+    "remote_started_ns",
+    "remote_deadline_ns",
+    "collection_end_ns",
+    "reap_end_ns",
+    "launch_started_ns",
+    "launch_returned_ns",
+    "pid_from_retained_handle",
+    "handle_retained",
+    "actual_exit",
+    "actual_exit_observed_ns",
+    "reaped",
+    "eof",
+    "observed_bytes",
+    "dropped_known_bytes",
+    "unread_or_dropped_unknown",
+    "overflow",
+    "timed_out",
+    "deadline_loss",
+    "kill_attempted",
+    "kill_syscall_returned",
+    "kill_or_reap_error",
+    "kill_eligibility_exit",
+    "kill_eligibility_observed_ns",
+    "first_error",
+    "close_errors",
+    "finished_ns"
+  ],
+  "title": "Inert prepare parent child status interface; author source contract, not actual output",
+  "type": "object"
+}

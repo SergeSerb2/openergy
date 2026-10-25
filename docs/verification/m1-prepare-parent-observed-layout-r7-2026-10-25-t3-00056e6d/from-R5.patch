@@ -1,0 +1,37 @@
+--- a/prepare-parent.py.txt
++++ b/prepare-parent.py.txt
+@@ -922,9 +922,20 @@
+     'data-materialization-once.guard', 'data-materialization-receipt.json',
+     'metadata-source-once.json', 'artifact-binding-once.guard',
+     'artifact-binding-receipt.json')
+-ROOT_INITIAL_NAMES = (frozenset(INITIAL_INPUTS) | frozenset(COMPLETED)
++# These two COMPLETED originals are PARENT_ONLY/external, never ROOT leaves.
++# Keep the original full-seven manifest and parent inspection duty unchanged.
++ROOT_PARENT_ONLY = ('source-files-once.guard', 'source-files-parent-result.json')
++# Exact public observed DATA only; neither entry is trusted/importable Python.
++# The passive :- bytes do not prove all seven missing requirements bodies.
++ROOT_OBSERVED_DATA = {
++    'coverage-policy.json': {'bytes': 1864,
++        'sha256': '35516fa08202a4ccd26ece557daecc5bf4e1e8f8e690f18b59d5cc70c3d30d36'},
++    ':-': {'bytes': 67,
++        'sha256': 'd55daee618ec400cc662eb3fb480e13b7ea93ff24c00b69bd4b2e9c871d48c22'}}
++ROOT_INITIAL_NAMES = (frozenset(INITIAL_INPUTS)
++    | (frozenset(COMPLETED) - frozenset(ROOT_PARENT_ONLY))
+     | frozenset(row['leaf'] for row in SOURCE_RAWS) | frozenset(SOURCE_BOUNDARY)
+-    | frozenset(EIGHT) | frozenset(ROOT_DATA_ADDITIONS))
++    | frozenset(EIGHT) | frozenset(ROOT_DATA_ADDITIONS) | frozenset(ROOT_OBSERVED_DATA))
+ 
+ HANDLES = []  # Exact direct helper/prepare handles survive until os._exit.
+ CONFIG = None
+@@ -1158,6 +1169,11 @@
+     require(set(seen) == expected, 'no missing or extra ROOT names')
+     for name, identity in seen.items():
+         remaining(REMOTE_END)
++        if name in ROOT_OBSERVED_DATA:
++            # Rebind the byte reader to this invocation's enumerated identity.
++            require(identity == stamp(os.stat(name, dir_fd=rootfd, follow_symlinks=False)),
++                    'enumerated observed DATA identity')
++            read_leaf(rootfd, name, ROOT_OBSERVED_DATA[name])
+         require(identity == stamp(os.stat(name, dir_fd=rootfd, follow_symlinks=False)),
+                 'stable flat linked leaf')
+     require(stamp(before) == stamp(os.fstat(rootfd))

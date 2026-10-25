@@ -1,0 +1,61 @@
+{
+  "SYSTEM_entry": [
+    "/usr/bin/python3",
+    "-I",
+    "-S",
+    "-B",
+    "-"
+  ],
+  "SYSTEM_version": [
+    3,
+    9,
+    6
+  ],
+  "actual_private_route": null,
+  "additional_flags": [],
+  "alternative_roots": [],
+  "capsule_sys_argv": [
+    "-"
+  ],
+  "cwd": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+  "execution": false,
+  "external_route_token_count": 29,
+  "helper_argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-S",
+    "-B",
+    "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/file-qualification.recipe.py.txt",
+    "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+    "entry"
+  ],
+  "optimization": false,
+  "parent_status_field_rename": {
+    "meaning": "Only successful direct syscall return. No delivery or reap assertion.",
+    "new": "kill_syscall_returned",
+    "old": "kill_delivered"
+  },
+  "primary_argv": [
+    "/Users/m1-dev/.local/state/openergy-verification/m1-prerequisite-data-20261024-d896c0b3636a/extracted-data/python/bin/python3.13",
+    "-B",
+    "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/prepare.py"
+  ],
+  "root": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+  "root_layout": "exact260 initial; exact264 before common/private; no directories",
+  "selectors": [],
+  "source_or_argv_execution_in_this_task": false,
+  "source_sha256": "b3fbd793a0709c7857e34efca667a081a0486accfd0f3ad13a8068484b7eb8d9",
+  "startup": {
+    "HOME": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+    "LANG": "C",
+    "MACOSX_DEPLOYMENT_TARGET": "15.0",
+    "OPENERGY_DISABLE_UPDATES": "1",
+    "OPENERGY_ORDINARY_PYTHON": "/Users/m1-dev/.local/state/openergy-verification/m1-prerequisite-data-20261024-d896c0b3636a/extracted-data/python/bin/python3.13",
+    "OPENERGY_ORDINARY_SOURCE_ROOT": "/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/repo",
+    "PATH": "/usr/bin:/bin",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONNOUSERSITE": "1",
+    "TMPDIR": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/"
+  },
+  "startup_keys": 10
+}
