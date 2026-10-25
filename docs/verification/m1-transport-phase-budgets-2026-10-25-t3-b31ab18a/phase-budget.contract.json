@@ -1,0 +1,335 @@
+{
+  "schema": "openergy.inert-m1-transport-closed-phase-budgets.v1",
+  "status": "IMPLEMENTED_UNREVIEWED",
+  "execution": false,
+  "source_clear": false,
+  "runtime_acceptance": false,
+  "closed_phases_seconds": {
+    "metadata-source": {
+      "work": 130,
+      "settle": 2,
+      "final": 3,
+      "total": 135,
+      "work_end_offset": 130,
+      "settle_end_offset": 132,
+      "absolute_end_offset": 135
+    },
+    "metadata-copy": {
+      "work": 130,
+      "settle": 2,
+      "final": 3,
+      "total": 135,
+      "work_end_offset": 130,
+      "settle_end_offset": 132,
+      "absolute_end_offset": 135
+    },
+    "prepare": {
+      "work": 130,
+      "settle": 2,
+      "final": 3,
+      "total": 135,
+      "work_end_offset": 130,
+      "settle_end_offset": 132,
+      "absolute_end_offset": 135
+    },
+    "controller": {
+      "work": 335,
+      "settle": 2,
+      "final": 3,
+      "total": 340,
+      "work_end_offset": 335,
+      "settle_end_offset": 337,
+      "absolute_end_offset": 340
+    }
+  },
+  "cli": {
+    "mandatory_flags": [
+      "--phase",
+      "--profile",
+      "--profile-sha256",
+      "--payload",
+      "--payload-sha256",
+      "--run-dir",
+      "--collector-sha256",
+      "--envelope-start-ns",
+      "--clock-sha256"
+    ],
+    "flag_count": 9,
+    "token_count_after_script": 18,
+    "order": "Any order; exactly one nonempty value per flag; no duplicate, missing or extra flag.",
+    "phase_rule": "Exact membership in PHASE_WORK_SECONDS; no aliases, arbitrary duration, environment override or profile budget.",
+    "digest_rule": "Four mandatory SHA-256 flag values each exactly 64 lowercase hexadecimal characters.",
+    "start_rule": "Exactly 1..20 decimal digits; original parent sample S; future start rejected against ENTRY_NS.",
+    "console_output": "No raw argv/profile/payload/exception text; main returns actual CLI status, not a self-exit observation."
+  },
+  "arithmetic": {
+    "S": "Original parent same-local-Mac monotonic_ns sample before collector spawn/admission.",
+    "work": "S + PHASE_WORK_SECONDS[phase] * 1000000000",
+    "settle_end": "work + 2000000000",
+    "absolute": "settle_end + 3000000000",
+    "settle_stop": "min(settle_end, settle-entry local clock + 2000000000)",
+    "final_stop": "min(absolute, final-entry local clock + 3000000000)",
+    "late_rule": "Every existing >= deadline rejection remains. Stage entry does not renew any selected original end.",
+    "metadata_compatibility": "Both metadata phases keep the exact existing deadline record keys and 130/2/3/135 values."
+  },
+  "remote_internal_limits_unchanged": {
+    "metadata_source_seconds": 120,
+    "metadata_copy_seconds": 120,
+    "prepare_file_seconds": 120,
+    "controller_file_admission_seconds": 120,
+    "controller_flow_seconds": 120,
+    "controller_cleanup_seconds_max": 60,
+    "controller_product_absolute_end": "flow_start+180",
+    "controller_outer_340": "Includes file admission, flow, bounded cleanup and evidence; supplies no extra product lifetime.",
+    "detached_watchdog": "Never cancel, replace, restart or extend it. No internal clocks or watchdog/cleanup authority change.",
+    "payload_prepare_controller_common_watchdog_caller_logic_changed": false,
+    "binding_limit": "A phase label is local budget selection only; the collector treats payload bytes as opaque. Parent must independently bind the exact separately reviewed payload to the selected phase."
+  },
+  "route": {
+    "argv_tokens": 29,
+    "argv_template": [
+      "/usr/bin/ssh",
+      "-o",
+      "BatchMode=yes",
+      "-o",
+      "ConnectTimeout=8",
+      "-o",
+      "ConnectionAttempts=1",
+      "-o",
+      "StrictHostKeyChecking=yes",
+      "-o",
+      "ControlMaster=no",
+      "-o",
+      "ControlPath=none",
+      "-o",
+      "ControlPersist=no",
+      "-o",
+      "ServerAliveInterval=5",
+      "-o",
+      "ServerAliveCountMax=3",
+      "-p",
+      "22",
+      "-o",
+      null,
+      "-o",
+      null,
+      "-o",
+      null,
+      null,
+      "/usr/bin/python3 -I -S -B -"
+    ],
+    "source_guard": {
+      "path": null,
+      "sha256": "9e0b9a5afb47b7755d1ebaf5f50edf45cf0a7372baaa2f83b83d9255011aed4c"
+    },
+    "guard_declared_bytes_not_measured": 1563,
+    "private_slots_in_order": [
+      "HostName",
+      "HostKeyAlias",
+      "UserKnownHostsFile",
+      "selector"
+    ],
+    "parent_rule": "Qualify exact saved guard and compare all 29 argv tokens before binding whole profile hash. No private guard read here.",
+    "stdin": "Exact bounded hash-checked opaque payload bytes; same exclusive0400 O_RDWR snapshot FD retained, fsynced, rewound and passed directly to SSH.",
+    "ssh_spawn": "One retained /usr/bin/ssh Popen, shell=False, close_fds=True, cwd=/, bufsize=0; exact environment below.",
+    "effective_inherited_SSH_configuration": "UNVERIFIED; no new audit or human gate."
+  },
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "LC_ALL": "C",
+    "LANG": "C"
+  },
+  "runtime": "Trusted local macOS CPython>=3.10 -I -S -B, no optimization; exact Mach descriptor plus same host/boot direct-parent binding. No cross-host clock comparison.",
+  "caps_bytes": {
+    "profile": 131072,
+    "payload": 1048576,
+    "collector": 131072,
+    "stdout": 131072,
+    "stderr": 65536,
+    "combined": 196608,
+    "guard": 16384,
+    "receipt": 32768,
+    "publication_failure": 16384,
+    "all_local_files": 1310720
+  },
+  "filesystem": {
+    "input_mode_allowlist": [
+      "0400",
+      "0600"
+    ],
+    "input_required_links": 1,
+    "input_checks": "Absolute canonical component paths; O_NOFOLLOW directory walk, final owner, owned regular input, bounded nonblocking reads, stable initial/final FD and no-follow name identities, exact length/hash.",
+    "identity_fields": [
+      "st_dev",
+      "st_ino",
+      "st_mode",
+      "st_uid",
+      "st_nlink",
+      "st_size",
+      "st_mtime_ns",
+      "st_ctime_ns"
+    ],
+    "root": "New exclusive owned0700 directory; retained containing-parent FD fsynced between admission checks before guard. No resume/reset.",
+    "publication": "O_RDWR|O_CREAT|O_EXCL|O_NOFOLLOW|O_NONBLOCK, default0600; payload.stdin0400. Existing file/root fsyncs and clock checks remain.",
+    "all_local_files_cap_derivation": "1048576 payload +131072 stdout +65536 stderr +16384 guard +32768 receipt +16384 side record =1310720. Per-file and record caps enforced; no new aggregate runtime counter added.",
+    "durability_limit": "Completed fsync barriers are source intent only here; power-loss durability and hostile same-user mutation resistance UNVERIFIED."
+  },
+  "capture": {
+    "read_chunk_max": 16384,
+    "input_read_chunk_max": 65536,
+    "overflow_detection_extra_byte": 1,
+    "poll_select_delay_max_seconds": 0.05,
+    "during_read_caps": true,
+    "failure": "First cap failure before prefix write; keep partial prefixes, hashes/lengths, observed/drop counts, actual EOF and unknown unread bytes distinct. Close pipes without drain."
+  },
+  "record_contract": {
+    "guard_schema": "openergy.metadata-transport-once.v1",
+    "guard_fields": [
+      "schema",
+      "phase",
+      "bindings",
+      "clock",
+      "deadlines",
+      "python",
+      "caps",
+      "retries",
+      "remote_state",
+      "remote_child_exit"
+    ],
+    "receipt_schema": "openergy.metadata-transport-receipt.v1",
+    "receipt_fields": [
+      "schema",
+      "status",
+      "phase",
+      "bindings",
+      "clock",
+      "deadlines",
+      "python",
+      "guard_durable",
+      "spawn_started_ns",
+      "spawn_returned_ns",
+      "settle_stop_ns",
+      "final_stop_ns",
+      "actual_local_ssh_pid",
+      "actual_local_ssh_exit",
+      "actual_exit_observed_ns",
+      "handle_retained",
+      "kill",
+      "timeout",
+      "streams",
+      "first_observed_failure",
+      "secondary_publication_failures",
+      "publication_failure_count",
+      "caps",
+      "retries",
+      "completion_passes",
+      "remote_child_exit",
+      "remote_current_state",
+      "payload_receipt_assessed",
+      "artifact_accepted",
+      "r9_reserved_publisher",
+      "own_cli_exit_observed",
+      "independent_parent_observation_required",
+      "receipt_prewrite_ns"
+    ],
+    "deadlines_fields": [
+      "started_ns",
+      "entry_ns",
+      "work_until_ns",
+      "settle_until_ns",
+      "absolute_until_ns",
+      "work_seconds",
+      "settle_seconds",
+      "final_seconds",
+      "total_seconds"
+    ],
+    "binding_fields": [
+      "path",
+      "sha256",
+      "verified",
+      "bytes"
+    ],
+    "python_fields": [
+      "resolved_executable",
+      "version",
+      "implementation"
+    ],
+    "stream_fields": [
+      "observed_bytes",
+      "written_bytes",
+      "eof",
+      "overflow",
+      "read_drop",
+      "unknown_unread_bytes",
+      "fsynced",
+      "prefix_sha256",
+      "read_dropped_bytes"
+    ],
+    "kill_fields": [
+      "attempted",
+      "returned",
+      "observed_ns",
+      "policy"
+    ],
+    "first_failure_fields": [
+      "code",
+      "stage",
+      "observed_ns"
+    ],
+    "secondary_publication_failure_fields": [
+      "stage",
+      "exception_type",
+      "observed_ns"
+    ],
+    "secondary_publication_failure_retained_max": 16,
+    "publication_failure_count": "Total count remains distinct from at most16 retained detail records.",
+    "side_record_fields": [
+      "first_observed_failure",
+      "secondary_publication_failures",
+      "publication_failure_count",
+      "receipt_may_be_partial_or_stale"
+    ],
+    "outputs": [
+      "once.guard.json",
+      "payload.stdin",
+      "stdout.prefix.bin",
+      "stderr.prefix.bin",
+      "receipt.json",
+      "publication-failure.json (only existing bounded failure path)"
+    ],
+    "statuses": [
+      "TRANSPORT_COMPLETE",
+      "FAILED_UNVERIFIED"
+    ],
+    "remote_child_exit": null,
+    "remote_state": "UNVERIFIED",
+    "remote_current_state": "UNVERIFIED",
+    "payload_receipt_assessed": false,
+    "artifact_accepted": false,
+    "r9_reserved_publisher": false,
+    "own_cli_exit_observed": false,
+    "independent_parent_observation_required": true,
+    "completeness": "Existing source predicate: no first failure, actual SSH0 observed before selected work end, both EOF/no drop/no overflow/fsynced; independent D4 still needed.",
+    "publication_failure": "One exclusive bounded side record; no receipt replacement/retry. Partial/stale receipt cannot replace actual collector exit/D4 or prove success."
+  },
+  "signals": {
+    "target": "Only exact retained LOCAL SSH handle",
+    "eligibility": "cap or selected work deadline/timeout only",
+    "post_poll_gate": "Immediately sample after actual eligibility poll; None can reach KILL only if that retained sample < settle_stop_ns AND < selected absolute. Reuse same sample in kill record.",
+    "actual_status": "Record only real retained-handle poll/wait code. No status inference from KILL/PID/EOF/file.",
+    "forbidden": [
+      "remote/product/group signals",
+      "PID/process discovery",
+      "watcher",
+      "restart",
+      "retry",
+      "drain",
+      "guard reset"
+    ]
+  },
+  "D4": "Actual retained collector OS exit plus immediate same-running-local-Mac clock T strictly before original selected A, before ANY receipt read. Late/unknown rejects even COMPLETE. No D4 is manufactured here.",
+  "publication_authority": "Local raw adapter, NOT the R9 reserved writer. Full payload/raw records, encoding, receipts and ordinary aggregate accounting remain under existing parent reservations.",
+  "caller_limit_reference": "caller-summary-limit.json retains exact historical size proof and integration limits. No compression, raw dropping, cap relaxation or extra writer.",
+  "new_review_or_execution_authority": false,
+  "human_gate_created": false
+}

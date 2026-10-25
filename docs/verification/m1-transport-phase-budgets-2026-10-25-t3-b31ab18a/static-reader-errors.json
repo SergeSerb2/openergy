@@ -1,0 +1,20 @@
+{
+  "schema": "openergy.inert-m1-transport-phase-budget-static-reader-errors.v1",
+  "execution": false,
+  "errors": [
+    {
+      "stage": "Author inline static data reader; full_record_field_contract",
+      "error": "AssertionError: full_record_field_contract",
+      "trace": "File \"<stdin>\", line 195, in <module>; File \"<stdin>\", line 36, in check",
+      "cause": "Author hard-coded 37 receipt fields. The unchanged literal receipt and correct new data contract have 33 top-level fields.",
+      "expected_by_first_reader": 37,
+      "actual_contract_fields": 33,
+      "correction": "Reader compares all 33 literal top-level receipt keys, in source order, with the contract. Nested keys are excluded through lexical delimiter depth, without AST parsing or source evaluation.",
+      "collector_or_contract_changed": false,
+      "candidate_function_called": false,
+      "runtime_or_target_operation_repeated": false,
+      "report_or_manifest_written_by_failed_reader": false
+    }
+  ],
+  "historical_public_reader_errors": "Separate older errors remain bound in parent observed bindings and are described in AUTHOR-OBSERVATIONS.md; no private inputs opened."
+}

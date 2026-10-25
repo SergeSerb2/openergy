@@ -1,0 +1,114 @@
+{
+  "schema": "openergy.inert-transport-r2-caller-summary-limit.v1",
+  "execution": false,
+  "runtime": "UNVERIFIED",
+  "report_commit": "0b06ca915e437dcd486f3ad14dd669b71459686b",
+  "report_path": "docs/verification/m1-source-transport-size-binding-2026-10-25/",
+  "retained_minimum_shape": {
+    "bytes": 209116,
+    "sha256": "b0b8fc94cf7b1c44fc31128aee173e192798cb552726d8909c422c1170b50c13",
+    "canonical_sorted_compact_ASCII_JSON_with_final_newline": true
+  },
+  "retained_size_bound": {
+    "bytes": 816,
+    "sha256": "fcc8a39fa5f7f4d774de6de32c61c427e9be780edbbfa9ef7e28164020c255f4"
+  },
+  "caller_source": {
+    "path": "docs/verification/m1-metadata-clock-failure-repair-2026-10-25-t3-d1e829a9/metadata-caller.py.txt",
+    "bytes": 42482,
+    "sha256": "464ab85baebf47e3b373463768e9abb2001d39dd181b4e2a790e1868d2b90597"
+  },
+  "command_vectors": {
+    "path": "docs/verification/m1-metadata-clock-failure-repair-2026-10-25-t3-d1e829a9/command-vectors.json",
+    "sha256": "e3ff5756ab3b35a5c815e50ac1fad6520117836e080849260de87592bd327fa0"
+  },
+  "source_shapes_read_as_text_and_AST": [
+    {
+      "name": "collect",
+      "line": 371,
+      "end_line": 478
+    },
+    {
+      "name": "perform",
+      "line": 499,
+      "end_line": 559
+    },
+    {
+      "name": "direct_children",
+      "line": 587,
+      "end_line": 592
+    },
+    {
+      "name": "emit_summary",
+      "line": 595,
+      "end_line": 600
+    },
+    {
+      "name": "main",
+      "line": 603,
+      "end_line": 711
+    }
+  ],
+  "shape_observations": {
+    "native_records": {
+      "count": 50,
+      "item_keys": [
+        "comparison",
+        "label",
+        "os_record",
+        "stderr",
+        "stdout"
+      ]
+    },
+    "collected_commands": {
+      "count": 50,
+      "item_keys": [
+        "collector_status",
+        "comparison",
+        "comparison_state",
+        "label",
+        "os_record",
+        "publication",
+        "stderr",
+        "stdout"
+      ],
+      "collector_status_keys_in_reduced_shape": [
+        "argv",
+        "label"
+      ],
+      "prepublication_copy_has_no_stream_references": true
+    },
+    "actual_direct_children": {
+      "count": 50,
+      "item_keys": [
+        "argv",
+        "collector_status",
+        "label"
+      ],
+      "collector_status_keys_in_reduced_shape": [
+        "argv",
+        "label"
+      ],
+      "direct_child_stream_refs_deliberately_omitted_in_retained_lower_bound": true,
+      "actual_source_uses_original_mutated_collector_record_with_stream_references": true
+    },
+    "labels_match_in_all_three_positions": true,
+    "reason_for_copy_difference": "perform stores dict(record) in collected_commands before publication adds stdout/stderr references to the original record. direct_children uses the original retained record. The reduced bound also deliberately omits direct-child stream refs. Source order was read; no candidate function was executed."
+  },
+  "minimum_serialized_bytes": 209116,
+  "transport_stdout_cap_bytes": 131072,
+  "minimum_excess_bytes": 78044,
+  "omitted_from_minimum": "all auxiliary commands, most status and timing fields, outer result fields, direct-child stream refs and all nonzero byte lengths",
+  "direct_passthrough_composes": false,
+  "caller_summary_cap_bytes": 1048576,
+  "required_future_parent_integration": "Exact pinned SYSTEM payload must bound/capture full caller1MiB summary and emit a separate bounded envelope. SOURCE initial evidence/caller exit/capture/publication stays in the original120s M1 phase; COPY uses existing R9 reserved publication/accounting. Local D4 actual-exit proof stays within the original135s envelope. No cross-host clock comparison.",
+  "not_supplied": [
+    "remote payload",
+    "compression",
+    "raw dropping",
+    "extra writer",
+    "cap relaxation",
+    "runtime acceptance"
+  ],
+  "validation": "Retained JSON fully parsed and canonical bytes/hash checked; relevant caller source shapes read as text and AST only. No candidate/source/helper execution or tests."
+}

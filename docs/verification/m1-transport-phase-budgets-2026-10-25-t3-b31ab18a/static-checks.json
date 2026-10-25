@@ -1,0 +1,896 @@
+{
+  "schema": "openergy.inert-m1-transport-phase-budget-author-static-checks.v1",
+  "status": "IMPLEMENTED_UNREVIEWED",
+  "execution": false,
+  "source_clear": false,
+  "runtime_acceptance": false,
+  "method": "Author-written standard-library file/Git/SHA-256/unique-key finite JSON/lexical physical-line and delimiter-depth/unified-patch data processing only. No supplied/proposed source or AST executed/imported/compiled; no AST parsed. Arithmetic checks compare fixed public contract data and source text; no candidate function called or phase simulated.",
+  "check_count": 157,
+  "all_final_checks_passed": true,
+  "checks": [
+    {
+      "name": "exact_parent_HEAD",
+      "passed": true
+    },
+    {
+      "name": "no_old_tracked_blob_mode_difference",
+      "passed": true
+    },
+    {
+      "name": "only_owned_new_folder_untracked",
+      "passed": true,
+      "evidence": {
+        "untracked_files_before_report_manifest": 12
+      }
+    },
+    {
+      "name": "all_new_files_plain0644",
+      "passed": true
+    },
+    {
+      "name": "baseline_exact_bytes_hash",
+      "passed": true
+    },
+    {
+      "name": "candidate_full_bytes_hash_lines",
+      "passed": true
+    },
+    {
+      "name": "25_lexical_functions_same_names_order",
+      "passed": true
+    },
+    {
+      "name": "exact_changed_function_names",
+      "passed": true,
+      "evidence": [
+        "arguments",
+        "Collector.__init__",
+        "Collector.deadlines"
+      ]
+    },
+    {
+      "name": "complete_function_binding:canonical",
+      "passed": true,
+      "evidence": {
+        "changed": false,
+        "candidate_sha256": "e419bd331d2784052dc0ef02a3c28401a0dee30d07fbd7e1ceda0173b0934ef6"
+      }
+    },
+    {
+      "name": "complete_function_binding:digest",
+      "passed": true,
+      "evidence": {
+        "changed": false,
+        "candidate_sha256": "50b76bfffc27cbd7a792c95d031f6fd8e49777b6241b96ed8c4c4773edc356cb"
+      }
+    },
+    {
+      "name": "complete_function_binding:clock_descriptor",
+      "passed": true,
+      "evidence": {
+        "changed": false,
+        "candidate_sha256": "6d53309863ad527e72115a38b3508f75492a1f79deddc4e5c8aa4ae4d09885b0"
+      }
+    },
+    {
+      "name": "complete_function_binding:arguments",
+      "passed": true,
+      "evidence": {
+        "changed": true,
+        "candidate_sha256": "1fd53674cd076039e4b75e62a8eefcd74e53ad60f0a3988fd5daba06c1bfe4ab"
+      }
+    },
+    {
+      "name": "complete_function_binding:directory",
+      "passed": true,
+      "evidence": {
+        "changed": false,
+        "candidate_sha256": "4461be5df0079e88b76ee43f49e6b2345cda43f6e7a95834a59841a8f51eb0e2"
+      }
+    },
+    {
+      "name": "complete_function_binding:leaf",
+      "passed": true,
+      "evidence": {
+        "changed": false,
+        "candidate_sha256": "6ad86056c9ffd7c497969e43a1cfa3cf4fd8c2550596b1ebaa2828c594e17ec3"
+      }
+    },
+    {
+      "name": "complete_function_binding:identity",
+      "passed": true,
+      "evidence": {
+        "changed": false,
+        "candidate_sha256": "930b37739e4385b2525b2a0c8d115d4bd7bd08c2b073e39519ade5c6b29ca6fc"
+      }
+    },
+    {
+      "name": "complete_function_binding:read_bound",
+      "passed": true,
+      "evidence": {
+        "changed": false,
+        "candidate_sha256": "3f999036c297a199ccff52d0712211c94b8de90d4debfe699dc7e19ecf6c5d77"
+      }
+    },
+    {
+      "name": "complete_function_binding:unique_object",
+      "passed": true,
+      "evidence": {
+        "changed": false,
+        "candidate_sha256": "9f03e4d922b56685581d765b4413675261a89932d57e28d6b8a996d5ec2e8721"
+      }
+    },
+    {
+      "name": "complete_function_binding:profile_vector",
+      "passed": true,
+      "evidence": {
+        "changed": false,
+        "candidate_sha256": "a27fa1cbbe0a3975b99ceb4cdd0f6b7b60c375ba2450e04a8563105846852ee5"
+      }
+    },
+    {
+      "name": "complete_function_binding:Collector.__init__",
+      "passed": true,
+      "evidence": {
+        "changed": true,
+        "candidate_sha256": "37eb991c3f414687c22fc31b056c136cc46dcb97c322adf28fcf6ddab0a131c1"
+      }
+    },
+    {
+      "name": "complete_function_binding:Collector.fail",
+      "passed": true,
+      "evidence": {
+        "changed": false,
+        "candidate_sha256": "99d2a8a97c5ae13590bb05453a3af0559406a987df2e9cdabb8403315870817f"
+      }
+    },
+    {
+      "name": "complete_function_binding:Collector.check",
+      "passed": true,
+      "evidence": {
+        "changed": false,
+        "candidate_sha256": "9db65cc62ce271161baa7db1d7cece7f3fd527c4566aa1270ea2bf211c61e1d6"
+      }
+    },
+    {
+      "name": "complete_function_binding:Collector.admission_clock",
+      "passed": true,
+      "evidence": {
+        "changed": false,
+        "candidate_sha256": "ff7d1367f1ec074310c4045f0a5fb811cb055a2f8879867453a236e0283eb906"
+      }
+    },
+    {
+      "name": "complete_function_binding:Collector.publication_failure",
+      "passed": true,
+      "evidence": {
+        "changed": false,
+        "candidate_sha256": "478b1c586b869bb0a8a495412d8459325b8f5444d02c00ad5d41b5ec2d604db0"
+      }
+    },
+    {
+      "name": "complete_function_binding:Collector.create",
+      "passed": true,
+      "evidence": {
+        "changed": false,
+        "candidate_sha256": "0c2532818f150ad521c6b59af7cc93851bcc967e4927dfa8eb3292c120117c21"
+      }
+    },
+    {
+      "name": "complete_function_binding:Collector.write",
+      "passed": true,
+      "evidence": {
+        "changed": false,
+        "candidate_sha256": "54d0da37c4ae12d200042b2fefa5c29a148e2cf6e47a12de6227a5ba3c3e1541"
+      }
+    },
+    {
+      "name": "complete_function_binding:Collector.put",
+      "passed": true,
+      "evidence": {
+        "changed": false,
+        "candidate_sha256": "68640cab80582aa14667d9b454d78d0a0c4188c05e631a51ea81102364f1a78d"
+      }
+    },
+    {
+      "name": "complete_function_binding:Collector.bindings",
+      "passed": true,
+      "evidence": {
+        "changed": false,
+        "candidate_sha256": "fadc510b32a68b735166e09df05285763529845296a7ec05c8d5e773dde40c02"
+      }
+    },
+    {
+      "name": "complete_function_binding:Collector.deadlines",
+      "passed": true,
+      "evidence": {
+        "changed": true,
+        "candidate_sha256": "7b9f8628ee119a06ebf19b6563a30d4373f92e1376babfd683c6005c4a856635"
+      }
+    },
+    {
+      "name": "complete_function_binding:Collector.observe_exit",
+      "passed": true,
+      "evidence": {
+        "changed": false,
+        "candidate_sha256": "35cc838d73f0d1baaf545738a958b0927020f2081cf2959dceb4984763227d13"
+      }
+    },
+    {
+      "name": "complete_function_binding:Collector.capture",
+      "passed": true,
+      "evidence": {
+        "changed": false,
+        "candidate_sha256": "3eb7cafecba46cb55a0c8c8a2c35824a3c055ec3ed0647be5d24771c5df4a00e"
+      }
+    },
+    {
+      "name": "complete_function_binding:Collector.settle",
+      "passed": true,
+      "evidence": {
+        "changed": false,
+        "candidate_sha256": "9707be347e3b36b120659e6ef278a3f87bc171e3a4d7fc9d8f00c86a82c7fcef"
+      }
+    },
+    {
+      "name": "complete_function_binding:Collector.run",
+      "passed": true,
+      "evidence": {
+        "changed": false,
+        "candidate_sha256": "77aacf50bd32114cdb174ce48d3317ac2c844e5fd5ae3c56e863f6508a25826c"
+      }
+    },
+    {
+      "name": "complete_function_binding:main",
+      "passed": true,
+      "evidence": {
+        "changed": false,
+        "candidate_sha256": "a3b873c22bf70f9f051ddeefeb74131a107cc6f9aa356288497eb465f35511a3"
+      }
+    },
+    {
+      "name": "22_unchanged_functions_exact",
+      "passed": true
+    },
+    {
+      "name": "sole_module_addition_exact_table",
+      "passed": true
+    },
+    {
+      "name": "all_remaining_bytes_exact",
+      "passed": true
+    },
+    {
+      "name": "arguments_only_membership_edit",
+      "passed": true
+    },
+    {
+      "name": "init_only_selected_original_start_arithmetic",
+      "passed": true
+    },
+    {
+      "name": "deadlines_only_selected_work_total",
+      "passed": true
+    },
+    {
+      "name": "deadline_record_keys_exact",
+      "passed": true
+    },
+    {
+      "name": "complete_function_document:arguments:baseline",
+      "passed": true
+    },
+    {
+      "name": "complete_function_document:arguments:candidate",
+      "passed": true
+    },
+    {
+      "name": "complete_function_document:Collector.__init__:baseline",
+      "passed": true
+    },
+    {
+      "name": "complete_function_document:Collector.__init__:candidate",
+      "passed": true
+    },
+    {
+      "name": "complete_function_document:Collector.deadlines:baseline",
+      "passed": true
+    },
+    {
+      "name": "complete_function_document:Collector.deadlines:candidate",
+      "passed": true
+    },
+    {
+      "name": "complete_module_table_document",
+      "passed": true
+    },
+    {
+      "name": "patch_exact_labels",
+      "passed": true
+    },
+    {
+      "name": "patch_hunk_exact_counts_context:1",
+      "passed": true
+    },
+    {
+      "name": "patch_hunk_exact_counts_context:2",
+      "passed": true
+    },
+    {
+      "name": "patch_hunk_exact_counts_context:3",
+      "passed": true
+    },
+    {
+      "name": "patch_hunk_exact_counts_context:4",
+      "passed": true
+    },
+    {
+      "name": "four_hunks_reconstruct_exact_full_candidate",
+      "passed": true,
+      "evidence": [
+        {
+          "old_start": 17,
+          "old_count": 6,
+          "new_start": 17,
+          "new_count": 10
+        },
+        {
+          "old_start": 82,
+          "old_count": 7,
+          "new_start": 86,
+          "new_count": 7
+        },
+        {
+          "old_start": 217,
+          "old_count": 9,
+          "new_start": 221,
+          "new_count": 10
+        },
+        {
+          "old_start": 321,
+          "old_count": 8,
+          "new_start": 326,
+          "new_count": 9
+        }
+      ]
+    },
+    {
+      "name": "exact_patch_size_hash",
+      "passed": true
+    },
+    {
+      "name": "unique_key_finite_JSON:bindings.json",
+      "passed": true
+    },
+    {
+      "name": "unique_key_finite_JSON:caller-summary-limit.json",
+      "passed": true
+    },
+    {
+      "name": "unique_key_finite_JSON:finite-plan.json",
+      "passed": true
+    },
+    {
+      "name": "unique_key_finite_JSON:function-bindings.json",
+      "passed": true
+    },
+    {
+      "name": "unique_key_finite_JSON:parent-observer.contract.json",
+      "passed": true
+    },
+    {
+      "name": "unique_key_finite_JSON:phase-budget.contract.json",
+      "passed": true
+    },
+    {
+      "name": "unique_key_finite_JSON:static-reader-errors.json",
+      "passed": true
+    },
+    {
+      "name": "literal_table_closed_phases_values",
+      "passed": true
+    },
+    {
+      "name": "closed_budget_data:metadata-source",
+      "passed": true,
+      "evidence": {
+        "work_settle_final_total": [
+          130,
+          2,
+          3,
+          135
+        ],
+        "static_data_only": true
+      }
+    },
+    {
+      "name": "closed_budget_data:metadata-copy",
+      "passed": true,
+      "evidence": {
+        "work_settle_final_total": [
+          130,
+          2,
+          3,
+          135
+        ],
+        "static_data_only": true
+      }
+    },
+    {
+      "name": "closed_budget_data:prepare",
+      "passed": true,
+      "evidence": {
+        "work_settle_final_total": [
+          130,
+          2,
+          3,
+          135
+        ],
+        "static_data_only": true
+      }
+    },
+    {
+      "name": "closed_budget_data:controller",
+      "passed": true,
+      "evidence": {
+        "work_settle_final_total": [
+          335,
+          2,
+          3,
+          340
+        ],
+        "static_data_only": true
+      }
+    },
+    {
+      "name": "phase_maps_closed_equal",
+      "passed": true
+    },
+    {
+      "name": "exact_nine_mandatory_flags",
+      "passed": true
+    },
+    {
+      "name": "exact_closed_CLI_checks_except_phase_selection",
+      "passed": true
+    },
+    {
+      "name": "exact29token_route",
+      "passed": true
+    },
+    {
+      "name": "saved_guard_and_SYSTEM_final_token",
+      "passed": true
+    },
+    {
+      "name": "full_local_environment_exact",
+      "passed": true
+    },
+    {
+      "name": "all_caps_explicit_exact",
+      "passed": true
+    },
+    {
+      "name": "full_local_file_sum",
+      "passed": true
+    },
+    {
+      "name": "preserved_control_bytes:directory",
+      "passed": true
+    },
+    {
+      "name": "preserved_control_bytes:leaf",
+      "passed": true
+    },
+    {
+      "name": "preserved_control_bytes:identity",
+      "passed": true
+    },
+    {
+      "name": "preserved_control_bytes:read_bound",
+      "passed": true
+    },
+    {
+      "name": "preserved_control_bytes:profile_vector",
+      "passed": true
+    },
+    {
+      "name": "preserved_control_bytes:Collector.create",
+      "passed": true
+    },
+    {
+      "name": "preserved_control_bytes:Collector.write",
+      "passed": true
+    },
+    {
+      "name": "preserved_control_bytes:Collector.put",
+      "passed": true
+    },
+    {
+      "name": "preserved_control_bytes:Collector.capture",
+      "passed": true
+    },
+    {
+      "name": "preserved_control_bytes:Collector.observe_exit",
+      "passed": true
+    },
+    {
+      "name": "preserved_control_bytes:Collector.settle",
+      "passed": true
+    },
+    {
+      "name": "preserved_control_bytes:Collector.run",
+      "passed": true
+    },
+    {
+      "name": "sole_KILL_on_retained_local_SSH",
+      "passed": true
+    },
+    {
+      "name": "post_poll_strict_gate_unchanged",
+      "passed": true
+    },
+    {
+      "name": "settle_final2_and3_not_renewed",
+      "passed": true
+    },
+    {
+      "name": "parentFD_fsync_before_guard_then_spawn",
+      "passed": true
+    },
+    {
+      "name": "complete_requires_actual_SSH_before_work",
+      "passed": true
+    },
+    {
+      "name": "all33_receipt_fields_exact_source_order",
+      "passed": true,
+      "evidence": [
+        "schema",
+        "status",
+        "phase",
+        "bindings",
+        "clock",
+        "deadlines",
+        "python",
+        "guard_durable",
+        "spawn_started_ns",
+        "spawn_returned_ns",
+        "settle_stop_ns",
+        "final_stop_ns",
+        "actual_local_ssh_pid",
+        "actual_local_ssh_exit",
+        "actual_exit_observed_ns",
+        "handle_retained",
+        "kill",
+        "timeout",
+        "streams",
+        "first_observed_failure",
+        "secondary_publication_failures",
+        "publication_failure_count",
+        "caps",
+        "retries",
+        "completion_passes",
+        "remote_child_exit",
+        "remote_current_state",
+        "payload_receipt_assessed",
+        "artifact_accepted",
+        "r9_reserved_publisher",
+        "own_cli_exit_observed",
+        "independent_parent_observation_required",
+        "receipt_prewrite_ns"
+      ]
+    },
+    {
+      "name": "deadline_fields_exact",
+      "passed": true
+    },
+    {
+      "name": "publication_failure_detail_limit16",
+      "passed": true
+    },
+    {
+      "name": "remote_status_unknown_no_R9_authority",
+      "passed": true
+    },
+    {
+      "name": "observer_record_cap_publication_preserved",
+      "passed": true
+    },
+    {
+      "name": "D4_actual_exit_immediate_clock_before_receipts",
+      "passed": true
+    },
+    {
+      "name": "D4_rejects_late_unknown_even_COMPLETE",
+      "passed": true
+    },
+    {
+      "name": "candidate_D4_and_results_null",
+      "passed": true
+    },
+    {
+      "name": "unreviewed_false_authority:plan",
+      "passed": true
+    },
+    {
+      "name": "unreviewed_false_authority:observer",
+      "passed": true
+    },
+    {
+      "name": "unreviewed_false_authority:contract",
+      "passed": true
+    },
+    {
+      "name": "unreviewed_false_authority:bindings",
+      "passed": true
+    },
+    {
+      "name": "no_human_gate_or_new_approval",
+      "passed": true
+    },
+    {
+      "name": "independent_review_next_not_manufactured",
+      "passed": true
+    },
+    {
+      "name": "prepare135_from_prescribed_plan",
+      "passed": true
+    },
+    {
+      "name": "controller340_from_prescribed_plan",
+      "passed": true
+    },
+    {
+      "name": "product_end_and_detached_watchdog_unchanged",
+      "passed": true
+    },
+    {
+      "name": "no_payload_prepare_controller_common_watchdog_caller_adaptation",
+      "passed": true
+    },
+    {
+      "name": "caller_summary_contract_copied_exact",
+      "passed": true
+    },
+    {
+      "name": "full_caller_size_limit_no_passthrough",
+      "passed": true
+    },
+    {
+      "name": "public_immutable_binding:docs/verification/m1-metadata-transport-r4-2026-10-25-t3-53ab1856/transport-collector.py.txt",
+      "passed": true
+    },
+    {
+      "name": "public_immutable_binding:docs/verification/m1-metadata-transport-r4-2026-10-25-t3-53ab1856/README.md",
+      "passed": true
+    },
+    {
+      "name": "public_immutable_binding:docs/verification/m1-metadata-transport-r4-2026-10-25-t3-53ab1856/parent-observer.contract.json",
+      "passed": true
+    },
+    {
+      "name": "public_immutable_binding:docs/verification/m1-metadata-transport-r4-2026-10-25-t3-53ab1856/finite-plan.json",
+      "passed": true
+    },
+    {
+      "name": "public_immutable_binding:docs/verification/m1-metadata-transport-r4-2026-10-25-t3-53ab1856/caller-summary-limit.json",
+      "passed": true
+    },
+    {
+      "name": "public_immutable_binding:docs/verification/m1-metadata-transport-r4-2026-10-25-t3-53ab1856/profile.schema.json",
+      "passed": true
+    },
+    {
+      "name": "public_immutable_binding:docs/verification/m1-metadata-transport-r4-2026-10-25-t3-53ab1856/profile.template.json",
+      "passed": true
+    },
+    {
+      "name": "public_immutable_binding:docs/verification/m1-metadata-transport-r4-2026-10-25-t3-53ab1856/repair.contract.json",
+      "passed": true
+    },
+    {
+      "name": "public_immutable_binding:docs/verification/m1-metadata-transport-r5-review-2026-10-25-t3-2901f30d/REVIEW.md",
+      "passed": true
+    },
+    {
+      "name": "public_immutable_binding:docs/verification/m1-metadata-transport-r5-review-2026-10-25-t3-2901f30d/function-bindings.json",
+      "passed": true
+    },
+    {
+      "name": "public_immutable_binding:docs/verification/m1-metadata-transport-r5-review-2026-10-25-t3-2901f30d/bindings.json",
+      "passed": true
+    },
+    {
+      "name": "public_immutable_binding:docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/next-operation.json",
+      "passed": true
+    },
+    {
+      "name": "public_immutable_binding:docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/README.md",
+      "passed": true
+    },
+    {
+      "name": "public_immutable_binding:docs/verification/m1-ordinary-fresh-flow-plan-2026-10-24-t3-5463ce44/operator-plan.md",
+      "passed": true
+    },
+    {
+      "name": "public_immutable_binding:docs/verification/m1-ordinary-fresh-flow-plan-2026-10-24-t3-5463ce44/receipt-contract.md",
+      "passed": true
+    },
+    {
+      "name": "public_immutable_binding:docs/verification/m1-source-metadata-observed-2026-10-25-t3-52422617/README.md",
+      "passed": true
+    },
+    {
+      "name": "public_immutable_binding:docs/verification/m1-source-metadata-observed-2026-10-25-t3-52422617/validation.json",
+      "passed": true
+    },
+    {
+      "name": "public_immutable_binding:docs/verification/m1-source-metadata-observed-2026-10-25-t3-52422617/bindings.json",
+      "passed": true
+    },
+    {
+      "name": "all18_public_input_bindings",
+      "passed": true
+    },
+    {
+      "name": "baseline_review_original",
+      "passed": true
+    },
+    {
+      "name": "baseline_review_import",
+      "passed": true
+    },
+    {
+      "name": "review_original_import_parent_bytes_equal",
+      "passed": true
+    },
+    {
+      "name": "review_folder_tree_original_import_parent_equal",
+      "passed": true
+    },
+    {
+      "name": "new_bound_artifact:FUNCTION-CHANGES.md",
+      "passed": true
+    },
+    {
+      "name": "new_bound_artifact:caller-summary-limit.json",
+      "passed": true
+    },
+    {
+      "name": "new_bound_artifact:collector-from-04444ec.patch",
+      "passed": true
+    },
+    {
+      "name": "new_bound_artifact:finite-plan.json",
+      "passed": true
+    },
+    {
+      "name": "new_bound_artifact:function-bindings.json",
+      "passed": true
+    },
+    {
+      "name": "new_bound_artifact:parent-observer.contract.json",
+      "passed": true
+    },
+    {
+      "name": "new_bound_artifact:phase-budget.contract.json",
+      "passed": true
+    },
+    {
+      "name": "new_bound_artifact:transport-collector.py.txt",
+      "passed": true
+    },
+    {
+      "name": "public_recorded53_children212_files213334_bytes",
+      "passed": true
+    },
+    {
+      "name": "public_recorded_all53_actual0_EOF",
+      "passed": true
+    },
+    {
+      "name": "public_recorded_all50_native_basis_matches",
+      "passed": true
+    },
+    {
+      "name": "public_recorded_one_DATA_one_SOURCE",
+      "passed": true
+    },
+    {
+      "name": "public_recorded17_135s_transports_actual0_EOF_D4",
+      "passed": true
+    },
+    {
+      "name": "public_recorded_no_prepare_copy_controller_artifact_acceptance",
+      "passed": true
+    },
+    {
+      "name": "historical_fail_unknown_unverified_closed_updater_preserved",
+      "passed": true
+    },
+    {
+      "name": "historical_reader_error_unknown_field_preserved",
+      "passed": true
+    },
+    {
+      "name": "new_prepare_copy_controller_not_performed",
+      "passed": true
+    },
+    {
+      "name": "static_scope_all_forbidden_operations_zero",
+      "passed": true
+    },
+    {
+      "name": "first_author_reader_failure_retained",
+      "passed": true
+    },
+    {
+      "name": "final_bound_artifacts_after_document_EOF_normalization",
+      "passed": true
+    },
+    {
+      "name": "complete_changed_candidate_blocks_after_document_EOF_normalization",
+      "passed": true
+    },
+    {
+      "name": "final_new_files_all_plain0644",
+      "passed": true
+    },
+    {
+      "name": "staged_whitespace_check_all_non_patch_files",
+      "passed": true,
+      "evidence": "git diff --cached --check -- . with only exact .patch artifact excluded; exit0. Full check remains exit2 for two required unified-patch context-marker lines, recorded separately."
+    }
+  ],
+  "earlier_failed_reader_attempt": [
+    {
+      "stage": "Author inline static data reader; full_record_field_contract",
+      "error": "AssertionError: full_record_field_contract",
+      "trace": "File \"<stdin>\", line 195, in <module>; File \"<stdin>\", line 36, in check",
+      "cause": "Author hard-coded 37 receipt fields. The unchanged literal receipt and correct new data contract have 33 top-level fields.",
+      "expected_by_first_reader": 37,
+      "actual_contract_fields": 33,
+      "correction": "Reader compares all 33 literal top-level receipt keys, in source order, with the contract. Nested keys are excluded through lexical delimiter depth, without AST parsing or source evaluation.",
+      "collector_or_contract_changed": false,
+      "candidate_function_called": false,
+      "runtime_or_target_operation_repeated": false,
+      "report_or_manifest_written_by_failed_reader": false
+    }
+  ],
+  "error_disposition": "Only the incorrect author receipt-field count was corrected to a full33-key source comparison; collector and contract stayed unchanged. No runtime/target action occurred or repeated.",
+  "proof_limits": [
+    "Python syntax and AST validity unverified",
+    "Any actual candidate timing/cap/deadline/OS behavior",
+    "Actual new collector/SSH/remote status or D4",
+    "Signals/reap/filesystem faults/power-loss durability",
+    "Future private full-route/payload/same-host-boot qualification",
+    "R9 reserved publication/accounting",
+    "Prepare/copy/controller and ordinary/native/artifact/release acceptance"
+  ],
+  "manifest_and_commit": "SHA256SUMS binds this report and all other files except itself. Final precommit/postcommit Git scope checks are reported separately in the handoff.",
+  "human_gate_created": false,
+  "whitespace_checks": {
+    "first_full_check": {
+      "exit_code": 2,
+      "diagnostics": [
+        "docs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/FUNCTION-CHANGES.md:175: new blank line at EOF.",
+        "docs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/collector-from-04444ec.patch:5: trailing whitespace. Literal line is one required context-marker space.",
+        "docs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/collector-from-04444ec.patch:46: trailing whitespace. Literal line is one required context-marker space."
+      ]
+    },
+    "correction": "Removed only the extra blank line at document EOF, updated its hash binding. Collector/patch and all source acceptance predicates unchanged.",
+    "final_full_check": {
+      "exit_code": 2,
+      "stdout": "docs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/collector-from-04444ec.patch:5: trailing whitespace.\n+ \ndocs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/collector-from-04444ec.patch:46: trailing whitespace.\n+ \n",
+      "stderr": "",
+      "disposition": "Retained two valid unified-patch context-marker lines; exact patch reconstruction and SHA remain unchanged. Full raw whitespace check is not claimed clear."
+    },
+    "all_other_staged_files": {
+      "exit_code": 0,
+      "excluded_only": "docs/verification/m1-transport-phase-budgets-2026-10-25-t3-b31ab18a/collector-from-04444ec.patch",
+      "stdout": "",
+      "stderr": ""
+    }
+  }
+}
