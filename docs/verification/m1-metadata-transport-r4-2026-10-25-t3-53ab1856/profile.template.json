@@ -1,0 +1,38 @@
+{
+  "schema": "openergy.m1-bound-ssh-profile.v1",
+  "source_guard": {
+    "path": null,
+    "sha256": "9e0b9a5afb47b7755d1ebaf5f50edf45cf0a7372baaa2f83b83d9255011aed4c"
+  },
+  "argv": [
+    "/usr/bin/ssh",
+    "-o",
+    "BatchMode=yes",
+    "-o",
+    "ConnectTimeout=8",
+    "-o",
+    "ConnectionAttempts=1",
+    "-o",
+    "StrictHostKeyChecking=yes",
+    "-o",
+    "ControlMaster=no",
+    "-o",
+    "ControlPath=none",
+    "-o",
+    "ControlPersist=no",
+    "-o",
+    "ServerAliveInterval=5",
+    "-o",
+    "ServerAliveCountMax=3",
+    "-p",
+    "22",
+    "-o",
+    null,
+    "-o",
+    null,
+    "-o",
+    null,
+    null,
+    "/usr/bin/python3 -I -S -B -"
+  ]
+}

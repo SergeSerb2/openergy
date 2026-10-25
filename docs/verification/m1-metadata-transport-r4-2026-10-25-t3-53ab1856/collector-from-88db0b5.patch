@@ -1,0 +1,47 @@
+--- a/transport-collector.py.txt
++++ b/transport-collector.py.txt
+@@ -406,15 +406,25 @@
+         # Only this retained local SSH handle. poll() rechecks before kill().
+         eligible = (self.timeout or any(item["overflow"] for item in self.streams.values())
+                     or time.monotonic_ns() >= self.work)
+-        if (eligible and time.monotonic_ns() < self.settle_stop_ns
+-                and self.process.poll() is None):
+-            self.kill["attempted"] = True
+-            self.kill["observed_ns"] = time.monotonic_ns()
+-            try:
+-                self.process.kill()
+-                self.kill["returned"] = True
+-            except OSError:
+-                pass
++        if eligible and time.monotonic_ns() < self.settle_stop_ns:
++            code = self.process.poll()
++            observed = time.monotonic_ns()  # Immediately after the eligibility poll.
++            if code is not None:
++                self.actual_exit = code
++                self.exit_observed_ns = observed
++                if code != 0:
++                    self.fail("ssh_exit_nonzero", "poll")
++            elif observed < self.settle_stop_ns and observed < self.absolute:
++                self.kill["attempted"] = True
++                self.kill["observed_ns"] = observed
++                try:
++                    self.process.kill()
++                    self.kill["returned"] = True
++                except OSError:
++                    pass
++            else:
++                self.timeout = True
++                self.fail("settle_deadline", "settle")
+         self.observe_exit()
+         remaining = (self.settle_stop_ns - time.monotonic_ns()) / SECOND
+         if self.actual_exit is None and remaining > 0:
+@@ -449,6 +459,9 @@
+                 info = os.fstat(self.root)
+                 if info.st_uid != os.getuid() or stat.S_IMODE(info.st_mode) != 0o700:
+                     raise Rejected("run_directory_owner_mode")
++                self.admission_clock()
++                os.fsync(parent)  # Persist the new root entry before the once guard.
++                self.admission_clock()
+             finally:
+                 os.close(parent)
+             for label, path in (("collector", os.path.abspath(__file__)),
