@@ -1,0 +1,50 @@
+--- a/docs/verification/m1-prepare-parent-capsule-2026-10-25-t3-764cae00/prepare-parent.py.txt
++++ b/docs/verification/m1-prepare-parent-admission-cache-repair-2026-10-25-t3-53a3c637/prepare-parent.py.txt
+@@ -1431,6 +1431,9 @@
+     # Repeat exact pins immediately before the only supplied-module import.
+     for name, binding in PINS.items():
+         read_leaf(rootfd, name, binding)
++    # -B suppresses cache writes, not reads. Keep ROOT exclusive through exit.
++    for name in ('__pycache__', 'common.pyc', 'common.pyo'):
++        absent(rootfd, name)  # Reject only; no cache deletion, root repair or retry.
+     require('common' not in sys.modules, 'no prior common module')
+     os.environ['OPENERGY_ORDINARY_SOURCE_ROOT'] = SOURCE_ROOT
+     os.environ['OPENERGY_ORDINARY_PYTHON'] = PRIVATE_PYTHON
+@@ -1607,12 +1610,12 @@
+     HANDLES.append(retained)
+     try:
+         with until(work_end):
+-            if label == 'prepare':
+-                require(started + 120 * NS + 500000000 < work_end,
+-                        'late admission cannot fit original prepare120; no spawn')
+-            else:
++            if label == 'entry':
+                 require(started + 750000000 < work_end, 'helper remaining admission')
+             status['launch_started_ns'] = clock_ns()
++            if label == 'prepare':
++                require(status['launch_started_ns'] + 120 * NS + 500000000 < work_end,
++                        'late admission cannot fit original prepare120; no spawn')
+             proc = subprocess.Popen(argv, stdin=subprocess.DEVNULL,
+                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=ROOT,
+                 env=startup(), shell=False, close_fds=True, bufsize=0)
+@@ -1747,7 +1750,9 @@
+             rootfd = open_root()
+             STAGE = 'fixed-source-artifact-boundaries'
+             artifact, bundle_tree = inspect_frozen(rootfd)
+-            for name in OUTPUTS + ('bytes.json', 'bytes.lock', 'prepared.json', 'prepare-guard.json'):
++            # Exclude every ordinary ROOT common cache before supplied module/private entry.
++            for name in OUTPUTS + ('__pycache__', 'common.pyc', 'common.pyo',
++                                    'bytes.json', 'bytes.lock', 'prepared.json', 'prepare-guard.json'):
+                 absent(rootfd, name)
+             initial = inventory(rootfd)  # Complete count BEFORE first growth.
+             budget = dict(initial)
+@@ -1783,6 +1788,9 @@
+                 read_leaf(rootfd, name, binding)
+             absent(rootfd, 'bytes.json')
+             absent(rootfd, 'bytes.lock')
++            # Recheck before the irreversible attempt; ownership stays exclusive through exit.
++            for name in ('__pycache__', 'common.pyc', 'common.pyo'):
++                absent(rootfd, name)
+         STAGE = 'one-private-prepare'
+         primary_attempted = True  # Irreversible mode boundary, even spawn failure.
+         primary, stdout, stderr = collect('prepare')

@@ -1,0 +1,113 @@
+{
+  "actual_commit": null,
+  "all_passed": true,
+  "check_count": 15,
+  "checks": [
+    {
+      "check": "exact_HEAD_still_parent",
+      "evidence": "078ced42f232509118e038cd3abbc80225e80929",
+      "result": true
+    },
+    {
+      "check": "all4298_original_Git_blobs_modes_equal",
+      "evidence": "Full tree map, no omitted path",
+      "result": true
+    },
+    {
+      "check": "all4298_original_working_bytes_modes_equal",
+      "evidence": "Every byte/hash/length/mode; existing CRLF form retained",
+      "result": true
+    },
+    {
+      "check": "all95_public_Git_inputs_still_exact",
+      "evidence": "Full raw records, no private inputs",
+      "result": true
+    },
+    {
+      "check": "all_packet_JSON_strict_unique_finite",
+      "evidence": {
+        "count": 14,
+        "files": [
+          "baseline-tracked-inventory.json",
+          "bindings.json",
+          "cli-contract.json",
+          "config.schema.json",
+          "config.template.json",
+          "construction-data.json",
+          "finite-plan.json",
+          "function-inventory.json",
+          "input-bindings.json",
+          "module-layout.json",
+          "pin-bindings.json",
+          "repair-disposition.json",
+          "static-checks.json",
+          "template-proof.json"
+        ]
+      },
+      "result": true
+    },
+    {
+      "check": "one_final_source_identity_all_receipts",
+      "evidence": "fce82ca2775607fd86e0ef8dbb8c44fd3cd5a213815ae77cb9501327160ee57d",
+      "result": true
+    },
+    {
+      "check": "69_source_checks_retained_exact",
+      "evidence": "bb8b35524d34aef7ede12c87e683282607c55ca201c9e8380102e191a2ef236c",
+      "result": true
+    },
+    {
+      "check": "false_null_status_consistent",
+      "evidence": "No future review/render/runtime receipt synthesized",
+      "result": true
+    },
+    {
+      "check": "patch_identity_exact",
+      "evidence": "3da43718972caf517b490b827e07d6a7cf12d5fec85c1d129bc62b99a3bf8755",
+      "result": true
+    },
+    {
+      "check": "full_parent_contract_and_README_bind_final_source",
+      "evidence": "Both bind exact final source and require independent R4",
+      "result": true
+    },
+    {
+      "check": "required_full_packet_present",
+      "evidence": "Full inert source/patch/functions/globals/config/schema/plan/bindings/static/contract/limits",
+      "result": true
+    },
+    {
+      "check": "all_new_payloads_regular0644",
+      "evidence": "No executable or special file",
+      "result": true
+    },
+    {
+      "check": "original_tracked_index_worktree_diff_empty",
+      "evidence": "No old tracked edit",
+      "result": true
+    },
+    {
+      "check": "only_single_owned_new_folder_in_status",
+      "evidence": "docs/verification/m1-prepare-parent-admission-cache-repair-2026-10-25-t3-53a3c637",
+      "result": true
+    },
+    {
+      "check": "historical_states_explicit",
+      "evidence": "Full limitations retain failure and source/static/runtime distinctions",
+      "result": true
+    }
+  ],
+  "commit_pending": true,
+  "commit_policy": {
+    "commit_gpgsign": false,
+    "hooks_path": "/dev/null",
+    "no_gpg_sign": true,
+    "only_folder": "docs/verification/m1-prepare-parent-admission-cache-repair-2026-10-25-t3-53a3c637"
+  },
+  "execution": false,
+  "packet_whitespace_correction": "Initial staged diff --check reported one extra separator blank line at EOF in each full changed-function transcript. Removed those separator newlines; full declaration bytes and repaired source unchanged.",
+  "parent": "078ced42f232509118e038cd3abbc80225e80929",
+  "post_commit_status": null,
+  "scope": "Public static data only; post-commit exact parent/diff/mode/clean results reported outside packet",
+  "source_sha256": "fce82ca2775607fd86e0ef8dbb8c44fd3cd5a213815ae77cb9501327160ee57d"
+}

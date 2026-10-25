@@ -1,0 +1,436 @@
+{
+  "all_passed": true,
+  "baseline_sha256": "3c7c6e639ee64ca2e8ec49b27c993921ee4e7abff90928fd2f498135f2b20135",
+  "check_count": 69,
+  "checks": [
+    {
+      "check": "exact_parent_HEAD",
+      "evidence": "078ced42f232509118e038cd3abbc80225e80929",
+      "result": true
+    },
+    {
+      "check": "baseline_identity",
+      "evidence": "06634b58/import9379e2b:105367B/3c7c6e63",
+      "result": true
+    },
+    {
+      "check": "complete_repaired_source_identity",
+      "evidence": {
+        "bytes": 106001,
+        "lines": 1872,
+        "path": "prepare-parent.py.txt",
+        "sha256": "fce82ca2775607fd86e0ef8dbb8c44fd3cd5a213815ae77cb9501327160ee57d"
+      },
+      "result": true
+    },
+    {
+      "check": "Python39_AST_data_parse",
+      "evidence": "Parse only; no compile to executable, eval, import or execution of supplied source",
+      "result": true
+    },
+    {
+      "check": "exact_four_hunk_patch_reconstruction",
+      "evidence": {
+        "hunks": [
+          {
+            "new_lines": 9,
+            "new_start": 1431,
+            "old_lines": 6,
+            "old_start": 1431
+          },
+          {
+            "new_lines": 12,
+            "new_start": 1610,
+            "old_lines": 12,
+            "old_start": 1607
+          },
+          {
+            "new_lines": 9,
+            "new_start": 1750,
+            "old_lines": 7,
+            "old_start": 1747
+          },
+          {
+            "new_lines": 9,
+            "new_start": 1788,
+            "old_lines": 6,
+            "old_start": 1783
+          }
+        ],
+        "patch_sha256": "3da43718972caf517b490b827e07d6a7cf12d5fec85c1d129bc62b99a3bf8755"
+      },
+      "result": true
+    },
+    {
+      "check": "all_44_declarations_accounted",
+      "evidence": "43 functions including nested + Stop",
+      "result": true
+    },
+    {
+      "check": "only_three_functions_changed",
+      "evidence": [
+        "collect",
+        "import_common",
+        "main"
+      ],
+      "result": true
+    },
+    {
+      "check": "all_41_unchanged_hashes_equal",
+      "evidence": "Whole physical declaration ranges including nested functions and Stop",
+      "result": true
+    },
+    {
+      "check": "all_entry_global_guard_segments_unchanged",
+      "evidence": "40 complete outside-declaration physical segments",
+      "result": true
+    },
+    {
+      "check": "helper_admission_unchanged",
+      "evidence": "started+0.75s strictly before helper work_end, before launch sample",
+      "result": true
+    },
+    {
+      "check": "fresh_sample_after_alarm_entry",
+      "evidence": "until(work_end) body: helper gate, retained clock sample, prepare predicate, Popen",
+      "result": true
+    },
+    {
+      "check": "strict_fresh_prepare_fit_predicate",
+      "evidence": "launch_started_ns+120s+0.5s < unchanged work_end",
+      "result": true
+    },
+    {
+      "check": "fresh_sample_predicate_directly_precede_Popen",
+      "evidence": "No extra OS call inserted between sample/predicate/Popen; argument evaluation/OS/scheduler stalls unverified",
+      "result": true
+    },
+    {
+      "check": "old_started_fit_predicate_removed",
+      "evidence": "phase_started_ns remains original; launch_started_ns is admission sample",
+      "result": true
+    },
+    {
+      "check": "exact_Popen_call_unchanged",
+      "evidence": "Exact argv expression, DEVNULL/PIPE/cwd/env/shell=False/close_fds/bufsize unchanged",
+      "result": true
+    },
+    {
+      "check": "collection_after_Popen_unchanged",
+      "evidence": "Retained handle, returned launch clock, selectors, raw cap, real poll/EOF loop unchanged",
+      "result": true
+    },
+    {
+      "check": "collection_exception_handlers_unchanged",
+      "evidence": "First collection failure latch and timeout fields unchanged",
+      "result": true
+    },
+    {
+      "check": "collection_finally_unchanged",
+      "evidence": "One fresh-poll/clock direct KILL and unchanged original-remainder wait/close",
+      "result": true
+    },
+    {
+      "check": "collection_pretry_and_tail_unchanged",
+      "evidence": "Vector/budget/status setup, final status completion/latched failure/raw return unchanged",
+      "result": true
+    },
+    {
+      "check": "initial_cache_absence_gate",
+      "evidence": "All three names included in original initial absence loop",
+      "result": true
+    },
+    {
+      "check": "two_cache_recheck_gates",
+      "evidence": "import_common and main final private admission",
+      "result": true
+    },
+    {
+      "check": "initial_gate_before_inventory_growth_and_children",
+      "evidence": {
+        "initial_gate_line": 1754
+      },
+      "result": true
+    },
+    {
+      "check": "import_gate_after_repeated_pins_before_module_entry",
+      "evidence": {
+        "import_gate_line": 1435,
+        "module_spec_line": 1441
+      },
+      "result": true
+    },
+    {
+      "check": "final_gate_before_irreversible_attempt_and_private_entry",
+      "evidence": {
+        "attempt_line": 1795,
+        "final_gate_line": 1792
+      },
+      "result": true
+    },
+    {
+      "check": "nofollow_reject_only_absent_unchanged",
+      "evidence": "FileNotFoundError-only absence; any file/directory/link or other error rejects; no deletion/repair/retry",
+      "result": true
+    },
+    {
+      "check": "exclusive_root_parent_duty_unchanged",
+      "evidence": "Original mandatory CONFIG duty still required before root access; continued exclusivity is external",
+      "result": true
+    },
+    {
+      "check": "no_new_global_flags_or_environment",
+      "evidence": "Flags, exact10-key startup, root, all budgets, caps, source and receipt literals unchanged",
+      "result": true
+    },
+    {
+      "check": "remote128_work126_reap126_5_preserved",
+      "evidence": "Original remote clock prefix and collect setup unchanged",
+      "result": true
+    },
+    {
+      "check": "local135_130_2_3_preserved",
+      "evidence": "Original S/A fixed before local collector admission; no renewal",
+      "result": true
+    },
+    {
+      "check": "primary_attempt_one_way_preserved",
+      "evidence": "No INITIAL publication after attempt; original main error/finalization tail retained",
+      "result": true
+    },
+    {
+      "check": "fixed_vectors_and_startup_contract",
+      "evidence": "cli-contract.json; source vector setup/startup/Popen all unchanged",
+      "result": true
+    },
+    {
+      "check": "one_Popen_one_direct_KILL_unchanged",
+      "evidence": "One shared collector implementation; no new child vector, signal or drain",
+      "result": true
+    },
+    {
+      "check": "unchanged_initial_put",
+      "evidence": "7b3fdc887bb007e6ae1e7378f0599cd602d7dfec450a1f2e7fcd3fa7ff493249",
+      "result": true
+    },
+    {
+      "check": "unchanged_reserved_put",
+      "evidence": "2af9e40a0c20195b3e4cb9fbd2073581c70d05a502cccba443a7eee67c945ae0",
+      "result": true
+    },
+    {
+      "check": "unchanged_common_deadline",
+      "evidence": "1d8dcb38b35c9dd3390e5275b12940e0d8b5662ccf01a52aa230ad8a87da6b72",
+      "result": true
+    },
+    {
+      "check": "unchanged_existing_ledger",
+      "evidence": "f14b8a32e7ffa286b368e1e3fb4e870b85200b59a20fac15b6a87e1b94869d81",
+      "result": true
+    },
+    {
+      "check": "unchanged_inspect_entry",
+      "evidence": "d89e380c42166abef964b867a3e431cecb96cda8e5bad6919424a27dd594cc51",
+      "result": true
+    },
+    {
+      "check": "unchanged_inspect_prepared",
+      "evidence": "474b6b43175cd5c662109f02ac24cf1e9148a82d1047b785cbb1c355e13b7636",
+      "result": true
+    },
+    {
+      "check": "unchanged_collection_complete",
+      "evidence": "1e392aa0f5b155a79c614f7f8b967bf8edeefba7fb7729ccaa3ceacc25c6a793",
+      "result": true
+    },
+    {
+      "check": "unchanged_observe_exit",
+      "evidence": "94a6fafecbef10b6509533a0d792cce1fc61b4fcb99d9183118da1916b83610c",
+      "result": true
+    },
+    {
+      "check": "unchanged_latch",
+      "evidence": "1fc81f469b2139c30fcccfcc0ba115eec20e8deb4cd190d363f56bf31fe80640",
+      "result": true
+    },
+    {
+      "check": "unchanged_fail",
+      "evidence": "de1bd3450d76eb0036a1f40c2d29b91d542d1715469a2bb1256f8f309997adcc",
+      "result": true
+    },
+    {
+      "check": "unchanged_emit_once",
+      "evidence": "548d547e0d17682cc006964f4d75fb3e6f7aa3132576600fc87e1727c9349cc7",
+      "result": true
+    },
+    {
+      "check": "unchanged_console_admission",
+      "evidence": "a5447dfce8fef6cac5259f0315182e0d0c206e8a9cfe50b8ffe280ef029e41fe",
+      "result": true
+    },
+    {
+      "check": "unchanged_inventory",
+      "evidence": "12c46f1c5b191b7fdd68455b26c33fc259c4119b9b3b5b9647a93a5737ebb22f",
+      "result": true
+    },
+    {
+      "check": "unchanged_open_root",
+      "evidence": "c7aee36ba2ba05b59397e13a30160ffc77a94a2360d705ff22a54dfe69ae163f",
+      "result": true
+    },
+    {
+      "check": "unchanged_read_leaf",
+      "evidence": "963beb17880dcd6f322370c6df7a7d2a0c1cf573b049cbcf990faf02e4af389f",
+      "result": true
+    },
+    {
+      "check": "unchanged_read_new_leaf",
+      "evidence": "2b9c6970ae56804639e26a755b436528d84ae41d4ae0df09f3cea42d86b5b46c",
+      "result": true
+    },
+    {
+      "check": "unchanged_startup",
+      "evidence": "77f6e5efc6f48392d70f305e7f8be86b6d20f82574df1cff818d28389c088bd9",
+      "result": true
+    },
+    {
+      "check": "full_changed_function_bodies_retained",
+      "evidence": "Exact ranges/hashes in function-inventory.json, no omitted body",
+      "result": true
+    },
+    {
+      "check": "config_schema_bytes_unchanged",
+      "evidence": "b79c9e1cae0d6d2458099c1432fc8d0bffb7133e8e9e6d3d85eb8efd1f9e2149",
+      "result": true
+    },
+    {
+      "check": "config_template_bytes_unchanged",
+      "evidence": "be5709c670ab5be1568a5b88834b531615afe8f01379452f6ae9bc16de24b539",
+      "result": true
+    },
+    {
+      "check": "actual_null_template_closed_schema_traversal",
+      "evidence": "Own static JSON traversal, no supplied source checker or bind_config executed; no fabricated input",
+      "result": true
+    },
+    {
+      "check": "all_unresolved_CONFIG_slots_null",
+      "evidence": "No future candidate/review/parent/boundary or rendered payload filled",
+      "result": true
+    },
+    {
+      "check": "template_nonadmitting_by_static_semantics",
+      "evidence": "Unchanged bind_config first hash gate cannot accept null; function not invoked",
+      "result": true
+    },
+    {
+      "check": "one_constant_CONFIG_token_and_restoration",
+      "evidence": "Real constant token unchanged; no synthetic populated render; actual_future_render=null",
+      "result": true
+    },
+    {
+      "check": "exact_token_prefix_suffix_config_identities",
+      "evidence": {
+        "AST_execution": false,
+        "AST_grammar": "Python3.9",
+        "actual_future_render": null,
+        "actual_future_render_required": true,
+        "canonical_config_sha256": "f80fef90503c10fdbabf1a6814b32381fe75ac7b7a7c787ab18f0c184637d1f3",
+        "config_schema_sha256": "b79c9e1cae0d6d2458099c1432fc8d0bffb7133e8e9e6d3d85eb8efd1f9e2149",
+        "config_string_tokens": 1,
+        "config_template_sha256": "be5709c670ab5be1568a5b88834b531615afe8f01379452f6ae9bc16de24b539",
+        "config_token_end_byte": 3164,
+        "config_token_sha256": "278ba36ddd0b82a09c6f087ba152d27f15326af071407d7646490e21f74e8f5b",
+        "config_token_start_byte": 1288,
+        "execution": false,
+        "normalized_AST_data_hash_is_not_future_render_proof": true,
+        "normalized_AST_data_sha256": "01d8173a36b3464e4dd1478e23f14ac9ba8bc7330fb226cd60077b4452dd81a8",
+        "prefix_sha256": "10aaa990f16b52ed2defa2ef68d3341ea9c13bfde663541448b8fa7f3ef72eba",
+        "source_bytes": 106001,
+        "source_lines": 1872,
+        "source_sha256": "fce82ca2775607fd86e0ef8dbb8c44fd3cd5a213815ae77cb9501327160ee57d",
+        "suffix_sha256": "bcc5e6f773ae18e83b7b3130deb374f569557344e3306962b5fddba19e674433",
+        "synthetic_render_created": false,
+        "template_le_1MiB": true,
+        "template_token_restore_byte_exact": true,
+        "token_unchanged_from_06634b5": true
+      },
+      "result": true
+    },
+    {
+      "check": "template_under_1MiB",
+      "evidence": {
+        "actual_bytes": 106001,
+        "actual_future_render": null,
+        "cap": 1048576
+      },
+      "result": true
+    },
+    {
+      "check": "frozen17_and_all_upstream_pins_unchanged",
+      "evidence": "New capsule/provenance metadata only; upstream source pins/receipts untouched",
+      "result": true
+    },
+    {
+      "check": "ten_module_hashes_unchanged",
+      "evidence": "Exact ten public module bodies, no imports",
+      "result": true
+    },
+    {
+      "check": "all212_source_raw_rows_equal_public_record",
+      "evidence": {
+        "bytes": 213334,
+        "rows": 212,
+        "sha256": "2baea069155b633485b1e8aed8fe72f3bf746f67de83a84f07a2daf0648fe4ee"
+      },
+      "result": true
+    },
+    {
+      "check": "actual_artifact_public_record_unchanged",
+      "evidence": "Existing4fbf8f0 public record only; historical actual0 is not a new run",
+      "result": true
+    },
+    {
+      "check": "all_eight_actual_receipt_refs_equal_frozen",
+      "evidence": "Full9374-byte receipt,1398-byte guard and8/136360-byte set remain fixed",
+      "result": true
+    },
+    {
+      "check": "95_public_input_records_verified",
+      "evidence": "38 original+17 candidate+17 imported candidate+7 original R2+7 imported R2+9 public DATA records",
+      "result": true
+    },
+    {
+      "check": "all4298_prior_working_bytes_modes_preserved",
+      "evidence": "All public tracked paths read/hash/mode checked; pre-existing .cmd CRLF separately recorded",
+      "result": true
+    },
+    {
+      "check": "no_prior_index_or_tracked_changes",
+      "evidence": "Before staging: old tracked index/worktree clean",
+      "result": true
+    },
+    {
+      "check": "only_owned_new_folder_changed",
+      "evidence": "No other untracked/modified/staged path",
+      "result": true
+    },
+    {
+      "check": "new_folder_files_regular0644",
+      "evidence": "Only inert plain files in the single new owned folder",
+      "result": true
+    },
+    {
+      "check": "R4_and_execution_status_honest",
+      "evidence": "No independent review, runtime result, human gate or execution grant invented",
+      "result": true
+    }
+  ],
+  "execution": false,
+  "independent_R4_review": null,
+  "method": "Own trusted isolated standard-library readers over raw public text/strict JSON/AST data/hashes; no evaluated supplied code; not tests/mocks or runtime acceptance",
+  "runtime_acceptance": false,
+  "setup_correction": "Initial read-only equality assertion stopped on pre-existing tools/windows/openergy-run.cmd CRLF checkout conversion. No writes occurred. Raw Git and working identities are now recorded separately.",
+  "source_clear": false,
+  "source_sha256": "fce82ca2775607fd86e0ef8dbb8c44fd3cd5a213815ae77cb9501327160ee57d"
+}

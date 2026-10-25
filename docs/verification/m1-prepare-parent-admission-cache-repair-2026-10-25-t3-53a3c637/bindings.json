@@ -1,0 +1,186 @@
+{
+  "R2": {
+    "P1": 0,
+    "P2": 2,
+    "commit": "f6e15d0803d52905636f9b916b50e0c0a23ef05a",
+    "import_commit": "078ced42f232509118e038cd3abbc80225e80929",
+    "sha256": "e50e67ef33aa690525f821fb3d77bf7601a1138740e9ee7c4910b1cfc1129981",
+    "verdict": "HOLD_SOURCE"
+  },
+  "baseline": {
+    "bytes": 105367,
+    "commit": "06634b58f1b4795684b9139de716b4fe8f6430e0",
+    "import_commit": "9379e2b50b566e3346ec934b322ef142db2ade39",
+    "sha256": "3c7c6e639ee64ca2e8ec49b27c993921ee4e7abff90928fd2f498135f2b20135"
+  },
+  "execution": false,
+  "independent_R4_review": null,
+  "local_public_stdlib_source": {
+    "bytes": 64569,
+    "path": "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/importlib/_bootstrap_external.py",
+    "read_ranges": [
+      [
+        348,
+        435
+      ],
+      [
+        696,
+        748
+      ],
+      [
+        844,
+        850
+      ],
+      [
+        916,
+        998
+      ],
+      [
+        1515,
+        1558
+      ],
+      [
+        1634,
+        1644
+      ]
+    ],
+    "sha256": "ae0b9f573429b63e40942e8d3365c73a7ed37302fff6dfc7eebbd2bb62b6bd85",
+    "target_runtime_qualification": false,
+    "text_only": true
+  },
+  "parent": "078ced42f232509118e038cd3abbc80225e80929",
+  "patch": {
+    "bytes": 2954,
+    "path": "from-06634b5.patch",
+    "sha256": "3da43718972caf517b490b827e07d6a7cf12d5fec85c1d129bc62b99a3bf8755"
+  },
+  "public_artifact": {
+    "D4_before_original_135s": true,
+    "actual_collector_exit": 0,
+    "actual_ssh_exit": 0,
+    "both_EOF": true,
+    "files": {
+      "abi-source-assessment.md": {
+        "bytes": 13696,
+        "sha256": "034a5384e06e468a41d752496fd3bc8fe57a6af1715ca0fbbd92657aa913652e"
+      },
+      "artifact-receipt.json": {
+        "bytes": 33785,
+        "sha256": "67daf1812cd935ae420eb10a14755ed65aeb096cdd213ee0c2ea4886731abd53"
+      },
+      "operation.bound.json": {
+        "bytes": 157,
+        "sha256": "79365864068890381b0cd142d43571aeab62904c3fadb200b8f8767823d28a9d"
+      },
+      "qualification-abi.json": {
+        "bytes": 8684,
+        "sha256": "56a155e929e88e8ae1e1cf333520d2313534a3d78dbe45ce0005dec626f4d131"
+      },
+      "qualification-artifact-observations.json": {
+        "bytes": 72362,
+        "sha256": "0aa904b5502ac04e072fe2029c5ee74b84cf16adb5aa0fd1e1afed4fe958b952"
+      },
+      "qualification-python.json": {
+        "bytes": 4574,
+        "sha256": "fa6fd0066bf6bd32564907541cd0b68c5298e31a688af5eff47cf87994008a35"
+      },
+      "qualification-transfer.json": {
+        "bytes": 1451,
+        "sha256": "465f91e45fe676770929eb17018ae8e7b7fe7163a1bf2493fb29b4c410b508fa"
+      },
+      "source-transport-parent-exit.json": {
+        "bytes": 1651,
+        "sha256": "c4d25a531a2692551dd94b7b502ec7f9cbf61e1d675218549aa3235ff816d597"
+      }
+    },
+    "guard": {
+      "bytes": 1398,
+      "sha256": "5af64345f7e2df22ee516aa6a23dbff26489b0e1c1f6bf208814f5093bc0a956"
+    },
+    "materializer_receipt": {
+      "bytes": 9374,
+      "sha256": "cd3ae8c0e5e985f8352fc204cc247007d8133e262c5381ce710c087eb056818f"
+    },
+    "read_scope": "existing public records only; no private originals reopened; no operation repeated",
+    "record_commit": "4fbf8f0f32c08fcdfc1f02b3cb2a37b9b79a56ed",
+    "status": "ARTIFACT_DATA_BOUND",
+    "total_bytes": 136360,
+    "validation": {
+      "bytes": 3910,
+      "sha256": "759e44f21fca0627c9a391aaa93bd148898e7c7e68950765f70ade6aebdd285d"
+    }
+  },
+  "runtime_acceptance": false,
+  "source": {
+    "bytes": 106001,
+    "lines": 1872,
+    "path": "prepare-parent.py.txt",
+    "sha256": "fce82ca2775607fd86e0ef8dbb8c44fd3cd5a213815ae77cb9501327160ee57d"
+  },
+  "source_clear": false,
+  "source_raw_bytes": 213334,
+  "source_raw_manifest_sha256": "2baea069155b633485b1e8aed8fe72f3bf746f67de83a84f07a2daf0648fe4ee",
+  "source_raw_records": 212,
+  "upstream_modules": [
+    {
+      "bytes": 12781,
+      "name": "common.py",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/common.py.txt",
+      "sha256": "20a9c16030b2de53b99870f25bada68137bfc6fbc5b67cc29f8e878312d4129c"
+    },
+    {
+      "bytes": 36307,
+      "name": "controller.py",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/source/controller.py.txt",
+      "sha256": "08f1bbea8aeb5852b4aaddd0f3f693c7717c69e5e898462baa90b49cba41e3a4"
+    },
+    {
+      "bytes": 11382,
+      "name": "coverage.py",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/coverage.py.txt",
+      "sha256": "d154561f7f256e41b32c90941f7ce18ffa79d5284d23eecea9be88cc1c48f747"
+    },
+    {
+      "bytes": 2219,
+      "name": "exec_owned.py",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/exec_owned.py.txt",
+      "sha256": "e7d9a755eed1fadfd04b43b3b96dbd0663cabdf07cc5aa7808ce006183859af2"
+    },
+    {
+      "bytes": 8075,
+      "name": "macproc.py",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/macproc.py.txt",
+      "sha256": "d4f6fe358bd9af786fc4c2cba61f1a47f3f4015c918aae85cf8e6aa1c6d3e6c7"
+    },
+    {
+      "bytes": 35975,
+      "name": "ownership.py",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/ownership.py.txt",
+      "sha256": "3ac4bab54db909beb236d0d9caa4ee83084ad9b566aa19d97c5b6d26c356b091"
+    },
+    {
+      "bytes": 10096,
+      "name": "port_diagnostic.py",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/port_diagnostic.py.txt",
+      "sha256": "9d35bf1adbde9209562d9b4cfa211b75574a0fb1922dc0297761880c2d6d3985"
+    },
+    {
+      "bytes": 11632,
+      "name": "prepare.py",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/prepare.py.txt",
+      "sha256": "16f2c5d9dce3f3bce8a871bd53eea06ebf1818080de5f9bdaae3997b86304e9a"
+    },
+    {
+      "bytes": 699,
+      "name": "probe.py",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/probe.py.txt",
+      "sha256": "d65d17246bbd9057576e32454014b00afed6988dfead7899251435302a651efd"
+    },
+    {
+      "bytes": 18760,
+      "name": "watchdog.py",
+      "path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/watchdog.py.txt",
+      "sha256": "5efe2cd41f9339463187dfc3d5b11ec8d14f1a159a58787e9b3e01fe60db158d"
+    }
+  ]
+}

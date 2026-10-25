@@ -1,0 +1,34 @@
+{
+  "execution": false,
+  "findings": [
+    {
+      "changed_function": "collect",
+      "disposition": "IMPLEMENTED_AWAITING_R4",
+      "id": "PREPARE-P2-1",
+      "predicate": "status['launch_started_ns'] + 120 * NS + 500000000 < work_end",
+      "remaining_limit": "Scheduling or OS can stall after the final sample; no runtime evidence"
+    },
+    {
+      "absent_names": [
+        "__pycache__",
+        "common.pyc",
+        "common.pyo"
+      ],
+      "changed_functions": [
+        "import_common",
+        "main"
+      ],
+      "delete_repair_retry": false,
+      "disposition": "IMPLEMENTED_AWAITING_R4",
+      "id": "PREPARE-P2-2",
+      "remaining_limit": "Fixed trusted runtime and standard-library cache scope; actual absence/exclusivity unobserved",
+      "root_exclusive_through_exit_required": true
+    }
+  ],
+  "human_approval_required": false,
+  "independent_R4_review": null,
+  "runtime_acceptance": false,
+  "source_clear": false,
+  "source_sha256": "fce82ca2775607fd86e0ef8dbb8c44fd3cd5a213815ae77cb9501327160ee57d",
+  "status": "IMPLEMENTED_UNREVIEWED_R4_REQUIRED"
+}

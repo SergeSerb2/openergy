@@ -1,0 +1,59 @@
+{
+  "AST_data_only": true,
+  "PR_or_push": false,
+  "actual_artifact_records_changed": false,
+  "added_functions": 0,
+  "build": false,
+  "changed_functions": [
+    "collect",
+    "import_common",
+    "main"
+  ],
+  "child_agents": false,
+  "edits": [
+    {
+      "change": "insert fixed absence loop after17 repeated source pins before normal source-loader entry",
+      "finding": "PREPARE-P2-2",
+      "function": "import_common"
+    },
+    {
+      "change": "retain original helper gate before sample; gate prepare on the fresh retained launch sample before Popen",
+      "finding": "PREPARE-P2-1",
+      "function": "collect"
+    },
+    {
+      "change": "extend original initial absence loop with three cache names before inventory/growth/children",
+      "finding": "PREPARE-P2-2",
+      "function": "main"
+    },
+    {
+      "change": "recheck three cache names after final pins/ledger absence before irreversible private attempt",
+      "finding": "PREPARE-P2-2",
+      "function": "main"
+    }
+  ],
+  "entry_global_changes": 0,
+  "execution": false,
+  "hooks_enabled_for_commit": false,
+  "human_approval_requirement": false,
+  "independent_R4_review": null,
+  "network": false,
+  "owner_folder": "docs/verification/m1-prepare-parent-admission-cache-repair-2026-10-25-t3-53a3c637",
+  "private_files_read": 0,
+  "remote_or_native": false,
+  "removed_functions": 0,
+  "runtime_acceptance": false,
+  "signing_enabled_for_commit": false,
+  "source_clear": false,
+  "source_origin": "frozen06634b58 full source read as raw text; four exact string edits only",
+  "source_sha256": "fce82ca2775607fd86e0ef8dbb8c44fd3cd5a213815ae77cb9501327160ee57d",
+  "starting_parent": "078ced42f232509118e038cd3abbc80225e80929",
+  "static_checks": 69,
+  "supplied_code_compiled_to_executable": false,
+  "supplied_code_evaluated": false,
+  "supplied_code_executed": false,
+  "supplied_code_imported": false,
+  "tests_or_mocks": false,
+  "unchanged_declarations": 41,
+  "upstream_identities_changed": false
+}
