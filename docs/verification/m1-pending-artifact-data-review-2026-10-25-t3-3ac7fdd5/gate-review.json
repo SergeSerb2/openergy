@@ -1,0 +1,99 @@
+[
+  {
+    "candidate_evidence_fields": [
+      "/evidence/build_result",
+      "/evidence/build_worker",
+      "/evidence/build_bundle_exit",
+      "/evidence/build_operation",
+      "/evidence/bundle_files"
+    ],
+    "decision": "SUPPORTED_STATIC_SOURCE",
+    "independent_reason": "Exact staged five raw build records match the template and schema pins. All bind_sources success predicates hold. Build acceptance remains UNVERIFIED; the stripping warning and absent complete outer build OS exit are retained.",
+    "json_pointer": "/qualification_gates/successful_current_build"
+  },
+  {
+    "candidate_evidence_fields": [
+      "qualification-artifact-observations.json#/observed/source_file_qualification",
+      "qualification-artifact-observations.json#/raw_source_inventory"
+    ],
+    "decision": "SUPPORTED_STATIC_SOURCE",
+    "independent_reason": "Completed source-file facts, raw stdout, actual helper OS exit and guard match the parent boundary. Pinned complete source-binding bytes preserve all 702 records and 4773386 bytes, including archive/framework/Python fields. No live source rerun.",
+    "json_pointer": "/qualification_gates/source_702_raw_git_bytes_modes"
+  },
+  {
+    "candidate_evidence_fields": [
+      "qualification-artifact-observations.json#/bundle_inventory",
+      "qualification-artifact-observations.json#/generated_plist_hash_bound_by_fresh_complete_bundle_match",
+      "qualification-transfer.json#/fresh_file_qualification"
+    ],
+    "decision": "SUPPORTED_STATIC_SOURCE",
+    "independent_reason": "Complete original 167-entry inventory: 95 regular files /10050709 bytes, 9 symlinks and 63 directories. Completed file pass binds exact source tree and root0700; app/daemon/object hashes and modes match. Future private copy remains separate.",
+    "json_pointer": "/qualification_gates/runtime_artifacts_bytes_modes_symlinks"
+  },
+  {
+    "candidate_evidence_fields": [
+      "qualification-artifact-observations.json#/objects",
+      "qualification-artifact-observations.json#/parsed_static_plist_and_load_assessment"
+    ],
+    "decision": "SUPPORTED_STATIC_SOURCE",
+    "independent_reason": "All seven actual lipo/status/raw records agree. App and daemon are thin arm64; the five upstream binaries retain x86_64 and arm64. All recorded load-command and dependency names independently agree as text. The app has one non-system Sparkle load and a valid embedded candidate at its third rpath; actual dyld choice is not observed.",
+    "json_pointer": "/qualification_gates/arm64_app_daemon_and_embedded_slice"
+  },
+  {
+    "candidate_evidence_fields": [
+      "qualification-artifact-observations.json#/objects",
+      "qualification-artifact-observations.json#/deep_verify"
+    ],
+    "decision": "SUPPORTED_STATIC_SOURCE",
+    "independent_reason": "Seven strict all-architecture verifies plus outer deep verify have actual exit0, EOF and complete raw data. Display/requirements/entitlements remain arm64 detail. Identifiers/CDHashes and complete payload distinctions agree with saved corrected basis; direct daemon and Autoupdate supplement records match. No copy or trust result is claimed.",
+    "json_pointer": "/qualification_gates/signatures_entitlements_unchanged"
+  },
+  {
+    "candidate_evidence_fields": [
+      "qualification-artifact-observations.json#/ordinary_metadata",
+      "qualification-artifact-observations.json#/ordinary_metadata_raw"
+    ],
+    "decision": "SUPPORTED_STATIC_SOURCE",
+    "independent_reason": "All 22 generated plist values agree with the exact hash-bound source template plus configure-plist version0.1.0/build1/no-configuration transformation. Generated Info.plist is 1577 bytes /77436f395caa73d6933add595ed6901439016c01fba359622e6492758be835fd and bound by completed full-tree equality. No activating fixture metadata or private launcher occurs in retained metadata/inventory.",
+    "json_pointer": "/qualification_gates/ordinary_info_no_fixture_no_launcher"
+  },
+  {
+    "candidate_evidence_fields": [
+      "qualification-artifact-observations.json#/pinned_sparkle",
+      "qualification-artifact-observations.json#/ordinary_metadata/plist"
+    ],
+    "decision": "SUPPORTED_STATIC_SOURCE",
+    "independent_reason": "Full source binding, exact Package.resolved and release constants agree on Sparkle2.10.0, revision eef1a539a373c1f1a320624b1130fc5de7b2e100 and archive17e28312b8e18ab7cdbbe09a6fb28cc55a5479ec6c371dbc07cdecd2a14fd959. AutomaticChecks=false, AutomaticallyUpdate=false, AllowsAutomaticUpdates=true, no feed/key. Closed updater remains closed.",
+    "json_pointer": "/qualification_gates/sparkle_pinned_updates_disabled"
+  },
+  {
+    "candidate_evidence_fields": [
+      "qualification-python.json#/file_facts",
+      "qualification-python.json#/entry_template_raw",
+      "qualification-python.json#/version_raw",
+      "qualification-python.json#/architecture_raw"
+    ],
+    "decision": "SUPPORTED_STATIC_SOURCE",
+    "independent_reason": "Completed prefix2006/46504040-byte facts and current SYSTEM entry-template raw data bind full digest, executable hash and0700 modes. Entry-template finished38361164295000 before private version started38361165466000. Actual version is3.13.9 and architecture arm64, all auxiliary exits0. Every future private entry still needs new SYSTEM authentication; future prepare/controller argv remains -B.",
+    "json_pointer": "/qualification_gates/qualified_private_python"
+  },
+  {
+    "candidate_evidence_fields": [
+      "qualification-abi.json#/headers",
+      "qualification-abi.json#/exact_header_text_evidence",
+      "qualification-abi.json#/recorded_requested_to_canonical_mapping",
+      "qualification-abi.json#/static_assessment"
+    ],
+    "decision": "SUPPORTED_STATIC_SOURCE",
+    "independent_reason": "All ten embedded raw header texts retain exact lengths/hashes and match exact requested MacOSX27.0.sdk to canonical MacOSX.sdk mapping and completed source-file recipe. Source/interface field derivation gives22 declarations,136 bytes/alignment8, nice116/start120/128; flavor3/CTL_KERN1/KERN_PROCARGS2=49. No compiled sizeof, new kernel read or observed argv payload is claimed.",
+    "json_pointer": "/qualification_gates/m1_process_abi"
+  },
+  {
+    "candidate_evidence_fields": [
+      "qualification-transfer.json"
+    ],
+    "decision": "SUPPORTED_STATIC_SOURCE",
+    "independent_reason": "Explicit original same-machine build bundle, no transfer, no archive extraction; full source tree and native source evidence are bound. No destination tree exists yet. ACL/xattr/timestamp preservation and trust acceptance are not claimed. Future private-copy qualification remains mandatory.",
+    "json_pointer": "/qualification_gates/archive_transfer_integrity"
+  }
+]
