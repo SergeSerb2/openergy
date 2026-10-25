@@ -1,0 +1,67 @@
+{
+  "SHA256SUMS_covers": "Every other file, including this manifest",
+  "execution": false,
+  "files": {
+    "REVIEW.md": {
+      "Git_blob": "4cb63fcf762a18e380371ab421a9914777d4b989",
+      "bytes": 20339,
+      "mode": "100644",
+      "sha256": "897d2315c99487444d0fcdfefdde231d0bf3c0164598a1fbdf0165fedd401d1b"
+    },
+    "bindings.json": {
+      "Git_blob": "0b23842ec59bfcde3a277dfa72b4b973ed0cd365",
+      "bytes": 66992,
+      "mode": "100644",
+      "sha256": "9d7a51ccc962eba40ac6355cb227fc842094c792ae3eb64965e7570efb48c3c6"
+    },
+    "findings.json": {
+      "Git_blob": "4edb14e05cf6a19d1989949399dc9d466b702d34",
+      "bytes": 3655,
+      "mode": "100644",
+      "sha256": "3dce6c57d7a17d457df855b22c211cc3848cbf554b87e882e1ae3401221bdc3b"
+    },
+    "function-bindings.json": {
+      "Git_blob": "0da23bb7bfb934d4b130ddda2e6bcf3dc0f20484",
+      "bytes": 38287,
+      "mode": "100644",
+      "sha256": "847dfd5172e28ba8d9218286ffffe8a30b38bfe29b232552b94ef729476f5b3b"
+    },
+    "preservation-closing.json": {
+      "Git_blob": "29e064bb9fae21d26d91f62d02a9ea5467f617f4",
+      "bytes": 1080,
+      "mode": "100644",
+      "sha256": "69e1782003470fb186039a8c1f3faeae74120a21a4a6fd5132a85fddee76ce17"
+    },
+    "preservation-opening.json": {
+      "Git_blob": "809e3da30c9b5c4c2a72e302f046daa6d1cae058",
+      "bytes": 907,
+      "mode": "100644",
+      "sha256": "0855199245a7ef92d327f13c59ff237659765f489f0a934d9f7ccd9eafcef570"
+    },
+    "scope.json": {
+      "Git_blob": "30e462db50f91c8bea066dd398f50b9f44c25c24",
+      "bytes": 1401,
+      "mode": "100644",
+      "sha256": "74ff30a87379eed7b368b82e038ce6f6ac67b12f072fc24e5d5c47af6db376c9"
+    },
+    "static-observations.json": {
+      "Git_blob": "d647055710e5aa695f0915437620b2fcc9cc3b1e",
+      "bytes": 15404,
+      "mode": "100644",
+      "sha256": "ec93945c8a89d3b8d8b1ea38407ccda4855fec9824eb195a85cffb733d919d73"
+    },
+    "static-reader.py": {
+      "Git_blob": "8ad112aac00134b1dd9c7d692396f26c8a0cb3cf",
+      "bytes": 28569,
+      "mode": "100644",
+      "sha256": "4085739b41f7b5684618ff5e83be6add1676285dd1675d79f09bcf29dcb26135"
+    }
+  },
+  "schema": "openergy.independent-prepare-admission-cache-review-manifest.v1",
+  "self_excluded": [
+    "manifest.json",
+    "SHA256SUMS"
+  ],
+  "source_sha256": "fce82ca2775607fd86e0ef8dbb8c44fd3cd5a213815ae77cb9501327160ee57d",
+  "verdict": "HOLD_SOURCE"
+}

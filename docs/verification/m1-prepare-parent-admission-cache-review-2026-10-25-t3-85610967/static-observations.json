@@ -1,0 +1,376 @@
+{
+  "author_records": {
+    "closure_checks": 15,
+    "public_inputs": 95,
+    "setup_error": "Initial raw/working equality assertion rejected existing .cmd CRLF conversion; corrected before author writes",
+    "source_checks": 69,
+    "treatment": "read as author DATA; no supplied checker run; counts are not module-selection or runtime proof",
+    "whitespace_error": "Two trailing transcript separator lines removed after author staged whitespace check; source unchanged"
+  },
+  "config": {
+    "actual_future_render": null,
+    "author_normalized_digest": "retained in exact author packet; unspecified marker/serialization not inferred",
+    "execution": false,
+    "normalization_string": "<REVIEWER_CONFIG_TEXT_DATA>",
+    "null_template_cannot_pass_first_hex_gate": true,
+    "parent_duties": [
+      "actual_all53_source_statuses_and50_comparisons_and212_raws_inspected",
+      "actual_source_boundary_and_all_seven_originals_inspected",
+      "actual_source_collector0_ssh0_eof_D4_inspected",
+      "artifact_data_independent_clear_bound",
+      "publisher_independent_clear_bound",
+      "publisher_full_receipt_all8_actual_bytes_modes_inspected",
+      "publisher_actual_collector0_ssh0_eof_D4_inspected",
+      "full_artifact_schema_and_receipt_contract_satisfied",
+      "all_supporting_raw_refs_and_build_ABI_plist_no_transfer_inspected",
+      "all_final_source_and_review_payloads_bound",
+      "exact29token_route_and_SYSTEM_stdin_entry_authenticated",
+      "exact_single_CONFIG_token_restore_prefix_suffix_AST_hash_verified",
+      "actual_rendered_payload_le_1MiB_bound",
+      "exclusive_root_no_other_mutators_through_exit",
+      "console_single_writer_live_reader_bound",
+      "original_local135_work130_and_remote_enclosure_owned",
+      "actual_prepare_exit_EOF_and_full_receipt_retention_owned"
+    ],
+    "reviewer_normalized_AST_data_sha256": "46ad9556327fa0a90d45a5c77209cf5a335091f184bd4f7c03eb281ed0837ad6",
+    "schema_closed_template_traversal": true,
+    "serialization": "ast.dump annotate_fields=True include_attributes=False UTF-8 without LF",
+    "unresolved_slots": "all null"
+  },
+  "execution": false,
+  "frozen17": {
+    "artifact-receipt.template.json": {
+      "bytes": 3496,
+      "public_paths": [
+        "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/artifact-receipt.template.json"
+      ],
+      "sha256": "6250a8698664c757af9f9bdb5ef191f3604d82725282ae860741eae2529939d3"
+    },
+    "build-source-bindings.json": {
+      "bytes": 151287,
+      "public_paths": [
+        "docs/verification/m1-sampler-source-repair-r3-2026-10-24/source-bindings.json"
+      ],
+      "sha256": "20e011251151cec81f69c4b80b0072d9fd0a98c1eaaf0e6c74d83ff752546617"
+    },
+    "common.py": {
+      "bytes": 12781,
+      "public_paths": [
+        "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/common.py.txt"
+      ],
+      "sha256": "20a9c16030b2de53b99870f25bada68137bfc6fbc5b67cc29f8e878312d4129c"
+    },
+    "controller.py": {
+      "bytes": 36307,
+      "public_paths": [
+        "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/source/controller.py.txt"
+      ],
+      "sha256": "08f1bbea8aeb5852b4aaddd0f3f693c7717c69e5e898462baa90b49cba41e3a4"
+    },
+    "coverage.py": {
+      "bytes": 11382,
+      "public_paths": [
+        "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/coverage.py.txt"
+      ],
+      "sha256": "d154561f7f256e41b32c90941f7ce18ffa79d5284d23eecea9be88cc1c48f747"
+    },
+    "exec_owned.py": {
+      "bytes": 2219,
+      "public_paths": [
+        "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/exec_owned.py.txt"
+      ],
+      "sha256": "e7d9a755eed1fadfd04b43b3b96dbd0663cabdf07cc5aa7808ce006183859af2"
+    },
+    "file-qualification.recipe.py.txt": {
+      "bytes": 7381,
+      "public_paths": [
+        "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/file-qualification.recipe.py.txt"
+      ],
+      "sha256": "bf2ddd03f00bedbf799b4eee518a2b7b25d1eb9a6df06a2f55c419252f6fa428"
+    },
+    "limits.json": {
+      "bytes": 876,
+      "public_paths": [
+        "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/limits.json"
+      ],
+      "sha256": "cadd06e19607f5dbe0ad070072673c8e518d961b1554958d243a0d028243d733"
+    },
+    "macproc.py": {
+      "bytes": 8075,
+      "public_paths": [
+        "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/macproc.py.txt"
+      ],
+      "sha256": "d4f6fe358bd9af786fc4c2cba61f1a47f3f4015c918aae85cf8e6aa1c6d3e6c7"
+    },
+    "metadata.recipe.json": {
+      "bytes": 7915,
+      "public_paths": [
+        "docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/metadata.recipe.json"
+      ],
+      "sha256": "f97b12054aceb745cadcd3159d25f4693b3570a44d216ffdd96d9c1ddf05701e"
+    },
+    "ownership.py": {
+      "bytes": 35975,
+      "public_paths": [
+        "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/ownership.py.txt"
+      ],
+      "sha256": "3ac4bab54db909beb236d0d9caa4ee83084ad9b566aa19d97c5b6d26c356b091"
+    },
+    "port_diagnostic.py": {
+      "bytes": 10096,
+      "public_paths": [
+        "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/port_diagnostic.py.txt"
+      ],
+      "sha256": "9d35bf1adbde9209562d9b4cfa211b75574a0fb1922dc0297761880c2d6d3985"
+    },
+    "prepare.py": {
+      "bytes": 11632,
+      "public_paths": [
+        "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/prepare.py.txt"
+      ],
+      "sha256": "16f2c5d9dce3f3bce8a871bd53eea06ebf1818080de5f9bdaae3997b86304e9a"
+    },
+    "probe.py": {
+      "bytes": 699,
+      "public_paths": [
+        "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/probe.py.txt"
+      ],
+      "sha256": "d65d17246bbd9057576e32454014b00afed6988dfead7899251435302a651efd"
+    },
+    "qualification.recipe.json": {
+      "bytes": 7671,
+      "public_paths": [
+        "docs/verification/m1-sdk-canonical-path-repair-2026-10-25/qualification.recipe.json"
+      ],
+      "sha256": "d90586546d6b3127dca26147b9d090544d29d7a8b229479966dae68ef25d3b11"
+    },
+    "source-checks.json": {
+      "bytes": 2932,
+      "public_paths": [
+        "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/source-checks.json"
+      ],
+      "sha256": "2bde5cf1f9396df5c7d8518caaadcdd69eafc5ff2f39117158efaf87e8d080f5"
+    },
+    "watchdog.py": {
+      "bytes": 18760,
+      "public_paths": [
+        "docs/verification/ordinary-combined-recorder-diagnostic-2026-10-25/source/watchdog.py.txt"
+      ],
+      "sha256": "5efe2cd41f9339463187dfc3d5b11ec8d14f1a159a58787e9b3e01fe60db158d"
+    }
+  },
+  "method": "Reviewer public raw bytes/strict JSON/parse-only AST DATA; no eval, supplied import, executable code object or target call",
+  "modules": [
+    {
+      "bytes": 12781,
+      "destination": "common.py",
+      "public_path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/common.py.txt",
+      "sha256": "20a9c16030b2de53b99870f25bada68137bfc6fbc5b67cc29f8e878312d4129c"
+    },
+    {
+      "bytes": 36307,
+      "destination": "controller.py",
+      "public_path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/source/controller.py.txt",
+      "sha256": "08f1bbea8aeb5852b4aaddd0f3f693c7717c69e5e898462baa90b49cba41e3a4"
+    },
+    {
+      "bytes": 11382,
+      "destination": "coverage.py",
+      "public_path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/coverage.py.txt",
+      "sha256": "d154561f7f256e41b32c90941f7ce18ffa79d5284d23eecea9be88cc1c48f747"
+    },
+    {
+      "bytes": 2219,
+      "destination": "exec_owned.py",
+      "public_path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/exec_owned.py.txt",
+      "sha256": "e7d9a755eed1fadfd04b43b3b96dbd0663cabdf07cc5aa7808ce006183859af2"
+    },
+    {
+      "bytes": 8075,
+      "destination": "macproc.py",
+      "public_path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/macproc.py.txt",
+      "sha256": "d4f6fe358bd9af786fc4c2cba61f1a47f3f4015c918aae85cf8e6aa1c6d3e6c7"
+    },
+    {
+      "bytes": 35975,
+      "destination": "ownership.py",
+      "public_path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/ownership.py.txt",
+      "sha256": "3ac4bab54db909beb236d0d9caa4ee83084ad9b566aa19d97c5b6d26c356b091"
+    },
+    {
+      "bytes": 10096,
+      "destination": "port_diagnostic.py",
+      "public_path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/port_diagnostic.py.txt",
+      "sha256": "9d35bf1adbde9209562d9b4cfa211b75574a0fb1922dc0297761880c2d6d3985"
+    },
+    {
+      "bytes": 11632,
+      "destination": "prepare.py",
+      "public_path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/prepare.py.txt",
+      "sha256": "16f2c5d9dce3f3bce8a871bd53eea06ebf1818080de5f9bdaae3997b86304e9a"
+    },
+    {
+      "bytes": 699,
+      "destination": "probe.py",
+      "public_path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/probe.py.txt",
+      "sha256": "d65d17246bbd9057576e32454014b00afed6988dfead7899251435302a651efd"
+    },
+    {
+      "bytes": 18760,
+      "destination": "watchdog.py",
+      "public_path": "docs/verification/ordinary-combined-context-tuple-repair-2026-10-25/../ordinary-combined-recorder-diagnostic-2026-10-25/source/watchdog.py.txt",
+      "sha256": "5efe2cd41f9339463187dfc3d5b11ec8d14f1a159a58787e9b3e01fe60db158d"
+    }
+  ],
+  "observer": {
+    "dependency_status": "bounded SOURCE CLEAR only; no capsule clearance or actual observation",
+    "review": {
+      "bytes": 15389,
+      "sha256": "bb8ed39275540eabc116cca932a40d42246c939c7245f8c04eaba03c87c97ed1"
+    },
+    "review_path": "docs/verification/m1-prepare-local-exit-observer-review-2026-10-25-t3-c2d0d953/REVIEW.md",
+    "source": {
+      "bytes": 7673,
+      "sha256": "845d90024ad47f6b76d6d6e646b679d00bb97b8ca0478d0fa86523de3dbec60f"
+    },
+    "source_path": "docs/verification/m1-prepare-local-exit-observer-2026-10-25-t3-52422617/observer.py.txt"
+  },
+  "public_DATA": {
+    "D4_before_original_135s": true,
+    "actual_collector_exit": 0,
+    "actual_ssh_exit": 0,
+    "both_EOF": true,
+    "current_flat_ROOT_inventory_or_current_shadow_absence_proof": false,
+    "eight": {
+      "abi-source-assessment.md": {
+        "bytes": 13696,
+        "sha256": "034a5384e06e468a41d752496fd3bc8fe57a6af1715ca0fbbd92657aa913652e"
+      },
+      "artifact-receipt.json": {
+        "bytes": 33785,
+        "sha256": "67daf1812cd935ae420eb10a14755ed65aeb096cdd213ee0c2ea4886731abd53"
+      },
+      "operation.bound.json": {
+        "bytes": 157,
+        "sha256": "79365864068890381b0cd142d43571aeab62904c3fadb200b8f8767823d28a9d"
+      },
+      "qualification-abi.json": {
+        "bytes": 8684,
+        "sha256": "56a155e929e88e8ae1e1cf333520d2313534a3d78dbe45ce0005dec626f4d131"
+      },
+      "qualification-artifact-observations.json": {
+        "bytes": 72362,
+        "sha256": "0aa904b5502ac04e072fe2029c5ee74b84cf16adb5aa0fd1e1afed4fe958b952"
+      },
+      "qualification-python.json": {
+        "bytes": 4574,
+        "sha256": "fa6fd0066bf6bd32564907541cd0b68c5298e31a688af5eff47cf87994008a35"
+      },
+      "qualification-transfer.json": {
+        "bytes": 1451,
+        "sha256": "465f91e45fe676770929eb17018ae8e7b7fe7163a1bf2493fb29b4c410b508fa"
+      },
+      "source-transport-parent-exit.json": {
+        "bytes": 1651,
+        "sha256": "c4d25a531a2692551dd94b7b502ec7f9cbf61e1d675218549aa3235ff816d597"
+      }
+    },
+    "guard": {
+      "bytes": 1398,
+      "sha256": "5af64345f7e2df22ee516aa6a23dbff26489b0e1c1f6bf208814f5093bc0a956"
+    },
+    "initial_entries_before_receipt": 259,
+    "initial_tally": {
+      "bytes": 1095162,
+      "entries": 250
+    },
+    "private_raw_reopens": 0,
+    "receipt": {
+      "bytes": 9374,
+      "sha256": "cd3ae8c0e5e985f8352fc204cc247007d8133e262c5381ce710c087eb056818f"
+    },
+    "record_commit": "4fbf8f0f32c08fcdfc1f02b3cb2a37b9b79a56ed",
+    "status": "ARTIFACT_DATA_BOUND",
+    "total_bytes": 136360
+  },
+  "public_library": {
+    "actual_M1_runtime_qualification": false,
+    "bytes": 64569,
+    "path": "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/importlib/_bootstrap_external.py",
+    "ranges": [
+      {
+        "bytes": 3873,
+        "end_line": 435,
+        "sha256": "a03f13e8a10b8eca3c5d4de93337f1773698600f2047b6d30faecfe0ac6f75df",
+        "start_line": 348
+      },
+      {
+        "bytes": 1991,
+        "end_line": 748,
+        "sha256": "7ecfefaedf1981219c9416ea0f03848de61f216371f79af96c653f78ac6bdbb7",
+        "start_line": 696
+      },
+      {
+        "bytes": 621,
+        "end_line": 850,
+        "sha256": "6b0a3ae4aa74516078bfe9a8a6a01f9e96aa93babdf6918c60ed86db58c03881",
+        "start_line": 837
+      },
+      {
+        "bytes": 3701,
+        "end_line": 998,
+        "sha256": "20cb0e362820825b331b3de40bf33b43c166a4600a837d8674cd0251f66d303f",
+        "start_line": 916
+      },
+      {
+        "bytes": 2321,
+        "end_line": 1428,
+        "sha256": "e4d4ab626655ba939e174a895408a7894073661e08303b828ece2deece7b60c2",
+        "start_line": 1374
+      },
+      {
+        "bytes": 2526,
+        "end_line": 1554,
+        "sha256": "4c2622dc1c46070265389514f19c3b8623c23fd9a23cc6abcba51a91addb64a0",
+        "start_line": 1500
+      },
+      {
+        "bytes": 349,
+        "end_line": 1642,
+        "sha256": "63b575b156f7440164a2de0bc106353b1b04212369e989bdda2e466c40906b71",
+        "start_line": 1634
+      }
+    ],
+    "sha256": "ae0b9f573429b63e40942e8d3365c73a7ed37302fff6dfc7eebbd2bb62b6bd85",
+    "text_only": true
+  },
+  "reviewer_reader_errors": [
+    {
+      "cause": "Wrong reviewer JSON member name; actual member is 'segments'",
+      "effect": "only opening preservation record written; no supplied/target action",
+      "error": "KeyError: 'unchanged_segments'"
+    },
+    {
+      "cause": "Reviewer over-assumed whole pin-bindings.json byte equality; actual diff is repair/provenance metadata",
+      "correction": "Verify all original binding subtrees separately; exact diff inspected; no source pin changed",
+      "effect": "no supplied/target action",
+      "error": "AssertionError"
+    }
+  ],
+  "schema": "openergy.independent-prepare-admission-cache-observations.v1",
+  "scopes": {
+    "COPY_review": false,
+    "build_signing_PR_push": 0,
+    "children": 0,
+    "network_remote_native": 0,
+    "private_state_reads": 0,
+    "runtime_acceptance": false,
+    "supplied_runs_imports_or_executable_compiles": 0,
+    "tests_mocks": 0
+  },
+  "source_raw_manifest": {
+    "bytes": 213334,
+    "entries": 212,
+    "sha256": "2baea069155b633485b1e8aed8fe72f3bf746f67de83a84f07a2daf0648fe4ee"
+  }
+}
