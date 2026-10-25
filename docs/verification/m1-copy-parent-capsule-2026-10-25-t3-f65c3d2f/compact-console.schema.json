@@ -1,0 +1,45 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "v": {
+      "const": "copy-parent.v1"
+    },
+    "state": {
+      "enum": [
+        "COPY_DATA_COMPLETE_EXTERNAL_PENDING",
+        "FAILED_UNVERIFIED"
+      ]
+    },
+    "r": {
+      "anyOf": [
+        {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 262144
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          ],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "v",
+    "state",
+    "r"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

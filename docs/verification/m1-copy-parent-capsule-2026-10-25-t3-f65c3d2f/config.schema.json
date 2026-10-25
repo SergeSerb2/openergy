@@ -1,0 +1,380 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:openergy:copy-parent-config:1",
+  "description": "The exact null template is inert. The bound branch requires external actual acts and runtime semantic checks; schema matches and duty booleans do not authenticate those acts. execution remains false.",
+  "oneOf": [
+    {
+      "const": {
+        "evidence_root": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+        "execution": false,
+        "parent": {
+          "actual_CONFIG_single_token_restore_prefix_suffix_AST_canonical_fullrender_hash_le1MiB_verified": null,
+          "actual_SOURCE53_statuses_50_comparisons_212_raws_and_outer_D4_inspected": null,
+          "actual_artifact_receipt_all8_raws_full_publisher_receipt_guard_and_D4_inspected": null,
+          "actual_new_prepared_full_bytes_and_tuple_from_one_prepare_owned": null,
+          "actual_outer_SSH0_collector0_EOF_D4_before_original135_receipt_reads_owned": null,
+          "actual_prepare0_reap_completeEOF_noerrors_and_D4_before_reads_inspected": null,
+          "all_final_independent_reviews_and_public_bindings_inspected": null,
+          "console_single_writer_live_reader_and_topology_owned": null,
+          "exact29token_route_final_SYSTEM_stdin_token_authenticated": null,
+          "exclusive_root_no_other_mutators_until_all_actual_reaps": null,
+          "full_COPY_result_52_raw_status_comparators_helper_caller_and_receipt_retention_owned": null,
+          "full_operator_artifact_schema_build_ABI_plist_support128_assessment_owned": null,
+          "local_collector_durable_once_guard_before_SSH_owned": null,
+          "original_local_metadata_copy135_work130_settle2_final3_and_remote_enclosure_owned": null
+        },
+        "prepared": {
+          "bundle": null,
+          "external_parent_proof": null,
+          "file": null,
+          "prepare_guard": null,
+          "prepare_receipt": null,
+          "prepare_status": null,
+          "prepare_stderr": null,
+          "prepare_stdout": null,
+          "private_root": null
+        },
+        "private_COPY_startup": "UNMEASURED",
+        "reviews": {
+          "capsule": {
+            "candidate_commit": null,
+            "review_commit": null,
+            "review_sha256": null,
+            "source_sha256": null,
+            "verdict": null
+          },
+          "prepare": {
+            "candidate_commit": null,
+            "review_commit": null,
+            "review_sha256": null,
+            "source_sha256": null,
+            "verdict": null
+          }
+        },
+        "schema": "openergy.copy-parent-config.v1",
+        "template_sha256": null
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "openergy.copy-parent-config.v1"
+        },
+        "execution": {
+          "const": false
+        },
+        "evidence_root": {
+          "const": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503"
+        },
+        "template_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "reviews": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "capsule": {
+              "$ref": "#/$defs/review"
+            },
+            "prepare": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/review"
+                },
+                {
+                  "properties": {
+                    "source_sha256": {
+                      "not": {
+                        "const": "3c7c6e639ee64ca2e8ec49b27c993921ee4e7abff90928fd2f498135f2b20135"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "required": [
+            "capsule",
+            "prepare"
+          ]
+        },
+        "parent": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "actual_prepare0_reap_completeEOF_noerrors_and_D4_before_reads_inspected": {
+              "const": true
+            },
+            "actual_new_prepared_full_bytes_and_tuple_from_one_prepare_owned": {
+              "const": true
+            },
+            "actual_SOURCE53_statuses_50_comparisons_212_raws_and_outer_D4_inspected": {
+              "const": true
+            },
+            "actual_artifact_receipt_all8_raws_full_publisher_receipt_guard_and_D4_inspected": {
+              "const": true
+            },
+            "full_operator_artifact_schema_build_ABI_plist_support128_assessment_owned": {
+              "const": true
+            },
+            "all_final_independent_reviews_and_public_bindings_inspected": {
+              "const": true
+            },
+            "exact29token_route_final_SYSTEM_stdin_token_authenticated": {
+              "const": true
+            },
+            "actual_CONFIG_single_token_restore_prefix_suffix_AST_canonical_fullrender_hash_le1MiB_verified": {
+              "const": true
+            },
+            "local_collector_durable_once_guard_before_SSH_owned": {
+              "const": true
+            },
+            "original_local_metadata_copy135_work130_settle2_final3_and_remote_enclosure_owned": {
+              "const": true
+            },
+            "exclusive_root_no_other_mutators_until_all_actual_reaps": {
+              "const": true
+            },
+            "console_single_writer_live_reader_and_topology_owned": {
+              "const": true
+            },
+            "full_COPY_result_52_raw_status_comparators_helper_caller_and_receipt_retention_owned": {
+              "const": true
+            },
+            "actual_outer_SSH0_collector0_EOF_D4_before_original135_receipt_reads_owned": {
+              "const": true
+            }
+          },
+          "required": [
+            "actual_prepare0_reap_completeEOF_noerrors_and_D4_before_reads_inspected",
+            "actual_new_prepared_full_bytes_and_tuple_from_one_prepare_owned",
+            "actual_SOURCE53_statuses_50_comparisons_212_raws_and_outer_D4_inspected",
+            "actual_artifact_receipt_all8_raws_full_publisher_receipt_guard_and_D4_inspected",
+            "full_operator_artifact_schema_build_ABI_plist_support128_assessment_owned",
+            "all_final_independent_reviews_and_public_bindings_inspected",
+            "exact29token_route_final_SYSTEM_stdin_token_authenticated",
+            "actual_CONFIG_single_token_restore_prefix_suffix_AST_canonical_fullrender_hash_le1MiB_verified",
+            "local_collector_durable_once_guard_before_SSH_owned",
+            "original_local_metadata_copy135_work130_settle2_final3_and_remote_enclosure_owned",
+            "exclusive_root_no_other_mutators_until_all_actual_reaps",
+            "console_single_writer_live_reader_and_topology_owned",
+            "full_COPY_result_52_raw_status_comparators_helper_caller_and_receipt_retention_owned",
+            "actual_outer_SSH0_collector0_EOF_D4_before_original135_receipt_reads_owned"
+          ]
+        },
+        "prepared": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "file": {
+              "$ref": "#/$defs/raw"
+            },
+            "prepare_receipt": {
+              "$ref": "#/$defs/raw"
+            },
+            "prepare_guard": {
+              "$ref": "#/$defs/raw"
+            },
+            "prepare_stdout": {
+              "$ref": "#/$defs/raw"
+            },
+            "prepare_stderr": {
+              "$ref": "#/$defs/raw"
+            },
+            "prepare_status": {
+              "$ref": "#/$defs/raw"
+            },
+            "private_root": {
+              "type": "string",
+              "pattern": "^/private/tmp/oe-m1-ordinary-fresh-[^/]+$",
+              "maxLength": 255
+            },
+            "bundle": {
+              "type": "string",
+              "pattern": "^/private/tmp/oe-m1-ordinary-fresh-[^/]+/Openergy.app$",
+              "maxLength": 268
+            },
+            "external_parent_proof": {
+              "$ref": "#/$defs/prepare_external_proof"
+            }
+          },
+          "required": [
+            "file",
+            "prepare_receipt",
+            "prepare_guard",
+            "prepare_stdout",
+            "prepare_stderr",
+            "prepare_status",
+            "private_root",
+            "bundle",
+            "external_parent_proof"
+          ]
+        },
+        "private_COPY_startup": {
+          "const": "UNMEASURED"
+        }
+      },
+      "required": [
+        "schema",
+        "execution",
+        "evidence_root",
+        "template_sha256",
+        "reviews",
+        "parent",
+        "prepared",
+        "private_COPY_startup"
+      ]
+    }
+  ],
+  "$defs": {
+    "raw": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8388608
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "bytes",
+        "sha256"
+      ]
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "candidate_commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "review_commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "review_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "verdict": {
+          "const": "CLEAR_SOURCE_ONLY"
+        }
+      },
+      "required": [
+        "candidate_commit",
+        "source_sha256",
+        "review_commit",
+        "review_sha256",
+        "verdict"
+      ]
+    },
+    "prepare_external_proof": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "openergy.prepare-external-parent-proof.v1"
+        },
+        "parent_record": {
+          "$ref": "#/$defs/raw"
+        },
+        "transport_receipt": {
+          "$ref": "#/$defs/raw"
+        },
+        "local_once_guard": {
+          "$ref": "#/$defs/raw"
+        },
+        "payload_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "actual_collector_exit": {
+          "const": 0
+        },
+        "actual_ssh_exit": {
+          "const": 0
+        },
+        "both_eof": {
+          "const": true
+        },
+        "no_errors_loss_timeout_kill": {
+          "const": true
+        },
+        "actual_wait_or_poll_returned": {
+          "const": true
+        },
+        "started_ns": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 99999999999999999999
+        },
+        "work_end_ns": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 99999999999999999999
+        },
+        "absolute_end_ns": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 99999999999999999999
+        },
+        "exit_observed_ns": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 99999999999999999999
+        },
+        "ssh_exit_observed_ns": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 99999999999999999999
+        },
+        "receipt_reads_before_exit_observation": {
+          "const": 0
+        },
+        "phase": {
+          "const": "prepare"
+        },
+        "same_local_host_boot": {
+          "const": true
+        },
+        "clock_domain": {
+          "const": "local-parent-only"
+        }
+      },
+      "required": [
+        "schema",
+        "parent_record",
+        "transport_receipt",
+        "local_once_guard",
+        "payload_sha256",
+        "actual_collector_exit",
+        "actual_ssh_exit",
+        "both_eof",
+        "no_errors_loss_timeout_kill",
+        "actual_wait_or_poll_returned",
+        "started_ns",
+        "work_end_ns",
+        "absolute_end_ns",
+        "exit_observed_ns",
+        "ssh_exit_observed_ns",
+        "receipt_reads_before_exit_observation",
+        "phase",
+        "same_local_host_boot",
+        "clock_domain"
+      ]
+    }
+  }
+}
