@@ -60,3 +60,12 @@ mistake: an integer212 count was first treated as Boolean. That rejection
 preceded every staging write and target attempt. All successful checks inspect
 the actual count and all212 file hashes. No supplied Python was executed to
 verify a render. No unit test, mock, build or TypeScript change occurred.
+
+The second read-only check initially compared a3.15 AST method hash with the
+reviewer's3.9 observation. Both installed runtimes were then inspected as data.
+CPython3.15 adds the FunctionDef type_params field. The configured runtime's
+complete method hash, exact source restoration and root association must agree;
+the3.9 observation remains historical. No staged source changed. The first
+binding commit preceded the manifest because that check stopped early. The
+separate reader-error record retains this sequence. Validation and later
+mutations now stop on a nonzero result.
