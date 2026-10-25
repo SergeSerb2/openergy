@@ -1,0 +1,416 @@
+{
+  "schema": "openergy.windows-fresh-r3-independent-source-review.v1",
+  "execution": false,
+  "review_start_head": "1f5b72e491bfbe2872dbe9f233e599ff786d6f64",
+  "review_branch": "t3/821487e9",
+  "candidate_commit": "23b41681e4019f086f1f760c9817553d79acff04",
+  "candidate_tree": "a22352120b5cba5971c4402d416db4e031295026",
+  "candidate_parent": "9a540b5ef78bedf9cf10e43eb66cdb359adcdbbc",
+  "baseline_commit": "9911db75fa07d0383b81366d319475ded016c066",
+  "prior_review_commit": "2c8e67ea85dadd2046cf98c9a8cafc75fcc3afbe",
+  "source_verdict": "CLEAR",
+  "concrete_p1_p2_findings": [],
+  "runtime": "UNVERIFIED",
+  "native_syntax": "UNVERIFIED",
+  "approval_receipt_created": false,
+  "package": {
+    "files": 24,
+    "all_equal_supplied_folder": true,
+    "manifest_members": 22,
+    "manifest_complete": true,
+    "manifest_members_match": true,
+    "sha256sums_match": true,
+    "file_bindings": [
+      {
+        "path": ".gitattributes",
+        "bytes": 58,
+        "sha256": "bbe39106782a22b081fa58265f81d15c8bf8e893d5e2088f3499b7d386b34b36"
+      },
+      {
+        "path": "COMMAND-BOUNDS.md",
+        "bytes": 6373,
+        "sha256": "d56700635c8dba2515f8029b769694844368c7b7d5c97789d6b094190bda77ec"
+      },
+      {
+        "path": "NEXT-RUN.md",
+        "bytes": 16621,
+        "sha256": "a6755b8e5d2a821a93c978e9cb756031c3089b4209969c0d27a29c9848109a89"
+      },
+      {
+        "path": "README.md",
+        "bytes": 3961,
+        "sha256": "cdd107a39b42e4453f16805b90fbbd35c045dd72df9b60b30e3ccdc982f46d26"
+      },
+      {
+        "path": "RESPONSES.md",
+        "bytes": 4799,
+        "sha256": "79e887b45ee8311fbf170a775bf9ccd19887d23f94c0cfbc23cbdef2d6d98216"
+      },
+      {
+        "path": "SHA256SUMS",
+        "bytes": 80,
+        "sha256": "8cf1a9a6f58d241062d028f2d74cf229687f4b57fbca40c5aa6015aeef96ec4a"
+      },
+      {
+        "path": "STATIC-CHECKS.md",
+        "bytes": 3001,
+        "sha256": "54bd5b6831d86f9b5621bc265ae4d777c7f4fa19a8679d3e5a4f9e459cdb1fc7"
+      },
+      {
+        "path": "diff-from-candidate-r1.patch",
+        "bytes": 11720,
+        "sha256": "a9db31295da536ddd0d1711171b8d547c87f2651e8016ff90b08ae982c547020"
+      },
+      {
+        "path": "input-bindings.json",
+        "bytes": 24870,
+        "sha256": "686a3a2b3cecf0bf6b6643fe6aa7f72ad6b84c0f9d04f40870f8129e393a8335"
+      },
+      {
+        "path": "input-contracts.json",
+        "bytes": 4574,
+        "sha256": "8750b776bdfa62cdd4ee0e7f56f9fb875bae2e30f3cbf32a1a446295de1c090e"
+      },
+      {
+        "path": "manifest.json",
+        "bytes": 3643,
+        "sha256": "f6feb69c95277f49afe9afa83a690ac6f11b2548f7941f93628b7afed2b693a0"
+      },
+      {
+        "path": "plan.json",
+        "bytes": 8784,
+        "sha256": "bf4d799c03cdd0ce9d6f443609b8f1c9adb2b109cfa5e718b9007badaea951f0"
+      },
+      {
+        "path": "result.schema.json",
+        "bytes": 4124,
+        "sha256": "7da07f0130a113da566f136c25a9e84303dba7295785209432f69aff7445666c"
+      },
+      {
+        "path": "source-bindings.json",
+        "bytes": 2890,
+        "sha256": "b0413d3ad3802be6564a0e047d012356f3a0a9a4aed9ea5665c12b40b10368ba"
+      },
+      {
+        "path": "source/build.ps1.txt",
+        "bytes": 18259,
+        "sha256": "3cdd135dd806e511fc68278e85cca7d34bc83f2efcafea86106d2e3950af6c33"
+      },
+      {
+        "path": "source/common.ps1.txt",
+        "bytes": 7121,
+        "sha256": "7c343002754725567dbfba5c66d0a3c81f2a3f05490d77b5933e895ef89218c9"
+      },
+      {
+        "path": "source/controller.py.txt",
+        "bytes": 38670,
+        "sha256": "1406633c2e098432f118b3a5904ba10183f216f8f99b81b0032137621a6dbd60"
+      },
+      {
+        "path": "source/observer.cs.txt",
+        "bytes": 12054,
+        "sha256": "8559ecbca18de3b896407df1048c278633c927134858cc99124ae883e816f5e2"
+      },
+      {
+        "path": "source/postflight.ps1.txt",
+        "bytes": 4857,
+        "sha256": "615104a7027f547dcbee574c1bdf8a504fb06492a579d365db6ebaccf116532b"
+      },
+      {
+        "path": "source/qualify.ps1.txt",
+        "bytes": 4218,
+        "sha256": "d0da8fecdec0ae2c31ea99e938306b59d7a2e45085685ca0d4cb0b2029d6c953"
+      },
+      {
+        "path": "source/runtime.ps1.txt",
+        "bytes": 21465,
+        "sha256": "2540d09a2840cc0b0c84ce0c2a0a7b874d75de35da3b12af46832b0c3bdd370d"
+      },
+      {
+        "path": "source/safety.ps1.txt",
+        "bytes": 5332,
+        "sha256": "26741118315aa23853d58b9701821496ac21aa9bc868632141e9658b05ecb610"
+      },
+      {
+        "path": "static-checks.json",
+        "bytes": 5500,
+        "sha256": "cd71bce7bc67c368ad9c596f5290d9c6ee423e393df381545f7fd97304415cb5"
+      },
+      {
+        "path": "static-reader-errors.json",
+        "bytes": 1117,
+        "sha256": "7583b5942c532bb6c80f07b0f81344020aeed2adf4c4227083e9cfc6b1b4a1e0"
+      }
+    ]
+  },
+  "json_files_decoded": [
+    "input-bindings.json",
+    "input-contracts.json",
+    "manifest.json",
+    "plan.json",
+    "result.schema.json",
+    "source-bindings.json",
+    "static-checks.json",
+    "static-reader-errors.json"
+  ],
+  "immutable_input_bindings": {
+    "count": 73,
+    "all_match": true
+  },
+  "source_bindings": [
+    {
+      "path": "source/build.ps1.txt",
+      "bytes": 18259,
+      "sha256": "3cdd135dd806e511fc68278e85cca7d34bc83f2efcafea86106d2e3950af6c33",
+      "exact_baseline": true
+    },
+    {
+      "path": "source/common.ps1.txt",
+      "bytes": 7121,
+      "sha256": "7c343002754725567dbfba5c66d0a3c81f2a3f05490d77b5933e895ef89218c9",
+      "exact_baseline": true
+    },
+    {
+      "path": "source/controller.py.txt",
+      "bytes": 38670,
+      "sha256": "1406633c2e098432f118b3a5904ba10183f216f8f99b81b0032137621a6dbd60",
+      "exact_baseline": false
+    },
+    {
+      "path": "source/observer.cs.txt",
+      "bytes": 12054,
+      "sha256": "8559ecbca18de3b896407df1048c278633c927134858cc99124ae883e816f5e2",
+      "exact_baseline": true
+    },
+    {
+      "path": "source/postflight.ps1.txt",
+      "bytes": 4857,
+      "sha256": "615104a7027f547dcbee574c1bdf8a504fb06492a579d365db6ebaccf116532b",
+      "exact_baseline": true
+    },
+    {
+      "path": "source/qualify.ps1.txt",
+      "bytes": 4218,
+      "sha256": "d0da8fecdec0ae2c31ea99e938306b59d7a2e45085685ca0d4cb0b2029d6c953",
+      "exact_baseline": true
+    },
+    {
+      "path": "source/runtime.ps1.txt",
+      "bytes": 21465,
+      "sha256": "2540d09a2840cc0b0c84ce0c2a0a7b874d75de35da3b12af46832b0c3bdd370d",
+      "exact_baseline": true
+    },
+    {
+      "path": "source/safety.ps1.txt",
+      "bytes": 5332,
+      "sha256": "26741118315aa23853d58b9701821496ac21aa9bc868632141e9658b05ecb610",
+      "exact_baseline": true
+    }
+  ],
+  "controller": {
+    "ast_data_only": true,
+    "unchanged_existing_methods": [
+      "__init__",
+      "bind_source",
+      "setup",
+      "collect",
+      "audit_retained_root",
+      "export",
+      "run"
+    ],
+    "changed_existing_methods": [
+      "prepare_inputs",
+      "command",
+      "remote",
+      "recover_transport_owner",
+      "stage"
+    ],
+    "new_methods": [
+      "transport_owner_recovery_script"
+    ],
+    "recovery_native_literal_exact_baseline": true,
+    "setup_cleanup_audit_native_literals_exact_baseline": {
+      "setup": true,
+      "collect": true,
+      "audit_retained_root": true
+    },
+    "remote_call_sites": [
+      {
+        "line": 242,
+        "label_source": "name"
+      },
+      {
+        "line": 354,
+        "label_source": "'setup'"
+      },
+      {
+        "line": 447,
+        "label_source": "'cleanup'"
+      },
+      {
+        "line": 471,
+        "label_source": "'retained-root-audit'"
+      }
+    ],
+    "command_call_sites": [
+      {
+        "line": 199,
+        "label_source": "label"
+      },
+      {
+        "line": 231,
+        "label_source": "'transport-owned-recovery'"
+      },
+      {
+        "line": 382,
+        "label_source": "'upload'"
+      },
+      {
+        "line": 388,
+        "label_source": "'download'"
+      }
+    ]
+  },
+  "diff": {
+    "regenerates_exactly": true,
+    "bytes": 11720,
+    "sha256": "a9db31295da536ddd0d1711171b8d547c87f2651e8016ff90b08ae982c547020"
+  },
+  "command_width_arithmetic": {
+    "wrapper_literal_ascii_chars": 1588,
+    "source_utf8_bytes_cap": 65536,
+    "compressed_literal_ascii_chars_cap": 10400,
+    "complete_wrapper_units_max": 12025,
+    "encoded_argument_ascii_chars_max": 32068,
+    "submitted_native_prefix_units": 66,
+    "submitted_native_line_units_including_nul_max": 32135,
+    "submitted_native_margin": 632,
+    "recovery_literal_ascii_chars": 2126,
+    "complete_recovery_utf8_bytes_max": 34183,
+    "compression_or_decompression_exercised": false,
+    "candidate_AST_or_functions_evaluated": false
+  },
+  "preserved_plan_sections": {
+    "historical": true,
+    "baseline": true,
+    "budgets_seconds": true,
+    "budget_semantics": true,
+    "data_bounds": true,
+    "one_shot": true,
+    "pinned": true,
+    "failure": true,
+    "removal": true,
+    "proof_limits": true
+  },
+  "result_schema_exact_baseline": true,
+  "retained_reader_error": {
+    "raw_error": "ValueError: R2 runtime tail",
+    "predicate": "all runtime bytes from $binary= through EOF equal R2",
+    "actual_result": false,
+    "cause": "reader incorrectly expected entire R2 runtime result metadata to remain exact across the earlier retained-binary to fresh-build conversion",
+    "inspected_diff": "exactly three changed R2/R3 lines: build receipt filename, build receipt admission, result build/artifact receipt metadata",
+    "failed_predicate_retained": true,
+    "additional_predicate_reason": "R2 readiness and stop flow begin after the result metadata; verify the complete source from Save runtime-start through EOF independently, while retaining the broader mismatch",
+    "candidate_or_predicate_source_changed": false,
+    "task_code_or_tests_executed": false
+  },
+  "prior_repairs": {
+    "r2_commit": "7d92633149204f834b4da55e352e7d05fd2abe4a",
+    "r9_commit": "762240ac041a835707b7ae3867b4e15b1e06b8c0",
+    "observer_exact_r2": true,
+    "observer_exact_r9": true,
+    "runtime_from_runtime_start_through_EOF_exact_r2": true,
+    "runtime_from_binary_through_EOF_exact_r9": true,
+    "build_only_source_binding_expression_changed_from_r9": true
+  },
+  "historical_file_preservation": {
+    "recorded_files": 179,
+    "all_match_hashes_git_blobs_candidate_and_review_checkout": true,
+    "native_preservation": "UNVERIFIED",
+    "historical_runtime": "FAILED_UNVERIFIED",
+    "original_stop_requests": 0,
+    "qualified_bindings": 0,
+    "required_bindings": 9,
+    "closed_retrieval_count": 160
+  },
+  "current_reference_source": {
+    "commit": "ed7d96bf53da1a539fa2acde3b7133613221fd4b",
+    "files": 558,
+    "git_bytes_line_endings_hashes_match": true,
+    "new_execution_archive_or_manifest_created": false
+  },
+  "private_launcher_observation": {
+    "data_only_review": true,
+    "query_or_route_executed_by_reviewer": false,
+    "receipt_sha256": "5fd1f40dc8caf85226a9ce047862d5c72a34ef0d6ab68aa02f96775ffc2a2c00",
+    "private_file_bindings_hashes_only": [
+      {
+        "file": "metadata.json",
+        "bytes": 6748,
+        "sha256": "18ca5007de306e208bf5d7e7e04ccfd9ba9880b07e57b0b4f33f88df9f073f88"
+      },
+      {
+        "file": "command.ps1.txt",
+        "bytes": 880,
+        "sha256": "0aff593606551149284d2bb726b50ed0f5ef78155909e242a521a9789d3d5093"
+      },
+      {
+        "file": "argv.json",
+        "bytes": 2809,
+        "sha256": "986c3626f482bb6fee04d71f6306a1d3ffd51812c457b192d1959add13d0b498"
+      },
+      {
+        "file": "receipt.json",
+        "bytes": 559,
+        "sha256": "5fd1f40dc8caf85226a9ce047862d5c72a34ef0d6ab68aa02f96775ffc2a2c00"
+      },
+      {
+        "file": "stdout",
+        "bytes": 6317,
+        "sha256": "5a910552b499febccb83f88f36fd1bfe2a98072a7f384e49d7942c2cb90d21b4"
+      },
+      {
+        "file": "stderr",
+        "bytes": 840,
+        "sha256": "d3cd92134ab88e47dd4cb8d97db0deac2f0722885211a5b8beca7c0f54cfd401"
+      }
+    ],
+    "receipt_returncode": 0,
+    "receipt_retry_count": 0,
+    "receipt_task_product_or_controller_executed": false,
+    "command_stdout_stderr_hashes_match": true,
+    "metadata_equals_decoded_stdout": true,
+    "native_fixed_argv_matches": true,
+    "current_query_literal_shell_template_matches": true,
+    "native_child_ends_with_exact_encoded_argument": true,
+    "native_child_quoted_system_executable": true,
+    "observed_native_child_prefix_utf16_units": 111,
+    "observed_shell_prefix_utf16_units": 45,
+    "observed_shell_suffix_utf16_units": 1,
+    "same_shape_native_child_max_including_nul": 32180,
+    "same_shape_shell_max_including_nul": 32181,
+    "default_shell_matches_observed_pwsh": true,
+    "command_option_absent": true,
+    "escape_arguments_absent": true,
+    "stderr_stream_labels": [
+      "progress"
+    ],
+    "future_private_binding_created": false,
+    "proof_limit": "one supplied metadata query; exact existing selector, unchanged route/config, implementation and each effective layer limit still need private binding; no arbitrary future nested route inferred",
+    "endpoint_username_full_private_path_encoded_data_exported": false
+  },
+  "activity_boundary": {
+    "allowed": "file/Git bytes, JSON/XML/AST data, source spans, diff regeneration, hashes and literal arithmetic; public primary documentation reads",
+    "task_code_import_evaluation_compilation_execution": false,
+    "compression_decoder_exercise": false,
+    "PowerShell_CSharp_execution_or_parser": false,
+    "tests": false,
+    "OS_process_job_port_queries_by_reviewer": false,
+    "task_network_transport_build_product_native_flow": false,
+    "primary_documentation_web_reads": true,
+    "private_selector_keys_credentials_partial_recovery_access": false,
+    "candidate_integration_or_changes": false,
+    "delegation": false,
+    "approval_receipt_created": false
+  }
+}
