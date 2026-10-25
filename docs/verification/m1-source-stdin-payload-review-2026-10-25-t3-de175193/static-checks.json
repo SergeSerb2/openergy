@@ -1,0 +1,109 @@
+{
+  "checks": {
+    "add_file_patch_650_lines_reconstructs_full_source": true,
+    "all_function_range_hashes_match": true,
+    "call_sites": {
+      "os._exit": [
+        647,
+        13,
+        15
+      ],
+      "os.fsync": [
+        393,
+        397
+      ],
+      "os.write": [
+        562,
+        392
+      ],
+      "proc.kill": [
+        506
+      ],
+      "proc.poll": [
+        472,
+        502
+      ],
+      "proc.wait": [
+        508
+      ],
+      "subprocess.Popen": [
+        460
+      ]
+    },
+    "candidate_and_import_folder_tree_equal": true,
+    "candidate_declared_public_bindings_verified": 44,
+    "candidate_import_worktree_all_11_files_equal": true,
+    "candidate_json_files": 6,
+    "candidate_modes_all_100644": true,
+    "candidate_sha256sum_entries": 10,
+    "canonical_config_sha256": "77926c546299639ea96304b8d2602680cbaa295a4760a7f1e7b29e862c76b50e",
+    "canonical_sdk_only_changed_fields": [
+      "/sdk_headers/0/path",
+      "/sdk_headers/1/path",
+      "/sdk_headers/2/path",
+      "/sdk_headers/3/path",
+      "/sdk_headers/4/path",
+      "/sdk_headers/5/path",
+      "/sdk_headers/6/path",
+      "/sdk_headers/7/path",
+      "/sdk_headers/8/path",
+      "/sdk_headers/9/path"
+    ],
+    "closed_config_keys_and_constant_fields_agree": true,
+    "completed_manifest_sha256": "1761bb0f0a999d26ea27d2ebf656d554a083f0f017429d3ee76e8edd8ad26a26",
+    "config_exact_embedded_template": true,
+    "config_null_fields_preserved": 22,
+    "console_delivery_or_all_failure_shape_size_proven": false,
+    "console_guard_actual_encoded_bytes": 16384,
+    "exact_startup_keys": 10,
+    "fixed_initial_inputs": 20,
+    "full_source_lines": 647,
+    "functions": 28,
+    "modules_bound_to_materialization_source_checks": 10,
+    "ordered_recipe_vectors_independently_expanded": 50,
+    "parent_v2_clock_manifest_shape_agrees": true,
+    "patch_equals_independent_unified_diff": true,
+    "post_poll_kill_deadline_check_present": false,
+    "public_pins": 17,
+    "python39_source_ast": true,
+    "r5_added_function": "normalize_startup",
+    "r5_changed_functions_vs_r3": [
+      "Writer._put",
+      "emit_summary",
+      "main"
+    ],
+    "retained_summary_excess_bytes": 78044,
+    "retained_summary_minimum_bytes": 209116,
+    "source_write_initial_cap": 12517376,
+    "startup_values_match_next_operation": true,
+    "strict_json_no_duplicate_or_nonfinite": true
+  },
+  "execution": false,
+  "execution_counts": {
+    "activation": 0,
+    "build": 0,
+    "caller": 0,
+    "candidate": 0,
+    "child_agents": 0,
+    "helper": 0,
+    "mocks": 0,
+    "native": 0,
+    "private_python": 0,
+    "private_read": 0,
+    "private_write": 0,
+    "remote": 0,
+    "sign": 0,
+    "supplied_checker": 0,
+    "tests": 0
+  },
+  "method": "reviewer-authored static Git/AST/JSON/hash/patch data readers only",
+  "proof_limits": [
+    "No runtime, actual clock or deadline, real exit/EOF, signal, OS stall, durability or complete pipe delivery proof.",
+    "No independent inspection of private originals; parent causal act and exclusive temporal ownership stay external.",
+    "R5/R6 caller HOLD and transport HOLD remain; future R7 bytes and compact interface are unreviewed.",
+    "No artifact, native, COPY, prepare, controller, product, release or approval grant."
+  ],
+  "schema": "openergy.independent-source-payload-static-report.v1",
+  "supplied_checker_executed_or_imported": false,
+  "supplied_source_or_ast_executed_or_imported_or_compiled": false
+}
