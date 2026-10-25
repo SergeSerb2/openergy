@@ -32,7 +32,10 @@ html,body{margin:0;background:transparent;color:var(--foreground);font-family:va
 #oe-evidence .end{text-align:right}
 #oe-evidence .pair{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 #oe-evidence .cost{display:grid;gap:4px;padding-top:8px}
+#oe-evidence .size-scale{display:flex;justify-content:space-between;margin:6px 114px 0 102px;color:var(--muted-foreground)}
+#oe-evidence .reference-size{background:var(--foreground);opacity:.35}
 @media(max-width:480px){#oe-evidence .status th:first-child{width:22%}#oe-evidence .status th:nth-child(2){width:30%}#oe-evidence th,#oe-evidence td{padding:8px 5px}#oe-evidence .barrow{grid-template-columns:72px minmax(0,1fr) 94px;gap:6px}}
+@media(max-width:480px){#oe-evidence .size-scale{margin-left:78px;margin-right:100px}}
 </style>
 </head>
 <body>
@@ -43,7 +46,7 @@ html,body{margin:0;background:transparent;color:var(--foreground);font-family:va
 <thead><tr><th scope="col">Workstream</th><th scope="col">Evidence now</th><th scope="col">Next gate</th></tr></thead>
 <tbody>
 <tr><th scope="row">M1 build</th><td>Bundle retained<span class="scope">Release acceptance unverified</span></td><td>Fresh artifact and private-copy qualification</td></tr>
-<tr><th scope="row">M1 verification</th><td>Full file qualification passed<span class="scope">702 source files · 167 bundle entries · 2,006 Python entries</span></td><td>Metadata caller review → signature checks → private-copy qualification → one app flow</td></tr>
+<tr><th scope="row">M1 verification</th><td>File qualification and saved-data inspection passed<span class="scope">702 source files · 167 bundle entries · 2,006 Python entries</span></td><td>Caller / transport / launcher review → metadata → private-copy qualification → one app flow</td></tr>
 <tr><th scope="row">Windows</th><td>Reader CLI evidence retained<span class="scope">SSH 255: no route to host</span></td><td>Connection → installed metadata → launch-limit proof → native flow</td></tr>
 <tr><th scope="row">Updater</th><td>Old operation closed<span class="scope">Approval expired</span></td><td>Fresh scoped operation and approval</td></tr>
 </tbody>
@@ -62,6 +65,15 @@ html,body{margin:0;background:transparent;color:var(--foreground);font-family:va
 </tbody>
 </table>
 <p class="minor">Needed: accepted current flow, then the same Mac, OS, real peer, settings, process set and measurement window.</p>
+</section>
+<section class="section" aria-labelledby="oe-size-title">
+<h2 id="oe-size-title">Recorded app-file content</h2>
+<div role="img" aria-label="Retained regular-file inventories: Openergy 0.1.0 build 1 is 9.59 mebibytes; Synergy 3.7.0-beta is 523.40 mebibytes. Shared linear scale from zero to 550 mebibytes. Different package contents; these values do not measure runtime efficiency.">
+<div class="barrow"><span>Openergy</span><div class="track"><div class="bar" style="width:1.742746%"></div></div><span class="numbers end">9.59 MiB</span></div>
+<div class="barrow" style="margin-top:10px"><span>Synergy</span><div class="track"><div class="bar reference-size" style="width:95.163067%"></div></div><span class="numbers end">523.40 MiB</span></div>
+<div class="size-scale numbers" aria-hidden="true"><span>0</span><span>275</span><span>550 MiB</span></div>
+</div>
+<p class="minor">Retained inventories: Openergy 24 Oct; Synergy 21 Oct. Regular-file bytes only. Different package contents; feature parity and release acceptance remain unverified.</p>
 </section>
 <details>
 <summary>Historical Openergy measurements and costs</summary>

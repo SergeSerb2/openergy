@@ -1,25 +1,45 @@
 {
   "comparison_sha256": "124bcddb206e4281839fccf6c6c72b0c937fa34fa8ece1408625af1241275999",
   "metadata_audit": "de8779a28539cd09ad434d931aded18f01c92abd",
-  "metadata_caller_candidate": "621e0e3a9037e15b391e05b964dfcdb25da01515",
-  "metadata_caller_review": "pending; parent clock-domain objection retained",
+  "metadata_caller_candidate": "2667d808fb7807ba6b2591c4141938f1cefabd90",
+  "metadata_caller_review": "HOLD df028a8d03ed3aa657aa18c8c170ba4521df3769: one-write success summary",
   "new_performance_measurements": 0,
+  "parent_saved_data_inspection": "492f067",
+  "payload_claim_scope": "descriptive regular-file inventories of different packages only; no runtime or reduction percentage",
   "performance_audit": "880eb9f93f3a75dc214961ed49749b38bf199ff6",
   "previews": [
     {
       "appearance": "dark",
       "console_messages": 0,
-      "height": 811,
+      "height": 1018,
       "width": 728
     },
     {
       "appearance": "light",
       "console_messages": 0,
-      "height": 1225,
+      "height": 1453,
       "width": 360
     }
   ],
   "qualified_current_legacy_runtime_pairs": 0,
+  "recorded_app_file_content": [
+    {
+      "MiB": 9.585103034973145,
+      "bytes": 10050709,
+      "id": "m1_payload",
+      "json_pointer": "/bundle_regular_bytes",
+      "source_path": "docs/verification/m1-completed-build-2026-10-24/result.json",
+      "source_sha256": "f529242400d5e06f0aaddfec893c4d9ef4a2fc634fd0cc50cc237cbcc757a631"
+    },
+    {
+      "MiB": 523.3968706130981,
+      "bytes": 548821397,
+      "id": "legacy_payload",
+      "json_pointer": "/synergy/app_regular_files_bytes",
+      "source_path": "docs/verification/release-integration-2026-10-22/performance-comparison.json",
+      "source_sha256": "1cc61c3e08040e2fb67a9aef8df07966792fc271d677b98cba924d67fa32251b"
+    }
+  ],
   "schema": "openergy.status-visual-bindings.v1",
   "sdk_proposal": "cfe7721",
   "sdk_review_status": "Bounded data CLEAR c490566f5306d79f2537e9bbce3c75db79a279d3",
@@ -34,10 +54,14 @@
     "prefix_root_mode": "0o700",
     "private_python_entries": 0,
     "product_invocations": 0,
-    "saved_data_audit": "pending",
+    "saved_data_audit": "f7f9b10fc99cc2196d0fd88a5b93a35a39a9adc5",
     "sdk_headers": 10,
     "source_files": 702,
     "status": "SOURCE_FILES_QUALIFIED_RUNTIME_UNVERIFIED"
   },
-  "visual_sha256": "5bc9937da66b40dd44b284038b0b31ec4afb53d91dec251674720a772ef1d817"
+  "source_payload_candidate": "fa72a0d865f12ae94b91f84400a31f51026c5b16",
+  "source_payload_review": "pending",
+  "transport_candidate": "88db0b54cf4d07092ea464392fe9b16ac7da2940",
+  "transport_review": "HOLD fc7a7bb02842f79936bfa989717e0a3facf71d8b: parent fsync and post-poll deadline",
+  "visual_sha256": "3b7df817887209187c0f93f095dece2ce4cebf229f880eda28dc3fdd13d8ebcf"
 }
