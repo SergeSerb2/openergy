@@ -1,0 +1,3926 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "openergy.prepared-copy-qualification.v1"
+    },
+    "execution": {
+      "const": false
+    },
+    "state": {
+      "enum": [
+        "COPY_DATA_COMPLETE_EXTERNAL_PENDING",
+        "FAILED_UNVERIFIED"
+      ]
+    },
+    "evidence_root": {
+      "const": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503"
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "template_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "config_canonical_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "reviews": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "capsule": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "candidate_commit": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{40}$"
+                },
+                "source_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "review_commit": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{40}$"
+                },
+                "review_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "verdict": {
+                  "const": "CLEAR_SOURCE_ONLY"
+                }
+              },
+              "required": [
+                "candidate_commit",
+                "source_sha256",
+                "review_commit",
+                "review_sha256",
+                "verdict"
+              ]
+            },
+            "prepare": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "candidate_commit": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{40}$"
+                },
+                "source_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "review_commit": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{40}$"
+                },
+                "review_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "verdict": {
+                  "const": "CLEAR_SOURCE_ONLY"
+                }
+              },
+              "required": [
+                "candidate_commit",
+                "source_sha256",
+                "review_commit",
+                "review_sha256",
+                "verdict"
+              ]
+            }
+          },
+          "required": [
+            "capsule",
+            "prepare"
+          ]
+        },
+        "fixed": {
+          "const": {
+            "metadata_caller": {
+              "source": {
+                "bytes": 46908,
+                "sha256": "01623cd4759f96cd0066a9456a2680bff476bc37b5b1acb61ec40388582a5e9f"
+              },
+              "review_commit": "1c0e4bcdc2dddcb64a3277db34d5ccd5e872fab2",
+              "review_sha256": "ad868577561145dcba9e74db7138e5118544e721ca3629f5c0c4f1808203c496",
+              "verdict": "CLEAR_SOURCE_ONLY"
+            },
+            "source_payload": {
+              "source": {
+                "bytes": 37775,
+                "sha256": "8d7844a20ce347b7be52c07a516b8d9136bdb5c067e450bea24eb3453441afa6"
+              },
+              "review_commit": "98a7ecab421ca64b67ac7f57db153be54b70f989",
+              "review_sha256": "3b04ce2543a07325bf5ae114002806064d0b01cd63206837976d04bc1e079dfd",
+              "verdict": "CLEAR_SOURCE_ONLY"
+            },
+            "file_helper": {
+              "source": {
+                "bytes": 7381,
+                "sha256": "bf2ddd03f00bedbf799b4eee518a2b7b25d1eb9a6df06a2f55c419252f6fa428"
+              },
+              "review_commit": "20187fe1b286851f1416437c40cc27108269b542",
+              "review_sha256": "c7de1f4dcec5f045282e9a5c656aac9d798ba71bf72e969132716bfef4736efb",
+              "verdict": "CLEAR_SOURCE_ONLY"
+            },
+            "transport": {
+              "source": {
+                "bytes": 28060,
+                "sha256": "695dc01461b31e04eb7b8c4a12848350f26a45731f05b0ddca971c05749e4df6"
+              },
+              "review_commit": "98b403d1902ac4d0651c230fb7ec28c4cc154035",
+              "review_sha256": "0c3b311ebff23145ecebd1b64ed38f0e6feaaff46c80c0b1d7a8ecc92d769a3c",
+              "verdict": "CLEAR_SOURCE_ONLY"
+            }
+          }
+        }
+      },
+      "required": [
+        "template_sha256",
+        "config_canonical_sha256",
+        "reviews",
+        "fixed"
+      ]
+    },
+    "clock": {
+      "const": {
+        "api": "time.clock_gettime_ns",
+        "clock": "CLOCK_MONOTONIC",
+        "clock_id": 6,
+        "platform": "darwin",
+        "schema": "openergy.shared-clock.v1",
+        "scope": "same-host-same-boot",
+        "unit": "nanoseconds"
+      }
+    },
+    "phase_started_ns": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 99999999999999999999
+    },
+    "phase_deadline_ns": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 99999999999999999999
+    },
+    "artifact_receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^/",
+          "maxLength": 4096
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8388608
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "path",
+        "bytes",
+        "sha256"
+      ]
+    },
+    "artifact_operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^/",
+          "maxLength": 4096
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8388608
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "path",
+        "bytes",
+        "sha256"
+      ]
+    },
+    "artifact_publication": {
+      "const": {
+        "artifact-binding-once.guard": {
+          "bytes": 1398,
+          "sha256": "5af64345f7e2df22ee516aa6a23dbff26489b0e1c1f6bf208814f5093bc0a956"
+        },
+        "artifact-binding-receipt.json": {
+          "bytes": 9374,
+          "sha256": "cd3ae8c0e5e985f8352fc204cc247007d8133e262c5381ce710c087eb056818f"
+        }
+      }
+    },
+    "artifact_eight_raws": {
+      "const": {
+        "abi-source-assessment.md": {
+          "bytes": 13696,
+          "sha256": "034a5384e06e468a41d752496fd3bc8fe57a6af1715ca0fbbd92657aa913652e"
+        },
+        "artifact-receipt.json": {
+          "bytes": 33785,
+          "sha256": "67daf1812cd935ae420eb10a14755ed65aeb096cdd213ee0c2ea4886731abd53"
+        },
+        "operation.bound.json": {
+          "bytes": 157,
+          "sha256": "79365864068890381b0cd142d43571aeab62904c3fadb200b8f8767823d28a9d"
+        },
+        "qualification-abi.json": {
+          "bytes": 8684,
+          "sha256": "56a155e929e88e8ae1e1cf333520d2313534a3d78dbe45ce0005dec626f4d131"
+        },
+        "qualification-artifact-observations.json": {
+          "bytes": 72362,
+          "sha256": "0aa904b5502ac04e072fe2029c5ee74b84cf16adb5aa0fd1e1afed4fe958b952"
+        },
+        "qualification-python.json": {
+          "bytes": 4574,
+          "sha256": "fa6fd0066bf6bd32564907541cd0b68c5298e31a688af5eff47cf87994008a35"
+        },
+        "qualification-transfer.json": {
+          "bytes": 1451,
+          "sha256": "465f91e45fe676770929eb17018ae8e7b7fe7163a1bf2493fb29b4c410b508fa"
+        },
+        "source-transport-parent-exit.json": {
+          "bytes": 1651,
+          "sha256": "c4d25a531a2692551dd94b7b502ec7f9cbf61e1d675218549aa3235ff816d597"
+        }
+      }
+    },
+    "source_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^/",
+          "maxLength": 4096
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8388608
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "path",
+        "bytes",
+        "sha256"
+      ]
+    },
+    "source_raw_manifest_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "source_boundary": {
+      "const": {
+        "metadata-source-parent.json": {
+          "bytes": 1954,
+          "sha256": "cfb37dab74115d012a0e9694099b8bf89c718a133c9a46f3e3dc838020b0ca17"
+        },
+        "source-caller-os.json": {
+          "bytes": 1378,
+          "sha256": "94cacad7b1943c7f313d83c92462f6e87b6b8ad449e0c48747ad665f5694fc97"
+        },
+        "source-caller.stderr.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "source-caller.stdout.bin": {
+          "bytes": 363,
+          "sha256": "2b5369f0423c2044b1d3df49512d3228e31a95dfde93b62ad683cab6b6227743"
+        },
+        "source-launch-once.json": {
+          "bytes": 1103,
+          "sha256": "5edfa4f7d962ae38c48f651011664efe96e840750749951990c7e557265d04f7"
+        },
+        "source-launch-receipt.json": {
+          "bytes": 2762,
+          "sha256": "cbf9bec46b4169ab1690fc4bd3ecf36cc7c09370eae2d16ec0cb40c01afe8f4a"
+        }
+      }
+    },
+    "prepared": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "raw": {
+              "$ref": "#/$defs/file"
+            },
+            "private_root": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "bundle": {
+              "type": "string",
+              "maxLength": 268
+            },
+            "prepare_receipt": {
+              "$ref": "#/$defs/file"
+            },
+            "canonical_owner0700_sameFS": {
+              "const": true
+            },
+            "external_actual_prepare_proof": {
+              "$ref": "#/$defs/prepare_external_proof"
+            }
+          },
+          "required": [
+            "raw",
+            "private_root",
+            "bundle",
+            "prepare_receipt",
+            "canonical_owner0700_sameFS",
+            "external_actual_prepare_proof"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "helper_collection": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "schema": {
+              "const": "openergy.copy-parent-child.v1"
+            },
+            "label": {
+              "enum": [
+                "entry",
+                "copy"
+              ]
+            },
+            "clock": {
+              "const": {
+                "api": "time.clock_gettime_ns",
+                "clock": "CLOCK_MONOTONIC",
+                "clock_id": 6,
+                "platform": "darwin",
+                "schema": "openergy.shared-clock.v1",
+                "scope": "same-host-same-boot",
+                "unit": "nanoseconds"
+              }
+            },
+            "argv": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 4096
+              },
+              "maxItems": 8
+            },
+            "cwd": {
+              "const": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503"
+            },
+            "environment": {
+              "const": {
+                "HOME": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+                "LANG": "C",
+                "MACOSX_DEPLOYMENT_TARGET": "15.0",
+                "OPENERGY_DISABLE_UPDATES": "1",
+                "OPENERGY_ORDINARY_PYTHON": "/Users/m1-dev/.local/state/openergy-verification/m1-prerequisite-data-20261024-d896c0b3636a/extracted-data/python/bin/python3.13",
+                "OPENERGY_ORDINARY_SOURCE_ROOT": "/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/repo",
+                "PATH": "/usr/bin:/bin",
+                "PYTHONDONTWRITEBYTECODE": "1",
+                "PYTHONNOUSERSITE": "1",
+                "TMPDIR": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/"
+              }
+            },
+            "eof": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "stdout": {
+                  "type": "boolean"
+                },
+                "stderr": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "stdout",
+                "stderr"
+              ]
+            },
+            "first_error": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "stage": {
+                      "type": "string",
+                      "maxLength": 128
+                    },
+                    "error": {
+                      "type": "string",
+                      "maxLength": 128
+                    }
+                  },
+                  "required": [
+                    "stage",
+                    "error"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "close_errors": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "stream": {
+                    "enum": [
+                      "stdin",
+                      "stdout",
+                      "stderr",
+                      "selector"
+                    ]
+                  },
+                  "error": {
+                    "type": "string",
+                    "maxLength": 128
+                  }
+                },
+                "required": [
+                  "stream",
+                  "error"
+                ]
+              },
+              "maxItems": 4
+            },
+            "retained_bytes": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "stdout": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                "stderr": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                }
+              },
+              "required": [
+                "stdout",
+                "stderr"
+              ]
+            },
+            "phase_started_ns": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "phase_deadline_ns": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "child_started_ns": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "child_deadline_ns": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "collection_end_ns": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "reap_end_ns": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "launch_started_ns": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "launch_returned_ns": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "pid_from_retained_handle": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "handle_retained": {
+              "type": "boolean"
+            },
+            "actual_exit": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "actual_exit_observed_ns": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "reaped": {
+              "type": "boolean"
+            },
+            "observed_bytes": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "dropped_known_bytes": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "unread_or_dropped_unknown": {
+              "type": "boolean"
+            },
+            "overflow": {
+              "type": "boolean"
+            },
+            "timed_out": {
+              "type": "boolean"
+            },
+            "deadline_loss": {
+              "type": "boolean"
+            },
+            "kill_attempted": {
+              "type": "boolean"
+            },
+            "kill_syscall_returned": {
+              "type": "boolean",
+              "description": "True only after os.kill on the retained unreaped direct child returns without exception; not proof of delivery, termination, or reap."
+            },
+            "kill_or_reap_error": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kill_eligibility_exit": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kill_eligibility_observed_ns": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "finished_ns": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "stdin_bytes_sent": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "stdin_complete": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "schema",
+            "label",
+            "clock",
+            "argv",
+            "cwd",
+            "environment",
+            "eof",
+            "first_error",
+            "close_errors",
+            "retained_bytes",
+            "phase_started_ns",
+            "phase_deadline_ns",
+            "child_started_ns",
+            "child_deadline_ns",
+            "collection_end_ns",
+            "reap_end_ns",
+            "launch_started_ns",
+            "launch_returned_ns",
+            "pid_from_retained_handle",
+            "handle_retained",
+            "actual_exit",
+            "actual_exit_observed_ns",
+            "reaped",
+            "observed_bytes",
+            "dropped_known_bytes",
+            "unread_or_dropped_unknown",
+            "overflow",
+            "timed_out",
+            "deadline_loss",
+            "kill_attempted",
+            "kill_syscall_returned",
+            "kill_or_reap_error",
+            "kill_eligibility_exit",
+            "kill_eligibility_observed_ns",
+            "finished_ns",
+            "stdin_bytes_sent",
+            "stdin_complete"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "entry_authentication": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "schema": {
+              "const": "openergy.metadata-entry-observation.v2"
+            },
+            "clock": {
+              "const": {
+                "api": "time.clock_gettime_ns",
+                "clock": "CLOCK_MONOTONIC",
+                "clock_id": 6,
+                "platform": "darwin",
+                "schema": "openergy.shared-clock.v1",
+                "scope": "same-host-same-boot",
+                "unit": "nanoseconds"
+              }
+            },
+            "actual_exit": {
+              "const": 0
+            },
+            "reaped": {
+              "const": true
+            },
+            "both_eof": {
+              "const": true
+            },
+            "overflow": {
+              "const": false
+            },
+            "deadline_loss": {
+              "const": false
+            },
+            "timed_out": {
+              "const": false
+            },
+            "unread_or_dropped_unknown": {
+              "const": false
+            },
+            "kill_attempted": {
+              "const": false
+            },
+            "error": {
+              "type": "null"
+            },
+            "kill_or_reap_error": {
+              "type": "null"
+            },
+            "stdout": {
+              "type": "string",
+              "maxLength": 1398104,
+              "contentEncoding": "base64"
+            },
+            "stderr": {
+              "const": ""
+            },
+            "system_python": {
+              "const": "/usr/bin/python3"
+            },
+            "helper_sha256": {
+              "const": "bf2ddd03f00bedbf799b4eee518a2b7b25d1eb9a6df06a2f55c419252f6fa428"
+            },
+            "started_ns": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 99999999999999999999
+            },
+            "finished_ns": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 99999999999999999999
+            },
+            "parent_inspected_ns": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 99999999999999999999
+            }
+          },
+          "required": [
+            "schema",
+            "clock",
+            "actual_exit",
+            "reaped",
+            "both_eof",
+            "overflow",
+            "deadline_loss",
+            "timed_out",
+            "unread_or_dropped_unknown",
+            "kill_attempted",
+            "error",
+            "kill_or_reap_error",
+            "stdout",
+            "stderr",
+            "system_python",
+            "helper_sha256",
+            "started_ns",
+            "finished_ns",
+            "parent_inspected_ns"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "caller_collection": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "schema": {
+              "const": "openergy.copy-parent-child.v1"
+            },
+            "label": {
+              "enum": [
+                "entry",
+                "copy"
+              ]
+            },
+            "clock": {
+              "const": {
+                "api": "time.clock_gettime_ns",
+                "clock": "CLOCK_MONOTONIC",
+                "clock_id": 6,
+                "platform": "darwin",
+                "schema": "openergy.shared-clock.v1",
+                "scope": "same-host-same-boot",
+                "unit": "nanoseconds"
+              }
+            },
+            "argv": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 4096
+              },
+              "maxItems": 8
+            },
+            "cwd": {
+              "const": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503"
+            },
+            "environment": {
+              "const": {
+                "HOME": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+                "LANG": "C",
+                "MACOSX_DEPLOYMENT_TARGET": "15.0",
+                "OPENERGY_DISABLE_UPDATES": "1",
+                "OPENERGY_ORDINARY_PYTHON": "/Users/m1-dev/.local/state/openergy-verification/m1-prerequisite-data-20261024-d896c0b3636a/extracted-data/python/bin/python3.13",
+                "OPENERGY_ORDINARY_SOURCE_ROOT": "/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/repo",
+                "PATH": "/usr/bin:/bin",
+                "PYTHONDONTWRITEBYTECODE": "1",
+                "PYTHONNOUSERSITE": "1",
+                "TMPDIR": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/"
+              }
+            },
+            "eof": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "stdout": {
+                  "type": "boolean"
+                },
+                "stderr": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "stdout",
+                "stderr"
+              ]
+            },
+            "first_error": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "stage": {
+                      "type": "string",
+                      "maxLength": 128
+                    },
+                    "error": {
+                      "type": "string",
+                      "maxLength": 128
+                    }
+                  },
+                  "required": [
+                    "stage",
+                    "error"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "close_errors": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "stream": {
+                    "enum": [
+                      "stdin",
+                      "stdout",
+                      "stderr",
+                      "selector"
+                    ]
+                  },
+                  "error": {
+                    "type": "string",
+                    "maxLength": 128
+                  }
+                },
+                "required": [
+                  "stream",
+                  "error"
+                ]
+              },
+              "maxItems": 4
+            },
+            "retained_bytes": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "stdout": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                "stderr": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                }
+              },
+              "required": [
+                "stdout",
+                "stderr"
+              ]
+            },
+            "phase_started_ns": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "phase_deadline_ns": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "child_started_ns": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "child_deadline_ns": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "collection_end_ns": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "reap_end_ns": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "launch_started_ns": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "launch_returned_ns": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "pid_from_retained_handle": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "handle_retained": {
+              "type": "boolean"
+            },
+            "actual_exit": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "actual_exit_observed_ns": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "reaped": {
+              "type": "boolean"
+            },
+            "observed_bytes": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "dropped_known_bytes": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "unread_or_dropped_unknown": {
+              "type": "boolean"
+            },
+            "overflow": {
+              "type": "boolean"
+            },
+            "timed_out": {
+              "type": "boolean"
+            },
+            "deadline_loss": {
+              "type": "boolean"
+            },
+            "kill_attempted": {
+              "type": "boolean"
+            },
+            "kill_syscall_returned": {
+              "type": "boolean",
+              "description": "True only after os.kill on the retained unreaped direct child returns without exception; not proof of delivery, termination, or reap."
+            },
+            "kill_or_reap_error": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kill_eligibility_exit": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kill_eligibility_observed_ns": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "finished_ns": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "stdin_bytes_sent": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "stdin_complete": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "schema",
+            "label",
+            "clock",
+            "argv",
+            "cwd",
+            "environment",
+            "eof",
+            "first_error",
+            "close_errors",
+            "retained_bytes",
+            "phase_started_ns",
+            "phase_deadline_ns",
+            "child_started_ns",
+            "child_deadline_ns",
+            "collection_end_ns",
+            "reap_end_ns",
+            "launch_started_ns",
+            "launch_returned_ns",
+            "pid_from_retained_handle",
+            "handle_retained",
+            "actual_exit",
+            "actual_exit_observed_ns",
+            "reaped",
+            "observed_bytes",
+            "dropped_known_bytes",
+            "unread_or_dropped_unknown",
+            "overflow",
+            "timed_out",
+            "deadline_loss",
+            "kill_attempted",
+            "kill_syscall_returned",
+            "kill_or_reap_error",
+            "kill_eligibility_exit",
+            "kill_eligibility_observed_ns",
+            "finished_ns",
+            "stdin_bytes_sent",
+            "stdin_complete"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "caller_attempted": {
+      "type": "boolean"
+    },
+    "parent_stdin_sha256": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "copy_gate_proof": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "full_result": {
+              "$ref": "#/$defs/file"
+            },
+            "actual_commands": {
+              "const": 52
+            },
+            "native_commands": {
+              "const": 50
+            },
+            "actual_all52_exit0_reap_EOF": {
+              "const": true
+            },
+            "before_after_file_facts": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "label": {
+                    "enum": [
+                      "copy-files-before",
+                      "copy-files-after"
+                    ]
+                  },
+                  "facts": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "mode": {
+                        "const": "copy"
+                      },
+                      "prefix_entries": {
+                        "const": 2006
+                      },
+                      "prefix_regular_bytes": {
+                        "const": 46504040
+                      },
+                      "prefix_sha256": {
+                        "const": "c46c9234c07785e90b66774ca161f20c7ef72c0a87323f52583fa4edb1186e67"
+                      },
+                      "modules": {
+                        "const": 10
+                      },
+                      "prefix_root_mode": {
+                        "const": "0o700"
+                      },
+                      "schema": {
+                        "const": "openergy.file-qualification-observation.v1"
+                      },
+                      "product_invocations": {
+                        "const": 0
+                      },
+                      "runtime": {
+                        "const": "UNVERIFIED"
+                      },
+                      "source_files": {
+                        "const": 702
+                      },
+                      "bundle_records": {
+                        "const": 167
+                      },
+                      "sdk_headers": {
+                        "const": 10
+                      },
+                      "copied_bundle": {
+                        "type": "string",
+                        "maxLength": 268
+                      },
+                      "elapsed_seconds": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 10
+                      }
+                    },
+                    "required": [
+                      "mode",
+                      "prefix_entries",
+                      "prefix_regular_bytes",
+                      "prefix_sha256",
+                      "modules",
+                      "prefix_root_mode",
+                      "schema",
+                      "product_invocations",
+                      "runtime",
+                      "source_files",
+                      "bundle_records",
+                      "sdk_headers",
+                      "copied_bundle",
+                      "elapsed_seconds"
+                    ]
+                  },
+                  "raw": {
+                    "$ref": "#/$defs/file"
+                  }
+                },
+                "required": [
+                  "label",
+                  "facts",
+                  "raw"
+                ]
+              },
+              "maxItems": 2,
+              "minItems": 2
+            },
+            "all50_saved_basis_and_fresh_source_raw_equal": {
+              "const": true
+            },
+            "records": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "maxLength": 64
+                  },
+                  "actual_exit": {
+                    "const": 0
+                  },
+                  "started_ns": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  "finished_ns": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  "command_deadline_ns": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  "stdout": {
+                    "$ref": "#/$defs/file"
+                  },
+                  "stderr": {
+                    "$ref": "#/$defs/file"
+                  },
+                  "os_record": {
+                    "$ref": "#/$defs/file"
+                  },
+                  "comparison": {
+                    "$ref": "#/$defs/file"
+                  }
+                },
+                "required": [
+                  "label",
+                  "actual_exit",
+                  "started_ns",
+                  "finished_ns",
+                  "command_deadline_ns",
+                  "stdout",
+                  "stderr",
+                  "os_record",
+                  "comparison"
+                ]
+              },
+              "maxItems": 52,
+              "minItems": 52
+            },
+            "retained_raw_status_comparators": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "leaf": {
+                    "type": "string",
+                    "maxLength": 128
+                  },
+                  "bytes": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  "sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  }
+                },
+                "required": [
+                  "leaf",
+                  "bytes",
+                  "sha256"
+                ]
+              },
+              "maxItems": 208,
+              "minItems": 208
+            },
+            "retained_raw_bytes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 99999999999999999999
+            },
+            "source_result": {
+              "$ref": "#/$defs/file"
+            },
+            "started_ns": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 99999999999999999999
+            },
+            "phase_deadline_ns": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 99999999999999999999
+            },
+            "observations_finished_ns": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 99999999999999999999
+            }
+          },
+          "required": [
+            "full_result",
+            "actual_commands",
+            "native_commands",
+            "actual_all52_exit0_reap_EOF",
+            "before_after_file_facts",
+            "all50_saved_basis_and_fresh_source_raw_equal",
+            "records",
+            "retained_raw_status_comparators",
+            "retained_raw_bytes",
+            "source_result",
+            "started_ns",
+            "phase_deadline_ns",
+            "observations_finished_ns"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "publications": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "copy-parent-once.guard": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "state": {
+              "enum": [
+                "attempted",
+                "durable",
+                "failed_or_partial_unverified"
+              ]
+            },
+            "ref": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/file"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "path",
+            "state",
+            "ref"
+          ]
+        },
+        "copy-parent-entry.stdout.bin": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "state": {
+              "enum": [
+                "attempted",
+                "durable",
+                "failed_or_partial_unverified"
+              ]
+            },
+            "ref": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/file"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "path",
+            "state",
+            "ref"
+          ]
+        },
+        "copy-parent-entry.stderr.bin": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "state": {
+              "enum": [
+                "attempted",
+                "durable",
+                "failed_or_partial_unverified"
+              ]
+            },
+            "ref": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/file"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "path",
+            "state",
+            "ref"
+          ]
+        },
+        "copy-parent-entry-os.json": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "state": {
+              "enum": [
+                "attempted",
+                "durable",
+                "failed_or_partial_unverified"
+              ]
+            },
+            "ref": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/file"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "path",
+            "state",
+            "ref"
+          ]
+        },
+        "copy-parent-stdin.json": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "state": {
+              "enum": [
+                "attempted",
+                "durable",
+                "failed_or_partial_unverified"
+              ]
+            },
+            "ref": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/file"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "path",
+            "state",
+            "ref"
+          ]
+        },
+        "copy-parent-caller.stdout.bin": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "state": {
+              "enum": [
+                "attempted",
+                "durable",
+                "failed_or_partial_unverified"
+              ]
+            },
+            "ref": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/file"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "path",
+            "state",
+            "ref"
+          ]
+        },
+        "copy-parent-caller.stderr.bin": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "state": {
+              "enum": [
+                "attempted",
+                "durable",
+                "failed_or_partial_unverified"
+              ]
+            },
+            "ref": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/file"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "path",
+            "state",
+            "ref"
+          ]
+        },
+        "copy-parent-caller-os.json": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "state": {
+              "enum": [
+                "attempted",
+                "durable",
+                "failed_or_partial_unverified"
+              ]
+            },
+            "ref": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/file"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "path",
+            "state",
+            "ref"
+          ]
+        }
+      },
+      "required": []
+    },
+    "first_error": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "stage": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "error": {
+              "type": "string",
+              "maxLength": 128
+            }
+          },
+          "required": [
+            "stage",
+            "error"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "publication_errors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "error": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "name",
+          "error"
+        ]
+      },
+      "maxItems": 9
+    },
+    "common_clock_conversions_before_receipt": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "shared_before_ns": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 99999999999999999999
+          },
+          "local_before": {
+            "type": "number"
+          },
+          "shared_after_ns": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 99999999999999999999
+          },
+          "shared_end_ns": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 99999999999999999999
+          },
+          "discarded_ns": {
+            "const": 1000000
+          },
+          "local_end": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "shared_before_ns",
+          "local_before",
+          "shared_after_ns",
+          "shared_end_ns",
+          "discarded_ns",
+          "local_end"
+        ]
+      },
+      "maxItems": 9
+    },
+    "common_clock_conversions_including_receipt": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "shared_before_ns": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 99999999999999999999
+          },
+          "local_before": {
+            "type": "number"
+          },
+          "shared_after_ns": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 99999999999999999999
+          },
+          "shared_end_ns": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 99999999999999999999
+          },
+          "discarded_ns": {
+            "const": 1000000
+          },
+          "local_end": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "shared_before_ns",
+          "local_before",
+          "shared_after_ns",
+          "shared_end_ns",
+          "discarded_ns",
+          "local_end"
+        ]
+      },
+      "maxItems": 9
+    },
+    "receipt_conversion": {
+      "const": "same conservative common.time.monotonic conversion; SAME original120 alarm"
+    },
+    "existing_ledger_before_parent_growth": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "ledger": {
+              "$ref": "#/$defs/file"
+            },
+            "lock": {
+              "$ref": "#/$defs/file"
+            },
+            "observed": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "charged": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                "regular": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                "product_reserved": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                "cleanup_reserved": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                },
+                "infrastructure_reserved": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 99999999999999999999
+                }
+              },
+              "required": [
+                "charged",
+                "regular",
+                "product_reserved",
+                "cleanup_reserved",
+                "infrastructure_reserved"
+              ]
+            }
+          },
+          "required": [
+            "ledger",
+            "lock",
+            "observed"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "frozen17": {
+      "const": {
+        "artifact-receipt.template.json": {
+          "bytes": 3496,
+          "sha256": "6250a8698664c757af9f9bdb5ef191f3604d82725282ae860741eae2529939d3"
+        },
+        "build-source-bindings.json": {
+          "bytes": 151287,
+          "sha256": "20e011251151cec81f69c4b80b0072d9fd0a98c1eaaf0e6c74d83ff752546617"
+        },
+        "common.py": {
+          "bytes": 12781,
+          "sha256": "20a9c16030b2de53b99870f25bada68137bfc6fbc5b67cc29f8e878312d4129c"
+        },
+        "controller.py": {
+          "bytes": 36307,
+          "sha256": "08f1bbea8aeb5852b4aaddd0f3f693c7717c69e5e898462baa90b49cba41e3a4"
+        },
+        "coverage.py": {
+          "bytes": 11382,
+          "sha256": "d154561f7f256e41b32c90941f7ce18ffa79d5284d23eecea9be88cc1c48f747"
+        },
+        "exec_owned.py": {
+          "bytes": 2219,
+          "sha256": "e7d9a755eed1fadfd04b43b3b96dbd0663cabdf07cc5aa7808ce006183859af2"
+        },
+        "file-qualification.recipe.py.txt": {
+          "bytes": 7381,
+          "sha256": "bf2ddd03f00bedbf799b4eee518a2b7b25d1eb9a6df06a2f55c419252f6fa428"
+        },
+        "limits.json": {
+          "bytes": 876,
+          "sha256": "cadd06e19607f5dbe0ad070072673c8e518d961b1554958d243a0d028243d733"
+        },
+        "macproc.py": {
+          "bytes": 8075,
+          "sha256": "d4f6fe358bd9af786fc4c2cba61f1a47f3f4015c918aae85cf8e6aa1c6d3e6c7"
+        },
+        "metadata.recipe.json": {
+          "bytes": 7915,
+          "sha256": "f97b12054aceb745cadcd3159d25f4693b3570a44d216ffdd96d9c1ddf05701e"
+        },
+        "ownership.py": {
+          "bytes": 35975,
+          "sha256": "3ac4bab54db909beb236d0d9caa4ee83084ad9b566aa19d97c5b6d26c356b091"
+        },
+        "port_diagnostic.py": {
+          "bytes": 10096,
+          "sha256": "9d35bf1adbde9209562d9b4cfa211b75574a0fb1922dc0297761880c2d6d3985"
+        },
+        "prepare.py": {
+          "bytes": 11632,
+          "sha256": "16f2c5d9dce3f3bce8a871bd53eea06ebf1818080de5f9bdaae3997b86304e9a"
+        },
+        "probe.py": {
+          "bytes": 699,
+          "sha256": "d65d17246bbd9057576e32454014b00afed6988dfead7899251435302a651efd"
+        },
+        "qualification.recipe.json": {
+          "bytes": 7671,
+          "sha256": "d90586546d6b3127dca26147b9d090544d29d7a8b229479966dae68ef25d3b11"
+        },
+        "source-checks.json": {
+          "bytes": 2932,
+          "sha256": "2bde5cf1f9396df5c7d8518caaadcdd69eafc5ff2f39117158efaf87e8d080f5"
+        },
+        "watchdog.py": {
+          "bytes": 18760,
+          "sha256": "5efe2cd41f9339463187dfc3d5b11ec8d14f1a159a58787e9b3e01fe60db158d"
+        }
+      }
+    },
+    "caps": {
+      "const": {
+        "file": 8388608,
+        "total": 33554432,
+        "combined_each_child": 1048576,
+        "console": 512,
+        "receipt": 262144,
+        "product_reserve": 16777216,
+        "cleanup_reserve": 4194304,
+        "accounting_reserve": 65536
+      }
+    },
+    "own_nice": {
+      "const": 15
+    },
+    "console_admission": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fifo": {
+          "const": true
+        },
+        "pipe_buf": {
+          "type": "integer",
+          "minimum": 512
+        },
+        "nonblocking": {
+          "const": true
+        },
+        "single_writer_live_reader": {
+          "const": "EXTERNAL_ACTUAL_PARENT_DUTY"
+        }
+      },
+      "required": [
+        "fifo",
+        "pipe_buf",
+        "nonblocking",
+        "single_writer_live_reader"
+      ]
+    },
+    "private_COPY_startup": {
+      "const": "UNMEASURED"
+    },
+    "external_parent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "actual_SSH_exit": {
+          "type": "null"
+        },
+        "actual_collector_exit": {
+          "type": "null"
+        },
+        "both_EOF": {
+          "type": "null"
+        },
+        "D4_actual_exit_before_original135_and_before_receipt_reads": {
+          "type": "null"
+        },
+        "all_full_raw_receipt_and52_records_retained": {
+          "type": "null"
+        },
+        "full_copy_signature_entitlement_operator_assessment": {
+          "type": "null"
+        },
+        "own_receipt_final_barriers_rootclose_console_exit": {
+          "const": "ACTUAL_EXTERNAL_PARENT_DUTY"
+        }
+      },
+      "required": [
+        "actual_SSH_exit",
+        "actual_collector_exit",
+        "both_EOF",
+        "D4_actual_exit_before_original135_and_before_receipt_reads",
+        "all_full_raw_receipt_and52_records_retained",
+        "full_copy_signature_entitlement_operator_assessment",
+        "own_receipt_final_barriers_rootclose_console_exit"
+      ]
+    },
+    "controller_operator_gate": {
+      "const": "BLOCKED_UNTIL_EXTERNAL_ACTUAL_PARENT_ASSESSMENT"
+    },
+    "controller_started": {
+      "const": false
+    },
+    "runtime_acceptance": {
+      "const": false
+    },
+    "runtime": {
+      "const": "UNVERIFIED"
+    }
+  },
+  "required": [
+    "schema",
+    "execution",
+    "state",
+    "evidence_root",
+    "identity",
+    "clock",
+    "phase_started_ns",
+    "phase_deadline_ns",
+    "artifact_receipt",
+    "artifact_operation",
+    "artifact_publication",
+    "artifact_eight_raws",
+    "source_result",
+    "source_raw_manifest_sha256",
+    "source_boundary",
+    "prepared",
+    "helper_collection",
+    "entry_authentication",
+    "caller_collection",
+    "caller_attempted",
+    "parent_stdin_sha256",
+    "copy_gate_proof",
+    "publications",
+    "first_error",
+    "publication_errors",
+    "common_clock_conversions_before_receipt",
+    "common_clock_conversions_including_receipt",
+    "receipt_conversion",
+    "existing_ledger_before_parent_growth",
+    "frozen17",
+    "caps",
+    "own_nice",
+    "console_admission",
+    "private_COPY_startup",
+    "external_parent",
+    "controller_operator_gate",
+    "controller_started",
+    "runtime_acceptance",
+    "runtime"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:openergy:prepared-copy-qualification:1",
+  "description": "Full postledger reserved receipt required by operator before controller. It is pre-exit data. COPY_DATA_COMPLETE_EXTERNAL_PENDING never proves external SSH/collector/EOF/D4 or full operator acceptance. All external facts stay null in the target receipt. Schema plus code semantic checks and actual parent acts all apply.",
+  "$defs": {
+    "raw": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8388608
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "bytes",
+        "sha256"
+      ]
+    },
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^/",
+          "maxLength": 4096
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8388608
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "path",
+        "bytes",
+        "sha256"
+      ]
+    },
+    "prepare_external_proof": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "openergy.prepare-external-parent-proof.v1"
+        },
+        "parent_record": {
+          "$ref": "#/$defs/raw"
+        },
+        "transport_receipt": {
+          "$ref": "#/$defs/raw"
+        },
+        "local_once_guard": {
+          "$ref": "#/$defs/raw"
+        },
+        "payload_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "actual_collector_exit": {
+          "const": 0
+        },
+        "actual_ssh_exit": {
+          "const": 0
+        },
+        "both_eof": {
+          "const": true
+        },
+        "no_errors_loss_timeout_kill": {
+          "const": true
+        },
+        "actual_wait_or_poll_returned": {
+          "const": true
+        },
+        "started_ns": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 99999999999999999999
+        },
+        "work_end_ns": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 99999999999999999999
+        },
+        "absolute_end_ns": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 99999999999999999999
+        },
+        "exit_observed_ns": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 99999999999999999999
+        },
+        "ssh_exit_observed_ns": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 99999999999999999999
+        },
+        "receipt_reads_before_exit_observation": {
+          "const": 0
+        },
+        "phase": {
+          "const": "prepare"
+        },
+        "same_local_host_boot": {
+          "const": true
+        },
+        "clock_domain": {
+          "const": "local-parent-only"
+        }
+      },
+      "required": [
+        "schema",
+        "parent_record",
+        "transport_receipt",
+        "local_once_guard",
+        "payload_sha256",
+        "actual_collector_exit",
+        "actual_ssh_exit",
+        "both_eof",
+        "no_errors_loss_timeout_kill",
+        "actual_wait_or_poll_returned",
+        "started_ns",
+        "work_end_ns",
+        "absolute_end_ns",
+        "exit_observed_ns",
+        "ssh_exit_observed_ns",
+        "receipt_reads_before_exit_observation",
+        "phase",
+        "same_local_host_boot",
+        "clock_domain"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "COPY_DATA_COMPLETE_EXTERNAL_PENDING"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "first_error": {
+            "type": "null"
+          },
+          "publication_errors": {
+            "const": []
+          },
+          "caller_attempted": {
+            "const": true
+          },
+          "copy_gate_proof": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "full_result": {
+                "$ref": "#/$defs/file"
+              },
+              "actual_commands": {
+                "const": 52
+              },
+              "native_commands": {
+                "const": 50
+              },
+              "actual_all52_exit0_reap_EOF": {
+                "const": true
+              },
+              "before_after_file_facts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "label": {
+                      "enum": [
+                        "copy-files-before",
+                        "copy-files-after"
+                      ]
+                    },
+                    "facts": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "mode": {
+                          "const": "copy"
+                        },
+                        "prefix_entries": {
+                          "const": 2006
+                        },
+                        "prefix_regular_bytes": {
+                          "const": 46504040
+                        },
+                        "prefix_sha256": {
+                          "const": "c46c9234c07785e90b66774ca161f20c7ef72c0a87323f52583fa4edb1186e67"
+                        },
+                        "modules": {
+                          "const": 10
+                        },
+                        "prefix_root_mode": {
+                          "const": "0o700"
+                        },
+                        "schema": {
+                          "const": "openergy.file-qualification-observation.v1"
+                        },
+                        "product_invocations": {
+                          "const": 0
+                        },
+                        "runtime": {
+                          "const": "UNVERIFIED"
+                        },
+                        "source_files": {
+                          "const": 702
+                        },
+                        "bundle_records": {
+                          "const": 167
+                        },
+                        "sdk_headers": {
+                          "const": 10
+                        },
+                        "copied_bundle": {
+                          "type": "string",
+                          "maxLength": 268
+                        },
+                        "elapsed_seconds": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 10
+                        }
+                      },
+                      "required": [
+                        "mode",
+                        "prefix_entries",
+                        "prefix_regular_bytes",
+                        "prefix_sha256",
+                        "modules",
+                        "prefix_root_mode",
+                        "schema",
+                        "product_invocations",
+                        "runtime",
+                        "source_files",
+                        "bundle_records",
+                        "sdk_headers",
+                        "copied_bundle",
+                        "elapsed_seconds"
+                      ]
+                    },
+                    "raw": {
+                      "$ref": "#/$defs/file"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "facts",
+                    "raw"
+                  ]
+                },
+                "maxItems": 2,
+                "minItems": 2
+              },
+              "all50_saved_basis_and_fresh_source_raw_equal": {
+                "const": true
+              },
+              "records": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "label": {
+                      "type": "string",
+                      "maxLength": 64
+                    },
+                    "actual_exit": {
+                      "const": 0
+                    },
+                    "started_ns": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 99999999999999999999
+                    },
+                    "finished_ns": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 99999999999999999999
+                    },
+                    "command_deadline_ns": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 99999999999999999999
+                    },
+                    "stdout": {
+                      "$ref": "#/$defs/file"
+                    },
+                    "stderr": {
+                      "$ref": "#/$defs/file"
+                    },
+                    "os_record": {
+                      "$ref": "#/$defs/file"
+                    },
+                    "comparison": {
+                      "$ref": "#/$defs/file"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "actual_exit",
+                    "started_ns",
+                    "finished_ns",
+                    "command_deadline_ns",
+                    "stdout",
+                    "stderr",
+                    "os_record",
+                    "comparison"
+                  ]
+                },
+                "maxItems": 52,
+                "minItems": 52
+              },
+              "retained_raw_status_comparators": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "leaf": {
+                      "type": "string",
+                      "maxLength": 128
+                    },
+                    "bytes": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 99999999999999999999
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    }
+                  },
+                  "required": [
+                    "leaf",
+                    "bytes",
+                    "sha256"
+                  ]
+                },
+                "maxItems": 208,
+                "minItems": 208
+              },
+              "retained_raw_bytes": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 99999999999999999999
+              },
+              "source_result": {
+                "$ref": "#/$defs/file"
+              },
+              "started_ns": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 99999999999999999999
+              },
+              "phase_deadline_ns": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 99999999999999999999
+              },
+              "observations_finished_ns": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 99999999999999999999
+              }
+            },
+            "required": [
+              "full_result",
+              "actual_commands",
+              "native_commands",
+              "actual_all52_exit0_reap_EOF",
+              "before_after_file_facts",
+              "all50_saved_basis_and_fresh_source_raw_equal",
+              "records",
+              "retained_raw_status_comparators",
+              "retained_raw_bytes",
+              "source_result",
+              "started_ns",
+              "phase_deadline_ns",
+              "observations_finished_ns"
+            ]
+          },
+          "prepared": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "raw": {
+                "$ref": "#/$defs/file"
+              },
+              "private_root": {
+                "type": "string",
+                "maxLength": 255
+              },
+              "bundle": {
+                "type": "string",
+                "maxLength": 268
+              },
+              "prepare_receipt": {
+                "$ref": "#/$defs/file"
+              },
+              "canonical_owner0700_sameFS": {
+                "const": true
+              },
+              "external_actual_prepare_proof": {
+                "$ref": "#/$defs/prepare_external_proof"
+              }
+            },
+            "required": [
+              "raw",
+              "private_root",
+              "bundle",
+              "prepare_receipt",
+              "canonical_owner0700_sameFS",
+              "external_actual_prepare_proof"
+            ]
+          },
+          "entry_authentication": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "schema": {
+                "const": "openergy.metadata-entry-observation.v2"
+              },
+              "clock": {
+                "const": {
+                  "api": "time.clock_gettime_ns",
+                  "clock": "CLOCK_MONOTONIC",
+                  "clock_id": 6,
+                  "platform": "darwin",
+                  "schema": "openergy.shared-clock.v1",
+                  "scope": "same-host-same-boot",
+                  "unit": "nanoseconds"
+                }
+              },
+              "actual_exit": {
+                "const": 0
+              },
+              "reaped": {
+                "const": true
+              },
+              "both_eof": {
+                "const": true
+              },
+              "overflow": {
+                "const": false
+              },
+              "deadline_loss": {
+                "const": false
+              },
+              "timed_out": {
+                "const": false
+              },
+              "unread_or_dropped_unknown": {
+                "const": false
+              },
+              "kill_attempted": {
+                "const": false
+              },
+              "error": {
+                "type": "null"
+              },
+              "kill_or_reap_error": {
+                "type": "null"
+              },
+              "stdout": {
+                "type": "string",
+                "maxLength": 1398104,
+                "contentEncoding": "base64"
+              },
+              "stderr": {
+                "const": ""
+              },
+              "system_python": {
+                "const": "/usr/bin/python3"
+              },
+              "helper_sha256": {
+                "const": "bf2ddd03f00bedbf799b4eee518a2b7b25d1eb9a6df06a2f55c419252f6fa428"
+              },
+              "started_ns": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 99999999999999999999
+              },
+              "finished_ns": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 99999999999999999999
+              },
+              "parent_inspected_ns": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 99999999999999999999
+              }
+            },
+            "required": [
+              "schema",
+              "clock",
+              "actual_exit",
+              "reaped",
+              "both_eof",
+              "overflow",
+              "deadline_loss",
+              "timed_out",
+              "unread_or_dropped_unknown",
+              "kill_attempted",
+              "error",
+              "kill_or_reap_error",
+              "stdout",
+              "stderr",
+              "system_python",
+              "helper_sha256",
+              "started_ns",
+              "finished_ns",
+              "parent_inspected_ns"
+            ]
+          },
+          "helper_collection": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "schema": {
+                "const": "openergy.copy-parent-child.v1"
+              },
+              "label": {
+                "enum": [
+                  "entry",
+                  "copy"
+                ]
+              },
+              "clock": {
+                "const": {
+                  "api": "time.clock_gettime_ns",
+                  "clock": "CLOCK_MONOTONIC",
+                  "clock_id": 6,
+                  "platform": "darwin",
+                  "schema": "openergy.shared-clock.v1",
+                  "scope": "same-host-same-boot",
+                  "unit": "nanoseconds"
+                }
+              },
+              "argv": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 4096
+                },
+                "maxItems": 8
+              },
+              "cwd": {
+                "const": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503"
+              },
+              "environment": {
+                "const": {
+                  "HOME": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+                  "LANG": "C",
+                  "MACOSX_DEPLOYMENT_TARGET": "15.0",
+                  "OPENERGY_DISABLE_UPDATES": "1",
+                  "OPENERGY_ORDINARY_PYTHON": "/Users/m1-dev/.local/state/openergy-verification/m1-prerequisite-data-20261024-d896c0b3636a/extracted-data/python/bin/python3.13",
+                  "OPENERGY_ORDINARY_SOURCE_ROOT": "/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/repo",
+                  "PATH": "/usr/bin:/bin",
+                  "PYTHONDONTWRITEBYTECODE": "1",
+                  "PYTHONNOUSERSITE": "1",
+                  "TMPDIR": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/"
+                }
+              },
+              "eof": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "stdout": {
+                    "type": "boolean"
+                  },
+                  "stderr": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "stdout",
+                  "stderr"
+                ]
+              },
+              "first_error": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "stage": {
+                        "type": "string",
+                        "maxLength": 128
+                      },
+                      "error": {
+                        "type": "string",
+                        "maxLength": 128
+                      }
+                    },
+                    "required": [
+                      "stage",
+                      "error"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "close_errors": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "stream": {
+                      "enum": [
+                        "stdin",
+                        "stdout",
+                        "stderr",
+                        "selector"
+                      ]
+                    },
+                    "error": {
+                      "type": "string",
+                      "maxLength": 128
+                    }
+                  },
+                  "required": [
+                    "stream",
+                    "error"
+                  ]
+                },
+                "maxItems": 4
+              },
+              "retained_bytes": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "stdout": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  "stderr": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  }
+                },
+                "required": [
+                  "stdout",
+                  "stderr"
+                ]
+              },
+              "phase_started_ns": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "phase_deadline_ns": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "child_started_ns": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "child_deadline_ns": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "collection_end_ns": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "reap_end_ns": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "launch_started_ns": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "launch_returned_ns": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "pid_from_retained_handle": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "handle_retained": {
+                "type": "boolean"
+              },
+              "actual_exit": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "actual_exit_observed_ns": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "reaped": {
+                "type": "boolean"
+              },
+              "observed_bytes": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "dropped_known_bytes": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "unread_or_dropped_unknown": {
+                "type": "boolean"
+              },
+              "overflow": {
+                "type": "boolean"
+              },
+              "timed_out": {
+                "type": "boolean"
+              },
+              "deadline_loss": {
+                "type": "boolean"
+              },
+              "kill_attempted": {
+                "type": "boolean"
+              },
+              "kill_syscall_returned": {
+                "type": "boolean",
+                "description": "True only after os.kill on the retained unreaped direct child returns without exception; not proof of delivery, termination, or reap."
+              },
+              "kill_or_reap_error": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 128
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "kill_eligibility_exit": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "kill_eligibility_observed_ns": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "finished_ns": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "stdin_bytes_sent": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "stdin_complete": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "schema",
+              "label",
+              "clock",
+              "argv",
+              "cwd",
+              "environment",
+              "eof",
+              "first_error",
+              "close_errors",
+              "retained_bytes",
+              "phase_started_ns",
+              "phase_deadline_ns",
+              "child_started_ns",
+              "child_deadline_ns",
+              "collection_end_ns",
+              "reap_end_ns",
+              "launch_started_ns",
+              "launch_returned_ns",
+              "pid_from_retained_handle",
+              "handle_retained",
+              "actual_exit",
+              "actual_exit_observed_ns",
+              "reaped",
+              "observed_bytes",
+              "dropped_known_bytes",
+              "unread_or_dropped_unknown",
+              "overflow",
+              "timed_out",
+              "deadline_loss",
+              "kill_attempted",
+              "kill_syscall_returned",
+              "kill_or_reap_error",
+              "kill_eligibility_exit",
+              "kill_eligibility_observed_ns",
+              "finished_ns",
+              "stdin_bytes_sent",
+              "stdin_complete"
+            ]
+          },
+          "caller_collection": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "schema": {
+                "const": "openergy.copy-parent-child.v1"
+              },
+              "label": {
+                "enum": [
+                  "entry",
+                  "copy"
+                ]
+              },
+              "clock": {
+                "const": {
+                  "api": "time.clock_gettime_ns",
+                  "clock": "CLOCK_MONOTONIC",
+                  "clock_id": 6,
+                  "platform": "darwin",
+                  "schema": "openergy.shared-clock.v1",
+                  "scope": "same-host-same-boot",
+                  "unit": "nanoseconds"
+                }
+              },
+              "argv": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 4096
+                },
+                "maxItems": 8
+              },
+              "cwd": {
+                "const": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503"
+              },
+              "environment": {
+                "const": {
+                  "HOME": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+                  "LANG": "C",
+                  "MACOSX_DEPLOYMENT_TARGET": "15.0",
+                  "OPENERGY_DISABLE_UPDATES": "1",
+                  "OPENERGY_ORDINARY_PYTHON": "/Users/m1-dev/.local/state/openergy-verification/m1-prerequisite-data-20261024-d896c0b3636a/extracted-data/python/bin/python3.13",
+                  "OPENERGY_ORDINARY_SOURCE_ROOT": "/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/repo",
+                  "PATH": "/usr/bin:/bin",
+                  "PYTHONDONTWRITEBYTECODE": "1",
+                  "PYTHONNOUSERSITE": "1",
+                  "TMPDIR": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/"
+                }
+              },
+              "eof": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "stdout": {
+                    "type": "boolean"
+                  },
+                  "stderr": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "stdout",
+                  "stderr"
+                ]
+              },
+              "first_error": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "stage": {
+                        "type": "string",
+                        "maxLength": 128
+                      },
+                      "error": {
+                        "type": "string",
+                        "maxLength": 128
+                      }
+                    },
+                    "required": [
+                      "stage",
+                      "error"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "close_errors": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "stream": {
+                      "enum": [
+                        "stdin",
+                        "stdout",
+                        "stderr",
+                        "selector"
+                      ]
+                    },
+                    "error": {
+                      "type": "string",
+                      "maxLength": 128
+                    }
+                  },
+                  "required": [
+                    "stream",
+                    "error"
+                  ]
+                },
+                "maxItems": 4
+              },
+              "retained_bytes": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "stdout": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  "stderr": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  }
+                },
+                "required": [
+                  "stdout",
+                  "stderr"
+                ]
+              },
+              "phase_started_ns": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "phase_deadline_ns": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "child_started_ns": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "child_deadline_ns": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "collection_end_ns": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "reap_end_ns": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "launch_started_ns": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "launch_returned_ns": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "pid_from_retained_handle": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "handle_retained": {
+                "type": "boolean"
+              },
+              "actual_exit": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "actual_exit_observed_ns": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "reaped": {
+                "type": "boolean"
+              },
+              "observed_bytes": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "dropped_known_bytes": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "unread_or_dropped_unknown": {
+                "type": "boolean"
+              },
+              "overflow": {
+                "type": "boolean"
+              },
+              "timed_out": {
+                "type": "boolean"
+              },
+              "deadline_loss": {
+                "type": "boolean"
+              },
+              "kill_attempted": {
+                "type": "boolean"
+              },
+              "kill_syscall_returned": {
+                "type": "boolean",
+                "description": "True only after os.kill on the retained unreaped direct child returns without exception; not proof of delivery, termination, or reap."
+              },
+              "kill_or_reap_error": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 128
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "kill_eligibility_exit": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "kill_eligibility_observed_ns": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "finished_ns": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "stdin_bytes_sent": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99999999999999999999
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "stdin_complete": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "schema",
+              "label",
+              "clock",
+              "argv",
+              "cwd",
+              "environment",
+              "eof",
+              "first_error",
+              "close_errors",
+              "retained_bytes",
+              "phase_started_ns",
+              "phase_deadline_ns",
+              "child_started_ns",
+              "child_deadline_ns",
+              "collection_end_ns",
+              "reap_end_ns",
+              "launch_started_ns",
+              "launch_returned_ns",
+              "pid_from_retained_handle",
+              "handle_retained",
+              "actual_exit",
+              "actual_exit_observed_ns",
+              "reaped",
+              "observed_bytes",
+              "dropped_known_bytes",
+              "unread_or_dropped_unknown",
+              "overflow",
+              "timed_out",
+              "deadline_loss",
+              "kill_attempted",
+              "kill_syscall_returned",
+              "kill_or_reap_error",
+              "kill_eligibility_exit",
+              "kill_eligibility_observed_ns",
+              "finished_ns",
+              "stdin_bytes_sent",
+              "stdin_complete"
+            ]
+          },
+          "parent_stdin_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "publications": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "copy-parent-once.guard": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "maxLength": 4096
+                  },
+                  "state": {
+                    "enum": [
+                      "attempted",
+                      "durable",
+                      "failed_or_partial_unverified"
+                    ]
+                  },
+                  "ref": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/$defs/file"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "path",
+                  "state",
+                  "ref"
+                ]
+              },
+              "copy-parent-entry.stdout.bin": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "maxLength": 4096
+                  },
+                  "state": {
+                    "enum": [
+                      "attempted",
+                      "durable",
+                      "failed_or_partial_unverified"
+                    ]
+                  },
+                  "ref": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/$defs/file"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "path",
+                  "state",
+                  "ref"
+                ]
+              },
+              "copy-parent-entry.stderr.bin": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "maxLength": 4096
+                  },
+                  "state": {
+                    "enum": [
+                      "attempted",
+                      "durable",
+                      "failed_or_partial_unverified"
+                    ]
+                  },
+                  "ref": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/$defs/file"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "path",
+                  "state",
+                  "ref"
+                ]
+              },
+              "copy-parent-entry-os.json": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "maxLength": 4096
+                  },
+                  "state": {
+                    "enum": [
+                      "attempted",
+                      "durable",
+                      "failed_or_partial_unverified"
+                    ]
+                  },
+                  "ref": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/$defs/file"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "path",
+                  "state",
+                  "ref"
+                ]
+              },
+              "copy-parent-stdin.json": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "maxLength": 4096
+                  },
+                  "state": {
+                    "enum": [
+                      "attempted",
+                      "durable",
+                      "failed_or_partial_unverified"
+                    ]
+                  },
+                  "ref": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/$defs/file"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "path",
+                  "state",
+                  "ref"
+                ]
+              },
+              "copy-parent-caller.stdout.bin": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "maxLength": 4096
+                  },
+                  "state": {
+                    "enum": [
+                      "attempted",
+                      "durable",
+                      "failed_or_partial_unverified"
+                    ]
+                  },
+                  "ref": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/$defs/file"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "path",
+                  "state",
+                  "ref"
+                ]
+              },
+              "copy-parent-caller.stderr.bin": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "maxLength": 4096
+                  },
+                  "state": {
+                    "enum": [
+                      "attempted",
+                      "durable",
+                      "failed_or_partial_unverified"
+                    ]
+                  },
+                  "ref": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/$defs/file"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "path",
+                  "state",
+                  "ref"
+                ]
+              },
+              "copy-parent-caller-os.json": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "maxLength": 4096
+                  },
+                  "state": {
+                    "enum": [
+                      "attempted",
+                      "durable",
+                      "failed_or_partial_unverified"
+                    ]
+                  },
+                  "ref": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/$defs/file"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "path",
+                  "state",
+                  "ref"
+                ]
+              }
+            },
+            "required": [
+              "copy-parent-once.guard",
+              "copy-parent-entry.stdout.bin",
+              "copy-parent-entry.stderr.bin",
+              "copy-parent-entry-os.json",
+              "copy-parent-stdin.json",
+              "copy-parent-caller.stdout.bin",
+              "copy-parent-caller.stderr.bin",
+              "copy-parent-caller-os.json"
+            ]
+          }
+        },
+        "allOf": [
+          {
+            "properties": {
+              "helper_collection": {
+                "properties": {
+                  "actual_exit": {
+                    "const": 0
+                  },
+                  "kill_attempted": {
+                    "const": false
+                  },
+                  "kill_syscall_returned": {
+                    "const": false
+                  }
+                }
+              },
+              "caller_collection": {
+                "properties": {
+                  "actual_exit": {
+                    "const": 0
+                  },
+                  "kill_attempted": {
+                    "const": false
+                  },
+                  "kill_syscall_returned": {
+                    "const": false
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
