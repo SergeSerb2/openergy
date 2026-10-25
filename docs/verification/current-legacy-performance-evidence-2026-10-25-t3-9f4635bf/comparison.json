@@ -1,0 +1,2998 @@
+{
+  "schema": "openergy.current-legacy-performance-evidence.v1",
+  "audit_date_local": "2026-10-25",
+  "timezone": "America/Vancouver",
+  "worktree_id": "t3-9f4635bf",
+  "parent_commit": "22e411d1f1a4514ce6598227806ffa1d41a2347e",
+  "audit_mode": "tracked data only; no new runtime, query, network, build, test, mock, source execution/import, private-state read or child agent",
+  "selection_scope": "Current retained M1 artifact and acceptance; tracked Synergy reference report; historical ARM64 S15, connected r3, stop-fix pair, finite idle/event observations, offline trust tradeoffs and sustained control. Bounded selection, not an exhaustive benchmark certification.",
+  "identities": {
+    "audit_parent": "22e411d1f1a4514ce6598227806ffa1d41a2347e",
+    "workspace_version": "0.1.0",
+    "workspace_version_source": {
+      "source_id": "workspace",
+      "lines": [
+        11,
+        11
+      ],
+      "anchor": "version = \"0.1.0\""
+    },
+    "fresh_performance_measurement": false,
+    "retained_candidate": {
+      "product_source_commit": "ed7d96bf53da1a539fa2acde3b7133613221fd4b",
+      "app_version": "0.1.0",
+      "build": "1",
+      "host_label": "M1 (report label; exact hardware model not established)",
+      "os": "macOS 27.0.1 (26A434)",
+      "architecture": "arm64",
+      "rust": "1.99.1",
+      "swift": "6.4",
+      "xcode": "27.1 (27A9275)",
+      "sdk": "27.0",
+      "jobs": 2,
+      "deployment_target": "15.0",
+      "app_sha256": "094d02b3831ee6565ae1628407756ad48053a0268f2a489c65bbde28b768d775",
+      "daemon_peer_sha256": "17065c334290b34c7a1b69483f409655e072eb0505ff2a0cc0bf6ed5f77a7bb2",
+      "archive": {
+        "bytes": 4692177,
+        "sha256": "7eb92de1ae6af988f8925546624a9f69fe20309aa8ea15f13fcf0b9ddf1cea21"
+      },
+      "sources": [
+        {
+          "source_id": "m1_build"
+        },
+        {
+          "source_id": "m1_assessment",
+          "json_pointer": "/objects/6"
+        },
+        {
+          "source_id": "m1_assessment",
+          "json_pointer": "/objects/5"
+        }
+      ]
+    },
+    "tracked_source_continuity": {
+      "from_commit": "ed7d96bf53da1a539fa2acde3b7133613221fd4b",
+      "to_commit": "22e411d1f1a4514ce6598227806ffa1d41a2347e",
+      "changed_path_count": 320,
+      "all_changed_paths_under_docs": true,
+      "non_docs_changed_paths": [],
+      "changed_path_list_sha256": "5568511b3e9d87e3469328d3b43521a156842b243bbcd4c86c19dd1ba662d792",
+      "from_non_docs_tree": {
+        "entries": 702,
+        "sha256_of_sorted_git_ls_tree_rows_json": "6dd371ea8a887aad633f143fb87e94e6fa4c169cbd41565034e082e4b3b7c23d"
+      },
+      "to_non_docs_tree": {
+        "entries": 702,
+        "sha256_of_sorted_git_ls_tree_rows_json": "6dd371ea8a887aad633f143fb87e94e6fa4c169cbd41565034e082e4b3b7c23d"
+      },
+      "method": "git diff --name-only; git ls-tree -r -z --full-tree; compare all tracked rows outside docs/",
+      "limit": "Source continuity only. External dependency/tool inputs, artifact requalification and runtime acceptance are separate gates."
+    },
+    "legacy_reference": {
+      "product": "Synergy",
+      "product_version": "3.7.0-beta",
+      "core_version": "1.21.1-beta",
+      "wire_version": "1.8",
+      "architecture": "arm64",
+      "os": "macOS 27.2",
+      "observation_date_local": "2026-10-21",
+      "pristine_core_sha256": "616e13a00b9981bbff0fea25f73a162c410e86cc21eac78eee198f4513e9bd2b",
+      "full_bundle_sha256": null,
+      "hardware_model": null,
+      "workload": "Passive existing connected client session; GUI/helpers absent; service, tray and core; no generated load",
+      "measurement_method": "Three ps snapshots, five seconds apart; rounded displayed CPU and KiB RSS; static bundle regular-file inventory",
+      "raw_process_samples_tracked": false,
+      "raw_bundle_inventory_tracked": false,
+      "sources": [
+        {
+          "source_id": "legacy_identity",
+          "lines": [
+            14,
+            14
+          ],
+          "anchor": "Original file SHA-256"
+        },
+        {
+          "source_id": "legacy_report",
+          "lines": [
+            3,
+            3
+          ],
+          "anchor": "Target:"
+        },
+        {
+          "source_id": "legacy_report",
+          "lines": [
+            232,
+            232
+          ],
+          "anchor": "Three passive `ps` samples"
+        }
+      ],
+      "limits": [
+        "Report-backed values; private process-samples.json and footprint.json were not read.",
+        "Core pristine static hash is not proof of a complete sampled bundle inventory hash.",
+        "Native connected client and closed GUI differ from virtual laboratory flows."
+      ]
+    }
+  },
+  "units": {
+    "byte": 1,
+    "KiB": 1024,
+    "MiB": 1048576,
+    "millisecond": "0.001 second",
+    "percent_one_core": "process kernel CPU time divided by wall interval, times 100; source-specific counter resolution applies",
+    "ps_displayed_percent": "rounded OS display; not an equivalent timed workload measure",
+    "raw_mach_tick": "not nanoseconds; r3 saved timebase numerator 125 / denominator 3; no new CPU percentage",
+    "MiB_per_minute": "source fitted checkpoint trend at declared three-second cycle pace"
+  },
+  "qualified_current_legacy_runtime_pairs": [],
+  "current_runtime_improvement_percent": null,
+  "completion_percent": null,
+  "current_launch_latency_ms": null,
+  "records": [
+    {
+      "id": "legacy",
+      "kind": "reference_snapshot",
+      "date_local": "2026-10-21",
+      "product_source": null,
+      "host": "macOS 27.2 arm64; hardware model not bound",
+      "workload": "Synergy native connected client, GUI closed; 3 passive snapshots and one static payload inventory",
+      "original_status": "REPORT_BACKED_PASSIVE_OBSERVATIONS",
+      "sources": [
+        {
+          "source_id": "legacy_report"
+        },
+        {
+          "source_id": "legacy_identity"
+        },
+        {
+          "source_id": "old_comparison"
+        }
+      ],
+      "limits": [
+        "No matched generated workload, timed CPU window, physical latency or launch benchmark.",
+        "Raw private process snapshots and inventory are not tracked in selected sources."
+      ],
+      "current_legacy_runtime_pair_eligible": false
+    },
+    {
+      "id": "m1",
+      "kind": "retained_current_candidate",
+      "date_local": "2026-10-24",
+      "product_source": "ed7d96bf53da1a539fa2acde3b7133613221fd4b",
+      "host": "macOS 27.0.1 (26A434); arm64; M1 report label",
+      "workload": "Build then one ordinary default25 headless real AppModel/IPC peer flow; virtual backend, rendering and discovery disabled; private TLS/loopback fixtures",
+      "original_status": "FAILED_NOT_ACCEPTED",
+      "sources": [
+        {
+          "source_id": "m1_build"
+        },
+        {
+          "source_id": "m1_build_report"
+        },
+        {
+          "source_id": "m1_flow"
+        },
+        {
+          "source_id": "m1_flow_report"
+        },
+        {
+          "source_id": "m1_checks"
+        },
+        {
+          "source_id": "m1_assessment"
+        }
+      ],
+      "limits": [
+        "Build timing is not launch latency.",
+        "25/25 app checks are correctness observations.",
+        "First strict postflight bind failed; remaining final gates not reached.",
+        "Whole-flow priority UNVERIFIED; no matched reference app run."
+      ],
+      "current_legacy_runtime_pair_eligible": false
+    },
+    {
+      "id": "m1_readiness",
+      "kind": "source_data_only",
+      "date_local": "2026-10-25",
+      "product_source": "ed7d96bf53da1a539fa2acde3b7133613221fd4b",
+      "host": "Saved M1 readiness record: macOS 27.0.1/26A434 arm64",
+      "workload": "Four saved file hash checks; no product invocation",
+      "original_status": "UNVERIFIED",
+      "sources": [
+        {
+          "source_id": "readiness"
+        },
+        {
+          "source_id": "next_operation"
+        }
+      ],
+      "limits": [
+        "No new product flow.",
+        "Full source/bundle/Python-prefix/copy qualification still false.",
+        "Controller source candidate 2b5fc1f is not a product performance candidate."
+      ],
+      "current_legacy_runtime_pair_eligible": false
+    },
+    {
+      "id": "old_package",
+      "kind": "historical_payload",
+      "date_local": "2026-10-22",
+      "product_source": "6b834202e712755222c8ef9418441874a5ecca5d",
+      "host": "macOS ARM64 historical package",
+      "workload": "Static regular app-file inventory; 9 files",
+      "original_status": "LOCAL_UNPUBLISHED_ADHOC_PACKAGE",
+      "sources": [
+        {
+          "source_id": "old_comparison"
+        },
+        {
+          "source_id": "old_arm"
+        }
+      ],
+      "limits": [
+        "Older package than M1; different contents/features.",
+        "No current runtime comparison."
+      ],
+      "current_legacy_runtime_pair_eligible": false,
+      "artifacts": {
+        "source": "6b834202e712755222c8ef9418441874a5ecca5d",
+        "archive_sha256": "2b688809f55862ea1d12086a1424c3a024cbf7e79e90e5d28c7d972135fb8036",
+        "archive_bytes": 3614432,
+        "app_regular_files_bytes": 6324472,
+        "app_regular_files_count": 9,
+        "daemon_sha256": "d2895ed27b52f61dfd4f16581469b984a2e32354a67c94f3fd83996558733573",
+        "app_sha256": "eef8600f4a505f05c4567aa68f23c3ecc09c4c39189abe87b713d6f96042e6ed",
+        "embedded_matches_sidecar": true,
+        "readme_exact_source": true,
+        "matches_arm_full_run": true,
+        "staged_smoke": true,
+        "fresh_extracted_smoke": true,
+        "extracted_codesign": true,
+        "published": false,
+        "native_desktop_exercised": false
+      }
+    },
+    {
+      "id": "s15",
+      "kind": "historical_virtual_performance",
+      "date_local": "2026-10-22",
+      "product_source": "4a652900d5e7043cb5c14e529d42c6eba0d327ff",
+      "host": "macOS 27.2 ARM64",
+      "workload": "S15: two virtual daemons, plaintext same-host loopback, GUI excluded; per-daemon ~60s CPU/RSS windows and 1000 moves",
+      "original_status": "PASS",
+      "sources": [
+        {
+          "source_id": "old_arm"
+        },
+        {
+          "source_id": "old_arm_report"
+        },
+        {
+          "source_id": "old_comparison"
+        },
+        {
+          "source_id": "old_host"
+        }
+      ],
+      "limits": [
+        "IPC injection to receiver ledger upper bound, not physical input-to-screen latency.",
+        "Daemon d2895ed27b52f61dfd4f16581469b984a2e32354a67c94f3fd83996558733573 matches only the recorded historical package.",
+        "Per-process RSS and CPU windows cannot be paired with Synergy snapshots."
+      ],
+      "current_legacy_runtime_pair_eligible": false,
+      "artifacts": {
+        "daemon_sha256": "d2895ed27b52f61dfd4f16581469b984a2e32354a67c94f3fd83996558733573",
+        "report_sha256": "98e6126be7787d71e904337b1424c116cf2e4a8b1733f6072e4062d0fc8b13c4"
+      }
+    },
+    {
+      "id": "stop_before",
+      "kind": "historical_stop_fix_pair",
+      "date_local": "2026-10-23",
+      "product_source": "d2ab17d4e053437d9f7568b0f6dbf96727bfd6c9 plus CLI trace overlay",
+      "host": "macOS 27.2 (26B5112a), Darwin arm64; hardware model not recorded",
+      "workload": "One real public CLI daemon.stop, virtual role Off, TLS enabled, discovery/autoconnect off, no connected peer; same collector/CLI trace overlay; distinct private loopback config ports",
+      "original_status": "PASS",
+      "sources": [
+        {
+          "source_id": "stop_report"
+        },
+        {
+          "source_id": "stop_host"
+        },
+        {
+          "source_id": "stop_before"
+        },
+        {
+          "source_id": "stop_before_binary"
+        },
+        {
+          "source_id": "stop_patch"
+        }
+      ],
+      "limits": [
+        "One observation only, shared CLOCK_MONOTONIC includes trace overhead.",
+        "Independent waitpid observer timestamp has OS scheduling delay.",
+        "Stop-fix pair only; not whole app, Synergy, general exit contract or connected-server result."
+      ],
+      "current_legacy_runtime_pair_eligible": false,
+      "artifacts": {
+        "tested_daemon_sha256": "1e4ea648bcada9fafc2a4ac0a59d723d04dbb6c9ee4cb71898d9b7b04a1e2f02",
+        "uninstrumented_runtime_reproduction": false
+      }
+    },
+    {
+      "id": "stop_after",
+      "kind": "historical_stop_fix_pair",
+      "date_local": "2026-10-23",
+      "product_source": "d2ab17d4e053437d9f7568b0f6dbf96727bfd6c9 plus runtime-fix.patch and identical CLI trace overlay; fix committed as 2485c1425e4d2f414eb22742dfd73f355d47390c",
+      "host": "macOS 27.2 (26B5112a), Darwin arm64; hardware model not recorded",
+      "workload": "One real public CLI daemon.stop, virtual role Off, TLS enabled, discovery/autoconnect off, no connected peer; same collector/CLI trace overlay; distinct private loopback config ports",
+      "original_status": "PASS",
+      "sources": [
+        {
+          "source_id": "stop_report"
+        },
+        {
+          "source_id": "stop_host"
+        },
+        {
+          "source_id": "stop_after"
+        },
+        {
+          "source_id": "stop_after_binary"
+        },
+        {
+          "source_id": "stop_patch"
+        }
+      ],
+      "limits": [
+        "One observation only, shared CLOCK_MONOTONIC includes trace overhead.",
+        "Independent waitpid observer timestamp has OS scheduling delay.",
+        "Stop-fix pair only; not whole app, Synergy, general exit contract or connected-server result."
+      ],
+      "current_legacy_runtime_pair_eligible": false,
+      "artifacts": {
+        "tested_daemon_sha256": "4ac294f7be9a1512c10537944f2ce1ffc257a62c9c34fb5c69c9cdf75b74a2ab",
+        "uninstrumented_runtime_reproduction": false
+      }
+    },
+    {
+      "id": "r3",
+      "kind": "historical_failed_connected_sample",
+      "date_local": "2026-10-23",
+      "product_source": "71a40b7c2a5cf22cd0bf18a8b602f9ead51de681 plus private AppEndToEnd overlay",
+      "host": "macOS 27.2 (26B5112a), Darwin arm64",
+      "workload": "Headless app with real model, virtual connected TLS peer; 35 sample batches, 33 steady, compiler overlap in 35/35",
+      "original_status": "FAILED: normal peer-stop 1s timeout and strict first exclusive rebind failure",
+      "sources": [
+        {
+          "source_id": "r3"
+        },
+        {
+          "source_id": "r3_samples"
+        },
+        {
+          "source_id": "r3_host"
+        },
+        {
+          "source_id": "r3_units"
+        },
+        {
+          "source_id": "r3_report"
+        }
+      ],
+      "limits": [
+        "Finite OS-counter baseline only; unrelated compiler overlap was observed.",
+        "First normal peer-stop wait timed out at 1s; peer eventually exited 0 after one owned-group SIGTERM.",
+        "Peer port first exclusive rebind failed; filtered OS TIME_WAIT rows are observations, not an established cause.",
+        "App daemon separate exit code was not collected.",
+        "Failure-only app diagnostic branch was compiled, not exercised by a failed app check.",
+        "Executed controller inherited an incorrect nanosecond label for raw Mach CPU ticks; raw bytes are preserved and derived results use the recorded timebase ratio.",
+        "Private stop_group now skips already-exited direct children before group signals; this differs from r2 and is retained explicitly for parent source review. Strict process/group absence and first rebind predicates remain unchanged."
+      ],
+      "current_legacy_runtime_pair_eligible": false,
+      "artifacts": {
+        "app_sha256": "1f9351253b0d5c6649da3ea4d9cf8b9faa0fc4b259608e88b9170cf25e86f8f7",
+        "daemon_sha256": "350db4541b95f67b8a295419d71933eb4832d07de37881c781664d212a29d572",
+        "compiled_sha256": "c56691aa49c4958a9d48448172d7fa61c42da8ffc94493d201147c8e3385afe6",
+        "controller_sha256": "170e07ed165606e07b9823677a1cdadea59fe25b33e146d8d01685d0c50150c6",
+        "overlay_sha256": "d2db3e4f7ae6a0c41d7d5d03cf30b1be13d6f8af9bc0931a3d4a21fcc9e55cb2"
+      }
+    },
+    {
+      "id": "combined_idle",
+      "kind": "historical_virtual_performance",
+      "date_local": "2026-10-23",
+      "product_source": "f7b10e7550aa11200385b06b69f6dcb2328dd9b5",
+      "host": "macOS; exact host model not bound by this selected record",
+      "workload": "One virtual daemon, role Off, no peers, TLS/discovery off; 30s idle then 30s with status CLI once per second",
+      "original_status": "BOUNDED_OBSERVATION",
+      "sources": [
+        {
+          "source_id": "combined_idle"
+        },
+        {
+          "source_id": "combined_idle_report"
+        }
+      ],
+      "limits": [
+        "Displayed CPU counter resolution 0.01s; zero displayed delta does not prove zero CPU work.",
+        "CLI timings include process launch and IPC; not native input latency.",
+        "No paired other build or reference app."
+      ],
+      "current_legacy_runtime_pair_eligible": false,
+      "artifacts": {
+        "bytes": 3725472,
+        "sha256": "0fc946a8fdb45d666e86739242a719212cafe0fcabc7bc48557e6af4d36608cd"
+      }
+    },
+    {
+      "id": "trust_before",
+      "kind": "historical_local_tradeoff",
+      "date_local": "2026-10-22",
+      "product_source": "4c9cb8c63a2b89c8b14ed273766adf09f5fea9ec",
+      "host": {
+        "os": "macOS 27.2",
+        "architecture": "aarch64",
+        "platform": "virtual",
+        "rust": "1.99.1",
+        "macos_deployment_target": "15.0",
+        "cargo_jobs": 2,
+        "priority": "reduced",
+        "docker_available": false,
+        "paired_timing": "sequential warm CLI; no concurrent build"
+      },
+      "workload": "Warm sequential trust CLI operations with legal finite trust stores; same frozen script, three command durations per offline case",
+      "original_status": "1/9 cases passed in complete source report",
+      "sources": [
+        {
+          "source_id": "trust"
+        },
+        {
+          "source_id": "trust_report"
+        }
+      ],
+      "limits": [
+        "Original baseline budget failures retained.",
+        "Source and executable differ; same local lab paths, no Synergy."
+      ],
+      "current_legacy_runtime_pair_eligible": false,
+      "artifacts": {
+        "daemon_sha256": "96a53a0136e9e96aaa881ef71b94a33f2851a8d829710678f654175bc389f005",
+        "frozen_script_sha256": "87514f36b3aff7c6ab0387530aae982f73aaa3b4749d4df0490bff454c50975e"
+      },
+      "case_outcomes": [
+        {
+          "case": "small_order_and_legacy",
+          "passed": true
+        },
+        {
+          "case": "large_compact_list",
+          "passed": false,
+          "error_detail": "AssertionError: list exceeded lab budget or changed files"
+        },
+        {
+          "case": "bulk_same_lists",
+          "passed": false,
+          "error_detail": "AssertionError: bulk command exceeded lab budget"
+        },
+        {
+          "case": "bulk_overlap",
+          "passed": false,
+          "error_detail": "AssertionError: bulk command exceeded lab budget"
+        },
+        {
+          "case": "bulk_canonical_expansion_refused",
+          "passed": false,
+          "error_detail": "AssertionError: bulk command exceeded lab budget"
+        },
+        {
+          "case": "compact_revoke",
+          "passed": false,
+          "error_detail": "AssertionError: bulk command exceeded lab budget"
+        },
+        {
+          "case": "live_server_approve",
+          "passed": false,
+          "error_detail": "AssertionError: large live update exceeded lab budget"
+        },
+        {
+          "case": "live_client_approve",
+          "passed": false,
+          "error_detail": "AssertionError: large live update exceeded lab budget"
+        },
+        {
+          "case": "live_server_revoke",
+          "passed": false,
+          "error_detail": "AssertionError: large live update exceeded lab budget"
+        }
+      ]
+    },
+    {
+      "id": "trust_after",
+      "kind": "historical_local_tradeoff",
+      "date_local": "2026-10-22",
+      "product_source": "0389e69e8b0dbc3420b062721c85aedc96f879dc",
+      "host": {
+        "os": "macOS 27.2",
+        "architecture": "aarch64",
+        "platform": "virtual",
+        "rust": "1.99.1",
+        "macos_deployment_target": "15.0",
+        "cargo_jobs": 2,
+        "priority": "reduced",
+        "docker_available": false,
+        "paired_timing": "sequential warm CLI; no concurrent build"
+      },
+      "workload": "Same warm sequential offline trust cases and frozen script; final historical optimization",
+      "original_status": "9/9 cases passed in complete source report",
+      "sources": [
+        {
+          "source_id": "trust"
+        },
+        {
+          "source_id": "trust_report"
+        }
+      ],
+      "limits": [
+        "Small case slower; large-list RSS and executable size higher.",
+        "Not a current or whole-app comparison."
+      ],
+      "current_legacy_runtime_pair_eligible": false,
+      "artifacts": {
+        "daemon_sha256": "0f7dc7030b18b361c5b634885f0c3b31c9e6f35038b3910840a043e4f0bdcf9e",
+        "frozen_script_sha256": "87514f36b3aff7c6ab0387530aae982f73aaa3b4749d4df0490bff454c50975e"
+      },
+      "case_outcomes": [
+        {
+          "case": "small_order_and_legacy",
+          "passed": true
+        },
+        {
+          "case": "large_compact_list",
+          "passed": true
+        },
+        {
+          "case": "bulk_same_lists",
+          "passed": true
+        },
+        {
+          "case": "bulk_overlap",
+          "passed": true
+        },
+        {
+          "case": "bulk_canonical_expansion_refused",
+          "passed": true
+        },
+        {
+          "case": "compact_revoke",
+          "passed": true
+        },
+        {
+          "case": "live_server_approve",
+          "passed": true
+        },
+        {
+          "case": "live_client_approve",
+          "passed": true
+        },
+        {
+          "case": "live_server_revoke",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "sustained",
+      "kind": "historical_resource_trend",
+      "date_local": "2026-10-22",
+      "product_source": "655e59f69c490841dc2cd2c8128eca51545c15f7",
+      "host": "Darwin/macOS OS allocation record; exact hardware not bound in selected record",
+      "workload": "Two virtual mutual-TLS loopback daemons, 90 cycles / 180 transfers, 90 cancellations, 9 reconnects, 270.006s; diagnostic history polling",
+      "original_status": {
+        "declared_gates_passed": true
+      },
+      "sources": [
+        {
+          "source_id": "sustained"
+        },
+        {
+          "source_id": "sustained_report"
+        }
+      ],
+      "limits": [
+        "Passing finite gates did not establish flat RSS, a leak diagnosis or sustained whole-process bound.",
+        "Separate polling control changed workload; do not call it a before/after product optimization.",
+        "Sampled RSS peaks can miss unsampled peaks; private original raw files not read."
+      ],
+      "current_legacy_runtime_pair_eligible": false,
+      "artifacts": {
+        "daemon_sha256": "1405abcc08a4f8b175d4116a413ac0426c5e708578e9e250487ff13d18ae97e5"
+      },
+      "report_wide_rss_sample_count": 1263
+    },
+    {
+      "id": "event",
+      "kind": "historical_event_measurement",
+      "date_local": "2026-10-23",
+      "product_source": "d83807d542a86a99ad83978cc460028d972373e1 plus private measurement overlay",
+      "host": "macOS private headless app; exact host model not bound here",
+      "workload": "12 paced real connection.restart / peer.untrusted events, 25ms model polling and heartbeat; virtual peers",
+      "original_status": "bounded pass; no actionable runtime delivery issue reproduced",
+      "sources": [
+        {
+          "source_id": "event"
+        },
+        {
+          "source_id": "event_report"
+        }
+      ],
+      "limits": [
+        "Daemon millisecond wall-clock timestamp to model polling/callback boundaries; not physical input.",
+        "App includes measurement/heartbeat overhead; no comparable idle or reference-app run.",
+        "RSS did not return to first reading; short sample proves neither leak nor absence."
+      ],
+      "current_legacy_runtime_pair_eligible": false,
+      "artifacts": {
+        "daemon_sha256": "350db4541b95f67b8a295419d71933eb4832d07de37881c781664d212a29d572",
+        "app_sha256": null,
+        "limit": "Copied daemon hash is report-backed; private measurement app has an overlay; no private binary read."
+      }
+    },
+    {
+      "id": "rosetta",
+      "kind": "historical_platform_observation",
+      "date_local": "2026-10-22",
+      "product_source": {
+        "baseline": "bf0b8aae33ecc52189e68f00f4ebca6fb028202f",
+        "candidate": "bf0b8aa plus exact 2201e73 IPC source"
+      },
+      "host": "x86_64 through Rosetta on ARM64 Mac; not physical Intel",
+      "workload": "Separate S15 virtual loopback 60s CPU windows; original baseline, failed replay, then candidate",
+      "original_status": {
+        "baseline": "FAIL",
+        "baseline_replay": "FAIL",
+        "candidate": "PASS"
+      },
+      "sources": [
+        {
+          "source_id": "old_arm",
+          "json_pointer": "/intel_cpu_probe"
+        }
+      ],
+      "limits": [
+        "Process CPU ticks are coarse at these low values. Separate finite runs; Rosetta translation. No physical Intel or whole-app efficiency claim.",
+        "No pooling of original and replay; no current/legacy performance transfer."
+      ],
+      "current_legacy_runtime_pair_eligible": false
+    }
+  ],
+  "metrics": [
+    {
+      "id": "legacy_core_rss",
+      "record_id": "legacy",
+      "label": "Core RSS",
+      "category": "runtime_performance",
+      "unit": "KiB",
+      "value": [
+        53264,
+        53936
+      ],
+      "statistic": "reported_min_max_bounds",
+      "sample_count": 3,
+      "sample_count_basis": "passive snapshots; bounds are not two samples",
+      "evidence": {
+        "source_id": "old_comparison",
+        "json_pointer": "/synergy/core_rss_snapshot_KiB"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "RSS is not unique physical memory; no generated workload."
+      ]
+    },
+    {
+      "id": "legacy_stack_rss",
+      "record_id": "legacy",
+      "label": "Service + tray + core summed RSS",
+      "category": "runtime_performance",
+      "unit": "KiB",
+      "value": [
+        147040,
+        147792
+      ],
+      "statistic": "reported_min_max_bounds",
+      "sample_count": 3,
+      "sample_count_basis": "passive snapshots; bounds are not two samples",
+      "evidence": {
+        "source_id": "old_comparison",
+        "json_pointer": "/synergy/background_stack_rss_snapshot_KiB"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "RSS is not unique physical memory; no generated workload."
+      ]
+    },
+    {
+      "id": "legacy_payload",
+      "record_id": "legacy",
+      "label": "App regular-file content",
+      "category": "payload_inventory",
+      "unit": "byte",
+      "value": 548821397,
+      "statistic": "inventory_total",
+      "sample_count": 1,
+      "sample_count_basis": "bundle inventory",
+      "evidence": {
+        "source_id": "old_comparison",
+        "json_pointer": "/synergy/app_regular_files_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "legacy_cpu_display",
+      "record_id": "legacy",
+      "label": "Displayed CPU per process in each snapshot",
+      "category": "runtime_observation",
+      "unit": "ps_displayed_percent",
+      "value": 0.0,
+      "statistic": "rounded_display",
+      "sample_count": 3,
+      "sample_count_basis": "snapshots per listed service/tray/core process",
+      "evidence": {
+        "source_id": "legacy_report",
+        "lines": [
+          239,
+          239
+        ],
+        "anchor": "| **Synergy total**"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "No instrumented timed workload CPU; do not read 0.0 as zero CPU work."
+      ]
+    },
+    {
+      "id": "legacy_earlier_stack_rss",
+      "record_id": "legacy",
+      "label": "Earlier same process-set RSS",
+      "category": "runtime_observation",
+      "unit": "KiB",
+      "value": 118832,
+      "statistic": "earlier_snapshot",
+      "sample_count": 1,
+      "sample_count_basis": "separate passive sample",
+      "evidence": {
+        "source_id": "legacy_report",
+        "lines": [
+          241,
+          241
+        ],
+        "anchor": "Earlier, at 13:59:17"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "Different time; variation does not establish leak or improvement."
+      ]
+    },
+    {
+      "id": "legacy_focusfix_rss",
+      "record_id": "legacy",
+      "label": "Separate user FocusFix RSS",
+      "category": "runtime_observation",
+      "unit": "KiB",
+      "value": 12208,
+      "statistic": "snapshot",
+      "sample_count": 1,
+      "sample_count_basis": "separate helper sample",
+      "evidence": {
+        "source_id": "legacy_report",
+        "lines": [
+          243,
+          243
+        ],
+        "anchor": "The user's separate FocusFix"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "Excluded from packaged Synergy stack; installed helper source version unbound."
+      ]
+    },
+    {
+      "id": "legacy_log_service_started",
+      "record_id": "legacy",
+      "label": "service_started wall-log interval",
+      "category": "log_interval",
+      "unit": "second",
+      "value": 2.5,
+      "statistic": "approximate_historical_log_interval",
+      "sample_count": 1,
+      "sample_count_basis": "one boot log prefix",
+      "evidence": {
+        "source_id": "legacy_report",
+        "lines": [
+          274,
+          274
+        ],
+        "anchor": "Historical startup logs show"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "Not cold launch, CPU time or readiness benchmark."
+      ]
+    },
+    {
+      "id": "legacy_log_first_core_ipc",
+      "record_id": "legacy",
+      "label": "first_core_ipc wall-log interval",
+      "category": "log_interval",
+      "unit": "second",
+      "value": 10.8,
+      "statistic": "approximate_historical_log_interval",
+      "sample_count": 1,
+      "sample_count_basis": "one boot log prefix",
+      "evidence": {
+        "source_id": "legacy_report",
+        "lines": [
+          274,
+          274
+        ],
+        "anchor": "Historical startup logs show"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "Not cold launch, CPU time or readiness benchmark."
+      ]
+    },
+    {
+      "id": "m1_worker_operation_elapsed_seconds",
+      "record_id": "m1",
+      "label": "Build worker after preparation through inventory",
+      "category": "build_observation",
+      "unit": "second",
+      "value": 101.05031070899986,
+      "statistic": "single_elapsed_interval",
+      "sample_count": 1,
+      "sample_count_basis": "one build",
+      "evidence": {
+        "source_id": "m1_build",
+        "json_pointer": "/worker_operation_elapsed_seconds"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "Not app launch latency or full exact controller duration."
+      ]
+    },
+    {
+      "id": "m1_resolve_elapsed_seconds",
+      "record_id": "m1",
+      "label": "Dependency resolution",
+      "category": "build_observation",
+      "unit": "second",
+      "value": 9.432977791000667,
+      "statistic": "single_elapsed_interval",
+      "sample_count": 1,
+      "sample_count_basis": "one build",
+      "evidence": {
+        "source_id": "m1_build",
+        "json_pointer": "/resolve_elapsed_seconds"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "Not app launch latency or full exact controller duration."
+      ]
+    },
+    {
+      "id": "m1_bundle_elapsed_seconds",
+      "record_id": "m1",
+      "label": "Bundling",
+      "category": "build_observation",
+      "unit": "second",
+      "value": 87.45542937500068,
+      "statistic": "single_elapsed_interval",
+      "sample_count": 1,
+      "sample_count_basis": "one build",
+      "evidence": {
+        "source_id": "m1_build",
+        "json_pointer": "/bundle_elapsed_seconds"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "Not app launch latency or full exact controller duration."
+      ]
+    },
+    {
+      "id": "m1_ssh_invocation_envelope_seconds",
+      "record_id": "m1",
+      "label": "Local SSH envelope",
+      "category": "build_observation",
+      "unit": "second",
+      "value": 103.82015408400184,
+      "statistic": "single_elapsed_interval",
+      "sample_count": 1,
+      "sample_count_basis": "one build",
+      "evidence": {
+        "source_id": "m1_build",
+        "json_pointer": "/ssh_invocation_envelope_seconds"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "Not app launch latency or full exact controller duration."
+      ]
+    },
+    {
+      "id": "m1_payload",
+      "record_id": "m1",
+      "label": "App regular-file content",
+      "category": "payload_inventory",
+      "unit": "byte",
+      "value": 10050709,
+      "statistic": "inventory_total",
+      "sample_count": 1,
+      "sample_count_basis": "bundle inventory",
+      "evidence": {
+        "source_id": "m1_build",
+        "json_pointer": "/bundle_regular_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "m1_flow_duration",
+      "record_id": "m1",
+      "label": "Failed ordinary controller invocation",
+      "category": "correctness_observation",
+      "unit": "second",
+      "value": 6.764437458000001,
+      "statistic": "failed_attempt_elapsed",
+      "sample_count": 1,
+      "sample_count_basis": "one controller attempt",
+      "evidence": {
+        "source_id": "m1_flow",
+        "json_pointer": "/controller_invocation_seconds"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "Not startup latency or a distribution."
+      ]
+    },
+    {
+      "id": "m1_checks_passed",
+      "record_id": "m1",
+      "label": "App checks passed",
+      "category": "correctness_observation",
+      "unit": "check",
+      "value": 25,
+      "statistic": "reported_correctness",
+      "sample_count": null,
+      "sample_count_basis": "checks are not performance samples",
+      "evidence": {
+        "source_id": "m1_flow",
+        "json_pointer": "/app_checks/passed"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "m1_checks_total",
+      "record_id": "m1",
+      "label": "App checks total",
+      "category": "correctness_observation",
+      "unit": "check",
+      "value": 25,
+      "statistic": "reported_correctness",
+      "sample_count": null,
+      "sample_count_basis": "checks are not performance samples",
+      "evidence": {
+        "source_id": "m1_flow",
+        "json_pointer": "/app_checks/total"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "m1_checks_actual_os_exit",
+      "record_id": "m1",
+      "label": "App checks actual_os_exit",
+      "category": "correctness_observation",
+      "unit": "exit_code",
+      "value": 0,
+      "statistic": "reported_correctness",
+      "sample_count": null,
+      "sample_count_basis": "checks are not performance samples",
+      "evidence": {
+        "source_id": "m1_flow",
+        "json_pointer": "/app_checks/actual_os_exit"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "old_payload",
+      "record_id": "old_package",
+      "label": "Historical app regular-file content",
+      "category": "payload_inventory",
+      "unit": "byte",
+      "value": 6324472,
+      "statistic": "inventory_total",
+      "sample_count": 1,
+      "sample_count_basis": "old package inventory",
+      "evidence": {
+        "source_id": "old_comparison",
+        "json_pointer": "/openergy_package/app_regular_files_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "s15_server_cpu_percent",
+      "record_id": "s15",
+      "label": "server cpu_percent",
+      "category": "runtime_performance",
+      "unit": "percent_one_core",
+      "value": 0.04995823058202637,
+      "statistic": "single_resource_window",
+      "sample_count": 1,
+      "sample_count_basis": "one window per daemon; internal RSS sample count unspecified",
+      "evidence": {
+        "source_id": "old_arm",
+        "json_pointer": "/mac_arm_full/scenarios/69/measurements/0/cpu_percent"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "s15_server_rss_peak_bytes",
+      "record_id": "s15",
+      "label": "server rss_peak_bytes",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 9469952,
+      "statistic": "single_resource_window",
+      "sample_count": 1,
+      "sample_count_basis": "one window per daemon; internal RSS sample count unspecified",
+      "evidence": {
+        "source_id": "old_arm",
+        "json_pointer": "/mac_arm_full/scenarios/69/measurements/0/rss_peak_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "s15_server_window_ms",
+      "record_id": "s15",
+      "label": "server window_ms",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 60050,
+      "statistic": "single_resource_window",
+      "sample_count": 1,
+      "sample_count_basis": "one window per daemon; internal RSS sample count unspecified",
+      "evidence": {
+        "source_id": "old_arm",
+        "json_pointer": "/mac_arm_full/scenarios/69/measurements/0/window_ms"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "s15_client_cpu_percent",
+      "record_id": "s15",
+      "label": "client cpu_percent",
+      "category": "runtime_performance",
+      "unit": "percent_one_core",
+      "value": 0.01665667566862828,
+      "statistic": "single_resource_window",
+      "sample_count": 1,
+      "sample_count_basis": "one window per daemon; internal RSS sample count unspecified",
+      "evidence": {
+        "source_id": "old_arm",
+        "json_pointer": "/mac_arm_full/scenarios/69/measurements/1/cpu_percent"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "s15_client_rss_peak_bytes",
+      "record_id": "s15",
+      "label": "client rss_peak_bytes",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 9420800,
+      "statistic": "single_resource_window",
+      "sample_count": 1,
+      "sample_count_basis": "one window per daemon; internal RSS sample count unspecified",
+      "evidence": {
+        "source_id": "old_arm",
+        "json_pointer": "/mac_arm_full/scenarios/69/measurements/1/rss_peak_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "s15_client_window_ms",
+      "record_id": "s15",
+      "label": "client window_ms",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 60035,
+      "statistic": "single_resource_window",
+      "sample_count": 1,
+      "sample_count_basis": "one window per daemon; internal RSS sample count unspecified",
+      "evidence": {
+        "source_id": "old_arm",
+        "json_pointer": "/mac_arm_full/scenarios/69/measurements/1/window_ms"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "s15_p50_ms",
+      "record_id": "s15",
+      "label": "External IPC-to-recorded p50_ms",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 0.7975840000000001,
+      "statistic": "p50_ms",
+      "sample_count": 1000,
+      "sample_count_basis": "virtual moves in one run",
+      "evidence": {
+        "source_id": "old_arm",
+        "json_pointer": "/mac_arm_full/scenarios/69/measurements/2/p50_ms"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "s15_p95_ms",
+      "record_id": "s15",
+      "label": "External IPC-to-recorded p95_ms",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 0.8825839999999999,
+      "statistic": "p95_ms",
+      "sample_count": 1000,
+      "sample_count_basis": "virtual moves in one run",
+      "evidence": {
+        "source_id": "old_arm",
+        "json_pointer": "/mac_arm_full/scenarios/69/measurements/2/p95_ms"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "s15_p99_ms",
+      "record_id": "s15",
+      "label": "External IPC-to-recorded p99_ms",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 0.9367909999999999,
+      "statistic": "p99_ms",
+      "sample_count": 1000,
+      "sample_count_basis": "virtual moves in one run",
+      "evidence": {
+        "source_id": "old_arm",
+        "json_pointer": "/mac_arm_full/scenarios/69/measurements/2/p99_ms"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "s15_max_ms",
+      "record_id": "s15",
+      "label": "External IPC-to-recorded max_ms",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 1.782958,
+      "statistic": "max_ms",
+      "sample_count": 1000,
+      "sample_count_basis": "virtual moves in one run",
+      "evidence": {
+        "source_id": "old_arm",
+        "json_pointer": "/mac_arm_full/scenarios/69/measurements/2/max_ms"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "stop_before_request_to_exit_ms",
+      "record_id": "stop_before",
+      "label": "request_to_exit_ms",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 1254.038,
+      "statistic": "single_interval",
+      "sample_count": 1,
+      "sample_count_basis": "one stop request per built version",
+      "evidence": {
+        "source_id": "stop_before",
+        "json_pointer": "/request_to_exit_ms"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "stop_before_request_to_reply_ms",
+      "record_id": "stop_before",
+      "label": "request_to_reply_ms",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 0.199,
+      "statistic": "single_interval",
+      "sample_count": 1,
+      "sample_count_basis": "one stop request per built version",
+      "evidence": {
+        "source_id": "stop_before",
+        "json_pointer": "/request_to_reply_ms"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "stop_before_reply_to_exit_ms",
+      "record_id": "stop_before",
+      "label": "reply_to_exit_ms",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 1253.839,
+      "statistic": "single_interval",
+      "sample_count": 1,
+      "sample_count_basis": "one stop request per built version",
+      "evidence": {
+        "source_id": "stop_before",
+        "json_pointer": "/reply_to_exit_ms"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "stop_after_request_to_exit_ms",
+      "record_id": "stop_after",
+      "label": "request_to_exit_ms",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 252.767,
+      "statistic": "single_interval",
+      "sample_count": 1,
+      "sample_count_basis": "one stop request per built version",
+      "evidence": {
+        "source_id": "stop_after",
+        "json_pointer": "/request_to_exit_ms"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "stop_after_request_to_reply_ms",
+      "record_id": "stop_after",
+      "label": "request_to_reply_ms",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 0.12,
+      "statistic": "single_interval",
+      "sample_count": 1,
+      "sample_count_basis": "one stop request per built version",
+      "evidence": {
+        "source_id": "stop_after",
+        "json_pointer": "/request_to_reply_ms"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "stop_after_reply_to_exit_ms",
+      "record_id": "stop_after",
+      "label": "reply_to_exit_ms",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 252.647,
+      "statistic": "single_interval",
+      "sample_count": 1,
+      "sample_count_basis": "one stop request per built version",
+      "evidence": {
+        "source_id": "stop_after",
+        "json_pointer": "/reply_to_exit_ms"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "r3_app_rss_bytes_min",
+      "record_id": "r3",
+      "label": "app rss_bytes_min",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 13369344,
+      "statistic": "rss_bytes_min",
+      "sample_count": 33,
+      "sample_count_basis": "steady samples including begin/end; one finite interval",
+      "evidence": {
+        "source_id": "r3",
+        "json_pointer": "/flow/resources/app/rss_bytes_min"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "Raw CPU unit corrected; no percent derived; overall run FAILED."
+      ]
+    },
+    {
+      "id": "r3_app_rss_bytes_max",
+      "record_id": "r3",
+      "label": "app rss_bytes_max",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 13451264,
+      "statistic": "rss_bytes_max",
+      "sample_count": 33,
+      "sample_count_basis": "steady samples including begin/end; one finite interval",
+      "evidence": {
+        "source_id": "r3",
+        "json_pointer": "/flow/resources/app/rss_bytes_max"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "Raw CPU unit corrected; no percent derived; overall run FAILED."
+      ]
+    },
+    {
+      "id": "r3_app_cpu_delta_raw_ticks",
+      "record_id": "r3",
+      "label": "app cpu_delta_raw_ticks",
+      "category": "runtime_performance",
+      "unit": "raw_mach_tick",
+      "value": 136662,
+      "statistic": "steady_interval_delta",
+      "sample_count": 33,
+      "sample_count_basis": "steady samples including begin/end; one finite interval",
+      "evidence": {
+        "source_id": "r3",
+        "json_pointer": "/flow/resources/app/cpu_delta_raw_ticks"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "Raw CPU unit corrected; no percent derived; overall run FAILED."
+      ]
+    },
+    {
+      "id": "r3_daemon_rss_bytes_min",
+      "record_id": "r3",
+      "label": "daemon rss_bytes_min",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 10584064,
+      "statistic": "rss_bytes_min",
+      "sample_count": 33,
+      "sample_count_basis": "steady samples including begin/end; one finite interval",
+      "evidence": {
+        "source_id": "r3",
+        "json_pointer": "/flow/resources/daemon/rss_bytes_min"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "Raw CPU unit corrected; no percent derived; overall run FAILED."
+      ]
+    },
+    {
+      "id": "r3_daemon_rss_bytes_max",
+      "record_id": "r3",
+      "label": "daemon rss_bytes_max",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 10633216,
+      "statistic": "rss_bytes_max",
+      "sample_count": 33,
+      "sample_count_basis": "steady samples including begin/end; one finite interval",
+      "evidence": {
+        "source_id": "r3",
+        "json_pointer": "/flow/resources/daemon/rss_bytes_max"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "Raw CPU unit corrected; no percent derived; overall run FAILED."
+      ]
+    },
+    {
+      "id": "r3_daemon_cpu_delta_raw_ticks",
+      "record_id": "r3",
+      "label": "daemon cpu_delta_raw_ticks",
+      "category": "runtime_performance",
+      "unit": "raw_mach_tick",
+      "value": 350449,
+      "statistic": "steady_interval_delta",
+      "sample_count": 33,
+      "sample_count_basis": "steady samples including begin/end; one finite interval",
+      "evidence": {
+        "source_id": "r3",
+        "json_pointer": "/flow/resources/daemon/cpu_delta_raw_ticks"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "Raw CPU unit corrected; no percent derived; overall run FAILED."
+      ]
+    },
+    {
+      "id": "r3_peer_rss_bytes_min",
+      "record_id": "r3",
+      "label": "peer rss_bytes_min",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 10502144,
+      "statistic": "rss_bytes_min",
+      "sample_count": 33,
+      "sample_count_basis": "steady samples including begin/end; one finite interval",
+      "evidence": {
+        "source_id": "r3",
+        "json_pointer": "/flow/resources/peer/rss_bytes_min"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "Raw CPU unit corrected; no percent derived; overall run FAILED."
+      ]
+    },
+    {
+      "id": "r3_peer_rss_bytes_max",
+      "record_id": "r3",
+      "label": "peer rss_bytes_max",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 10567680,
+      "statistic": "rss_bytes_max",
+      "sample_count": 33,
+      "sample_count_basis": "steady samples including begin/end; one finite interval",
+      "evidence": {
+        "source_id": "r3",
+        "json_pointer": "/flow/resources/peer/rss_bytes_max"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "Raw CPU unit corrected; no percent derived; overall run FAILED."
+      ]
+    },
+    {
+      "id": "r3_peer_cpu_delta_raw_ticks",
+      "record_id": "r3",
+      "label": "peer cpu_delta_raw_ticks",
+      "category": "runtime_performance",
+      "unit": "raw_mach_tick",
+      "value": 156115,
+      "statistic": "steady_interval_delta",
+      "sample_count": 33,
+      "sample_count_basis": "steady samples including begin/end; one finite interval",
+      "evidence": {
+        "source_id": "r3",
+        "json_pointer": "/flow/resources/peer/cpu_delta_raw_ticks"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "Raw CPU unit corrected; no percent derived; overall run FAILED."
+      ]
+    },
+    {
+      "id": "combined_0_rss_min",
+      "record_id": "combined_idle",
+      "label": "idle_no_status_poll rss_min",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 8667136,
+      "statistic": "rss_min",
+      "sample_count": 30,
+      "sample_count_basis": "one-Hz samples in one phase",
+      "evidence": {
+        "source_id": "combined_idle",
+        "json_pointer": "/phases/0/rss_min"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "CPU delta uses coarse displayed counter; not zero-work proof."
+      ]
+    },
+    {
+      "id": "combined_0_rss_max",
+      "record_id": "combined_idle",
+      "label": "idle_no_status_poll rss_max",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 8667136,
+      "statistic": "rss_max",
+      "sample_count": 30,
+      "sample_count_basis": "one-Hz samples in one phase",
+      "evidence": {
+        "source_id": "combined_idle",
+        "json_pointer": "/phases/0/rss_max"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "CPU delta uses coarse displayed counter; not zero-work proof."
+      ]
+    },
+    {
+      "id": "combined_0_cpu_seconds_delta",
+      "record_id": "combined_idle",
+      "label": "idle_no_status_poll cpu_seconds_delta",
+      "category": "runtime_performance",
+      "unit": "second",
+      "value": 0.0,
+      "statistic": "displayed_counter_delta",
+      "sample_count": 30,
+      "sample_count_basis": "one-Hz samples in one phase",
+      "evidence": {
+        "source_id": "combined_idle",
+        "json_pointer": "/phases/0/cpu_seconds_delta"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "CPU delta uses coarse displayed counter; not zero-work proof."
+      ]
+    },
+    {
+      "id": "combined_1_rss_min",
+      "record_id": "combined_idle",
+      "label": "status_cli_once_per_second rss_min",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 8699904,
+      "statistic": "rss_min",
+      "sample_count": 30,
+      "sample_count_basis": "one-Hz samples in one phase",
+      "evidence": {
+        "source_id": "combined_idle",
+        "json_pointer": "/phases/1/rss_min"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "CPU delta uses coarse displayed counter; not zero-work proof."
+      ]
+    },
+    {
+      "id": "combined_1_rss_max",
+      "record_id": "combined_idle",
+      "label": "status_cli_once_per_second rss_max",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 9027584,
+      "statistic": "rss_max",
+      "sample_count": 30,
+      "sample_count_basis": "one-Hz samples in one phase",
+      "evidence": {
+        "source_id": "combined_idle",
+        "json_pointer": "/phases/1/rss_max"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "CPU delta uses coarse displayed counter; not zero-work proof."
+      ]
+    },
+    {
+      "id": "combined_1_cpu_seconds_delta",
+      "record_id": "combined_idle",
+      "label": "status_cli_once_per_second cpu_seconds_delta",
+      "category": "runtime_performance",
+      "unit": "second",
+      "value": 0.0,
+      "statistic": "displayed_counter_delta",
+      "sample_count": 30,
+      "sample_count_basis": "one-Hz samples in one phase",
+      "evidence": {
+        "source_id": "combined_idle",
+        "json_pointer": "/phases/1/cpu_seconds_delta"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "CPU delta uses coarse displayed counter; not zero-work proof."
+      ]
+    },
+    {
+      "id": "combined_status_min",
+      "record_id": "combined_idle",
+      "label": "Status CLI round trip min",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 6.531208000005506,
+      "statistic": "min",
+      "sample_count": 30,
+      "sample_count_basis": "one CLI invocation per second; includes launch",
+      "evidence": {
+        "source_id": "combined_idle",
+        "json_pointer": "/phases/1/status_latency_summary_ms/min"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "combined_status_median",
+      "record_id": "combined_idle",
+      "label": "Status CLI round trip median",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 8.24960450000134,
+      "statistic": "median",
+      "sample_count": 30,
+      "sample_count_basis": "one CLI invocation per second; includes launch",
+      "evidence": {
+        "source_id": "combined_idle",
+        "json_pointer": "/phases/1/status_latency_summary_ms/median"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "combined_status_max",
+      "record_id": "combined_idle",
+      "label": "Status CLI round trip max",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 12.62645799999973,
+      "statistic": "max",
+      "sample_count": 30,
+      "sample_count_basis": "one CLI invocation per second; includes launch",
+      "evidence": {
+        "source_id": "combined_idle",
+        "json_pointer": "/phases/1/status_latency_summary_ms/max"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_baseline_small_order_and_legacy_median_ms",
+      "record_id": "trust_before",
+      "label": "small_order_and_legacy median_ms",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 10.785625000000007,
+      "statistic": "median_ms",
+      "sample_count": 3,
+      "sample_count_basis": "three sequential warm CLI commands; process peak RSS across these commands",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/baseline/cases/0/median_ms"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_baseline_small_order_and_legacy_max_rss_bytes",
+      "record_id": "trust_before",
+      "label": "small_order_and_legacy max_rss_bytes",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 7569408,
+      "statistic": "max_rss_bytes",
+      "sample_count": 3,
+      "sample_count_basis": "three sequential warm CLI commands; process peak RSS across these commands",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/baseline/cases/0/max_rss_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_fixed_small_order_and_legacy_median_ms",
+      "record_id": "trust_after",
+      "label": "small_order_and_legacy median_ms",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 11.643291999999999,
+      "statistic": "median_ms",
+      "sample_count": 3,
+      "sample_count_basis": "three sequential warm CLI commands; process peak RSS across these commands",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/fixed/cases/0/median_ms"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_fixed_small_order_and_legacy_max_rss_bytes",
+      "record_id": "trust_after",
+      "label": "small_order_and_legacy max_rss_bytes",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 7503872,
+      "statistic": "max_rss_bytes",
+      "sample_count": 3,
+      "sample_count_basis": "three sequential warm CLI commands; process peak RSS across these commands",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/fixed/cases/0/max_rss_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_baseline_large_compact_list_median_ms",
+      "record_id": "trust_before",
+      "label": "large_compact_list median_ms",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 190.01820800000002,
+      "statistic": "median_ms",
+      "sample_count": 3,
+      "sample_count_basis": "three sequential warm CLI commands; process peak RSS across these commands",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/baseline/cases/1/median_ms"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_baseline_large_compact_list_max_rss_bytes",
+      "record_id": "trust_before",
+      "label": "large_compact_list max_rss_bytes",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 9551872,
+      "statistic": "max_rss_bytes",
+      "sample_count": 3,
+      "sample_count_basis": "three sequential warm CLI commands; process peak RSS across these commands",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/baseline/cases/1/max_rss_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_fixed_large_compact_list_median_ms",
+      "record_id": "trust_after",
+      "label": "large_compact_list median_ms",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 36.94175000000005,
+      "statistic": "median_ms",
+      "sample_count": 3,
+      "sample_count_basis": "three sequential warm CLI commands; process peak RSS across these commands",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/fixed/cases/1/median_ms"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_fixed_large_compact_list_max_rss_bytes",
+      "record_id": "trust_after",
+      "label": "large_compact_list max_rss_bytes",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 9781248,
+      "statistic": "max_rss_bytes",
+      "sample_count": 3,
+      "sample_count_basis": "three sequential warm CLI commands; process peak RSS across these commands",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/fixed/cases/1/max_rss_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_baseline_bulk_same_lists_median_ms",
+      "record_id": "trust_before",
+      "label": "bulk_same_lists median_ms",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 331.46708300000006,
+      "statistic": "median_ms",
+      "sample_count": 3,
+      "sample_count_basis": "three sequential warm CLI commands; process peak RSS across these commands",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/baseline/cases/2/median_ms"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_baseline_bulk_same_lists_max_rss_bytes",
+      "record_id": "trust_before",
+      "label": "bulk_same_lists max_rss_bytes",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 12140544,
+      "statistic": "max_rss_bytes",
+      "sample_count": 3,
+      "sample_count_basis": "three sequential warm CLI commands; process peak RSS across these commands",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/baseline/cases/2/max_rss_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_fixed_bulk_same_lists_median_ms",
+      "record_id": "trust_after",
+      "label": "bulk_same_lists median_ms",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 28.86145799999995,
+      "statistic": "median_ms",
+      "sample_count": 3,
+      "sample_count_basis": "three sequential warm CLI commands; process peak RSS across these commands",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/fixed/cases/2/median_ms"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_fixed_bulk_same_lists_max_rss_bytes",
+      "record_id": "trust_after",
+      "label": "bulk_same_lists max_rss_bytes",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 12042240,
+      "statistic": "max_rss_bytes",
+      "sample_count": 3,
+      "sample_count_basis": "three sequential warm CLI commands; process peak RSS across these commands",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/fixed/cases/2/max_rss_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_baseline_bulk_overlap_median_ms",
+      "record_id": "trust_before",
+      "label": "bulk_overlap median_ms",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 187.68008300000005,
+      "statistic": "median_ms",
+      "sample_count": 3,
+      "sample_count_basis": "three sequential warm CLI commands; process peak RSS across these commands",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/baseline/cases/3/median_ms"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_baseline_bulk_overlap_max_rss_bytes",
+      "record_id": "trust_before",
+      "label": "bulk_overlap max_rss_bytes",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 13352960,
+      "statistic": "max_rss_bytes",
+      "sample_count": 3,
+      "sample_count_basis": "three sequential warm CLI commands; process peak RSS across these commands",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/baseline/cases/3/max_rss_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_fixed_bulk_overlap_median_ms",
+      "record_id": "trust_after",
+      "label": "bulk_overlap median_ms",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 38.62033400000009,
+      "statistic": "median_ms",
+      "sample_count": 3,
+      "sample_count_basis": "three sequential warm CLI commands; process peak RSS across these commands",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/fixed/cases/3/median_ms"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_fixed_bulk_overlap_max_rss_bytes",
+      "record_id": "trust_after",
+      "label": "bulk_overlap max_rss_bytes",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 13352960,
+      "statistic": "max_rss_bytes",
+      "sample_count": 3,
+      "sample_count_basis": "three sequential warm CLI commands; process peak RSS across these commands",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/fixed/cases/3/max_rss_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_baseline_bulk_canonical_expansion_refused_median_ms",
+      "record_id": "trust_before",
+      "label": "bulk_canonical_expansion_refused median_ms",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 295.6132079999998,
+      "statistic": "median_ms",
+      "sample_count": 3,
+      "sample_count_basis": "three sequential warm CLI commands; process peak RSS across these commands",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/baseline/cases/4/median_ms"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_baseline_bulk_canonical_expansion_refused_max_rss_bytes",
+      "record_id": "trust_before",
+      "label": "bulk_canonical_expansion_refused max_rss_bytes",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 11730944,
+      "statistic": "max_rss_bytes",
+      "sample_count": 3,
+      "sample_count_basis": "three sequential warm CLI commands; process peak RSS across these commands",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/baseline/cases/4/max_rss_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_fixed_bulk_canonical_expansion_refused_median_ms",
+      "record_id": "trust_after",
+      "label": "bulk_canonical_expansion_refused median_ms",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 20.831333000000065,
+      "statistic": "median_ms",
+      "sample_count": 3,
+      "sample_count_basis": "three sequential warm CLI commands; process peak RSS across these commands",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/fixed/cases/4/median_ms"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_fixed_bulk_canonical_expansion_refused_max_rss_bytes",
+      "record_id": "trust_after",
+      "label": "bulk_canonical_expansion_refused max_rss_bytes",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 11632640,
+      "statistic": "max_rss_bytes",
+      "sample_count": 3,
+      "sample_count_basis": "three sequential warm CLI commands; process peak RSS across these commands",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/fixed/cases/4/max_rss_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_baseline_compact_revoke_median_ms",
+      "record_id": "trust_before",
+      "label": "compact_revoke median_ms",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 363.7450830000004,
+      "statistic": "median_ms",
+      "sample_count": 3,
+      "sample_count_basis": "three sequential warm CLI commands; process peak RSS across these commands",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/baseline/cases/5/median_ms"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_baseline_compact_revoke_max_rss_bytes",
+      "record_id": "trust_before",
+      "label": "compact_revoke max_rss_bytes",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 15564800,
+      "statistic": "max_rss_bytes",
+      "sample_count": 3,
+      "sample_count_basis": "three sequential warm CLI commands; process peak RSS across these commands",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/baseline/cases/5/max_rss_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_fixed_compact_revoke_median_ms",
+      "record_id": "trust_after",
+      "label": "compact_revoke median_ms",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 48.77141600000001,
+      "statistic": "median_ms",
+      "sample_count": 3,
+      "sample_count_basis": "three sequential warm CLI commands; process peak RSS across these commands",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/fixed/cases/5/median_ms"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_fixed_compact_revoke_max_rss_bytes",
+      "record_id": "trust_after",
+      "label": "compact_revoke max_rss_bytes",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 14893056,
+      "statistic": "max_rss_bytes",
+      "sample_count": 3,
+      "sample_count_basis": "three sequential warm CLI commands; process peak RSS across these commands",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/fixed/cases/5/max_rss_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_baseline_bytes",
+      "record_id": "trust_before",
+      "label": "Executable file size",
+      "category": "artifact_size",
+      "unit": "byte",
+      "value": 3674000,
+      "statistic": "file_size",
+      "sample_count": 1,
+      "sample_count_basis": "one executable",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/binary_sizes/baseline_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "trust_fixed_bytes",
+      "record_id": "trust_after",
+      "label": "Executable file size",
+      "category": "artifact_size",
+      "unit": "byte",
+      "value": 3690816,
+      "statistic": "file_size",
+      "sample_count": 1,
+      "sample_count_basis": "one executable",
+      "evidence": {
+        "source_id": "trust",
+        "json_pointer": "/binary_sizes/fixed_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "sustained_server_reference11_20_ps_median_bytes",
+      "record_id": "sustained",
+      "label": "server reference11_20_ps_median_bytes",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 14213120.0,
+      "statistic": "reference11_20_ps_median_bytes",
+      "sample_count": 10,
+      "sample_count_basis": "cycles 11 through 20",
+      "evidence": {
+        "source_id": "sustained",
+        "json_pointer": "/sustained/memory/server/reference11_20_ps_median_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "RSS growth and positive trend retained despite passing declared gates."
+      ]
+    },
+    {
+      "id": "sustained_server_late81_90_ps_median_bytes",
+      "record_id": "sustained",
+      "label": "server late81_90_ps_median_bytes",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 18407424.0,
+      "statistic": "late81_90_ps_median_bytes",
+      "sample_count": 10,
+      "sample_count_basis": "cycles 81 through 90",
+      "evidence": {
+        "source_id": "sustained",
+        "json_pointer": "/sustained/memory/server/late81_90_ps_median_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "RSS growth and positive trend retained despite passing declared gates."
+      ]
+    },
+    {
+      "id": "sustained_server_late_minus_reference_bytes",
+      "record_id": "sustained",
+      "label": "server late_minus_reference_bytes",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 4194304.0,
+      "statistic": "late_minus_reference_bytes",
+      "sample_count": null,
+      "sample_count_basis": "difference between two ten-cycle medians",
+      "evidence": {
+        "source_id": "sustained",
+        "json_pointer": "/sustained/memory/server/late_minus_reference_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "RSS growth and positive trend retained despite passing declared gates."
+      ]
+    },
+    {
+      "id": "sustained_server_periodic_ps_peak_bytes",
+      "record_id": "sustained",
+      "label": "server periodic_ps_peak_bytes",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 39731200,
+      "statistic": "periodic_ps_peak_bytes",
+      "sample_count": null,
+      "sample_count_basis": "per-process periodic sample count unspecified; report-wide rss_sample_count=1263 retained separately",
+      "evidence": {
+        "source_id": "sustained",
+        "json_pointer": "/sustained/memory/server/periodic_ps_peak_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "RSS growth and positive trend retained despite passing declared gates."
+      ]
+    },
+    {
+      "id": "sustained_server_linear_ps_slope_MiB_per_minute_at_3s_pace",
+      "record_id": "sustained",
+      "label": "server linear_ps_slope_MiB_per_minute_at_3s_pace",
+      "category": "runtime_performance",
+      "unit": "MiB_per_minute",
+      "value": 1.3333539120055973,
+      "statistic": "linear_ps_slope_MiB_per_minute_at_3s_pace",
+      "sample_count": 90,
+      "sample_count_basis": "one checkpoint per cycle",
+      "evidence": {
+        "source_id": "sustained",
+        "json_pointer": "/sustained/memory/server/linear_ps_slope_MiB_per_minute_at_3s_pace"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "RSS growth and positive trend retained despite passing declared gates."
+      ]
+    },
+    {
+      "id": "polling_step_server",
+      "record_id": "sustained",
+      "label": "Separate full-history polling RSS step server",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 19259392.0,
+      "statistic": "control_phase_step",
+      "sample_count": null,
+      "sample_count_basis": "phase-based control; same old binary, changed polling workload",
+      "evidence": {
+        "source_id": "sustained",
+        "json_pointer": "/control_analysis/reciprocal_full_poll_step_bytes/server"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "Not a product version comparison."
+      ]
+    },
+    {
+      "id": "sustained_client_reference11_20_ps_median_bytes",
+      "record_id": "sustained",
+      "label": "client reference11_20_ps_median_bytes",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 14254080.0,
+      "statistic": "reference11_20_ps_median_bytes",
+      "sample_count": 10,
+      "sample_count_basis": "cycles 11 through 20",
+      "evidence": {
+        "source_id": "sustained",
+        "json_pointer": "/sustained/memory/client/reference11_20_ps_median_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "RSS growth and positive trend retained despite passing declared gates."
+      ]
+    },
+    {
+      "id": "sustained_client_late81_90_ps_median_bytes",
+      "record_id": "sustained",
+      "label": "client late81_90_ps_median_bytes",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 18694144.0,
+      "statistic": "late81_90_ps_median_bytes",
+      "sample_count": 10,
+      "sample_count_basis": "cycles 81 through 90",
+      "evidence": {
+        "source_id": "sustained",
+        "json_pointer": "/sustained/memory/client/late81_90_ps_median_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "RSS growth and positive trend retained despite passing declared gates."
+      ]
+    },
+    {
+      "id": "sustained_client_late_minus_reference_bytes",
+      "record_id": "sustained",
+      "label": "client late_minus_reference_bytes",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 4440064.0,
+      "statistic": "late_minus_reference_bytes",
+      "sample_count": null,
+      "sample_count_basis": "difference between two ten-cycle medians",
+      "evidence": {
+        "source_id": "sustained",
+        "json_pointer": "/sustained/memory/client/late_minus_reference_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "RSS growth and positive trend retained despite passing declared gates."
+      ]
+    },
+    {
+      "id": "sustained_client_periodic_ps_peak_bytes",
+      "record_id": "sustained",
+      "label": "client periodic_ps_peak_bytes",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 35717120,
+      "statistic": "periodic_ps_peak_bytes",
+      "sample_count": null,
+      "sample_count_basis": "per-process periodic sample count unspecified; report-wide rss_sample_count=1263 retained separately",
+      "evidence": {
+        "source_id": "sustained",
+        "json_pointer": "/sustained/memory/client/periodic_ps_peak_bytes"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "RSS growth and positive trend retained despite passing declared gates."
+      ]
+    },
+    {
+      "id": "sustained_client_linear_ps_slope_MiB_per_minute_at_3s_pace",
+      "record_id": "sustained",
+      "label": "client linear_ps_slope_MiB_per_minute_at_3s_pace",
+      "category": "runtime_performance",
+      "unit": "MiB_per_minute",
+      "value": 1.3329989299090421,
+      "statistic": "linear_ps_slope_MiB_per_minute_at_3s_pace",
+      "sample_count": 90,
+      "sample_count_basis": "one checkpoint per cycle",
+      "evidence": {
+        "source_id": "sustained",
+        "json_pointer": "/sustained/memory/client/linear_ps_slope_MiB_per_minute_at_3s_pace"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "RSS growth and positive trend retained despite passing declared gates."
+      ]
+    },
+    {
+      "id": "polling_step_client",
+      "record_id": "sustained",
+      "label": "Separate full-history polling RSS step client",
+      "category": "runtime_performance",
+      "unit": "byte",
+      "value": 18972672.0,
+      "statistic": "control_phase_step",
+      "sample_count": null,
+      "sample_count_basis": "phase-based control; same old binary, changed polling workload",
+      "evidence": {
+        "source_id": "sustained",
+        "json_pointer": "/control_analysis/reciprocal_full_poll_step_bytes/client"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "Not a product version comparison."
+      ]
+    },
+    {
+      "id": "event_model_log_emission_to_poll_ms_min",
+      "record_id": "event",
+      "label": "model_log_emission_to_poll_ms min",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 15.3330078125,
+      "statistic": "min",
+      "sample_count": 12,
+      "sample_count_basis": "12 paced events; one finite headless run",
+      "evidence": {
+        "source_id": "event",
+        "json_pointer": "/latencies_ms/model_log_emission_to_poll_ms/min"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "event_model_log_emission_to_poll_ms_max",
+      "record_id": "event",
+      "label": "model_log_emission_to_poll_ms max",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 68.71728515625,
+      "statistic": "max",
+      "sample_count": 12,
+      "sample_count_basis": "12 paced events; one finite headless run",
+      "evidence": {
+        "source_id": "event",
+        "json_pointer": "/latencies_ms/model_log_emission_to_poll_ms/max"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "event_witness_event_emission_to_callback_ms_min",
+      "record_id": "event",
+      "label": "witness_event_emission_to_callback_ms min",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 0.461181640625,
+      "statistic": "min",
+      "sample_count": 12,
+      "sample_count_basis": "12 paced events; one finite headless run",
+      "evidence": {
+        "source_id": "event",
+        "json_pointer": "/latencies_ms/witness_event_emission_to_callback_ms/min"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "event_witness_event_emission_to_callback_ms_max",
+      "record_id": "event",
+      "label": "witness_event_emission_to_callback_ms max",
+      "category": "runtime_performance",
+      "unit": "millisecond",
+      "value": 51.217041015625,
+      "statistic": "max",
+      "sample_count": 12,
+      "sample_count_basis": "12 paced events; one finite headless run",
+      "evidence": {
+        "source_id": "event",
+        "json_pointer": "/latencies_ms/witness_event_emission_to_callback_ms/max"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "event_delivery_rss_kib_min",
+      "record_id": "event",
+      "label": "delivery_rss_kib min",
+      "category": "runtime_performance",
+      "unit": "KiB",
+      "value": 12880,
+      "statistic": "min",
+      "sample_count": 27,
+      "sample_count_basis": "OS delivery samples; app includes instrumentation",
+      "evidence": {
+        "source_id": "event",
+        "json_pointer": "/resources/delivery_rss_kib/min"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "event_delivery_rss_kib_max",
+      "record_id": "event",
+      "label": "delivery_rss_kib max",
+      "category": "runtime_performance",
+      "unit": "KiB",
+      "value": 13136,
+      "statistic": "max",
+      "sample_count": 27,
+      "sample_count_basis": "OS delivery samples; app includes instrumentation",
+      "evidence": {
+        "source_id": "event",
+        "json_pointer": "/resources/delivery_rss_kib/max"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "event_delivery_displayed_ps_pcpu_min",
+      "record_id": "event",
+      "label": "delivery_displayed_ps_pcpu min",
+      "category": "runtime_performance",
+      "unit": "ps_displayed_percent",
+      "value": 0.4,
+      "statistic": "min",
+      "sample_count": 27,
+      "sample_count_basis": "OS delivery samples; app includes instrumentation",
+      "evidence": {
+        "source_id": "event",
+        "json_pointer": "/resources/delivery_displayed_ps_pcpu/min"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "event_delivery_displayed_ps_pcpu_max",
+      "record_id": "event",
+      "label": "delivery_displayed_ps_pcpu max",
+      "category": "runtime_performance",
+      "unit": "ps_displayed_percent",
+      "value": 1.0,
+      "statistic": "max",
+      "sample_count": 27,
+      "sample_count_basis": "OS delivery samples; app includes instrumentation",
+      "evidence": {
+        "source_id": "event",
+        "json_pointer": "/resources/delivery_displayed_ps_pcpu/max"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": []
+    },
+    {
+      "id": "rosetta_baseline",
+      "record_id": "rosetta",
+      "label": "Separate Intel/Rosetta baseline",
+      "category": "historical_platform_observation",
+      "unit": "percent_one_core",
+      "value": 0.1665290948997563,
+      "statistic": "single_60s_window",
+      "sample_count": 1,
+      "sample_count_basis": "separate finite Rosetta run",
+      "evidence": {
+        "source_id": "old_arm",
+        "json_pointer": "/intel_cpu_probe/baseline/measurements/0/cpu_percent"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "FAIL for both original baseline observations; candidate passes the unchanged 0.1% gate.",
+        "This is not native ARM64, physical Intel or a current/legacy app pair."
+      ]
+    },
+    {
+      "id": "rosetta_baseline_replay",
+      "record_id": "rosetta",
+      "label": "Separate Intel/Rosetta baseline_replay",
+      "category": "historical_platform_observation",
+      "unit": "percent_one_core",
+      "value": 0.1498502088995154,
+      "statistic": "single_60s_window",
+      "sample_count": 1,
+      "sample_count_basis": "separate finite Rosetta run",
+      "evidence": {
+        "source_id": "old_arm",
+        "json_pointer": "/intel_cpu_probe/baseline_replay/scenarios/0/measurements/0/cpu_percent"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "FAIL for both original baseline observations; candidate passes the unchanged 0.1% gate.",
+        "This is not native ARM64, physical Intel or a current/legacy app pair."
+      ]
+    },
+    {
+      "id": "rosetta_candidate_server",
+      "record_id": "rosetta",
+      "label": "Separate Intel/Rosetta candidate_server",
+      "category": "historical_platform_observation",
+      "unit": "percent_one_core",
+      "value": 0.09989098612161723,
+      "statistic": "single_60s_window",
+      "sample_count": 1,
+      "sample_count_basis": "separate finite Rosetta run",
+      "evidence": {
+        "source_id": "old_arm",
+        "json_pointer": "/intel_cpu_probe/candidate/scenarios/0/measurements/0/cpu_percent"
+      },
+      "current_legacy_runtime_pair_eligible": false,
+      "notes": [
+        "FAIL for both original baseline observations; candidate passes the unchanged 0.1% gate.",
+        "This is not native ARM64, physical Intel or a current/legacy app pair."
+      ]
+    }
+  ],
+  "comparisons": [
+    {
+      "id": "payload_current_reference",
+      "kind": "descriptive_payload_only",
+      "left_metric": "legacy_payload",
+      "right_metric": "m1_payload",
+      "current_legacy_runtime_comparable": false,
+      "reason": "Same regular-file byte unit, different packages/features/dates; no runtime operation; no improvement percent computed."
+    },
+    {
+      "id": "payload_old_current",
+      "kind": "historical_payload_change",
+      "left_metric": "old_payload",
+      "right_metric": "m1_payload",
+      "current_legacy_runtime_comparable": false,
+      "reason": "Different package contents, including later Sparkle bundle; old small package is not current."
+    },
+    {
+      "id": "stop_fix_request_to_exit_ms",
+      "kind": "historical_stop_fix_pair_only",
+      "left_metric": "stop_before_request_to_exit_ms",
+      "right_metric": "stop_after_request_to_exit_ms",
+      "current_legacy_runtime_comparable": false,
+      "same_operation_path": true,
+      "sample_count_per_side": 1,
+      "observed_direction": "lower_candidate_interval",
+      "limits": [
+        "Openergy before/after runtime fix, not Synergy or whole app.",
+        "Same collector and overlay; separate private configured ports; trace and observation overhead.",
+        "No distribution, ratio, general speedup or upper-bound claim."
+      ]
+    },
+    {
+      "id": "stop_fix_request_to_reply_ms",
+      "kind": "historical_stop_fix_pair_only",
+      "left_metric": "stop_before_request_to_reply_ms",
+      "right_metric": "stop_after_request_to_reply_ms",
+      "current_legacy_runtime_comparable": false,
+      "same_operation_path": true,
+      "sample_count_per_side": 1,
+      "observed_direction": "lower_candidate_interval",
+      "limits": [
+        "Openergy before/after runtime fix, not Synergy or whole app.",
+        "Same collector and overlay; separate private configured ports; trace and observation overhead.",
+        "No distribution, ratio, general speedup or upper-bound claim."
+      ]
+    },
+    {
+      "id": "stop_fix_reply_to_exit_ms",
+      "kind": "historical_stop_fix_pair_only",
+      "left_metric": "stop_before_reply_to_exit_ms",
+      "right_metric": "stop_after_reply_to_exit_ms",
+      "current_legacy_runtime_comparable": false,
+      "same_operation_path": true,
+      "sample_count_per_side": 1,
+      "observed_direction": "lower_candidate_interval",
+      "limits": [
+        "Openergy before/after runtime fix, not Synergy or whole app.",
+        "Same collector and overlay; separate private configured ports; trace and observation overhead.",
+        "No distribution, ratio, general speedup or upper-bound claim."
+      ]
+    },
+    {
+      "id": "trust_small_order_and_legacy_median_ms",
+      "kind": "historical_openergy_local_tradeoff",
+      "left_metric": "trust_baseline_small_order_and_legacy_median_ms",
+      "right_metric": "trust_fixed_small_order_and_legacy_median_ms",
+      "current_legacy_runtime_comparable": false,
+      "same_operation_path": true,
+      "sample_count_per_side": 3,
+      "observed_direction": "higher_candidate_value",
+      "limits": [
+        "Sequential warm CLI, same frozen script, finite legal trust files; no Synergy run.",
+        "Original baseline case failure remains in source; no current performance transfer."
+      ]
+    },
+    {
+      "id": "trust_small_order_and_legacy_max_rss_bytes",
+      "kind": "historical_openergy_local_tradeoff",
+      "left_metric": "trust_baseline_small_order_and_legacy_max_rss_bytes",
+      "right_metric": "trust_fixed_small_order_and_legacy_max_rss_bytes",
+      "current_legacy_runtime_comparable": false,
+      "same_operation_path": true,
+      "sample_count_per_side": 3,
+      "observed_direction": "lower_candidate_value",
+      "limits": [
+        "Sequential warm CLI, same frozen script, finite legal trust files; no Synergy run.",
+        "Original baseline case failure remains in source; no current performance transfer."
+      ]
+    },
+    {
+      "id": "trust_large_compact_list_median_ms",
+      "kind": "historical_openergy_local_tradeoff",
+      "left_metric": "trust_baseline_large_compact_list_median_ms",
+      "right_metric": "trust_fixed_large_compact_list_median_ms",
+      "current_legacy_runtime_comparable": false,
+      "same_operation_path": true,
+      "sample_count_per_side": 3,
+      "observed_direction": "lower_candidate_value",
+      "limits": [
+        "Sequential warm CLI, same frozen script, finite legal trust files; no Synergy run.",
+        "Original baseline case failure remains in source; no current performance transfer."
+      ]
+    },
+    {
+      "id": "trust_large_compact_list_max_rss_bytes",
+      "kind": "historical_openergy_local_tradeoff",
+      "left_metric": "trust_baseline_large_compact_list_max_rss_bytes",
+      "right_metric": "trust_fixed_large_compact_list_max_rss_bytes",
+      "current_legacy_runtime_comparable": false,
+      "same_operation_path": true,
+      "sample_count_per_side": 3,
+      "observed_direction": "higher_candidate_value",
+      "limits": [
+        "Sequential warm CLI, same frozen script, finite legal trust files; no Synergy run.",
+        "Original baseline case failure remains in source; no current performance transfer."
+      ]
+    },
+    {
+      "id": "trust_bulk_same_lists_median_ms",
+      "kind": "historical_openergy_local_tradeoff",
+      "left_metric": "trust_baseline_bulk_same_lists_median_ms",
+      "right_metric": "trust_fixed_bulk_same_lists_median_ms",
+      "current_legacy_runtime_comparable": false,
+      "same_operation_path": true,
+      "sample_count_per_side": 3,
+      "observed_direction": "lower_candidate_value",
+      "limits": [
+        "Sequential warm CLI, same frozen script, finite legal trust files; no Synergy run.",
+        "Original baseline case failure remains in source; no current performance transfer."
+      ]
+    },
+    {
+      "id": "trust_bulk_same_lists_max_rss_bytes",
+      "kind": "historical_openergy_local_tradeoff",
+      "left_metric": "trust_baseline_bulk_same_lists_max_rss_bytes",
+      "right_metric": "trust_fixed_bulk_same_lists_max_rss_bytes",
+      "current_legacy_runtime_comparable": false,
+      "same_operation_path": true,
+      "sample_count_per_side": 3,
+      "observed_direction": "lower_candidate_value",
+      "limits": [
+        "Sequential warm CLI, same frozen script, finite legal trust files; no Synergy run.",
+        "Original baseline case failure remains in source; no current performance transfer."
+      ]
+    },
+    {
+      "id": "trust_bulk_overlap_median_ms",
+      "kind": "historical_openergy_local_tradeoff",
+      "left_metric": "trust_baseline_bulk_overlap_median_ms",
+      "right_metric": "trust_fixed_bulk_overlap_median_ms",
+      "current_legacy_runtime_comparable": false,
+      "same_operation_path": true,
+      "sample_count_per_side": 3,
+      "observed_direction": "lower_candidate_value",
+      "limits": [
+        "Sequential warm CLI, same frozen script, finite legal trust files; no Synergy run.",
+        "Original baseline case failure remains in source; no current performance transfer."
+      ]
+    },
+    {
+      "id": "trust_bulk_overlap_max_rss_bytes",
+      "kind": "historical_openergy_local_tradeoff",
+      "left_metric": "trust_baseline_bulk_overlap_max_rss_bytes",
+      "right_metric": "trust_fixed_bulk_overlap_max_rss_bytes",
+      "current_legacy_runtime_comparable": false,
+      "same_operation_path": true,
+      "sample_count_per_side": 3,
+      "observed_direction": "equal_recorded_value",
+      "limits": [
+        "Sequential warm CLI, same frozen script, finite legal trust files; no Synergy run.",
+        "Original baseline case failure remains in source; no current performance transfer."
+      ]
+    },
+    {
+      "id": "trust_bulk_canonical_expansion_refused_median_ms",
+      "kind": "historical_openergy_local_tradeoff",
+      "left_metric": "trust_baseline_bulk_canonical_expansion_refused_median_ms",
+      "right_metric": "trust_fixed_bulk_canonical_expansion_refused_median_ms",
+      "current_legacy_runtime_comparable": false,
+      "same_operation_path": true,
+      "sample_count_per_side": 3,
+      "observed_direction": "lower_candidate_value",
+      "limits": [
+        "Sequential warm CLI, same frozen script, finite legal trust files; no Synergy run.",
+        "Original baseline case failure remains in source; no current performance transfer."
+      ]
+    },
+    {
+      "id": "trust_bulk_canonical_expansion_refused_max_rss_bytes",
+      "kind": "historical_openergy_local_tradeoff",
+      "left_metric": "trust_baseline_bulk_canonical_expansion_refused_max_rss_bytes",
+      "right_metric": "trust_fixed_bulk_canonical_expansion_refused_max_rss_bytes",
+      "current_legacy_runtime_comparable": false,
+      "same_operation_path": true,
+      "sample_count_per_side": 3,
+      "observed_direction": "lower_candidate_value",
+      "limits": [
+        "Sequential warm CLI, same frozen script, finite legal trust files; no Synergy run.",
+        "Original baseline case failure remains in source; no current performance transfer."
+      ]
+    },
+    {
+      "id": "trust_compact_revoke_median_ms",
+      "kind": "historical_openergy_local_tradeoff",
+      "left_metric": "trust_baseline_compact_revoke_median_ms",
+      "right_metric": "trust_fixed_compact_revoke_median_ms",
+      "current_legacy_runtime_comparable": false,
+      "same_operation_path": true,
+      "sample_count_per_side": 3,
+      "observed_direction": "lower_candidate_value",
+      "limits": [
+        "Sequential warm CLI, same frozen script, finite legal trust files; no Synergy run.",
+        "Original baseline case failure remains in source; no current performance transfer."
+      ]
+    },
+    {
+      "id": "trust_compact_revoke_max_rss_bytes",
+      "kind": "historical_openergy_local_tradeoff",
+      "left_metric": "trust_baseline_compact_revoke_max_rss_bytes",
+      "right_metric": "trust_fixed_compact_revoke_max_rss_bytes",
+      "current_legacy_runtime_comparable": false,
+      "same_operation_path": true,
+      "sample_count_per_side": 3,
+      "observed_direction": "lower_candidate_value",
+      "limits": [
+        "Sequential warm CLI, same frozen script, finite legal trust files; no Synergy run.",
+        "Original baseline case failure remains in source; no current performance transfer."
+      ]
+    },
+    {
+      "id": "trust_binary_size",
+      "kind": "historical_openergy_local_tradeoff",
+      "left_metric": "trust_baseline_bytes",
+      "right_metric": "trust_fixed_bytes",
+      "current_legacy_runtime_comparable": false,
+      "observed_direction": "higher_candidate_value",
+      "reason": "Executable size tradeoff accompanies latency changes; not memory or runtime performance."
+    }
+  ],
+  "preserved_failures_and_unverified": [
+    {
+      "id": "idle_r1",
+      "original_status": "UNVERIFIED",
+      "resource_sample_count": 0,
+      "evidence": [
+        {
+          "source_id": "r1",
+          "json_pointer": "/result"
+        },
+        {
+          "source_id": "r1_samples"
+        }
+      ],
+      "limit": "Controller startup failure; no resource baseline."
+    },
+    {
+      "id": "idle_r2",
+      "original_status": "UNVERIFIED",
+      "resource_sample_count": 0,
+      "evidence": [
+        {
+          "source_id": "r2",
+          "json_pointer": "/status"
+        },
+        {
+          "source_id": "r2",
+          "json_pointer": "/runtime"
+        },
+        {
+          "source_id": "r2_samples"
+        }
+      ],
+      "limit": "Trusted-readiness failure; first strict cleanup rebind failed; no resource baseline."
+    },
+    {
+      "id": "idle_r3",
+      "original_status": "FAILED: normal peer-stop 1s timeout and strict first exclusive rebind failure",
+      "evidence": [
+        {
+          "source_id": "r3",
+          "json_pointer": "/overall_result"
+        }
+      ],
+      "limit": "12 app checks do not accept failed stop/cleanup."
+    },
+    {
+      "id": "ordinary_old",
+      "original_status": "FAILED / NOT ACCEPTED, 23/25; controller failed",
+      "evidence": [
+        {
+          "source_id": "ordinary_old_report",
+          "lines": [
+            6,
+            6
+          ],
+          "anchor": "wrote all 25 checks:"
+        },
+        {
+          "source_id": "ordinary_old_outcome"
+        }
+      ],
+      "limit": "Not a performance run or accepted product regression."
+    },
+    {
+      "id": "m1_ordinary",
+      "original_status": "FAILED_NOT_ACCEPTED",
+      "app_checks": {
+        "actual_os_exit": 0,
+        "passed": 25,
+        "total": 25
+      },
+      "controller_exit": 1,
+      "bind": "EADDRINUSE_ERRNO48",
+      "failure_cause": "UNPROVED",
+      "priority": "COMPLETE: NI15 UNVERIFIED; both CLI product stages and late controller/watchdog detail coverage missing",
+      "evidence": [
+        {
+          "source_id": "m1_flow"
+        }
+      ],
+      "limit": "Second bind and original final gates not reached; never replaced with success."
+    },
+    {
+      "id": "rosetta_original",
+      "original_status": "FAIL",
+      "evidence": [
+        {
+          "source_id": "old_arm",
+          "json_pointer": "/intel_cpu_probe/baseline"
+        }
+      ],
+      "limit": "Original CPU gate failure retained separately from later replay/candidate."
+    },
+    {
+      "id": "rosetta_replay",
+      "original_status": "FAIL",
+      "evidence": [
+        {
+          "source_id": "old_arm",
+          "json_pointer": "/intel_cpu_probe/baseline_replay"
+        }
+      ],
+      "limit": "Separate failed finite replay; not pooled with another window."
+    },
+    {
+      "id": "build_warnings",
+      "original_status": "rust-objcopy SIGABRT; @rpath/libLLVM.dylib not found",
+      "evidence": [
+        {
+          "source_id": "m1_build",
+          "json_pointer": "/warning_preserved"
+        },
+        {
+          "source_id": "stop_report",
+          "lines": [
+            140,
+            140
+          ],
+          "anchor": "All three release builds exited 0."
+        }
+      ],
+      "limit": "Runnable build success is not successful Rust stripping or release clearance."
+    }
+  ],
+  "excluded_comparisons": [
+    {
+      "id": "native_reference_vs_virtual_s15",
+      "status": "NOT_COMPARABLE",
+      "reason": "Passive native connected three-process reference versus old GUI-free virtual loopback per-daemon timed windows; no legacy latency value.",
+      "sources": [
+        {
+          "source_id": "old_comparison",
+          "json_pointer": "/comparison_limits"
+        }
+      ]
+    },
+    {
+      "id": "current_m1_vs_legacy_snapshots",
+      "status": "NOT_COMPARABLE",
+      "reason": "No current matched native workload; macOS27.0.1 versus reference27.2, changed process set/method; correctness/build data not performance.",
+      "sources": [
+        {
+          "source_id": "m1_flow"
+        },
+        {
+          "source_id": "legacy_report"
+        }
+      ]
+    },
+    {
+      "id": "focus_lab_legacy_names",
+      "status": "NOT_REFERENCE_APP_PERFORMANCE",
+      "reason": "legacy = Openergy numbering off; builtin-legacy = lab Synergy-style NULL-source injector; historical correctness on macOS27.0.1, not shipped Synergy performance.",
+      "sources": [
+        {
+          "source_id": "focus_report"
+        }
+      ]
+    },
+    {
+      "id": "windows_reference_interop",
+      "status": "NOT_COMPARABLE",
+      "reason": "Synergy Windows session0 private copy with Mac virtual peer and SSH tunnels; compatibility, not same-host native runtime performance.",
+      "sources": [
+        {
+          "source_id": "windows_reference"
+        }
+      ]
+    },
+    {
+      "id": "legacy_launch_logs_vs_m1_build",
+      "status": "DIFFERENT_OPERATIONS",
+      "reason": "Approximate service/core wall-log intervals are not app launch readiness; M1 worker time is a build.",
+      "sources": [
+        {
+          "source_id": "legacy_report",
+          "lines": [
+            274,
+            274
+          ],
+          "anchor": "Historical startup logs show"
+        },
+        {
+          "source_id": "m1_build",
+          "json_pointer": "/timing_scope_correction"
+        }
+      ]
+    },
+    {
+      "id": "later_source_equals_old_runtime",
+      "status": "NO_NEW_MEASUREMENT",
+      "reason": "Tracked non-doc source continuity to M1 is verified; it does not create a new measurement, close failed gates or transfer old S15 artifact numbers.",
+      "sources": [
+        {
+          "source_id": "m1_build"
+        },
+        {
+          "source_id": "m1_flow"
+        }
+      ]
+    }
+  ],
+  "missing_gates": [
+    {
+      "id": "matched_identity_host",
+      "status": "MISSING",
+      "need": "Exact current and shipped reference full-stack artifacts and hashes, one host/OS/toolchain context; no substitution of virtual or Rosetta evidence."
+    },
+    {
+      "id": "current_flow_acceptance",
+      "status": "FAILED_UNVERIFIED",
+      "need": "Preserve old first bind failure; close existing new operation admission, cleanup, second bind, final artifact/outcome and priority coverage gates through its reviewed flow."
+    },
+    {
+      "id": "matching_workload",
+      "status": "MISSING",
+      "need": "Same peer/role, TLS/discovery, GUI state, real native backend, process-set inclusion, polling and duration."
+    },
+    {
+      "id": "measurement_boundary",
+      "status": "MISSING",
+      "need": "Declare RSS versus unique footprint, CPU kernel time and denominator, launch/readiness markers or input/clipboard endpoints before collection."
+    },
+    {
+      "id": "raw_pair",
+      "status": "MISSING",
+      "need": "Bounded raw timestamps, values, sample counts, independent process exits and cleanup for both apps; retain any failure and no fishing."
+    },
+    {
+      "id": "distribution",
+      "status": "MISSING",
+      "need": "Predeclared repeat/sample plan before any median/p95/p99 between-app claim. A single bounded pair supplies observations only."
+    }
+  ],
+  "minimal_next_comparison": {
+    "execution_authorized_by_this_audit": false,
+    "first_prerequisite": "Close the existing current ordinary-flow acceptance gates without changing original failed results.",
+    "first_performance_pair": "One predeclared finite connected-idle pass per exact current and shipped reference app on the same Mac/OS and real peer, e.g.60s, same GUI/role/TLS/discovery/polling/process set; raw timed CPU and sampled whole-stack RSS plus independent exits and cleanup.",
+    "failure_rule": "Keep both outcomes; stop at failed prerequisites; no retry, alternate port, SO_REUSE, platform substitution or selecting a better run.",
+    "claim_limit": "One pair supports only scoped observations; distribution, launch, physical input, clipboard, reconnect and endurance require separate predeclared comparisons."
+  },
+  "visualization_rules": [
+    "Use only qualified_current_legacy_runtime_pairs for a current-versus-legacy runtime improvement chart; it is empty.",
+    "Show null as missing, never zero. No completion percentage.",
+    "Separate payload/build/correctness/reference snapshots/historical virtual performance/historical Openergy repair panels.",
+    "Show original status, source identity, host/backend, units, sample count and limits beside every value.",
+    "Keep unfavorable/slower/higher/equal values and failed windows visible.",
+    "Never sum separate RSS maxima or call summed RSS unique physical memory.",
+    "Never call stop-fix pair Synergy/legacy/whole-app speedup or derive an improvement percentage from one sample.",
+    "Never call focus-lab legacy an actual legacy-app performance run."
+  ]
+}

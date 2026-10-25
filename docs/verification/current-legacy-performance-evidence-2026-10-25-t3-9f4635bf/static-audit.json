@@ -1,0 +1,160 @@
+{
+  "schema": "openergy.performance-evidence-static-audit.v1",
+  "parent_commit": "22e411d1f1a4514ce6598227806ffa1d41a2347e",
+  "date_local": "2026-10-25",
+  "timezone": "America/Vancouver",
+  "result": "STATIC_DATA_INTEGRITY_PASS",
+  "scope": "Exact tracked file/Git/JSON/hash data checks and documentation links only; no product validation",
+  "checks": [
+    {
+      "check": "source_bytes",
+      "result": "PASS",
+      "details": {
+        "tracked_sources": 44,
+        "snapshot_commit": "22e411d1f1a4514ce6598227806ffa1d41a2347e",
+        "sha256_bytes_git_blob_and_worktree_agree": true,
+        "private_raw_files_read": 0
+      }
+    },
+    {
+      "check": "source_selectors",
+      "result": "PASS",
+      "details": {
+        "source_references_checked": 173,
+        "json_pointers_and_markdown_anchors_resolve": true
+      }
+    },
+    {
+      "check": "metric_values",
+      "result": "PASS",
+      "details": {
+        "metrics": 101,
+        "exact_json_values": 96,
+        "report_literal_values": 5,
+        "unit_context_and_sample_basis_present": true,
+        "unknown_sample_counts_remain_null": true
+      }
+    },
+    {
+      "check": "comparison_gates",
+      "result": "PASS",
+      "details": {
+        "comparisons": 18,
+        "qualified_current_legacy_runtime_pairs": 0,
+        "no_runtime_improvement_or_completion_percentage": true,
+        "unfavorable_and_equal_values_retained": true
+      }
+    },
+    {
+      "check": "stop_pair_raw_arithmetic",
+      "result": "PASS",
+      "details": {
+        "samples_per_side": 1,
+        "shared_monotonic_intervals_agree": true,
+        "independent_exit_code_each": 0,
+        "scope": "historical stop-fix pair only"
+      }
+    },
+    {
+      "check": "r3_raw_samples",
+      "result": "PASS",
+      "details": {
+        "runtime_batches": 35,
+        "steady_samples": 33,
+        "per_process_rss_ranges_and_raw_tick_deltas_match": true,
+        "cpu_percent_derived_here": false,
+        "failed_overall_status_retained": true
+      }
+    },
+    {
+      "check": "failed_and_unverified",
+      "result": "PASS",
+      "details": {
+        "earlier_idle_sample_counts": [
+          0,
+          0
+        ],
+        "earlier_idle_statuses": [
+          "UNVERIFIED",
+          "UNVERIFIED"
+        ],
+        "m1_app_checks": "25/25",
+        "m1_overall": "FAILED_NOT_ACCEPTED",
+        "latest_readiness_product_invocations": 0,
+        "failed_trust_case_outcomes_retained": true,
+        "original_rosetta_failures_retained": true
+      }
+    },
+    {
+      "check": "tracked_source_continuity",
+      "result": "PASS",
+      "details": {
+        "non_docs_entries": 702,
+        "changed_paths": 320,
+        "all_changes_under_docs": true,
+        "runtime_or_external_input_equivalence_claimed": false
+      }
+    },
+    {
+      "check": "documentation_links",
+      "result": "PASS",
+      "details": {
+        "all_local_targets_exist": true
+      }
+    },
+    {
+      "check": "ownership_before_stage",
+      "result": "PASS",
+      "details": {
+        "existing_tracked_paths_changed": 0,
+        "untracked_files_all_owned": true,
+        "initial_index_empty": true
+      }
+    }
+  ],
+  "output_files": [
+    {
+      "path": "README.md",
+      "bytes": 9274,
+      "sha256": "c9d95e7bbd6cf8469c55d6fe624bb2bbed69ba2b6edc9d8fe03d9dfd43ca3316"
+    },
+    {
+      "path": "comparison.json",
+      "bytes": 106581,
+      "sha256": "124bcddb206e4281839fccf6c6c72b0c937fa34fa8ece1408625af1241275999"
+    },
+    {
+      "path": "sources.json",
+      "bytes": 22070,
+      "sha256": "aa2f3eefc62f25923c3df17a7512432e0370403700e1f7fc1e8590952744fac8"
+    }
+  ],
+  "reader_errors_preserved": [
+    {
+      "operation": "new static documentation-link validation",
+      "error": "AssertionError: static-audit.json",
+      "cause": "The link checker ran before its own output file existed.",
+      "correction": "Create this explicitly incomplete output before checking links; publish PASS only after every static check.",
+      "product_or_source_execution": false,
+      "input_or_acceptance_predicate_changed": false
+    }
+  ],
+  "not_run": [
+    "product or source execution/import",
+    "private-state read",
+    "network or remote query",
+    "runtime or process/port query",
+    "build or typecheck",
+    "unit or E2E test",
+    "mock",
+    "browser or desktop",
+    "child agent"
+  ],
+  "commit_requirement": {
+    "owned_folder_only": "docs/verification/current-legacy-performance-evidence-2026-10-25-t3-9f4635bf",
+    "hooks_disabled": true,
+    "commit_signing_disabled": true,
+    "stage_and_commit_checked_separately": true
+  },
+  "acceptance": "No new performance or release acceptance. FAILED and UNVERIFIED results preserved."
+}
