@@ -1,0 +1,91 @@
+{
+  "schema": "openergy.windows-launch-binding-data-source-review.v1",
+  "review_date_local": "2026-10-24",
+  "scope": "preparation.windows_launch_binding only",
+  "verdict": "UNSATISFIED_EXACT_R3_CONTRACT",
+  "execution": false,
+  "native_acceptance": "UNVERIFIED",
+  "private_binding_materialized": false,
+  "new_private_audit_materialized": false,
+  "admission_assertions_materialized": false,
+  "source_commit": "23b41681e4019f086f1f760c9817553d79acff04",
+  "source_package": "docs/verification/windows-fresh-command-repair-r3-2026-10-24-4d078c08",
+  "source_files": [
+    {
+      "path": "input-contracts.json",
+      "sha256": "8750b776bdfa62cdd4ee0e7f56f9fb875bae2e30f3cbf32a1a446295de1c090e",
+      "matches_source_commit_and_both_checkouts": true
+    },
+    {
+      "path": "COMMAND-BOUNDS.md",
+      "sha256": "d56700635c8dba2515f8029b769694844368c7b7d5c97789d6b094190bda77ec",
+      "matches_source_commit_and_both_checkouts": true
+    },
+    {
+      "path": "source/controller.py.txt",
+      "sha256": "1406633c2e098432f118b3a5904ba10183f216f8f99b81b0032137621a6dbd60",
+      "matches_source_commit_and_both_checkouts": true
+    }
+  ],
+  "retained_private_evidence": {
+    "label": "windows-launcher-metadata-e879066ad8a7",
+    "receipt_sha256": "5fd1f40dc8caf85226a9ce047862d5c72a34ef0d6ab68aa02f96775ffc2a2c00",
+    "expected_receipt_hash_matches": true,
+    "expected_existing_selector_hash_matches": true,
+    "receipt_selector_binding_matches": true,
+    "selector_alias_exactly_once_in_argv": true,
+    "receipt_command_stdout_stderr_hashes_match": true,
+    "parsed_stdout_equals_metadata": true,
+    "encoded_argv_decodes_to_exact_retained_query": true,
+    "recorded_returncode": 0,
+    "recorded_retry_count": 0,
+    "recorded_product_or_controller_execution": false,
+    "new_host_observation_by_reviewer": false
+  },
+  "retained_route_facts": {
+    "registry_shell_family": "PowerShell 7",
+    "registry_command_option_property_null": true,
+    "registry_escape_arguments_property_null": true,
+    "wrapper_path_casefold_matches_registry": true,
+    "wrapper_path_exact_text_matches_registry": false,
+    "all_six_saved_parent_links_match": true,
+    "wrapper_executable_path_utf16_units": 38,
+    "child_executable_path_utf16_units": 57,
+    "child_path_matches_command_resolution": true,
+    "submitted_native_line_ascii": true,
+    "submitted_space_join_equals_windows_serialization": true,
+    "outer_wrapper_prefix_utf16_units": 45,
+    "outer_wrapper_suffix_utf16_units": 1,
+    "outer_wrapper_contains_submitted_line_once": true,
+    "child_contains_unchanged_submitted_line": false,
+    "child_tail_options_and_base64_unchanged": true,
+    "child_expansion_utf16_units": 45,
+    "wrapper_addition_utf16_units": 46,
+    "observed_wrapper_template_candidates": 1,
+    "complete_admissible_template_sets": 0
+  },
+  "sizes_utf16_including_nul": {
+    "retained_query_submitted_native": 2415,
+    "retained_query_actual_child": 2460,
+    "retained_query_actual_outer_wrapper": 2461,
+    "retained_sshd_ancestor_lines": [42, 42, 37],
+    "r3_submitted_native_maximum": 32135,
+    "conditional_actual_child_maximum": 32180,
+    "conditional_actual_outer_wrapper_maximum": 32181,
+    "conditional_maximum_requires_unchanged_observed_construction": true,
+    "documented_createprocessw_ceiling": 32767,
+    "actual_per_layer_limits_established": false
+  },
+  "missing_prerequisites": [
+    "Exact R3-compatible representation of the quoted full-path child command; unchanged native_line is not a substring of that actual line.",
+    "Installed launcher and PowerShell implementation binding that establishes applicable per-layer limits, including any smaller limits."
+  ],
+  "favorable_but_insufficient_fact": "With the observed unchanged construction, the complete outer wrapper is always one UTF-16 unit longer than the expanded child. This bounds size but does not supply the contract-required separate exact representation.",
+  "historical_status": {
+    "old_result": "FAILED",
+    "old_stop_count": 0,
+    "native_acceptance": "UNVERIFIED",
+    "expired_sparkle_window": "CLOSED",
+    "existing_results_changed": false
+  }
+}
