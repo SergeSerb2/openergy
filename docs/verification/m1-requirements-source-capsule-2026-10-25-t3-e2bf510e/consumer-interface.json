@@ -1,0 +1,125 @@
+{
+  "actual_supplement_pins": {
+    "requirements-source-basis.json": null,
+    "requirements-source-capture.json": null,
+    "requirements-source-once.guard": null,
+    "requirements-source-receipt.json": null
+  },
+  "basis_schema": "openergy.metadata-requirements-basis.v1",
+  "capture_schema": "openergy.requirements-source-capture.v1",
+  "changed_indices": [
+    4,
+    11,
+    18,
+    25,
+    32,
+    39,
+    46
+  ],
+  "changed_labels": [
+    "object-0-requirements",
+    "object-1-requirements",
+    "object-2-requirements",
+    "object-3-requirements",
+    "object-4-requirements",
+    "object-5-requirements",
+    "object-6-requirements"
+  ],
+  "closed_consumer_input_schema_ref": "contracts.schema.json#/$defs/future_consumer_input",
+  "closed_consumer_input_template": {
+    "actual_transport0_EOF_D4_full_retention": null,
+    "evidence_root": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+    "execution": false,
+    "external_parent_binding": null,
+    "full_capsule_review": null,
+    "legacy_SOURCE_v2": {
+      "bytes": 327813,
+      "path": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/metadata-source-result.json",
+      "sha256": "7482a637159e0389c5cd4c505778919bb49354437bc9feb1cf008d9db395712d"
+    },
+    "legacy_basis": {
+      "bytes": 142587,
+      "path": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/expected-source-metadata.json",
+      "sha256": "1670da99b768e01de3fc4ecd4d644fba7031ea09e55d97c1395290bfb681c05f"
+    },
+    "old_vectors": {
+      "bytes": 12370,
+      "path": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/command-vectors.json",
+      "sha256": "e3ff5756ab3b35a5c815e50ac1fad6520117836e080849260de87592bd327fa0"
+    },
+    "runtime_acceptance": null,
+    "schema": "openergy.requirements-basis-consumer.v1",
+    "supplement_pins": {
+      "requirements-source-basis.json": null,
+      "requirements-source-capture.json": null,
+      "requirements-source-once.guard": null,
+      "requirements-source-receipt.json": null
+    }
+  },
+  "comparison": {
+    "all_other_output": "Exact UTF-8 text after that prefix substitution. No strip, sorting, XML/warning rewrite or empty/no-payload conversion.",
+    "codesign_verify_only": "Labels ending -verify: sorted complete UTF-8 splitlines() lists per stream; retain duplicate and empty lines. Saved approved parallel progress comparison.",
+    "exit": "actual == expected == 0; retain actual OS status, timeout and both raw byte streams first",
+    "fresh_copy": "Compare copy to fresh source, each matching corrected saved basis. Keep raw bytes; never reissue failed/incomplete commands.",
+    "path_normalization": "Replace only the exact BUNDLE prefix with source_bundle prefix independently per stream."
+  },
+  "exact_new_vector_projection_sha256": "da05a76028ec2ad4a28a1071045c94d07b6fcfdcc6f9a144425bfa9af872fb20",
+  "execution": false,
+  "fallback_old_requirements_vector": false,
+  "future_bindings": {
+    "COPYv4_caller": null,
+    "COPYv4_materializer": null,
+    "COPYv4_parent": null,
+    "CURRENT_artifact_gate": null,
+    "actual_D4": null,
+    "actual_EOF": null,
+    "actual_exit": null,
+    "actual_transport": null,
+    "capsule_source": null,
+    "external_parent": null,
+    "full_review": null,
+    "prepareR8": null,
+    "recoveryR2_design": null,
+    "runtime": null
+  },
+  "implemented_consumer": false,
+  "mandatory_relations": [
+    "Authenticate old SOURCE v2 against OLD vectors as data; never execute its bad seven vectors.",
+    "Compare unchanged43 COPY rows against both old basis and old SOURCE under unchanged comparison rules.",
+    "Compare corrected7 COPY rows against new basis/projection and actual SOURCE7 capture; never compare to old empty bodies.",
+    "Verify decoded capture streams/bytes/SHA/UTF8 and exact object binding with all9 actual complete statuses.",
+    "Bind four actual supplement bytes/hashes and actual transport0/reap/bothEOF/D4/full retention.",
+    "Require parent CURRENT artifact semantic gate old8 + actual new7 before any private file prepare."
+  ],
+  "old_SOURCE_schema": "openergy.metadata-observations.v2",
+  "old_SOURCE_v2": {
+    "bytes": 327813,
+    "path": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/metadata-source-result.json",
+    "sha256": "7482a637159e0389c5cd4c505778919bb49354437bc9feb1cf008d9db395712d"
+  },
+  "old_basis": {
+    "bytes": 142587,
+    "path": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/expected-source-metadata.json",
+    "sha256": "1670da99b768e01de3fc4ecd4d644fba7031ea09e55d97c1395290bfb681c05f"
+  },
+  "old_vectors": {
+    "bytes": 12370,
+    "path": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/command-vectors.json",
+    "sha256": "e3ff5756ab3b35a5c815e50ac1fad6520117836e080849260de87592bd327fa0"
+  },
+  "ordering_waiver": false,
+  "origin": "capture SOURCE7 and new basis seven share one actual origin; not independent measurements",
+  "receipt_schema": "openergy.requirements-source-receipt.v1",
+  "required_counts": {
+    "capture_observations": 9,
+    "future_COPY_observations": 52,
+    "legacy_vectors": 50,
+    "new_source_requirements": 7,
+    "prepareR8_entry": 268,
+    "prepareR8_initial": 264,
+    "unchanged_rows": 43
+  },
+  "root": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+  "schema": "openergy.requirements-basis-future-consumer-interface.v1",
+  "status": "IMPLEMENTED_UNREVIEWED"
+}

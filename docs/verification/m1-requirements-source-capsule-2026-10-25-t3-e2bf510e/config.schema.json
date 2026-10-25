@@ -1,0 +1,681 @@
+{
+  "$id": "openergy.requirements-source-config.v1.schema",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Closed render DATA. Null template is valid DATA but is rejected by bind_config before target access. Populated records require external actual full review/parent inspection; scalar shape alone is no authority.",
+  "properties": {
+    "artifact_publication": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact-binding-once.guard": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "bytes": {
+                  "maximum": 16384,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "bytes",
+                "sha256"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "artifact-binding-receipt.json": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "bytes": {
+                  "maximum": 16384,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "bytes",
+                "sha256"
+              ],
+              "type": "object"
+            }
+          ]
+        }
+      },
+      "required": [
+        "artifact-binding-once.guard",
+        "artifact-binding-receipt.json"
+      ],
+      "type": "object"
+    },
+    "completed_SOURCE": {
+      "additionalProperties": false,
+      "properties": {
+        "metadata-source-parent.json": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "bytes": {
+                  "maximum": 65536,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "bytes",
+                "sha256"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "source-caller-os.json": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "bytes": {
+                  "maximum": 65536,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "bytes",
+                "sha256"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "source-caller.stderr.bin": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "bytes": {
+                  "maximum": 65536,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "bytes",
+                "sha256"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "source-caller.stdout.bin": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "bytes": {
+                  "maximum": 65536,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "bytes",
+                "sha256"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "source-launch-once.json": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "bytes": {
+                  "maximum": 65536,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "bytes",
+                "sha256"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "source-launch-receipt.json": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "bytes": {
+                  "maximum": 65536,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "bytes",
+                "sha256"
+              ],
+              "type": "object"
+            }
+          ]
+        }
+      },
+      "required": [
+        "metadata-source-parent.json",
+        "source-caller-os.json",
+        "source-caller.stderr.bin",
+        "source-caller.stdout.bin",
+        "source-launch-once.json",
+        "source-launch-receipt.json"
+      ],
+      "type": "object"
+    },
+    "evidence_root": {
+      "const": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503"
+    },
+    "execution": {
+      "const": false
+    },
+    "parent": {
+      "additionalProperties": false,
+      "properties": {
+        "actual_all53_source_statuses_and50_comparisons_and212_raws_inspected": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "actual_capsule_exit0_reap_bothEOF_D4_and_full_retention_owned": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "actual_rendered_payload_le_1MiB_bound": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "actual_source_boundary_and_all_seven_originals_inspected": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "actual_source_collector0_ssh0_eof_D4_inspected": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "all_final_source_and_review_payloads_bound": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "all_supporting_raw_refs_and_build_ABI_plist_no_transfer_inspected": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "console_single_writer_live_reader_bound": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "exact_SYSTEM_stdin_entry_and_executed_source_association_owned": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "exact_single_CONFIG_token_restore_prefix_suffix_normalized_AST_hash_verified": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "exclusive_root_no_other_mutators_through_exit": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "fresh_full_source_review_and_recoveryR2_design_and_exact_composition_bound": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "original_local130_work_plus2_reap_plus3_retention135_owned": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "publisher_actual_collector0_ssh0_eof_D4_inspected": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "publisher_full_receipt_all8_actual_bytes_modes_inspected": {
+          "enum": [
+            null,
+            true
+          ]
+        },
+        "whole_profile_and_NI15_inheritance_inspection_owned": {
+          "enum": [
+            null,
+            true
+          ]
+        }
+      },
+      "required": [
+        "actual_all53_source_statuses_and50_comparisons_and212_raws_inspected",
+        "actual_capsule_exit0_reap_bothEOF_D4_and_full_retention_owned",
+        "actual_rendered_payload_le_1MiB_bound",
+        "actual_source_boundary_and_all_seven_originals_inspected",
+        "actual_source_collector0_ssh0_eof_D4_inspected",
+        "all_final_source_and_review_payloads_bound",
+        "all_supporting_raw_refs_and_build_ABI_plist_no_transfer_inspected",
+        "console_single_writer_live_reader_bound",
+        "exact_SYSTEM_stdin_entry_and_executed_source_association_owned",
+        "exact_single_CONFIG_token_restore_prefix_suffix_normalized_AST_hash_verified",
+        "exclusive_root_no_other_mutators_through_exit",
+        "fresh_full_source_review_and_recoveryR2_design_and_exact_composition_bound",
+        "original_local130_work_plus2_reap_plus3_retention135_owned",
+        "publisher_actual_collector0_ssh0_eof_D4_inspected",
+        "publisher_full_receipt_all8_actual_bytes_modes_inspected",
+        "whole_profile_and_NI15_inheritance_inspection_owned"
+      ],
+      "type": "object"
+    },
+    "reviews": {
+      "additionalProperties": false,
+      "properties": {
+        "capsule": {
+          "additionalProperties": false,
+          "properties": {
+            "candidate_commit": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "pattern": "^[0-9a-f]{40}$",
+                  "type": "string"
+                }
+              ]
+            },
+            "review_commit": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "pattern": "^[0-9a-f]{40}$",
+                  "type": "string"
+                }
+              ]
+            },
+            "review_sha256": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              ]
+            },
+            "source_sha256": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              ]
+            },
+            "verdict": {
+              "enum": [
+                null,
+                "CLEAR"
+              ]
+            }
+          },
+          "required": [
+            "candidate_commit",
+            "source_sha256",
+            "review_commit",
+            "review_sha256",
+            "verdict"
+          ],
+          "type": "object"
+        },
+        "exact_composition": {
+          "additionalProperties": false,
+          "properties": {
+            "candidate_commit": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "pattern": "^[0-9a-f]{40}$",
+                  "type": "string"
+                }
+              ]
+            },
+            "review_commit": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "pattern": "^[0-9a-f]{40}$",
+                  "type": "string"
+                }
+              ]
+            },
+            "review_sha256": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              ]
+            },
+            "source_sha256": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              ]
+            },
+            "verdict": {
+              "enum": [
+                null,
+                "CLEAR"
+              ]
+            }
+          },
+          "required": [
+            "candidate_commit",
+            "source_sha256",
+            "review_commit",
+            "review_sha256",
+            "verdict"
+          ],
+          "type": "object"
+        },
+        "recoveryR2design": {
+          "additionalProperties": false,
+          "properties": {
+            "candidate_commit": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "pattern": "^[0-9a-f]{40}$",
+                  "type": "string"
+                }
+              ]
+            },
+            "review_commit": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "pattern": "^[0-9a-f]{40}$",
+                  "type": "string"
+                }
+              ]
+            },
+            "review_sha256": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              ]
+            },
+            "source_sha256": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              ]
+            },
+            "verdict": {
+              "enum": [
+                null,
+                "CLEAR"
+              ]
+            }
+          },
+          "required": [
+            "candidate_commit",
+            "source_sha256",
+            "review_commit",
+            "review_sha256",
+            "verdict"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "capsule",
+        "exact_composition",
+        "recoveryR2design"
+      ],
+      "type": "object"
+    },
+    "root_proof": {
+      "additionalProperties": false,
+      "properties": {
+        "data-materialization-once.guard": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "bytes": {
+                  "maximum": 8388608,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "bytes",
+                "sha256"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "data-materialization-receipt.json": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "bytes": {
+                  "maximum": 8388608,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "bytes",
+                "sha256"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "metadata-source-once.json": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "bytes": {
+                  "maximum": 8388608,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "bytes",
+                "sha256"
+              ],
+              "type": "object"
+            }
+          ]
+        }
+      },
+      "required": [
+        "data-materialization-once.guard",
+        "data-materialization-receipt.json",
+        "metadata-source-once.json"
+      ],
+      "type": "object"
+    },
+    "schema": {
+      "const": "openergy.requirements-source-config.v1"
+    },
+    "template_sha256": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema",
+    "execution",
+    "evidence_root",
+    "template_sha256",
+    "reviews",
+    "parent",
+    "completed_SOURCE",
+    "artifact_publication",
+    "root_proof"
+  ],
+  "type": "object"
+}

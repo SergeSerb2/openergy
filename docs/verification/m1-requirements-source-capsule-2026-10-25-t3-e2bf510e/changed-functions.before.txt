@@ -1,0 +1,500 @@
+Complete changed donor declarations. SOURCE DATA ONLY.
+
+# observe_exit -- docs/verification/m1-prepare-parent-observed-layout-r7-2026-10-25-t3-00056e6d/prepare-parent.py.txt
+def observe_exit(proc, status, code):
+    # Called immediately after each successful actual poll/wait, before any writes.
+    if code is not None and status['actual_exit'] is None:
+        status['actual_exit'] = code
+        status['reaped'] = True
+        status['actual_exit_observed_ns'] = clock_ns()
+        return status['actual_exit_observed_ns']
+    return clock_ns()  # Sample even a real poll result of None; do not infer exit.
+
+
+# bind_config -- docs/verification/m1-prepare-parent-observed-layout-r7-2026-10-25-t3-00056e6d/prepare-parent.py.txt
+def bind_config():
+    config = closed_json(CONFIG_TEXT)
+    require(type(config) is dict and set(config) == {
+        'schema', 'execution', 'evidence_root', 'template_sha256', 'reviews',
+        'parent', 'completed_SOURCE', 'artifact_publication'}, 'closed CONFIG')
+    require(config['schema'] == 'openergy.prepare-parent-config.v1'
+            and config['execution'] is False and config['evidence_root'] == ROOT,
+            'fixed inert prepare CONFIG')
+    require(hex_string(config['template_sha256'], 64), 'pending template binding')
+    require(type(config['reviews']) is dict and set(config['reviews']) == {
+        'capsule', 'artifact_data', 'publisher'}, 'closed independent reviews')
+    for label, review in config['reviews'].items():
+        require(type(review) is dict and set(review) == {
+            'candidate_commit', 'source_sha256', 'review_commit', 'review_sha256', 'verdict'},
+            'closed review record')
+        require(hex_string(review['candidate_commit'], 40)
+                and hex_string(review['source_sha256'], 64)
+                and hex_string(review['review_commit'], 40)
+                and hex_string(review['review_sha256'], 64)
+                and review['verdict'] == 'CLEAR', 'pending actual independent review: ' + label)
+    require(config['reviews']['capsule']['source_sha256'] == config['template_sha256'],
+            'review must bind unrendered capsule bytes')
+    for label in ('artifact_data', 'publisher'):
+        require(config['reviews'][label]['candidate_commit'] == REVIEWED_INPUTS[label]['candidate_commit']
+                and config['reviews'][label]['source_sha256'] == REVIEWED_INPUTS[label]['source_sha256'],
+                'exact pending candidate remains fixed')
+    require(same_data(config['parent'], {k: True for k in PARENT_DUTIES}),
+            'actual EXTERNAL parent inspection prerequisites remain mandatory')
+    for key, names, cap in (('completed_SOURCE', SOURCE_BOUNDARY, 65536),
+                            ('artifact_publication', ARTIFACT_PUBLICATION, 16384)):
+        require(type(config[key]) is dict and set(config[key]) == set(names), 'closed boundary names')
+        for binding in config[key].values():
+            require(type(binding) is dict and set(binding) == {'bytes', 'sha256'}
+                    and type(binding['bytes']) is int and 0 <= binding['bytes'] <= cap
+                    and hex_string(binding['sha256'], 64), 'pending actual boundary raw binding')
+    require(config['completed_SOURCE']['source-caller.stdout.bin']['bytes'] <= 512
+            and config['completed_SOURCE']['source-caller.stderr.bin'] ==
+                {'bytes': 0, 'sha256': sha(b'')}, 'source compact raw bounds')
+    return config, dict(template_sha256=config['template_sha256'],
+                        config_canonical_sha256=sha(encoded(config)[:-1]),
+                        reviews=config['reviews'], fixed_source_bindings=FIXED_BINDINGS)
+
+
+# console_admission -- docs/verification/m1-prepare-parent-observed-layout-r7-2026-10-25-t3-00056e6d/prepare-parent.py.txt
+def console_admission():
+    require(stat.S_ISFIFO(os.fstat(1).st_mode), 'console must be actual FIFO')
+    allowance = os.fpathconf(1, 'PC_PIPE_BUF')
+    require(type(allowance) is int and allowance >= CONSOLE_CAP, 'actual atomic pipe allowance')
+    require(CONFIG['parent']['console_single_writer_live_reader_bound'] is True,
+            'external actual one-writer/live-reader topology')
+    os.set_blocking(1, False)
+    require(os.get_blocking(1) is False, 'nonblocking console before ANY target write')
+    remaining(REMOTE_END)
+    return dict(fifo=True, pipe_buf=allowance, single_writer_live_reader='external-parent-bound',
+                nonblocking=True)
+
+
+# closed_root_layout -- docs/verification/m1-prepare-parent-observed-layout-r7-2026-10-25-t3-00056e6d/prepare-parent.py.txt
+def closed_root_layout(rootfd, entry_outputs=False):
+    # Reject presence; no recursion, suffix admission, deletion or root repair.
+    # Exact initial260, then only the four already-durable INITIAL outputs264.
+    require(type(entry_outputs) is bool and len(ROOT_INITIAL_NAMES) == 260,
+            'closed pre-prepare layout phase/names')
+    extra = OUTPUTS[:4] if entry_outputs else ()
+    require(set(PUBLICATIONS) == set(extra), 'no future output publication before private attempt')
+    for name in extra:
+        item = PUBLICATIONS[name]
+        require(item['state'] == 'durable' and item['ref'] is not None,
+                'only already-durable entry outputs')
+        read_leaf(rootfd, name, item['ref'])
+    expected = ROOT_INITIAL_NAMES | frozenset(extra)
+    before = os.fstat(rootfd)
+    require(stat.S_ISDIR(before.st_mode) and before.st_uid == os.getuid()
+            and stat.S_IMODE(before.st_mode) == 0o700, 'flat root owner/mode')
+    seen, total = {}, 0
+    with os.scandir(rootfd) as entries:
+        for entry in entries:
+            remaining(REMOTE_END)
+            name = entry.name
+            require(name in expected and name not in seen and len(seen) < len(expected)
+                    and len(name.encode('utf-8')) <= 255, 'exact flat ROOT name set')
+            info = os.stat(name, dir_fd=rootfd, follow_symlinks=False)
+            require(stat.S_ISREG(info.st_mode) and info.st_uid == before.st_uid
+                    and info.st_dev == before.st_dev and stat.S_IMODE(info.st_mode) == 0o600
+                    and info.st_nlink == 1 and 0 <= info.st_size <= FILE_CAP,
+                    'flat nofollow regular owner0600 nlink1 file cap')
+            seen[name] = stamp(info)
+            total += info.st_size
+            require(len(seen) <= ENTRY_CAP and total <= INITIAL_CAP, 'flat initial caps')
+    require(set(seen) == expected, 'no missing or extra ROOT names')
+    for name, identity in seen.items():
+        remaining(REMOTE_END)
+        if name in ROOT_OBSERVED_DATA:
+            # Rebind the byte reader to this invocation's enumerated identity.
+            require(identity == stamp(os.stat(name, dir_fd=rootfd, follow_symlinks=False)),
+                    'enumerated observed DATA identity')
+            read_leaf(rootfd, name, ROOT_OBSERVED_DATA[name])
+        require(identity == stamp(os.stat(name, dir_fd=rootfd, follow_symlinks=False)),
+                'stable flat linked leaf')
+    require(stamp(before) == stamp(os.fstat(rootfd))
+            == stamp(os.stat(ROOT, follow_symlinks=False)), 'stable linked flat root')
+    # Exclusive-root duty continues through exit, including permitted later writes.
+    return dict(entries=len(seen), bytes=total)
+
+
+# expand -- docs/verification/m1-copy-only-caller-direct-signal-2026-10-25-t3-56c87ccf/metadata-copy-caller-direct-signal.py.txt
+def expand(vector, bundle):
+    # Frozen token vectors only; no shell, config argv or command generation fallback.
+    return [bundle + token[len('${BUNDLE}'):] if token == '${BUNDLE}' or token.startswith('${BUNDLE}/') else token for token in vector['argv']]
+
+
+# inspect_frozen -- docs/verification/m1-prepare-parent-observed-layout-r7-2026-10-25-t3-00056e6d/prepare-parent.py.txt
+def inspect_frozen(rootfd):
+    inspect_remote(rootfd)  # Original five retained leaves; seven actual originals remain parent-owned.
+    for name, binding in INITIAL_INPUTS.items():
+        read_leaf(rootfd, name, binding)
+    pinraw = read_leaf(rootfd, 'input-pins.json', INITIAL_INPUTS['input-pins.json'])
+    pins = closed_json(pinraw)
+    require(set(pins) == {'schema', 'execution', 'files'} and pins['execution'] is False
+            and pins['schema'] == 'openergy.metadata-caller-pins.v1'
+            and set(pins['files']) == set(PINS) and len(PINS) == 17, 'frozen17 pin closure')
+    for name, expected in PINS.items():
+        require(pins['files'][name]['bytes'] == expected['bytes']
+                and pins['files'][name]['sha256'] == expected['sha256'], 'exact original pin record')
+        read_leaf(rootfd, name, expected)
+    read_leaf(rootfd, 'metadata-caller.py.txt', FIXED_BINDINGS['metadata_caller']['source'])
+    source = closed_json(read_leaf(rootfd, 'metadata-source-result.json', SOURCE_RESULT))
+    require(source['schema'] == 'openergy.metadata-observations.v2' and source['mode'] == 'source'
+            and same_data(source['clock'], CLOCK) and source['completed_native_commands'] == 50
+            and len(source['native_records']) == 50 and len(source['auxiliary_records']) == 3
+            and source['observation_sequence_complete'] is True and source['first_error'] is None
+            and source['first_failed_command'] is None and source['first_failed_comparison'] is None
+            and source['publication_errors'] == [] and len(source['actual_direct_children']) == 53,
+            'exact completed SOURCE result; full semantic/raw assessment remains EXTERNAL')
+    for row in SOURCE_RAWS:
+        read_leaf(rootfd, row['leaf'], row)
+    boundary = {name: read_leaf(rootfd, name, binding)
+                for name, binding in CONFIG['completed_SOURCE'].items()}
+    actual = closed_json(boundary['source-caller-os.json'])
+    require(collection_complete(actual), 'actual completed SOURCE child status')
+    require(boundary['source-caller.stderr.bin'] == b'', 'SOURCE empty stderr')
+    publication = {name: read_leaf(rootfd, name, binding)
+                   for name, binding in CONFIG['artifact_publication'].items()}
+    published = closed_json(publication['artifact-binding-receipt.json'])
+    require(published['schema'] == 'openergy.eight-artifact-data-binding.v1'
+            and published['evidence_root'] == ROOT and published['execution'] is False
+            and published['first_error'] is None
+            and published['eight_files_state'] == 'durable_barriers_returned'
+            and set(published['files']) == set(EIGHT), 'actual publisher full receipt')
+    for name, binding in EIGHT.items():
+        require(same_data(published['files'][name], dict(path=ROOT + '/' + name,
+                      mode='0o600', **binding)), 'publisher actual8 raw references')
+    # Receipt text/hash is insufficient: all EXTERNAL actual OS/D4/raw predicates
+    # were required by CONFIG before root access. No new publication is inferred.
+    artifact = inspect_artifact(rootfd)
+    build = {label: closed_json(read_build_record(rootfd, label)) for label in BUILD_INPUTS}
+    require(len(build['bundle_files']['files']) == 167
+            and build['bundle_files']['app'] == ARTIFACT_SHAPE['build_bundle_path'], 'saved bundle inventory')
+    return artifact, build['bundle_files']['files']
+
+
+# initial_put -- docs/verification/m1-prepare-parent-observed-layout-r7-2026-10-25-t3-00056e6d/prepare-parent.py.txt
+def initial_put(rootfd, name, data, budget):
+    require(name in OUTPUTS[:4] and len(data) <= FILE_CAP, 'only pre-primary INITIAL outputs')
+    item = dict(path=ROOT + '/' + name, state='attempted', ref=None)
+    PUBLICATIONS[name] = item
+    fd = None
+    try:
+        with until(REMOTE_END):
+            absent(rootfd, 'bytes.json')
+            absent(rootfd, 'bytes.lock')
+            # Reserve the exact growth before exclusive create; never refund a partial.
+            require(budget['bytes'] + len(data) <= INITIAL_CAP
+                    and budget['entries'] + 1 <= ENTRY_CAP, 'INITIAL pre-write reservation')
+            budget['bytes'] += len(data)
+            budget['entries'] += 1
+            fd = os.open(name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+                         0o600, dir_fd=rootfd)
+            os.fchmod(fd, 0o600)
+            require(os.write(fd, data) == len(data), 'short raw INITIAL write; no retry')
+            os.fsync(fd)
+            closing, fd = fd, None
+            os.close(closing)
+            os.fsync(rootfd)
+        item.update(state='durable', mode='0o600', ref=dict(path=ROOT + '/' + name,
+                                             bytes=len(data), sha256=sha(data)))
+        return item['ref']
+    except BaseException as exc:
+        fail('initial-publication', exc)
+        item['state'] = 'failed_or_partial_unverified'
+        PUBLICATION_ERRORS.append(dict(name=name, error=type(exc).__name__))
+        raise
+    finally:
+        if fd is not None:
+            closing, fd = fd, None
+            try:
+                os.close(closing)
+            except BaseException as exc:
+                fail('initial-close', exc)
+                PUBLICATION_ERRORS.append(dict(name=name, error=type(exc).__name__, stage='close'))
+
+
+# collect -- docs/verification/m1-copy-only-caller-direct-signal-2026-10-25-t3-56c87ccf/metadata-copy-caller-direct-signal.py.txt
+def collect(label, argv, root, phase_deadline):
+    """Direct child only. Bounded nonblocking reads; no communicate or PID inference."""
+    started = clock_ns()
+    deadline = min(started + 10 * NS, phase_deadline - NS)  # Leave publication time inside phase.
+    require(deadline - started > 750000000, label + ': no command/reap allowance')
+    work_end = deadline - 500000000  # Kill/reap share the command's original ceiling.
+    buffers = {'stdout': bytearray(), 'stderr': bytearray()}
+    eof = {'stdout': False, 'stderr': False}
+    observed, dropped, drop_unknown = 0, 0, False
+    overflow, timed_out, deadline_loss = False, False, False
+    proc, error, kill_error, reaped = None, None, None, False
+    selector = selectors.DefaultSelector()
+    kill_attempted, kill_syscall_returned = False, False
+    kill_eligibility_exit, kill_eligibility_observed_ns = None, None
+    try:
+        with until(work_end):
+            proc = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE, cwd=root, env=native_environment(root),
+                                    shell=False, close_fds=True)
+            HANDLES.append(dict(label=label, argv=list(argv), handle=proc, collector_status=None))
+            for name in ('stdout', 'stderr'):
+                stream = getattr(proc, name)
+                os.set_blocking(stream.fileno(), False)
+                selector.register(stream, selectors.EVENT_READ, name)
+            while True:
+                status = proc.poll()  # Actual waitpid status from the retained handle.
+                if status is not None and all(eof.values()):
+                    reaped = True
+                    break
+                if clock_ns() >= work_end:
+                    timed_out = deadline_loss = True
+                    break
+                if not selector.get_map():
+                    # EOF without exit: block only within the remaining work interval.
+                    try:
+                        proc.wait(timeout=remaining(work_end))
+                    except subprocess.TimeoutExpired:
+                        timed_out = deadline_loss = True
+                    continue
+                for key, _mask in selector.select(min(0.05, remaining(work_end))):
+                    # Read at most remaining capacity + one overflow byte. Never capture then cap.
+                    allowance = STREAM_CAP - sum(len(x) for x in buffers.values())
+                    try:
+                        chunk = os.read(key.fd, min(65536, allowance + 1))
+                    except BlockingIOError:
+                        continue
+                    if not chunk:
+                        eof[key.data] = True
+                        selector.unregister(key.fileobj)
+                        continue
+                    observed += len(chunk)
+                    buffers[key.data].extend(chunk[:allowance])
+                    if len(chunk) > allowance:
+                        dropped += len(chunk) - allowance
+                        overflow, drop_unknown = True, True
+                        break
+                if overflow:
+                    break
+    except Exception as exc:
+        error = type(exc).__name__ + ': ' + str(exc)[:1024]
+        if isinstance(exc, (TimeoutError, subprocess.TimeoutExpired)):
+            timed_out = deadline_loss = True
+    finally:
+        if proc is not None:
+            try:
+                with until(deadline):
+                    kill_eligibility_exit = proc.poll()
+                    try:
+                        kill_eligibility_observed_ns = clock_ns()
+                    finally:
+                        # A real poll exit remains reaped even if the clock raises.
+                        if kill_eligibility_exit is not None:
+                            reaped = True
+                    if kill_eligibility_exit is None:
+                        if kill_eligibility_observed_ns < deadline and kill_eligibility_observed_ns < phase_deadline:
+                            if overflow or timed_out:
+                                kill_attempted = True
+                                # Only this retained, still-unreaped child; no extra poll/OS query.
+                                os.kill(proc.pid, signal.SIGKILL)
+                                kill_syscall_returned = True  # Return is not delivery, exit or reap.
+                        else:
+                            timed_out = deadline_loss = True
+                    proc.wait(timeout=remaining(deadline))
+                    reaped = True
+            except Exception as exc:
+                kill_error = type(exc).__name__ + ': ' + str(exc)[:1024]
+                deadline_loss = True
+            # No drain pass after failure; unread bytes remain explicitly unknown.
+            if not all(eof.values()):
+                drop_unknown = True
+            if clock_ns() > deadline:
+                deadline_loss = True
+            for name in ('stdout', 'stderr'):
+                stream = getattr(proc, name)
+                if stream is not None:
+                    try:
+                        stream.close()
+                    except Exception as exc:
+                        if error is None:
+                            error = type(exc).__name__ + ': ' + str(exc)[:1024]
+        try:
+            selector.close()
+        except Exception as exc:
+            if error is None:
+                error = type(exc).__name__ + ': ' + str(exc)[:1024]
+    finished = clock_ns()
+    if finished > deadline:
+        deadline_loss = True
+    status = proc.returncode if proc is not None else None
+    record = dict(label=label, argv=argv, pid=proc.pid if proc is not None else None,
+                  handle_retained=proc is not None, actual_exit=status, reaped=reaped,
+                  stdout_eof=eof['stdout'], stderr_eof=eof['stderr'],
+                  observed_stream_bytes=observed, dropped_observed_bytes=dropped,
+                  unread_or_dropped_unknown=drop_unknown, overflow=overflow,
+                  timed_out=timed_out, deadline_loss=deadline_loss,
+                  kill_attempted=kill_attempted, kill_syscall_returned=kill_syscall_returned,
+                  kill_eligibility_exit=kill_eligibility_exit,
+                  kill_eligibility_observed_ns=kill_eligibility_observed_ns,
+                  error=error, kill_or_reap_error=kill_error, clock=CLOCK, started_ns=started,
+                  command_deadline_ns=deadline, finished_ns=finished)
+    if proc is not None:
+        HANDLES[-1]['collector_status'] = record
+    return record, bytes(buffers['stdout']), bytes(buffers['stderr'])
+
+
+# direct_children -- docs/verification/m1-copy-only-caller-direct-signal-2026-10-25-t3-56c87ccf/metadata-copy-caller-direct-signal.py.txt
+def direct_children():
+    # Do not poll or wait again here. Only actual statuses already observed on
+    # retained handles; null remains null. Every direct handle appears once.
+    return [dict(label=e['label'], argv=e['argv'], pid=e['handle'].pid,
+                 actual_exit=e['handle'].returncode, handle_retained=True,
+                 collector_status=e['collector_status']) for e in HANDLES]
+
+
+# emit_once -- docs/verification/m1-prepare-parent-observed-layout-r7-2026-10-25-t3-00056e6d/prepare-parent.py.txt
+def emit_once(receipt_ref, complete):
+    # One <=512 atomic nonblocking raw write; no retry, flush or shutdown output.
+    value = dict(v='prepare-parent.v1', state=('PREPARED_DATA_COMPLETE' if complete else 'FAILED_UNVERIFIED'),
+                 r=([receipt_ref['bytes'], receipt_ref['sha256']] if receipt_ref else None))
+    data = encoded(value)
+    require(len(data) <= CONSOLE_CAP, 'compact console cap')
+    with until(REMOTE_END):
+        require(stat.S_ISFIFO(os.fstat(1).st_mode) and os.get_blocking(1) is False
+                and os.fpathconf(1, 'PC_PIPE_BUF') >= CONSOLE_CAP, 'same admitted console FIFO')
+        remaining(REMOTE_END)
+        require(os.write(1, data) == len(data), 'single console write failed; no retry')
+
+
+# main -- docs/verification/m1-prepare-parent-observed-layout-r7-2026-10-25-t3-00056e6d/prepare-parent.py.txt
+def main():
+    global CONFIG, STAGE
+    rootfd, common, identity, initial, budget = None, None, None, None, None
+    auth, primary, prepared, receipt_ref = None, None, None, None
+    conversions, ledger = [], None
+    final_nice, console = None, None
+    primary_attempted = False
+    complete = False
+    try:
+        require(sys.argv == ['-'] and sys.version_info[:3] == (3, 9, 6)
+                and sys.flags.isolated and sys.flags.no_site and sys.flags.dont_write_bytecode
+                and not sys.flags.optimize, 'fixed trusted SYSTEM3.9.6 stdin -I -S -B')
+        require(os.getuid() == os.geteuid(), 'same real/effective owner')
+        os.umask(0o077)
+        with until(REMOTE_END):
+            CONFIG, identity = bind_config()  # Null-closed BEFORE private root access.
+            console = console_admission()  # BEFORE ANY target writes.
+            rootfd = open_root()
+            initial = closed_root_layout(rootfd)  # Exact260 BEFORE reads/growth/helper entry.
+            STAGE = 'fixed-source-artifact-boundaries'
+            artifact, bundle_tree = inspect_frozen(rootfd)
+            # Exclude every ordinary ROOT common cache before supplied module/private entry.
+            for name in OUTPUTS + ('__pycache__', 'common.pyc', 'common.pyo',
+                                    'bytes.json', 'bytes.lock', 'prepared.json', 'prepare-guard.json'):
+                absent(rootfd, name)
+            require(inventory(rootfd) == initial, 'same complete initial tally before first growth')
+            budget = dict(initial)
+            guard_data = encoded(dict(schema='openergy.prepare-parent-once.v1', identity=identity,
+                clock=CLOCK, remote_started_ns=REMOTE_START, remote_deadline_ns=REMOTE_END,
+                guard_before_all_spawns=True, helper_maximum=1, primary_maximum=1,
+                primary_argv=[PRIVATE_PYTHON, '-B', ROOT + '/prepare.py'],
+                environment=startup(), nice_before=NICE_BEFORE, own_nice=OWN_NICE,
+                execution=False, flow_started=False))
+            require(len(guard_data) <= STATUS_CAP and initial['entries'] + 4 <= ENTRY_CAP
+                    and initial['bytes'] + len(guard_data) + RAW_CAP + STATUS_CAP <= INITIAL_CAP,
+                    'reserve guard+combined helper raw+status BEFORE first write')
+        STAGE = 'exclusive-once-guard'
+        initial_put(rootfd, OUTPUTS[0], guard_data, budget)
+        STAGE = 'SYSTEM-entry-helper'
+        status, stdout, stderr = collect('entry')
+        require(status['reaped'] is True, 'unreaped helper: no later writes')
+        # Even a failed helper keeps exact bounded raw/status if safe. Its first
+        # actual failure is already latched. No private entry follows any error.
+        initial_put(rootfd, OUTPUTS[1], stdout, budget)
+        initial_put(rootfd, OUTPUTS[2], stderr, budget)
+        require(len(encoded(status)) <= STATUS_CAP, 'helper status reserved bound')
+        initial_put(rootfd, OUTPUTS[3], encoded(status), budget)
+        with until(REMOTE_END):
+            auth = inspect_entry(status, stdout, stderr)
+            require(FIRST_ERROR is None, 'failed helper is not authentication')
+        STAGE = 'authenticated-SYSTEM-common'
+        common = import_common(rootfd, auth)
+        with until(REMOTE_END):
+            # Rebind fixed operation/artifact and modules just before private entry.
+            inspect_artifact(rootfd)
+            for name, binding in PINS.items():
+                read_leaf(rootfd, name, binding)
+            absent(rootfd, 'bytes.json')
+            absent(rootfd, 'bytes.lock')
+            # Recheck before the irreversible attempt; ownership stays exclusive through exit.
+            for name in ('__pycache__', 'common.pyc', 'common.pyo'):
+                absent(rootfd, name)
+            closed_root_layout(rootfd, entry_outputs=True)  # Exact264; no future ledger/output leaves.
+        STAGE = 'one-private-prepare'
+        primary_attempted = True  # Irreversible mode boundary, even spawn failure.
+        primary, stdout, stderr = collect('prepare')
+        # No post-child writer touches ROOT until exact actual status is closed.
+        require(primary['reaped'] is True and type(primary['actual_exit']) is int,
+                'unreaped prepare: raw unpublished/unknown; no writer')
+        # FIRST_ERROR and the full primary record were fixed BEFORE all calls below.
+        STAGE = 'existing-R9-reserved-publication'
+        with until(REMOTE_END):
+            ledger = existing_ledger(rootfd)
+        reserved_put(rootfd, common, OUTPUTS[4], stdout, conversions)
+        reserved_put(rootfd, common, OUTPUTS[5], stderr, conversions)
+        reserved_put(rootfd, common, OUTPUTS[6], encoded(primary), conversions)
+        if collection_complete(primary) and FIRST_ERROR is None:
+            STAGE = 'new-prepared-data-binding'
+            try:
+                with until(REMOTE_END):
+                    prepared = inspect_prepared(rootfd, artifact, bundle_tree)
+            except BaseException as exc:
+                fail(STAGE, exc)
+        with until(REMOTE_END):
+            final_nice = os.getpriority(os.PRIO_PROCESS, 0)
+            require(final_nice == 15, 'own NI15 final observation')
+        complete = (collection_complete(primary) and FIRST_ERROR is None and prepared is not None
+                    and not PUBLICATION_ERRORS)
+        STAGE = 'full-R9-receipt'
+        receipt = dict(schema='openergy.prepare-parent-receipt.v1', identity=identity,
+            evidence_root=ROOT, clock=CLOCK, remote_started_ns=REMOTE_START,
+            caps=dict(file=FILE_CAP, aggregate=TOTAL_CAP, INITIAL=INITIAL_CAP,
+                      combined_each_child=RAW_CAP, console=CONSOLE_CAP, full_receipt=RECEIPT_CAP,
+                      product_reserve=16777216, cleanup_reserve=4194304, accounting_reserve=65536),
+            remote_deadline_ns=REMOTE_END, remote_collection_end_ns=REMOTE_END - 2 * NS,
+            remote_reap_end_ns=REMOTE_END - 1500000000, helper=auth,
+            primary=primary, primary_attempted=primary_attempted, actual_handles=[
+                dict(label=e['label'], pid_from_retained_handle=(e['handle'].pid if e['handle'] else None),
+                     actual_exit=(e['handle'].returncode if e['handle'] else None), status=e['status'])
+                for e in HANDLES],
+            first_error=FIRST_ERROR, publication_errors=PUBLICATION_ERRORS,
+            publications=PUBLICATIONS, prepared=prepared, initial_tally=initial,
+            preprimary_INITIAL_charged_by_unchanged_prepare=budget, ledger_before_parent_writes=ledger,
+            common_clock_conversions_before_receipt=list(conversions),
+            receipt_writer_boundary='same conservative conversion at reserved_put; outer end unchanged',
+            fixed_artifact_files=EIGHT, frozen17=PINS,
+            source_result=SOURCE_RESULT, source_raw_manifest_sha256=sha(encoded(SOURCE_RAWS)),
+            source_boundaries=CONFIG['completed_SOURCE'], artifact_publication=CONFIG['artifact_publication'],
+            own_nice_before=NICE_BEFORE, own_nice_entry=OWN_NICE, own_nice_final=final_nice,
+            console_admission=console, state=('PREPARED_DATA_COMPLETE' if complete else 'FAILED_UNVERIFIED'),
+            execution=False, flow_started=False, copy_qualification='STILL_REQUIRED',
+            artifact_runtime_acceptance=False, runtime='UNVERIFIED',
+            own_exit_EOF_SSH_collector_D4_and_final_barriers='external actual parent duty')
+        receipt_ref = reserved_put(rootfd, common, OUTPUTS[7], receipt, conversions)
+    except BaseException as exc:
+        fail(STAGE, exc)
+        complete = False
+    # No second writer or failure-path file publication. Existing partial outputs
+    # remain. Missing receipt/raw/ledger/exit is declared FAILED_UNVERIFIED below.
+    if rootfd is not None:
+        try:
+            closing, rootfd = rootfd, None
+            with until(REMOTE_END):
+                os.close(closing)
+        except BaseException as exc:
+            fail('root-close', exc)
+            complete = False
+    try:
+        require(CONFIG is not None and console is not None, 'no admitted console')
+        emit_once(receipt_ref, complete and FIRST_ERROR is None)
+        remaining(REMOTE_END)
+    except BaseException:
+        return 1
+    return 0 if complete and FIRST_ERROR is None else 1

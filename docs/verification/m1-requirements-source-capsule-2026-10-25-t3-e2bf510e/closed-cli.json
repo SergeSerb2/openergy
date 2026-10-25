@@ -1,0 +1,265 @@
+{
+  "SYSTEM_source_helpers": 2,
+  "actual_entry": null,
+  "bootstrap_exception": false,
+  "entry": [
+    "/usr/bin/python3",
+    "-I",
+    "-S",
+    "-B",
+    "-"
+  ],
+  "execution": false,
+  "ledger": "MUST_REMAIN_ABSENT_BEFORE_EACH_INITIAL_WRITE",
+  "native_commands": 7,
+  "observation_sequence": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-I",
+        "-S",
+        "-B",
+        "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/file-qualification.recipe.py.txt",
+        "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+        "source"
+      ],
+      "environment": {
+        "HOME": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+        "LANG": "C",
+        "MACOSX_DEPLOYMENT_TARGET": "15.0",
+        "OPENERGY_DISABLE_UPDATES": "1",
+        "OPENERGY_ORDINARY_PYTHON": "/Users/m1-dev/.local/state/openergy-verification/m1-prerequisite-data-20261024-d896c0b3636a/extracted-data/python/bin/python3.13",
+        "OPENERGY_ORDINARY_SOURCE_ROOT": "/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/repo",
+        "PATH": "/usr/bin:/bin",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONNOUSERSITE": "1",
+        "TMPDIR": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/"
+      },
+      "label": "source-files-before"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--arch",
+        "arm64",
+        "--requirements",
+        "-",
+        "/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/dist/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/B/Autoupdate"
+      ],
+      "environment": {
+        "DEVELOPER_DIR": "/Applications/Xcode.app/Contents/Developer",
+        "HOME": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+        "LC_ALL": "C",
+        "MACOSX_DEPLOYMENT_TARGET": "15.0",
+        "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONNOUSERSITE": "1",
+        "TMPDIR": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/"
+      },
+      "label": "object-0-requirements"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--arch",
+        "arm64",
+        "--requirements",
+        "-",
+        "/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/dist/Openergy.app/Contents/Frameworks/Sparkle.framework"
+      ],
+      "environment": {
+        "DEVELOPER_DIR": "/Applications/Xcode.app/Contents/Developer",
+        "HOME": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+        "LC_ALL": "C",
+        "MACOSX_DEPLOYMENT_TARGET": "15.0",
+        "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONNOUSERSITE": "1",
+        "TMPDIR": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/"
+      },
+      "label": "object-1-requirements"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--arch",
+        "arm64",
+        "--requirements",
+        "-",
+        "/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/dist/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/B/Updater.app"
+      ],
+      "environment": {
+        "DEVELOPER_DIR": "/Applications/Xcode.app/Contents/Developer",
+        "HOME": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+        "LC_ALL": "C",
+        "MACOSX_DEPLOYMENT_TARGET": "15.0",
+        "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONNOUSERSITE": "1",
+        "TMPDIR": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/"
+      },
+      "label": "object-2-requirements"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--arch",
+        "arm64",
+        "--requirements",
+        "-",
+        "/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/dist/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Downloader.xpc"
+      ],
+      "environment": {
+        "DEVELOPER_DIR": "/Applications/Xcode.app/Contents/Developer",
+        "HOME": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+        "LC_ALL": "C",
+        "MACOSX_DEPLOYMENT_TARGET": "15.0",
+        "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONNOUSERSITE": "1",
+        "TMPDIR": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/"
+      },
+      "label": "object-3-requirements"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--arch",
+        "arm64",
+        "--requirements",
+        "-",
+        "/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/dist/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Installer.xpc"
+      ],
+      "environment": {
+        "DEVELOPER_DIR": "/Applications/Xcode.app/Contents/Developer",
+        "HOME": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+        "LC_ALL": "C",
+        "MACOSX_DEPLOYMENT_TARGET": "15.0",
+        "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONNOUSERSITE": "1",
+        "TMPDIR": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/"
+      },
+      "label": "object-4-requirements"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--arch",
+        "arm64",
+        "--requirements",
+        "-",
+        "/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/dist/Openergy.app/Contents/Helpers/openergy"
+      ],
+      "environment": {
+        "DEVELOPER_DIR": "/Applications/Xcode.app/Contents/Developer",
+        "HOME": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+        "LC_ALL": "C",
+        "MACOSX_DEPLOYMENT_TARGET": "15.0",
+        "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONNOUSERSITE": "1",
+        "TMPDIR": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/"
+      },
+      "label": "object-5-requirements"
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--arch",
+        "arm64",
+        "--requirements",
+        "-",
+        "/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/dist/Openergy.app"
+      ],
+      "environment": {
+        "DEVELOPER_DIR": "/Applications/Xcode.app/Contents/Developer",
+        "HOME": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+        "LC_ALL": "C",
+        "MACOSX_DEPLOYMENT_TARGET": "15.0",
+        "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONNOUSERSITE": "1",
+        "TMPDIR": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/"
+      },
+      "label": "object-6-requirements"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-I",
+        "-S",
+        "-B",
+        "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/file-qualification.recipe.py.txt",
+        "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+        "source"
+      ],
+      "environment": {
+        "HOME": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+        "LANG": "C",
+        "MACOSX_DEPLOYMENT_TARGET": "15.0",
+        "OPENERGY_DISABLE_UPDATES": "1",
+        "OPENERGY_ORDINARY_PYTHON": "/Users/m1-dev/.local/state/openergy-verification/m1-prerequisite-data-20261024-d896c0b3636a/extracted-data/python/bin/python3.13",
+        "OPENERGY_ORDINARY_SOURCE_ROOT": "/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/repo",
+        "PATH": "/usr/bin:/bin",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONNOUSERSITE": "1",
+        "TMPDIR": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/"
+      },
+      "label": "source-files-after"
+    }
+  ],
+  "outputs": [
+    {
+      "cap": 16384,
+      "name": "requirements-source-once.guard"
+    },
+    {
+      "cap": 262144,
+      "name": "requirements-source-capture.json"
+    },
+    {
+      "cap": 1048576,
+      "name": "requirements-source-basis.json"
+    },
+    {
+      "cap": 16384,
+      "name": "requirements-source-receipt.json"
+    }
+  ],
+  "parent": null,
+  "private_python_entries": 0,
+  "review": null,
+  "root": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+  "runtime": null,
+  "schema": "openergy.requirements-source-closed-cli.v1",
+  "selectors": [],
+  "startup": {
+    "HOME": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503",
+    "LANG": "C",
+    "MACOSX_DEPLOYMENT_TARGET": "15.0",
+    "OPENERGY_DISABLE_UPDATES": "1",
+    "OPENERGY_ORDINARY_PYTHON": "/Users/m1-dev/.local/state/openergy-verification/m1-prerequisite-data-20261024-d896c0b3636a/extracted-data/python/bin/python3.13",
+    "OPENERGY_ORDINARY_SOURCE_ROOT": "/Users/m1-dev/.local/state/openergy-verification/m1-bundle-run-r3-20261024-d8280b96422f/repo",
+    "PATH": "/usr/bin:/bin",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONNOUSERSITE": "1",
+    "TMPDIR": "/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503/"
+  },
+  "stdin_role": "full rendered source; one CONFIG constant token",
+  "sys_argv": [
+    "-"
+  ],
+  "system_version": [
+    3,
+    9,
+    6
+  ]
+}

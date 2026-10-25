@@ -1,0 +1,41 @@
+{
+  "actual_per_entry_checks": {
+    "actual_full_permission_modes": 4787,
+    "actual_raw_Git_byte_equality_or_explicit_existing_CRLF": 4787,
+    "actual_working_bytes_SHA256": 4787,
+    "actual_working_file_kinds": 4787,
+    "canonical_opening_closing_digest_equality": true,
+    "mismatches": [],
+    "old_HEAD_tree_and_index_mode_blob_stage0": 4787,
+    "old_git_blob_bodies_read": 4787
+  },
+  "baseline_head": "5a587faa701da00d6e16f2e5ff9f2f43f553caf5",
+  "baseline_tree": "f38f123cb32ccea21ceb698c2a5f161f6ecc099e",
+  "closing_digest": "1ca260195417a6628dc712adf040910ee77e27f79796a8d4b5be388b853a2e10",
+  "commit_policy": {
+    "core_fsmonitor": false,
+    "gpgSign": false,
+    "hooksPath": "/dev/null",
+    "no_verify": true,
+    "signoff": false
+  },
+  "digest_encoding": "SHA256 compact sorted-key ASCII JSON array plus LF; rows in git ls-files order; each row path,index_mode,index_blob,working_mode(full st_mode),bytes,sha256(actual working bytes)",
+  "execution": false,
+  "existing_working_byte_exceptions": [
+    {
+      "git_blob_bytes": 502,
+      "git_blob_content_sha256": "74772411a85032212c7f4ba1be1948233804dcb21166c5caef0a6611ea2c3210",
+      "path": "tools/windows/openergy-run.cmd",
+      "reason": "existing CRLF working bytes; preserved exactly by opening/closing canonical digest",
+      "working_bytes": 511,
+      "working_sha256": "f784708ca8aa30160c34a96c406ee3b666d3d82d3cad6756f7aa8d6b6b21d11e"
+    }
+  ],
+  "old_entries": 4787,
+  "old_working_bytes": 78010153,
+  "only_new_owned_folder": "docs/verification/m1-requirements-source-capsule-2026-10-25-t3-e2bf510e",
+  "opening_digest": "1ca260195417a6628dc712adf040910ee77e27f79796a8d4b5be388b853a2e10",
+  "postcommit_identity_and_clean_status": "reported outside the packet to avoid self-reference",
+  "precommit_status": "only untracked files in the one owned new folder",
+  "schema": "openergy.requirements-source-preservation.v1"
+}
