@@ -1,0 +1,98 @@
+{
+  "schema": "openergy.failed-prepare-independent-raw-audit.v1",
+  "rows": [
+    {
+      "label": "object-0-requirements",
+      "actual_exit": 0,
+      "stdout_bytes": 0,
+      "stderr_bytes": 177,
+      "refs_checked": 4,
+      "saved_raw_comparison": true,
+      "requirements_body_present": false
+    },
+    {
+      "label": "object-1-requirements",
+      "actual_exit": 0,
+      "stdout_bytes": 0,
+      "stderr_bytes": 180,
+      "refs_checked": 4,
+      "saved_raw_comparison": true,
+      "requirements_body_present": false
+    },
+    {
+      "label": "object-2-requirements",
+      "actual_exit": 0,
+      "stdout_bytes": 0,
+      "stderr_bytes": 201,
+      "refs_checked": 4,
+      "saved_raw_comparison": true,
+      "requirements_body_present": false
+    },
+    {
+      "label": "object-3-requirements",
+      "actual_exit": 0,
+      "stdout_bytes": 0,
+      "stderr_bytes": 219,
+      "refs_checked": 4,
+      "saved_raw_comparison": true,
+      "requirements_body_present": false
+    },
+    {
+      "label": "object-4-requirements",
+      "actual_exit": 0,
+      "stdout_bytes": 0,
+      "stderr_bytes": 217,
+      "refs_checked": 4,
+      "saved_raw_comparison": true,
+      "requirements_body_present": false
+    },
+    {
+      "label": "object-5-requirements",
+      "actual_exit": 0,
+      "stdout_bytes": 0,
+      "stderr_bytes": 143,
+      "refs_checked": 4,
+      "saved_raw_comparison": true,
+      "requirements_body_present": false
+    },
+    {
+      "label": "object-6-requirements",
+      "actual_exit": 0,
+      "stdout_bytes": 0,
+      "stderr_bytes": 141,
+      "refs_checked": 4,
+      "saved_raw_comparison": true,
+      "requirements_body_present": false
+    }
+  ],
+  "requirements_files_checked": 28,
+  "last_display_files_checked": 4,
+  "saved_status_rows_checked": 53,
+  "saved_raw_ref_rows_checked": 212,
+  "saved_raw_bytes": 213334,
+  "manifest_hashes": {
+    "prepare_literal": "2baea069155b633485b1e8aed8fe72f3bf746f67de83a84f07a2daf0648fe4ee",
+    "saved_validation": "2baea069155b633485b1e8aed8fe72f3bf746f67de83a84f07a2daf0648fe4ee",
+    "declared": "2baea069155b633485b1e8aed8fe72f3bf746f67de83a84f07a2daf0648fe4ee"
+  },
+  "all50_raw_comparison_history_preserved": true,
+  "actual_available_raw_bodies_checked": 32,
+  "other180_bodies_reopened": false,
+  "semantic_requirements_clear": false,
+  "fixed_vectors_checked": 50,
+  "unsafe_requirements_vectors": 7,
+  "observed_colon_dash": {
+    "bytes": 67,
+    "sha256": "d55daee618ec400cc662eb3fb480e13b7ea93ff24c00b69bd4b2e9c871d48c22",
+    "actual_text": "# designated => cdhash H\"07f9138c67bb59ebdc8c04536fc0c9cb108b0fb0\"\n",
+    "trailing_LF_count": 1,
+    "brief_two_LF_literal_correct": false,
+    "creation_actor_directly_observed": false
+  },
+  "coverage_policy": {
+    "bytes": 1864,
+    "sha256": "35516fa08202a4ccd26ece557daecc5bf4e1e8f8e690f18b59d5cc70c3d30d36",
+    "frozen_exact": true
+  },
+  "reader_note": "The brief specified two final LF bytes. The actual 67-byte leaf has one LF. Both its exact SHA and its last-object CDHash association hold. No missing body was invented."
+}
