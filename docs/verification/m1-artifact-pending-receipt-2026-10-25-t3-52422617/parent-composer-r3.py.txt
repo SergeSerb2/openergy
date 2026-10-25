@@ -1,0 +1,85 @@
+import os,stat,json,hashlib,re,copy
+from pathlib import Path
+B=Path('/Users/serge/.local/state/openergy-verification/m1-source-metadata-launch-prepared-20261025-7ae23486940a');D=B/'artifact-binding';W=Path('/Users/serge/.t3/worktrees/openergy/t3-52422617');ROOT='/Users/m1-dev/.local/state/openergy-verification/m1-ordinary-reviewed-flow-20261025-4b20357c1503'
+OLD=Path('/Users/serge/.local/state/openergy-verification/m1-reviewed-ordinary-canonical-sdk-prepared-20261025-4b20357c1503/retained-source-file-facts')
+def sha(x):return hashlib.sha256(x).hexdigest()
+def canon(v):return(json.dumps(v,sort_keys=True,separators=(',',':'),ensure_ascii=True,allow_nan=False)+'\n').encode('ascii')
+def rd(p,cap=1048576):
+ f=os.open(p,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
+ try:
+  s=os.fstat(f);assert stat.S_ISREG(s.st_mode) and s.st_uid==os.getuid() and s.st_nlink==1 and s.st_size<=cap
+  chunks=[];n=0
+  while True:
+   z=os.read(f,min(65536,cap+1-n))
+   if not z:break
+   chunks.append(z);n+=len(z);assert n<=cap
+  raw=b''.join(chunks);t=os.fstat(f);assert len(raw)==s.st_size and (s.st_dev,s.st_ino,s.st_size,s.st_mtime_ns,s.st_ctime_ns)==(t.st_dev,t.st_ino,t.st_size,t.st_mtime_ns,t.st_ctime_ns);return raw
+ finally:os.close(f)
+def obj(p,cap=1048576):return json.loads(rd(p,cap))
+def ref(name,raw):return {'path':ROOT+'/'+name,'bytes':len(raw),'sha256':sha(raw)}
+def put(p,raw):
+ f=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+ try:assert os.write(f,raw)==len(raw);os.fsync(f)
+ finally:os.close(f)
+artifact=obj(W/'docs/verification/m1-next-reviewed-ordinary-flow-2026-10-25-t3-a8a4ece5/artifact-receipt.template.json');original=copy.deepcopy(artifact)
+rraw=rd(B/'retained-SOURCE-metadata-source-result.json');r=json.loads(rraw);assert len(rraw)==327813 and sha(rraw)=='7482a637159e0389c5cd4c505778919bb49354437bc9feb1cf008d9db395712d'
+validation=obj(B/'SOURCE-full-validation.json');assert validation['status']=='BOUNDED_SOURCE_METADATA_PASS' and validation['native_commands']==50 and validation['auxiliary_commands']==3 and validation['all_raw_status_comparison_files_retained']==212
+bundle=artifact['source_bundle'];assert bundle==artifact['build_bundle_path'];inventory=obj(D/'build-bundle_files.json');tree={row['path']:row for row in inventory['files']};assert len(tree)==167
+oldindex=obj(W/'docs/verification/m1-ordinary-data-source-assessment-2026-10-24-t3-a104ad9f/hash-bindings.json');oldrefs={x['role']:x['recorded_remote'] for x in oldindex['private_inputs'] if 'recorded_remote' in x};assessment=rd(W/'docs/verification/m1-ordinary-data-source-assessment-2026-10-24-t3-a104ad9f/ASSESSMENT.md');assert len(assessment)==13696 and sha(assessment)=='034a5384e06e468a41d752496fd3bc8fe57a6af1715ca0fbbd92657aa913652e'
+oldheaders=obj(D/'abi_header_evidence.json');supplement=obj(D/'supplement.json');plist_data=obj(D/'ordinary_metadata.json');sdkrecipe_raw=rd(W/'docs/verification/m1-sdk-canonical-path-repair-2026-10-25/qualification.recipe.json');assert sha(sdkrecipe_raw)=='d90586546d6b3127dca26147b9d090544d29d7a8b229479966dae68ef25d3b11';sdkrecipe=json.loads(sdkrecipe_raw)
+headers=oldheaders['headers']+supplement['abi_type_headers'];assert len(headers)==10
+path_observations=obj(W/'docs/verification/m1-sdk-canonical-path-repair-2026-10-25/sdk-path-observations.json');assert path_observations['schema']=='openergy.sdk-exact-path-observations.v1' and len(path_observations['headers'])==10
+for h,expected,mapping in zip(headers,sdkrecipe['sdk_headers'],path_observations['headers']):
+ text=h.get('text',h.get('contents'));assert type(text) is str
+ raw=text.encode();assert len(raw)==expected['bytes']==h['bytes']==mapping['bytes'] and sha(raw)==expected['sha256']==h['sha256']==mapping['sha256'] and h['path']==mapping['requested_path'] and expected['path']==mapping['resolved_path'] and mapping['mode']=='0o644' and mapping['uid']==0
+config=obj(B/'source-config.bound.json');completed=config['completed_files'];filesfactsraw=rd(OLD/'qualification-source-files.json',8192);filesfacts=json.loads(filesfactsraw);assert len(filesfactsraw)==completed['qualification-source-files.json']['bytes'] and sha(filesfactsraw)==completed['qualification-source-files.json']['sha256'] and filesfacts['source_files']==702 and filesfacts['bundle_records']==167 and filesfacts['sdk_headers']==10
+source_result_ref=ref('metadata-source-result.json',rraw);source_parent_raw=rd(B/'retained-SOURCE-metadata-source-parent.json',16384);source_parent_ref=ref('metadata-source-parent.json',source_parent_raw);source_os_raw=rd(B/'retained-SOURCE-source-caller-os.json',16384);source_os_ref=ref('source-caller-os.json',source_os_raw);transport_raw=rd(B/'SOURCE-parent-exit.json',16384);transport=json.loads(transport_raw);assert transport['actual_collector_exit']==0 and transport['strictly_before_absolute'] is True and not transport['timeout'];transport_ref=ref('source-transport-parent-exit.json',transport_raw);assessment_ref=ref('abi-source-assessment.md',assessment)
+lookup={x['label']:x for x in r['native_records']+r['auxiliary_records']}
+def stream(label,name):
+ item=lookup[label];raw=rd(B/'retained-SOURCE-records'/Path(item[name]['path']).name);assert len(raw)==item[name]['bytes'] and sha(raw)==item[name]['sha256'];return raw
+objects=[]
+for i,old in enumerate(oldindex['objects']):
+ assert old['sha256']==tree[old['relative_binary']]['sha256'] and old['mode']==tree[old['relative_binary']]['mode']
+ arch=stream('object-'+str(i)+'-arch','stdout').decode().strip().split();assert arch==old['architectures'] and 'arm64' in arch
+ display=stream('object-'+str(i)+'-display','stderr').decode()
+ for k,value in old['arm64_signature_display'].items():
+  wanted=value if k in ('CodeDirectory','Internal') else k+'='+value
+  assert wanted in display,wanted
+ assert stream('object-'+str(i)+'-entitlements','stdout').decode()==old['arm64_entitlements_stdout'] and stream('object-'+str(i)+'-requirements','stdout').decode()==old['arm64_requirements_stdout']
+ native={kind:{'argv':r['collected_commands'][3+i*7+j]['collector_status']['argv'],'actual_exit':0,'stdout':lookup['object-'+str(i)+'-'+kind]['stdout'],'stderr':lookup['object-'+str(i)+'-'+kind]['stderr'],'status_in_full_result':{'record':source_result_ref,'json_pointer':'/collected_commands/'+str(3+i*7+j)+'/collector_status'}} for j,kind in enumerate(['arch','verify','display','entitlements','requirements','dependencies','loadcommands'])}
+ objects.append({'relative_binary':old['relative_binary'],'sha256':old['sha256'],'mode':old['mode'],'architectures':arch,'detailed_slice':'arm64','strict_verification_scope':'all architectures','signature_display':old['arm64_signature_display'],'entitlements_stdout':old['arm64_entitlements_stdout'],'requirements_stdout':old['arm64_requirements_stdout'],'load_commands':old['arm64_load_commands'],'otool_L_and_l_names_agree':old['otool_L_and_l_names_agree'],'native':native})
+assert [x['architectures'] for x in objects][5:]==[['arm64'],['arm64']]
+plist=plist_data['plist'];assert plist_data['all_plists_no_private_fixture'] is True and plist_data['matches_source_transform'] is True and plist['CFBundleIdentifier']=='dev.openergy.app' and plist['CFBundleExecutable']=='Openergy' and plist['CFBundlePackageType']=='APPL' and plist['CFBundleVersion']=='1' and plist['CFBundleShortVersionString']=='0.1.0' and plist['LSMinimumSystemVersion']=='15.0' and plist['SUEnableAutomaticChecks'] is False and plist['SUAutomaticallyUpdate'] is False and plist['SUAllowsAutomaticUpdates'] is True and 'SUFeedURL' not in plist and 'SUPublicEDKey' not in plist and 'OpenergyPrivateUpdateFixture' not in plist and not any('OpenergyPrivateLauncher' in p for p in tree)
+assert tree['Contents/Info.plist']['sha256']=='77436f395caa73d6933add595ed6901439016c01fba359622e6492758be835fd'
+source_qual_ref={'path':ROOT+'/qualification-source-files.json',**completed['qualification-source-files.json']}
+shared={'source_file_qualification':source_qual_ref,'source_metadata':source_result_ref,'source_parent_boundary':source_parent_ref,'actual_caller_os':source_os_ref,'actual_local_transport_parent':transport_ref,'actual_source_children':53,'actual_source_caller_exit':0,'actual_ssh_exit':0,'actual_collector_exit':0,'D4':True,'source_phase_started_ns':r['started_ns'],'source_phase_deadline_ns':r['phase_deadline_ns'],'actual_caller_exit_observed_ns':validation['actual_caller_exit_observed_ns'],'all_raw_status_comparisons_checked_by_parent':212}
+limits=['Detailed native metadata is arm64; strict verification covers all recorded architectures.','Embedded Sparkle rpath resolution is a static valid candidate; no dyld trace or OS-library availability proof.','No Gatekeeper, named signing identity, trust, notarization, release or native UI acceptance.','Whole-flow NI15 remains UNVERIFIED.','Private-copy tree, signature, entitlement and native qualification remain required after the one preparation.','Build stripping warning and missing complete outer build OS exit remain explicit.']
+artifact_qual={'schema':'openergy.fresh-source-artifact-observations.v1','scope':'source artifact only; private copy and ordinary runtime remain unverified','observed':shared,'objects':objects,'deep_verify':{'argv':r['collected_commands'][-1]['collector_status']['argv'],'actual_exit':0,'stdout':lookup['full-bundle-deep-verify']['stdout'],'stderr':lookup['full-bundle-deep-verify']['stderr']},'ordinary_metadata':plist_data,'ordinary_metadata_raw':oldrefs['ordinary_metadata'],'generated_plist_hash_bound_by_fresh_complete_bundle_match':tree['Contents/Info.plist'],'source_commit':artifact['source_commit'],'raw_source_inventory':{'path':ROOT+'/build-source-bindings.json','bytes':151287,'sha256':'20e011251151cec81f69c4b80b0072d9fd0a98c1eaaf0e6c74d83ff752546617'},'bundle_inventory':artifact['evidence']['bundle_files'],'full_tree_records':167,'root_mode':'0o700','pinned_sparkle':{'version':'2.10.0','revision':'eef1a539a373c1f1a320624b1130fc5de7b2e100','archive_sha256':'17e28312b8e18ab7cdbbe09a6fb28cc55a5479ec6c371dbc07cdecd2a14fd959','source_package_and_release_pin_assessment':assessment_ref},'full_source_raw_metadata_equal_to_corrected_saved_basis':True,'parsed_static_plist_and_load_assessment':assessment_ref,'limitations':limits,'runtime':'UNVERIFIED','artifact_gate_authority':False}
+entry=lookup['entry-template'];version=lookup['python-version'];architecture=lookup['python-architecture'];entryfacts=json.loads(stream('entry-template','stdout'));assert entryfacts['prefix_sha256']==artifact['python']['prefix_sha256'] and stream('python-version','stdout')==b'Python 3.13.9\n' and stream('python-architecture','stdout')==b'arm64\n'
+pyqual={'schema':'openergy.fresh-private-python-qualification.v1','python':artifact['python'],'architecture':'arm64','executable_mode':'0o700','prefix_root_mode':entryfacts['prefix_root_mode'],'prefix_entries':2006,'prefix_regular_bytes':46504040,'authenticated_before_private_version_entry':True,'file_facts':source_qual_ref,'entry_template_raw':{'stdout':entry['stdout'],'stderr':entry['stderr']},'version_raw':{'stdout':version['stdout'],'stderr':version['stderr']},'architecture_raw':{'stdout':architecture['stdout'],'stderr':architecture['stderr']},'actual_statuses_in_full_result':source_result_ref,'actual_auxiliary_exit_codes':[0,0,0],'parent_observations':shared,'future_private_entries_require_new_SYSTEM_prefix_authentication':True,'source_version_argv':['-I','-S','-B','--version'],'prepare_controller_argv_unchanged':'-B only; exact prescribed startup and modules','runtime':'UNVERIFIED'}
+abiqual={'schema':'openergy.fresh-m1-process-abi-qualification.v1','reader_sha256':'d4f6fe358bd9af786fc4c2cba61f1a47f3f4015c918aae85cf8e6aa1c6d3e6c7','reader_unchanged':True,'fresh_source_header_fact':source_qual_ref,'fresh_header_recipe_sha256':sha(sdkrecipe_raw),'headers':sdkrecipe['sdk_headers'],'recorded_requested_to_canonical_mapping':path_observations,'exact_header_text_evidence':[oldrefs['abi_header_evidence'],oldrefs['supplement']],'static_assessment':assessment_ref,'proc_bsdinfo_size':136,'proc_bsdinfo_alignment':8,'nice_offset':116,'start_seconds_offset':120,'start_microseconds_offset':128,'proc_pidinfo_flavor':3,'CTL_KERN':1,'KERN_PROCARGS2':49,'layout_is_source_derived_not_new_compiled_or_kernel_probe':True,'header_identity_to_fresh_verified_bytes':True,'interface_qualification_only':True,'limitations':oldindex['limits'],'runtime_argv_decode_and_actual_flow_identity_evidence':'UNVERIFIED; required in the real ordinary flow'}
+transferqual={'schema':'openergy.fresh-same-machine-no-transfer.v1','build_bundle':artifact['build_bundle_path'],'execution_source_bundle':artifact['source_bundle'],'same_machine':True,'transfer_for_execution':False,'archive_extracted_for_execution':False,'fresh_file_qualification':source_qual_ref,'build_bundle_inventory':artifact['evidence']['bundle_files'],'source_native_qualification':source_result_ref,'full_tree_equal_to_build':True,'records':167,'root_mode':'0o700','destination_tree':'NOT APPLICABLE at source stage; private copy not created yet','timestamps_acls_xattrs_preservation':'NOT CLAIMED','future_private_copy_native_qualification_required':True,'trust_notarization_release_acceptance':False}
+payloads={'qualification-artifact-observations.json':canon(artifact_qual),'qualification-python.json':canon(pyqual),'qualification-abi.json':canon(abiqual),'qualification-transfer.json':canon(transferqual),'abi-source-assessment.md':assessment,'source-transport-parent-exit.json':transport_raw}
+for kind,leaf in [('artifact_qualification','qualification-artifact-observations.json'),('python_qualification','qualification-python.json'),('abi_qualification','qualification-abi.json'),('transfer_qualification','qualification-transfer.json')]:artifact['evidence'][kind]=ref(leaf,payloads[leaf])
+support=[]
+for item in r['native_records']+r['auxiliary_records']:
+ support.extend([item['stdout'],item['stderr']])
+support+=list(original['evidence'][k] for k in ['build_result','build_worker','build_bundle_exit','build_operation','bundle_files'])
+support += [source_result_ref]+[{'path':ROOT+'/'+name,**completed[name]} for name in ['qualification-source-files.json','source-files.stdout.bin','source-files.stderr.bin','source-files-os-exit.json','source-qualification-guard.json']]+[source_parent_ref,source_os_ref,transport_ref,oldrefs['abi_header_evidence'],oldrefs['supplement'],assessment_ref,oldrefs['ordinary_metadata']]
+support+=list(artifact['evidence'][k] for k in ['artifact_qualification','python_qualification','abi_qualification','transfer_qualification'])
+assert len(support)==128 and len({x['path'] for x in support})==128
+artifact['supporting_evidence']=support
+artifact['qualification_gates']={k:True for k in original['qualification_gates']}
+assert set(artifact)==set(original) and set(artifact['evidence'])==set(original['evidence']) and set(artifact['python'])==set(original['python'])
+for file in list(artifact['evidence'].values())+support:
+ assert set(file)=={'path','bytes','sha256'} and type(file['bytes']) is int and 0<=file['bytes']<=8388608 and re.fullmatch('[0-9a-f]{64}',file['sha256']) and file['path'].startswith('/') and '..' not in Path(file['path']).parts
+ assert '${' not in file['path']
+# These True decisions are parent-owned static source decisions. Every raw file
+# and the new bytes must still pass the once-only materializer and actual exit
+# checks. Nothing here publishes or invokes the new operation on the target.
+payloads['artifact-receipt.json']=canon(artifact);payloads['operation.bound.json']=canon({'schema':'openergy.m1-ordinary-operation.v1','execution':True,'artifact_receipt_sha256':sha(payloads['artifact-receipt.json'])})
+assert len(payloads)==8 and sum(map(len,payloads.values()))<=524288
+for leaf,raw in payloads.items():put(D/(leaf+'.pending'),raw)
+file_refs={leaf:ref(leaf,raw) for leaf,raw in payloads.items()};put(D/'eight-file-data-manifest.json',canon({'schema':'openergy.artifact-eight-file-data-manifest.v1','publication':'NOT RUN; parent-data binding only','files':file_refs,'aggregate_raw_bytes':sum(map(len,payloads.values())),'artifact_supporting_records':128,'artifact_receipt_sha256':sha(payloads['artifact-receipt.json']),'new_artifact_data_materializer_review':'PENDING','source_full_result_sha256':sha(rraw),'all_prior_failure_states_unchanged':True,'ordinary_runtime':'UNVERIFIED','prepare_invocations':0}))
+f=os.open(D,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW);os.fsync(f);os.close(f)
+print(json.dumps({'pending_data_files':8,'aggregate_raw_bytes':sum(map(len,payloads.values())),'supporting_evidence':128,'artifact_receipt_bytes':len(payloads['artifact-receipt.json']),'artifact_receipt_sha256':sha(payloads['artifact-receipt.json']),'operation_bound_sha256':sha(payloads['operation.bound.json']),'remote_publication':False,'prepare_invocations':0}))
