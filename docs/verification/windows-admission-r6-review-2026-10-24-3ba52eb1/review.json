@@ -1,0 +1,171 @@
+{
+  "schema": "openergy.windows-admission-r6-source-data-review.v1",
+  "date_local": "2026-10-24",
+  "timezone": "America/Vancouver",
+  "execution": false,
+  "reviewed_commit": "4410818a9332292bb8bcbb24d7df5d21fa17ee9a",
+  "reviewed_tree": "20d68fc7319c0560b5bef7a03c14dca04a3d146d",
+  "package": "docs/verification/windows-admission-contract-repair-2026-10-24-3a26b095",
+  "source_verdict": "CLEAR_NO_CONCRETE_P1_OR_P2",
+  "p1_p2_findings": [],
+  "retained_data_verdict": "BOTH_OBSERVED_COMPLETE_COMMAND_SHAPES_REPRESENTABLE_IN_V2",
+  "execution_binding_verdict": "UNSATISFIED_INSTALLED_IMPLEMENTATIONS_AND_EFFECTIVE_LIMITS_UNPROVED",
+  "native_syntax": "UNVERIFIED",
+  "native_runtime": "UNVERIFIED",
+  "notes": [
+    {
+      "id": "P3-DOC-1",
+      "severity": "P3",
+      "path": "COMMAND-BOUNDS.md",
+      "line": 121,
+      "problem": "The expression subtracts 13 for the 14-unit powershell.exe token. Its actual result is 32181; its stated result is 32180.",
+      "correction": "Use (2 + 57 + (66 - 14)) + 32068 + 1 = 32180.",
+      "source_impact": "None: the source uses len(native[0]) correctly.",
+      "candidate_changed_by_reviewer": false
+    }
+  ],
+  "bindings": {
+    "base_r3_commit": "23b41681e4019f086f1f760c9817553d79acff04",
+    "r4_review_commit": "b5e93a2fafbf6850798abc8d6018851b3c68d648",
+    "r5_review_commit": "a6552ba88a3c96063f558a5edc4cdb80a5234778",
+    "package_file_count": 23,
+    "all_package_bytes_match_reviewed_commit": true,
+    "manifest_members": 21,
+    "immutable_inputs": 27,
+    "all_declared_immutable_inputs_match": true,
+    "changed_controller_functions": [
+      "transport_argv",
+      "Controller.prepare_inputs"
+    ],
+    "all_seven_native_files_byte_exact_r3": true,
+    "exact_r3_patch_regenerated": true
+  },
+  "source_hashes": [
+    {
+      "path": "source/build.ps1.txt",
+      "bytes": 18259,
+      "sha256": "3cdd135dd806e511fc68278e85cca7d34bc83f2efcafea86106d2e3950af6c33"
+    },
+    {
+      "path": "source/common.ps1.txt",
+      "bytes": 7121,
+      "sha256": "7c343002754725567dbfba5c66d0a3c81f2a3f05490d77b5933e895ef89218c9"
+    },
+    {
+      "path": "source/controller.py.txt",
+      "bytes": 39798,
+      "sha256": "2241d7b8c99d5b0e6cb827149cb3e31b91d0e29009e45e6fbff23dac5b9bb995"
+    },
+    {
+      "path": "source/observer.cs.txt",
+      "bytes": 12054,
+      "sha256": "8559ecbca18de3b896407df1048c278633c927134858cc99124ae883e816f5e2"
+    },
+    {
+      "path": "source/postflight.ps1.txt",
+      "bytes": 4857,
+      "sha256": "615104a7027f547dcbee574c1bdf8a504fb06492a579d365db6ebaccf116532b"
+    },
+    {
+      "path": "source/qualify.ps1.txt",
+      "bytes": 4218,
+      "sha256": "d0da8fecdec0ae2c31ea99e938306b59d7a2e45085685ca0d4cb0b2029d6c953"
+    },
+    {
+      "path": "source/runtime.ps1.txt",
+      "bytes": 21465,
+      "sha256": "2540d09a2840cc0b0c84ce0c2a0a7b874d75de35da3b12af46832b0c3bdd370d"
+    },
+    {
+      "path": "source/safety.ps1.txt",
+      "bytes": 5332,
+      "sha256": "26741118315aa23853d58b9701821496ac21aa9bc868632141e9658b05ecb610"
+    }
+  ],
+  "retained_route": {
+    "receipt_sha256": "5fd1f40dc8caf85226a9ce047862d5c72a34ef0d6ab68aa02f96775ffc2a2c00",
+    "saved_sizes_utf16_including_nul": {
+      "submitted": 2415,
+      "child": 2460,
+      "wrapper": 2461
+    },
+    "conditional_maxima_utf16_including_nul": {
+      "submitted": 32135,
+      "resolved_child": 32180,
+      "literal_wrapper": 32181
+    },
+    "conditional_maxima_require_unchanged_observed_construction": true,
+    "effective_limits_proved": false,
+    "installed_implementation_versions_bound": false,
+    "existing_selector_file_opened": false,
+    "current_selector_hash_independently_recomputed": false,
+    "private_binding_materialized": false,
+    "true_admission_assertions_materialized": false,
+    "new_query": false
+  },
+  "retained_false_predicates": {
+    "original_whole_list_multiline_literal_equality": false,
+    "all_nine_original_multiline_literal_occurrences_retained": true,
+    "sole_added_multiline_literal_is_four_character_path_guard": true,
+    "printed_document_child_expression_equals_printed_result": false,
+    "initial_review_arithmetic_correction_retained": true
+  },
+  "parent_query_failure": {
+    "outcome": "SSH_PARENT_TIMED_OUT_30_SECONDS_BEFORE_OUTPUT",
+    "attempts": 1,
+    "failure_sha256_as_bound_by_parent_package": "1a340873cdaa1d4c92707364d780c02013ea9fdd514333b872931c4ad99ce434",
+    "private_failure_file_reopened_by_reviewer": false,
+    "parent_report_preserved": true,
+    "versions_and_limits": "UNVERIFIED",
+    "retry": false
+  },
+  "missing_execution_inputs": [
+    "Exact future clean product source, Git tree, archive and manifest binding.",
+    "New bound baseline selection and complete private preparation.",
+    "Same-selector unchanged installed launcher/PowerShell versions and configuration/argument construction.",
+    "Complete actual command-layer coverage and independently established effective limits, including smaller limits."
+  ],
+  "historical": {
+    "original_windows_result": "FAILED_UNVERIFIED",
+    "original_daemon_stop_requests": 0,
+    "preservation": "UNVERIFIED",
+    "qualified_fixture_bindings": 0,
+    "required_fixture_bindings": 9,
+    "retrieval_search": "CLOSED_AT_160",
+    "expired_sparkle_window": "CLOSED",
+    "historical_records_changed": false
+  },
+  "proof_limits": [
+    "Native syntax, codec/launcher behavior, filesystem/ACL/reparse behavior, process/handle identity, build settlement, collection, cleanup and normal stop remain UNVERIFIED.",
+    "Static widths and a retained short query do not establish near-ceiling launch acceptance or actual implementation limits.",
+    "Same-user path races, unsampled generations, arbitrary OS-call preemption, external SSH/job state, uncapped output and total memory/disk retain their stated limits."
+  ],
+  "reviewer_activity": {
+    "standard_library_static_file_git_json_ast_string_hash_readers_only": true,
+    "task_code_executed_or_imported": false,
+    "ast_evaluation": false,
+    "candidate_renderer_exercised": false,
+    "compressor_or_decoder_exercised": false,
+    "tests_mocks_simulations": false,
+    "native_parser": false,
+    "network_or_remote": false,
+    "host_os_or_process_probe": false,
+    "private_writes": false,
+    "source_integration": false,
+    "build_product_signing": false,
+    "children_spawned": false
+  },
+  "approval_receipt_created": false,
+  "new_human_approval_gate": false,
+  "future_execution_started": false,
+  "report": {
+    "path": "REVIEW.md",
+    "bytes": 14504,
+    "sha256": "febfc23bca5242163fc75583f8f45e2e3006fe0a022dc24b00c1f40ae926c85f"
+  },
+  "static_data": {
+    "path": "static-data-checks.json",
+    "bytes": 25644,
+    "sha256": "492454f1b6a027170766e3d684c82038ef3b56dfb30e73fab84a9b2080a9e348"
+  }
+}
