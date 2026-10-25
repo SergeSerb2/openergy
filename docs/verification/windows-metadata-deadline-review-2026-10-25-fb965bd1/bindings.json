@@ -1,0 +1,708 @@
+{
+  "execution": false,
+  "original_reader_revision": "78759877392af3e41bb4d51fb5f40470c33ff6f9",
+  "patch": {
+    "bytes": 41575,
+    "full_index_binary": true,
+    "path": "repair-from-626e2bc.patch.txt",
+    "sha256": "c15c8987cf93603f058688ba228137b952b28bf6cb4bc9188961d2479058f474"
+  },
+  "prior_historical_binding": {
+    "git_blob_identity_rechecked": true,
+    "historical_bytes_reopened": false,
+    "historical_count": 179,
+    "path": "docs/verification/windows-metadata-reader-review-2026-10-25-9d61c036/bindings.json",
+    "public_input_bytes_rehashed": true,
+    "public_inputs_count": 30,
+    "sha256": "64dc6ea6a54d522ab4fa0ac0988b54872bc2354fcf9e14bca5c668dbf71ede15"
+  },
+  "prior_review_import": "626e2bc2a2aa29fbc9952c637388896b565523d5",
+  "prior_review_revision": "f9aaf96ba4ef2b48c44367edba9bc6c7242e0376",
+  "private_index_verified": [
+    {
+      "bytes": 697,
+      "mode": "0o600",
+      "path": "driver-result.json",
+      "private_label": "metadata-reader-local-cli-20261025-462641b2d473",
+      "sha256": "fe98445375a3c265e65255091f308f09f739308c4723f831c6613b9feda29600",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 0,
+      "mode": "0o600",
+      "path": "driver.stderr",
+      "private_label": "metadata-reader-local-cli-20261025-462641b2d473",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 0,
+      "mode": "0o600",
+      "path": "driver.stdout",
+      "private_label": "metadata-reader-local-cli-20261025-462641b2d473",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 65536,
+      "mode": "0o600",
+      "path": "flow/nonzero/receipt.json",
+      "private_label": "metadata-reader-local-cli-20261025-462641b2d473",
+      "sha256": "dcf06d16be255de4580936d2bd65fe0df487d6f53f7375a9bd9085893a169a41",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 0,
+      "mode": "0o600",
+      "path": "flow/nonzero/stderr.bin",
+      "private_label": "metadata-reader-local-cli-20261025-462641b2d473",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 0,
+      "mode": "0o600",
+      "path": "flow/nonzero/stdout.bin",
+      "private_label": "metadata-reader-local-cli-20261025-462641b2d473",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 118,
+      "mode": "0o600",
+      "path": "flow/nonzero-command.json",
+      "private_label": "metadata-reader-local-cli-20261025-462641b2d473",
+      "sha256": "0e65076cc246292f840ae2a1322b3d7d1cbb7a1bab07c4406351aadc43b41c76",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 65536,
+      "mode": "0o600",
+      "path": "flow/output-cap/receipt.json",
+      "private_label": "metadata-reader-local-cli-20261025-462641b2d473",
+      "sha256": "a4ead99da13c68f27166179342cabdbfecce73ef24690db6440eab09bf63a602",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 0,
+      "mode": "0o600",
+      "path": "flow/output-cap/stderr.bin",
+      "private_label": "metadata-reader-local-cli-20261025-462641b2d473",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 128,
+      "mode": "0o600",
+      "path": "flow/output-cap/stdout.bin",
+      "private_label": "metadata-reader-local-cli-20261025-462641b2d473",
+      "sha256": "9d6ef848784352df50e182a9ab91ddfa588d245d01112e7e1d1b1cc22b250d68",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 128,
+      "mode": "0o600",
+      "path": "flow/output-cap-command.json",
+      "private_label": "metadata-reader-local-cli-20261025-462641b2d473",
+      "sha256": "169752c4fee415e984bae02b05577f625fd66858d0697e50327b501077dd6b03",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 65536,
+      "mode": "0o600",
+      "path": "flow/partial-timeout/receipt.json",
+      "private_label": "metadata-reader-local-cli-20261025-462641b2d473",
+      "sha256": "c3754c7dcf63ebab86de5e31128241976555c04b0eccc1e247b0f23aa7226a2a",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 0,
+      "mode": "0o600",
+      "path": "flow/partial-timeout/stderr.bin",
+      "private_label": "metadata-reader-local-cli-20261025-462641b2d473",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 7,
+      "mode": "0o600",
+      "path": "flow/partial-timeout/stdout.bin",
+      "private_label": "metadata-reader-local-cli-20261025-462641b2d473",
+      "sha256": "5a958fd0cb0435992ec0b7afb3255dbe976078447b0fe2830119c083b9eae082",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 160,
+      "mode": "0o600",
+      "path": "flow/partial-timeout-command.json",
+      "private_label": "metadata-reader-local-cli-20261025-462641b2d473",
+      "sha256": "8d4eb31059e3d9ab0505085dfbb8a3ed58eb27c4ec482688d5a7c2047191832a",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 5452,
+      "mode": "0o600",
+      "path": "flow/result.json",
+      "private_label": "metadata-reader-local-cli-20261025-462641b2d473",
+      "sha256": "f559f9818de358d539bcec00aaaf4c0c59876cecb143bf538f5694d20a63c4ee",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 65536,
+      "mode": "0o600",
+      "path": "flow/success/receipt.json",
+      "private_label": "metadata-reader-local-cli-20261025-462641b2d473",
+      "sha256": "474787829e39733dc0a9da7b31c7bda8ddcdafb6e74aa18d7030f8821bab3358",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 0,
+      "mode": "0o600",
+      "path": "flow/success/stderr.bin",
+      "private_label": "metadata-reader-local-cli-20261025-462641b2d473",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 7,
+      "mode": "0o600",
+      "path": "flow/success/stdout.bin",
+      "private_label": "metadata-reader-local-cli-20261025-462641b2d473",
+      "sha256": "d4431c5127a04a3695bb810b98d7385b306f1c3617771f50c0e191ad7b954eb2",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 124,
+      "mode": "0o600",
+      "path": "flow/success-command.json",
+      "private_label": "metadata-reader-local-cli-20261025-462641b2d473",
+      "sha256": "1a74897c1674be2e464f99bb846bef5622ba1c96f43d10d136693072d1758b06",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 1141,
+      "mode": "0o600",
+      "path": "invocation.json",
+      "private_label": "metadata-reader-local-cli-20261025-462641b2d473",
+      "sha256": "0ad4e718d442587ed3d6c2971b39b03015752a156a11ffae1114295cca75a7b7",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 0,
+      "mode": "0o600",
+      "path": "local-verification-once.guard",
+      "private_label": "metadata-reader-local-cli-20261025-462641b2d473",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 4586,
+      "mode": "0o400",
+      "path": "source/metadata-query.ps1.txt",
+      "private_label": "metadata-reader-local-cli-20261025-462641b2d473",
+      "sha256": "3404c46e256d41c17c1c7efaea1364216075f7988e1e5d38f588b43c92358443",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 21506,
+      "mode": "0o400",
+      "path": "source/metadata_reader.py.txt",
+      "private_label": "metadata-reader-local-cli-20261025-462641b2d473",
+      "sha256": "e7fb7a8fde0f63246796d5209f85571d2de0418ab96536797101561bec39b380",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 6635,
+      "mode": "0o400",
+      "path": "source/verify-cli.py",
+      "private_label": "metadata-reader-local-cli-20261025-462641b2d473",
+      "sha256": "8090e3dce24bbaf5b557f2ee219ab08ba20ba71477ad71f4583390b266622915",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 696,
+      "mode": "0o600",
+      "path": "driver-result.json",
+      "private_label": "metadata-reader-local-cli-corrected-20261025-09032baafc54",
+      "sha256": "a2d0feacce875857d5e6df9fbb8f46dbd8a0c846f7d76f5b88476df80cdde7f4",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 0,
+      "mode": "0o600",
+      "path": "driver.stderr",
+      "private_label": "metadata-reader-local-cli-corrected-20261025-09032baafc54",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 0,
+      "mode": "0o600",
+      "path": "driver.stdout",
+      "private_label": "metadata-reader-local-cli-corrected-20261025-09032baafc54",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 65536,
+      "mode": "0o600",
+      "path": "flow/nonzero/receipt.json",
+      "private_label": "metadata-reader-local-cli-corrected-20261025-09032baafc54",
+      "sha256": "b1e32682288cbb0566cf96628fda1efcd51877371e647ece7ff1227635dc9d3b",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 0,
+      "mode": "0o600",
+      "path": "flow/nonzero/stderr.bin",
+      "private_label": "metadata-reader-local-cli-corrected-20261025-09032baafc54",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 0,
+      "mode": "0o600",
+      "path": "flow/nonzero/stdout.bin",
+      "private_label": "metadata-reader-local-cli-corrected-20261025-09032baafc54",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 118,
+      "mode": "0o600",
+      "path": "flow/nonzero-command.json",
+      "private_label": "metadata-reader-local-cli-corrected-20261025-09032baafc54",
+      "sha256": "0e65076cc246292f840ae2a1322b3d7d1cbb7a1bab07c4406351aadc43b41c76",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 65536,
+      "mode": "0o600",
+      "path": "flow/output-cap/receipt.json",
+      "private_label": "metadata-reader-local-cli-corrected-20261025-09032baafc54",
+      "sha256": "04d59f35e485ac36406b0d96d006064755b3f1dd60ded2af3afa8f3c08383579",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 0,
+      "mode": "0o600",
+      "path": "flow/output-cap/stderr.bin",
+      "private_label": "metadata-reader-local-cli-corrected-20261025-09032baafc54",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 128,
+      "mode": "0o600",
+      "path": "flow/output-cap/stdout.bin",
+      "private_label": "metadata-reader-local-cli-corrected-20261025-09032baafc54",
+      "sha256": "9d6ef848784352df50e182a9ab91ddfa588d245d01112e7e1d1b1cc22b250d68",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 128,
+      "mode": "0o600",
+      "path": "flow/output-cap-command.json",
+      "private_label": "metadata-reader-local-cli-corrected-20261025-09032baafc54",
+      "sha256": "169752c4fee415e984bae02b05577f625fd66858d0697e50327b501077dd6b03",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 65536,
+      "mode": "0o600",
+      "path": "flow/partial-timeout/receipt.json",
+      "private_label": "metadata-reader-local-cli-corrected-20261025-09032baafc54",
+      "sha256": "672698642bb52a123ac472bddb70bd5813b1c23c2897e2960ff561aeaee93921",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 0,
+      "mode": "0o600",
+      "path": "flow/partial-timeout/stderr.bin",
+      "private_label": "metadata-reader-local-cli-corrected-20261025-09032baafc54",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 7,
+      "mode": "0o600",
+      "path": "flow/partial-timeout/stdout.bin",
+      "private_label": "metadata-reader-local-cli-corrected-20261025-09032baafc54",
+      "sha256": "5a958fd0cb0435992ec0b7afb3255dbe976078447b0fe2830119c083b9eae082",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 160,
+      "mode": "0o600",
+      "path": "flow/partial-timeout-command.json",
+      "private_label": "metadata-reader-local-cli-corrected-20261025-09032baafc54",
+      "sha256": "8d4eb31059e3d9ab0505085dfbb8a3ed58eb27c4ec482688d5a7c2047191832a",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 5661,
+      "mode": "0o600",
+      "path": "flow/result.json",
+      "private_label": "metadata-reader-local-cli-corrected-20261025-09032baafc54",
+      "sha256": "7464310777f02ca239aada8f502816cd69df8901ccbe1d311904aa7be1287511",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 65536,
+      "mode": "0o600",
+      "path": "flow/success/receipt.json",
+      "private_label": "metadata-reader-local-cli-corrected-20261025-09032baafc54",
+      "sha256": "116e2b2b70d596fd1ef9dd5603c8110b97c82105ed98b9bd30fc2d35896f7231",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 0,
+      "mode": "0o600",
+      "path": "flow/success/stderr.bin",
+      "private_label": "metadata-reader-local-cli-corrected-20261025-09032baafc54",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 7,
+      "mode": "0o600",
+      "path": "flow/success/stdout.bin",
+      "private_label": "metadata-reader-local-cli-corrected-20261025-09032baafc54",
+      "sha256": "d4431c5127a04a3695bb810b98d7385b306f1c3617771f50c0e191ad7b954eb2",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 124,
+      "mode": "0o600",
+      "path": "flow/success-command.json",
+      "private_label": "metadata-reader-local-cli-corrected-20261025-09032baafc54",
+      "sha256": "1a74897c1674be2e464f99bb846bef5622ba1c96f43d10d136693072d1758b06",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 1208,
+      "mode": "0o600",
+      "path": "invocation.json",
+      "private_label": "metadata-reader-local-cli-corrected-20261025-09032baafc54",
+      "sha256": "06a6391bb09ce381234670df4829fcf8d0aebe0edeed4bbd22a036208e86ff4b",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 0,
+      "mode": "0o600",
+      "path": "local-verification-once.guard",
+      "private_label": "metadata-reader-local-cli-corrected-20261025-09032baafc54",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 4586,
+      "mode": "0o400",
+      "path": "source/metadata-query.ps1.txt",
+      "private_label": "metadata-reader-local-cli-corrected-20261025-09032baafc54",
+      "sha256": "3404c46e256d41c17c1c7efaea1364216075f7988e1e5d38f588b43c92358443",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 21506,
+      "mode": "0o400",
+      "path": "source/metadata_reader.py.txt",
+      "private_label": "metadata-reader-local-cli-corrected-20261025-09032baafc54",
+      "sha256": "e7fb7a8fde0f63246796d5209f85571d2de0418ab96536797101561bec39b380",
+      "verified_bytes_hash_mode": true
+    },
+    {
+      "bytes": 7320,
+      "mode": "0o400",
+      "path": "source/verify-cli.py",
+      "private_label": "metadata-reader-local-cli-corrected-20261025-09032baafc54",
+      "sha256": "2013c4939c8191480634277efbb028d70cf35b7fcc28a03c7a12371c7fd4bece",
+      "verified_bytes_hash_mode": true
+    }
+  ],
+  "repair_revision": "97cc8f9930d0548c2d0c4d6b1a3ec56a18e14283",
+  "retained_flow_publication_revision": "0175b076a04c0b79181b8f070e4c9b53d7eb0418",
+  "review_artifacts": [
+    {
+      "bytes": 11103,
+      "path": "REVIEW.md",
+      "sha256": "e37ab0ac5f019ac4987796a47fda29700d0b21ac706e7fca6694ee7094fcf8c9"
+    },
+    {
+      "bytes": 4883,
+      "path": "static-data-checks.json",
+      "sha256": "8f3fc9d8478855f8346c8e9004a1fd495074a968b90fd8e17e10450cb9eb9078"
+    },
+    {
+      "bytes": 41575,
+      "path": "repair-from-626e2bc.patch.txt",
+      "sha256": "c15c8987cf93603f058688ba228137b952b28bf6cb4bc9188961d2479058f474"
+    }
+  ],
+  "review_base": "c884126196f0215094896f29649af4b895befd72",
+  "review_base_tree": "4ad98018e99717ea0894149e2d2705262afe5c45",
+  "schema": "openergy.metadata-terminal-deadline-independent-review-bindings.v1",
+  "scope_files": [
+    {
+      "bound_revision": "97cc8f9930d0548c2d0c4d6b1a3ec56a18e14283",
+      "bytes": 3563,
+      "equals_parent_worktree": true,
+      "git_blob": "b3285374fdad106f294c4418aed27ef6de5d6941",
+      "git_mode": "100644",
+      "path": "docs/verification/metadata-reader-local-cli-2026-10-25/README.md",
+      "sha256": "a9ccba20cd8cd24ea2a5b85f0f5ed0099887721009e7fe96ef05b48712c62172"
+    },
+    {
+      "bound_revision": "97cc8f9930d0548c2d0c4d6b1a3ec56a18e14283",
+      "bytes": 329,
+      "equals_parent_worktree": true,
+      "git_blob": "4093110f37ee245cecd0920dcc2323d0bd81a497",
+      "git_mode": "100644",
+      "path": "docs/verification/metadata-reader-local-cli-2026-10-25/SHA256SUMS",
+      "sha256": "a8540710a97cbd10eee513510823c21f0a56762f3bb15e35039a66ffd24d6c9c"
+    },
+    {
+      "bound_revision": "97cc8f9930d0548c2d0c4d6b1a3ec56a18e14283",
+      "bytes": 13079,
+      "equals_parent_worktree": true,
+      "git_blob": "d97fd4d3466d2af1376c2d1bfce5b41150731dc3",
+      "git_mode": "100644",
+      "path": "docs/verification/metadata-reader-local-cli-2026-10-25/private-evidence-index.json",
+      "sha256": "2e96761dac23b789cf875dbf14a7891293689ea7a20d8824996f7f6d9b39cdef"
+    },
+    {
+      "bound_revision": "97cc8f9930d0548c2d0c4d6b1a3ec56a18e14283",
+      "bytes": 10432,
+      "equals_parent_worktree": true,
+      "git_blob": "167ec36ddc59104e89999244945c001e6ab951d7",
+      "git_mode": "100644",
+      "path": "docs/verification/metadata-reader-local-cli-2026-10-25/results.json",
+      "sha256": "d696f6829fa07284982a45edaf3b4e536be07748fbd8f9a0ff46d00cee095eee"
+    },
+    {
+      "bound_revision": "97cc8f9930d0548c2d0c4d6b1a3ec56a18e14283",
+      "bytes": 8436,
+      "equals_parent_worktree": true,
+      "git_blob": "ce3559a0a90bb3ff561565f4279d5a324d8d4e6d",
+      "git_mode": "100644",
+      "path": "docs/verification/metadata-reader-local-cli-2026-10-25/verify-cli.py",
+      "sha256": "5f174d77b138d1b3b9a27d6cd6810d24cfb87c32c1f70dc079091d1d41c4bd27"
+    },
+    {
+      "bound_revision": "78759877392af3e41bb4d51fb5f40470c33ff6f9",
+      "bytes": 5613,
+      "equals_parent_worktree": true,
+      "git_blob": "b5a48d26b969d1ea9b1ae3932eb572b66f556d7a",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-reader-repair-2026-10-25-588e28c3/CLI.md",
+      "sha256": "2056c780c04f442b81b25e8384fa9133fbc9e43ab080f989b56c617e98b63fe9"
+    },
+    {
+      "bound_revision": "78759877392af3e41bb4d51fb5f40470c33ff6f9",
+      "bytes": 6868,
+      "equals_parent_worktree": true,
+      "git_blob": "9f9d6b5a020082043f15c0641b96471c6326e528",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-reader-repair-2026-10-25-588e28c3/README.md",
+      "sha256": "574ef61d93fabd9825990b6216e3479be30dd98313b3870dbe4b25b0f5fc3b72"
+    },
+    {
+      "bound_revision": "78759877392af3e41bb4d51fb5f40470c33ff6f9",
+      "bytes": 740,
+      "equals_parent_worktree": true,
+      "git_blob": "bb7399272d9489c8e3654149a4a9c5192bf9b286",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-reader-repair-2026-10-25-588e28c3/SHA256SUMS",
+      "sha256": "b3fd3b63712502dafae10601c293e5e6c5e4a73f56cc1e84f6c7ff6ac26b1879"
+    },
+    {
+      "bound_revision": "78759877392af3e41bb4d51fb5f40470c33ff6f9",
+      "bytes": 69750,
+      "equals_parent_worktree": true,
+      "git_blob": "e60f7007c89cce5b1e5eadb32467525f7e190d9b",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-reader-repair-2026-10-25-588e28c3/input-bindings.json",
+      "sha256": "68ad2d996a3e335147622807762c55b75512e2161f4551ede73857ba569e0e8d"
+    },
+    {
+      "bound_revision": "78759877392af3e41bb4d51fb5f40470c33ff6f9",
+      "bytes": 2837,
+      "equals_parent_worktree": true,
+      "git_blob": "8fc5c7e60aa875b30279d23772898b4eaef76d61",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-reader-repair-2026-10-25-588e28c3/input-contract.json",
+      "sha256": "ea6fc64e1b6f272bc0928c07af37301f891d0b4a0a17c8b326f73edb1c7b5421"
+    },
+    {
+      "bound_revision": "78759877392af3e41bb4d51fb5f40470c33ff6f9",
+      "bytes": 1419,
+      "equals_parent_worktree": true,
+      "git_blob": "74c89e49b0b366e5baaaa85fffe3f62e9b2b1cd2",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-reader-repair-2026-10-25-588e28c3/manifest.json",
+      "sha256": "d7d5467fab1da0f82122ea0d8858a320f7901643724aec0c769293dda2fe02b4"
+    },
+    {
+      "bound_revision": "78759877392af3e41bb4d51fb5f40470c33ff6f9",
+      "bytes": 4586,
+      "equals_parent_worktree": true,
+      "git_blob": "e385a50f78d8e2af5b3783afedd2d6666af40c02",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-reader-repair-2026-10-25-588e28c3/metadata-query.ps1.txt",
+      "sha256": "3404c46e256d41c17c1c7efaea1364216075f7988e1e5d38f588b43c92358443"
+    },
+    {
+      "bound_revision": "78759877392af3e41bb4d51fb5f40470c33ff6f9",
+      "bytes": 21506,
+      "equals_parent_worktree": true,
+      "git_blob": "c891ca79d7418a9ea4c4daa06e9a3dff44eccf22",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-reader-repair-2026-10-25-588e28c3/metadata_reader.py.txt",
+      "sha256": "e7fb7a8fde0f63246796d5209f85571d2de0418ab96536797101561bec39b380"
+    },
+    {
+      "bound_revision": "78759877392af3e41bb4d51fb5f40470c33ff6f9",
+      "bytes": 3273,
+      "equals_parent_worktree": true,
+      "git_blob": "fdb121ce604b022183108bb02a38dcc4410053ea",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-reader-repair-2026-10-25-588e28c3/plan.json",
+      "sha256": "4137655a0fb9afd8bc9e789f55763df367bab7bc3bf795e4eb9c642c128518b3"
+    },
+    {
+      "bound_revision": "78759877392af3e41bb4d51fb5f40470c33ff6f9",
+      "bytes": 2658,
+      "equals_parent_worktree": true,
+      "git_blob": "de1dfc5783d8f82e582f32d25ed8874b17c5ab1c",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-reader-repair-2026-10-25-588e28c3/static-checks.json",
+      "sha256": "1bf8a577e226c25c4af21303827dab66fa13c1628d0580bb1ed4739c14e3b131"
+    },
+    {
+      "bound_revision": "f9aaf96ba4ef2b48c44367edba9bc6c7242e0376",
+      "bytes": 9389,
+      "equals_parent_worktree": true,
+      "git_blob": "4d577df661060ca444c35d856158679e7fa1d380",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-reader-review-2026-10-25-9d61c036/REVIEW.md",
+      "sha256": "e36fd84e2bd896bd058a7447cb084a8b16d68ebdeca61c54f320599b8569ed97"
+    },
+    {
+      "bound_revision": "f9aaf96ba4ef2b48c44367edba9bc6c7242e0376",
+      "bytes": 549,
+      "equals_parent_worktree": true,
+      "git_blob": "b5c73183ab5e0d9b73599f3115f584f35723c306",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-reader-review-2026-10-25-9d61c036/SHA256SUMS",
+      "sha256": "88b5e9eeca7ec93bff06fe1b43f850ac0733003b0ab86fabf1347cff2ed0672a"
+    },
+    {
+      "bound_revision": "f9aaf96ba4ef2b48c44367edba9bc6c7242e0376",
+      "bytes": 75094,
+      "equals_parent_worktree": true,
+      "git_blob": "cafad3f82884770298de605dbda9d53127601544",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-reader-review-2026-10-25-9d61c036/bindings.json",
+      "sha256": "64dc6ea6a54d522ab4fa0ac0988b54872bc2354fcf9e14bca5c668dbf71ede15"
+    },
+    {
+      "bound_revision": "f9aaf96ba4ef2b48c44367edba9bc6c7242e0376",
+      "bytes": 125681,
+      "equals_parent_worktree": true,
+      "git_blob": "075df0c52b764b3cc0316f7c42950b0e21e5f8e7",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-reader-review-2026-10-25-9d61c036/candidate-from-original-parent.patch.txt",
+      "sha256": "40e8abc7072568281b1a29deda2e80b445342eca4c8b1f7b2868adfb58f098c2"
+    },
+    {
+      "bound_revision": "f9aaf96ba4ef2b48c44367edba9bc6c7242e0376",
+      "bytes": 9712,
+      "equals_parent_worktree": true,
+      "git_blob": "c0c802789c796b9bddc1a49a004f631362f48db5",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-reader-review-2026-10-25-9d61c036/driver-from-original-parent.patch.txt",
+      "sha256": "8c976e7341bd1336af4c34049087cb83472f334c0906589ecbb014177868e62c"
+    },
+    {
+      "bound_revision": "f9aaf96ba4ef2b48c44367edba9bc6c7242e0376",
+      "bytes": 5976,
+      "equals_parent_worktree": true,
+      "git_blob": "b8940a069584432360dd195785e5726f854785bd",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-reader-review-2026-10-25-9d61c036/saved-evidence-assessment.json",
+      "sha256": "68ab8a44529604f0a41d358e5ef6ca2e5efde8b12b467b9b4433660a299e1b4c"
+    },
+    {
+      "bound_revision": "f9aaf96ba4ef2b48c44367edba9bc6c7242e0376",
+      "bytes": 2659,
+      "equals_parent_worktree": true,
+      "git_blob": "f11d92b65ae8f4ed98d768231071c14543bb3b16",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-reader-review-2026-10-25-9d61c036/static-checks.json",
+      "sha256": "a1290c67f8177f30b08fbc8be9a13fa5c8f7aa999263233b3f3e13beddf9f2cd"
+    },
+    {
+      "bound_revision": "97cc8f9930d0548c2d0c4d6b1a3ec56a18e14283",
+      "bytes": 2203,
+      "equals_parent_worktree": true,
+      "git_blob": "bbfdadcd72e43d62ddb153799163c196262a997e",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-terminal-deadline-repair-2026-10-25/README.md",
+      "sha256": "54c92d9344440a381a4224aa11b844abc3d031e41b96c2bea42f50446fe8ffa5"
+    },
+    {
+      "bound_revision": "97cc8f9930d0548c2d0c4d6b1a3ec56a18e14283",
+      "bytes": 507,
+      "equals_parent_worktree": true,
+      "git_blob": "94b6577c456e58df52928d1f2c16baa9da255aa6",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-terminal-deadline-repair-2026-10-25/SHA256SUMS",
+      "sha256": "818fa8fca1ebe919634566000e19fcbb74877c7f4a122fab4495ed1855fab1e0"
+    },
+    {
+      "bound_revision": "97cc8f9930d0548c2d0c4d6b1a3ec56a18e14283",
+      "bytes": 595,
+      "equals_parent_worktree": true,
+      "git_blob": "3eb33f636eda1fe30be9a5de7e9c0b496d26b038",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-terminal-deadline-repair-2026-10-25/bindings.json",
+      "sha256": "850de80ea1470dd48a77ed4ae7abd2969af196a47ec27344e06566a16f32d760"
+    },
+    {
+      "bound_revision": "97cc8f9930d0548c2d0c4d6b1a3ec56a18e14283",
+      "bytes": 4586,
+      "equals_parent_worktree": true,
+      "git_blob": "e385a50f78d8e2af5b3783afedd2d6666af40c02",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-terminal-deadline-repair-2026-10-25/metadata-query.ps1.txt",
+      "sha256": "3404c46e256d41c17c1c7efaea1364216075f7988e1e5d38f588b43c92358443"
+    },
+    {
+      "bound_revision": "97cc8f9930d0548c2d0c4d6b1a3ec56a18e14283",
+      "bytes": 21740,
+      "equals_parent_worktree": true,
+      "git_blob": "d02586222827e4bcbb39a24ed909c03ce5d27206",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-terminal-deadline-repair-2026-10-25/metadata_reader.py.txt",
+      "sha256": "8f55fbb7c930989f0ad7327536eb61a1330eb741c108992784f37b54af68086c"
+    },
+    {
+      "bound_revision": "97cc8f9930d0548c2d0c4d6b1a3ec56a18e14283",
+      "bytes": 747,
+      "equals_parent_worktree": true,
+      "git_blob": "6342b7ad4058b43f110120ea625666b3c4c5b083",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-terminal-deadline-repair-2026-10-25/reader-deadline.patch",
+      "sha256": "2fca588300f84882b602d296f52a800407219c924fd447259fc3523a0a6920f2"
+    },
+    {
+      "bound_revision": "97cc8f9930d0548c2d0c4d6b1a3ec56a18e14283",
+      "bytes": 302,
+      "equals_parent_worktree": true,
+      "git_blob": "448e818a4134e5a90c323db0412e6318efec893a",
+      "git_mode": "100644",
+      "path": "docs/verification/windows-metadata-terminal-deadline-repair-2026-10-25/static-checks.json",
+      "sha256": "626373da22710aa842445b19b288caa55d83fcd3d02ab9bb0e24cf8841de7db4"
+    }
+  ]
+}
