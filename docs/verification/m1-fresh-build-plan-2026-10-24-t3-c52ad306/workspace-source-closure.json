@@ -1,0 +1,164 @@
+{
+  "archive_binding": {
+    "all_702_file_records_equal_independent_git_bindings": true,
+    "file": "source-workspace-r3.tar",
+    "receipt_sha256": "7ec86206f0ad7a0931451e46c0e056e6dea07223cd60e4e05d4037f1b4f5c0bb",
+    "sha256": "e28b00daeaf5de62ab12f1e0165a5ba1b815d22ca9139a74b54f599e20ada277"
+  },
+  "corrected_static_data_reader": "Explicit installed Python 3.15 standard library; no target Python or product code executed.",
+  "execution": false,
+  "first_local_data_reader_failure": {
+    "error": "ModuleNotFoundError: No module named 'tomllib'",
+    "interpreter": "default python3",
+    "phase": "Before TOML/project reads; no task helper imported or executed.",
+    "preserved": true
+  },
+  "local_manifest_closure": [
+    "Cargo.toml",
+    "crates/config/Cargo.toml",
+    "crates/daemon/Cargo.toml",
+    "crates/ipc/Cargo.toml",
+    "crates/net/Cargo.toml",
+    "crates/platform-linux/Cargo.toml",
+    "crates/platform-macos/Cargo.toml",
+    "crates/platform-windows/Cargo.toml",
+    "crates/platform/Cargo.toml",
+    "crates/protocol/Cargo.toml",
+    "crates/session/Cargo.toml",
+    "tools/e2e/Cargo.toml",
+    "vendor/mdns-sd/Cargo.toml"
+  ],
+  "local_path_edges": [
+    [
+      "Cargo.toml",
+      "vendor/mdns-sd/Cargo.toml"
+    ],
+    [
+      "crates/daemon/Cargo.toml",
+      "crates/config/Cargo.toml"
+    ],
+    [
+      "crates/daemon/Cargo.toml",
+      "crates/ipc/Cargo.toml"
+    ],
+    [
+      "crates/daemon/Cargo.toml",
+      "crates/net/Cargo.toml"
+    ],
+    [
+      "crates/daemon/Cargo.toml",
+      "crates/platform-linux/Cargo.toml"
+    ],
+    [
+      "crates/daemon/Cargo.toml",
+      "crates/platform-macos/Cargo.toml"
+    ],
+    [
+      "crates/daemon/Cargo.toml",
+      "crates/platform-windows/Cargo.toml"
+    ],
+    [
+      "crates/daemon/Cargo.toml",
+      "crates/platform/Cargo.toml"
+    ],
+    [
+      "crates/daemon/Cargo.toml",
+      "crates/protocol/Cargo.toml"
+    ],
+    [
+      "crates/daemon/Cargo.toml",
+      "crates/session/Cargo.toml"
+    ],
+    [
+      "crates/net/Cargo.toml",
+      "crates/ipc/Cargo.toml"
+    ],
+    [
+      "crates/net/Cargo.toml",
+      "crates/protocol/Cargo.toml"
+    ],
+    [
+      "crates/net/Cargo.toml",
+      "crates/session/Cargo.toml"
+    ],
+    [
+      "crates/platform-linux/Cargo.toml",
+      "crates/platform/Cargo.toml"
+    ],
+    [
+      "crates/platform-linux/Cargo.toml",
+      "crates/protocol/Cargo.toml"
+    ],
+    [
+      "crates/platform-macos/Cargo.toml",
+      "crates/platform/Cargo.toml"
+    ],
+    [
+      "crates/platform-macos/Cargo.toml",
+      "crates/protocol/Cargo.toml"
+    ],
+    [
+      "crates/platform-windows/Cargo.toml",
+      "crates/platform/Cargo.toml"
+    ],
+    [
+      "crates/platform-windows/Cargo.toml",
+      "crates/protocol/Cargo.toml"
+    ],
+    [
+      "crates/session/Cargo.toml",
+      "crates/config/Cargo.toml"
+    ],
+    [
+      "crates/session/Cargo.toml",
+      "crates/ipc/Cargo.toml"
+    ],
+    [
+      "crates/session/Cargo.toml",
+      "crates/platform/Cargo.toml"
+    ],
+    [
+      "crates/session/Cargo.toml",
+      "crates/protocol/Cargo.toml"
+    ],
+    [
+      "tools/e2e/Cargo.toml",
+      "crates/ipc/Cargo.toml"
+    ]
+  ],
+  "release_configuration_inputs": [
+    "Cargo.toml",
+    "rust-toolchain.toml",
+    "apps/macos/Package.swift",
+    "apps/macos/Support/Info.plist",
+    "crates/protocol/Cargo.toml",
+    "crates/platform/Cargo.toml",
+    "crates/config/Cargo.toml",
+    "crates/ipc/Cargo.toml",
+    "crates/session/Cargo.toml",
+    "crates/net/Cargo.toml",
+    "crates/platform-macos/Cargo.toml",
+    "crates/platform-windows/Cargo.toml",
+    "crates/platform-linux/Cargo.toml",
+    "crates/daemon/Cargo.toml",
+    "tools/e2e/Cargo.toml"
+  ],
+  "result": "PASS: every named input and recursive local path manifest is bound to the new 702-file source selection",
+  "schema": "openergy.m1-workspace-source-closure.v1",
+  "scope": "TOML/source data only; no Cargo, compiler or release helper ran.",
+  "source_commit": "ed7d96bf53da1a539fa2acde3b7133613221fd4b",
+  "workspace_member_count": 11,
+  "workspace_members": [
+    "crates/protocol/Cargo.toml",
+    "crates/platform/Cargo.toml",
+    "crates/config/Cargo.toml",
+    "crates/ipc/Cargo.toml",
+    "crates/session/Cargo.toml",
+    "crates/net/Cargo.toml",
+    "crates/platform-macos/Cargo.toml",
+    "crates/platform-windows/Cargo.toml",
+    "crates/platform-linux/Cargo.toml",
+    "crates/daemon/Cargo.toml",
+    "tools/e2e/Cargo.toml"
+  ]
+}
