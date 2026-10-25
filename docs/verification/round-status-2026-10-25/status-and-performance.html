@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Openergy evidence and next gates</title>
+<style>
+html,body{margin:0;background:transparent;color:var(--foreground);font-family:var(--font-sans);font-weight:400}
+#oe-evidence{--viz-series-1:var(--chart-1);--viz-series-2:var(--chart-2);display:grid;gap:20px;padding:4px 0 12px}
+#oe-evidence h2,#oe-evidence h3,#oe-evidence p{margin:0;font-size:inherit;font-weight:400}
+#oe-evidence h2,#oe-evidence h3,#oe-evidence th,#oe-evidence strong{font-weight:500}
+#oe-evidence .section{display:grid;gap:12px;min-width:0}
+#oe-evidence .minor{color:var(--muted-foreground)}
+#oe-evidence .numbers{font-variant-numeric:tabular-nums}
+#oe-evidence table{border-collapse:collapse;width:100%;table-layout:fixed}
+#oe-evidence th,#oe-evidence td{text-align:left;vertical-align:top;padding:9px 8px;border-bottom:1px solid var(--border);overflow-wrap:anywhere}
+#oe-evidence th:first-child,#oe-evidence td:first-child{padding-left:0}
+#oe-evidence th:last-child,#oe-evidence td:last-child{padding-right:0}
+#oe-evidence .status th:first-child{width:24%}
+#oe-evidence .status th:nth-child(2){width:31%}
+#oe-evidence .performance th:first-child{width:24%}
+#oe-evidence .performance th:not(:first-child){width:38%}
+#oe-evidence .scope{display:block;color:var(--muted-foreground);margin-top:4px}
+#oe-evidence .warning{color:var(--warning-foreground)}
+#oe-evidence details{border-top:1px solid var(--border);padding-top:12px}
+#oe-evidence summary{font-weight:500;cursor:default}
+#oe-evidence .historical{display:grid;gap:12px;margin-top:16px}
+#oe-evidence .barrow{display:grid;grid-template-columns:92px minmax(0,1fr) 104px;align-items:center;gap:10px}
+#oe-evidence .track{height:20px;background:color-mix(in srgb,var(--foreground) 7%,transparent)}
+#oe-evidence .bar{height:20px;background:var(--viz-series-1)}
+#oe-evidence .after{background:var(--viz-series-2)}
+#oe-evidence .end{text-align:right}
+#oe-evidence .pair{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+#oe-evidence .cost{display:grid;gap:4px;padding-top:8px}
+@media(max-width:480px){#oe-evidence .status th:first-child{width:22%}#oe-evidence .status th:nth-child(2){width:30%}#oe-evidence th,#oe-evidence td{padding:8px 5px}#oe-evidence .barrow{grid-template-columns:72px minmax(0,1fr) 94px;gap:6px}}
+</style>
+</head>
+<body>
+<main id="oe-evidence">
+<section class="section" aria-labelledby="oe-status-title">
+<div class="pair"><h2 id="oe-status-title">Openergy: verified work and open gates</h2><span class="minor">25 Oct 2026 · PDT</span></div>
+<table class="status">
+<thead><tr><th scope="col">Workstream</th><th scope="col">Evidence now</th><th scope="col">Next gate</th></tr></thead>
+<tbody>
+<tr><th scope="row">M1 build</th><td>Bundle retained<span class="scope">Release acceptance unverified</span></td><td>Fresh artifact and private-copy qualification</td></tr>
+<tr><th scope="row">M1 verification</th><td>Controller source clear<span class="scope">New file preflight failed at an SDK alias</span></td><td>Review ten canonical path bindings → fresh qualification → one app flow</td></tr>
+<tr><th scope="row">Windows</th><td>Reader CLI evidence retained<span class="scope">SSH 255: no route to host</span></td><td>Connection → installed metadata → launch-limit proof → native flow</td></tr>
+<tr><th scope="row">Updater</th><td>Old operation closed<span class="scope">Approval expired</span></td><td>Fresh scoped operation and approval</td></tr>
+</tbody>
+</table>
+<p class="minor">Historical M1: app 25/25, app exit 0, controller exit 1 · FAILED_NOT_ACCEPTED · port cause unknown.</p>
+</section>
+<section class="section" aria-labelledby="oe-performance-title">
+<h2 id="oe-performance-title">Current app versus legacy reference</h2>
+<p><strong>No matched runtime comparison yet.</strong></p>
+<table class="performance">
+<thead><tr><th scope="col">Measure</th><th scope="col">Openergy 0.1.0 · build 1<span class="scope">M1 · macOS 27.0.1</span></th><th scope="col">Synergy 3.7.0-beta<span class="scope">macOS 27.2 · passive snapshots</span></th></tr></thead>
+<tbody>
+<tr><th scope="row">Whole-stack memory</th><td>Matched value missing</td><td class="numbers">143.6–144.3 MiB summed RSS<span class="scope">3 snapshots · not unique memory</span></td></tr>
+<tr><th scope="row">CPU</th><td>Matched value missing</td><td>Rounded passive display<span class="scope">No shared timed workload</span></td></tr>
+<tr><th scope="row">Launch / input latency</th><td>Matched values missing</td><td>Matched values missing</td></tr>
+</tbody>
+</table>
+<p class="minor">Needed: accepted current flow, then the same Mac, OS, real peer, settings, process set and measurement window.</p>
+</section>
+<details>
+<summary>Historical Openergy measurements and costs</summary>
+<div class="historical">
+<h3>Stop request → independently observed exit</h3>
+<p class="minor">Openergy before/after fix · role Off · virtual backend · one sample each · not a Synergy comparison</p>
+<div role="img" aria-label="Historical stop-fix pair. Before: 1254.038 milliseconds. After: 252.767 milliseconds. One sample per version; no distribution or whole-app speed claim.">
+<div class="barrow"><span>Before fix</span><div class="track"><div class="bar" style="width:100%"></div></div><span class="numbers end">1254.038 ms</span></div>
+<div class="barrow" style="margin-top:10px"><span>After fix</span><div class="track"><div class="bar after" style="width:20.156253%"></div></div><span class="numbers end">252.767 ms</span></div>
+</div>
+<div class="cost"><strong>Historical trust CLI: small-list median</strong><span class="numbers">10.786 → 11.643 ms</span><span class="minor">Three sequential warm commands per version · slower candidate value</span></div>
+<div class="cost"><strong>Retained M1 build-worker operation</strong><span class="numbers">101.0503 s</span><span class="minor">Build time · app launch latency remains unmeasured</span></div>
+<p class="minor">Evidence audit: 880eb9f · canonical SDK proposal: cfe7721 · no new performance measurements</p>
+</div>
+</details>
+</main>
+</body>
+</html>
