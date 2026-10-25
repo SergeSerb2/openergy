@@ -1,0 +1,125 @@
+import os,sys,time,stat,json,hashlib,subprocess
+B='/Users/serge/.local/state/openergy-verification/m1-source-metadata-launch-prepared-20261025-7ae23486940a'
+PYTHON='/opt/homebrew/bin/python3.15'
+PHASE='prepare'
+WORK_SECONDS=130
+SETTLE_SECONDS=2
+FINAL_SECONDS=3
+TOTAL_SECONDS=135
+PAYLOAD_BYTES=None
+PAYLOAD_SHA256=None
+COLLECTOR_SHA256='695dc01461b31e04eb7b8c4a12848350f26a45731f05b0ddca971c05749e4df6'
+PROFILE_SHA256='dc9ff86519970ad740961012b0740b1b1a7aab3135a6fe79e47aa0de071acf4f'
+CLOCK_SHA256='67e4f9525b2d1b1496689808d08ab625fc88698bb1e2b049e463868f08e5303d'
+PROCESS=None
+
+def canonical(v):
+    return (json.dumps(v,sort_keys=True,separators=(',',':'),ensure_ascii=True,allow_nan=False)+'\n').encode('ascii')
+
+def stamp(s):
+    return (s.st_dev,s.st_ino,s.st_mode,s.st_uid,s.st_gid,s.st_nlink,s.st_size,s.st_mtime_ns,s.st_ctime_ns)
+
+def read_bound(path,size,wanted,mode):
+    fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
+    try:
+        old=os.fstat(fd)
+        assert stat.S_ISREG(old.st_mode) and old.st_uid==os.getuid() and old.st_nlink==1
+        assert stat.S_IMODE(old.st_mode)==mode and old.st_size==size and size<=1048576
+        parts=[];seen=0
+        while True:
+            chunk=os.read(fd,min(65536,size+1-seen))
+            if not chunk:break
+            seen+=len(chunk);assert seen<=size;parts.append(chunk)
+        raw=b''.join(parts)
+        assert len(raw)==size and hashlib.sha256(raw).hexdigest()==wanted
+        assert stamp(old)==stamp(os.fstat(fd))==stamp(os.stat(path,follow_symlinks=False))
+        return raw
+    finally:
+        os.close(fd)
+
+def save(name,value,end):
+    assert time.monotonic_ns()<end
+    raw=canonical(value);assert len(raw)<=16384
+    fd=os.open(B+'/'+name,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW|os.O_NONBLOCK,0o600)
+    try:
+        assert time.monotonic_ns()<end
+        assert os.write(fd,raw)==len(raw)
+        assert time.monotonic_ns()<end
+        os.fsync(fd)
+        assert time.monotonic_ns()<end
+    finally:
+        os.close(fd)
+    d=os.open(B,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
+    try:os.fsync(d)
+    finally:os.close(d)
+    assert time.monotonic_ns()<end
+    return {'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()}
+
+def main():
+    global PROCESS
+    os.umask(0o077)
+    assert type(PAYLOAD_BYTES) is int and 0<PAYLOAD_BYTES<=1048576
+    assert type(PAYLOAD_SHA256) is str and len(PAYLOAD_SHA256)==64 and all(c in '0123456789abcdef' for c in PAYLOAD_SHA256)
+    assert sys.platform=='darwin' and sys.implementation.name=='cpython' and sys.version_info[:2]==(3,15)
+    assert sys.flags.isolated and sys.flags.no_site and sys.flags.dont_write_bytecode and not sys.flags.optimize
+    os.setpriority(os.PRIO_PROCESS,0,15)
+    assert os.getpriority(os.PRIO_PROCESS,0)==15
+    console=os.fstat(1);assert stat.S_ISFIFO(console.st_mode) and os.fpathconf(1,'PC_PIPE_BUF')>=512
+    os.set_blocking(1,False)
+    read_bound(B+'/tools/transport-phase-budgets.py',28060,COLLECTOR_SHA256,0o400)
+    read_bound(B+'/m1-profile.json',821,PROFILE_SHA256,0o400)
+    read_bound(B+'/prepare-launch/prepare.payload.py',PAYLOAD_BYTES,PAYLOAD_SHA256,0o400)
+    info=time.get_clock_info('monotonic')
+    assert info.monotonic and not info.adjustable and info.implementation=='mach_absolute_time()'
+    clock={'schema':'openergy.local-macos-clock.v1','clock':'time.monotonic_ns','implementation':info.implementation,'monotonic':info.monotonic,'adjustable':info.adjustable,'resolution_seconds':info.resolution,'unit':'integer_nanoseconds','origin':'macOS Mach absolute clock','scope':'same running local Mac only; CPython >=3.10','cross_host_comparison':False}
+    assert hashlib.sha256(canonical(clock)).hexdigest()==CLOCK_SHA256
+    for name in ['prepare-run','prepare-parent-request.json','prepare-parent-exit.json']:
+        assert not os.path.lexists(B+'/'+name),name
+    fd=os.open(__file__,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
+    try:
+        own_source=os.read(fd,16385);assert len(own_source)<=16384 and os.read(fd,1)==b''
+    finally:os.close(fd)
+    own_sha=hashlib.sha256(own_source).hexdigest()
+    S=time.monotonic_ns();A=S+TOTAL_SECONDS*1000000000
+    argv=[PYTHON,'-I','-S','-B',B+'/tools/transport-phase-budgets.py','--phase',PHASE,'--profile',B+'/m1-profile.json','--profile-sha256',PROFILE_SHA256,'--payload',B+'/prepare-launch/prepare.payload.py','--payload-sha256',PAYLOAD_SHA256,'--run-dir',B+'/prepare-run','--collector-sha256',COLLECTOR_SHA256,'--envelope-start-ns',str(S),'--clock-sha256',CLOCK_SHA256]
+    request={'schema':'openergy.phase-parent-once.v1','operation':'one-file-only-prepare','phase':PHASE,'selected_work_seconds':WORK_SECONDS,'selected_settle_seconds':SETTLE_SECONDS,'selected_final_seconds':FINAL_SECONDS,'selected_total_seconds':TOTAL_SECONDS,'observer_source_sha256':own_sha,'own_priority_before':15,'clock':clock,'same_local_host_and_boot_bound_by_direct_topology':True,'started_ns':S,'work_until_ns':S+WORK_SECONDS*1000000000,'absolute_until_ns':A,'argv':argv,'retries':0,'exclusive_target_root_owned_for_serial_attempt':True,'remote_enclosure':'actual completed activity must be proved within original local envelope; no cross-host timestamp comparison or assumed latency'}
+    save('prepare-parent-request.json',request,A)
+    assert time.monotonic_ns()<A
+    PROCESS=subprocess.Popen(argv,stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,shell=False,close_fds=True,cwd='/',env={'PATH':'/usr/bin:/bin','LC_ALL':'C','LANG':'C'})
+    spawn_returned=time.monotonic_ns()
+    code=None;T=None;returned=False;timeout=False
+    if spawn_returned<A:
+        try:
+            code=PROCESS.wait(timeout=max(0,(A-time.monotonic_ns())/1000000000))
+            T=time.monotonic_ns()
+            returned=True
+        except subprocess.TimeoutExpired:
+            timeout=True
+            code=PROCESS.poll()
+            T=time.monotonic_ns()
+            returned=code is not None
+    else:
+        timeout=True
+        code=PROCESS.poll()
+        T=time.monotonic_ns()
+        returned=code is not None
+    record={'schema':'openergy.metadata-transport-independent-exit.v1','observer_resolved_python':os.path.realpath(sys.executable),'observer_full_version':sys.version,'clock_descriptor':clock,'same_local_host_and_boot_bound':True,'collector_source_sha256':COLLECTOR_SHA256,'profile_sha256':PROFILE_SHA256,'payload_sha256':PAYLOAD_SHA256,'run_directory':B+'/prepare-run','started_ns':S,'absolute_until_ns':A,'actual_collector_pid_from_retained_handle':PROCESS.pid,'actual_collector_exit':code,'actual_wait_or_poll_returned':returned,'post_actual_exit_observed_ns':T,'strictly_before_absolute':bool(returned and T<A),'timeout':timeout,'receipt_assessed':False,'artifact_accepted':False,'phase':PHASE,'selected_work_seconds':WORK_SECONDS,'selected_settle_seconds':SETTLE_SECONDS,'selected_final_seconds':FINAL_SECONDS,'selected_total_seconds':TOTAL_SECONDS}
+    good=code==0 and returned and T<A and not timeout
+    ref=None
+    if time.monotonic_ns()<A:
+        ref=save('prepare-parent-exit.json',record,A)
+    good=good and ref is not None and time.monotonic_ns()<A
+    console_value={'actual_collector_exit':code,'D4_before_original135':record['strictly_before_absolute'],'phase':PHASE,'elapsed_seconds':(T-S)/1000000000,'observer_record':ref,'receipt_reads':0,'remote_or_artifact_acceptance':False}
+    out=canonical(console_value);assert len(out)<=512
+    try:
+        assert time.monotonic_ns()<A
+        assert os.write(1,out)==len(out)
+        assert time.monotonic_ns()<A
+    except BaseException:good=False
+    return 0 if good else 1
+
+try:
+    result=main()
+except BaseException:
+    result=1
+os._exit(result)
