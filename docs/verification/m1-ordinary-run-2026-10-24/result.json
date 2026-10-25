@@ -1,0 +1,62 @@
+{
+  "actual_controller_os_exit": 1,
+  "admission_candidate": "02c9b174c8e13d4eaa6bf7692f20cbb44c93ae57",
+  "admission_review": "08ac9ae4eff90099c83f5314eba0482f8b3f9cbe",
+  "app_checks": {
+    "actual_os_exit": 0,
+    "passed": 25,
+    "total": 25
+  },
+  "collector_direct_exit_codes": {
+    "app": 0,
+    "peer": 0,
+    "peer-status": 0,
+    "peer-stop": 0
+  },
+  "collector_sealed": true,
+  "controller_attempts": 1,
+  "controller_invocation_seconds": 6.764437458000001,
+  "expired_sparkle_operation": "CLOSED_NO_RETRY",
+  "failure_cause": "UNPROVED",
+  "first_postflight_bind": "EADDRINUSE_ERRNO48",
+  "first_postflight_port": 65431,
+  "first_prebind_scoped_rows": [],
+  "native_ui_input_update_and_release_acceptance": "UNVERIFIED",
+  "original_final_outcome_bundle_after_and_archival": "NOT_REACHED",
+  "overall_status": "FAILED_NOT_ACCEPTED",
+  "postfailure_data_bundle_comparison": true,
+  "preparation_attempts": 1,
+  "prior_ordinary_result": "UNCHANGED_FAILED_NOT_ACCEPTED_23_OF_25",
+  "product_flow_attempts": 1,
+  "product_source": "ed7d96bf53da1a539fa2acde3b7133613221fd4b",
+  "qualification_parent_errors_preserved": [
+    "Data sealing R1 Base64 encoder/decoder error occurred before first write; corrected transfer only, no preparation/product retry",
+    "Copy signature comparison originally rejected parallel verification message ordering after nine successful metadata commands; remaining41 commands completed without repeating first9, copy or preparation; first failed checker receipt preserved"
+  ],
+  "recovery_esrch_known_identities": 6,
+  "recovery_handoff_lost": false,
+  "recovery_kill_deliveries": {},
+  "recovery_private_overflow": false,
+  "recovery_report_passed": true,
+  "recovery_report_recovered": true,
+  "recovery_term_deliveries": {},
+  "recovery_unresolved_private": [],
+  "retention": {
+    "archive_bytes": 182473,
+    "archive_sha256": "535ba1f87258d8e94f584c427db890fa599acb6b6e06cfbfb0d60dea3dbb9f24",
+    "file_bindings_verified": 100,
+    "members_verified": 101,
+    "new_run_or_bind_or_probe": false,
+    "original_attempt": "FAILED_NOT_ACCEPTED",
+    "postfailure_bundle_matches_prepared_tree": true,
+    "private_local_label": "m1-resume-private-20261024/ordinary-flow-inputs-aa9357b7f58a/retained-failed-flow",
+    "retained_payload_bytes": 988589,
+    "schema": "openergy-ordinary-failed-flow-local-retention-v1"
+  },
+  "runtime_retry_count": 0,
+  "schema": "openergy-m1-ordinary-bounded-attempt-public-v1",
+  "second_postflight_port_65432": "NOT_REACHED",
+  "watchdog_independent_absence": true,
+  "watchdog_os_exit": 0,
+  "whole_flow_priority_and_gate_audit": "PENDING independent saved-data review"
+}

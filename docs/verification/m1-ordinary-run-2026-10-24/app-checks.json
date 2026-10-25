@@ -1,0 +1,105 @@
+{
+  "scope": "ordinary no-render virtual AppModel and IPC, not native input",
+  "checks": [
+    {
+      "name": "connect",
+      "passed": true
+    },
+    {
+      "name": "starts from safe off config",
+      "passed": true
+    },
+    {
+      "name": "role off",
+      "passed": true
+    },
+    {
+      "name": "join 127.0.0.1:65431",
+      "passed": true
+    },
+    {
+      "name": "real peer connected",
+      "passed": true
+    },
+    {
+      "name": "disconnect peer",
+      "passed": true
+    },
+    {
+      "name": "rejoin same address",
+      "passed": true
+    },
+    {
+      "name": "clipboard off",
+      "passed": true
+    },
+    {
+      "name": "clipboard on",
+      "passed": true
+    },
+    {
+      "name": "test port",
+      "passed": true
+    },
+    {
+      "name": "role server",
+      "passed": true
+    },
+    {
+      "name": "layout seeded",
+      "passed": true
+    },
+    {
+      "name": "layout left of this Mac",
+      "passed": true
+    },
+    {
+      "name": "layout keeps imported fields",
+      "passed": true
+    },
+    {
+      "name": "derived links arrive",
+      "passed": true
+    },
+    {
+      "name": "rename keeps layout entry",
+      "passed": true
+    },
+    {
+      "name": "rename keeps explicit links",
+      "passed": true
+    },
+    {
+      "name": "live log lines",
+      "passed": true
+    },
+    {
+      "name": "rejected layout rolls back",
+      "passed": true
+    },
+    {
+      "name": "join then off preserves intent",
+      "passed": true
+    },
+    {
+      "name": "stalled IPC remains responsive",
+      "passed": true
+    },
+    {
+      "name": "owned daemon crash recovers",
+      "passed": true
+    },
+    {
+      "name": "role off again",
+      "passed": true
+    },
+    {
+      "name": "import warning notice",
+      "passed": true
+    },
+    {
+      "name": "empty import reports error",
+      "passed": true
+    }
+  ]
+}
