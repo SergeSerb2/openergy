@@ -1,0 +1,530 @@
+--- a/metadata-caller.py.txt
++++ b/metadata-caller.py.txt
+@@ -1,6 +1,6 @@
+ """INERT SOURCE/DATA. Independently review before any later parent use.
+ 
+-CLI: metadata-caller.py.txt source|copy EVIDENCE START_MONOTONIC PARENT_RECORD_SHA256
++CLI: metadata-caller.py.txt source|copy EVIDENCE START_CLOCK_MONOTONIC_NS PARENT_RECORD_SHA256
+ Source parent record: EVIDENCE/metadata-source-parent.json. Copy: bounded stdin.
+ See README.md for the parent boundary and outer collection contract.
+ No artifact gate is granted here. No prepare/controller/product entry exists.
+@@ -32,7 +32,22 @@
+ FILE_CAP, TOTAL_CAP, STREAM_CAP = 8388608, 33554432, 1048576
+ # Keep the original product, cleanup and accounting reservations available.
+ INITIAL_CAP = TOTAL_CAP - 16777216 - 4194304 - 65536
+-HANDLES = []  # Actual Popen handles retained for this process lifetime.
++NS = 1000000000
++CLOCK = dict(schema='openergy.shared-clock.v1', platform='darwin',
++             api='time.clock_gettime_ns', clock='CLOCK_MONOTONIC', clock_id=6,
++             unit='nanoseconds', scope='same-host-same-boot')
++# These are immutable completed facts, NOT new shared-clock observations.
++COMPLETED_FILES = {
++    'source-files-parent-result.json': (1778, '9b26841fbb4803ca3444bf84e90e9d0db32e0515a9d2da5052e7c7baf403b5e1'),
++    'source-files-once.guard': (1563, '9e0b9a5afb47b7755d1ebaf5f50edf45cf0a7372baaa2f83b83d9255011aed4c'),
++    'qualification-source-files.json': (406, 'ebd466312ed346991a9cdd72c64535dbc0696af82b4061b9d79d91fcc937d192'),
++    'source-files.stdout.bin': (406, 'ebd466312ed346991a9cdd72c64535dbc0696af82b4061b9d79d91fcc937d192'),
++    'source-files.stderr.bin': (0, 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'),
++    'source-files-os-exit.json': (926, '3e05e0315b0b608a19d7725286bc1becacc103e0650c4bb9760fad7ad06f4d13'),
++    'source-qualification-guard.json': (426, '29cf75185b594bb760877bf8a297dcbbbb262d940bcc51c4a08ccdefa5233650'),
++}
++SAVED_AUDIT = 'f7f9b10fc99cc2196d0fd88a5b93a35a39a9adc5'
++HANDLES = []  # Label + actual Popen handle + bounded status; retained for lifetime.
+ 
+ 
+ class Stop(RuntimeError):
+@@ -44,22 +59,31 @@
+         raise Stop(binding)
+ 
+ 
++def clock_ns():
++    """The only NEW absolute clock. No monotonic fallback or inferred offset."""
++    require(sys.platform == 'darwin' and hasattr(time, 'clock_gettime_ns')
++            and getattr(time, 'CLOCK_MONOTONIC', None) == CLOCK['clock_id'], 'explicit shared clock unavailable')
++    value = time.clock_gettime_ns(time.CLOCK_MONOTONIC)
++    require(type(value) is int and value >= 0, 'shared integer clock')
++    return value
++
++
+ def remaining(deadline):
+-    value = deadline - time.monotonic()
++    value = deadline - clock_ns()
+     if value <= 0:
+-        raise TimeoutError('absolute deadline')
+-    return value
++        raise TimeoutError('absolute shared-clock deadline')
++    return math.nextafter(value / NS, -math.inf)
+ 
+ 
+ @contextlib.contextmanager
+ def until(deadline):
+-    """Interruptible-call envelope only; the OS can still stall. Parent owns outer."""
++    """Shared absolute ns deadline; nested alarm and postcheck. Parent owns outer."""
+     duration = remaining(deadline)
+     previous_handler = signal.getsignal(signal.SIGALRM)
+     previous_timer = signal.getitimer(signal.ITIMER_REAL)
+-    entered = time.monotonic()
++    entered = clock_ns()
+     def expired(_signum, _frame):
+-        raise TimeoutError('absolute deadline')
++        raise TimeoutError('absolute shared-clock deadline')
+     signal.signal(signal.SIGALRM, expired)
+     signal.setitimer(signal.ITIMER_REAL, min(duration, previous_timer[0]) if previous_timer[0] else duration)
+     try:
+@@ -69,7 +93,23 @@
+         signal.setitimer(signal.ITIMER_REAL, 0)
+         signal.signal(signal.SIGALRM, previous_handler)
+         if previous_timer[0]:
+-            signal.setitimer(signal.ITIMER_REAL, max(0.000001, previous_timer[0] - (time.monotonic() - entered)), previous_timer[1])
++            signal.setitimer(signal.ITIMER_REAL, max(0.000001, previous_timer[0] - (clock_ns() - entered) / NS), previous_timer[1])
++
++
++def common_deadline(deadline):
++    """Conservative remaining duration, consumed only in unchanged common's domain."""
++    # Sample common's local clock FIRST. Time between the samples is discarded.
++    # Shorten by 1ms and round down; neither shared absolute ns nor an offset is
++    # passed to common. The enclosing shared alarm + postcheck stay authoritative.
++    local_before = time.monotonic()
++    shared_after = clock_ns()
++    budget = deadline - shared_after - 1000000
++    require(budget > 0 and math.isfinite(local_before), 'common remaining budget')
++    duration = math.nextafter(budget / NS, -math.inf)
++    local_end = math.nextafter(local_before + duration, -math.inf)
++    require(math.isfinite(local_end) and local_end > local_before, 'common local deadline')
++    remaining(deadline)
++    return local_end
+ 
+ 
+ def canonical(path):
+@@ -124,6 +164,10 @@
+         self.root, self.mode, self.deadline, self.common = root, mode, deadline, common
+         self.initial = 0
+         self.first_failed_comparison = None
++        self.first_failed_command = None
++        self.active_command = None
++        self.collected_commands = []
++        self.publication_errors = []
+         if mode == 'source':
+             # One complete sum BEFORE the guard or any source write. No ledger.
+             with until(deadline):
+@@ -144,7 +188,7 @@
+             read(root / 'bytes.json', deadline)
+             require((root / 'bytes.lock').is_file() and not (root / 'bytes.lock').is_symlink(), 'existing byte lock')
+ 
+-    def put(self, name, data):
++    def _put(self, name, data):
+         require(Path(name).name == name and len(data) <= FILE_CAP, 'fixed output filename/file cap')
+         path = self.root / name
+         with until(self.deadline):
+@@ -159,13 +203,25 @@
+                     os.fsync(stream.fileno())
+             else:
+                 # Existing common charges regular capacity BEFORE temporary/final growth.
+-                self.common.write_bytes(path, data, self.deadline, critical=False)
++                self.common.write_bytes(path, data, common_deadline(self.deadline), critical=False)
+             sync_file(path, self.deadline)
+         return dict(path=str(path), bytes=len(data), sha256=sha(data))
+ 
++    def put(self, name, data):
++        try:
++            return self._put(name, data)
++        except Exception as exc:
++            self.publication_errors.append(dict(name=name, error=type(exc).__name__ + ': ' + str(exc)[:1024]))
++            raise
++
+     def save(self, name, value):
+         # Account actual UTF-8 JSON bytes, including worst-case escapes, before writes.
+-        return self.put(name, encoded(value))
++        try:
++            data = encoded(value)
++        except Exception as exc:
++            self.publication_errors.append(dict(name=name, error=type(exc).__name__ + ': ' + str(exc)[:1024]))
++            raise
++        return self.put(name, data)
+ 
+ 
+ def startup(root):
+@@ -211,24 +267,80 @@
+     return bound(path, record['sha256'], deadline)
+ 
+ 
+-def inspect_parent_helper(root, record, required_mode, deadline, inline=False):
+-    """Bind retained parent observations. Parent must enforce authentication BEFORE entry."""
+-    require(set(record) == {'actual_exit', 'both_eof', 'overflow', 'deadline_loss', 'stdout', 'stderr', 'system_python', 'helper_sha256', 'started_monotonic', 'finished_monotonic'}, 'parent helper record shape')
+-    require(type(record['actual_exit']) is int and record['actual_exit'] == 0 and record['both_eof'] is True and record['overflow'] is False and record['deadline_loss'] is False, 'parent helper actual status')
++def inspect_completed_source(root, record, phase_started, deadline):
++    """Completed file pass: immutable raw evidence + parent's NEW causal inspection."""
++    require(set(record) == {'schema', 'saved_audit_commit', 'retained_files', 'parent_inspection'}, 'completed source shape')
++    manifest = {name: dict(bytes=size, sha256=digest) for name, (size, digest) in COMPLETED_FILES.items()}
++    require(record['schema'] == 'openergy.completed-source-files.v1'
++            and record['saved_audit_commit'] == SAVED_AUDIT and record['retained_files'] == manifest, 'completed evidence bindings')
++    inspection = record['parent_inspection']
++    require(set(inspection) == {'schema', 'clock', 'inspected_ns', 'evidence_root', 'manifest_sha256',
++                               'actual_helper_exit', 'actual_ssh_exit', 'inspected'}, 'causal inspection shape')
++    require(inspection['schema'] == 'openergy.source-files-parent-inspection.v1' and inspection['clock'] == CLOCK
++            and type(inspection['inspected_ns']) is int and 0 <= inspection['inspected_ns'] <= phase_started
++            and inspection['evidence_root'] == str(root) and inspection['manifest_sha256'] == sha(encoded(manifest))
++            and type(inspection['actual_helper_exit']) is int and inspection['actual_helper_exit'] == 0
++            and type(inspection['actual_ssh_exit']) is int and inspection['actual_ssh_exit'] == 0
++            and inspection['inspected'] == 'completed-facts-actual-exits-and-guards-before-phase-start', 'parent causal inspection binding')
++    # Local SSH receipt and once guard stay with the parent. The parent must inspect
++    # their exact bytes, actual exit/EOF/error facts and guard/payload/review binding
++    # BEFORE taking inspected_ns, then phase_started. Their hashes alone are no gate.
++    raw = {}
++    for name in ('qualification-source-files.json', 'source-files.stdout.bin', 'source-files.stderr.bin',
++                 'source-files-os-exit.json', 'source-qualification-guard.json'):
++        size, digest = COMPLETED_FILES[name]
++        raw[name] = bound(root / name, digest, deadline, STREAM_CAP)
++        require(len(raw[name]) == size, 'completed raw length')
++    facts = json.loads(raw['qualification-source-files.json'])
++    actual = json.loads(raw['source-files-os-exit.json'])
++    guard = json.loads(raw['source-qualification-guard.json'])
++    require(raw['qualification-source-files.json'] == raw['source-files.stdout.bin']
++            and raw['source-files.stderr.bin'] == b'' and actual['facts'] == facts, 'completed facts/raw agreement')
++    require(facts['schema'] == 'openergy.file-qualification-observation.v1' and facts['mode'] == 'source'
++            and facts['prefix_sha256'] == PREFIX_HASH and facts['prefix_entries'] == 2006
++            and facts['prefix_regular_bytes'] == 46504040 and facts['prefix_root_mode'] == '0o700'
++            and facts['modules'] == 10 and facts['source_files'] == 702 and facts['bundle_records'] == 167
++            and facts['sdk_headers'] == 10 and facts['product_invocations'] == 0 and facts['runtime'] == 'UNVERIFIED', 'completed file-only facts')
++    require(type(actual['actual_helper_exit']) is int and actual['actual_helper_exit'] == 0
++            and actual['eof'] == {'stdout': True, 'stderr': True} and actual['first_error'] is None
++            and actual['local_helper_kill_called'] is False and actual['before_deadline'] is True
++            and actual['status'] == 'SOURCE_FILES_QUALIFIED_RUNTIME_UNVERIFIED', 'completed actual helper exit')
++    require(guard['one_attempt'] is True
++            and guard['argv'] == [SYSTEM, '-I', '-S', '-B', str(root / 'file-qualification.recipe.py.txt'), str(root), 'source']
++            and guard['started_monotonic'] == actual['started_monotonic']
++            and guard['deadline_monotonic'] == actual['deadline_monotonic'], 'completed guard/root binding')
++    # These differences are WITHIN the old remote wrapper only. Never compare
++    # these raw ~0.x values, or the old local SSH times, to any NEW clock value.
++    old_start, old_end, old_exit = actual['started_monotonic'], actual['deadline_monotonic'], actual['exit_observed_monotonic']
++    require(all(type(v) in (int, float) and math.isfinite(v) for v in (old_start, old_end, old_exit))
++            and old_end == old_start + 120 and old_start <= old_exit <= old_end
++            and 0 <= facts['elapsed_seconds'] <= 120, 'completed own-process deadline facts')
++
++
++def inspect_parent_helper(root, record, phase_started, deadline):
++    """NEW COPY authentication; parent must inspect the full prefix BEFORE entry."""
++    require(set(record) == {'schema', 'clock', 'actual_exit', 'reaped', 'both_eof', 'overflow', 'deadline_loss',
++                            'timed_out', 'unread_or_dropped_unknown', 'kill_attempted', 'error', 'kill_or_reap_error',
++                            'stdout', 'stderr', 'system_python', 'helper_sha256', 'started_ns', 'finished_ns',
++                            'parent_inspected_ns'}, 'parent helper record shape')
++    require(record['schema'] == 'openergy.metadata-entry-observation.v2' and record['clock'] == CLOCK
++            and type(record['actual_exit']) is int and record['actual_exit'] == 0
++            and record['reaped'] is True and record['both_eof'] is True
++            and all(record[k] is False for k in ('overflow', 'deadline_loss', 'timed_out', 'unread_or_dropped_unknown', 'kill_attempted'))
++            and record['error'] is None and record['kill_or_reap_error'] is None, 'parent helper actual status')
+     require(record['system_python'] == SYSTEM and record['helper_sha256'] == 'bf2ddd03f00bedbf799b4eee518a2b7b25d1eb9a6df06a2f55c419252f6fa428', 'parent trusted helper binding')
+-    start, finish = record['started_monotonic'], record['finished_monotonic']
+-    limit = 120 if required_mode == 'source' else 10
+-    require(type(start) in (int, float) and type(finish) in (int, float) and math.isfinite(start) and math.isfinite(finish)
+-            and start <= finish <= time.monotonic() and finish - start <= limit, 'parent helper including reap deadline')
+-    if inline:
+-        streams = {name: base64.b64decode(record[name], validate=True) for name in ('stdout', 'stderr')}
+-        require(sum(len(v) for v in streams.values()) <= STREAM_CAP, 'inline helper combined byte cap')
+-    else:
+-        streams = {name: parent_reference(root, record[name], deadline) for name in ('stdout', 'stderr')}
++    start, finish = record['started_ns'], record['finished_ns']
++    require(type(start) is int and type(finish) is int and type(record['parent_inspected_ns']) is int
++            and phase_started <= start <= finish <= record['parent_inspected_ns'] <= clock_ns() < deadline
++            and finish - start <= 10 * NS, 'parent helper shared phase/10s including reap')
++    streams = {name: base64.b64decode(record[name], validate=True) for name in ('stdout', 'stderr')}
++    require(sum(len(v) for v in streams.values()) <= STREAM_CAP, 'inline helper combined byte cap')
+     facts = json.loads(streams['stdout'].decode('utf-8'))
+-    require(facts['mode'] == required_mode and facts['prefix_sha256'] == PREFIX_HASH and facts['prefix_entries'] == 2006 and facts['prefix_regular_bytes'] == 46504040 and facts['prefix_root_mode'] == '0o700' and facts['modules'] == 10, 'parent complete prefix observation')
+-    if required_mode == 'source':
+-        require(facts['source_files'] == 702 and facts['bundle_records'] == 167 and facts['sdk_headers'] == 10, 'parent fresh source-file observation')
++    require(facts['mode'] == 'entry' and facts['prefix_sha256'] == PREFIX_HASH and facts['prefix_entries'] == 2006
++            and facts['prefix_regular_bytes'] == 46504040 and facts['prefix_root_mode'] == '0o700'
++            and facts['modules'] == 10, 'parent complete prefix observation')
++    # facts.elapsed_seconds is the unchanged helper's OWN local duration, not
++    # a shared absolute timestamp. No conversion or retagging of helper facts.
+     return streams
+ 
+ 
+@@ -258,10 +370,10 @@
+ 
+ def collect(label, argv, root, phase_deadline):
+     """Direct child only. Bounded nonblocking reads; no communicate or PID inference."""
+-    started = time.monotonic()
+-    deadline = min(started + 10, phase_deadline - 1.0)  # Leave publication time inside phase.
+-    require(deadline - started > 0.75, label + ': no command/reap allowance')
+-    work_end = deadline - 0.5  # Kill/reap share the command's original ceiling.
++    started = clock_ns()
++    deadline = min(started + 10 * NS, phase_deadline - NS)  # Leave publication time inside phase.
++    require(deadline - started > 750000000, label + ': no command/reap allowance')
++    work_end = deadline - 500000000  # Kill/reap share the command's original ceiling.
+     buffers = {'stdout': bytearray(), 'stderr': bytearray()}
+     eof = {'stdout': False, 'stderr': False}
+     observed, dropped, drop_unknown = 0, 0, False
+@@ -274,7 +386,7 @@
+             proc = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                                     stderr=subprocess.PIPE, cwd=root, env=native_environment(root),
+                                     shell=False, close_fds=True)
+-            HANDLES.append(proc)
++            HANDLES.append(dict(label=label, argv=list(argv), handle=proc, collector_status=None))
+             for name in ('stdout', 'stderr'):
+                 stream = getattr(proc, name)
+                 os.set_blocking(stream.fileno(), False)
+@@ -284,7 +396,7 @@
+                 if status is not None and all(eof.values()):
+                     reaped = True
+                     break
+-                if time.monotonic() >= work_end:
++                if clock_ns() >= work_end:
+                     timed_out = deadline_loss = True
+                     break
+                 if not selector.get_map():
+@@ -333,14 +445,22 @@
+             # No drain pass after failure; unread bytes remain explicitly unknown.
+             if not all(eof.values()):
+                 drop_unknown = True
+-            if time.monotonic() > deadline:
++            if clock_ns() > deadline:
+                 deadline_loss = True
+             for name in ('stdout', 'stderr'):
+                 stream = getattr(proc, name)
+                 if stream is not None:
+-                    stream.close()
+-        selector.close()
+-    finished = time.monotonic()
++                    try:
++                        stream.close()
++                    except Exception as exc:
++                        if error is None:
++                            error = type(exc).__name__ + ': ' + str(exc)[:1024]
++        try:
++            selector.close()
++        except Exception as exc:
++            if error is None:
++                error = type(exc).__name__ + ': ' + str(exc)[:1024]
++    finished = clock_ns()
+     if finished > deadline:
+         deadline_loss = True
+     status = proc.returncode if proc is not None else None
+@@ -351,8 +471,10 @@
+                   unread_or_dropped_unknown=drop_unknown, overflow=overflow,
+                   timed_out=timed_out, deadline_loss=deadline_loss,
+                   kill_attempted=kill_attempted, kill_delivered=kill_delivered,
+-                  error=error, kill_or_reap_error=kill_error, started_monotonic=started,
+-                  command_deadline=deadline, finished_monotonic=finished)
++                  error=error, kill_or_reap_error=kill_error, clock=CLOCK, started_ns=started,
++                  command_deadline_ns=deadline, finished_ns=finished)
++    if proc is not None:
++        HANDLES[-1]['collector_status'] = record
+     return record, bytes(buffers['stdout']), bytes(buffers['stderr'])
+ 
+ 
+@@ -363,8 +485,10 @@
+             and record['unread_or_dropped_unknown'] is False and record['dropped_observed_bytes'] == 0
+             and record['error'] is None and record['kill_or_reap_error'] is None
+             and record['kill_attempted'] is False
+-            and record['started_monotonic'] <= record['finished_monotonic'] <= record['command_deadline']
+-            and record['command_deadline'] <= record['started_monotonic'] + 10)
++            and record['clock'] == CLOCK and type(record['started_ns']) is int
++            and type(record['finished_ns']) is int and type(record['command_deadline_ns']) is int
++            and record['started_ns'] <= record['finished_ns'] <= record['command_deadline_ns']
++            and record['command_deadline_ns'] <= record['started_ns'] + 10 * NS)
+ 
+ 
+ def normalize(raw, bundle, label):
+@@ -374,11 +498,34 @@
+ 
+ def perform(writer, label, argv, bundle, basis=None, fresh=None, helper_mode=None, exact_stdout=None):
+     record, stdout, stderr = collect(label, argv, writer.root, writer.deadline)
++    # Retain the active label and ALL bounded collector facts BEFORE any writer,
++    # fsync or comparator. This is a command failure, not a fabricated comparator.
++    item = dict(label=label, collector_status=dict(record), stdout=None, stderr=None,
++                os_record=None, comparison=None, publication={}, comparison_state='not_started')
++    writer.active_command = item
++    writer.collected_commands.append(item)
++    if not complete(record) and writer.first_failed_command is None:
++        writer.first_failed_command = dict(label=label, collector_status=dict(record))
+     prefix = 'metadata-' + writer.mode + '-' + label
+-    # Durable raw bytes and actual status FIRST, including failed/incomplete commands.
+-    record['stdout'] = writer.put(prefix + '.stdout', stdout)
+-    record['stderr'] = writer.put(prefix + '.stderr', stderr)
+-    raw_record = writer.save(prefix + '-os.json', record)
++    for key, suffix in (('stdout', '.stdout'), ('stderr', '.stderr'), ('os_record', '-os.json')):
++        item['publication'][key] = dict(path=str(writer.root / (prefix + suffix)), state='not_attempted', ref=None)
++    for key, data in (('stdout', stdout), ('stderr', stderr), ('os_record', None)):
++        publication = item['publication'][key]
++        publication['state'] = 'attempted'
++        try:
++            ref = writer.save(prefix + '-os.json', record) if key == 'os_record' else writer.put(prefix + '.' + key, data)
++        except Exception:
++            # May be absent, partial, linked but not fsynced, or not durable.
++            # Keep the attempted path separate from a verified durable reference.
++            publication['state'] = 'failed_or_partial_unverified'
++            raise
++        publication.update(state='durable', ref=ref)
++        item[key] = ref
++        if key != 'os_record':
++            record[key] = ref
++    raw_record = item['os_record']
++    # Payload comparison starts ONLY AFTER all raw/status publication is durable.
++    item['comparison_state'] = 'evaluating'
+     comparisons = {}
+     comparison_error = None
+     try:
+@@ -402,7 +549,10 @@
+                       comparisons=comparisons, comparison_error=comparison_error, match=match)
+     if not match and writer.first_failed_comparison is None:
+         writer.first_failed_comparison = comparison
++    item['comparison_state'] = 'assigned'
+     ref = writer.save(prefix + '-comparison.json', comparison)
++    item['comparison'] = ref
++    item['comparison_state'] = 'durable'
+     if not match:
+         writer.save('metadata-' + writer.mode + '-first-failure.json', comparison)
+         raise Stop(label + ': first failed status/comparison; see retained raw records')
+@@ -411,9 +561,11 @@
+ 
+ def fresh_source(root, deadline, vectors):
+     receipt = json.loads(read(root / 'metadata-source-result.json', deadline))
+-    require(receipt['schema'] == 'openergy.metadata-observations.v1' and receipt['mode'] == 'source'
++    require(receipt['schema'] == 'openergy.metadata-observations.v2' and receipt['clock'] == CLOCK and receipt['mode'] == 'source'
+             and receipt['expected_basis_sha256'] == EXPECTED_HASH and receipt['completed_native_commands'] == 50
+-            and receipt['first_error'] is None and receipt['observation_sequence_complete'] is True,
++            and receipt['first_error'] is None and receipt['first_failed_command'] is None
++            and receipt['first_failed_comparison'] is None and receipt['publication_errors'] == []
++            and receipt['observation_sequence_complete'] is True,
+             'fresh source result')
+     items = receipt['native_records']
+     require(len(items) == 50, 'fresh complete50')
+@@ -432,6 +584,22 @@
+     return records
+ 
+ 
++def direct_children():
++    # Do not poll or wait again here. Only actual statuses already observed on
++    # retained handles; null remains null. Every direct handle appears once.
++    return [dict(label=e['label'], argv=e['argv'], pid=e['handle'].pid,
++                 actual_exit=e['handle'].returncode, handle_retained=True,
++                 collector_status=e['collector_status']) for e in HANDLES]
++
++
++def emit_summary(result, deadline):
++    with until(deadline):
++        data = encoded(result)
++        require(len(data) <= STREAM_CAP, 'bounded outer fallback summary')
++        require(sys.stdout.buffer.write(data) == len(data), 'short outer summary')
++        sys.stdout.buffer.flush()
++
++
+ def main():
+     require(len(sys.argv) == 5 and sys.argv[1] in ('source', 'copy'), 'fixed CLI')
+     mode, root = sys.argv[1], canonical(sys.argv[2])
+@@ -439,15 +607,18 @@
+     require(root.parent == Path('/Users/m1-dev/.local/state/openergy-verification') and root.name.startswith('m1-ordinary-reviewed-flow-20261025-'), 'fresh evidence namespace')
+     info = root.stat()
+     require(info.st_uid == os.getuid() and stat.S_IMODE(info.st_mode) == 0o700 and info.st_dev == Path('/private/tmp').stat().st_dev, 'evidence owner/mode/filesystem')
+-    started = float(sys.argv[3])
+-    require(math.isfinite(started) and started <= time.monotonic(), 'parent same-host monotonic start')
+-    deadline = started + 120
++    require(sys.argv[3].isascii() and sys.argv[3].isdigit() and len(sys.argv[3]) <= 20, 'integer shared-clock CLI')
++    started = int(sys.argv[3])
++    require(str(started) == sys.argv[3] and started <= clock_ns(), 'parent explicit shared-clock start')
++    deadline = started + 120 * NS
+     os.umask(0o077)
+     writer = None
+-    result = dict(schema='openergy.metadata-observations.v1', mode=mode, expected_basis_sha256=EXPECTED_HASH,
+-                  started_monotonic=started, phase_deadline=deadline, native_records=[], auxiliary_records=[],
++    result = dict(schema='openergy.metadata-observations.v2', clock=CLOCK, mode=mode, expected_basis_sha256=EXPECTED_HASH,
++                  started_ns=started, phase_deadline_ns=deadline, native_records=[], auxiliary_records=[],
+                   completed_native_commands=0, observation_sequence_complete=False, first_error=None,
+-                  artifact_gate_authority=False, runtime='UNVERIFIED', actual_direct_children=[])
++                  artifact_gate_authority=False, runtime='UNVERIFIED', actual_direct_children=[],
++                  first_failed_command=None, first_failed_comparison=None, collected_commands=[],
++                  active_command=None, publication_errors=[])
+     try:
+         with until(deadline):
+             require(dict(os.environ) == startup(root), 'exact caller startup environment')
+@@ -460,25 +631,26 @@
+                 parent_bytes = sys.stdin.buffer.read(STREAM_CAP + 1)
+                 require(len(parent_bytes) <= STREAM_CAP and sha(parent_bytes) == sys.argv[4], 'copy bounded stdin parent binding')
+             parent = json.loads(parent_bytes)
+-            require(set(parent) == {'schema', 'mode', 'phase_started_monotonic', 'source_file_qualification', 'entry_authentication'}, 'parent record shape')
+-            require(parent['schema'] == 'openergy.metadata-parent-boundary.v1' and parent['mode'] == mode and parent['phase_started_monotonic'] == started, 'parent phase binding')
++            require(set(parent) == {'schema', 'mode', 'clock', 'phase_started_ns', 'phase_deadline_ns', 'source_file_qualification', 'entry_authentication'}, 'parent record shape')
++            require(parent['schema'] == 'openergy.metadata-parent-boundary.v2' and parent['mode'] == mode
++                    and parent['clock'] == CLOCK and type(parent['phase_started_ns']) is int
++                    and type(parent['phase_deadline_ns']) is int and parent['phase_started_ns'] == started
++                    and parent['phase_deadline_ns'] == deadline, 'parent phase binding')
+             common = None
+             if mode == 'source':
+                 # Parent owns exact /usr/bin/python3 launch. A system launcher
+                 # can report its toolchain executable in sys.executable.
+                 require(sys.flags.isolated and sys.flags.no_site and sys.flags.dont_write_bytecode and not sys.flags.optimize, 'source system -I -S -B flags')
+                 require(parent['entry_authentication'] is None, 'source authenticates entry-template itself')
+-                inspect_parent_helper(root, parent['source_file_qualification'], 'source', deadline)
+-                require(parent['source_file_qualification']['finished_monotonic'] <= started, 'source files precede metadata phase')
++                inspect_completed_source(root, parent['source_file_qualification'], started, deadline)
+             else:
+                 require(parent['source_file_qualification'] is None, 'copy parent boundary')
+                 auth = parent['entry_authentication']
+-                require(started <= auth['started_monotonic'], 'copy authentication inside same120s phase')
+-                parent_streams = inspect_parent_helper(root, auth, 'entry', deadline, inline=True)
++                parent_streams = inspect_parent_helper(root, auth, started, deadline)
+                 # This check binds data AFTER entry. It cannot replace the parent's pre-entry gate.
+                 common = import_common(root, deadline)
+             writer = Writer(root, mode, deadline, common)
+-            writer.save('metadata-' + mode + '-once.json', dict(mode=mode, started_monotonic=started, parent_record_sha256=sys.argv[4], execution_attempts=1))
++            writer.save('metadata-' + mode + '-once.json', dict(mode=mode, clock=CLOCK, started_ns=started, phase_deadline_ns=deadline, parent_record_sha256=sys.argv[4], execution_attempts=1))
+             if mode == 'copy':
+                 # ALL new post-prepare evidence uses regular pre-write reservations.
+                 writer.put('metadata-copy-parent.json', parent_bytes)
+@@ -503,25 +675,39 @@
+             result['observation_sequence_complete'] = True
+     except Exception as exc:
+         result['first_error'] = type(exc).__name__ + ': ' + str(exc)[:2048]
+-        if writer is not None and writer.first_failed_comparison is not None:
+-            result['first_failed_comparison'] = writer.first_failed_comparison
+-            result['publication_or_stop_detail'] = result['first_error']
++        result['observation_sequence_complete'] = False
++    if writer is not None:
++        result.update(collected_commands=writer.collected_commands, active_command=writer.active_command,
++                      first_failed_command=writer.first_failed_command, first_failed_comparison=writer.first_failed_comparison,
++                      publication_errors=writer.publication_errors)
++        if writer.first_failed_command is not None:
++            result['stop_detail'] = result['first_error']
++            result['first_error'] = writer.first_failed_command['label'] + ': first failed COMMAND status'
++        elif writer.first_failed_comparison is not None:
++            result['stop_detail'] = result['first_error']
+             result['first_error'] = writer.first_failed_comparison['label'] + ': first failed status/comparison'
++    # This is a pre-publication observation, never a claim about caller actual exit.
++    # Parent owns actual outer exit/EOF and must include it within the SAME phase.
++    try:
++        with until(deadline):
++            result['observations_finished_ns'] = clock_ns()
++            result['actual_direct_children'] = direct_children()
++            require(writer is not None, 'no admitted writer')
++            writer.save('metadata-' + mode + '-result.json', result)
++    except Exception as exc:
+         result['observation_sequence_complete'] = False
+-    # No post-deadline evidence allowance, retry or completion pass. Parent retains
+-    # this process's real status/partial streams if publication cannot finish.
+-    result['finished_monotonic'] = time.monotonic()
+-    result['actual_direct_children'] = [dict(pid=p.pid, actual_exit=p.returncode, handle_retained=True) for p in HANDLES]
+-    if writer is not None:
+-        try:
+-            writer.save('metadata-' + mode + '-result.json', result)
+-        except Exception as exc:
+-            print(json.dumps(dict(mode=mode, publication_error=type(exc).__name__, actual_direct_children=result['actual_direct_children'], first_error=result['first_error'])), flush=True)
+-            return 1
+-    else:
+-        print(json.dumps(dict(mode=mode, first_error=result['first_error'], actual_direct_children=result['actual_direct_children'])), flush=True)
++        result['result_publication_error'] = type(exc).__name__ + ': ' + str(exc)[:1024]
++        if result['first_error'] is None:
++            result['first_error'] = result['result_publication_error']
++        result['actual_direct_children'] = direct_children()
++    # One stdout summary attempt, no retry or late writer/extra allowance. If
++    # time is gone, the parent keeps its actual handle/partial streams/exit and
++    # missing facts stay missing. A partial summary is never issued a second time.
++    try:
++        emit_summary(result, deadline)
++        remaining(deadline)
++    except Exception:
+         return 1
+-    print(json.dumps(dict(mode=mode, completed_native_commands=result['completed_native_commands'], observation_sequence_complete=result['observation_sequence_complete'], first_error=result['first_error'])), flush=True)
+     return 0 if result['observation_sequence_complete'] else 1
+ 
+ 

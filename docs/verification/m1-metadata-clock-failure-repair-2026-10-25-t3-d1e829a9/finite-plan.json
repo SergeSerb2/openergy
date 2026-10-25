@@ -1,0 +1,95 @@
+{
+  "aggregate_cap": 33554432,
+  "artifact_gate_authority": false,
+  "caller_independent_review": null,
+  "caller_review_required_before_use": true,
+  "canonical_sdk_recipe_review": "c490566f5306d79f2537e9bbce3c75db79a279d3",
+  "canonical_sdk_recipe_review_status": "CLEAR_PARENT_REPORTED_imported_85ae4d5",
+  "clock": {
+    "api": "time.clock_gettime_ns",
+    "clock": "CLOCK_MONOTONIC",
+    "clock_id": 6,
+    "platform": "darwin",
+    "schema": "openergy.shared-clock.v1",
+    "scope": "same-host-same-boot",
+    "unit": "nanoseconds"
+  },
+  "clock_prerequisite_commit": "b4c7d11",
+  "clock_prerequisite_scope": "SYSTEM API availability only; resolution approximately1e-6 seconds; conversion/cross-process equivalence NOT measured",
+  "combined_output_cap_during_reads": 1048576,
+  "command_seconds_including_kill_reap": 10,
+  "completion_passes": 0,
+  "controller_candidate": "2b5fc1f505b1f0426b8f1e8b00537a0b6e805fc7",
+  "controller_entry_implemented": false,
+  "copy_ledger_initialization": false,
+  "copy_new_records_writer": "byte-exact common.write_bytes, regular pre-write reservations",
+  "execution": false,
+  "expected_basis_sha256": "1670da99b768e01de3fc4ecd4d644fba7031ea09e55d97c1395290bfb681c05f",
+  "file_cap": 8388608,
+  "fixed_helper_review": "20187fe1b286851f1416437c40cc27108269b542",
+  "fresh_copy_metadata": null,
+  "fresh_evidence": null,
+  "fresh_source_file_qualification": "COMPLETED_SAVED_FILE_PASS_ONLY_NO_REPEAT",
+  "fresh_source_metadata": null,
+  "frozen_caller_commit": "621e0e3a9037e15b391e05b964dfcdb25da01515",
+  "full_review_commit": "54bc355f5f733008a444c45cafe1e4aa7b819777",
+  "historical_status": "All FAILED/UNKNOWN and whole-flow NI15 UNVERIFIED unchanged",
+  "maximum_metadata_passes_per_bundle": 1,
+  "metadata_basis_bridge_commit": "ce7fe4a1af63af88e0b0b2cacab288e4a46a0d13",
+  "metadata_basis_bridge_scope": "BOUNDED_DATA_CLEAR for wrapper.commands projection only; no caller/transport/runtime clearance",
+  "native_commands_per_pass": 50,
+  "new_caller_independent_review": null,
+  "new_parent_boundary": "openergy.metadata-parent-boundary.v2",
+  "parent_commit": "11d5d49683357e1469c100c960310a491b84f126",
+  "phase_seconds_absolute": 120,
+  "prefix_authentication_is_parent_pre_entry_gate": true,
+  "prepare_entry_implemented": false,
+  "product_entries": 0,
+  "retries": 0,
+  "reuse_failed_root": false,
+  "runtime": "UNVERIFIED",
+  "saved_file_audit_commit": "f7f9b10fc99cc2196d0fd88a5b93a35a39a9adc5",
+  "schema": "openergy.inert-metadata-clock-failure-repair-plan.v2",
+  "source_completed_manifest_sha256": "1761bb0f0a999d26ea27d2ebf656d554a083f0f017429d3ee76e8edd8ad26a26",
+  "source_ledger_initialization": false,
+  "steps": [
+    {
+      "action": "Independent repair review required. Parent already has one completed file qualification. Bind exact seven evidence hashes, actual exits and guard inspection; no repeat. Generic EVIDENCE only.",
+      "execution": false,
+      "order": 1,
+      "owner": "parent"
+    },
+    {
+      "action": "Parent inspects completed file pass first, stamps explicit shared inspected_ns, then starts shared absolute SOURCE120s. SYSTEM caller entry-template, exact private-I-S-B --version, fixed Python lipo, closed50; no phase reset. Initial exclusive0600 files, no ledger.",
+      "execution": false,
+      "maximum": 1,
+      "order": 2,
+      "owner": "parent plus SOURCE caller"
+    },
+    {
+      "action": "Apply full unchanged artifact receipt contract. This caller grants no gate. Only existing authorization and all real bindings can permit the later one prepare.",
+      "execution": false,
+      "order": 3,
+      "owner": "parent, outside this caller"
+    },
+    {
+      "action": "Parent starts shared COPY120s BEFORE SYSTEM full prefix entry authentication. Its collection has10s including capture/kill/reap. Parent inspects full raw facts/exits before one private-B caller entry. Hashes all pins before common import; convert remaining shared duration conservatively at common write boundary; regular reservation only.",
+      "execution": false,
+      "maximum": 1,
+      "order": 4,
+      "owner": "parent plus COPY caller"
+    },
+    {
+      "action": "Read prepared canonical copy only. SYSTEM copy helper BEFORE/AFTER closed50, compare saved basis and fresh SOURCE v2. All work and publication remain within SAME shared120s. Latch failed command status before raw/status write; comparator only after durable raw/status; stop first failure.",
+      "execution": false,
+      "order": 5,
+      "owner": "COPY caller"
+    },
+    {
+      "action": "Parent inspects actual caller exit0/EOF before SAME shared deadline, actual direct-child exits, raw facts, full unchanged receipt predicates. A result file is pre-exit data only. No late publication, receipt writer, prepare/controller/product is implemented.",
+      "execution": false,
+      "order": 6,
+      "owner": "parent, outside this caller"
+    }
+  ]
+}

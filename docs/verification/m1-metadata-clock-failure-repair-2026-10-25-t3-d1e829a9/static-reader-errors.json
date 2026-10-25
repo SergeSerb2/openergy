@@ -1,0 +1,13 @@
+{
+  "schema": "openergy.static-reader-notes.v1",
+  "execution": false,
+  "events": [
+    {
+      "operation": "independent static pin Git-byte check",
+      "error": "Git rejects repository_path containing /../ even when the filesystem resolves it",
+      "disposition": "Normalize the path in the independent reader before git show; leave all pinned bytes, paths and predicates unchanged",
+      "private_reads": 0,
+      "candidate_executed": false
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "schema": "openergy.completed-source-file-data-bindings.v1",
+  "execution": false,
+  "read_scope": "exact seven permitted regular nofollow files only; no directory inventory",
+  "read_maximum_per_file": 1048576,
+  "actual_private_content_bytes": 5505,
+  "regular_file_opens": 7,
+  "retained_files": {
+    "source-files-parent-result.json": {
+      "bytes": 1778,
+      "sha256": "9b26841fbb4803ca3444bf84e90e9d0db32e0515a9d2da5052e7c7baf403b5e1"
+    },
+    "source-files-once.guard": {
+      "bytes": 1563,
+      "sha256": "9e0b9a5afb47b7755d1ebaf5f50edf45cf0a7372baaa2f83b83d9255011aed4c"
+    },
+    "qualification-source-files.json": {
+      "bytes": 406,
+      "sha256": "ebd466312ed346991a9cdd72c64535dbc0696af82b4061b9d79d91fcc937d192"
+    },
+    "source-files.stdout.bin": {
+      "bytes": 406,
+      "sha256": "ebd466312ed346991a9cdd72c64535dbc0696af82b4061b9d79d91fcc937d192"
+    },
+    "source-files.stderr.bin": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "source-files-os-exit.json": {
+      "bytes": 926,
+      "sha256": "3e05e0315b0b608a19d7725286bc1becacc103e0650c4bb9760fad7ad06f4d13"
+    },
+    "source-qualification-guard.json": {
+      "bytes": 426,
+      "sha256": "29cf75185b594bb760877bf8a297dcbbbb262d940bcc51c4a08ccdefa5233650"
+    }
+  },
+  "manifest_serialization": "json.dumps(sort_keys=True,separators=(comma,colon),ensure_ascii=True)+LF UTF-8",
+  "manifest_sha256": "1761bb0f0a999d26ea27d2ebf656d554a083f0f017429d3ee76e8edd8ad26a26",
+  "facts_sha256": "ebd466312ed346991a9cdd72c64535dbc0696af82b4061b9d79d91fcc937d192",
+  "actual_helper_exit": 0,
+  "actual_ssh_exit": 0,
+  "old_remote_raw_times": {
+    "original_domain": "original SYSTEM3.9.6 remote wrapper process time.monotonic only",
+    "raw": {
+      "started_monotonic": 0.078168458,
+      "deadline_monotonic": 120.078168458,
+      "exit_observed_monotonic": 0.715196125
+    }
+  },
+  "old_local_raw_times": {
+    "original_domain": "original local parent time.monotonic record only; no NEW clock identity asserted",
+    "raw": {
+      "started_monotonic": 13269.182156458,
+      "deadline_monotonic": 13419.182156458,
+      "exit_observed_monotonic": 13270.1011865
+    }
+  },
+  "helper_own_elapsed_seconds": 0.4378145,
+  "parent_causal_inspection_completed_by_this_task": false,
+  "source_admission_requires_new_parent_inspection": true,
+  "no_old_to_new_absolute_comparisons": true,
+  "qualification_repeated": false,
+  "public_payload": "hashes and sanitized fields only; no SSH argv/alias/endpoint/PID",
+  "saved_audit_commit": "f7f9b10fc99cc2196d0fd88a5b93a35a39a9adc5",
+  "audit_import": "d79ed01",
+  "audit_scope": "saved-data supports file pass only, not metadata or runtime"
+}
