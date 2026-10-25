@@ -6,10 +6,21 @@ It checks actual reader and child exits, exact saved output hashes, the byte
 cap, partial output after timeout, and collection after overflow. It stops on
 the first unexpected result. It uses no imported reader functions or mocks.
 
-Status: **PREPARED; NOT RUN**. Python AST parsing passed. The reader source is
-still being prepared in its separately owned worktree. Its final exact hash
-must be supplied before this driver can run. Keep its source unchanged during
-verification. Independent review and actual CLI results remain pending.
+The first driver revision ran once against reader SHA-256
+`e7fb7a8fde0f63246796d5209f85571d2de0418ab96536797101561bec39b380`.
+Success, nonzero exit and partial-timeout cases passed. The output-cap case
+stopped the driver with exit1: the reader collected actual child exit -13
+(SIGPIPE), but the driver incorrectly required SIGKILL and a local kill call.
+The original result remains **INCOMPLETE / FAILED** and is retained unchanged.
+
+The corrected driver accepts actual collected SIGPIPE termination or a recorded
+local kill followed by actual SIGKILL termination for that output-cap case. It
+also requires the exact 128-byte expected prefix, the single overflow sentinel,
+OverflowError and the saved stream hashes. No missing exit is accepted. This
+does not change any product predicate or accept the first driver invocation.
+Python AST parsing passed; the corrected revision is **NOT RUN**. Its fresh
+review and full CLI validation remain pending. Keep exact source unchanged
+during verification and supply the final reader hash explicitly.
 
 The caller supplies an absent output path below an owned private mode-0700
 directory. Raw command bindings, output and receipts stay there. The driver

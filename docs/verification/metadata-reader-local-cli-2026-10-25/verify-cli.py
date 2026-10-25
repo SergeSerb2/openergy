@@ -101,9 +101,18 @@ def main():
                          receipt['local_kill_called'] and receipt['local_child_returncode'] == -signal.SIGKILL and
                          receipt['first_error']['class'] == 'TimeoutError')
             else:
+                # Closing a full output pipe can terminate yes with SIGPIPE
+                # before a local kill is needed. Require its real collected
+                # exit and exact bounded prefix; a kill call is not delivery.
+                child_exit = receipt['local_child_returncode']
+                settled = (child_exit == -signal.SIGPIPE or
+                           (child_exit == -signal.SIGKILL and receipt['local_kill_called']))
                 valid = (receipt['status'] == 'INCOMPLETE' and len(stdout) == cap and
+                         stdout == (b'coverage\n' * (cap // 9 + 1))[:cap] and not stderr and
                          receipt['streams']['stdout']['overflow_observed'] and
-                         receipt['local_kill_called'] and receipt['local_child_returncode'] == -signal.SIGKILL)
+                         receipt['streams']['stdout']['bytes_read'] == cap + 1 and
+                         receipt['streams']['stdout']['bytes_not_preserved'] == 1 and
+                         receipt['first_error']['class'] == 'OverflowError' and settled)
             if not valid:
                 raise RuntimeError(label + ': full CLI result differs from required outcome')
             record.update(accepted=True, receipt_sha256=hashlib.sha256(receipt_data).hexdigest(),
