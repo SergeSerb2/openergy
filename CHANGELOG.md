@@ -34,8 +34,9 @@ First public source release.
   role, the menu-bar panel's connection line kept animating while closed and
   used 21–29% CPU. Visible animations are capped at 30 frames per second.
 - A host that drops a stalled peer now delivers the final key-up, mouse-up,
-  and leave messages when that peer starts to read again. Before, on Linux,
-  the host could close the connection first, and a key could stay held down.
+  and leave messages if that peer starts to read again within 2 seconds.
+  Before, the host waited only 250 ms and, on Linux, often did not try to
+  write again in that time, so a key could stay held down.
 - macOS release packaging works with older Xcode `lipo` tools.
 
 ### Security

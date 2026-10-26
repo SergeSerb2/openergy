@@ -31,7 +31,9 @@ const BULK_WINDOW: usize = 256 * 1024;
 const WAKE: Token = Token(0);
 const LISTENER: Token = Token(1);
 const TRUST_POLL: Duration = Duration::from_millis(500);
-const CLOSE_TIMEOUT: Duration = Duration::from_millis(250);
+// A dropped peer may first have to drain megabytes of kernel-buffered input
+// before its final key-ups fit. A stalled peer still goes at this fixed deadline.
+const CLOSE_TIMEOUT: Duration = Duration::from_secs(2);
 const CLOSE_RETRY: Duration = Duration::from_millis(10);
 // A byte budget alone admits tens of thousands of tiny messages in one turn.
 // Yield after this many events, finishing the current <=16 KiB read so decoder

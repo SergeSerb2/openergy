@@ -28,7 +28,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         ..NetConfig::default()
     })?;
     driver.set_transport_mode(TransportMode::Frames)?;
-    driver.set_heartbeat_interval(Duration::from_millis(if case == "close-deadline" { 1500 } else { 120 }))?;
+    driver.set_heartbeat_interval(Duration::from_millis(if case == "close-deadline" { 4000 } else { 120 }))?;
     let mut out = Vec::new();
     if case == "guard-denied" || case == "guard-allowed" {
         // Run only against a validation copy whose protected port was redirected
@@ -207,7 +207,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                     {
                         break;
                     }
-                    if start.elapsed() >= Duration::from_millis(650) {
+                    if start.elapsed() >= Duration::from_millis(if case == "close-deadline" { 2400 } else { 650 }) {
                         return Err(format!("{case} did not close within its fixed deadline").into());
                     }
                     // Repeated requests must not extend either watchdog.
