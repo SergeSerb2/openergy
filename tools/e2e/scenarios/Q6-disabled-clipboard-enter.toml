@@ -11,6 +11,10 @@ role = "server"
 id = "client"
 role = "client"
 remote = "server"
+# The client's marker clipboard must stay local. With send enabled, its 200 ms
+# change poll can report the marker after sharing resumes, and that older copy
+# then races the server's newer clipboard on slow hosts. Receive stays enabled.
+config = { clipboard = { send = false } }
 
 [[step]]
 do = "wait_connected"
