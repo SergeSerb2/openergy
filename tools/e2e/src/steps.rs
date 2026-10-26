@@ -300,7 +300,11 @@ impl Context {
                             .ok_or_else(|| Failure::runner("code must be a string"))
                     })
                     .collect::<Result<Vec<_>>>()?;
-                self.raw(&id)?.expect_absent(&codes, timeout)?;
+                // An observation window, not a deadline: it is often sized against a
+                // protocol timer such as the heartbeat, so --slowdown must not stretch it.
+                let window =
+                    Duration::from_millis(step.number("timeout_ms", self.scenario.timeout_ms).clamp(1, 180_000));
+                self.raw(&id)?.expect_absent(&codes, window)?;
                 Ok(json!({"absent": codes}))
             }
             "raw_expect_closed" => {

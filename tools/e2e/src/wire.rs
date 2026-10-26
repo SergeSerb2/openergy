@@ -86,18 +86,31 @@ impl Raw {
     }
     pub fn expect(&mut self, data: &[u8], timeout: Duration, framed: bool, scan: bool) -> Result<()> {
         self.socket(timeout)?;
-        let deadline = Instant::now() + timeout;
+        let started = Instant::now();
+        let deadline = started + timeout;
+        let (mut frames, mut bytes) = (0usize, 0usize);
+        // Hosted CI keeps only the console log, so say how far the scan got.
+        let context = |e: Failure, frames: usize, bytes: usize| Failure {
+            message: format!(
+                "{} after {frames} frames / {bytes} bytes in {} ms",
+                e.message,
+                started.elapsed().as_millis()
+            ),
+            ..e
+        };
         loop {
             let actual = if framed {
-                let header = self.take(4, deadline)?;
+                let header = self.take(4, deadline).map_err(|e| context(e, frames, bytes))?;
                 let len = u32::from_be_bytes([header[0], header[1], header[2], header[3]]) as usize;
                 if len > 4 * 1024 * 1024 {
                     return Err(Failure::product("peer sent oversized frame"));
                 }
-                self.take(len, deadline)?
+                self.take(len, deadline).map_err(|e| context(e, frames, bytes))?
             } else {
-                self.take(data.len(), deadline)?
+                self.take(data.len(), deadline).map_err(|e| context(e, frames, bytes))?
             };
+            frames += 1;
+            bytes += actual.len();
             if actual.starts_with(data) {
                 return Ok(());
             }
