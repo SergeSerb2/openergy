@@ -1,6 +1,7 @@
 //! Original raw probe builders from docs/re/03-core-protocol.md, not the codec.
 use crate::model::{Failure, Result, Step};
-use crate::util::{check_deadline, hex, wait_io};
+use crate::util::{check_deadline, hex, io_budget, wait_io};
+use std::collections::VecDeque;
 use std::io::{Read, Write};
 use std::net::{Shutdown, TcpListener, TcpStream};
 use std::time::{Duration, Instant};
@@ -8,6 +9,9 @@ use std::time::{Duration, Instant};
 pub struct Raw {
     pub listener: Option<TcpListener>,
     pub stream: Option<TcpStream>,
+    /// Bytes read from `stream` but not yet consumed by a step. Bulk reads keep
+    /// a probe from paying two syscalls per tiny frame while it drains backlog.
+    pub pending: VecDeque<u8>,
 }
 impl Raw {
     pub fn accept(&mut self, timeout: Duration) -> Result<()> {
@@ -81,23 +85,18 @@ impl Raw {
         Ok(())
     }
     pub fn expect(&mut self, data: &[u8], timeout: Duration, framed: bool, scan: bool) -> Result<()> {
-        let stream = self.socket(timeout)?;
+        self.socket(timeout)?;
         let deadline = Instant::now() + timeout;
         loop {
             let actual = if framed {
-                let mut header = [0; 4];
-                read_exact_deadline(stream, &mut header, deadline)?;
-                let len = u32::from_be_bytes(header) as usize;
+                let header = self.take(4, deadline)?;
+                let len = u32::from_be_bytes([header[0], header[1], header[2], header[3]]) as usize;
                 if len > 4 * 1024 * 1024 {
                     return Err(Failure::product("peer sent oversized frame"));
                 }
-                let mut bytes = vec![0; len];
-                read_exact_deadline(stream, &mut bytes, deadline)?;
-                bytes
+                self.take(len, deadline)?
             } else {
-                let mut bytes = vec![0; data.len()];
-                read_exact_deadline(stream, &mut bytes, deadline)?;
-                bytes
+                self.take(data.len(), deadline)?
             };
             if actual.starts_with(data) {
                 return Ok(());
@@ -112,9 +111,9 @@ impl Raw {
         }
     }
     pub fn expect_absent(&mut self, codes: &[String], timeout: Duration) -> Result<()> {
+        let mut bytes: Vec<u8> = self.pending.drain(..).collect();
         let stream = self.socket(timeout)?;
         let deadline = Instant::now() + timeout;
-        let mut bytes = Vec::new();
         let mut buffer = [0; 4096];
         while Instant::now() < deadline {
             match stream.read(&mut buffer) {
@@ -146,6 +145,11 @@ impl Raw {
     }
     pub fn expect_closed(&mut self, timeout: Duration, reject_bytes: bool) -> Result<()> {
         let deadline = Instant::now() + timeout;
+        let buffered = !self.pending.is_empty();
+        self.pending.clear();
+        if buffered && reject_bytes {
+            return Err(Failure::product("unexpected bytes before FIN"));
+        }
         let stream = self.socket(timeout)?;
         let mut buf = [0; 4096];
         loop {
@@ -247,15 +251,38 @@ pub fn build(step: &Step) -> Result<Vec<u8>> {
     Ok(frame)
 }
 
-fn read_exact_deadline(stream: &mut TcpStream, bytes: &mut [u8], deadline: Instant) -> Result<()> {
-    let mut offset = 0;
-    while offset < bytes.len() {
-        check_deadline(deadline, "raw read")?;
-        match stream.read(&mut bytes[offset..]) {
+impl Raw {
+    /// Consume exactly `len` bytes. Reads are bulk and block in the kernel
+    /// (bounded by the deadline), so draining a large backlog costs a few
+    /// syscalls instead of two per tiny frame plus a timer sleep per refill.
+    fn take(&mut self, len: usize, deadline: Instant) -> Result<Vec<u8>> {
+        if self.pending.len() < len {
+            let stream = self
+                .stream
+                .as_mut()
+                .ok_or_else(|| Failure::runner("missing raw socket"))?;
+            stream.set_nonblocking(false)?;
+            let filled = fill(stream, &mut self.pending, len, deadline);
+            stream.set_nonblocking(true)?;
+            filled?;
+        }
+        Ok(self.pending.drain(..len).collect())
+    }
+}
+fn fill(stream: &mut TcpStream, pending: &mut VecDeque<u8>, len: usize, deadline: Instant) -> Result<()> {
+    let mut chunk = vec![0; 64 * 1024];
+    while pending.len() < len {
+        // macOS rejects socket options with EINVAL once both directions are shut
+        // down; the next call then reports EOF or EPIPE without blocking.
+        let _ = stream.set_read_timeout(io_budget(deadline, "raw read")?);
+        match stream.read(&mut chunk) {
             Ok(0) => return Err(Failure::product("raw TCP closed inside expected bytes")),
-            Ok(count) => offset += count,
-            Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => wait_io(deadline, "raw read")?,
-            Err(e) if e.kind() == std::io::ErrorKind::Interrupted => {}
+            Ok(count) => pending.extend(&chunk[..count]),
+            Err(e)
+                if matches!(
+                    e.kind(),
+                    std::io::ErrorKind::WouldBlock | std::io::ErrorKind::TimedOut | std::io::ErrorKind::Interrupted
+                ) => {}
             Err(e) => return Err(Failure::product(format!("raw read: {e}"))),
         }
     }

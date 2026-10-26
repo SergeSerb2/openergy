@@ -337,6 +337,7 @@ impl Context {
             self.state_mut(id)?.raw = Some(Raw {
                 listener: Some(listener),
                 stream: None,
+                pending: Default::default(),
             });
         } else if spec.kind == "raw" {
             self.state_mut(id)?.reservation.take();
@@ -357,6 +358,7 @@ impl Context {
             self.state_mut(id)?.raw = Some(Raw {
                 listener: None,
                 stream: Some(stream),
+                pending: Default::default(),
             });
         } else if spec.kind == "openergy" {
             let text = std::fs::read_to_string(&self.state(id)?.config)?;
