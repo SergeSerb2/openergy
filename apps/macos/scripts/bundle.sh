@@ -87,7 +87,7 @@ plutil -lint "$STAGED_APP/Contents/Info.plist"
 printf 'APPL????' > "$STAGED_APP/Contents/PkgInfo"
 for binary in "$STAGED_APP/Contents/MacOS/Openergy" "$STAGED_APP/Contents/Helpers/openergy"; do
   [[ -x "$binary" ]] || { echo "Missing bundle executable" >&2; exit 1; }
-  for arch in "${ARCHS[@]}"; do lipo -verify_arch "$arch" "$binary"; done
+  for arch in "${ARCHS[@]}"; do lipo "$binary" -verify_arch "$arch"; done
 done
 
 step "Signing with the explicitly selected mode"

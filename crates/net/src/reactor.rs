@@ -32,6 +32,7 @@ const WAKE: Token = Token(0);
 const LISTENER: Token = Token(1);
 const TRUST_POLL: Duration = Duration::from_millis(500);
 const CLOSE_TIMEOUT: Duration = Duration::from_millis(250);
+const CLOSE_RETRY: Duration = Duration::from_millis(10);
 // A byte budget alone admits tens of thousands of tiny messages in one turn.
 // Yield after this many events, finishing the current <=16 KiB read so decoder
 // and TLS state stay intact. Large-frame throughput keeps the existing byte cap.
@@ -1734,6 +1735,9 @@ impl NetDriver {
             }
             if let Some(d) = c.close_at {
                 cap(d.saturating_duration_since(now));
+                if c.write_blocked {
+                    cap(CLOSE_RETRY);
+                }
             }
             if let Some(d) = c.client_hello_at {
                 cap(d.saturating_duration_since(now));
@@ -1851,6 +1855,13 @@ impl NetDriver {
             };
             if c.connecting {
                 continue;
+            }
+            if c.close_at.is_some() {
+                // Linux signals writable only after about a third of the send
+                // buffer drains, but a write succeeds once any space frees. A
+                // closing peer that is still reading a backlog must get its
+                // final key-ups and leave before the close deadline.
+                c.write_blocked = false;
             }
             let result = c
                 .finish_handshake(out)

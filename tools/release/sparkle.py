@@ -159,7 +159,7 @@ def verify_app(app, archs):
         if not path.is_file() or not os.access(path, os.X_OK):
             raise ValueError("missing executable in app/framework")
         for arch in archs:
-            run("lipo", "-verify_arch", arch, path)
+            run("lipo", path, "-verify_arch", arch)
         # Universal otool output has a separate file header for each architecture.
         links = [line.strip() for line in run("otool", "-L", path).splitlines() if line.startswith("\t")]
         if any(not line.startswith(("/System/Library/", "/usr/lib/", "@rpath/", "@loader_path/", "@executable_path/"))

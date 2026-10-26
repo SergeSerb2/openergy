@@ -18,7 +18,8 @@ The public waker also lets unrelated daemon work interrupt that poll.
   A cancelled outbound attempt that had not yet produced a result also emits
   `ConnectFailed`. `StopListening` keeps existing connections.
 - `Close` flushes pending Control frames and TLS close-notify for at most
-  250 ms. Send/flush CBYE before `Shutdown` when a graceful protocol exit is needed.
+  250 ms, retrying a blocked socket every 10 ms. Send/flush CBYE before
+  `Shutdown` when a graceful protocol exit is needed.
 - `reconfigure` changes future connections. Existing connections retain their
   original TLS connection, frame limit, trust path, and hold deadline.
 - `Connect` produces one initial Connected, UntrustedPeer, or ConnectFailed.
