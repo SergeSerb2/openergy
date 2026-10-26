@@ -1,0 +1,266 @@
+# Requirement: Hostile known-message fields close only their connections; the real daemon remains available.
+name = "P07-hostile-field-bounds"
+requirement = "Bound DSOP counts, UTF-8 text and DCLP fields and reject trailing bytes without daemon failure."
+timeout_ms = 3000
+
+[[node]]
+id = "server"
+role = "server"
+platform = "virtual"
+
+[[node]]
+id = "vector_cap"
+kind = "raw"
+role = "client"
+remote = "server"
+
+[[node]]
+id = "vector_odd"
+kind = "raw"
+role = "client"
+remote = "server"
+
+[[node]]
+id = "vector_short"
+kind = "raw"
+role = "client"
+remote = "server"
+
+[[node]]
+id = "vector_trailing"
+kind = "raw"
+role = "client"
+remote = "server"
+
+[[node]]
+id = "language_cap"
+kind = "raw"
+role = "client"
+remote = "server"
+
+[[node]]
+id = "language_utf8"
+kind = "raw"
+role = "client"
+remote = "server"
+
+[[node]]
+id = "decimal_overflow"
+kind = "raw"
+role = "client"
+remote = "server"
+
+[[node]]
+id = "nonempty_end"
+kind = "raw"
+role = "client"
+remote = "server"
+
+[[node]]
+id = "chunk_cap"
+kind = "raw"
+role = "client"
+remote = "server"
+
+[[node]]
+id = "trailing_code"
+kind = "raw"
+role = "client"
+remote = "server"
+
+[[node]]
+id = "hello_nul"
+kind = "raw"
+role = "client"
+remote = "server"
+
+[[node]]
+id = "hello_utf8"
+kind = "raw"
+role = "client"
+remote = "server"
+
+[[step]]
+do = "raw_expect"
+node = "vector_cap"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "vector_cap"
+hex = "0000001453796e65726779000100080000000570726f62650000000844534f50ffffffff"
+
+[[step]]
+do = "raw_expect_closed"
+node = "vector_cap"
+timeout_ms = 500
+
+[[step]]
+do = "raw_expect"
+node = "vector_odd"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "vector_odd"
+hex = "0000001453796e65726779000100080000000570726f62650000000844534f5000000003"
+
+[[step]]
+do = "raw_expect_closed"
+node = "vector_odd"
+timeout_ms = 500
+
+[[step]]
+do = "raw_expect"
+node = "vector_short"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "vector_short"
+hex = "0000001453796e65726779000100080000000570726f62650000001044534f500000000448415254000001f4"
+
+[[step]]
+do = "raw_expect_closed"
+node = "vector_short"
+timeout_ms = 500
+
+[[step]]
+do = "raw_expect"
+node = "vector_trailing"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "vector_trailing"
+hex = "0000001453796e65726779000100080000000570726f62650000001144534f500000000248415254000001f421"
+
+[[step]]
+do = "raw_expect_closed"
+node = "vector_trailing"
+timeout_ms = 500
+
+[[step]]
+do = "raw_expect"
+node = "language_cap"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "language_cap"
+hex = "0000001453796e65726779000100080000000570726f6265000000494c53594e000000416161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161"
+
+[[step]]
+do = "raw_expect_closed"
+node = "language_cap"
+timeout_ms = 500
+
+[[step]]
+do = "raw_expect"
+node = "language_utf8"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "language_utf8"
+hex = "0000001453796e65726779000100080000000570726f62650000000f444b444c00610000000100000001ff"
+
+[[step]]
+do = "raw_expect_closed"
+node = "language_utf8"
+timeout_ms = 500
+
+[[step]]
+do = "raw_expect"
+node = "decimal_overflow"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "decimal_overflow"
+hex = "0000001453796e65726779000100080000000570726f62650000001844434c500000000000010000000a34323934393637323936"
+
+[[step]]
+do = "raw_expect_closed"
+node = "decimal_overflow"
+timeout_ms = 500
+
+[[step]]
+do = "raw_expect"
+node = "nonempty_end"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "nonempty_end"
+hex = "0000001453796e65726779000100080000000570726f62650000000f44434c500000000000030000000178"
+
+[[step]]
+do = "raw_expect_closed"
+node = "nonempty_end"
+timeout_ms = 500
+
+[[step]]
+do = "raw_expect"
+node = "chunk_cap"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "chunk_cap"
+hex = "0000001453796e65726779000100080000000570726f62650000000e44434c5000000000000200100001"
+
+[[step]]
+do = "raw_expect_closed"
+node = "chunk_cap"
+timeout_ms = 500
+
+[[step]]
+do = "raw_expect"
+node = "trailing_code"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "trailing_code"
+hex = "0000001453796e65726779000100080000000570726f62650000000543414c5621"
+
+[[step]]
+do = "raw_expect_closed"
+node = "trailing_code"
+timeout_ms = 500
+
+[[step]]
+do = "raw_expect"
+node = "hello_nul"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "hello_nul"
+hex = "0000001253796e657267790001000800000003610062"
+
+[[step]]
+do = "raw_expect_closed"
+node = "hello_nul"
+timeout_ms = 500
+
+[[step]]
+do = "raw_expect"
+node = "hello_utf8"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "hello_utf8"
+hex = "0000001053796e657267790001000800000001ff"
+
+[[step]]
+do = "raw_expect_closed"
+node = "hello_utf8"
+timeout_ms = 500
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { role = "server", state = "listening" }

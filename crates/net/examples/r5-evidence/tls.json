@@ -1,0 +1,71 @@
+{
+  "binary": "/private/tmp/oe-r5-net-target/release/openergy",
+  "excluded": [],
+  "excluded_count": 0,
+  "failed": 0,
+  "format_version": 1,
+  "lab_port_range": [
+    26220,
+    26239
+  ],
+  "no_docker": true,
+  "passed": 2,
+  "port_range": [
+    26202,
+    26219
+  ],
+  "scenarios": [
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1199,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Server connected state clears old errors; TLS status distinguishes an unverified client from a verified server pin.",
+      "scenario": "A9-tls-trusted-status",
+      "stderr_tails": {
+        "client": [
+          "1792654532612 INFO openergy::runtime: openergy 0.1.0 daemon listening on /tmp/oe7-91031-1792654532563/s0/client/ctl.sock",
+          "1792654532714 WARN openergy::runtime: untrusted_peer: Peer fingerprint needs approval",
+          "1792654533113 WARN openergy_net::reactor: connection 2 established: TLS=Some(\"TLSv1_3\"), cipher=Some(\"TLS13_AES_256_GCM_SHA384\")"
+        ],
+        "server": [
+          "1792654532595 INFO openergy::runtime: openergy 0.1.0 daemon listening on /tmp/oe7-91031-1792654532563/s0/server/ctl.sock",
+          "1792654532595 INFO openergy::runtime: listening on 127.0.0.1:26202",
+          "1792654532714 WARN openergy_net::reactor: connection 2 established: TLS=Some(\"TLSv1_3\"), cipher=Some(\"TLS13_AES_256_GCM_SHA384\")"
+        ]
+      }
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [
+        "WP4",
+        "WP6"
+      ],
+      "cleanup_failures": [],
+      "elapsed_ms": 1662,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Unknown TLS identity holds input; approval persists trust and permits reconnect.",
+      "scenario": "S6-trust-approval",
+      "stderr_tails": {
+        "client": [
+          "1792654534692 INFO openergy::runtime: openergy 0.1.0 daemon listening on /tmp/oe7-91031-1792654532563/s1/client/ctl.sock",
+          "1792654534794 WARN openergy_net::reactor: connection 2 established: TLS=Some(\"TLSv1_3\"), cipher=Some(\"TLS13_AES_256_GCM_SHA384\")"
+        ],
+        "server": [
+          "1792654533784 INFO openergy::runtime: openergy 0.1.0 daemon listening on /tmp/oe7-91031-1792654532563/s1/server/ctl.sock",
+          "1792654533784 INFO openergy::runtime: listening on 127.0.0.1:26202",
+          "1792654533909 WARN openergy_net::reactor: connection 2 established: TLS=Some(\"TLSv1_3\"), cipher=Some(\"TLS13_AES_256_GCM_SHA384\")",
+          "1792654534410 INFO openergy_session::server: peer goodbye",
+          "1792654534794 WARN openergy_net::reactor: connection 3 established: TLS=Some(\"TLSv1_3\"), cipher=Some(\"TLS13_AES_256_GCM_SHA384\")"
+        ]
+      }
+    }
+  ]
+}

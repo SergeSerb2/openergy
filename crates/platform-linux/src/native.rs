@@ -57,6 +57,12 @@ pub fn wait(c: &RustConnection, w: &UnixStream, timeout: i32) -> Result<(), Plat
         // Safety: fds points to two valid pollfd values; poll does not retain the pointer.
         let result = unsafe { libc::poll(fds.as_mut_ptr(), 2, timeout) };
         if result >= 0 {
+            if fds
+                .iter()
+                .any(|fd| fd.revents & (libc::POLLERR | libc::POLLHUP | libc::POLLNVAL) != 0)
+            {
+                return Err(error("X11 worker connection closed"));
+            }
             return Ok(());
         }
         let e = std::io::Error::last_os_error();
@@ -154,14 +160,20 @@ impl ScreenSystem for Screens {
             .map_err(error)?;
             c.flush().map_err(error)?;
             let (w, mut r) = UnixStream::pair().map_err(error)?;
+            w.set_nonblocking(true).map_err(error)?;
             r.set_nonblocking(true).map_err(error)?;
             let stop = Arc::new(AtomicBool::new(false));
             let flag = stop.clone();
             let h = std::thread::Builder::new()
                 .name("oe-x11-displays".into())
                 .spawn(move || {
-                    while !flag.load(Ordering::Acquire) {
-                        while let Ok(Some(ev)) = c.poll_for_event() {
+                    'monitor: while !flag.load(Ordering::Acquire) {
+                        loop {
+                            let ev = match c.poll_for_event() {
+                                Ok(Some(ev)) => ev,
+                                Ok(None) => break,
+                                Err(_) => break 'monitor,
+                            };
                             if matches!(ev, Event::RandrScreenChangeNotify(_) | Event::RandrNotify(_)) {
                                 cb();
                             }

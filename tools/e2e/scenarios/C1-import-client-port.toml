@@ -1,0 +1,79 @@
+# Requirement: Import a Synergy client with a host-only remote and custom core port, then connect through the real daemon.
+name = "C1-import-client-port"
+requirement = "Synergy's core port is preserved in the imported client endpoint; the imported daemon connects and survives restart."
+timeout_ms = 3000
+
+[[node]]
+id = "server"
+role = "server"
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+autostart = false
+
+[[step]]
+do = "write_file"
+path = "${fixtures}/client-import/synergy.conf"
+text = """
+section: screens
+    server:
+    client:
+end
+section: links
+    server:
+        right = client
+    client:
+        left = server
+end
+section: options
+    address = 127.0.0.1:${server.port}
+    heartbeat = 500
+end
+"""
+
+[[step]]
+do = "write_file"
+path = "${fixtures}/client-import/synergy-core.conf"
+text = """
+[core]
+coreMode=1
+computerName=client
+interface=127.0.0.1
+port=${server.port}
+[client]
+remoteHost=127.0.0.1
+[security]
+tlsEnabled=false
+"""
+
+[[step]]
+do = "cli"
+node = "client"
+args = ["import-synergy", "--from", "${fixtures}/client-import", "--out", "${client.config}"]
+
+[[step]]
+do = "assert_file"
+path = "${client.config}"
+mode = "0600"
+regex = 'remote = "127[.]0[.]0[.]1:${server.port}"'
+toml_expect = {role = "client", client = {remote = "127.0.0.1:${server.port}"}}
+
+[[step]]
+do = "start"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+peer = "server"
+
+[[step]]
+do = "restart"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+peer = "server"

@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """End-to-end WP2 checks. Runs the real CLI and a real virtual daemon; no mocks.
 
-Writes only synthetic evidence under /tmp/oe-wp2. Never reads live preferences.
+Writes only synthetic evidence under a fresh private temp directory. Never reads live preferences.
 The daemon uses only a private Unix socket and a loopback-only config.
 """
 import copy
+import argparse
 import hashlib
 import json
 import os
@@ -12,14 +13,39 @@ from pathlib import Path
 import shlex
 import shutil
 import subprocess
+import socket as net_socket
+import tempfile
 import time
 
 ROOT = Path(__file__).resolve().parents[2]
-BIN = ROOT / "target/release/openergy"
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--openergy", type=Path, default=ROOT / "target/release/openergy")
+parser.add_argument("--port-range", default="25160-25179")
+args = parser.parse_args()
+first_port, last_port = map(int, args.port_range.split("-"))
+if not (1 <= first_port < last_port <= 65535) or first_port <= 24800 <= last_port:
+    parser.error("need at least two non-production ports")
+reservations = []
+for port in range(first_port, last_port + 1):
+    candidate = net_socket.socket()
+    try:
+        candidate.bind(("127.0.0.1", port))
+    except OSError:
+        candidate.close()
+        continue
+    reservations.append(candidate)
+    if len(reservations) == 2:
+        break
+if len(reservations) != 2:
+    parser.error("need two free ports in --port-range")
+PORT, NEXT_PORT = [s.getsockname()[1] for s in reservations]
+BIN = args.openergy.resolve()
 FIX = ROOT / "crates/config/fixtures"
-OUT = Path("/tmp/oe-wp2")
-OUT.mkdir(exist_ok=True, mode=0o700)
-os.chmod(OUT, 0o700)
+OUT = Path(tempfile.mkdtemp(prefix="oe-wp2-"))
+ENV = dict(os.environ, OPENERGY_CONFIG=str(OUT / "layout.toml"),
+           OPENERGY_CONFIG_DIR=str(OUT), OPENERGY_TLS_DIR=str(OUT / "tls"),
+           OPENERGY_SOCKET=str(OUT / "oe-wp2.sock"), OPENERGY_DISABLE_DISCOVERY="1",
+           XDG_CONFIG_HOME=str(OUT / "xdg-config"), XDG_RUNTIME_DIR=str(OUT / "runtime"))
 LOG = (OUT / "verification.log").open("w")
 COUNT = 0
 
@@ -27,7 +53,8 @@ COUNT = 0
 def run(*args, ok=True, env=None):
     global COUNT
     command = [str(BIN)] + [str(a) for a in args]
-    p = subprocess.run(command, capture_output=True, text=True, cwd=ROOT, timeout=15, env=env)
+    p = subprocess.run(command, capture_output=True, text=True, cwd=ROOT, timeout=15,
+                       env=dict(ENV, **(env or {})))
     LOG.write("$ " + shlex.join(command) + "\n" + p.stdout + p.stderr)
     LOG.flush()
     if (p.returncode == 0) != ok:
@@ -63,14 +90,21 @@ assert one["config"]["options"]["barrier"]
 assert one["config"]["screen"][0]["options"]["half_duplex_num_lock"]
 assert one["config"]["screen"][1]["aliases"] == ["laptop"]
 assert len(one["report"]["warnings"]) == 5
-# Export -> reimport -> export must be byte identical for the representable core view.
+# Synergy export -> reimport -> export is stable. Barrier's startup dialect is
+# an informational comment, not a core setting; import cannot recover that flag.
 for stem in ("config", "legacy"):
     first = OUT / (stem + ".conf")
     second = OUT / (stem + "-roundtrip.conf")
     run("export-synergy-conf", "--config", OUT / (stem + ".toml"), "--out", first)
     result = imported(first, OUT / (stem + "-roundtrip.toml"))
     run("export-synergy-conf", "--config", OUT / (stem + "-roundtrip.toml"), "--out", second)
-    assert first.read_bytes() == second.read_bytes()
+    if stem == "config":
+        assert first.read_bytes() == second.read_bytes()
+    else:
+        assert result["config"]["screen"] == one["config"]["screen"]
+        assert result["config"]["switch"] == one["config"]["switch"]
+        assert result["config"]["hotkeys"] == one["config"]["hotkeys"]
+        assert not result["config"].get("options", {}).get("barrier", False)
     assert result["derived_links"] == (three if stem == "config" else one)["derived_links"]
 # No synergy.conf: use db editor ranges, not authoritative overrides.
 db_only = OUT / "db-only"
@@ -147,18 +181,19 @@ home = OUT / "synthetic-home"
 preferences = home / "Library/Preferences/Synergy"
 preferences.mkdir(parents=True, exist_ok=True)
 shutil.copyfile(FIX / "synergy1/synergy.conf", preferences / "synergy.conf")
-result = json.loads(run("import-synergy", "--json", env=dict(os.environ, HOME=str(home))).stdout)
+result = json.loads(run("import-synergy", "--json", env={"HOME": str(home)}).stdout)
 assert len(result["config"]["screen"]) == 2
 
 # Step 0 chmods the socket parent; use our own 0700 dir, never /tmp itself.
 socket = OUT / "oe-wp2.sock"
 live = OUT / "layout.toml"
-shutil.copyfile(FIX / "layout/partial.toml", live)
+live.write_text((FIX / "layout/partial.toml").read_text().replace("25020", str(PORT)))
 os.chmod(live, 0o600)
 if socket.exists():
     raise RuntimeError("refuse to reuse an existing socket")
 log = (OUT / "daemon.log").open("w")
-daemon = subprocess.Popen([str(BIN), "daemon", "--platform", "virtual", "--socket", str(socket), "--config", str(live), "--foreground"], stdout=log, stderr=log, cwd=ROOT)
+reservations[0].close()
+daemon = subprocess.Popen([str(BIN), "daemon", "--platform", "virtual", "--socket", str(socket), "--config", str(live), "--foreground"], stdout=log, stderr=log, cwd=ROOT, env=ENV)
 
 
 def ctl(method, params=None, ok=True):
@@ -248,7 +283,8 @@ try:
     result = ctl("config.patch", {"patch": {"input": {"relative_mouse": None}, "hotkeys": None, "unknown_deleted": None}})
     assert result["config"]["input"]["relative_mouse"] is False and result["config"]["hotkeys"] == {}
     # Server port wins, with a visible warning.
-    result = ctl("config.patch", {"patch": {"server": {"port": 25021}}})
+    reservations[1].close()
+    result = ctl("config.patch", {"patch": {"server": {"port": NEXT_PORT}}})
     assert "server.port overrides the port in server.listen" in result["warnings"]
     # Three-screen L: one full pair and one half/full pair.
     l_screens = [{"name": "studio-pc", "rect": {"x": 0, "y": 0, "w": 1000, "h": 1000}}, {"name": "macbook", "rect": {"x": 1000, "y": 0, "w": 1000, "h": 1000}}, {"name": "linux-box", "rect": {"x": 0, "y": 1000, "w": 500, "h": 1000}}]
@@ -279,7 +315,7 @@ finally:
 run("export-synergy-conf", "--config", live, "--out", OUT / "persisted.conf")
 persisted = imported(OUT / "persisted.conf", OUT / "persisted-roundtrip.toml")
 assert persisted["derived_links"] == [link("studio-pc", "right", [0, 50], "macbook", [0, 100]), link("studio-pc", "right", [50, 100], "linux-box", [0, 100])]
-assert persisted["config"]["server"]["port"] == 25021
+assert persisted["config"]["server"]["port"] == NEXT_PORT
 print("PASS: CLI import/export round trips; JSON and source precedence; strict failures; native edge geometry, Synergy editor fidelity, L layout and ranged overrides; invalid patches preserve file and live state.")
 print("invalid patch sha256 before/after: " + errors[0]["before"] + " / " + errors[0]["after"])
 LOG.close()

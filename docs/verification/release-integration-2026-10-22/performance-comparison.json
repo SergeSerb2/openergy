@@ -1,0 +1,136 @@
+{
+  "date_local": "2026-10-22",
+  "units": {
+    "MiB": 1048576,
+    "RSS": "resident set size, not unique physical memory",
+    "cpu_percent": "per-process CPU during the recorded window"
+  },
+  "synergy": {
+    "source_commit": "dfed3e9",
+    "source_report": "docs/re/04-tray-security-packaging.md",
+    "product_version": "3.7.0-beta",
+    "app_regular_files_bytes": 548821397,
+    "core_rss_snapshot_KiB": [
+      53264,
+      53936
+    ],
+    "background_stack_rss_snapshot_KiB": [
+      147040,
+      147792
+    ],
+    "cpu_snapshot_percent": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "sampling": "Three passive native connected-session snapshots, five seconds apart; no generated workload",
+    "comparable_latency": null
+  },
+  "openergy_package": {
+    "source": "6b834202e712755222c8ef9418441874a5ecca5d",
+    "archive_sha256": "2b688809f55862ea1d12086a1424c3a024cbf7e79e90e5d28c7d972135fb8036",
+    "archive_bytes": 3614432,
+    "app_regular_files_bytes": 6324472,
+    "app_regular_files_count": 9,
+    "daemon_sha256": "d2895ed27b52f61dfd4f16581469b984a2e32354a67c94f3fd83996558733573",
+    "app_sha256": "eef8600f4a505f05c4567aa68f23c3ecc09c4c39189abe87b713d6f96042e6ed",
+    "embedded_matches_sidecar": true,
+    "readme_exact_source": true,
+    "matches_arm_full_run": true,
+    "staged_smoke": true,
+    "fresh_extracted_smoke": true,
+    "extracted_codesign": true,
+    "published": false,
+    "native_desktop_exercised": false
+  },
+  "openergy_runtime": {
+    "source": "4a652900d5e7043cb5c14e529d42c6eba0d327ff",
+    "daemon_sha256": "d2895ed27b52f61dfd4f16581469b984a2e32354a67c94f3fd83996558733573",
+    "scenario": "S15-resources-latency",
+    "report_sha256": "98e6126be7787d71e904337b1424c116cf2e4a8b1733f6072e4062d0fc8b13c4",
+    "run_source": "88/88 native ARM64 virtual run; binary bytes match clean6b83420 package",
+    "packaged_source": "6b834202e712755222c8ef9418441874a5ecca5d",
+    "transport": "plaintext same-host loopback",
+    "backend": "virtual; GUI excluded",
+    "measurements": [
+      {
+        "cpu_percent": 0.04995823058202637,
+        "kind": "resources",
+        "rss_peak_bytes": 9469952,
+        "window_ms": 60050
+      },
+      {
+        "cpu_percent": 0.01665667566862828,
+        "kind": "resources",
+        "rss_peak_bytes": 9420800,
+        "window_ms": 60035
+      },
+      {
+        "kind": "capture_to_recorded_upper_bound",
+        "max_ms": 1.782958,
+        "p50_ms": 0.7975840000000001,
+        "p95_ms": 0.8825839999999999,
+        "p99_ms": 0.9367909999999999,
+        "samples": 1000
+      }
+    ]
+  },
+  "regular_file_reduction_percent": 98.84762656219834,
+  "comparison_limits": [
+    "App file bytes describe recorded payloads, with different features and support.",
+    "Native Synergy snapshots and virtual Openergy timed samples are unmatched; no whole-app RAM or CPU efficiency ratio.",
+    "No comparable Synergy latency measurement; no physical input-to-screen latency or speedup claim.",
+    "Later source changes must be checked against recorded binary hashes before reusing runtime results."
+  ],
+  "review_corrections": [
+    "Label the source/run for each panel; update ZIP3.44MiB historical to88c199a3.45MiB.",
+    "Hardening chart compares the same probe/workload, not equal delivered packet counts.",
+    "Link stationary_edge_cpu raw record with both source and binary identities.",
+    "Current panels use clean6b83420 package and4a65290 ARM64 S15, matched by exact daemon SHA256. Preserve older records separately; Intel results are Rosetta evidence only."
+  ],
+  "historical_openergy_package": {
+    "source": "88c199a4c316f211102221843d73bf1b215f2f19",
+    "archive_sha256": "a944fcc51bd8c9813ba9f33820080b9a746eb6f500717fb0adc4839a54dd67d5",
+    "archive_bytes": 3614033,
+    "app_regular_files_bytes": 6324424,
+    "app_regular_files_count": 9,
+    "daemon_sha256": "1405abcc08a4f8b175d4116a413ac0426c5e708578e9e250487ff13d18ae97e5",
+    "app_sha256": "724de37fd2e482e425f0f1f5ec7af64f80b353ed29e35ddf2e3c1b60e0d21d0d",
+    "staged_smoke": true,
+    "fresh_extracted_smoke": true,
+    "extracted_codesign": true,
+    "published": false,
+    "native_desktop_exercised": false
+  },
+  "historical_openergy_runtime": {
+    "source": "655e59f69c490841dc2cd2c8128eca51545c15f7",
+    "daemon_sha256": "1405abcc08a4f8b175d4116a413ac0426c5e708578e9e250487ff13d18ae97e5",
+    "scenario": "S15-resources-latency",
+    "report_sha256": "7c42a4407fa39af6dc9650c91041396c1615cc818db978192e063e1941edd5bb",
+    "run_source": "recorded 88/88 virtual run; same packaged daemon bytes",
+    "transport": "plaintext same-host loopback",
+    "backend": "virtual; GUI excluded",
+    "measurements": [
+      {
+        "cpu_percent": 0.06659705202895352,
+        "kind": "resources",
+        "rss_peak_bytes": 9420800,
+        "window_ms": 60062
+      },
+      {
+        "cpu_percent": 0.049953903509444904,
+        "kind": "resources",
+        "rss_peak_bytes": 7946240,
+        "window_ms": 60055
+      },
+      {
+        "kind": "capture_to_recorded_upper_bound",
+        "max_ms": 2.2234160000000003,
+        "p50_ms": 0.8369169999999999,
+        "p95_ms": 0.9883330000000001,
+        "p99_ms": 1.233625,
+        "samples": 1000
+      }
+    ]
+  }
+}

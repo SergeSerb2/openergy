@@ -1,0 +1,130 @@
+# Real virtual-daemon and raw TCP checks. No platform clipboard is used.
+name = "R5-incoming-clipboard-cancellation"
+requirement = "A declared 64 MiB transfer does not eagerly allocate; a newer grab cancels a complete pending payload, and a fresh transfer recovers."
+timeout_ms = 3000
+
+[[node]]
+id = "host"
+kind = "raw"
+role = "server"
+
+[[node]]
+id = "client"
+role = "client"
+remote = "host"
+platform = "virtual"
+tls = false
+
+[[step]]
+do = "clipboard_set"
+node = "client"
+text = "r5 preserved"
+
+[[step]]
+do = "raw_send"
+node = "host"
+builder = "hello"
+
+[[step]]
+do = "raw_expect"
+node = "host"
+builder = "hello_back"
+name = "client"
+
+[[step]]
+do = "raw_send"
+node = "host"
+hex = "0000000451494e46"
+
+[[step]]
+do = "raw_send"
+node = "host"
+hex = "000000044349414b"
+
+[[step]]
+do = "raw_send"
+node = "host"
+hex = "0000000844534f5000000000"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "raw_send"
+node = "host"
+hex = "0000000943434c500000000001"
+
+[[step]]
+do = "raw_send"
+node = "host"
+hex = "0000001644434c50000000000101000000083637313038383634"
+
+[[step]]
+do = "measure"
+node = "client"
+kind = "resources"
+window_ms = 1000
+rss_bytes = 33554432
+# This short gate checks allocation. S15 checks idle CPU over 60 seconds;
+# one centisecond of CPU accounting in this window is already about 1%.
+cpu_percent = 100.0
+
+[[step]]
+do = "raw_send"
+node = "host"
+hex = "0000001044434c50000000000101000000023137"
+
+[[step]]
+do = "raw_send"
+node = "host"
+hex = "0000001f44434c50000000000102000000110000000100000000000000057374616c65"
+
+[[step]]
+do = "raw_send"
+node = "host"
+hex = "0000000943434c500000000002"
+
+[[step]]
+do = "raw_send"
+node = "host"
+hex = "0000000e44434c5000000000010300000000"
+
+[[step]]
+do = "raw_send"
+node = "host"
+hex = "0000000443414c56"
+
+[[step]]
+do = "raw_expect"
+node = "host"
+builder = "code"
+code = "CALV"
+payload_only = true
+framed = true
+scan = true
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+text = "r5 preserved"
+
+[[step]]
+do = "raw_send"
+node = "host"
+hex = "0000001044434c50000000000201000000023137"
+
+[[step]]
+do = "raw_send"
+node = "host"
+hex = "0000001f44434c50000000000202000000110000000100000000000000056672657368"
+
+[[step]]
+do = "raw_send"
+node = "host"
+hex = "0000000e44434c5000000000020300000000"
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+text = "fresh"

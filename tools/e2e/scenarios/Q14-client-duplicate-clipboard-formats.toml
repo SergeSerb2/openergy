@@ -1,0 +1,119 @@
+# Requirement: Reject duplicate clipboard formats before calling a backend.
+name = "Q14-client-duplicate-clipboard-formats"
+requirement = "Duplicate wire format IDs cause no clipboard update, transfer notice, or backend error; the next valid transfer succeeds."
+timeout_ms = 1200
+
+[[node]]
+id = "server"
+kind = "raw"
+role = "server"
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "hello"
+
+[[step]]
+do = "raw_expect"
+node = "server"
+builder = "hello_back"
+name = "client"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "QINF"
+payload_hex = ""
+
+[[step]]
+do = "raw_expect"
+node = "server"
+builder = "code"
+code = "DINF"
+payload_only = true
+framed = true
+scan = true
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "CIAK"
+payload_hex = ""
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "options"
+values = []
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "000000000001000000023232"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "0000000000020000001600000002000000000000000161000000000000000162"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "00000000000300000000"
+
+[[step]]
+do = "sleep"
+ms = 200
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+empty = true
+
+[[step]]
+do = "assert_status"
+node = "client"
+fields = { "clipboard.last_transfer" = { "$null" = true }, last_error = { "$null" = true } }
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "000000000001000000023137"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "000000000002000000110000000100000000000000056672657368"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "00000000000300000000"
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+text = "fresh"

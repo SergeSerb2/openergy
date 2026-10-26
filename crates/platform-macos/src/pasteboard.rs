@@ -34,6 +34,9 @@ pub fn info() -> Result<PasteboardInfo> {
     // Safety: native objects remain retained within the pool; static selectors use SDK-matched ABIs.
     unsafe {
         let pasteboard = general();
+        if pasteboard.is_null() {
+            return Err(openergy_platform::PlatformError::ClipboardUnavailable);
+        }
         let change_count = ffi::msg0(pasteboard, c"changeCount");
         let array: ffi::Id = ffi::msg0(pasteboard, c"types");
         let count: usize = ffi::msg0(array, c"count");
@@ -54,6 +57,8 @@ fn general() -> ffi::Id {
 /// Explicit content read. max_bytes caps each input blob, the decoded raster,
 /// the output DIB, and the sum of returned wire formats. NSPasteboard has no
 /// public length-only data query, so its fetch may allocate before length check.
+/// A stable empty type list is a real clear. Unsupported-only, missing promised
+/// data, and changing snapshots return ClipboardUnavailable instead.
 pub fn read(max_bytes: usize) -> Result<Clipboard> {
     let _pool = ffi::Pool::new();
     let before = info()?;
@@ -63,7 +68,7 @@ pub fn read(max_bytes: usize) -> Result<Clipboard> {
         if before.types.iter().any(|value| value == uti) {
             let bytes = read_type(uti, remaining)?;
             let text = String::from_utf8(bytes).map_err(|_| error(format!("{uti} is not UTF-8")))?;
-            let text = lf_endings(&text);
+            let text = lf_endings(text);
             remaining =
                 remaining
                     .checked_sub(text.len())
@@ -86,7 +91,12 @@ pub fn read(max_bytes: usize) -> Result<Clipboard> {
         output.dib = Some(image_to_dib(&bytes, remaining)?);
     }
     if change_count() != before.change_count {
-        return Err(error("pasteboard changed while reading; retry"));
+        return Err(openergy_platform::PlatformError::ClipboardUnavailable);
+    }
+    if !before.types.is_empty() && output.text.is_none() && output.html.is_none() && output.dib.is_none() {
+        // A clipboard with only unsupported types is not a request to erase
+        // the peer's clipboard. A genuinely empty pasteboard is a real clear.
+        return Err(openergy_platform::PlatformError::ClipboardUnavailable);
     }
     Ok(output)
 }
@@ -94,7 +104,10 @@ pub fn read(max_bytes: usize) -> Result<Clipboard> {
 fn read_type(uti: &str, maximum: usize) -> Result<Vec<u8>> {
     let name = ffi::ns_string(uti)?;
     // Safety: explicit content-read call uses a live pasteboard and retained NSString type name.
-    let data = unsafe { ffi::msg1(general(), c"dataForType:", name.0) };
+    let data: ffi::Id = unsafe { ffi::msg1(general(), c"dataForType:", name.0) };
+    if data.is_null() {
+        return Err(openergy_platform::PlatformError::ClipboardUnavailable);
+    }
     ffi::data_bytes(data, maximum)
 }
 
@@ -102,30 +115,38 @@ fn read_type(uti: &str, maximum: usize) -> Result<Vec<u8>> {
 /// before clearContents. There is no atomic replace API or rollback guarantee.
 pub fn write(clipboard: &Clipboard, max_bytes: usize) -> Result<()> {
     let _pool = ffi::Pool::new();
-    let mut formats: Vec<(&str, Vec<u8>)> = Vec::new();
     let mut total = 0usize;
+    for text in [&clipboard.text, &clipboard.html].into_iter().flatten() {
+        total = add_bounded(total, text.len(), max_bytes)?;
+    }
+    if let Some(dib) = &clipboard.dib {
+        add_bounded(total, dib.len(), max_bytes)?;
+    }
+    let mut formats: Vec<(&str, OwnedObj)> = Vec::new();
     for (uti, text) in [(TEXT_TYPE, &clipboard.text), (HTML_TYPE, &clipboard.html)] {
         if let Some(text) = text {
-            total = add_bounded(total, text.len(), max_bytes)?;
-            formats.push((uti, text.as_bytes().to_vec())); // macOS accepts wire LF as-is.
+            formats.push((uti, ffi::ns_data(text.as_bytes())?)); // macOS accepts wire LF as-is.
         }
     }
     if let Some(dib) = &clipboard.dib {
-        let _ = add_bounded(total, dib.len(), max_bytes)?;
-        let image = dib_to_image(dib, max_bytes)?;
-        formats.push((PNG_TYPE, encode_image(&image, 4, max_bytes)?));
-        formats.push((TIFF_TYPE, encode_image(&image, 0, max_bytes)?));
+        let image = dib_to_image(dib, max_bytes - total)?;
+        formats.push((PNG_TYPE, ffi::ns_data(&encode_image(&image, 4, max_bytes)?)?));
+        formats.push((TIFF_TYPE, ffi::ns_data(&encode_image(&image, 0, max_bytes)?)?));
     }
     // Build a single item before touching the user's pasteboard.
     // Safety: native objects remain retained within the pool; static selectors use SDK-matched ABIs.
     unsafe {
+        if formats.is_empty() {
+            // An empty remote clipboard is a clear, not an item with no types.
+            ffi::msg0::<isize>(general(), c"clearContents");
+            return Ok(());
+        }
         let item = OwnedObj::new(
             ffi::msg0(ffi::msg0::<ffi::Id>(ffi::class(c"NSPasteboardItem"), c"alloc"), c"init"),
             "pasteboard item",
         )?;
-        for (uti, bytes) in formats {
+        for (uti, data) in formats {
             let name = ffi::ns_string(uti)?;
-            let data = ffi::ns_data(&bytes)?;
             let success: bool = ffi::msg2(item.0, c"setData:forType:", data.0, name.0);
             if !success {
                 return Err(error(format!("cannot prepare pasteboard {uti}")));
@@ -142,8 +163,24 @@ pub fn write(clipboard: &Clipboard, max_bytes: usize) -> Result<()> {
     Ok(())
 }
 
-fn lf_endings(text: &str) -> String {
-    text.replace("\r\n", "\n").replace('\r', "\n")
+fn lf_endings(mut text: String) -> String {
+    // ASCII CR/LF cannot occur inside a UTF-8 multibyte sequence. Compact the
+    // owned input in place instead of making two full-size replacement copies.
+    // Safety: edits preserve valid UTF-8 and remove only ASCII bytes.
+    let bytes = unsafe { text.as_mut_vec() };
+    let mut read = 0;
+    let mut write = 0;
+    while read < bytes.len() {
+        let byte = bytes[read];
+        bytes[write] = if byte == b'\r' { b'\n' } else { byte };
+        read += 1;
+        if byte == b'\r' && bytes.get(read) == Some(&b'\n') {
+            read += 1;
+        }
+        write += 1;
+    }
+    bytes.truncate(write);
+    text
 }
 fn add_bounded(a: usize, b: usize, maximum: usize) -> Result<usize> {
     a.checked_add(b)
@@ -229,7 +266,7 @@ pub fn decode_image(bytes: &[u8], max_bytes: usize) -> Result<RgbaImage> {
             image,
         );
         drop(context);
-        for pixel in pixels.chunks_exact_mut(4) {
+        for pixel in pixels.as_chunks_mut::<4>().0 {
             let alpha = u32::from(pixel[3]);
             for channel in &mut pixel[..3] {
                 *channel = (u32::from(*channel) * 255 + alpha / 2)
@@ -364,10 +401,10 @@ fn parse_dib(dib: &[u8], maximum: usize) -> Result<DibInfo> {
     if (compression != 0 && compression != 3) || (bpp == 24 && compression != 0) {
         return Err(error("DIB must be BI_RGB or BI_BITFIELDS"));
     }
-    // For 32-bit data, a palette is neither required nor accepted. Its size
+    // For 24/32-bit data, a palette is neither required nor accepted. Its size
     // otherwise changes the pixel offset and can conceal truncated pixels.
     if get_u32(dib, 32)? != 0 {
-        return Err(error("32-bpp DIB palettes are unsupported"));
+        return Err(error("24/32-bpp DIB palettes are unsupported"));
     }
     let offset = if compression == 3 && header == 40 { 52 } else { header };
     let pixel_bytes = usize::from(bpp / 8);
@@ -446,19 +483,9 @@ pub fn dib_to_bmp(dib: &[u8], max_bytes: usize) -> Result<Vec<u8>> {
 
 pub fn dib_to_image(dib: &[u8], max_bytes: usize) -> Result<RgbaImage> {
     let info = parse_dib(dib, max_bytes)?;
-    let bmp = dib_to_bmp(dib, max_bytes)?;
-    let _pool = ffi::Pool::new();
-    let native = bitmap_from_data(&bmp)?;
-    // Safety: native is a live owned NSBitmapImageRep; pixelsWide returns NSInteger.
-    let native_width: isize = unsafe { ffi::msg0(native.0, c"pixelsWide") };
-    // Safety: native is a live NSBitmapImageRep; pixelsHigh returns NSInteger.
-    let native_height: isize = unsafe { ffi::msg0(native.0, c"pixelsHigh") };
-    if native_width != info.width as isize || native_height != info.height as isize {
-        return Err(error("native BMP decoder dimensions differ from DIB"));
-    }
-    // Apple's BMP decoder may ignore BI_RGB's reserved byte or V4 alpha.
-    // Read explicit masks ourselves, then normalize into NSBitmapImageRep
-    // for PNG/TIFF encoding. This also supports valid nonstandard bit masks.
+    // Parse the bounded DIB directly. A second BMP copy and AppKit decode added
+    // allocations and exposed native decoding before these same pixels were
+    // read again. PNG/TIFF encoding still uses NSBitmapImageRep afterwards.
     let mut pixels = vec![0u8; info.width * info.height * 4];
     for y in 0..info.height {
         for x in 0..info.width {

@@ -112,6 +112,121 @@ pub struct Step {
     pub fields: BTreeMap<String, Value>,
 }
 impl Step {
+    pub fn validate(&self) -> Result<()> {
+        let allowed = match self.op.as_str() {
+            "wait_status" | "assert_status" => "node fields",
+            "wait_connected" => "node peer",
+            "inject" => "node events seed hid_seed now_ms click_interval_ms click_distance",
+            "inject_burst" => "node event batch_size repeat",
+            "assert_recorded" | "assert_recorded_tail" => "node expect expect_tail since exact input_only",
+            "assert_numbering" => "node since seed min_downs states allow_held",
+            "ledger_mark" | "clipboard_get" | "pause" | "resume" | "start" | "subscribe" | "parent_exit" | "trust_crash_recovery" => "node",
+            "clipboard_set" => "node formats fixture text kind encoding",
+            "assert_clipboard" => "node empty kind text sha256 bytes",
+            "set_screens" => "node rects",
+            "set_permissions" => "node permissions",
+            "config_patch" => "node patch expect expect_error fields",
+            "ctl" => "node method params expect expect_error fields",
+            "wait_event" => "node event expect",
+            "kill" => "node signal",
+            "stop" | "restart" => "node force",
+            "wait_exit" => "node code",
+            "raw_send" | "raw_expect" => "node hex builder product major minor name width height code payload_hex values payload_only repeat allow_closed shutdown_write framed scan",
+            "raw_expect_closed" => "node reject_bytes",
+            "raw_expect_absent" => "node codes",
+            "lab_drive" => "node args",
+            "lab_pointer" => "node fields",
+            "lab_events_dump" => "node regex nonempty",
+            "lab_clipboard" => "node action text expect_text regex",
+            "lab_ctl" => "node args regex expect_text",
+            "cli" => "node args code regex output_regex stdout_path",
+            "assert_file" => "path exists mode sha256 regex toml_expect",
+            "write_file" => "path fixture text",
+            "fixture_dib" => "path",
+            "copy_identity" => "node source",
+            "set_lab_trust" => "node fingerprint",
+            "set_lab_screens" => "node path",
+            "sleep" => "ms",
+            "measure" => "node kind receiver count p99_ms window_ms rss_bytes cpu_percent",
+            "assert_json" => "actual expect fields",
+            other => return Err(Failure::runner(format!("unknown step {other}"))),
+        };
+        for (key, value) in &self.fields {
+            if key != "timeout_ms" && key != "save" && !allowed.split_whitespace().any(|s| s == key) {
+                return Err(Failure::runner(format!("{}: unknown field {key}", self.op)));
+            }
+            // Variables keep their JSON type when expanded. Validate again then.
+            if value.as_str().is_some_and(|s| s.contains("${")) {
+                continue;
+            }
+            let valid = match key.as_str() {
+                "exact" | "input_only" | "allow_held" | "empty" | "force" | "payload_only" | "allow_closed"
+                | "shutdown_write" | "framed" | "scan" | "reject_bytes" | "nonempty" | "exists" => value.is_boolean(),
+                "timeout_ms" => value.as_u64().is_some_and(|v| (1..=180_000).contains(&v)),
+                "since" | "now_ms" | "click_interval_ms" | "repeat" | "ms" | "window_ms" | "rss_bytes" | "count"
+                | "min_downs" | "batch_size" | "bytes" => value.as_u64().is_some(),
+                "seed" | "hid_seed" | "code" if self.op != "raw_send" && self.op != "raw_expect" => {
+                    value.as_i64().is_some()
+                }
+                "click_distance" | "p99_ms" | "cpu_percent" => {
+                    value.as_f64().is_some_and(|n| n.is_finite() && n >= 0.0)
+                }
+                "fields" | "params" | "permissions" | "toml_expect" => value.is_object(),
+                "expect" | "expect_tail" if matches!(self.op.as_str(), "assert_recorded" | "assert_recorded_tail") => {
+                    value.is_array()
+                }
+                "events" | "args" | "codes" | "states" | "rects" | "formats" => value.is_array(),
+                "node" | "peer" | "source" | "method" | "save" | "expect_error" | "text" | "sha256" | "kind"
+                | "encoding" | "fixture" | "path" | "mode" | "regex" | "output_regex" | "stdout_path" | "signal"
+                | "builder" | "product" | "name" | "payload_hex" | "hex" | "action" | "expect_text" | "receiver"
+                | "fingerprint" => value.is_string(),
+                _ => true,
+            };
+            if !valid {
+                return Err(Failure::runner(format!("{}: invalid value for {key}", self.op)));
+            }
+        }
+        if let Some(fields) = self.fields.get("fields").and_then(Value::as_object) {
+            for expected in fields.values().filter_map(Value::as_object) {
+                if expected.keys().any(|key| key.starts_with('$')) {
+                    for (op, rhs) in expected {
+                        if rhs.as_str().is_some_and(|s| s.contains("${")) {
+                            continue;
+                        }
+                        let valid = match op.as_str() {
+                            "$exists" | "$null" => rhs.is_boolean(),
+                            "$len" => rhs.as_u64().is_some(),
+                            "$gte" | "$lte" => rhs.as_f64().is_some(),
+                            "$contains" | "$ne" => true,
+                            _ => false,
+                        };
+                        if !valid {
+                            return Err(Failure::runner(format!("{}: invalid field predicate {op}", self.op)));
+                        }
+                    }
+                }
+            }
+        }
+        if self.op == "assert_json" && !self.fields.contains_key("expect") && !self.fields.contains_key("fields") {
+            return Err(Failure::runner("assert_json requires expect or fields"));
+        }
+        if matches!(self.op.as_str(), "assert_recorded" | "assert_recorded_tail")
+            && !self.fields.contains_key("expect")
+            && !self.fields.contains_key("expect_tail")
+        {
+            return Err(Failure::runner("ledger assertion requires expect or expect_tail"));
+        }
+        if matches!(self.op.as_str(), "wait_status" | "assert_status" | "assert_json")
+            && self
+                .fields
+                .get("fields")
+                .and_then(Value::as_object)
+                .is_some_and(|m| m.is_empty())
+        {
+            return Err(Failure::runner("assertion fields must not be empty"));
+        }
+        Ok(())
+    }
     pub fn value(&self, key: &str) -> Value {
         self.fields.get(key).cloned().unwrap_or(Value::Null)
     }
@@ -138,6 +253,10 @@ pub struct Options {
     pub port_range: (u16, u16),
     pub lab_range: (u16, u16),
     pub keep: bool,
+    pub no_docker: bool,
+    /// Factor for slower machines such as hosted CI VMs. It stretches deadlines and
+    /// the latency and CPU budgets; memory budgets and measurement windows stay fixed.
+    pub slowdown: f64,
     pub scenario_dir: PathBuf,
     pub pattern: String,
     pub report: Option<PathBuf>,
@@ -151,6 +270,7 @@ pub struct ScenarioReport {
     pub failed_step: Option<usize>,
     pub elapsed_ms: u128,
     pub failure: Option<Failure>,
+    pub cleanup_failures: Vec<Failure>,
     pub artifact_dir: Option<PathBuf>,
     pub stderr_tails: BTreeMap<String, Vec<String>>,
     pub measurements: Vec<Value>,
@@ -159,7 +279,11 @@ pub struct ScenarioReport {
 impl Scenario {
     /// Validate every step before starting children, including steps after a blocker.
     pub fn validate(&self) -> Result<()> {
+        if !(1..=180_000).contains(&self.timeout_ms) {
+            return Err(Failure::runner("scenario timeout_ms must be within 1..=180000"));
+        }
         for step in &self.steps {
+            step.validate()?;
             let required: &[&str] = match step.op.as_str() {
                 "wait_status" | "assert_status" => &["node", "fields"],
                 "wait_connected"
@@ -212,9 +336,7 @@ impl Scenario {
             for key in [
                 "timeout_ms",
                 "since",
-                "seed",
                 "now_ms",
-                "hid_seed",
                 "repeat",
                 "ms",
                 "window_ms",

@@ -1,0 +1,618 @@
+{
+  "scope": "dependency policy only; no compiler or runtime acceptance",
+  "candidate_source_commit": "da668c3aac3fc2c74354d136733d4db8464a6144",
+  "integrated_source_commit": "dddf9fef012f9d56ea6435be36bd5c74a08087d7",
+  "candidate_source_archive_sha256": "82efe0c1f67e7a2f7a32235e64f5d885c465fb13a2c362939b3abd0afc9fbaa1",
+  "snapshot_files_unchanged": 741,
+  "integrated_policy_and_vendor_inputs_match_candidate": {
+    "Cargo.toml": true,
+    "Cargo.lock": true,
+    "deny.toml": true,
+    "rust-toolchain.toml": true,
+    "vendor/mdns-sd/Cargo.toml": true,
+    "vendor/mdns-sd/UPSTREAM.json": true,
+    "vendor/mdns-sd/OPENERGY.patch": true,
+    "vendor/mdns-sd/src/lib.rs": true,
+    "vendor/mdns-sd/src/service_daemon.rs": true
+  },
+  "tool": {
+    "root": "<private-tool-directory>",
+    "binary": "<verified-tool>/cargo-deny",
+    "version": "0.20.2",
+    "archive_url": "https://github.com/EmbarkStudios/cargo-deny/releases/download/0.20.2/cargo-deny-0.20.2-aarch64-apple-darwin.tar.gz",
+    "checksum_url": "https://github.com/EmbarkStudios/cargo-deny/releases/download/0.20.2/cargo-deny-0.20.2-aarch64-apple-darwin.tar.gz.sha256",
+    "archive_sha256": "fe67d82a10d8597a3549364cb733a3f9cc1bfff9031b7ae46384a9f2a72090c3",
+    "binary_sha256": "5f65c07c459c9514f0c97cc2e2fb6b120daef2d95aee31062cab4816cf027eb1"
+  },
+  "rustsec": {
+    "repository": "https://github.com/RustSec/advisory-db",
+    "revision": "640bf5a9f06e66d8721e8772766531fe77c8630d",
+    "worktree_clean": true,
+    "remote_head_matches": true,
+    "remote_head_observed_local_date": "2026-10-22",
+    "revision_committed_at": "2026-10-22T12:49:47+02:00"
+  },
+  "checks": [
+    {
+      "source_commit": "da668c3aac3fc2c74354d136733d4db8464a6144",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "<verified-tool>/cargo-deny",
+        "--locked",
+        "--color",
+        "never",
+        "fetch",
+        "db",
+        "index"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.74,
+      "observed_at_utc": "2026-10-23T04:46:46.534757+00:00"
+    },
+    {
+      "source_commit": "da668c3aac3fc2c74354d136733d4db8464a6144",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "<verified-tool>/cargo-deny",
+        "--locked",
+        "--all-features",
+        "--color",
+        "never",
+        "-L",
+        "info",
+        "--format",
+        "json",
+        "check",
+        "--show-stats"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.647,
+      "observed_at_utc": "2026-10-23T04:46:47.181853+00:00"
+    },
+    {
+      "source_commit": "da668c3aac3fc2c74354d136733d4db8464a6144",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "<verified-tool>/cargo-deny",
+        "--locked",
+        "--all-features",
+        "--target",
+        "aarch64-apple-darwin",
+        "--color",
+        "never",
+        "-L",
+        "info",
+        "--format",
+        "json",
+        "check",
+        "--show-stats"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.602,
+      "observed_at_utc": "2026-10-23T04:46:47.784140+00:00"
+    },
+    {
+      "source_commit": "da668c3aac3fc2c74354d136733d4db8464a6144",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "<verified-tool>/cargo-deny",
+        "--locked",
+        "--all-features",
+        "--target",
+        "x86_64-apple-darwin",
+        "--color",
+        "never",
+        "-L",
+        "info",
+        "--format",
+        "json",
+        "check",
+        "--show-stats"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.621,
+      "observed_at_utc": "2026-10-23T04:46:48.405081+00:00"
+    },
+    {
+      "source_commit": "da668c3aac3fc2c74354d136733d4db8464a6144",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "<verified-tool>/cargo-deny",
+        "--locked",
+        "--all-features",
+        "--target",
+        "x86_64-unknown-linux-gnu",
+        "--color",
+        "never",
+        "-L",
+        "info",
+        "--format",
+        "json",
+        "check",
+        "--show-stats"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.637,
+      "observed_at_utc": "2026-10-23T04:46:49.042868+00:00"
+    },
+    {
+      "source_commit": "da668c3aac3fc2c74354d136733d4db8464a6144",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "<verified-tool>/cargo-deny",
+        "--locked",
+        "--all-features",
+        "--target",
+        "x86_64-pc-windows-msvc",
+        "--color",
+        "never",
+        "-L",
+        "info",
+        "--format",
+        "json",
+        "check",
+        "--show-stats"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.665,
+      "observed_at_utc": "2026-10-23T04:46:49.708344+00:00"
+    },
+    {
+      "source_commit": "da668c3aac3fc2c74354d136733d4db8464a6144",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "<verified-tool>/cargo-deny",
+        "--locked",
+        "--all-features",
+        "--target",
+        "aarch64-unknown-linux-gnu",
+        "--color",
+        "never",
+        "-L",
+        "info",
+        "--format",
+        "json",
+        "check",
+        "--show-stats"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.694,
+      "observed_at_utc": "2026-10-23T04:46:50.402954+00:00"
+    }
+  ],
+  "graphs": [
+    {
+      "name": "aarch64-apple-darwin",
+      "packages": 73,
+      "summary": {
+        "advisories": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        },
+        "bans": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 1
+        },
+        "licenses": {
+          "errors": 0,
+          "helps": 73,
+          "notes": 0,
+          "warnings": 4
+        },
+        "sources": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        }
+      },
+      "warnings": [
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "Apache-2.0 WITH LLVM-exception"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "BSD-2-Clause"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "CC0-1.0"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "Zlib"
+          ]
+        },
+        {
+          "code": "duplicate",
+          "message": "found 2 duplicate entries for crate 'winnow'",
+          "spans": [
+            "winnow 0.7.15 registry+https://github.com/rust-lang/crates.io-index\nwinnow 1.0.4 registry+https://github.com/rust-lang/crates.io-index"
+          ]
+        }
+      ],
+      "raw_stderr_sha256": "834a2f18fa5968ad80af6ea94d6acfaf82dced7360ac090b438c9b82eb750d37",
+      "raw_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "aarch64-unknown-linux-gnu",
+      "packages": 79,
+      "summary": {
+        "advisories": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        },
+        "bans": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 1
+        },
+        "licenses": {
+          "errors": 0,
+          "helps": 79,
+          "notes": 0,
+          "warnings": 3
+        },
+        "sources": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        }
+      },
+      "warnings": [
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "BSD-2-Clause"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "CC0-1.0"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "Zlib"
+          ]
+        },
+        {
+          "code": "duplicate",
+          "message": "found 2 duplicate entries for crate 'winnow'",
+          "spans": [
+            "winnow 0.7.15 registry+https://github.com/rust-lang/crates.io-index\nwinnow 1.0.4 registry+https://github.com/rust-lang/crates.io-index"
+          ]
+        }
+      ],
+      "raw_stderr_sha256": "c691a044cb8108cdbdffdb21fa6169c40e0eb9f00702b32aaaad2f92116361f6",
+      "raw_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "combined",
+      "packages": 93,
+      "summary": {
+        "advisories": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        },
+        "bans": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 2
+        },
+        "licenses": {
+          "errors": 0,
+          "helps": 93,
+          "notes": 0,
+          "warnings": 3
+        },
+        "sources": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        }
+      },
+      "warnings": [
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "BSD-2-Clause"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "CC0-1.0"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "Zlib"
+          ]
+        },
+        {
+          "code": "duplicate",
+          "message": "found 2 duplicate entries for crate 'windows-sys'",
+          "spans": [
+            "windows-sys 0.52.0 registry+https://github.com/rust-lang/crates.io-index\nwindows-sys 0.61.2 registry+https://github.com/rust-lang/crates.io-index"
+          ]
+        },
+        {
+          "code": "duplicate",
+          "message": "found 2 duplicate entries for crate 'winnow'",
+          "spans": [
+            "winnow 0.7.15 registry+https://github.com/rust-lang/crates.io-index\nwinnow 1.0.4 registry+https://github.com/rust-lang/crates.io-index"
+          ]
+        }
+      ],
+      "raw_stderr_sha256": "3a52c42b537a94bd9ec4b2e4c98c497724c045b7cce80b2d2de6122eae4eb66c",
+      "raw_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "x86_64-apple-darwin",
+      "packages": 73,
+      "summary": {
+        "advisories": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        },
+        "bans": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 1
+        },
+        "licenses": {
+          "errors": 0,
+          "helps": 73,
+          "notes": 0,
+          "warnings": 4
+        },
+        "sources": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        }
+      },
+      "warnings": [
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "Apache-2.0 WITH LLVM-exception"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "BSD-2-Clause"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "CC0-1.0"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "Zlib"
+          ]
+        },
+        {
+          "code": "duplicate",
+          "message": "found 2 duplicate entries for crate 'winnow'",
+          "spans": [
+            "winnow 0.7.15 registry+https://github.com/rust-lang/crates.io-index\nwinnow 1.0.4 registry+https://github.com/rust-lang/crates.io-index"
+          ]
+        }
+      ],
+      "raw_stderr_sha256": "72230f379286904484d53db501241f364a03349adf2ca1adecce14774bee422c",
+      "raw_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "x86_64-pc-windows-msvc",
+      "packages": 75,
+      "summary": {
+        "advisories": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        },
+        "bans": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 1
+        },
+        "licenses": {
+          "errors": 0,
+          "helps": 75,
+          "notes": 0,
+          "warnings": 4
+        },
+        "sources": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        }
+      },
+      "warnings": [
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "Apache-2.0 WITH LLVM-exception"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "BSD-2-Clause"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "CC0-1.0"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "Zlib"
+          ]
+        },
+        {
+          "code": "duplicate",
+          "message": "found 2 duplicate entries for crate 'winnow'",
+          "spans": [
+            "winnow 0.7.15 registry+https://github.com/rust-lang/crates.io-index\nwinnow 1.0.4 registry+https://github.com/rust-lang/crates.io-index"
+          ]
+        }
+      ],
+      "raw_stderr_sha256": "258e4f264a4ad5aba770f4a7c63df9c0507f1db7363c8a7da512a7a681a2ee06",
+      "raw_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "x86_64-unknown-linux-gnu",
+      "packages": 79,
+      "summary": {
+        "advisories": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        },
+        "bans": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 1
+        },
+        "licenses": {
+          "errors": 0,
+          "helps": 79,
+          "notes": 0,
+          "warnings": 3
+        },
+        "sources": {
+          "errors": 0,
+          "helps": 0,
+          "notes": 0,
+          "warnings": 0
+        }
+      },
+      "warnings": [
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "BSD-2-Clause"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "CC0-1.0"
+          ]
+        },
+        {
+          "code": "license-not-encountered",
+          "message": "license was not encountered",
+          "spans": [
+            "Zlib"
+          ]
+        },
+        {
+          "code": "duplicate",
+          "message": "found 2 duplicate entries for crate 'winnow'",
+          "spans": [
+            "winnow 0.7.15 registry+https://github.com/rust-lang/crates.io-index\nwinnow 1.0.4 registry+https://github.com/rust-lang/crates.io-index"
+          ]
+        }
+      ],
+      "raw_stderr_sha256": "47811bf9f815724f76e256049542256322a65ea0dcc249861dccd3e9702bbd34",
+      "raw_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "source_input_sha256": {
+    "Cargo.toml": "7ea29af11f38ac187df7fb78ecbfb5ba0f5c4d2248211efb857010b91412ea04",
+    "Cargo.lock": "6d57d3d84fcef4208a9ce657e511b07099187dcda084cd9decb9ab9a56756800",
+    "deny.toml": "48165f414b8cf95491ba9489fb711d9151b1250eb142db86d2bb75c020b9e0a8",
+    "rust-toolchain.toml": "f715f440167e20fd8ea9afa0498c3d1ab80174cfcb8cbc895f106a34d907a1e1",
+    "vendor/mdns-sd/Cargo.toml": "0fcc79974fb49f2c670668dc24380e6c43207fa50d79588c1b49550a406a5ae4",
+    "vendor/mdns-sd/UPSTREAM.json": "c28cea9cfa076cd5c3cc297a85150575101c7441fff6bb1cdb3cae6b2f204c91",
+    "vendor/mdns-sd/OPENERGY.patch": "b240dc9131eac2f1355a1bb595a9c219f26a1c052bd9e4ceaf6f8282d17a9ad3",
+    "vendor/mdns-sd/src/lib.rs": "5828af0294e915fc600913d1fb7d9409f527c3ccda6e8fa4512d666743973ab0",
+    "vendor/mdns-sd/src/service_daemon.rs": "3f1bf0a78767e928db84c19a005718869208c68747eee5f7ff05fce6e73ac4a5"
+  },
+  "limits": [
+    "Target graphs are policy filters, not platform builds or runtime verification.",
+    "Cargo-deny index fetch and cached-index checks do not establish a fresh direct HTTPS observation for every registry entry.",
+    "No new per-package yank/checksum inventory was collected in this step.",
+    "Vendored source reconstruction and source review are separate evidence.",
+    "No whole-cache, expiry, timer, query-work or variable-record-byte bounds.",
+    "No native input/clipboard, positive Windows migration, original release-provenance security acceptance or trusted distribution clearance."
+  ]
+}

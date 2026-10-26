@@ -1,0 +1,111 @@
+# Requirement: A synthesized modifier remains held until the incoming mask clears its bit.
+name = "Q17-preentry-modifier-mask"
+requirement = "Two pre-entry Shift keys and a later physical Shift release separately without dropping the remaining held modifier."
+timeout_ms = 1200
+
+[[node]]
+id = "server"
+role = "server"
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "key_down", key = 61409, modifiers = 1, button = 7 }, { type = "key_down", key = 61410, modifiers = 1, button = 8 }, { type = "mouse_move_abs", x = 1919, y = 540 }, { type = "mouse_move_rel", dx = 20, dy = 0 }]
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+expect = [{ event = { type = "key_down", key = 61409 } }]
+
+[[step]]
+do = "ledger_mark"
+node = "client"
+save = "before_release"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "key_up", key = 61410, modifiers = 1, button = 8 }]
+
+[[step]]
+do = "sleep"
+ms = 100
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "virtual.recorded"
+fields = { "stats.pressed_keys" = 1 }
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+since = "${before_release.sequence}"
+exact = true
+expect = []
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "key_up", key = 61409, modifiers = 0, button = 7 }]
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+since = "${before_release.sequence}"
+expect = [{ event = { type = "key_up", key = 61409 } }]
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "virtual.recorded"
+fields = { "stats.pressed_keys" = 0 }
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "mouse_move_abs", x = 0, y = 540 }, { type = "mouse_move_rel", dx = -20, dy = 0 }]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { active_screen = "server" }
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "key_down", key = 61409, modifiers = 1, button = 7 }, { type = "mouse_move_abs", x = 1919, y = 540 }, { type = "mouse_move_rel", dx = 20, dy = 0 }]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { active_screen = "client" }
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "key_down", key = 61410, modifiers = 1, button = 8 }, { type = "key_up", key = 61409, modifiers = 1, button = 7 }, { type = "key_up", key = 61410, modifiers = 0, button = 8 }]
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+expect = [{ event = { type = "key_down", key = 61410, button = 8 } }, { event = { type = "key_up", key = 61409 } }, { event = { type = "key_up", key = 61410, button = 8 } }]
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "virtual.recorded"
+fields = { "stats.pressed_keys" = 0 }

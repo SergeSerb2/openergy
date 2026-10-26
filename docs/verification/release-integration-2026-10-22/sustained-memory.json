@@ -1,0 +1,1820 @@
+{
+  "date_local": "2026-10-22",
+  "schema": 1,
+  "scope": "Two isolated same-host virtual real-daemon checks; no native desktop or matched Synergy runtime benchmark",
+  "sustained": {
+    "gates": {
+      "per_process_sampled_peak_rss_bytes": 100663296,
+      "last10_minus_reference10_median_bytes": 16777216
+    },
+    "plan": {
+      "cycles": 90,
+      "pace_seconds": 3,
+      "warmup_cycles": [
+        1,
+        10
+      ],
+      "reference_window": [
+        11,
+        20
+      ],
+      "middle_window": [
+        41,
+        50
+      ],
+      "late_window": [
+        81,
+        90
+      ],
+      "size_schedule_MiB": [
+        1,
+        2,
+        4,
+        8,
+        1,
+        2,
+        4,
+        8,
+        4,
+        4
+      ],
+      "rss_sampling_seconds": 0.2,
+      "large_content": "unique ASCII text, no CRLF",
+      "verification": "all large transfers: new remote own-write stamp, exact byte count, new incoming transfer record; each 1 MiB transfer also full remote byte SHA256"
+    },
+    "counts": {
+      "bulk_transfers": 180,
+      "bulk_bytes": 717225984,
+      "full_remote_hashes": 36,
+      "cancellations": 90,
+      "clears": 180,
+      "safe_patches": 92,
+      "input_batches": 90,
+      "reconnects": 9,
+      "pressed_recoveries": 9,
+      "cli_stats": 182,
+      "cli_trust_approvals": 2
+    },
+    "failure": null,
+    "provenance": {
+      "head": "2b902d9921d3dd5c93e997edb0b0335594fcde44",
+      "source": "655e59f69c490841dc2cd2c8128eca51545c15f7",
+      "binary": "LOCAL_PINNED_BINARY/openergy",
+      "sha256": "1405abcc08a4f8b175d4116a413ac0426c5e708578e9e250487ff13d18ae97e5",
+      "tracked_non_exception_files_verified": 514,
+      "docs_only_differences": [
+        "README.md",
+        "crates/platform-linux/FINAL-R5-VERIFICATION-2026-10-22.md",
+        "docs/verification/release-integration-2026-10-22/README.md",
+        "docs/verification/release-integration-2026-10-22/round5.json",
+        "docs/verification/release-integration-2026-10-22/round5.md",
+        "tools/windows/ROUND5-1ef54fc.md"
+      ],
+      "package_build_commit": "655e59f69c490841dc2cd2c8128eca51545c15f7",
+      "clean_before": true
+    },
+    "memory": {
+      "server": {
+        "reference11_20_ps_median_bytes": 14213120.0,
+        "middle41_50_ps_median_bytes": 16769024.0,
+        "late81_90_ps_median_bytes": 18407424.0,
+        "late_minus_reference_bytes": 4194304.0,
+        "periodic_ps_peak_bytes": 39731200,
+        "checkpoint_cli_peak_bytes": 18743296,
+        "checkpoint_ps_bytes_all_cycles": [
+          11812864,
+          11911168,
+          11960320,
+          12124160,
+          12697600,
+          12861440,
+          12992512,
+          13123584,
+          13139968,
+          13303808,
+          13320192,
+          13844480,
+          13844480,
+          13991936,
+          14008320,
+          14417920,
+          14417920,
+          14581760,
+          14598144,
+          14745600,
+          14745600,
+          14909440,
+          14909440,
+          15073280,
+          15073280,
+          15237120,
+          15237120,
+          15351808,
+          15351808,
+          15564800,
+          15564800,
+          15810560,
+          15810560,
+          15925248,
+          15925248,
+          16089088,
+          16089088,
+          16187392,
+          16187392,
+          16351232,
+          16351232,
+          16547840,
+          16564224,
+          16678912,
+          16678912,
+          16859136,
+          16859136,
+          16973824,
+          16973824,
+          17088512,
+          17088512,
+          17317888,
+          17317888,
+          17481728,
+          17481728,
+          17629184,
+          17629184,
+          17694720,
+          17629184,
+          17760256,
+          17760256,
+          17907712,
+          17907712,
+          18006016,
+          18006016,
+          18137088,
+          18137088,
+          18251776,
+          18251776,
+          18317312,
+          18317312,
+          18513920,
+          18513920,
+          17580032,
+          17580032,
+          17711104,
+          17711104,
+          17842176,
+          17842176,
+          17989632,
+          17989632,
+          18169856,
+          18169856,
+          18333696,
+          18333696,
+          18481152,
+          18481152,
+          18595840,
+          18595840,
+          18743296
+        ],
+        "checkpoint_cli_bytes_all_cycles": [
+          11812864,
+          11911168,
+          11960320,
+          12124160,
+          12697600,
+          12861440,
+          12992512,
+          13123584,
+          13139968,
+          13303808,
+          13320192,
+          13844480,
+          13844480,
+          13991936,
+          14008320,
+          14417920,
+          14417920,
+          14581760,
+          14598144,
+          14745600,
+          14745600,
+          14909440,
+          14909440,
+          15073280,
+          15073280,
+          15237120,
+          15237120,
+          15351808,
+          15351808,
+          15564800,
+          15564800,
+          15810560,
+          15810560,
+          15925248,
+          15925248,
+          16089088,
+          16089088,
+          16187392,
+          16187392,
+          16351232,
+          16351232,
+          16547840,
+          16564224,
+          16678912,
+          16678912,
+          16859136,
+          16859136,
+          16973824,
+          16973824,
+          17088512,
+          17088512,
+          17317888,
+          17317888,
+          17481728,
+          17481728,
+          17629184,
+          17629184,
+          17694720,
+          17629184,
+          17760256,
+          17760256,
+          17907712,
+          17907712,
+          18006016,
+          18006016,
+          18137088,
+          18137088,
+          18251776,
+          18251776,
+          18317312,
+          18317312,
+          18513920,
+          18513920,
+          17580032,
+          17580032,
+          17711104,
+          17711104,
+          17842176,
+          17842176,
+          17989632,
+          17989632,
+          18169856,
+          18169856,
+          18333696,
+          18333696,
+          18481152,
+          18481152,
+          18595840,
+          18595840,
+          18743296
+        ],
+        "linear_ps_slope_bytes_per_cycle": 69906.14558175906,
+        "linear_ps_slope_MiB_per_minute_at_3s_pace": 1.3333539120055973,
+        "rss_gate_pass": true,
+        "growth_gate_pass": true
+      },
+      "client": {
+        "reference11_20_ps_median_bytes": 14254080.0,
+        "middle41_50_ps_median_bytes": 16826368.0,
+        "late81_90_ps_median_bytes": 18694144.0,
+        "late_minus_reference_bytes": 4440064.0,
+        "periodic_ps_peak_bytes": 35717120,
+        "checkpoint_cli_peak_bytes": 18956288,
+        "checkpoint_ps_bytes_all_cycles": [
+          11632640,
+          12320768,
+          12451840,
+          12517376,
+          13205504,
+          13221888,
+          13418496,
+          13500416,
+          13631488,
+          13729792,
+          13926400,
+          13942784,
+          14090240,
+          14106624,
+          14254080,
+          14254080,
+          14401536,
+          14450688,
+          14614528,
+          14680064,
+          14876672,
+          14893056,
+          15024128,
+          15040512,
+          15187968,
+          15187968,
+          15335424,
+          15368192,
+          15532032,
+          15532032,
+          15761408,
+          15761408,
+          15876096,
+          15876096,
+          16023552,
+          16023552,
+          16187392,
+          16203776,
+          16367616,
+          16384000,
+          16580608,
+          16580608,
+          16728064,
+          16728064,
+          16826368,
+          16826368,
+          16990208,
+          16990208,
+          17104896,
+          17137664,
+          17317888,
+          17317888,
+          17465344,
+          17465344,
+          17612800,
+          17629184,
+          17743872,
+          17743872,
+          17809408,
+          17842176,
+          18006016,
+          18006016,
+          18120704,
+          18120704,
+          18284544,
+          18284544,
+          18415616,
+          18415616,
+          18513920,
+          18366464,
+          18628608,
+          18628608,
+          18759680,
+          17612800,
+          17727488,
+          17727488,
+          17891328,
+          17891328,
+          18071552,
+          18104320,
+          18284544,
+          18284544,
+          18513920,
+          18513920,
+          18694144,
+          18694144,
+          18825216,
+          18825216,
+          18939904,
+          18956288
+        ],
+        "checkpoint_cli_bytes_all_cycles": [
+          11632640,
+          12320768,
+          12451840,
+          12517376,
+          13205504,
+          13221888,
+          13418496,
+          13500416,
+          13631488,
+          13729792,
+          13926400,
+          13942784,
+          14090240,
+          14106624,
+          14254080,
+          14254080,
+          14401536,
+          14450688,
+          14614528,
+          14680064,
+          14876672,
+          14893056,
+          15024128,
+          15040512,
+          15187968,
+          15187968,
+          15335424,
+          15368192,
+          15532032,
+          15532032,
+          15761408,
+          15761408,
+          15876096,
+          15876096,
+          16023552,
+          16023552,
+          16187392,
+          16203776,
+          16367616,
+          16384000,
+          16580608,
+          16580608,
+          16728064,
+          16728064,
+          16826368,
+          16826368,
+          16990208,
+          16990208,
+          17104896,
+          17137664,
+          17317888,
+          17317888,
+          17465344,
+          17465344,
+          17612800,
+          17629184,
+          17743872,
+          17743872,
+          17809408,
+          17842176,
+          18006016,
+          18006016,
+          18120704,
+          18120704,
+          18284544,
+          18284544,
+          18415616,
+          18415616,
+          18513920,
+          18366464,
+          18628608,
+          18628608,
+          18759680,
+          17612800,
+          17727488,
+          17727488,
+          17891328,
+          17891328,
+          18071552,
+          18104320,
+          18284544,
+          18284544,
+          18513920,
+          18513920,
+          18694144,
+          18694144,
+          18825216,
+          18825216,
+          18939904,
+          18956288
+        ],
+        "linear_ps_slope_bytes_per_cycle": 69887.5342964152,
+        "linear_ps_slope_MiB_per_minute_at_3s_pace": 1.3329989299090421,
+        "rss_gate_pass": true,
+        "growth_gate_pass": true
+      }
+    },
+    "pass": true,
+    "rss_sample_count": 1263,
+    "cleanup": [
+      {
+        "name": "client",
+        "pid": 44385,
+        "exit_code": 0,
+        "graceful": true,
+        "socket_removed_by_daemon": true,
+        "socket_absent": true,
+        "private_key_removed": true
+      },
+      {
+        "name": "server",
+        "pid": 44382,
+        "exit_code": 0,
+        "graceful": true,
+        "socket_removed_by_daemon": true,
+        "socket_absent": true,
+        "private_key_removed": true
+      }
+    ],
+    "binary_sha256_after": "1405abcc08a4f8b175d4116a413ac0426c5e708578e9e250487ff13d18ae97e5",
+    "binary_unchanged": true,
+    "repo_unchanged": true,
+    "workload_duration_s": 270.006,
+    "total_duration_s": 284.502
+  },
+  "control": {
+    "purpose": "Separate fixed diagnostic history serialization/cache retention from growing payload retention; no new RSS pass/fail gate",
+    "plan": {
+      "source": "655e59f69c490841dc2cd2c8128eca51545c15f7",
+      "sha256": "1405abcc08a4f8b175d4116a413ac0426c5e708578e9e250487ff13d18ae97e5",
+      "ports": [
+        26822,
+        26823
+      ],
+      "cycle_pace_s": 3,
+      "cycles": 90,
+      "prefill_forwarded_events": 5200,
+      "prefill_batch_events": 200,
+      "ledger_capacity": 4096,
+      "polling": "two extra virtual.recorded calls per node/cycle; stats uses since=u64::MAX, full uses since=0, both audit=true",
+      "phases": [
+        {
+          "name": "minimal-both",
+          "cycles": 20,
+          "modes": {
+            "server": "stats",
+            "client": "stats"
+          }
+        },
+        {
+          "name": "full-server",
+          "cycles": 20,
+          "modes": {
+            "server": "full",
+            "client": "stats"
+          }
+        },
+        {
+          "name": "full-client",
+          "cycles": 20,
+          "modes": {
+            "server": "stats",
+            "client": "full"
+          }
+        },
+        {
+          "name": "full-both",
+          "cycles": 20,
+          "modes": {
+            "server": "full",
+            "client": "full"
+          }
+        },
+        {
+          "name": "minimal-tail",
+          "cycles": 10,
+          "modes": {
+            "server": "stats",
+            "client": "stats"
+          }
+        }
+      ],
+      "os_tools": "vmmap -summary against owned Popen PIDs only; at prefill and each phase boundary",
+      "bounds": "270s scheduled repeated workload plus prefill/snapshots; maximum 330s from setup to end of phases"
+    },
+    "counts": {
+      "bulk_transfers": 180,
+      "bulk_bytes": 717225984,
+      "full_remote_hashes": 36,
+      "cancellations": 90,
+      "clears": 180,
+      "safe_patches": 92,
+      "input_batches": 90,
+      "reconnects": 9,
+      "pressed_recoveries": 9,
+      "cli_stats": 208,
+      "cli_trust_approvals": 2,
+      "prefill_batches": 26,
+      "prefill_injected_events": 5200,
+      "full_history_polls": 160,
+      "stats_history_polls": 200
+    },
+    "phase_results": [
+      {
+        "name": "minimal-both",
+        "cycles": [
+          1,
+          20
+        ],
+        "modes": {
+          "server": "stats",
+          "client": "stats"
+        },
+        "nodes": {
+          "server": {
+            "mode": "stats",
+            "rss_first10_median_bytes": 14041088.0,
+            "rss_last10_median_bytes": 14295040.0,
+            "rss_last10_minus_first10_bytes": 253952.0,
+            "rss_min_bytes": 12795904,
+            "rss_max_bytes": 14352384,
+            "linear_rss_MiB_per_minute": 1.0892079844732467,
+            "checkpoint_values_bytes": [
+              12795904,
+              13385728,
+              13451264,
+              13484032,
+              14041088,
+              14041088,
+              14123008,
+              14155776,
+              14172160,
+              14172160,
+              14204928,
+              14204928,
+              14237696,
+              14237696,
+              14270464,
+              14319616,
+              14319616,
+              14319616,
+              14336000,
+              14352384
+            ],
+            "history_response_min_bytes": 324,
+            "history_response_max_bytes": 324,
+            "history_rows_each": [
+              0
+            ],
+            "last_ledger_stats": {
+              "cursor": [
+                1920,
+                540
+              ],
+              "cursor_captured": true,
+              "cursor_visible": false,
+              "dropped": 1455,
+              "last_sequence": 5551,
+              "ledger_capacity": 4096,
+              "ledger_len": 4096,
+              "ledger_reserved_bytes": 393216,
+              "oldest_sequence": 1456,
+              "pressed_buttons": 0,
+              "pressed_keys": 0,
+              "prevent_sleep": false,
+              "sequence_exhausted": false
+            }
+          },
+          "client": {
+            "mode": "stats",
+            "rss_first10_median_bytes": 13565952.0,
+            "rss_last10_median_bytes": 13754368.0,
+            "rss_last10_minus_first10_bytes": 188416.0,
+            "rss_min_bytes": 12206080,
+            "rss_max_bytes": 13795328,
+            "linear_rss_MiB_per_minute": 0.999511661968072,
+            "checkpoint_values_bytes": [
+              12206080,
+              12812288,
+              12861440,
+              13500416,
+              13549568,
+              13582336,
+              13615104,
+              13631488,
+              13647872,
+              13664256,
+              13664256,
+              13713408,
+              13713408,
+              13746176,
+              13746176,
+              13762560,
+              13762560,
+              13795328,
+              13795328,
+              13795328
+            ],
+            "history_response_min_bytes": 321,
+            "history_response_max_bytes": 324,
+            "history_rows_each": [
+              0
+            ],
+            "last_ledger_stats": {
+              "cursor": [
+                0,
+                540
+              ],
+              "cursor_captured": false,
+              "cursor_visible": true,
+              "dropped": 1481,
+              "last_sequence": 5577,
+              "ledger_capacity": 4096,
+              "ledger_len": 4096,
+              "ledger_reserved_bytes": 393216,
+              "oldest_sequence": 1482,
+              "pressed_buttons": 0,
+              "pressed_keys": 0,
+              "prevent_sleep": false,
+              "sequence_exhausted": false
+            }
+          }
+        }
+      },
+      {
+        "name": "full-server",
+        "cycles": [
+          21,
+          40
+        ],
+        "modes": {
+          "server": "full",
+          "client": "stats"
+        },
+        "nodes": {
+          "server": {
+            "mode": "full",
+            "rss_first10_median_bytes": 33521664.0,
+            "rss_last10_median_bytes": 33554432.0,
+            "rss_last10_minus_first10_bytes": 32768.0,
+            "rss_min_bytes": 32833536,
+            "rss_max_bytes": 33587200,
+            "linear_rss_MiB_per_minute": 0.2774811364847911,
+            "checkpoint_values_bytes": [
+              32833536,
+              33439744,
+              33488896,
+              33505280,
+              33521664,
+              33521664,
+              33521664,
+              33521664,
+              33521664,
+              33554432,
+              33554432,
+              33554432,
+              33554432,
+              33554432,
+              33554432,
+              33554432,
+              33554432,
+              33554432,
+              33570816,
+              33587200
+            ],
+            "history_response_min_bytes": 957910,
+            "history_response_max_bytes": 959844,
+            "history_rows_each": [
+              4096
+            ],
+            "last_ledger_stats": {
+              "cursor": [
+                1920,
+                540
+              ],
+              "cursor_captured": true,
+              "cursor_visible": false,
+              "dropped": 1801,
+              "last_sequence": 5897,
+              "ledger_capacity": 4096,
+              "ledger_len": 4096,
+              "ledger_reserved_bytes": 393216,
+              "oldest_sequence": 1802,
+              "pressed_buttons": 0,
+              "pressed_keys": 0,
+              "prevent_sleep": false,
+              "sequence_exhausted": false
+            }
+          },
+          "client": {
+            "mode": "stats",
+            "rss_first10_median_bytes": 13811712.0,
+            "rss_last10_median_bytes": 13860864.0,
+            "rss_last10_minus_first10_bytes": 49152.0,
+            "rss_min_bytes": 13795328,
+            "rss_max_bytes": 13910016,
+            "linear_rss_MiB_per_minute": 0.09474563458525374,
+            "checkpoint_values_bytes": [
+              13795328,
+              13795328,
+              13795328,
+              13811712,
+              13811712,
+              13811712,
+              13811712,
+              13811712,
+              13811712,
+              13860864,
+              13860864,
+              13860864,
+              13860864,
+              13860864,
+              13860864,
+              13860864,
+              13860864,
+              13860864,
+              13860864,
+              13910016
+            ],
+            "history_response_min_bytes": 321,
+            "history_response_max_bytes": 324,
+            "history_rows_each": [
+              0
+            ],
+            "last_ledger_stats": {
+              "cursor": [
+                0,
+                540
+              ],
+              "cursor_captured": false,
+              "cursor_visible": true,
+              "dropped": 1853,
+              "last_sequence": 5949,
+              "ledger_capacity": 4096,
+              "ledger_len": 4096,
+              "ledger_reserved_bytes": 393216,
+              "oldest_sequence": 1854,
+              "pressed_buttons": 0,
+              "pressed_keys": 0,
+              "prevent_sleep": false,
+              "sequence_exhausted": false
+            }
+          }
+        }
+      },
+      {
+        "name": "full-client",
+        "cycles": [
+          41,
+          60
+        ],
+        "modes": {
+          "server": "stats",
+          "client": "full"
+        },
+        "nodes": {
+          "server": {
+            "mode": "stats",
+            "rss_first10_median_bytes": 33587200.0,
+            "rss_last10_median_bytes": 33603584.0,
+            "rss_last10_minus_first10_bytes": 16384.0,
+            "rss_min_bytes": 33587200,
+            "rss_max_bytes": 33603584,
+            "linear_rss_MiB_per_minute": 0.023096612844811636,
+            "checkpoint_values_bytes": [
+              33587200,
+              33587200,
+              33587200,
+              33587200,
+              33587200,
+              33587200,
+              33587200,
+              33587200,
+              33587200,
+              33603584,
+              33603584,
+              33603584,
+              33603584,
+              33603584,
+              33603584,
+              33603584,
+              33603584,
+              33603584,
+              33603584,
+              33603584
+            ],
+            "history_response_min_bytes": 324,
+            "history_response_max_bytes": 324,
+            "history_rows_each": [
+              0
+            ],
+            "last_ledger_stats": {
+              "cursor": [
+                1920,
+                540
+              ],
+              "cursor_captured": true,
+              "cursor_visible": false,
+              "dropped": 2147,
+              "last_sequence": 6243,
+              "ledger_capacity": 4096,
+              "ledger_len": 4096,
+              "ledger_reserved_bytes": 393216,
+              "oldest_sequence": 2148,
+              "pressed_buttons": 0,
+              "pressed_keys": 0,
+              "prevent_sleep": false,
+              "sequence_exhausted": false
+            }
+          },
+          "client": {
+            "mode": "full",
+            "rss_first10_median_bytes": 32235520.0,
+            "rss_last10_median_bytes": 32833536.0,
+            "rss_last10_minus_first10_bytes": 598016.0,
+            "rss_min_bytes": 32145408,
+            "rss_max_bytes": 32849920,
+            "linear_rss_MiB_per_minute": 0.7835320191235968,
+            "checkpoint_values_bytes": [
+              32145408,
+              32178176,
+              32210944,
+              32210944,
+              32227328,
+              32243712,
+              32768000,
+              32784384,
+              32784384,
+              32833536,
+              32833536,
+              32833536,
+              32833536,
+              32833536,
+              32833536,
+              32833536,
+              32833536,
+              32833536,
+              32833536,
+              32849920
+            ],
+            "history_response_min_bytes": 863524,
+            "history_response_max_bytes": 865249,
+            "history_rows_each": [
+              4096
+            ],
+            "last_ledger_stats": {
+              "cursor": [
+                0,
+                540
+              ],
+              "cursor_captured": false,
+              "cursor_visible": true,
+              "dropped": 2224,
+              "last_sequence": 6320,
+              "ledger_capacity": 4096,
+              "ledger_len": 4096,
+              "ledger_reserved_bytes": 393216,
+              "oldest_sequence": 2225,
+              "pressed_buttons": 0,
+              "pressed_keys": 0,
+              "prevent_sleep": false,
+              "sequence_exhausted": false
+            }
+          }
+        }
+      },
+      {
+        "name": "full-both",
+        "cycles": [
+          61,
+          80
+        ],
+        "modes": {
+          "server": "full",
+          "client": "full"
+        },
+        "nodes": {
+          "server": {
+            "mode": "full",
+            "rss_first10_median_bytes": 33603584.0,
+            "rss_last10_median_bytes": 31916032.0,
+            "rss_last10_minus_first10_bytes": -1687552.0,
+            "rss_min_bytes": 31916032,
+            "rss_max_bytes": 33619968,
+            "linear_rss_MiB_per_minute": -2.3104989663635145,
+            "checkpoint_values_bytes": [
+              33603584,
+              33603584,
+              33603584,
+              33603584,
+              33603584,
+              33603584,
+              33603584,
+              33603584,
+              33603584,
+              33619968,
+              33619968,
+              33619968,
+              31916032,
+              31916032,
+              31916032,
+              31916032,
+              31916032,
+              31916032,
+              31916032,
+              31948800
+            ],
+            "history_response_min_bytes": 954474,
+            "history_response_max_bytes": 956184,
+            "history_rows_each": [
+              4096
+            ],
+            "last_ledger_stats": {
+              "cursor": [
+                1920,
+                540
+              ],
+              "cursor_captured": true,
+              "cursor_visible": false,
+              "dropped": 2493,
+              "last_sequence": 6589,
+              "ledger_capacity": 4096,
+              "ledger_len": 4096,
+              "ledger_reserved_bytes": 393216,
+              "oldest_sequence": 2494,
+              "pressed_buttons": 0,
+              "pressed_keys": 0,
+              "prevent_sleep": false,
+              "sequence_exhausted": false
+            }
+          },
+          "client": {
+            "mode": "full",
+            "rss_first10_median_bytes": 32849920.0,
+            "rss_last10_median_bytes": 32006144.0,
+            "rss_last10_minus_first10_bytes": -843776.0,
+            "rss_min_bytes": 31719424,
+            "rss_max_bytes": 33439744,
+            "linear_rss_MiB_per_minute": -1.415091816683624,
+            "checkpoint_values_bytes": [
+              32849920,
+              32849920,
+              32849920,
+              32849920,
+              32849920,
+              32849920,
+              32849920,
+              33390592,
+              33390592,
+              33439744,
+              33439744,
+              33439744,
+              32309248,
+              32243712,
+              32243712,
+              31719424,
+              31719424,
+              31719424,
+              31719424,
+              31768576
+            ],
+            "history_response_min_bytes": 865276,
+            "history_response_max_bytes": 867012,
+            "history_rows_each": [
+              4096
+            ],
+            "last_ledger_stats": {
+              "cursor": [
+                0,
+                540
+              ],
+              "cursor_captured": false,
+              "cursor_visible": true,
+              "dropped": 2597,
+              "last_sequence": 6693,
+              "ledger_capacity": 4096,
+              "ledger_len": 4096,
+              "ledger_reserved_bytes": 393216,
+              "oldest_sequence": 2598,
+              "pressed_buttons": 0,
+              "pressed_keys": 0,
+              "prevent_sleep": false,
+              "sequence_exhausted": false
+            }
+          }
+        }
+      },
+      {
+        "name": "minimal-tail",
+        "cycles": [
+          81,
+          90
+        ],
+        "modes": {
+          "server": "stats",
+          "client": "stats"
+        },
+        "nodes": {
+          "server": {
+            "mode": "stats",
+            "rss_first10_median_bytes": 31948800.0,
+            "rss_last10_median_bytes": 31948800.0,
+            "rss_last10_minus_first10_bytes": 0.0,
+            "rss_min_bytes": 31948800,
+            "rss_max_bytes": 31965184,
+            "linear_rss_MiB_per_minute": 0.01705967767088131,
+            "checkpoint_values_bytes": [
+              31948800,
+              31948800,
+              31948800,
+              31948800,
+              31948800,
+              31948800,
+              31948800,
+              31948800,
+              31948800,
+              31965184
+            ],
+            "history_response_min_bytes": 324,
+            "history_response_max_bytes": 324,
+            "history_rows_each": [
+              0
+            ],
+            "last_ledger_stats": {
+              "cursor": [
+                1920,
+                540
+              ],
+              "cursor_captured": true,
+              "cursor_visible": false,
+              "dropped": 2666,
+              "last_sequence": 6762,
+              "ledger_capacity": 4096,
+              "ledger_len": 4096,
+              "ledger_reserved_bytes": 393216,
+              "oldest_sequence": 2667,
+              "pressed_buttons": 0,
+              "pressed_keys": 0,
+              "prevent_sleep": false,
+              "sequence_exhausted": false
+            }
+          },
+          "client": {
+            "mode": "stats",
+            "rss_first10_median_bytes": 31768576.0,
+            "rss_last10_median_bytes": 31768576.0,
+            "rss_last10_minus_first10_bytes": 0.0,
+            "rss_min_bytes": 30736384,
+            "rss_max_bytes": 31768576,
+            "linear_rss_MiB_per_minute": -2.8314023635766605,
+            "checkpoint_values_bytes": [
+              31768576,
+              31768576,
+              31768576,
+              31768576,
+              31768576,
+              31768576,
+              30736384,
+              30736384,
+              30736384,
+              30752768
+            ],
+            "history_response_min_bytes": 321,
+            "history_response_max_bytes": 324,
+            "history_rows_each": [
+              0
+            ],
+            "last_ledger_stats": {
+              "cursor": [
+                0,
+                540
+              ],
+              "cursor_captured": false,
+              "cursor_visible": true,
+              "dropped": 2782,
+              "last_sequence": 6878,
+              "ledger_capacity": 4096,
+              "ledger_len": 4096,
+              "ledger_reserved_bytes": 393216,
+              "oldest_sequence": 2783,
+              "pressed_buttons": 0,
+              "pressed_keys": 0,
+              "prevent_sleep": false,
+              "sequence_exhausted": false
+            }
+          }
+        }
+      }
+    ],
+    "failure": null,
+    "provenance": {
+      "head": "2b902d9921d3dd5c93e997edb0b0335594fcde44",
+      "source": "655e59f69c490841dc2cd2c8128eca51545c15f7",
+      "binary": "LOCAL_PINNED_BINARY/openergy",
+      "sha256": "1405abcc08a4f8b175d4116a413ac0426c5e708578e9e250487ff13d18ae97e5",
+      "tracked_non_exception_files_verified": 514,
+      "docs_only_differences": [
+        "README.md",
+        "crates/platform-linux/FINAL-R5-VERIFICATION-2026-10-22.md",
+        "docs/verification/release-integration-2026-10-22/README.md",
+        "docs/verification/release-integration-2026-10-22/round5.json",
+        "docs/verification/release-integration-2026-10-22/round5.md",
+        "tools/windows/ROUND5-1ef54fc.md"
+      ],
+      "package_build_commit": "655e59f69c490841dc2cd2c8128eca51545c15f7",
+      "clean_before": true
+    },
+    "prefill": {
+      "states": {
+        "server": {
+          "cursor": [
+            1920,
+            540
+          ],
+          "cursor_captured": true,
+          "cursor_visible": false,
+          "dropped": 1109,
+          "last_sequence": 5205,
+          "ledger_capacity": 4096,
+          "ledger_len": 4096,
+          "ledger_reserved_bytes": 393216,
+          "oldest_sequence": 1110,
+          "pressed_buttons": 0,
+          "pressed_keys": 0,
+          "prevent_sleep": false,
+          "sequence_exhausted": false
+        },
+        "client": {
+          "cursor": [
+            0,
+            540
+          ],
+          "cursor_captured": false,
+          "cursor_visible": true,
+          "dropped": 1110,
+          "last_sequence": 5206,
+          "ledger_capacity": 4096,
+          "ledger_len": 4096,
+          "ledger_reserved_bytes": 393216,
+          "oldest_sequence": 1111,
+          "pressed_buttons": 0,
+          "pressed_keys": 0,
+          "prevent_sleep": false,
+          "sequence_exhausted": false
+        }
+      },
+      "batches": [
+        {
+          "batch": 1,
+          "client_sequence": 206,
+          "client_len": 206,
+          "client_dropped": 0
+        },
+        {
+          "batch": 2,
+          "client_sequence": 406,
+          "client_len": 406,
+          "client_dropped": 0
+        },
+        {
+          "batch": 3,
+          "client_sequence": 606,
+          "client_len": 606,
+          "client_dropped": 0
+        },
+        {
+          "batch": 4,
+          "client_sequence": 806,
+          "client_len": 806,
+          "client_dropped": 0
+        },
+        {
+          "batch": 5,
+          "client_sequence": 1006,
+          "client_len": 1006,
+          "client_dropped": 0
+        },
+        {
+          "batch": 6,
+          "client_sequence": 1206,
+          "client_len": 1206,
+          "client_dropped": 0
+        },
+        {
+          "batch": 7,
+          "client_sequence": 1406,
+          "client_len": 1406,
+          "client_dropped": 0
+        },
+        {
+          "batch": 8,
+          "client_sequence": 1606,
+          "client_len": 1606,
+          "client_dropped": 0
+        },
+        {
+          "batch": 9,
+          "client_sequence": 1806,
+          "client_len": 1806,
+          "client_dropped": 0
+        },
+        {
+          "batch": 10,
+          "client_sequence": 2006,
+          "client_len": 2006,
+          "client_dropped": 0
+        },
+        {
+          "batch": 11,
+          "client_sequence": 2206,
+          "client_len": 2206,
+          "client_dropped": 0
+        },
+        {
+          "batch": 12,
+          "client_sequence": 2406,
+          "client_len": 2406,
+          "client_dropped": 0
+        },
+        {
+          "batch": 13,
+          "client_sequence": 2606,
+          "client_len": 2606,
+          "client_dropped": 0
+        },
+        {
+          "batch": 14,
+          "client_sequence": 2806,
+          "client_len": 2806,
+          "client_dropped": 0
+        },
+        {
+          "batch": 15,
+          "client_sequence": 3006,
+          "client_len": 3006,
+          "client_dropped": 0
+        },
+        {
+          "batch": 16,
+          "client_sequence": 3206,
+          "client_len": 3206,
+          "client_dropped": 0
+        },
+        {
+          "batch": 17,
+          "client_sequence": 3406,
+          "client_len": 3406,
+          "client_dropped": 0
+        },
+        {
+          "batch": 18,
+          "client_sequence": 3606,
+          "client_len": 3606,
+          "client_dropped": 0
+        },
+        {
+          "batch": 19,
+          "client_sequence": 3806,
+          "client_len": 3806,
+          "client_dropped": 0
+        },
+        {
+          "batch": 20,
+          "client_sequence": 4006,
+          "client_len": 4006,
+          "client_dropped": 0
+        },
+        {
+          "batch": 21,
+          "client_sequence": 4206,
+          "client_len": 4096,
+          "client_dropped": 110
+        },
+        {
+          "batch": 22,
+          "client_sequence": 4406,
+          "client_len": 4096,
+          "client_dropped": 310
+        },
+        {
+          "batch": 23,
+          "client_sequence": 4606,
+          "client_len": 4096,
+          "client_dropped": 510
+        },
+        {
+          "batch": 24,
+          "client_sequence": 4806,
+          "client_len": 4096,
+          "client_dropped": 710
+        },
+        {
+          "batch": 25,
+          "client_sequence": 5006,
+          "client_len": 4096,
+          "client_dropped": 910
+        },
+        {
+          "batch": 26,
+          "client_sequence": 5206,
+          "client_len": 4096,
+          "client_dropped": 1110
+        }
+      ],
+      "memory": {
+        "server": {
+          "ps_rss_bytes": 11845632,
+          "cli_rss_bytes": 11829248,
+          "events_in": 5204,
+          "events_out": 5207
+        },
+        "client": {
+          "ps_rss_bytes": 11354112,
+          "cli_rss_bytes": 11354112,
+          "events_in": 5207,
+          "events_out": 2
+        }
+      }
+    },
+    "final_stats": {
+      "server": {
+        "cursor": [
+          1920,
+          540
+        ],
+        "cursor_captured": true,
+        "cursor_visible": false,
+        "dropped": 2666,
+        "last_sequence": 6762,
+        "ledger_capacity": 4096,
+        "ledger_len": 4096,
+        "ledger_reserved_bytes": 393216,
+        "oldest_sequence": 2667,
+        "pressed_buttons": 0,
+        "pressed_keys": 0,
+        "prevent_sleep": false,
+        "sequence_exhausted": false
+      },
+      "client": {
+        "cursor": [
+          0,
+          540
+        ],
+        "cursor_captured": false,
+        "cursor_visible": true,
+        "dropped": 2783,
+        "last_sequence": 6879,
+        "ledger_capacity": 4096,
+        "ledger_len": 4096,
+        "ledger_reserved_bytes": 393216,
+        "oldest_sequence": 2784,
+        "pressed_buttons": 0,
+        "pressed_keys": 0,
+        "prevent_sleep": false,
+        "sequence_exhausted": false
+      }
+    },
+    "flow_pass": true,
+    "rss_sample_count": 1296,
+    "sampled_peak_rss_bytes": {
+      "server": 50397184,
+      "client": 49659904
+    },
+    "cleanup": [
+      {
+        "name": "client",
+        "pid": 26622,
+        "exit_code": 0,
+        "graceful": true,
+        "socket_removed_by_daemon": true,
+        "socket_absent": true,
+        "private_key_removed": true
+      },
+      {
+        "name": "server",
+        "pid": 26619,
+        "exit_code": 0,
+        "graceful": true,
+        "socket_removed_by_daemon": true,
+        "socket_absent": true,
+        "private_key_removed": true
+      }
+    ],
+    "binary_sha256_after": "1405abcc08a4f8b175d4116a413ac0426c5e708578e9e250487ff13d18ae97e5",
+    "binary_unchanged": true,
+    "original_evidence_unchanged": true,
+    "repo_unchanged": true,
+    "workload_duration_s": 276.054,
+    "owned_duration_s": 278.039,
+    "total_duration_s": 290.413,
+    "completed": true
+  },
+  "control_analysis": {
+    "conclusion": "Controlled full-history polling caused resident free/fragmented Darwin malloc pages. Fixed-history operation showed a bounded high-water plateau in this run. No unbounded clipboard-buffer retention was reproduced.",
+    "scope_limit": "Causal control identifies the diagnostic serialization/cache contribution. It does not retroactively classify every byte of the original 1.33 MiB/min slope, provide allocation stack traces, or prove a bound for all workloads.",
+    "new_rss_gate": null,
+    "reciprocal_full_poll_step_bytes": {
+      "server": 19259392.0,
+      "client": 18972672.0
+    },
+    "os_snapshots": [
+      {
+        "label": "00-prefill",
+        "elapsed_s": 11.15,
+        "nodes": {
+          "server": {
+            "os_values_are_rounded": true,
+            "virtual_display": "21.3M",
+            "resident_display": "2480K",
+            "dirty_display": "2480K",
+            "swapped_display": "0K",
+            "allocation_count": 918,
+            "allocated_display": "742K",
+            "dirty_plus_swap_fragment_display": "1738K",
+            "fragment_percent_display": "71%",
+            "region_count": 8,
+            "resident_plus_swap_MiB_approx": 2.421875,
+            "raw_line": "DefaultMallocZone_0x103020000      21.3M      2480K      2480K         0K        918       742K      1738K     71%       8",
+            "rss_before_ps_bytes": 11845632,
+            "stack_line": "Stack                             16.1M     144K     144K       0K       0K       0K       0K        6 ",
+            "untagged_line": "Untagged                            96K       0K       0K       0K       0K       0K       0K        6 ",
+            "file": "LOCAL_CONTROL_EVIDENCE/00-prefill-server-vmmap.txt"
+          },
+          "client": {
+            "os_values_are_rounded": true,
+            "virtual_display": "33.3M",
+            "resident_display": "2080K",
+            "dirty_display": "2080K",
+            "swapped_display": "0K",
+            "allocation_count": 903,
+            "allocated_display": "717K",
+            "dirty_plus_swap_fragment_display": "1363K",
+            "fragment_percent_display": "66%",
+            "region_count": 11,
+            "resident_plus_swap_MiB_approx": 2.03125,
+            "raw_line": "DefaultMallocZone_0x104ce8000      33.3M      2080K      2080K         0K        903       717K      1363K     66%      11",
+            "rss_before_ps_bytes": 11354112,
+            "stack_line": "Stack                             14.1M     128K     128K       0K       0K       0K       0K        5 ",
+            "untagged_line": "Untagged                            80K       0K       0K       0K       0K       0K       0K        5 ",
+            "file": "LOCAL_CONTROL_EVIDENCE/00-prefill-client-vmmap.txt"
+          }
+        }
+      },
+      {
+        "label": "01-minimal-both",
+        "elapsed_s": 72.622,
+        "nodes": {
+          "server": {
+            "os_values_are_rounded": true,
+            "virtual_display": "41.3M",
+            "resident_display": "4928K",
+            "dirty_display": "4592K",
+            "swapped_display": "0K",
+            "allocation_count": 951,
+            "allocated_display": "725K",
+            "dirty_plus_swap_fragment_display": "3867K",
+            "fragment_percent_display": "85%",
+            "region_count": 13,
+            "resident_plus_swap_MiB_approx": 4.8125,
+            "raw_line": "DefaultMallocZone_0x103020000      41.3M      4928K      4592K         0K        951       725K      3867K     85%      13",
+            "rss_before_ps_bytes": 14352384,
+            "stack_line": "Stack                             16.1M     144K     144K       0K       0K       0K       0K        6 ",
+            "untagged_line": "Untagged                            96K       0K       0K       0K       0K       0K       0K        6 ",
+            "file": "LOCAL_CONTROL_EVIDENCE/01-minimal-both-server-vmmap.txt"
+          },
+          "client": {
+            "os_values_are_rounded": true,
+            "virtual_display": "45.3M",
+            "resident_display": "4448K",
+            "dirty_display": "3936K",
+            "swapped_display": "0K",
+            "allocation_count": 911,
+            "allocated_display": "715K",
+            "dirty_plus_swap_fragment_display": "3221K",
+            "fragment_percent_display": "82%",
+            "region_count": 14,
+            "resident_plus_swap_MiB_approx": 4.34375,
+            "raw_line": "DefaultMallocZone_0x104ce8000      45.3M      4448K      3936K         0K        911       715K      3221K     82%      14",
+            "rss_before_ps_bytes": 13795328,
+            "stack_line": "Stack                             14.1M     128K     128K       0K       0K       0K       0K        5 ",
+            "untagged_line": "Untagged                            80K       0K       0K       0K       0K       0K       0K        5 ",
+            "file": "LOCAL_CONTROL_EVIDENCE/01-minimal-both-client-vmmap.txt"
+          }
+        }
+      },
+      {
+        "label": "02-full-server",
+        "elapsed_s": 133.787,
+        "nodes": {
+          "server": {
+            "os_values_are_rounded": true,
+            "virtual_display": "65.3M",
+            "resident_display": "23.1M",
+            "dirty_display": "23.0M",
+            "swapped_display": "0K",
+            "allocation_count": 977,
+            "allocated_display": "730K",
+            "dirty_plus_swap_fragment_display": "22.2M",
+            "fragment_percent_display": "97%",
+            "region_count": 19,
+            "resident_plus_swap_MiB_approx": 23.1,
+            "raw_line": "DefaultMallocZone_0x103020000      65.3M      23.1M      23.0M         0K        977       730K      22.2M     97%      19",
+            "rss_before_ps_bytes": 33587200,
+            "stack_line": "Stack                             16.1M     144K     144K       0K       0K       0K       0K        6 ",
+            "untagged_line": "Untagged                            96K       0K       0K       0K       0K       0K       0K        6 ",
+            "file": "LOCAL_CONTROL_EVIDENCE/02-full-server-server-vmmap.txt"
+          },
+          "client": {
+            "os_values_are_rounded": true,
+            "virtual_display": "45.3M",
+            "resident_display": "4560K",
+            "dirty_display": "4032K",
+            "swapped_display": "0K",
+            "allocation_count": 913,
+            "allocated_display": "715K",
+            "dirty_plus_swap_fragment_display": "3317K",
+            "fragment_percent_display": "83%",
+            "region_count": 14,
+            "resident_plus_swap_MiB_approx": 4.453125,
+            "raw_line": "DefaultMallocZone_0x104ce8000      45.3M      4560K      4032K         0K        913       715K      3317K     83%      14",
+            "rss_before_ps_bytes": 13910016,
+            "stack_line": "Stack                             14.1M     128K     128K       0K       0K       0K       0K        5 ",
+            "untagged_line": "Untagged                            80K       0K       0K       0K       0K       0K       0K        5 ",
+            "file": "LOCAL_CONTROL_EVIDENCE/02-full-server-client-vmmap.txt"
+          }
+        }
+      },
+      {
+        "label": "03-full-client",
+        "elapsed_s": 194.95,
+        "nodes": {
+          "server": {
+            "os_values_are_rounded": true,
+            "virtual_display": "65.3M",
+            "resident_display": "23.2M",
+            "dirty_display": "4912K",
+            "swapped_display": "0K",
+            "allocation_count": 1003,
+            "allocated_display": "734K",
+            "dirty_plus_swap_fragment_display": "4178K",
+            "fragment_percent_display": "86%",
+            "region_count": 19,
+            "resident_plus_swap_MiB_approx": 23.2,
+            "raw_line": "DefaultMallocZone_0x103020000      65.3M      23.2M      4912K         0K       1003       734K      4178K     86%      19",
+            "rss_before_ps_bytes": 33603584,
+            "stack_line": "Stack                             16.1M     144K     144K       0K       0K       0K       0K        6 ",
+            "untagged_line": "Untagged                            96K       0K       0K       0K       0K       0K       0K        6 ",
+            "file": "LOCAL_CONTROL_EVIDENCE/03-full-client-server-vmmap.txt"
+          },
+          "client": {
+            "os_values_are_rounded": true,
+            "virtual_display": "61.3M",
+            "resident_display": "22.5M",
+            "dirty_display": "21.3M",
+            "swapped_display": "0K",
+            "allocation_count": 915,
+            "allocated_display": "715K",
+            "dirty_plus_swap_fragment_display": "20.6M",
+            "fragment_percent_display": "97%",
+            "region_count": 18,
+            "resident_plus_swap_MiB_approx": 22.5,
+            "raw_line": "DefaultMallocZone_0x104ce8000      61.3M      22.5M      21.3M         0K        915       715K      20.6M     97%      18",
+            "rss_before_ps_bytes": 32849920,
+            "stack_line": "Stack                             14.1M     128K     128K       0K       0K       0K       0K        5 ",
+            "untagged_line": "Untagged                            80K       0K       0K       0K       0K       0K       0K        5 ",
+            "file": "LOCAL_CONTROL_EVIDENCE/03-full-client-client-vmmap.txt"
+          }
+        }
+      },
+      {
+        "label": "04-full-both",
+        "elapsed_s": 256.163,
+        "nodes": {
+          "server": {
+            "os_values_are_rounded": true,
+            "virtual_display": "65.3M",
+            "resident_display": "22.3M",
+            "dirty_display": "22.3M",
+            "swapped_display": "416K",
+            "allocation_count": 1029,
+            "allocated_display": "739K",
+            "dirty_plus_swap_fragment_display": "22.0M",
+            "fragment_percent_display": "97%",
+            "region_count": 19,
+            "resident_plus_swap_MiB_approx": 22.70625,
+            "raw_line": "DefaultMallocZone_0x103020000      65.3M      22.3M      22.3M       416K       1029       739K      22.0M     97%      19",
+            "rss_before_ps_bytes": 31948800,
+            "stack_line": "Stack                             16.1M     128K     128K      16K       0K       0K       0K        6 ",
+            "untagged_line": "Untagged                            96K       0K       0K       0K       0K       0K       0K        6 ",
+            "file": "LOCAL_CONTROL_EVIDENCE/04-full-both-server-vmmap.txt"
+          },
+          "client": {
+            "os_values_are_rounded": true,
+            "virtual_display": "61.3M",
+            "resident_display": "22.2M",
+            "dirty_display": "21.4M",
+            "swapped_display": "880K",
+            "allocation_count": 917,
+            "allocated_display": "716K",
+            "dirty_plus_swap_fragment_display": "21.6M",
+            "fragment_percent_display": "97%",
+            "region_count": 18,
+            "resident_plus_swap_MiB_approx": 23.059375,
+            "raw_line": "DefaultMallocZone_0x104ce8000      61.3M      22.2M      21.4M       880K        917       716K      21.6M     97%      18",
+            "rss_before_ps_bytes": 31768576,
+            "stack_line": "Stack                             14.1M     112K     112K      16K       0K       0K       0K        5 ",
+            "untagged_line": "Untagged                            80K       0K       0K       0K       0K       0K       0K        5 ",
+            "file": "LOCAL_CONTROL_EVIDENCE/04-full-both-client-vmmap.txt"
+          }
+        }
+      },
+      {
+        "label": "05-minimal-tail",
+        "elapsed_s": 287.475,
+        "nodes": {
+          "server": {
+            "os_values_are_rounded": true,
+            "virtual_display": "65.3M",
+            "resident_display": "22.3M",
+            "dirty_display": "22.3M",
+            "swapped_display": "416K",
+            "allocation_count": 1042,
+            "allocated_display": "742K",
+            "dirty_plus_swap_fragment_display": "22.0M",
+            "fragment_percent_display": "97%",
+            "region_count": 19,
+            "resident_plus_swap_MiB_approx": 22.70625,
+            "raw_line": "DefaultMallocZone_0x103020000      65.3M      22.3M      22.3M       416K       1042       742K      22.0M     97%      19",
+            "rss_before_ps_bytes": 31965184,
+            "stack_line": "Stack                             16.1M     128K     128K      16K       0K       0K       0K        6 ",
+            "untagged_line": "Untagged                            96K       0K       0K       0K       0K       0K       0K        6 ",
+            "file": "LOCAL_CONTROL_EVIDENCE/05-minimal-tail-server-vmmap.txt"
+          },
+          "client": {
+            "os_values_are_rounded": true,
+            "virtual_display": "61.3M",
+            "resident_display": "21.2M",
+            "dirty_display": "21.2M",
+            "swapped_display": "1104K",
+            "allocation_count": 918,
+            "allocated_display": "716K",
+            "dirty_plus_swap_fragment_display": "21.6M",
+            "fragment_percent_display": "97%",
+            "region_count": 18,
+            "resident_plus_swap_MiB_approx": 22.278125,
+            "raw_line": "DefaultMallocZone_0x104ce8000      61.3M      21.2M      21.2M      1104K        918       716K      21.6M     97%      18",
+            "rss_before_ps_bytes": 30752768,
+            "stack_line": "Stack                             14.1M     112K     112K      16K       0K       0K       0K        5 ",
+            "untagged_line": "Untagged                            80K       0K       0K       0K       0K       0K       0K        5 ",
+            "file": "LOCAL_CONTROL_EVIDENCE/05-minimal-tail-client-vmmap.txt"
+          }
+        }
+      }
+    ],
+    "full_both_balanced_windows": {
+      "server": {
+        "cycles_first": [
+          61,
+          70
+        ],
+        "cycles_late": [
+          71,
+          80
+        ],
+        "first_median_bytes": 33603584.0,
+        "late_median_bytes": 31916032.0,
+        "change_bytes": -1687552.0,
+        "slope_MiB_per_minute": -2.3104989663635145
+      },
+      "client": {
+        "cycles_first": [
+          61,
+          70
+        ],
+        "cycles_late": [
+          71,
+          80
+        ],
+        "first_median_bytes": 32849920.0,
+        "late_median_bytes": 32006144.0,
+        "change_bytes": -843776.0,
+        "slope_MiB_per_minute": -1.415091816683624
+      }
+    },
+    "tail_note": "Tail has only 10 cycles, so its driver first10/last10 fields overlap and are not independent evidence. Use its min/max range and time trend, plus the preceding balanced full-both windows.",
+    "tail_range_bytes": {
+      "server": [
+        31948800,
+        31965184
+      ],
+      "client": [
+        30736384,
+        31768576
+      ]
+    },
+    "swapping_note": "RSS decreases partly coincide with up to 416K server and 1104K client swapped malloc pages. The allocation counts, virtual zone/region bounds and resident-plus-swapped figures support the boundedness result independently of RSS falling.",
+    "log_sizes": {
+      "server": {
+        "line_count": 70,
+        "bytes": 7502
+      },
+      "client": {
+        "line_count": 14,
+        "bytes": 1623
+      }
+    },
+    "no_product_bug_handoff": "No unbounded retention defect reproduced in this fixed workload. Avoid full ledger retrieval for stats: use since=u64::MAX, or an explicit recent since cursor when reading events. Optional product work is a stats-only path and less JSON response materialization; no implementation was made.",
+    "evidence_unchanged": {
+      "owned_pids_absent": true,
+      "sockets_absent": true,
+      "private_keys_absent": true,
+      "original_evidence_unchanged": true,
+      "original_files_verified": 61,
+      "binary_sha256": "1405abcc08a4f8b175d4116a413ac0426c5e708578e9e250487ff13d18ae97e5",
+      "repo_status": "",
+      "nice_values": [
+        15
+      ],
+      "os_snapshot_exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "raw_evidence_sha256": {
+    "sustained/report.json": "a2adea345b28a61d40320f49053a0a7391ad23fae259addd858be3f223b8eaee",
+    "sustained/driver.py": "3f8c4e4c60a2935c2f8b99821b275bb56f84550a9525d51ad587f1a1aa95b8e8",
+    "sustained/rss-ps.jsonl": "ebb6ada6a1983a1c359a5472e28b568dfd75c04a5f1507a7027217afc8f43a01",
+    "sustained/preliminary-driver-corrections.json": "4b7fdcf34bea8452acec17ae28b75a29e646c061e0b1c05a69eb01f2d308722b",
+    "control/report.json": "ddbaaa914123ecdaa035622788c371aa97bf6dfbeb888f7322377e48bf3dc16e",
+    "control/driver.py": "185c63790179dbb7026e219e711aae382f146ee8b3350c2adbb2c0089137ecbc",
+    "control/analysis.json": "b7b092c74fafc2a4fa7e49f2175ffc83d0bbed4cb734f016d3c23a62f32f6f9f",
+    "control/findings.txt": "9bcea00e361886c2cbf612e8097c6934e06dd2afec2e8ab6d78ce18db2f53d22",
+    "control/rss-ps.jsonl": "29f88941f9ca4eb038fb0a04728f2c0d2bdb92ac30fe5a9564662b19a05d0188",
+    "control/final-readback.json": "9bfc8c08b01a7038f3d2a8fc3c723aca01eee2815721a5d71fdcbdb79d30ffa0",
+    "control/startup-driver-correction.json": "e7d947706fb51e62428fb2128dc2193bf35f6c8ee4e48bfe67e09e9111ecd5a1"
+  }
+}

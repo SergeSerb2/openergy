@@ -1,0 +1,3609 @@
+{
+  "date": "2026-10-22",
+  "integration_source_commit": "974a17e0f9d0bd465b5466163238a0cd8d00b323",
+  "runtime_change_commit": "ebf30ee01999ee4dc7849b52bc057b60a6bf0625",
+  "probe_commit": "c2de2b7",
+  "guardrail_probe_commit": "974a17e0f9d0bd465b5466163238a0cd8d00b323",
+  "baseline_source_commit": "e07ecca5e662acb037b5f195455727c983225ec8",
+  "environment": {
+    "os": "macOS 27.2",
+    "architecture": "arm64",
+    "rust": "1.99.1",
+    "macos_deployment_target": "15.0",
+    "cargo_jobs": 2,
+    "priority": "nice 15",
+    "python": "3.14.9",
+    "ssl": "OpenSSL 4.0.3 29 Sep 2026",
+    "timing": "sequential paired processes; no concurrent owned build"
+  },
+  "flood_matrix": {
+    "baseline": {
+      "plain": {
+        "scenario": "R5-tiny-control-queue-memory",
+        "source": "e07ecca5e662acb037b5f195455727c983225ec8",
+        "binary_sha256": "4ba143a7f99f03e2a0c5a844b6c40589ac10dc0c8543d6ca3f3f0341effc3091",
+        "platform": "Darwin",
+        "baseline_rss_bytes": 8962048,
+        "tls_version": null,
+        "peak_rss_bytes": 24477696,
+        "growth_bytes": 15515648,
+        "growth_limit_bytes": 67108864,
+        "max_ipc_ms": 225.518,
+        "ipc_budget_ms": 100.0,
+        "within_ipc_budget": false,
+        "stressed": true,
+        "passed": false,
+        "samples": [
+          {
+            "seconds": 0.045,
+            "rss_bytes": 15204352,
+            "sent_frames": 270336,
+            "events_out": 40962,
+            "ipc_ms": 40.215,
+            "error_code": null
+          },
+          {
+            "seconds": 0.308,
+            "rss_bytes": 21004288,
+            "sent_frames": 352256,
+            "events_out": 106498,
+            "ipc_ms": 55.293,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 0.713,
+            "rss_bytes": 24477696,
+            "sent_frames": 393216,
+            "events_out": 172034,
+            "ipc_ms": 194.899,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.087,
+            "rss_bytes": 21102592,
+            "sent_frames": 475136,
+            "events_out": 237570,
+            "ipc_ms": 166.419,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.522,
+            "rss_bytes": 21168128,
+            "sent_frames": 557056,
+            "events_out": 303106,
+            "ipc_ms": 225.518,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.775,
+            "rss_bytes": 21217280,
+            "sent_frames": 557056,
+            "events_out": 335874,
+            "ipc_ms": 48.152,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.006,
+            "rss_bytes": 21250048,
+            "sent_frames": 598016,
+            "events_out": 368642,
+            "ipc_ms": 21.276,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.309,
+            "rss_bytes": 21250048,
+            "sent_frames": 598016,
+            "events_out": 401410,
+            "ipc_ms": 98.332,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.539,
+            "rss_bytes": 21282816,
+            "sent_frames": 663552,
+            "events_out": 434178,
+            "ipc_ms": 24.67,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.767,
+            "rss_bytes": 21282816,
+            "sent_frames": 663552,
+            "events_out": 466946,
+            "ipc_ms": 18.565,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.014,
+            "rss_bytes": 21299200,
+            "sent_frames": 753664,
+            "events_out": 499714,
+            "ipc_ms": 38.777,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.251,
+            "rss_bytes": 21315584,
+            "sent_frames": 753664,
+            "events_out": 532482,
+            "ipc_ms": 27.915,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.459,
+            "rss_bytes": 15581184,
+            "sent_frames": 753664,
+            "events_out": 532482,
+            "ipc_ms": 0.238,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.669,
+            "rss_bytes": 15613952,
+            "sent_frames": 753664,
+            "events_out": 532482,
+            "ipc_ms": 0.316,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.875,
+            "rss_bytes": 15613952,
+            "sent_frames": 753664,
+            "events_out": 532482,
+            "ipc_ms": 0.468,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.085,
+            "rss_bytes": 15630336,
+            "sent_frames": 753664,
+            "events_out": 532482,
+            "ipc_ms": 0.252,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.294,
+            "rss_bytes": 15630336,
+            "sent_frames": 753664,
+            "events_out": 532482,
+            "ipc_ms": 0.251,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.506,
+            "rss_bytes": 15630336,
+            "sent_frames": 753664,
+            "events_out": 532482,
+            "ipc_ms": 0.235,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.716,
+            "rss_bytes": 15630336,
+            "sent_frames": 753664,
+            "events_out": 532482,
+            "ipc_ms": 0.26,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.926,
+            "rss_bytes": 15630336,
+            "sent_frames": 753664,
+            "events_out": 532482,
+            "ipc_ms": 0.302,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.137,
+            "rss_bytes": 15630336,
+            "sent_frames": 753664,
+            "events_out": 532482,
+            "ipc_ms": 0.557,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.347,
+            "rss_bytes": 15630336,
+            "sent_frames": 753664,
+            "events_out": 532482,
+            "ipc_ms": 0.527,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.555,
+            "rss_bytes": 15646720,
+            "sent_frames": 753664,
+            "events_out": 532482,
+            "ipc_ms": 0.543,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.76,
+            "rss_bytes": 15646720,
+            "sent_frames": 753664,
+            "events_out": 532482,
+            "ipc_ms": 0.225,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.969,
+            "rss_bytes": 15663104,
+            "sent_frames": 753664,
+            "events_out": 532482,
+            "ipc_ms": 0.478,
+            "error_code": "network_queue_full"
+          }
+        ]
+      },
+      "tls12": {
+        "scenario": "R5-tiny-control-queue-memory",
+        "source": "e07ecca5e662acb037b5f195455727c983225ec8",
+        "binary_sha256": "4ba143a7f99f03e2a0c5a844b6c40589ac10dc0c8543d6ca3f3f0341effc3091",
+        "platform": "Darwin",
+        "baseline_rss_bytes": 10043392,
+        "tls_version": "TLSv1.2",
+        "peak_rss_bytes": 21463040,
+        "growth_bytes": 11419648,
+        "growth_limit_bytes": 67108864,
+        "max_ipc_ms": 109.568,
+        "ipc_budget_ms": 100.0,
+        "within_ipc_budget": false,
+        "stressed": true,
+        "passed": false,
+        "samples": [
+          {
+            "seconds": 0.038,
+            "rss_bytes": 14598144,
+            "sent_frames": 229376,
+            "events_out": 24578,
+            "ipc_ms": 33.788,
+            "error_code": null
+          },
+          {
+            "seconds": 0.354,
+            "rss_bytes": 20365312,
+            "sent_frames": 311296,
+            "events_out": 106498,
+            "ipc_ms": 109.568,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 0.631,
+            "rss_bytes": 20381696,
+            "sent_frames": 352256,
+            "events_out": 139266,
+            "ipc_ms": 67.673,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 0.921,
+            "rss_bytes": 20463616,
+            "sent_frames": 352256,
+            "events_out": 172034,
+            "ipc_ms": 81.202,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.184,
+            "rss_bytes": 21364736,
+            "sent_frames": 393216,
+            "events_out": 204802,
+            "ipc_ms": 54.546,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.406,
+            "rss_bytes": 21413888,
+            "sent_frames": 425984,
+            "events_out": 237570,
+            "ipc_ms": 16.059,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.642,
+            "rss_bytes": 21430272,
+            "sent_frames": 466944,
+            "events_out": 270338,
+            "ipc_ms": 26.599,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.873,
+            "rss_bytes": 21430272,
+            "sent_frames": 499712,
+            "events_out": 303106,
+            "ipc_ms": 21.406,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.106,
+            "rss_bytes": 21430272,
+            "sent_frames": 540672,
+            "events_out": 335874,
+            "ipc_ms": 24.426,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.328,
+            "rss_bytes": 21463040,
+            "sent_frames": 638976,
+            "events_out": 368642,
+            "ipc_ms": 13.388,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.546,
+            "rss_bytes": 21463040,
+            "sent_frames": 638976,
+            "events_out": 401410,
+            "ipc_ms": 9.403,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.775,
+            "rss_bytes": 21463040,
+            "sent_frames": 638976,
+            "events_out": 434178,
+            "ipc_ms": 20.314,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.997,
+            "rss_bytes": 21463040,
+            "sent_frames": 720896,
+            "events_out": 466946,
+            "ipc_ms": 17.182,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.207,
+            "rss_bytes": 16351232,
+            "sent_frames": 720896,
+            "events_out": 483330,
+            "ipc_ms": 0.284,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.418,
+            "rss_bytes": 16351232,
+            "sent_frames": 720896,
+            "events_out": 483330,
+            "ipc_ms": 0.372,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.63,
+            "rss_bytes": 16351232,
+            "sent_frames": 720896,
+            "events_out": 483330,
+            "ipc_ms": 0.33,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.842,
+            "rss_bytes": 16351232,
+            "sent_frames": 720896,
+            "events_out": 483330,
+            "ipc_ms": 0.346,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.054,
+            "rss_bytes": 16351232,
+            "sent_frames": 720896,
+            "events_out": 483330,
+            "ipc_ms": 0.331,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.265,
+            "rss_bytes": 16351232,
+            "sent_frames": 720896,
+            "events_out": 483330,
+            "ipc_ms": 0.334,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.475,
+            "rss_bytes": 16351232,
+            "sent_frames": 720896,
+            "events_out": 483330,
+            "ipc_ms": 0.32,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.686,
+            "rss_bytes": 16351232,
+            "sent_frames": 720896,
+            "events_out": 483330,
+            "ipc_ms": 0.335,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.892,
+            "rss_bytes": 16351232,
+            "sent_frames": 720896,
+            "events_out": 483330,
+            "ipc_ms": 0.239,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.101,
+            "rss_bytes": 16367616,
+            "sent_frames": 720896,
+            "events_out": 483330,
+            "ipc_ms": 0.233,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.309,
+            "rss_bytes": 16367616,
+            "sent_frames": 720896,
+            "events_out": 483330,
+            "ipc_ms": 0.21,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.517,
+            "rss_bytes": 16367616,
+            "sent_frames": 720896,
+            "events_out": 483330,
+            "ipc_ms": 0.214,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.725,
+            "rss_bytes": 16367616,
+            "sent_frames": 720896,
+            "events_out": 483330,
+            "ipc_ms": 0.203,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.935,
+            "rss_bytes": 16367616,
+            "sent_frames": 720896,
+            "events_out": 483330,
+            "ipc_ms": 0.205,
+            "error_code": "network_queue_full"
+          }
+        ]
+      },
+      "tls13": {
+        "scenario": "R5-tiny-control-queue-memory",
+        "source": "e07ecca5e662acb037b5f195455727c983225ec8",
+        "binary_sha256": "4ba143a7f99f03e2a0c5a844b6c40589ac10dc0c8543d6ca3f3f0341effc3091",
+        "platform": "Darwin",
+        "baseline_rss_bytes": 10076160,
+        "tls_version": "TLSv1.3",
+        "peak_rss_bytes": 20922368,
+        "growth_bytes": 10846208,
+        "growth_limit_bytes": 67108864,
+        "max_ipc_ms": 62.442,
+        "ipc_budget_ms": 100.0,
+        "within_ipc_budget": true,
+        "stressed": true,
+        "passed": true,
+        "samples": [
+          {
+            "seconds": 0.037,
+            "rss_bytes": 14434304,
+            "sent_frames": 106496,
+            "events_out": 24578,
+            "ipc_ms": 33.464,
+            "error_code": null
+          },
+          {
+            "seconds": 0.308,
+            "rss_bytes": 20676608,
+            "sent_frames": 262144,
+            "events_out": 106498,
+            "ipc_ms": 62.442,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 0.533,
+            "rss_bytes": 20709376,
+            "sent_frames": 303104,
+            "events_out": 139266,
+            "ipc_ms": 16.455,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 0.757,
+            "rss_bytes": 20758528,
+            "sent_frames": 352256,
+            "events_out": 172034,
+            "ipc_ms": 15.935,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 0.986,
+            "rss_bytes": 20791296,
+            "sent_frames": 393216,
+            "events_out": 204802,
+            "ipc_ms": 19.28,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.211,
+            "rss_bytes": 20807680,
+            "sent_frames": 393216,
+            "events_out": 237570,
+            "ipc_ms": 17.086,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.44,
+            "rss_bytes": 20840448,
+            "sent_frames": 425984,
+            "events_out": 270338,
+            "ipc_ms": 19.942,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.658,
+            "rss_bytes": 20873216,
+            "sent_frames": 466944,
+            "events_out": 303106,
+            "ipc_ms": 12.131,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.882,
+            "rss_bytes": 20905984,
+            "sent_frames": 499712,
+            "events_out": 335874,
+            "ipc_ms": 17.352,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.121,
+            "rss_bytes": 20922368,
+            "sent_frames": 540672,
+            "events_out": 368642,
+            "ipc_ms": 30.464,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.336,
+            "rss_bytes": 20922368,
+            "sent_frames": 573440,
+            "events_out": 401410,
+            "ipc_ms": 7.04,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.562,
+            "rss_bytes": 20922368,
+            "sent_frames": 614400,
+            "events_out": 434178,
+            "ipc_ms": 17.584,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.806,
+            "rss_bytes": 20922368,
+            "sent_frames": 647168,
+            "events_out": 466946,
+            "ipc_ms": 35.644,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.074,
+            "rss_bytes": 20922368,
+            "sent_frames": 688128,
+            "events_out": 499714,
+            "ipc_ms": 59.563,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.283,
+            "rss_bytes": 15482880,
+            "sent_frames": 688128,
+            "events_out": 499714,
+            "ipc_ms": 0.207,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.488,
+            "rss_bytes": 15482880,
+            "sent_frames": 688128,
+            "events_out": 499714,
+            "ipc_ms": 0.217,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.695,
+            "rss_bytes": 15482880,
+            "sent_frames": 688128,
+            "events_out": 499714,
+            "ipc_ms": 0.247,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.902,
+            "rss_bytes": 15482880,
+            "sent_frames": 688128,
+            "events_out": 499714,
+            "ipc_ms": 0.255,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.111,
+            "rss_bytes": 15482880,
+            "sent_frames": 688128,
+            "events_out": 499714,
+            "ipc_ms": 0.214,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.317,
+            "rss_bytes": 15482880,
+            "sent_frames": 688128,
+            "events_out": 499714,
+            "ipc_ms": 0.24,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.526,
+            "rss_bytes": 15482880,
+            "sent_frames": 688128,
+            "events_out": 499714,
+            "ipc_ms": 0.26,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.734,
+            "rss_bytes": 15482880,
+            "sent_frames": 688128,
+            "events_out": 499714,
+            "ipc_ms": 0.263,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.943,
+            "rss_bytes": 15499264,
+            "sent_frames": 688128,
+            "events_out": 499714,
+            "ipc_ms": 0.21,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.152,
+            "rss_bytes": 15499264,
+            "sent_frames": 688128,
+            "events_out": 499714,
+            "ipc_ms": 0.218,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.364,
+            "rss_bytes": 15499264,
+            "sent_frames": 688128,
+            "events_out": 499714,
+            "ipc_ms": 0.32,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.572,
+            "rss_bytes": 15499264,
+            "sent_frames": 688128,
+            "events_out": 499714,
+            "ipc_ms": 0.317,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.782,
+            "rss_bytes": 15499264,
+            "sent_frames": 688128,
+            "events_out": 499714,
+            "ipc_ms": 0.443,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.997,
+            "rss_bytes": 15499264,
+            "sent_frames": 688128,
+            "events_out": 499714,
+            "ipc_ms": 0.502,
+            "error_code": "network_queue_full"
+          }
+        ]
+      }
+    },
+    "fixed": {
+      "plain": {
+        "scenario": "R5-tiny-control-queue-memory",
+        "source": "ebf30ee01999ee4dc7849b52bc057b60a6bf0625",
+        "binary_sha256": "683de1fc9c64c062dc98482975f3f8dc05542426af36716a3a4fb299c406b5a4",
+        "platform": "Darwin",
+        "baseline_rss_bytes": 8962048,
+        "tls_version": null,
+        "peak_rss_bytes": 16384000,
+        "growth_bytes": 7421952,
+        "growth_limit_bytes": 67108864,
+        "max_ipc_ms": 13.924,
+        "ipc_budget_ms": 100.0,
+        "within_ipc_budget": true,
+        "stressed": true,
+        "passed": true,
+        "samples": [
+          {
+            "seconds": 0.004,
+            "rss_bytes": 9912320,
+            "sent_frames": 90112,
+            "events_out": 4098,
+            "ipc_ms": 0.452,
+            "error_code": null
+          },
+          {
+            "seconds": 0.221,
+            "rss_bytes": 16203776,
+            "sent_frames": 819200,
+            "events_out": 133122,
+            "ipc_ms": 9.519,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 0.439,
+            "rss_bytes": 16203776,
+            "sent_frames": 819200,
+            "events_out": 161794,
+            "ipc_ms": 8.526,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 0.658,
+            "rss_bytes": 16220160,
+            "sent_frames": 950272,
+            "events_out": 192514,
+            "ipc_ms": 10.798,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 0.868,
+            "rss_bytes": 16252928,
+            "sent_frames": 950272,
+            "events_out": 217090,
+            "ipc_ms": 1.705,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.09,
+            "rss_bytes": 16269312,
+            "sent_frames": 950272,
+            "events_out": 247810,
+            "ipc_ms": 13.595,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.31,
+            "rss_bytes": 16302080,
+            "sent_frames": 950272,
+            "events_out": 280578,
+            "ipc_ms": 13.924,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.526,
+            "rss_bytes": 16367616,
+            "sent_frames": 950272,
+            "events_out": 311298,
+            "ipc_ms": 6.622,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.742,
+            "rss_bytes": 16367616,
+            "sent_frames": 1081344,
+            "events_out": 344066,
+            "ipc_ms": 7.708,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.956,
+            "rss_bytes": 16367616,
+            "sent_frames": 1081344,
+            "events_out": 374786,
+            "ipc_ms": 5.594,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.171,
+            "rss_bytes": 16384000,
+            "sent_frames": 1081344,
+            "events_out": 405506,
+            "ipc_ms": 9.866,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.392,
+            "rss_bytes": 16384000,
+            "sent_frames": 1081344,
+            "events_out": 438274,
+            "ipc_ms": 11.753,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.608,
+            "rss_bytes": 16384000,
+            "sent_frames": 1212416,
+            "events_out": 468994,
+            "ipc_ms": 11.524,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.818,
+            "rss_bytes": 16384000,
+            "sent_frames": 1212416,
+            "events_out": 499714,
+            "ipc_ms": 1.764,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.036,
+            "rss_bytes": 16384000,
+            "sent_frames": 1212416,
+            "events_out": 532482,
+            "ipc_ms": 9.467,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.243,
+            "rss_bytes": 11894784,
+            "sent_frames": 1212416,
+            "events_out": 548866,
+            "ipc_ms": 0.252,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.455,
+            "rss_bytes": 11943936,
+            "sent_frames": 1212416,
+            "events_out": 548866,
+            "ipc_ms": 0.317,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.664,
+            "rss_bytes": 11943936,
+            "sent_frames": 1212416,
+            "events_out": 548866,
+            "ipc_ms": 0.367,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.874,
+            "rss_bytes": 11943936,
+            "sent_frames": 1212416,
+            "events_out": 548866,
+            "ipc_ms": 0.249,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.08,
+            "rss_bytes": 11943936,
+            "sent_frames": 1212416,
+            "events_out": 548866,
+            "ipc_ms": 0.267,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.288,
+            "rss_bytes": 11943936,
+            "sent_frames": 1212416,
+            "events_out": 548866,
+            "ipc_ms": 0.311,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.493,
+            "rss_bytes": 11943936,
+            "sent_frames": 1212416,
+            "events_out": 548866,
+            "ipc_ms": 0.237,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.702,
+            "rss_bytes": 11960320,
+            "sent_frames": 1212416,
+            "events_out": 548866,
+            "ipc_ms": 0.221,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.911,
+            "rss_bytes": 11960320,
+            "sent_frames": 1212416,
+            "events_out": 548866,
+            "ipc_ms": 0.207,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.121,
+            "rss_bytes": 11960320,
+            "sent_frames": 1212416,
+            "events_out": 548866,
+            "ipc_ms": 0.244,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.331,
+            "rss_bytes": 11960320,
+            "sent_frames": 1212416,
+            "events_out": 548866,
+            "ipc_ms": 0.246,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.542,
+            "rss_bytes": 11976704,
+            "sent_frames": 1212416,
+            "events_out": 548866,
+            "ipc_ms": 0.417,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.751,
+            "rss_bytes": 11976704,
+            "sent_frames": 1212416,
+            "events_out": 548866,
+            "ipc_ms": 0.418,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.96,
+            "rss_bytes": 11976704,
+            "sent_frames": 1212416,
+            "events_out": 548866,
+            "ipc_ms": 0.303,
+            "error_code": "network_queue_full"
+          }
+        ]
+      },
+      "tls12": {
+        "scenario": "R5-tiny-control-queue-memory",
+        "source": "ebf30ee01999ee4dc7849b52bc057b60a6bf0625",
+        "binary_sha256": "683de1fc9c64c062dc98482975f3f8dc05542426af36716a3a4fb299c406b5a4",
+        "platform": "Darwin",
+        "baseline_rss_bytes": 10076160,
+        "tls_version": "TLSv1.2",
+        "peak_rss_bytes": 17760256,
+        "growth_bytes": 7684096,
+        "growth_limit_bytes": 67108864,
+        "max_ipc_ms": 18.087,
+        "ipc_budget_ms": 100.0,
+        "within_ipc_budget": true,
+        "stressed": true,
+        "passed": true,
+        "samples": [
+          {
+            "seconds": 0.013,
+            "rss_bytes": 11059200,
+            "sent_frames": 106496,
+            "events_out": 4098,
+            "ipc_ms": 7.367,
+            "error_code": null
+          },
+          {
+            "seconds": 0.236,
+            "rss_bytes": 17563648,
+            "sent_frames": 180224,
+            "events_out": 90114,
+            "ipc_ms": 12.2,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 0.447,
+            "rss_bytes": 17612800,
+            "sent_frames": 286720,
+            "events_out": 118786,
+            "ipc_ms": 2.145,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 0.668,
+            "rss_bytes": 17629184,
+            "sent_frames": 327680,
+            "events_out": 149506,
+            "ipc_ms": 10.853,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 0.883,
+            "rss_bytes": 17661952,
+            "sent_frames": 335872,
+            "events_out": 180226,
+            "ipc_ms": 6.906,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.105,
+            "rss_bytes": 17694720,
+            "sent_frames": 376832,
+            "events_out": 212994,
+            "ipc_ms": 13.333,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.325,
+            "rss_bytes": 17711104,
+            "sent_frames": 417792,
+            "events_out": 241666,
+            "ipc_ms": 10.305,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.544,
+            "rss_bytes": 17743872,
+            "sent_frames": 450560,
+            "events_out": 274434,
+            "ipc_ms": 9.898,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.772,
+            "rss_bytes": 17743872,
+            "sent_frames": 491520,
+            "events_out": 307202,
+            "ipc_ms": 18.087,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.98,
+            "rss_bytes": 17743872,
+            "sent_frames": 524288,
+            "events_out": 337922,
+            "ipc_ms": 3.375,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.189,
+            "rss_bytes": 17760256,
+            "sent_frames": 524288,
+            "events_out": 368642,
+            "ipc_ms": 2.704,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.404,
+            "rss_bytes": 17760256,
+            "sent_frames": 557056,
+            "events_out": 397314,
+            "ipc_ms": 5.353,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.623,
+            "rss_bytes": 17760256,
+            "sent_frames": 598016,
+            "events_out": 428034,
+            "ipc_ms": 10.474,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.832,
+            "rss_bytes": 17760256,
+            "sent_frames": 630784,
+            "events_out": 458754,
+            "ipc_ms": 4.629,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.047,
+            "rss_bytes": 17760256,
+            "sent_frames": 671744,
+            "events_out": 489474,
+            "ipc_ms": 7.246,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.259,
+            "rss_bytes": 13205504,
+            "sent_frames": 671744,
+            "events_out": 491522,
+            "ipc_ms": 0.3,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.467,
+            "rss_bytes": 13221888,
+            "sent_frames": 671744,
+            "events_out": 491522,
+            "ipc_ms": 0.209,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.678,
+            "rss_bytes": 13221888,
+            "sent_frames": 671744,
+            "events_out": 491522,
+            "ipc_ms": 0.39,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.889,
+            "rss_bytes": 13221888,
+            "sent_frames": 671744,
+            "events_out": 491522,
+            "ipc_ms": 0.431,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.1,
+            "rss_bytes": 13221888,
+            "sent_frames": 671744,
+            "events_out": 491522,
+            "ipc_ms": 0.506,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.306,
+            "rss_bytes": 13221888,
+            "sent_frames": 671744,
+            "events_out": 491522,
+            "ipc_ms": 0.391,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.519,
+            "rss_bytes": 13221888,
+            "sent_frames": 671744,
+            "events_out": 491522,
+            "ipc_ms": 0.576,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.73,
+            "rss_bytes": 13238272,
+            "sent_frames": 671744,
+            "events_out": 491522,
+            "ipc_ms": 0.244,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.94,
+            "rss_bytes": 13238272,
+            "sent_frames": 671744,
+            "events_out": 491522,
+            "ipc_ms": 0.372,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.151,
+            "rss_bytes": 13238272,
+            "sent_frames": 671744,
+            "events_out": 491522,
+            "ipc_ms": 0.255,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.359,
+            "rss_bytes": 13238272,
+            "sent_frames": 671744,
+            "events_out": 491522,
+            "ipc_ms": 0.256,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.565,
+            "rss_bytes": 13238272,
+            "sent_frames": 671744,
+            "events_out": 491522,
+            "ipc_ms": 0.254,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.772,
+            "rss_bytes": 13238272,
+            "sent_frames": 671744,
+            "events_out": 491522,
+            "ipc_ms": 0.254,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.983,
+            "rss_bytes": 13238272,
+            "sent_frames": 671744,
+            "events_out": 491522,
+            "ipc_ms": 0.494,
+            "error_code": "network_queue_full"
+          }
+        ]
+      },
+      "tls13": {
+        "scenario": "R5-tiny-control-queue-memory",
+        "source": "ebf30ee01999ee4dc7849b52bc057b60a6bf0625",
+        "binary_sha256": "683de1fc9c64c062dc98482975f3f8dc05542426af36716a3a4fb299c406b5a4",
+        "platform": "Darwin",
+        "baseline_rss_bytes": 10059776,
+        "tls_version": "TLSv1.3",
+        "peak_rss_bytes": 17612800,
+        "growth_bytes": 7553024,
+        "growth_limit_bytes": 67108864,
+        "max_ipc_ms": 15.916,
+        "ipc_budget_ms": 100.0,
+        "within_ipc_budget": true,
+        "stressed": true,
+        "passed": true,
+        "samples": [
+          {
+            "seconds": 0.007,
+            "rss_bytes": 11091968,
+            "sent_frames": 90112,
+            "events_out": 4098,
+            "ipc_ms": 3.293,
+            "error_code": null
+          },
+          {
+            "seconds": 0.217,
+            "rss_bytes": 17301504,
+            "sent_frames": 745472,
+            "events_out": 92162,
+            "ipc_ms": 1.141,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 0.438,
+            "rss_bytes": 17383424,
+            "sent_frames": 745472,
+            "events_out": 122882,
+            "ipc_ms": 13.272,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 0.658,
+            "rss_bytes": 17399808,
+            "sent_frames": 745472,
+            "events_out": 151554,
+            "ipc_ms": 10.26,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 0.871,
+            "rss_bytes": 17498112,
+            "sent_frames": 892928,
+            "events_out": 182274,
+            "ipc_ms": 6.151,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.092,
+            "rss_bytes": 17530880,
+            "sent_frames": 892928,
+            "events_out": 215042,
+            "ipc_ms": 13.143,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.312,
+            "rss_bytes": 17563648,
+            "sent_frames": 892928,
+            "events_out": 245762,
+            "ipc_ms": 13.05,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.531,
+            "rss_bytes": 17596416,
+            "sent_frames": 892928,
+            "events_out": 276482,
+            "ipc_ms": 8.892,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.748,
+            "rss_bytes": 17612800,
+            "sent_frames": 892928,
+            "events_out": 307202,
+            "ipc_ms": 11.375,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.964,
+            "rss_bytes": 17612800,
+            "sent_frames": 892928,
+            "events_out": 337922,
+            "ipc_ms": 7.064,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.179,
+            "rss_bytes": 17612800,
+            "sent_frames": 892928,
+            "events_out": 366594,
+            "ipc_ms": 7.77,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.397,
+            "rss_bytes": 17612800,
+            "sent_frames": 892928,
+            "events_out": 395266,
+            "ipc_ms": 11.542,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.607,
+            "rss_bytes": 17612800,
+            "sent_frames": 892928,
+            "events_out": 423938,
+            "ipc_ms": 1.372,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.83,
+            "rss_bytes": 17612800,
+            "sent_frames": 892928,
+            "events_out": 452610,
+            "ipc_ms": 15.916,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.053,
+            "rss_bytes": 17612800,
+            "sent_frames": 892928,
+            "events_out": 481282,
+            "ipc_ms": 13.192,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.263,
+            "rss_bytes": 13058048,
+            "sent_frames": 892928,
+            "events_out": 483330,
+            "ipc_ms": 0.462,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.472,
+            "rss_bytes": 13058048,
+            "sent_frames": 892928,
+            "events_out": 483330,
+            "ipc_ms": 0.459,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.682,
+            "rss_bytes": 13058048,
+            "sent_frames": 892928,
+            "events_out": 483330,
+            "ipc_ms": 0.225,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.889,
+            "rss_bytes": 13058048,
+            "sent_frames": 892928,
+            "events_out": 483330,
+            "ipc_ms": 0.265,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.099,
+            "rss_bytes": 13058048,
+            "sent_frames": 892928,
+            "events_out": 483330,
+            "ipc_ms": 0.439,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.305,
+            "rss_bytes": 13058048,
+            "sent_frames": 892928,
+            "events_out": 483330,
+            "ipc_ms": 0.434,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.514,
+            "rss_bytes": 13058048,
+            "sent_frames": 892928,
+            "events_out": 483330,
+            "ipc_ms": 0.224,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.723,
+            "rss_bytes": 13090816,
+            "sent_frames": 892928,
+            "events_out": 483330,
+            "ipc_ms": 0.381,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.928,
+            "rss_bytes": 13090816,
+            "sent_frames": 892928,
+            "events_out": 483330,
+            "ipc_ms": 0.397,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.137,
+            "rss_bytes": 13090816,
+            "sent_frames": 892928,
+            "events_out": 483330,
+            "ipc_ms": 0.377,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.347,
+            "rss_bytes": 13090816,
+            "sent_frames": 892928,
+            "events_out": 483330,
+            "ipc_ms": 0.283,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.558,
+            "rss_bytes": 13090816,
+            "sent_frames": 892928,
+            "events_out": 483330,
+            "ipc_ms": 0.368,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.768,
+            "rss_bytes": 13090816,
+            "sent_frames": 892928,
+            "events_out": 483330,
+            "ipc_ms": 0.259,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.973,
+            "rss_bytes": 13090816,
+            "sent_frames": 892928,
+            "events_out": 483330,
+            "ipc_ms": 0.235,
+            "error_code": "network_queue_full"
+          }
+        ]
+      }
+    }
+  },
+  "flood_budgets": {
+    "max_observed_ipc_ms": 100,
+    "sampled_rss_growth_bytes": 67108864,
+    "stressed_min_outgoing_events": 100000,
+    "queue_full_required": true
+  },
+  "connection_churn": {
+    "binary_sha256": "683de1fc9c64c062dc98482975f3f8dc05542426af36716a3a4fb299c406b5a4",
+    "workers": [
+      0,
+      4,
+      16,
+      32
+    ],
+    "samples_per_probe_per_case": 60,
+    "p99_budget_ms": 100,
+    "tls": false,
+    "platform": "virtual",
+    "cases": [
+      {
+        "workers": 0,
+        "passed": true,
+        "window_ms": 1437.4179580008786,
+        "input": {
+          "samples": 60,
+          "p50_ms": 0.33020899900293443,
+          "p99_ms": 6.699249999655876,
+          "max_ms": 6.699249999655876
+        },
+        "status": {
+          "samples": 60,
+          "p50_ms": 0.23599999985890463,
+          "p99_ms": 1.84912499935308,
+          "max_ms": 1.84912499935308
+        },
+        "rejected_at_cap": 0,
+        "unexpected_admissions": 0,
+        "socket_errors": 0,
+        "peers_preserved": true,
+        "held_key_preserved": true,
+        "config_preserved": true,
+        "active_screen_preserved": true,
+        "overflow_refused": true,
+        "release_delivered": true,
+        "cleanup": true
+      },
+      {
+        "workers": 4,
+        "passed": true,
+        "window_ms": 1439.9662910000188,
+        "input": {
+          "samples": 60,
+          "p50_ms": 0.6606660008401377,
+          "p99_ms": 18.51570799954061,
+          "max_ms": 18.51570799954061
+        },
+        "status": {
+          "samples": 60,
+          "p50_ms": 0.4135829985898454,
+          "p99_ms": 4.454500000065309,
+          "max_ms": 4.454500000065309
+        },
+        "rejected_at_cap": 30502,
+        "unexpected_admissions": 0,
+        "socket_errors": 0,
+        "peers_preserved": true,
+        "held_key_preserved": true,
+        "config_preserved": true,
+        "active_screen_preserved": true,
+        "overflow_refused": true,
+        "release_delivered": true,
+        "cleanup": true
+      },
+      {
+        "workers": 16,
+        "passed": true,
+        "window_ms": 1551.7226250012754,
+        "input": {
+          "samples": 60,
+          "p50_ms": 2.2963749997870764,
+          "p99_ms": 5.121166001117672,
+          "max_ms": 5.121166001117672
+        },
+        "status": {
+          "samples": 60,
+          "p50_ms": 1.215791000504396,
+          "p99_ms": 2.3612090008100495,
+          "max_ms": 2.3612090008100495
+        },
+        "rejected_at_cap": 21851,
+        "unexpected_admissions": 0,
+        "socket_errors": 0,
+        "peers_preserved": true,
+        "held_key_preserved": true,
+        "config_preserved": true,
+        "active_screen_preserved": true,
+        "overflow_refused": true,
+        "release_delivered": true,
+        "cleanup": true
+      },
+      {
+        "workers": 32,
+        "passed": true,
+        "window_ms": 1686.9901249992836,
+        "input": {
+          "samples": 60,
+          "p50_ms": 4.236875000060536,
+          "p99_ms": 9.380374998727348,
+          "max_ms": 9.380374998727348
+        },
+        "status": {
+          "samples": 60,
+          "p50_ms": 2.1152499994059326,
+          "p99_ms": 4.461291000552592,
+          "max_ms": 4.461291000552592
+        },
+        "rejected_at_cap": 24631,
+        "unexpected_admissions": 0,
+        "socket_errors": 0,
+        "peers_preserved": true,
+        "held_key_preserved": true,
+        "config_preserved": true,
+        "active_screen_preserved": true,
+        "overflow_refused": true,
+        "release_delivered": true,
+        "cleanup": true
+      }
+    ],
+    "passed": true
+  },
+  "churn_baseline_exploratory": {
+    "binary_sha256": "4ba143a7f99f03e2a0c5a844b6c40589ac10dc0c8543d6ca3f3f0341effc3091",
+    "workers": [
+      0,
+      4,
+      16,
+      32
+    ],
+    "samples_per_probe_per_case": 60,
+    "p99_budget_ms": 100,
+    "tls": false,
+    "platform": "virtual",
+    "cases": [
+      {
+        "workers": 0,
+        "passed": true,
+        "window_ms": 1486.6962079999998,
+        "input": {
+          "samples": 60,
+          "p50_ms": 0.5953340000000029,
+          "p99_ms": 7.24604099999998,
+          "max_ms": 7.24604099999998
+        },
+        "status": {
+          "samples": 60,
+          "p50_ms": 0.5093339999999724,
+          "p99_ms": 0.7974589999999865,
+          "max_ms": 0.7974589999999865
+        },
+        "rejected_at_cap": 0,
+        "unexpected_admissions": 0,
+        "socket_errors": 0,
+        "peers_preserved": true,
+        "held_key_preserved": true,
+        "config_preserved": true,
+        "active_screen_preserved": true,
+        "overflow_refused": true,
+        "release_delivered": true,
+        "cleanup": true
+      },
+      {
+        "workers": 4,
+        "passed": true,
+        "window_ms": 1512.073708,
+        "input": {
+          "samples": 60,
+          "p50_ms": 1.0054999999997705,
+          "p99_ms": 9.676750000000123,
+          "max_ms": 9.676750000000123
+        },
+        "status": {
+          "samples": 60,
+          "p50_ms": 0.6000839999997787,
+          "p99_ms": 5.00287499999974,
+          "max_ms": 5.00287499999974
+        },
+        "rejected_at_cap": 24714,
+        "unexpected_admissions": 0,
+        "socket_errors": 0,
+        "peers_preserved": true,
+        "held_key_preserved": true,
+        "config_preserved": true,
+        "active_screen_preserved": true,
+        "overflow_refused": true,
+        "release_delivered": true,
+        "cleanup": true
+      },
+      {
+        "workers": 16,
+        "passed": true,
+        "window_ms": 1816.5869159999995,
+        "input": {
+          "samples": 60,
+          "p50_ms": 3.6092090000003907,
+          "p99_ms": 30.31762499999946,
+          "max_ms": 30.31762499999946
+        },
+        "status": {
+          "samples": 60,
+          "p50_ms": 1.8366250000001472,
+          "p99_ms": 16.04679099999995,
+          "max_ms": 16.04679099999995
+        },
+        "rejected_at_cap": 17693,
+        "unexpected_admissions": 0,
+        "socket_errors": 0,
+        "peers_preserved": true,
+        "held_key_preserved": true,
+        "config_preserved": true,
+        "active_screen_preserved": true,
+        "overflow_refused": true,
+        "release_delivered": true,
+        "cleanup": true
+      },
+      {
+        "workers": 32,
+        "passed": true,
+        "window_ms": 2148.369334000001,
+        "input": {
+          "samples": 60,
+          "p50_ms": 7.703541999999786,
+          "p99_ms": 43.61266700000055,
+          "max_ms": 43.61266700000055
+        },
+        "status": {
+          "samples": 60,
+          "p50_ms": 3.795250000000472,
+          "p99_ms": 34.29516699999979,
+          "max_ms": 34.29516699999979
+        },
+        "rejected_at_cap": 19542,
+        "unexpected_admissions": 0,
+        "socket_errors": 0,
+        "peers_preserved": true,
+        "held_key_preserved": true,
+        "config_preserved": true,
+        "active_screen_preserved": true,
+        "overflow_refused": true,
+        "release_delivered": true,
+        "cleanup": true
+      }
+    ],
+    "passed": true
+  },
+  "examples": [
+    {
+      "example": "guardrails",
+      "exit": 0,
+      "passed": true,
+      "stdout": [
+        "REFUSED exactly_one_ConnectFailed=PASS",
+        "INPUT_BUDGET refused=2 peer_preserved=PASS",
+        "SLOW_PEER queued_nonbulk_over_4MiB close_ms=3002 reason=SlowPeer",
+        "HANDSHAKE_DEADLINE close_ms=120 exactly_one_ConnectFailed=PASS",
+        "TCP loopback_listener_accepted=PASS",
+        "CROSS_THREAD_WAKER wake_ms=47 reused_driver=PASS",
+        "FLOOD valid_frames=2906112 close_ms=5019 reason=Flood"
+      ]
+    },
+    {
+      "example": "lifecycle",
+      "exit": 0,
+      "passed": true,
+      "stdout": [
+        "CYCLE tls=true port=24974 bidirectional_frames=PASS StopListening_keeps_peer=PASS Shutdown_disconnected=1",
+        "CYCLE tls=false port=24975 bidirectional_frames=PASS StopListening_keeps_peer=PASS Shutdown_disconnected=1",
+        "REUSE same_driver=PASS same_waker=PASS original_handle=PASS TLS_on_to_off=PASS"
+      ]
+    },
+    {
+      "example": "trust_directories",
+      "exit": 0,
+      "passed": true,
+      "stdout": [
+        "CASE {\"case\":\"retained_revoke_and_admission\",\"passed\":true,\"mutual_tls\":true,\"bidirectional_frames\":true,\"same_driver_waker_handle\":true,\"child_and_listener_cleanup\":true}",
+        "CASE {\"case\":\"current_read_failure\",\"passed\":true,\"mutual_tls\":true,\"bidirectional_frames\":true,\"same_driver_waker_handle\":true,\"child_and_listener_cleanup\":true}",
+        "CASE {\"case\":\"retained_read_failure\",\"passed\":true,\"mutual_tls\":true,\"bidirectional_frames\":true,\"same_driver_waker_handle\":true,\"child_and_listener_cleanup\":true}",
+        "CASE {\"case\":\"prepare_refusal\",\"passed\":true,\"mutual_tls\":true,\"bidirectional_frames\":true,\"same_driver_waker_handle\":true,\"child_and_listener_cleanup\":true}",
+        "PASS 4/4 real transport directory scenarios"
+      ]
+    }
+  ],
+  "tls_priority_pair": {
+    "exit_codes": [
+      0,
+      0
+    ],
+    "passed": true,
+    "stdout": {
+      "server": [
+        "LISTENING 127.0.0.1:24973",
+        "SENT bulk_bytes=10485760 input_frames=321 echo_samples=321 p99_echo_us=244"
+      ],
+      "client": [
+        "RECEIVED bulk_bytes=10485760 input_frames=321 max_bulk_frames_between_input=1 max_slice=32768"
+      ]
+    }
+  },
+  "cli_refusals": [
+    {
+      "case": "churn_production_port",
+      "passed": true,
+      "exit": 1,
+      "no_report_created": true
+    },
+    {
+      "case": "churn_short_range",
+      "passed": true,
+      "exit": 1,
+      "no_report_created": true
+    },
+    {
+      "case": "queue_zero_budget",
+      "passed": true,
+      "exit": 2,
+      "no_report_created": true
+    },
+    {
+      "case": "queue_nan_budget",
+      "passed": true,
+      "exit": 2,
+      "no_report_created": true
+    }
+  ],
+  "exploratory": {
+    "initial_memory_only": {
+      "scenario": "R5-tiny-control-queue-memory",
+      "source": "e07ecca5e662acb037b5f195455727c983225ec8",
+      "binary_sha256": "4ba143a7f99f03e2a0c5a844b6c40589ac10dc0c8543d6ca3f3f0341effc3091",
+      "platform": "Darwin",
+      "baseline_rss_bytes": 8978432,
+      "peak_rss_bytes": 21217280,
+      "growth_bytes": 12238848,
+      "growth_limit_bytes": 67108864,
+      "stressed": true,
+      "passed": true,
+      "samples": [
+        {
+          "seconds": 0.575,
+          "rss_bytes": 20987904,
+          "sent_frames": 344064,
+          "events_out": 106498,
+          "ipc_ms": 271.647,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 0.923,
+          "rss_bytes": 21053440,
+          "sent_frames": 385024,
+          "events_out": 139266,
+          "ipc_ms": 108.994,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 1.327,
+          "rss_bytes": 21086208,
+          "sent_frames": 393216,
+          "events_out": 172034,
+          "ipc_ms": 43.139,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 1.723,
+          "rss_bytes": 21086208,
+          "sent_frames": 434176,
+          "events_out": 204802,
+          "ipc_ms": 48.649,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 2.281,
+          "rss_bytes": 21135360,
+          "sent_frames": 475136,
+          "events_out": 237570,
+          "ipc_ms": 167.869,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 2.793,
+          "rss_bytes": 21168128,
+          "sent_frames": 475136,
+          "events_out": 270338,
+          "ipc_ms": 119.415,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 3.359,
+          "rss_bytes": 21217280,
+          "sent_frames": 475136,
+          "events_out": 303106,
+          "ipc_ms": 301.345,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 3.715,
+          "rss_bytes": 15482880,
+          "sent_frames": 475136,
+          "events_out": 303106,
+          "ipc_ms": 0.455,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 4.003,
+          "rss_bytes": 15499264,
+          "sent_frames": 475136,
+          "events_out": 303106,
+          "ipc_ms": 0.488,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 4.502,
+          "rss_bytes": 15499264,
+          "sent_frames": 475136,
+          "events_out": 303106,
+          "ipc_ms": 0.335,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 4.943,
+          "rss_bytes": 15499264,
+          "sent_frames": 475136,
+          "events_out": 303106,
+          "ipc_ms": 0.505,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 5.427,
+          "rss_bytes": 15499264,
+          "sent_frames": 475136,
+          "events_out": 303106,
+          "ipc_ms": 0.421,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 5.829,
+          "rss_bytes": 15499264,
+          "sent_frames": 475136,
+          "events_out": 303106,
+          "ipc_ms": 3.842,
+          "error_code": "network_queue_full"
+        }
+      ]
+    },
+    "first_explicit_plaintext_gate": {
+      "scenario": "R5-tiny-control-queue-memory",
+      "source": "e07ecca5e662acb037b5f195455727c983225ec8",
+      "binary_sha256": "4ba143a7f99f03e2a0c5a844b6c40589ac10dc0c8543d6ca3f3f0341effc3091",
+      "platform": "Darwin",
+      "baseline_rss_bytes": 9043968,
+      "peak_rss_bytes": 25542656,
+      "growth_bytes": 16498688,
+      "growth_limit_bytes": 67108864,
+      "max_ipc_ms": 645.052,
+      "ipc_budget_ms": 100.0,
+      "within_ipc_budget": false,
+      "stressed": true,
+      "passed": false,
+      "samples": [
+        {
+          "seconds": 0.046,
+          "rss_bytes": 16007168,
+          "sent_frames": 139264,
+          "events_out": 40962,
+          "ipc_ms": 38.041,
+          "error_code": null
+        },
+        {
+          "seconds": 0.9,
+          "rss_bytes": 25542656,
+          "sent_frames": 212992,
+          "events_out": 106498,
+          "ipc_ms": 645.052,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 1.416,
+          "rss_bytes": 22724608,
+          "sent_frames": 253952,
+          "events_out": 139266,
+          "ipc_ms": 306.415,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 1.82,
+          "rss_bytes": 22740992,
+          "sent_frames": 401408,
+          "events_out": 172034,
+          "ipc_ms": 195.7,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 2.284,
+          "rss_bytes": 22773760,
+          "sent_frames": 409600,
+          "events_out": 204802,
+          "ipc_ms": 257.545,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 2.937,
+          "rss_bytes": 22790144,
+          "sent_frames": 458752,
+          "events_out": 237570,
+          "ipc_ms": 444.134,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 3.569,
+          "rss_bytes": 22822912,
+          "sent_frames": 458752,
+          "events_out": 270338,
+          "ipc_ms": 426.173,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 3.777,
+          "rss_bytes": 17072128,
+          "sent_frames": 458752,
+          "events_out": 270338,
+          "ipc_ms": 0.548,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 3.986,
+          "rss_bytes": 17154048,
+          "sent_frames": 458752,
+          "events_out": 270338,
+          "ipc_ms": 0.366,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 4.196,
+          "rss_bytes": 17203200,
+          "sent_frames": 458752,
+          "events_out": 270338,
+          "ipc_ms": 0.441,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 4.404,
+          "rss_bytes": 17203200,
+          "sent_frames": 458752,
+          "events_out": 270338,
+          "ipc_ms": 0.648,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 4.617,
+          "rss_bytes": 17203200,
+          "sent_frames": 458752,
+          "events_out": 270338,
+          "ipc_ms": 0.631,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 4.829,
+          "rss_bytes": 17203200,
+          "sent_frames": 458752,
+          "events_out": 270338,
+          "ipc_ms": 0.347,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 5.037,
+          "rss_bytes": 17219584,
+          "sent_frames": 458752,
+          "events_out": 270338,
+          "ipc_ms": 0.49,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 5.246,
+          "rss_bytes": 17252352,
+          "sent_frames": 458752,
+          "events_out": 270338,
+          "ipc_ms": 0.344,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 5.459,
+          "rss_bytes": 17252352,
+          "sent_frames": 458752,
+          "events_out": 270338,
+          "ipc_ms": 0.693,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 5.669,
+          "rss_bytes": 17252352,
+          "sent_frames": 458752,
+          "events_out": 270338,
+          "ipc_ms": 0.428,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 5.881,
+          "rss_bytes": 17268736,
+          "sent_frames": 458752,
+          "events_out": 270338,
+          "ipc_ms": 0.453,
+          "error_code": "network_queue_full"
+        }
+      ]
+    },
+    "earlier_plaintext_final_before_metadata_fix": {
+      "scenario": "R5-tiny-control-queue-memory",
+      "source": "e07ecca5e662acb037b5f195455727c983225ec8",
+      "binary_sha256": "4ba143a7f99f03e2a0c5a844b6c40589ac10dc0c8543d6ca3f3f0341effc3091",
+      "platform": "Darwin",
+      "baseline_rss_bytes": 8962048,
+      "tls_version": null,
+      "peak_rss_bytes": 21266432,
+      "growth_bytes": 12304384,
+      "growth_limit_bytes": 67108864,
+      "max_ipc_ms": 233.579,
+      "ipc_budget_ms": 100.0,
+      "within_ipc_budget": false,
+      "stressed": true,
+      "passed": false,
+      "samples": [
+        {
+          "seconds": 0.022,
+          "rss_bytes": 10895360,
+          "sent_frames": 409600,
+          "events_out": 40962,
+          "ipc_ms": 19.541,
+          "error_code": null
+        },
+        {
+          "seconds": 0.27,
+          "rss_bytes": 20955136,
+          "sent_frames": 466944,
+          "events_out": 106498,
+          "ipc_ms": 39.356,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 0.653,
+          "rss_bytes": 21053440,
+          "sent_frames": 557056,
+          "events_out": 172034,
+          "ipc_ms": 174.672,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 1.095,
+          "rss_bytes": 21053440,
+          "sent_frames": 614400,
+          "events_out": 237570,
+          "ipc_ms": 233.579,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 1.382,
+          "rss_bytes": 21102592,
+          "sent_frames": 614400,
+          "events_out": 270338,
+          "ipc_ms": 82.928,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 1.619,
+          "rss_bytes": 21151744,
+          "sent_frames": 614400,
+          "events_out": 303106,
+          "ipc_ms": 27.215,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 1.91,
+          "rss_bytes": 21168128,
+          "sent_frames": 704512,
+          "events_out": 335874,
+          "ipc_ms": 83.303,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 2.154,
+          "rss_bytes": 21168128,
+          "sent_frames": 704512,
+          "events_out": 368642,
+          "ipc_ms": 35.26,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 2.408,
+          "rss_bytes": 21200896,
+          "sent_frames": 704512,
+          "events_out": 401410,
+          "ipc_ms": 45.918,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 2.662,
+          "rss_bytes": 21200896,
+          "sent_frames": 794624,
+          "events_out": 434178,
+          "ipc_ms": 44.458,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 2.932,
+          "rss_bytes": 21250048,
+          "sent_frames": 794624,
+          "events_out": 466946,
+          "ipc_ms": 61.352,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 3.171,
+          "rss_bytes": 21266432,
+          "sent_frames": 884736,
+          "events_out": 499714,
+          "ipc_ms": 31.052,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 3.38,
+          "rss_bytes": 15515648,
+          "sent_frames": 884736,
+          "events_out": 499714,
+          "ipc_ms": 0.215,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 3.588,
+          "rss_bytes": 15548416,
+          "sent_frames": 884736,
+          "events_out": 499714,
+          "ipc_ms": 0.218,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 3.797,
+          "rss_bytes": 15564800,
+          "sent_frames": 884736,
+          "events_out": 499714,
+          "ipc_ms": 0.252,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 4.006,
+          "rss_bytes": 15564800,
+          "sent_frames": 884736,
+          "events_out": 499714,
+          "ipc_ms": 0.246,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 4.214,
+          "rss_bytes": 15564800,
+          "sent_frames": 884736,
+          "events_out": 499714,
+          "ipc_ms": 0.213,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 4.423,
+          "rss_bytes": 15564800,
+          "sent_frames": 884736,
+          "events_out": 499714,
+          "ipc_ms": 0.26,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 4.629,
+          "rss_bytes": 15581184,
+          "sent_frames": 884736,
+          "events_out": 499714,
+          "ipc_ms": 0.25,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 4.835,
+          "rss_bytes": 15581184,
+          "sent_frames": 884736,
+          "events_out": 499714,
+          "ipc_ms": 0.22,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 5.044,
+          "rss_bytes": 15597568,
+          "sent_frames": 884736,
+          "events_out": 499714,
+          "ipc_ms": 0.254,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 5.253,
+          "rss_bytes": 15597568,
+          "sent_frames": 884736,
+          "events_out": 499714,
+          "ipc_ms": 0.243,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 5.461,
+          "rss_bytes": 15613952,
+          "sent_frames": 884736,
+          "events_out": 499714,
+          "ipc_ms": 0.254,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 5.67,
+          "rss_bytes": 15613952,
+          "sent_frames": 884736,
+          "events_out": 499714,
+          "ipc_ms": 0.247,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 5.879,
+          "rss_bytes": 15613952,
+          "sent_frames": 884736,
+          "events_out": 499714,
+          "ipc_ms": 0.231,
+          "error_code": "network_queue_full"
+        }
+      ]
+    },
+    "first_fixed_plaintext": {
+      "scenario": "R5-tiny-control-queue-memory",
+      "source": "working-tree-receive-fairness",
+      "binary_sha256": "683de1fc9c64c062dc98482975f3f8dc05542426af36716a3a4fb299c406b5a4",
+      "platform": "Darwin",
+      "baseline_rss_bytes": 8896512,
+      "tls_version": null,
+      "peak_rss_bytes": 16400384,
+      "growth_bytes": 7503872,
+      "growth_limit_bytes": 67108864,
+      "max_ipc_ms": 13.982,
+      "ipc_budget_ms": 100.0,
+      "within_ipc_budget": true,
+      "stressed": true,
+      "passed": true,
+      "samples": [
+        {
+          "seconds": 0.005,
+          "rss_bytes": 9846784,
+          "sent_frames": 147456,
+          "events_out": 4098,
+          "ipc_ms": 1.054,
+          "error_code": null
+        },
+        {
+          "seconds": 0.225,
+          "rss_bytes": 16154624,
+          "sent_frames": 811008,
+          "events_out": 135170,
+          "ipc_ms": 12.195,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 0.444,
+          "rss_bytes": 16220160,
+          "sent_frames": 811008,
+          "events_out": 165890,
+          "ipc_ms": 10.562,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 0.664,
+          "rss_bytes": 16220160,
+          "sent_frames": 942080,
+          "events_out": 198658,
+          "ipc_ms": 11.232,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 0.876,
+          "rss_bytes": 16252928,
+          "sent_frames": 942080,
+          "events_out": 227330,
+          "ipc_ms": 7.058,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 1.088,
+          "rss_bytes": 16285696,
+          "sent_frames": 942080,
+          "events_out": 258050,
+          "ipc_ms": 3.257,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 1.311,
+          "rss_bytes": 16318464,
+          "sent_frames": 942080,
+          "events_out": 290818,
+          "ipc_ms": 13.254,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 1.529,
+          "rss_bytes": 16334848,
+          "sent_frames": 1073152,
+          "events_out": 321538,
+          "ipc_ms": 13.345,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 1.738,
+          "rss_bytes": 16367616,
+          "sent_frames": 1073152,
+          "events_out": 352258,
+          "ipc_ms": 1.007,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 1.952,
+          "rss_bytes": 16367616,
+          "sent_frames": 1073152,
+          "events_out": 382978,
+          "ipc_ms": 5.097,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 2.173,
+          "rss_bytes": 16367616,
+          "sent_frames": 1073152,
+          "events_out": 415746,
+          "ipc_ms": 13.678,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 2.396,
+          "rss_bytes": 16384000,
+          "sent_frames": 1073152,
+          "events_out": 448514,
+          "ipc_ms": 13.982,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 2.61,
+          "rss_bytes": 16384000,
+          "sent_frames": 1204224,
+          "events_out": 475138,
+          "ipc_ms": 5.639,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 2.822,
+          "rss_bytes": 16384000,
+          "sent_frames": 1204224,
+          "events_out": 503810,
+          "ipc_ms": 4.326,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 3.035,
+          "rss_bytes": 16400384,
+          "sent_frames": 1204224,
+          "events_out": 532482,
+          "ipc_ms": 3.997,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 3.24,
+          "rss_bytes": 11894784,
+          "sent_frames": 1204224,
+          "events_out": 546818,
+          "ipc_ms": 0.227,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 3.449,
+          "rss_bytes": 11894784,
+          "sent_frames": 1204224,
+          "events_out": 546818,
+          "ipc_ms": 0.247,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 3.658,
+          "rss_bytes": 11894784,
+          "sent_frames": 1204224,
+          "events_out": 546818,
+          "ipc_ms": 0.267,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 3.864,
+          "rss_bytes": 11894784,
+          "sent_frames": 1204224,
+          "events_out": 546818,
+          "ipc_ms": 0.239,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 4.073,
+          "rss_bytes": 11894784,
+          "sent_frames": 1204224,
+          "events_out": 546818,
+          "ipc_ms": 0.22,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 4.283,
+          "rss_bytes": 11894784,
+          "sent_frames": 1204224,
+          "events_out": 546818,
+          "ipc_ms": 0.365,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 4.488,
+          "rss_bytes": 11894784,
+          "sent_frames": 1204224,
+          "events_out": 546818,
+          "ipc_ms": 0.241,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 4.696,
+          "rss_bytes": 11911168,
+          "sent_frames": 1204224,
+          "events_out": 546818,
+          "ipc_ms": 0.239,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 4.905,
+          "rss_bytes": 11911168,
+          "sent_frames": 1204224,
+          "events_out": 546818,
+          "ipc_ms": 0.213,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 5.114,
+          "rss_bytes": 11911168,
+          "sent_frames": 1204224,
+          "events_out": 546818,
+          "ipc_ms": 0.219,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 5.318,
+          "rss_bytes": 11927552,
+          "sent_frames": 1204224,
+          "events_out": 546818,
+          "ipc_ms": 0.226,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 5.526,
+          "rss_bytes": 11927552,
+          "sent_frames": 1204224,
+          "events_out": 546818,
+          "ipc_ms": 0.236,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 5.736,
+          "rss_bytes": 11927552,
+          "sent_frames": 1204224,
+          "events_out": 546818,
+          "ipc_ms": 0.27,
+          "error_code": "network_queue_full"
+        },
+        {
+          "seconds": 5.942,
+          "rss_bytes": 11927552,
+          "sent_frames": 1204224,
+          "events_out": 546818,
+          "ipc_ms": 0.216,
+          "error_code": "network_queue_full"
+        }
+      ]
+    },
+    "excluded_tls_metadata_run": {
+      "report": {
+        "scenario": "R5-tiny-control-queue-memory",
+        "source": "e07ecca5e662acb037b5f195455727c983225ec8",
+        "binary_sha256": "4ba143a7f99f03e2a0c5a844b6c40589ac10dc0c8543d6ca3f3f0341effc3091",
+        "platform": "Darwin",
+        "baseline_rss_bytes": 10092544,
+        "tls_version": null,
+        "peak_rss_bytes": 19496960,
+        "growth_bytes": 9404416,
+        "growth_limit_bytes": 67108864,
+        "max_ipc_ms": 67.351,
+        "ipc_budget_ms": 100.0,
+        "within_ipc_budget": true,
+        "stressed": true,
+        "passed": true,
+        "samples": [
+          {
+            "seconds": 0.008,
+            "rss_bytes": 12681216,
+            "sent_frames": 98304,
+            "events_out": 16386,
+            "ipc_ms": 2.103,
+            "error_code": null
+          },
+          {
+            "seconds": 0.266,
+            "rss_bytes": 19218432,
+            "sent_frames": 172032,
+            "events_out": 98306,
+            "ipc_ms": 48.775,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 0.485,
+            "rss_bytes": 19283968,
+            "sent_frames": 212992,
+            "events_out": 131074,
+            "ipc_ms": 9.203,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 0.709,
+            "rss_bytes": 19333120,
+            "sent_frames": 344064,
+            "events_out": 163842,
+            "ipc_ms": 16.992,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 0.931,
+            "rss_bytes": 19398656,
+            "sent_frames": 344064,
+            "events_out": 196610,
+            "ipc_ms": 13.725,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.15,
+            "rss_bytes": 19415040,
+            "sent_frames": 393216,
+            "events_out": 229378,
+            "ipc_ms": 10.043,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.374,
+            "rss_bytes": 19431424,
+            "sent_frames": 434176,
+            "events_out": 262146,
+            "ipc_ms": 15.79,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.596,
+            "rss_bytes": 19431424,
+            "sent_frames": 491520,
+            "events_out": 294914,
+            "ipc_ms": 15.954,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 1.848,
+            "rss_bytes": 19431424,
+            "sent_frames": 524288,
+            "events_out": 327682,
+            "ipc_ms": 43.184,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.092,
+            "rss_bytes": 19464192,
+            "sent_frames": 524288,
+            "events_out": 360450,
+            "ipc_ms": 33.123,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.339,
+            "rss_bytes": 19480576,
+            "sent_frames": 565248,
+            "events_out": 393218,
+            "ipc_ms": 37.545,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.611,
+            "rss_bytes": 19480576,
+            "sent_frames": 606208,
+            "events_out": 425986,
+            "ipc_ms": 67.351,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 2.837,
+            "rss_bytes": 19496960,
+            "sent_frames": 647168,
+            "events_out": 458754,
+            "ipc_ms": 15.686,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.057,
+            "rss_bytes": 19496960,
+            "sent_frames": 688128,
+            "events_out": 491522,
+            "ipc_ms": 10.331,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.269,
+            "rss_bytes": 14991360,
+            "sent_frames": 688128,
+            "events_out": 491522,
+            "ipc_ms": 0.486,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.484,
+            "rss_bytes": 15024128,
+            "sent_frames": 688128,
+            "events_out": 491522,
+            "ipc_ms": 0.415,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.693,
+            "rss_bytes": 15024128,
+            "sent_frames": 688128,
+            "events_out": 491522,
+            "ipc_ms": 0.229,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 3.903,
+            "rss_bytes": 15040512,
+            "sent_frames": 688128,
+            "events_out": 491522,
+            "ipc_ms": 0.37,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.113,
+            "rss_bytes": 15040512,
+            "sent_frames": 688128,
+            "events_out": 491522,
+            "ipc_ms": 0.37,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.324,
+            "rss_bytes": 15040512,
+            "sent_frames": 688128,
+            "events_out": 491522,
+            "ipc_ms": 0.365,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.531,
+            "rss_bytes": 15040512,
+            "sent_frames": 688128,
+            "events_out": 491522,
+            "ipc_ms": 0.313,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.745,
+            "rss_bytes": 15040512,
+            "sent_frames": 688128,
+            "events_out": 491522,
+            "ipc_ms": 0.427,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 4.959,
+            "rss_bytes": 15056896,
+            "sent_frames": 688128,
+            "events_out": 491522,
+            "ipc_ms": 0.344,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.168,
+            "rss_bytes": 15056896,
+            "sent_frames": 688128,
+            "events_out": 491522,
+            "ipc_ms": 0.402,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.381,
+            "rss_bytes": 15056896,
+            "sent_frames": 688128,
+            "events_out": 491522,
+            "ipc_ms": 0.545,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.587,
+            "rss_bytes": 15056896,
+            "sent_frames": 688128,
+            "events_out": 491522,
+            "ipc_ms": 0.416,
+            "error_code": "network_queue_full"
+          },
+          {
+            "seconds": 5.801,
+            "rss_bytes": 15056896,
+            "sent_frames": 688128,
+            "events_out": 491522,
+            "ipc_ms": 0.555,
+            "error_code": "network_queue_full"
+          }
+        ]
+      },
+      "reason": "TLS version queried after socket shutdown; excluded and rerun"
+    },
+    "unsupported_python_ssl": {
+      "ssl": "LibreSSL 2.8.3",
+      "error": "ValueError: Unsupported protocol version 0x304",
+      "no_daemon_started": true
+    },
+    "legacy_guardrail_first": {
+      "exit": 1,
+      "stderr": "guardrails: no SlowPeer close",
+      "stdout": [
+        "REFUSED exactly_one_ConnectFailed=PASS"
+      ],
+      "reason": "Existing Input budget refused excess frames before the SlowPeer threshold. Probe now checks that refusal before filling the reserved Control allowance."
+    }
+  },
+  "binary_artifacts": {
+    "baseline-openergy": {
+      "sha256": "4ba143a7f99f03e2a0c5a844b6c40589ac10dc0c8543d6ca3f3f0341effc3091",
+      "bytes": 3707520
+    },
+    "fixed-openergy": {
+      "sha256": "683de1fc9c64c062dc98482975f3f8dc05542426af36716a3a4fb299c406b5a4",
+      "bytes": 3707520
+    },
+    "tls_peer": {
+      "sha256": "def421ec9765409bad123ca0f57ef3f44fc9362a5d508de92e3f0e3958a4c181",
+      "bytes": 2155600
+    },
+    "priority_peer": {
+      "sha256": "a15f1edb9830406d386e3873a34aa87dad5fefb24624bd561c882a273657cdd7",
+      "bytes": 2155344
+    },
+    "guardrails": {
+      "sha256": "d18fe4129df09aad67ff79f5a607c7fdf971a917d43324d960945c10e16be997",
+      "bytes": 2155712
+    },
+    "lifecycle": {
+      "sha256": "4ece4f35dbd52877d5c211ea23dd80204f8bea2bef9da3ca4c17603bd2653535",
+      "bytes": 2190880
+    },
+    "trust_directories": {
+      "sha256": "444f98ad455f8f86b4bb697c230b32c95166edb3cb37d35f08f075f34a5499ea",
+      "bytes": 2224448
+    }
+  },
+  "rust_inputs": {
+    "Cargo.lock": "0cc466112ead33a26cb59fce717d83c202bd470e6ba64394ab7c81ac560c6f3f",
+    "Cargo.toml": "1249baacd47b641edbab7350fa10f94d5a08624223c0ef1d7c8e49707c96fb0d",
+    "crates/config/Cargo.toml": "2a747685780dabe93f139c609859005c2baad60e6599c4b8442273f5dea79968",
+    "crates/config/src/cli.rs": "21df1802c13c89bb4569f1e0f3b0290aa212dfdb1a6d2e7ce9aa5e32d0262246",
+    "crates/config/src/layout.rs": "04b27afdd4cb1e05c321845c79370aabeb79d0afd2574a29ee3d357412c46c06",
+    "crates/config/src/lib.rs": "214d8694a6d1b93bffd10b3ccb150da95191b6ce64b83a7a9e347ea9290979a4",
+    "crates/config/src/model.rs": "06eba7851d8a9789a342dc7d374880eedadcfc9a106026b7c3f3e69a4cf7b0b3",
+    "crates/config/src/synergy.rs": "8e1650d35a9a20c87504832e81b1b0fdd0dcb9a289e39d988c9c9f4f4e86f3e0",
+    "crates/config/src/synergy3.rs": "9faca911b846568795c23d01b768d6de3113d90f73e65e24418c79bdc44621fc",
+    "crates/daemon/Cargo.toml": "4cb03349cb6d9cf4a6f95dce64cd0e3ed5306a7faa7762326fdc00d28a48aefa",
+    "crates/daemon/src/adapter.rs": "874a75cebedcc5120306f4dec0d9d326932379fceb6ca072451bc8cf04d6185a",
+    "crates/daemon/src/allocator.rs": "1b0193bd0f658b47d219bb931cb045df7f25ee9f61ba11c4cd2c1f653a006ffd",
+    "crates/daemon/src/clipboard_json.rs": "5ec7fc4e24fd1d8054a60bffa0d7ac671d4357fc73c44abf59c81d9c26343299",
+    "crates/daemon/src/events.rs": "cee67a01d3ef29d5dc6aa300169ec61287c7edd0e492913de7f0fa3bb800dfad",
+    "crates/daemon/src/interfaces.rs": "80e2a11a6eb67be30ce263635c85edcee0d4e6185fc64514add27d3ee96df550",
+    "crates/daemon/src/ipc_server.rs": "4ceb1dc908211fd0b6493c55787f32582b8b248bedff20c99d800fed41a2301e",
+    "crates/daemon/src/lifetime.rs": "922a15a92661fdb6ca5f848852b79cc67e34c9b9b2ad266f7f4d4e7fd6f194e5",
+    "crates/daemon/src/logger.rs": "2faf11b9ec28a1d12ced24b662014e21aa86bae798dec6f4a15a0fd2a728e298",
+    "crates/daemon/src/main.rs": "ba5a5d6ae3817bed2a9fd6955b9fee751983bc6b1f53c0df9f9e12f76519bb61",
+    "crates/daemon/src/runtime.rs": "187c2301efa9873791597289a45247abc6221c9cf8538db492d20e4b0d202af9",
+    "crates/daemon/src/windows_pipe.rs": "9234c4be2e35e228cd8dba0b6b5c153ff419b1eeb15ad96b9dd6b7a531711a6c",
+    "crates/daemon/src/workers.rs": "5109cd76c0a1911b74512b3d8d2cf4d49df27fed417a55d3ac68a1f1ca8028b2",
+    "crates/ipc/Cargo.toml": "6ba4201f9b8b94fa813fc3699d422165b7db6102e14c2b70292c7cc83f7073d3",
+    "crates/ipc/src/lib.rs": "04d612b9256a8229932d76900b75671f6b66a23e242491077ed73212e16aeaec",
+    "crates/net/Cargo.toml": "c74312dcc7dc550825d7c247961e2fd44f7ca1dbbdfc7bb6c28e7351ef30637c",
+    "crates/net/examples/audit_transport.rs": "5c4e2986ccce3b2fccdb8c71df1d34d15d22292f857c5bc9574d673fa5033c5e",
+    "crates/net/examples/discovery.rs": "685ca4b9e1e4abf6aad00489c957eb1ab813b55609c2f417808455169f19f77b",
+    "crates/net/examples/guardrails.rs": "258bff08c83575a7d052978f304cbcdd5650b34b42c2a3c4055cbc9358163e0d",
+    "crates/net/examples/lifecycle.rs": "f143c2eb29f20fc1f0ed80b17a3b44a8fa6782293b8b88607245e8288c98b9dd",
+    "crates/net/examples/priority_peer.rs": "37f5a97dcf4a37bccc8f13acdc92f9e2bcb16794c410e09352d596fd0c7061df",
+    "crates/net/examples/tls_peer.rs": "03849b13c29090840707dd8b343cdbefc5fe9d42ae25095a7e61bc1db34c790d",
+    "crates/net/examples/trust_directories.rs": "61d7dd28b7288c86606d6df851893ecfa6b5f03c01f0c4b1fab8e27c0ebbdcd8",
+    "crates/net/src/cli.rs": "b22cef41a524d556c81afb98e7b6d5d57557749ce9ca586145881995b82acb41",
+    "crates/net/src/connect_error.rs": "a3c944fefddc2b4a9e759298b5a4c9d5637503bf88fcbbf5dc0baf7e78929568",
+    "crates/net/src/discovery.rs": "bdbf309bc7f2b63ab72e03c19b20f75a1d397acdd452a288592739fd71fe0897",
+    "crates/net/src/identity.rs": "102aa396739087ce2f117f775f18508475ff3b4326fe702b7ad4d1a4d886b07c",
+    "crates/net/src/lib.rs": "1bfcda0c11d7bb5be7f23005d9db9170e62317161877e52b616c79c655317ac9",
+    "crates/net/src/reactor.rs": "43476e3ab801096113d91632c9b0426ff0221fade860a18f46f7120594d44887",
+    "crates/net/src/tls.rs": "b6c852d4d03ea27549e24eeba5d80ca65432dd6a90ea6f2cf1cf33dda1157abe",
+    "crates/net/src/trust.rs": "830010af377e5b93a32334d8386f325cc10e19fe83520dda26b267a0a81ee6ff",
+    "crates/net/src/windows_permissions.rs": "2dbca5dc28eb51dc87c89bb2b0a8b7f009037094db45c7085db635ae598090c4",
+    "crates/platform-linux/Cargo.toml": "d9f8772dc001e12d2fe9f1489d35918deeeeead9daab8131371ea91cf0b1a4ac",
+    "crates/platform-linux/examples/x11_probe.rs": "d61e6bf76b0d7802a0ad124110feb1991239a90b1008b0edad3bb62cdbc0e761",
+    "crates/platform-linux/src/clipboard.rs": "c30058611fc426f3f2b0bc5d4c9f53bf8ef48ea4cb3915098894c22277fdf88c",
+    "crates/platform-linux/src/image.rs": "085b0a326643393ce926234a249d2b9baeb21a62d77ceaab7d2468a0422d1eb8",
+    "crates/platform-linux/src/keymap.rs": "e30286da66b02322186f9c3cdc808a6a347691e0e7c458184517a1507604f42e",
+    "crates/platform-linux/src/lib.rs": "3c34c73f6ab833b843195e5c2a99bee7affc7d46bd7fe7fd3786be3cb033e441",
+    "crates/platform-linux/src/native.rs": "00588627b702216ab2a35ee288d83241cb8705456a101b7e904e8c47107d6579",
+    "crates/platform-linux/src/sink.rs": "0144d18b20dbd1fa55727ff59e4daa9f6e7a89c3f25a7ada027bfb260e791be3",
+    "crates/platform-linux/src/source.rs": "e1429aab6c7549219cdca6a844cd944061909e93ca5d32e6d009e23acd74b5f8",
+    "crates/platform-linux/src/unicode_keysyms.rs": "b632ddb45d402b9045b0d6003a71e1ea5a9448ddfea7780dfc3cb3028571d58f",
+    "crates/platform-macos/Cargo.toml": "7b2607a96c77a79f3e8f6ab482fc39249e74a0ea8a283e3b6db5cf0cffdb2280",
+    "crates/platform-macos/examples/focuslab_inject.rs": "d8ba4769e3c54bb904ab9c54eb4e3d0437f3d84c1d261b0429df59b33f4f60ad",
+    "crates/platform-macos/examples/mac_probe.rs": "93e5dbde8d0a2d7f6c4f6a980baafa60a305b1e6df73272c44e5db0218f92c5c",
+    "crates/platform-macos/src/displays.rs": "1d6860ac0ceb6ebf9234eb7e7bbabeb789584a33b7b85134515d4111ce34ae5e",
+    "crates/platform-macos/src/ffi.rs": "6b106e9e9d2e0b1453f2d846d991182914ce6a4a87acb0e400637b65aeeb6ef8",
+    "crates/platform-macos/src/inject.rs": "2604c4e71c7f7713ef71a0e6c5d558422f97f5eea81307861dcfce144c9bddbc",
+    "crates/platform-macos/src/keymap.rs": "0dc9a9583802b154f87b4dd68a41c87a4b6902024218b2accee47d8d917fe314",
+    "crates/platform-macos/src/lib.rs": "aafa994a8696824968671f1cda6a2f06933bdc2f9e472606d783ae86d8b0801e",
+    "crates/platform-macos/src/pasteboard.rs": "6b53e3063f6a4a015a4761dcc9a9399d5a47d73b87c92947d036cbf7e2f62d39",
+    "crates/platform-macos/src/permissions.rs": "ee6111c35d5985a55b8187c6f573bff7bb372397e32ed3dcbaf87d48e15d3914",
+    "crates/platform-macos/src/screens.rs": "384cc286565139bc0605cc6493222c7c52621f7ace2701a0471242160deb55b0",
+    "crates/platform-macos/src/tap.rs": "fd28e13ff29fa5fe453ad8b4cba3b85c80e013c9971021a088546d491e96a571",
+    "crates/platform-macos/src/types.rs": "71cbea2c52890d808d32412d9b33e095033dfe570e20387d38d4a2df3228284a",
+    "crates/platform-windows/Cargo.toml": "080605b569ed545650abd65a3cc551dbb5c3231f8eb3d8589b5598fc3f6cf460",
+    "crates/platform-windows/src/clipboard.rs": "451bc0555457ce95f7f5d2ba7ae657834925cd708b186e14678686b12ce8dc80",
+    "crates/platform-windows/src/keymap.rs": "a9d531bbe6ed9916a389de4b384aa2321f7f04848c73e378fc61da7aca400aeb",
+    "crates/platform-windows/src/lib.rs": "1ce695c6f22dbd55d4cdded98f147a32812ffae7b1eb7f2ff8ad7f319daaeedb",
+    "crates/platform-windows/src/native.rs": "3aeddda52041991234e601dab0afe7c388b1aa9e858b308004d24bda84810cc1",
+    "crates/platform-windows/src/sink.rs": "1ca075dd2e12e9d383ae29254138573a9ea6bfa190bc94ce233b9f1043f5d7fb",
+    "crates/platform-windows/src/source.rs": "c5726f8d3ba7903903bdfe671252a622ceb3784356583784dd23a20ac76975ab",
+    "crates/platform/Cargo.toml": "88ee6e62955081ae5017549067c0055bd3ebd7a7e52b739b4b59455cebcc02ce",
+    "crates/platform/examples/virtual_demo.rs": "a4ab3a3995e1799f233375861ad4512085b8318427d0721a4793475eb32028e0",
+    "crates/platform/src/click.rs": "08801f4736e89a7512bf33a017fa92c66fc3dcb8221e6703ffbbf8321b8feee7",
+    "crates/platform/src/lib.rs": "77cf31c3b30f62eddbe89051702a95d7b529ffaef4eafea5214916b54b5652b5",
+    "crates/platform/src/script.rs": "bbe2991d5f2152f7bb6f3314bec2601b1e58a1318b14ba753f72f3043e5d3c01",
+    "crates/platform/src/virtual_backend.rs": "ae8c8ca58f828b6b106d09079e5b960bb9e4b035567917b5e0da682663d97a18",
+    "crates/protocol/Cargo.toml": "c91717334a50d2e68057c5e306b685e95a1506fc4d0bd9b08f443b62d6897445",
+    "crates/protocol/examples/wire_probe.rs": "f59443a83fef0d835259b5d8a9fd34b22f027d66cbb1049f19c7b9edb5abec68",
+    "crates/protocol/src/clipboard.rs": "4fb846e2fe3812f4136e77b64a509f120f5ba25675a8fcca9392269c672583da",
+    "crates/protocol/src/codec.rs": "9641df927d3391e26279bd138307192b6e04feb785e8f459b27cb57a748b7c0e",
+    "crates/protocol/src/keys.rs": "bdcde8427a2534a8e2e96987da21ca792bdf38d60415d5d32b52f949293fbaff",
+    "crates/protocol/src/lib.rs": "82cccc4173141f0a597431e27179d088007c9d0ada50dc6d0f5716dabe49c103",
+    "crates/session/Cargo.toml": "a1c5e86b885cb1cf079c19600bf180fb04fb3847173b9d5324426047865fae18",
+    "crates/session/src/client.rs": "9905587a134a14c3ac0da9c1efab8c78f2ed0702e53905f9a9ad399f425a0084",
+    "crates/session/src/clipboard.rs": "b65912bcdc8e852d2b03e4955966bf127f3b6f02ad52ae790ff1ba469c37ef18",
+    "crates/session/src/common.rs": "cb5a10b02ea47486643f82c8c8484f952ce2234b27dbe805ef20a49c1cb3f46d",
+    "crates/session/src/hotkey.rs": "709cf340dec0b839bc8a97d3b11fd796a45add44107a35e93db63622991b2c7a",
+    "crates/session/src/layout.rs": "8408d750040ebe5b7357859219ce416888e77fb3ed005894b32f36ad69f94fab",
+    "crates/session/src/lib.rs": "a1acd5fa946c692f758a9eea75f19b73e81eb5c0cabc4b5835ffeb14c0a561a5",
+    "crates/session/src/server.rs": "c7a7f2597c174de865734e2e09c1db7f5e7ff3b0efecfb711cafe507e18357c3",
+    "rust-toolchain.toml": "f715f440167e20fd8ea9afa0498c3d1ab80174cfcb8cbc895f106a34d907a1e1",
+    "spikes/macos-input/Cargo.lock": "6b2bdaafd2c7cf3442398c0244d8a9ebfe140202aef0b61afd0d4227f6e70d26",
+    "spikes/macos-input/Cargo.toml": "66fa2711dc2075ff1d9b2cfd65e870f7162af4b7644406ab6df956ea440d64eb",
+    "spikes/macos-input/src/displays.rs": "097255ecbb3479ef3a415cd5d88f87d3c88bfd256704a3e37bc6eb762b9f597d",
+    "spikes/macos-input/src/ffi.rs": "d36d47365bdd1892d360ebb895f3188b4f565c8be74658f83cb1748f97c5bbea",
+    "spikes/macos-input/src/inject.rs": "28805a5ca112d88d643e0b9d4438b23d581010689395e1298627644c946a2e05",
+    "spikes/macos-input/src/keymap.rs": "92e7f3b1d0bbedeea88f5e6ac4fea656a7f81553d09188aafd9af50e861412b7",
+    "spikes/macos-input/src/lib.rs": "8f535b679342e67334c540d7f9157b7bbe18463504f04fdd397f864a457c3c3d",
+    "spikes/macos-input/src/main.rs": "1f27d60bf5ecf8ef9eca5dcac926fbcb6b7554d93e9dba3af69cad487c537136",
+    "spikes/macos-input/src/pasteboard.rs": "1a2f8d72c09493dfe72096820a7a79771bef3a9abec45bda6d7de06c116a829e",
+    "spikes/macos-input/src/permissions.rs": "f429d183c05cc3673bf8e0c99126575e37cee029b3b4abacf9ba3eb485893afd",
+    "spikes/macos-input/src/tap.rs": "41d71dd216657056f405c837f6f308bb10809bae73ca70c1c2c097f14932d19f",
+    "spikes/macos-input/src/types.rs": "099b05491e7d85ed04bcec133ffc2164f995f486064fe637172174dcc4741abf",
+    "tools/e2e/Cargo.toml": "78bb98248bc0c14ead549803d241fd912b95b068b894b2040d1d36d6ac55b83c",
+    "tools/e2e/src/guardian.rs": "8b48c734c7f4f111ff0e9c17461d8a02d2d0e9e6c51317b9d19279cf61c8e00a",
+    "tools/e2e/src/main.rs": "a38b74212fc8ccda9388da68f5a3d4da558ff872df56d0ab3251b2f7c0bd18f3",
+    "tools/e2e/src/model.rs": "f7b7004ad68da192e3e094ed49a554d9d4741fc89ab068cc34fe5e4c661236c4",
+    "tools/e2e/src/process.rs": "10ee9511a9ef68a81f4a4ac9c199a186e62b995d479d2e2e61004e32d89f9f0b",
+    "tools/e2e/src/runner.rs": "cd42127261573a5a6ce0b9d8a31a9d1013aa34b1486db97af0decb871970d564",
+    "tools/e2e/src/steps.rs": "de99717892fa32348af6d24bdb44b84097feb3b4e14c4316ec18219369621184",
+    "tools/e2e/src/util.rs": "c2d962c283abae42984bd310fbab30d286a0664d6f9752aeba3f47cb81b16fc6",
+    "tools/e2e/src/wire.rs": "60593d4a4461ce5f81ddbe94c4f19976cde2c14e46a6d48f0a431a5d5a7ef22c"
+  },
+  "script_sha256": {
+    "crates/net/examples/r5_queue_memory.py": "d0c3204b51046dd1428cd7b2b563f2ba0cba00b5effcf3ae1372b57a214a9742",
+    "crates/daemon/scripts/verify_connection_churn.py": "18558d7745fb4b979041ff273a2668d94993ffcb01495b2108af85a5c5fb9a65"
+  },
+  "source_integrity": {
+    "tracked_rust_cargo_toolchain_files": 113,
+    "changed_existing_inputs": [
+      "crates/net/examples/guardrails.rs",
+      "crates/net/src/reactor.rs"
+    ],
+    "new_rust_inputs": [],
+    "production_runtime_changed_files": [
+      "crates/net/src/reactor.rs"
+    ],
+    "manifest_lockfile_dependency_changes": false
+  },
+  "validation": {
+    "locked_release_daemon_and_runner_build": "PASS",
+    "locked_release_examples_build": "PASS",
+    "strict_release_workspace_all_targets_clippy": "PASS",
+    "fmt": "PASS",
+    "python_ast": "PASS",
+    "diff_check": "PASS",
+    "local_markdown_links": {
+      "checked": 27,
+      "passed": true
+    },
+    "changed_file_personal_path_and_private_key_marker_scan": {
+      "files": 7,
+      "passed": true
+    }
+  },
+  "limits": [
+    "Finite loopback workload and sampled RSS; no whole-process memory or universal denial-of-service bound",
+    "No new Linux/Windows/native or signed/notarized distribution acceptance",
+    "Native/security-review/distribution gates and two original review threads remain open",
+    "GitHub private reporting setup remains deferred"
+  ],
+  "raw_report_sha256": {
+    "baseline-fairness.json": "8614a311c793187955f8d7e3936c51816dac2616c48eb359e3ca88956a240d5b",
+    "baseline-final-plain.json": "82e260b359a2396cdb1da6cd5bb267df403d8f7af6e3af550bacf946c7edc51c",
+    "baseline-plain-final-replay.json": "50ac53c5e3a80e3609674a9199f382d91ad1f1abfadf4c0396ca6cf4d7af812f",
+    "baseline-tls12-final.json": "3904fe8675e617973f6c53104357ba961db030f7da733e396ed839dfddbf1a91",
+    "baseline-tls13-final.json": "bdf2cb98a2f0465f1272c0257d75cda70edd9b003eba485daf0363b46a149d20",
+    "baseline-tls13-first-metadata-invalid.json": "fd1b88864add0b31d707cb087de79f429900dc9d43fdc6893e8693dcd3f8937a",
+    "churn-fixed.json": "82c8dff01d4975546fc78f39a867a10349d8c76bf4c173bb9fffdfd39072f665",
+    "churn.json": "ad3135951b29552dc9be62b4a4489efadfe538381429023e79d914e21a9ca08a",
+    "cli-refusals.json": "e2bc2dac5169d698bcef769453acb402379f66546a9b3b7fbda6469f178fea17",
+    "example-checks.json": "eda8ae2051cbb98b8d4037df43f740c936e61949c7f68f27ab7bbb06d55a3131",
+    "fixed-plain-final.json": "2e03886ed109c64cb078682767cadc5731d9a8eb6e06c6d355fb9d638f961677",
+    "fixed-plain.json": "cf90c2418c028e721404e62a0e5453700c536857a774b09341d2d54d8693cfbd",
+    "fixed-tls12-final.json": "539ce79e4028eb664e0ec9490f35382273ba2da83f2a1758b57a843d492d6994",
+    "fixed-tls13-final.json": "2e7b5e4fc78aa0d81859ad6c6733e425b0da195c498a3174ab0a66023195b727",
+    "matrix-summary.json": "f88c854f1db2ad87462d5761c9b534f89135e3c0b3915142c6a57ee993ec7fce",
+    "priority.json": "b55726b1bfe533539784bba6734397f8a9fe4c14e4ffe861e2fd01fb6fda577c",
+    "queue.json": "699885252d85c9f183052959ad144a2f42c3ddef5a1f8e1623ec6e44a094f3da",
+    "virtual-final.json": "7e3ef1f9a1b351ec03c1b6baa2002aa15967cf7b2f1762825624cdade2c815de"
+  },
+  "virtual_suite": {
+    "passed": 89,
+    "failed": 0,
+    "excluded_count": 30,
+    "excluded": [
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I1-barrier-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I1-barrier-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I1-deskflow-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I1-deskflow-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-barrier-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-barrier-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-barrier-wrong-pin"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-deskflow-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-deskflow-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-deskflow-wrong-pin"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I3-barrier-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I3-barrier-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I3-deskflow-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I3-deskflow-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I4-barrier-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I4-barrier-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I4-deskflow-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I4-deskflow-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I5-barrier-export"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I5-deskflow-export"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L1-barrier-hello"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L1-deskflow-hello"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L2-barrier-clipboard"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L2-deskflow-clipboard"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L3-barrier-pair"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L3-deskflow-pair"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L4-barrier-raw-client"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L4-deskflow-raw-client"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "P03-barrier-held-key-repeat"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "P08-deskflow-held-key-repeat"
+      }
+    ],
+    "cleanup_failure_count": 0,
+    "outcomes": [
+      {
+        "scenario": "A1-modifier-and-receiver-wheel",
+        "outcome": "PASS",
+        "elapsed_ms": 723
+      },
+      {
+        "scenario": "A10-unsupported-hello-close",
+        "outcome": "PASS",
+        "elapsed_ms": 407
+      },
+      {
+        "scenario": "A11-input-backpressure-release",
+        "outcome": "PASS",
+        "elapsed_ms": 1050
+      },
+      {
+        "scenario": "A12-restart-connected-roles",
+        "outcome": "PASS",
+        "elapsed_ms": 848
+      },
+      {
+        "scenario": "A13-pinned-revoke-cutoff",
+        "outcome": "PASS",
+        "elapsed_ms": 1182
+      },
+      {
+        "scenario": "A2-client-direction-version-heartbeat-sequence",
+        "outcome": "PASS",
+        "elapsed_ms": 3943
+      },
+      {
+        "scenario": "A3-heartbeat-close-flush",
+        "outcome": "PASS",
+        "elapsed_ms": 1812
+      },
+      {
+        "scenario": "A4-config-live-rollback",
+        "outcome": "PASS",
+        "elapsed_ms": 630
+      },
+      {
+        "scenario": "A5-unavailable-clipboard-readback",
+        "outcome": "PASS",
+        "elapsed_ms": 1937
+      },
+      {
+        "scenario": "A6-clipboard-backpressure",
+        "outcome": "PASS",
+        "elapsed_ms": 540
+      },
+      {
+        "scenario": "A7-trust-lock-crash",
+        "outcome": "PASS",
+        "elapsed_ms": 399
+      },
+      {
+        "scenario": "A8-config-save-rollback",
+        "outcome": "PASS",
+        "elapsed_ms": 656
+      },
+      {
+        "scenario": "A9-tls-trusted-status",
+        "outcome": "PASS",
+        "elapsed_ms": 1125
+      },
+      {
+        "scenario": "C1-import-client-port",
+        "outcome": "PASS",
+        "elapsed_ms": 1091
+      },
+      {
+        "scenario": "C2-import-final-identity",
+        "outcome": "PASS",
+        "elapsed_ms": 689
+      },
+      {
+        "scenario": "C3-clipboard-supported-cap",
+        "outcome": "PASS",
+        "elapsed_ms": 698
+      },
+      {
+        "scenario": "D2-restart-disconnected-workers",
+        "outcome": "PASS",
+        "elapsed_ms": 1087
+      },
+      {
+        "scenario": "E1-repeated-ledger-tail",
+        "outcome": "PASS",
+        "elapsed_ms": 612
+      },
+      {
+        "scenario": "N2-queued-release-reentry",
+        "outcome": "PASS",
+        "elapsed_ms": 328
+      },
+      {
+        "scenario": "P01-impossible-hello-prefixes",
+        "outcome": "PASS",
+        "elapsed_ms": 319
+      },
+      {
+        "scenario": "P02-short-established-frame",
+        "outcome": "PASS",
+        "elapsed_ms": 298
+      },
+      {
+        "scenario": "P04-legacy-repeat-dialects",
+        "outcome": "PASS",
+        "elapsed_ms": 317
+      },
+      {
+        "scenario": "P05-modern-repeat-truncated",
+        "outcome": "PASS",
+        "elapsed_ms": 298
+      },
+      {
+        "scenario": "P06-legacy-repeat-truncated",
+        "outcome": "PASS",
+        "elapsed_ms": 310
+      },
+      {
+        "scenario": "P07-hostile-field-bounds",
+        "outcome": "PASS",
+        "elapsed_ms": 328
+      },
+      {
+        "scenario": "P09-clipboard-wire-containers",
+        "outcome": "PASS",
+        "elapsed_ms": 309
+      },
+      {
+        "scenario": "Q1-primary-screen-name",
+        "outcome": "PASS",
+        "elapsed_ms": 304
+      },
+      {
+        "scenario": "Q10-clipboard-policy-cancels-chunks",
+        "outcome": "PASS",
+        "elapsed_ms": 550
+      },
+      {
+        "scenario": "Q11-layout-delay-unmapped-edge",
+        "outcome": "PASS",
+        "elapsed_ms": 1507
+      },
+      {
+        "scenario": "Q12-client-cannot-disable-heartbeat",
+        "outcome": "PASS",
+        "elapsed_ms": 2068
+      },
+      {
+        "scenario": "Q13-clipboard-readback-recovery",
+        "outcome": "PASS",
+        "elapsed_ms": 1836
+      },
+      {
+        "scenario": "Q14-client-duplicate-clipboard-formats",
+        "outcome": "PASS",
+        "elapsed_ms": 516
+      },
+      {
+        "scenario": "Q15-server-duplicate-clipboard-formats",
+        "outcome": "PASS",
+        "elapsed_ms": 531
+      },
+      {
+        "scenario": "Q16-lock-hotkey-grammar",
+        "outcome": "PASS",
+        "elapsed_ms": 945
+      },
+      {
+        "scenario": "Q17-preentry-modifier-mask",
+        "outcome": "PASS",
+        "elapsed_ms": 712
+      },
+      {
+        "scenario": "Q18-empty-clipboard-clear",
+        "outcome": "PASS",
+        "elapsed_ms": 1394
+      },
+      {
+        "scenario": "Q19-unavailable-is-not-clear",
+        "outcome": "PASS",
+        "elapsed_ms": 1753
+      },
+      {
+        "scenario": "Q2-client-setup-clipboard",
+        "outcome": "PASS",
+        "elapsed_ms": 476
+      },
+      {
+        "scenario": "Q20-client-unsupported-only-clipboard",
+        "outcome": "PASS",
+        "elapsed_ms": 462
+      },
+      {
+        "scenario": "Q20-server-unsupported-only-clipboard",
+        "outcome": "PASS",
+        "elapsed_ms": 492
+      },
+      {
+        "scenario": "Q21-client-unsupported-only-local-clipboard",
+        "outcome": "PASS",
+        "elapsed_ms": 1638
+      },
+      {
+        "scenario": "Q21-server-unsupported-only-local-clipboard",
+        "outcome": "PASS",
+        "elapsed_ms": 1602
+      },
+      {
+        "scenario": "Q3-server-setup-clipboard",
+        "outcome": "PASS",
+        "elapsed_ms": 423
+      },
+      {
+        "scenario": "Q4-two-held-shift-keys",
+        "outcome": "PASS",
+        "elapsed_ms": 629
+      },
+      {
+        "scenario": "Q5-live-layout-peer-geometry",
+        "outcome": "PASS",
+        "elapsed_ms": 636
+      },
+      {
+        "scenario": "Q6-disabled-clipboard-enter",
+        "outcome": "PASS",
+        "elapsed_ms": 1233
+      },
+      {
+        "scenario": "Q7-receive-disabled-ownership",
+        "outcome": "PASS",
+        "elapsed_ms": 1795
+      },
+      {
+        "scenario": "Q8-zero-button-key-release",
+        "outcome": "PASS",
+        "elapsed_ms": 342
+      },
+      {
+        "scenario": "Q9-reconnect-clipboard-sequence",
+        "outcome": "PASS",
+        "elapsed_ms": 901
+      },
+      {
+        "scenario": "R1-control-files",
+        "outcome": "PASS",
+        "elapsed_ms": 2114
+      },
+      {
+        "scenario": "R2-lifecycle",
+        "outcome": "PASS",
+        "elapsed_ms": 1106
+      },
+      {
+        "scenario": "R5-client-config-retains-clipboard",
+        "outcome": "PASS",
+        "elapsed_ms": 374
+      },
+      {
+        "scenario": "R5-dead-corner-negative-origin",
+        "outcome": "PASS",
+        "elapsed_ms": 718
+      },
+      {
+        "scenario": "R5-dead-corner-positive-origin",
+        "outcome": "PASS",
+        "elapsed_ms": 728
+      },
+      {
+        "scenario": "R5-double-tap-stationary-timeout",
+        "outcome": "PASS",
+        "elapsed_ms": 1310
+      },
+      {
+        "scenario": "R5-incoming-clipboard-cancellation",
+        "outcome": "PASS",
+        "elapsed_ms": 1412
+      },
+      {
+        "scenario": "R5-server-live-alias-merge",
+        "outcome": "PASS",
+        "elapsed_ms": 319
+      },
+      {
+        "scenario": "R5-server-live-alias-rename",
+        "outcome": "PASS",
+        "elapsed_ms": 993
+      },
+      {
+        "scenario": "S0-smoke",
+        "outcome": "PASS",
+        "elapsed_ms": 384
+      },
+      {
+        "scenario": "S1-connect",
+        "outcome": "PASS",
+        "elapsed_ms": 1674
+      },
+      {
+        "scenario": "S10-clipboard-cap",
+        "outcome": "PASS",
+        "elapsed_ms": 1837
+      },
+      {
+        "scenario": "S11-heartbeat",
+        "outcome": "PASS",
+        "elapsed_ms": 2398
+      },
+      {
+        "scenario": "S12-display-change",
+        "outcome": "PASS",
+        "elapsed_ms": 594
+      },
+      {
+        "scenario": "S13-flood",
+        "outcome": "PASS",
+        "elapsed_ms": 7649
+      },
+      {
+        "scenario": "S13-garbage",
+        "outcome": "PASS",
+        "elapsed_ms": 626
+      },
+      {
+        "scenario": "S13-oversized",
+        "outcome": "PASS",
+        "elapsed_ms": 620
+      },
+      {
+        "scenario": "S13-truncated-hello",
+        "outcome": "PASS",
+        "elapsed_ms": 309
+      },
+      {
+        "scenario": "S13-truncated",
+        "outcome": "PASS",
+        "elapsed_ms": 626
+      },
+      {
+        "scenario": "S13-unknown",
+        "outcome": "PASS",
+        "elapsed_ms": 1115
+      },
+      {
+        "scenario": "S14-import-roundtrip",
+        "outcome": "PASS",
+        "elapsed_ms": 739
+      },
+      {
+        "scenario": "S15-resources-latency",
+        "outcome": "PASS",
+        "elapsed_ms": 121693
+      },
+      {
+        "scenario": "S16-permissions",
+        "outcome": "PASS",
+        "elapsed_ms": 647
+      },
+      {
+        "scenario": "S17-healthy",
+        "outcome": "PASS",
+        "elapsed_ms": 959
+      },
+      {
+        "scenario": "S17-same-fingerprint",
+        "outcome": "PASS",
+        "elapsed_ms": 1122
+      },
+      {
+        "scenario": "S17-stale",
+        "outcome": "PASS",
+        "elapsed_ms": 1604
+      },
+      {
+        "scenario": "S18-click-numbering",
+        "outcome": "PASS",
+        "elapsed_ms": 641
+      },
+      {
+        "scenario": "S19-config-patch",
+        "outcome": "PASS",
+        "elapsed_ms": 701
+      },
+      {
+        "scenario": "S2-edge-mapping",
+        "outcome": "PASS",
+        "elapsed_ms": 634
+      },
+      {
+        "scenario": "S2-wire-order",
+        "outcome": "PASS",
+        "elapsed_ms": 327
+      },
+      {
+        "scenario": "S20-parent-exit",
+        "outcome": "PASS",
+        "elapsed_ms": 703
+      },
+      {
+        "scenario": "S20-parent-off",
+        "outcome": "PASS",
+        "elapsed_ms": 381
+      },
+      {
+        "scenario": "S21-fingerprint-import",
+        "outcome": "PASS",
+        "elapsed_ms": 1214
+      },
+      {
+        "scenario": "S3-input-order",
+        "outcome": "PASS",
+        "elapsed_ms": 628
+      },
+      {
+        "scenario": "S4-disconnect-release",
+        "outcome": "PASS",
+        "elapsed_ms": 952
+      },
+      {
+        "scenario": "S5-disconnect-release",
+        "outcome": "PASS",
+        "elapsed_ms": 882
+      },
+      {
+        "scenario": "S6-trust-approval",
+        "outcome": "PASS",
+        "elapsed_ms": 1602
+      },
+      {
+        "scenario": "S7-wrong-pin",
+        "outcome": "PASS",
+        "elapsed_ms": 726
+      },
+      {
+        "scenario": "S8-text-clipboard",
+        "outcome": "PASS",
+        "elapsed_ms": 1177
+      },
+      {
+        "scenario": "S9-large-dib",
+        "outcome": "PASS",
+        "elapsed_ms": 2333
+      }
+    ],
+    "S15_measurements": [
+      {
+        "cpu_percent": 0.04994720341268929,
+        "kind": "resources",
+        "rss_peak_bytes": 9437184,
+        "window_ms": 60063
+      },
+      {
+        "cpu_percent": 0.016646034900730362,
+        "kind": "resources",
+        "rss_peak_bytes": 9437184,
+        "window_ms": 60074
+      },
+      {
+        "kind": "capture_to_recorded_upper_bound",
+        "max_ms": 0.9949169999999999,
+        "p50_ms": 0.806583,
+        "p95_ms": 0.861833,
+        "p99_ms": 0.904833,
+        "samples": 1000
+      }
+    ]
+  },
+  "fresh_local_clone": {
+    "source_commit": "974a17e0f9d0bd465b5466163238a0cd8d00b323",
+    "tracked_rust_cargo_toolchain_files": 113,
+    "scripts": 2,
+    "all_hashes_matched": true,
+    "clean": true
+  }
+}

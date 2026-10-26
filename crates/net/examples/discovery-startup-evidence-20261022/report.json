@@ -1,0 +1,51 @@
+{
+  "starting_source": "884ff876b98e38d7380e119c67de8acbb86f6331",
+  "toolchain": "1.99.1",
+  "deployment_target": "15.0",
+  "nice": 15,
+  "build_jobs": 2,
+  "baseline_status": 1,
+  "baseline_checks_passed": 5,
+  "baseline_checks_total": 12,
+  "baseline_startup_metric_only": true,
+  "initial_fixed_status": 0,
+  "initial_fixed_checks": 12,
+  "final_startup_status": 0,
+  "final_startup_checks": 14,
+  "retained_status": 0,
+  "retained_checks": 19,
+  "owned_shutdown_status": 0,
+  "owned_shutdown_cases": 4,
+  "startup_ports": [
+    25090,
+    25091
+  ],
+  "retained_ports": [
+    25086,
+    25087
+  ],
+  "shutdown_ports": [
+    25094,
+    25095
+  ],
+  "upstream_patch_lines": 389,
+  "expiry_runtime": "excluded, provider-stopped, unverified",
+  "blocked_release_provenance_review": "not attempted, unverified",
+  "parent_independent_acceptance": false,
+  "source_sha256": {
+    "vendor/mdns-sd/src/service_daemon.rs": "3f1bf0a78767e928db84c19a005718869208c68747eee5f7ff05fce6e73ac4a5",
+    "vendor/mdns-sd/src/lib.rs": "5828af0294e915fc600913d1fb7d9409f527c3ccda6e8fa4512d666743973ab0",
+    "vendor/mdns-sd/OPENERGY.patch": "b240dc9131eac2f1355a1bb595a9c219f26a1c052bd9e4ceaf6f8282d17a9ad3",
+    "vendor/mdns-sd/UPSTREAM.json": "c28cea9cfa076cd5c3cc297a85150575101c7441fff6bb1cdb3cae6b2f204c91",
+    "crates/net/examples/discovery_recovery.rs": "602593c2e97c1ca1646ef5bf5a3a3abcd05b4cd2f50a23489f635aa3260dbb80",
+    "Cargo.toml": "7ea29af11f38ac187df7fb78ecbfb5ba0f5c4d2248211efb857010b91412ea04",
+    "Cargo.lock": "6d57d3d84fcef4208a9ce657e511b07099187dcda084cd9decb9ab9a56756800"
+  },
+  "binary_sha256": {
+    "discovery_recovery": "eff663ff829b9bdbc6eccc7b2700495fb16be12e874650443a8048381866c911",
+    "discovery_owned_shutdown": "99c4f5154c2fcd5a4886dd5fb1da77bcc86459e222dce6f44a185131a7efe112"
+  },
+  "repeat_startup_status": 0,
+  "repeat_startup_checks": 14,
+  "upstream_existing_tests_changed": false
+}

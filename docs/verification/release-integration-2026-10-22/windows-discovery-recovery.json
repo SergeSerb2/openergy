@@ -1,0 +1,377 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-22",
+  "timezone": "America/Vancouver",
+  "result": "PASS within loopback discovery and virtual control scope",
+  "source": {
+    "commit": "ac5c45081a9e060392cb850eddd625f07b591bfe",
+    "starting_checkout_matches_commit": true,
+    "starting_checkout_clean": true,
+    "isolated_branch": "t3/windows-discovery-verification",
+    "parent_branch": "t3/public-release-readiness",
+    "runtime_source_edits": false,
+    "files": 572,
+    "archive_sha256": "4ff5283c9f1b1d41cc3c3358479ffcff09188f0a3a2f5652568e74b1e35a6707",
+    "manifest_sha256": "a72bbfa46fe883d15e42444cdd220fb6aaf7887099eedc538db7dd68326e06f4",
+    "all_remote_files_match_manifest_before_and_after": true,
+    "all_remote_source_files_readonly_before_and_after": true,
+    "archive_regular_files_match_manifest": true,
+    "git_blob_exact_matches": 571,
+    "git_checkout_conversion": {
+      "path": "tools/windows/openergy-run.cmd",
+      "git_bytes": 502,
+      "archive_bytes": 511,
+      "git_sha256": "74772411a85032212c7f4ba1be1948233804dcb21166c5caef0a6611ea2c3210",
+      "archive_sha256": "f784708ca8aa30160c34a96c406ee3b666d3d82d3cad6756f7aa8d6b6b21d11e",
+      "crlf_only": true
+    },
+    "conversion_rule": "*.cmd text eol=crlf",
+    "conversion_git_clean_filter_matches_commit": true,
+    "conversion_git_blob_id": "9cd6f37ce26dde4edcad6f808492171f8daf3462"
+  },
+  "build": {
+    "reused_original_parent_build": true,
+    "restarted_or_duplicated": false,
+    "toolchain": "1.99.1-x86_64-pc-windows-msvc",
+    "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+    "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+    "max_jobs": 2,
+    "priority": "BelowNormal",
+    "session_id": 0,
+    "os": "Microsoft Windows NT 10.0.26340.0",
+    "architecture": "AMD64",
+    "powershell_version": "7.6.4",
+    "started_local": "2026-10-22T20:53:39.997825-07:00",
+    "ended_local": "2026-10-22T20:56:24.424668-07:00",
+    "passed": true,
+    "steps": [
+      {
+        "name": "clippy",
+        "arguments": [
+          "+1.99.1",
+          "clippy",
+          "--locked",
+          "--release",
+          "-p",
+          "openergy-daemon",
+          "-p",
+          "openergy-platform-windows",
+          "-p",
+          "openergy-net",
+          "-p",
+          "openergy-session",
+          "-p",
+          "openergy-platform",
+          "-p",
+          "openergy-protocol",
+          "-p",
+          "openergy-config",
+          "-p",
+          "openergy-ipc",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit": 0,
+        "elapsed_ms": 34788
+      },
+      {
+        "name": "release",
+        "arguments": [
+          "+1.99.1",
+          "build",
+          "--locked",
+          "--release",
+          "-p",
+          "openergy-daemon",
+          "-p",
+          "openergy-platform-windows"
+        ],
+        "exit": 0,
+        "elapsed_ms": 79983
+      },
+      {
+        "name": "examples",
+        "arguments": [
+          "+1.99.1",
+          "build",
+          "--locked",
+          "--release",
+          "-p",
+          "openergy-net",
+          "--example",
+          "discovery_recovery",
+          "--example",
+          "discovery"
+        ],
+        "exit": 0,
+        "elapsed_ms": 44823
+      }
+    ],
+    "build_script_sha256": "f6827acd5c377282c66a147e6339307cd7c9d8e33629aa4cf28a78f62fb87aed",
+    "build_result_sha256": "494f6dd53e7dbb2cb43d65dcb8a7e486b47e7589ee4b984fe55ecb4eecde7e76"
+  },
+  "frozen_binaries": [
+    {
+      "build_name": "release/openergy.exe",
+      "frozen_name": "openergy.exe",
+      "bytes": 4101632,
+      "sha256": "c5951c2c1e1d92f9114ae66a214f709ccf9162e9a295c374c3b112490bff28dc"
+    },
+    {
+      "build_name": "release/examples/discovery_recovery.exe",
+      "frozen_name": "discovery_recovery.exe",
+      "bytes": 928256,
+      "sha256": "0b821581fdc085f82b01bc081d2878f9de1c5d07824e6416413d650fe9dc228d"
+    },
+    {
+      "build_name": "release/examples/discovery.exe",
+      "frozen_name": "discovery.exe",
+      "bytes": 1567232,
+      "sha256": "f0a44136eddc47316cbe22b1ec70c30e591de68dba807362507e3fd1babdf26c"
+    }
+  ],
+  "isolation": {
+    "windows_fixture": "%LOCALAPPDATA%/Temp/oe-win-discovery-905e1537e742",
+    "bin_relative": "bin-native-3e1f16ce",
+    "runtime_relative": "native-verification-3e1f16ce",
+    "session_id": 0,
+    "priority": "BelowNormal",
+    "fixture_acl_protected": true,
+    "fixture_acl_rules": 1,
+    "fixture_and_child_acl_current_user_only": true,
+    "temporary_environment_paths_private": true,
+    "allow_port_24800": "0",
+    "discovery_mdns_udp_port": 25092,
+    "discovery_service_metadata_ports": [
+      25094,
+      25095
+    ],
+    "control_tcp_port": 25241,
+    "control_backend": "virtual",
+    "control_discovery_disabled": true,
+    "default_ipc_used": false
+  },
+  "discovery": {
+    "command": "<BIN>/discovery_recovery.exe probe <RUNTIME>/discovery-runtime 25092 25094",
+    "exit": 0,
+    "elapsed_ms": 21343,
+    "timeout_seconds": 120,
+    "timed_out": false,
+    "started_local": "2026-10-22T21:01:11.042376-07:00",
+    "ended_local": "2026-10-22T21:01:32.627532-07:00",
+    "check_count": 8,
+    "checks": [
+      "CHECK initial-resolution=true",
+      "CHECK real-upstream-channel-overflow=true",
+      "CHECK snapshot-cap=true",
+      "CHECK fresh-advertisement-after-overflow=true",
+      "CHECK updated-port-and-untrusted-hint=true",
+      "CHECK goodbye-removes-all-peers=true",
+      "CHECK publisher-exits-zero=true",
+      "CHECK worker-shutdown=true"
+    ],
+    "burst_services": 800,
+    "snapshot_peak": 64,
+    "calibrating_receiver_closed_at_events": 1000,
+    "recovery_observation_ms": 0,
+    "stderr_empty": true,
+    "forced_cleanup": false,
+    "all_observed_processes_session_zero": true
+  },
+  "control": {
+    "command": "pwsh.exe -NoLogo -NoProfile -NonInteractive -File <SOURCE>/tools/windows/verify-control.ps1 -BinaryPath <BIN>/openergy.exe -Port 25241",
+    "script_sha256": "264d6a71e54de650498f6dcf46b806acaf5cc20f2022222082372cf614ab8aeb",
+    "exit": 0,
+    "elapsed_ms": 5881,
+    "timeout_seconds": 180,
+    "timed_out": false,
+    "started_local": "2026-10-22T21:01:32.649730-07:00",
+    "ended_local": "2026-10-22T21:01:38.725339-07:00",
+    "check_count": 23,
+    "checks": [
+      "PASS ctl status alias",
+      "PASS status command",
+      "PASS disconnect command",
+      "PASS connect command",
+      "PASS config patch saves and applies",
+      "PASS second daemon rejected",
+      "PASS kernel DACL: protected, one allow ACE, current user SID only",
+      "PASS events subscribe response",
+      "PASS event bus subscription delivery",
+      "PASS logs subscribe response",
+      "PASS logs subscription delivery",
+      "PASS fragmented frame survives read timeouts",
+      "PASS unknown method returns typed error",
+      "PASS 65th client rejected",
+      "PASS client slot recovers",
+      "PASS ipc-stop exit deadline",
+      "PASS ipc-stop exit=0",
+      "PASS absent daemon error",
+      "PASS watched daemon stays alive with parent",
+      "PASS parent exit deadline",
+      "PASS parent exit=0",
+      "PASS parent-watched exit deadline",
+      "PASS parent-watched exit=0"
+    ],
+    "pass_marker": "WINDOWS_CONTROL_PASS",
+    "stderr_empty": true,
+    "forced_cleanup": false,
+    "all_observed_daemons_session_zero": true
+  },
+  "postflight": {
+    "passed": true,
+    "recorded_local": "2026-10-22T21:02:32.102485-07:00",
+    "source_files": 572,
+    "source_hashes_unchanged": true,
+    "archive_manifest_build_script_control_script_hashes_unchanged": true,
+    "binaries": [
+      {
+        "path": "target/release/openergy.exe",
+        "bytes": 4101632,
+        "sha256": "c5951c2c1e1d92f9114ae66a214f709ccf9162e9a295c374c3b112490bff28dc",
+        "readonly": false
+      },
+      {
+        "path": "bin-native-3e1f16ce/openergy.exe",
+        "bytes": 4101632,
+        "sha256": "c5951c2c1e1d92f9114ae66a214f709ccf9162e9a295c374c3b112490bff28dc",
+        "readonly": true
+      },
+      {
+        "path": "target/release/examples/discovery_recovery.exe",
+        "bytes": 928256,
+        "sha256": "0b821581fdc085f82b01bc081d2878f9de1c5d07824e6416413d650fe9dc228d",
+        "readonly": false
+      },
+      {
+        "path": "bin-native-3e1f16ce/discovery_recovery.exe",
+        "bytes": 928256,
+        "sha256": "0b821581fdc085f82b01bc081d2878f9de1c5d07824e6416413d650fe9dc228d",
+        "readonly": true
+      },
+      {
+        "path": "target/release/examples/discovery.exe",
+        "bytes": 1567232,
+        "sha256": "f0a44136eddc47316cbe22b1ec70c30e591de68dba807362507e3fd1babdf26c",
+        "readonly": false
+      },
+      {
+        "path": "bin-native-3e1f16ce/discovery.exe",
+        "bytes": 1567232,
+        "sha256": "f0a44136eddc47316cbe22b1ec70c30e591de68dba807362507e3fd1babdf26c",
+        "readonly": true
+      }
+    ],
+    "toolchains_before": [
+      "stable-x86_64-pc-windows-msvc (active, default)",
+      "nightly-x86_64-pc-windows-msvc",
+      "nightly-2026-08-10-x86_64-pc-windows-msvc",
+      "1.98.0-x86_64-pc-windows-msvc",
+      "1.99.1-x86_64-pc-windows-msvc"
+    ],
+    "toolchains_after": [
+      "stable-x86_64-pc-windows-msvc (active, default)",
+      "nightly-x86_64-pc-windows-msvc",
+      "nightly-2026-08-10-x86_64-pc-windows-msvc",
+      "1.98.0-x86_64-pc-windows-msvc",
+      "1.99.1-x86_64-pc-windows-msvc"
+    ],
+    "toolchain_defaults_unchanged": true,
+    "remaining_fixture_executables": [],
+    "remaining_assigned_tcp_listeners": [],
+    "remaining_assigned_udp_endpoints": [],
+    "control_temp_labs_remaining": [],
+    "endpoint_audit": {
+      "passed": true,
+      "queries_use_error_action_stop": true,
+      "os_tcp_listener_inventory_count": 11,
+      "os_udp_endpoint_inventory_count": 69,
+      "os_process_inventory_count": 379,
+      "remaining_assigned_tcp_listeners": 0,
+      "remaining_assigned_udp_endpoints": 0,
+      "remaining_fixture_executables": 0,
+      "recorded_utc": "2026-10-23T04:05:24.0338518Z"
+    }
+  },
+  "retained_helper_failures": [
+    {
+      "stage": "local Git-blob/archive inspector",
+      "original_error": "AssertionError: tools/windows/openergy-run.cmd",
+      "resolution": "Preserved exact-byte difference; verified CRLF-only conversion mandated by .gitattributes and matching Git clean-filter blob. No source changes."
+    },
+    {
+      "stage": "local archive inventory inspector",
+      "original_error": "AssertionError from comparing all tar members with regular-file manifest",
+      "resolution": "Retained original failure; enumerated 572 regular files and 86 directories; each regular file matches manifest. No archive changes."
+    },
+    {
+      "stage": "first remote postflight",
+      "original_error": "Get-Item cannot find concatenated target and bin path",
+      "raw_stderr": "native-postflight.stderr",
+      "resolution": "native-postflight-v2.ps1 adds parentheses around each array element. Repeated only read-only audit; no runtime or assertions changed."
+    },
+    {
+      "stage": "local timestamp rendering",
+      "resolution": "Use six fractional digits and +00:00 when rendering local timestamps; retained original UTC raw reports.",
+      "original_errors": [
+        "ValueError: Invalid isoformat string: '2026-10-23T03:56:24.4246680Z'",
+        "ValueError: Invalid isoformat string after Z replacement because Python rejects seven fractional digits"
+      ]
+    }
+  ],
+  "raw_evidence": {
+    "windows_runtime_relative": "native-verification-3e1f16ce",
+    "private_local_directory_name": "windows-native-20261022",
+    "local_runtime_subdirectory": "raw",
+    "local_original_build_subdirectory": "original-build",
+    "runtime_sha256": {
+      "preflight.json": "cb816989dba93885b688be7b16d88b89ca39926baa92c5575b2dec93ef07295f",
+      "runtime-start.json": "c88380fa26b725b4b0952c03d29f823f37f68affc07135532b3ae38b46b7c3c8",
+      "discovery-recovery-result.json": "abf3e2f87978a66e0c7d106ff38077df09f11bb1c22826191002f31198a23a34",
+      "discovery-recovery.stdout": "2f6431140769255740e481695cca6ebe798860d33288c9fa24b4835472c89f96",
+      "discovery-recovery.stderr": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+      "discovery-runtime/publisher.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "windows-control-result.json": "4c2110702800ef043583f9224fe3572101e8443f86239d83f0d81211c47ce21a",
+      "windows-control.stdout": "1e474e911061920039a87dfcc36e32583cc8a07c665489423426cb8a12df21d8",
+      "windows-control.stderr": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+      "postflight.json": "85f2ee681523210b0f86beda9fb265e54945ff0d010001f34a96b0062aa9ec2e",
+      "endpoint-audit.json": "48024ab5cba6c4d55789a0b5fa83bf376c7f850f7e21534f2df9639331310dc2"
+    },
+    "original_build_sha256": {
+      "build-process.json": "180db81c4970c7d7c91cb0a1fc9fcc9571b5a4e084e41246bba4887696bb1a26",
+      "build-result.json": "494f6dd53e7dbb2cb43d65dcb8a7e486b47e7589ee4b984fe55ecb4eecde7e76",
+      "build.ps1": "f6827acd5c377282c66a147e6339307cd7c9d8e33629aa4cf28a78f62fb87aed",
+      "clippy.log": "7be8f92fef185fa13c708aff2e1da566fcafc8aacf582d8fc6599248c346388f",
+      "release.log": "3e6267d2a943faf47fe57a1673a57f5d4d474c4081ac9888407eaaf02ff7d2c6",
+      "examples.log": "7c365be7f0a4c17d03fd808aa161810617f8fe2db9b0603a7cb3bfdcc6ef107d"
+    },
+    "local_helper_failures": "helper-failures.json",
+    "first_failed_postflight_stderr": "native-postflight.stderr",
+    "corrected_postflight_script": "native-postflight-v2.ps1"
+  },
+  "limitations": [
+    "One native Windows loopback/virtual run; no sustained soak or independent Windows baseline comparison.",
+    "RECOVERY_OBSERVATION_MS=0 measures the first observation after the publisher phase has already waited two seconds; it is not network recovery latency.",
+    "discovery.exe was frozen and hash-checked but not executed; discovery_recovery.exe supplied the exercised discovery path.",
+    "No native desktop input or clipboard, restricted-token/desktop changes, positive Windows migration, or trusted signed distribution checks ran.",
+    "Original release-provenance and Windows privilege findings remain open; this verification does not clear them.",
+    "GitHub private reporting remains deferred."
+  ],
+  "preserved_scope": [
+    "Installed Openergy and Synergy and live sharing",
+    "Production config, TLS, default IPC and port 24800",
+    "Services, tasks, login, accounts, credentials, desktop and windowstation",
+    "Firewall and network configuration",
+    "Docker state",
+    "Repository settings, signing, publication, PR and remote refs"
+  ],
+  "parent_integration_qualification": {
+    "status": "intermediate ac5c450; retained-cache and Discovery-worker proof gaps open",
+    "record": "discovery-recovery-initial.md",
+    "retained_namespace_exercised": false,
+    "discovery_worker_acknowledged_by_probe": false,
+    "scope_note": "The original eight checks passed. The full burst is removed before checking recovery; worker-shutdown=true includes raw sentinel acknowledgement and a submitted Discovery shutdown request. Final process/endpoint cleanup is a separate observed result. No later revision is verified here."
+  }
+}

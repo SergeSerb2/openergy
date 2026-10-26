@@ -1,0 +1,325 @@
+{
+  "binary": "/private/tmp/oe-r5-net-target/release/openergy",
+  "excluded": [],
+  "excluded_count": 0,
+  "failed": 0,
+  "format_version": 1,
+  "lab_port_range": [
+    26220,
+    26239
+  ],
+  "no_docker": true,
+  "passed": 12,
+  "port_range": [
+    26202,
+    26219
+  ],
+  "scenarios": [
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1102,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Lost input repeats report an error without dropping peers; a lost up leaves only that peer and flushes ups/COUT before FIN.",
+      "scenario": "A11-input-backpressure-release",
+      "stderr_tails": {
+        "observer": [
+          "1792654330394 INFO openergy::runtime: openergy 0.1.0 daemon listening on /tmp/oe7-48294-1792654330362/s0/observer/ctl.sock",
+          "1792654330394 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792654330394 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792654330394 WARN openergy::runtime: plaintext connection: 127.0.0.1:26202"
+        ],
+        "server": [
+          "1792654330809 WARN openergy::runtime: network_queue_full: Can't send data: Network queue is full.",
+          "1792654330809 WARN openergy::runtime: network_queue_full: Can't send data: Network queue is full.",
+          "1792654330809 WARN openergy::runtime: network_queue_full: Can't send data: Network queue is full.",
+          "1792654330809 WARN openergy::runtime: network_queue_full: Can't send data: Network queue is full.",
+          "1792654330809 WARN openergy::runtime: network_queue_full: Can't send data: Network queue is full.",
+          "1792654330809 WARN openergy::runtime: network_queue_full: Can't send data: Network queue is full.",
+          "1792654330809 WARN openergy::runtime: network_queue_full: Can't send data: Network queue is full.",
+          "1792654330809 WARN openergy::runtime: network_queue_full: Can't send data: Network queue is full.",
+          "1792654330809 WARN openergy::runtime: network_queue_full: Can't send data: Network queue is full.",
+          "1792654330809 WARN openergy::runtime: network_queue_full: Can't send data: Network queue is full.",
+          "1792654330809 WARN openergy::runtime: network_queue_full: Can't send data: Network queue is full.",
+          "1792654330809 WARN openergy_net::reactor: connection 2 exceeded 4 MiB input/control queue budget; closing SlowPeer after heartbeat"
+        ]
+      }
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 571,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "A real stopped reader fills the bounded Bulk queue; transfer abort is visible while IPC stays responsive.",
+      "scenario": "A6-clipboard-backpressure",
+      "stderr_tails": {
+        "server": [
+          "1792654331471 INFO openergy::runtime: openergy 0.1.0 daemon listening on /tmp/oe7-48294-1792654330362/s1/server/ctl.sock",
+          "1792654331471 INFO openergy::runtime: listening on 127.0.0.1:26202",
+          "1792654331492 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792654331492 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792654331492 WARN openergy::runtime: plaintext connection: 127.0.0.1:63692",
+          "1792654331707 WARN openergy::runtime: network_queue_full: Can't send data: Network queue is full.",
+          "[input or clipboard log line redacted]"
+        ]
+      }
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 342,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "A queued key down precedes its safety release, which precedes leave, same-peer reentry and a new down.",
+      "scenario": "N2-queued-release-reentry",
+      "stderr_tails": {
+        "server": [
+          "1792654332043 INFO openergy::runtime: openergy 0.1.0 daemon listening on /tmp/oe7-48294-1792654330362/s2/server/ctl.sock",
+          "1792654332043 INFO openergy::runtime: listening on 127.0.0.1:26202",
+          "1792654332059 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792654332059 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792654332059 WARN openergy::runtime: plaintext connection: 127.0.0.1:63696"
+        ]
+      }
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 352,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "DCLP containers preserve NUL and Unicode text, HTML and binary bytes, skip unknown formats, reject bad counts and lengths, and accept an empty clipboard.",
+      "scenario": "P09-clipboard-wire-containers",
+      "stderr_tails": {
+        "client": [
+          "1792654332386 INFO openergy::runtime: openergy 0.1.0 daemon listening on /tmp/oe7-48294-1792654330362/s3/client/ctl.sock",
+          "1792654332386 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792654332386 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792654332386 WARN openergy::runtime: plaintext connection: 127.0.0.1:26202",
+          "[input or clipboard log line redacted]",
+          "[input or clipboard log line redacted]",
+          "[input or clipboard log line redacted]",
+          "[input or clipboard log line redacted]"
+        ]
+      }
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 574,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Disable/re-enable receive cannot resurrect pre-policy clipboard chunks; a fresh Start recovers.",
+      "scenario": "Q10-clipboard-policy-cancels-chunks",
+      "stderr_tails": {
+        "server": [
+          "1792654332741 INFO openergy::runtime: openergy 0.1.0 daemon listening on /tmp/oe7-48294-1792654330362/s4/server/ctl.sock",
+          "1792654332741 INFO openergy::runtime: listening on 127.0.0.1:26202",
+          "1792654332758 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792654332759 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792654332759 WARN openergy::runtime: plaintext connection: 127.0.0.1:63699"
+        ]
+      }
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1463,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Host and client text followed by an empty format list clears stale remote clipboard data.",
+      "scenario": "Q18-empty-clipboard-clear",
+      "stderr_tails": {
+        "client": [
+          "1792654333338 INFO openergy::runtime: openergy 0.1.0 daemon listening on /tmp/oe7-48294-1792654330362/s5/client/ctl.sock",
+          "1792654333338 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792654333338 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792654333338 WARN openergy::runtime: plaintext connection: 127.0.0.1:26202"
+        ],
+        "server": [
+          "1792654333316 INFO openergy::runtime: openergy 0.1.0 daemon listening on /tmp/oe7-48294-1792654330362/s5/server/ctl.sock",
+          "1792654333316 INFO openergy::runtime: listening on 127.0.0.1:26202",
+          "1792654333338 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792654333338 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792654333338 WARN openergy::runtime: plaintext connection: 127.0.0.1:63702"
+        ]
+      }
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 921,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "After reconnect, a client uses sequence zero until the new server sends CINN.",
+      "scenario": "Q9-reconnect-clipboard-sequence",
+      "stderr_tails": {
+        "client": [
+          "1792654334776 INFO openergy::runtime: openergy 0.1.0 daemon listening on /tmp/oe7-48294-1792654330362/s6/client/ctl.sock",
+          "1792654334777 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792654334777 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792654334777 WARN openergy::runtime: plaintext connection: 127.0.0.1:26202",
+          "1792654334978 WARN openergy::runtime: connection loss: reconnect attempt=1 delay_ms=220",
+          "1792654335198 WARN openergy_net::reactor: PLAINTEXT connection 3: TLS explicitly disabled",
+          "1792654335200 WARN openergy_net::reactor: connection 3 established: TLS=None, cipher=None",
+          "1792654335200 WARN openergy::runtime: plaintext connection: 127.0.0.1:26202"
+        ]
+      }
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1439,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [
+        {
+          "cpu_percent": 0.0,
+          "kind": "resources",
+          "rss_peak_bytes": 9240576,
+          "window_ms": 1047
+        }
+      ],
+      "outcome": "PASS",
+      "requirement": "A declared 64 MiB transfer does not eagerly allocate; a newer grab cancels a complete pending payload, and a fresh transfer recovers.",
+      "scenario": "R5-incoming-clipboard-cancellation",
+      "stderr_tails": {
+        "client": [
+          "1792654335698 INFO openergy::runtime: openergy 0.1.0 daemon listening on /tmp/oe7-48294-1792654330362/s7/client/ctl.sock",
+          "1792654335698 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792654335698 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792654335698 WARN openergy::runtime: plaintext connection: 127.0.0.1:26202"
+        ]
+      }
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [
+        "WP6"
+      ],
+      "cleanup_failures": [],
+      "elapsed_ms": 1661,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Two real plain virtual daemons exchange hello/QINF/DINF, report names/screens, and stop cleanly.",
+      "scenario": "S1-connect",
+      "stderr_tails": {}
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [
+        "WP3",
+        "WP6"
+      ],
+      "cleanup_failures": [],
+      "elapsed_ms": 1712,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Local and receiver clipboard caps emit clipboard.blocked, deliver no partial, and recover for a small clip.",
+      "scenario": "S10-clipboard-cap",
+      "stderr_tails": {
+        "client": [
+          "1792654338824 INFO openergy::runtime: openergy 0.1.0 daemon listening on /tmp/oe7-48294-1792654330362/s9/client/ctl.sock",
+          "1792654338824 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792654338824 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792654338824 WARN openergy::runtime: plaintext connection: 127.0.0.1:26202",
+          "[input or clipboard log line redacted]"
+        ],
+        "server": [
+          "1792654338799 INFO openergy::runtime: openergy 0.1.0 daemon listening on /tmp/oe7-48294-1792654330362/s9/server/ctl.sock",
+          "1792654338799 INFO openergy::runtime: listening on 127.0.0.1:26202",
+          "1792654338824 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792654338824 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792654338824 WARN openergy::runtime: plaintext connection: 127.0.0.1:63760"
+        ]
+      }
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [
+        "WP6"
+      ],
+      "cleanup_failures": [],
+      "elapsed_ms": 1260,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "UTF-8 clipboard travels in both directions with CRLF normalization and no bounce-back.",
+      "scenario": "S8-text-clipboard",
+      "stderr_tails": {
+        "client": [
+          "1792654340539 INFO openergy::runtime: openergy 0.1.0 daemon listening on /tmp/oe7-48294-1792654330362/s10/client/ctl.sock",
+          "1792654340539 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792654340539 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792654340539 WARN openergy::runtime: plaintext connection: 127.0.0.1:26202"
+        ],
+        "server": [
+          "1792654340513 INFO openergy::runtime: openergy 0.1.0 daemon listening on /tmp/oe7-48294-1792654330362/s10/server/ctl.sock",
+          "1792654340513 INFO openergy::runtime: listening on 127.0.0.1:26202",
+          "1792654340539 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792654340539 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792654340539 WARN openergy::runtime: plaintext connection: 127.0.0.1:63762"
+        ]
+      }
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [
+        "WP3",
+        "WP6"
+      ],
+      "cleanup_failures": [],
+      "elapsed_ms": 2111,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "8 MiB DIB pixels plus 40-byte header retain SHA-256; typing arrives before transfer completion.",
+      "scenario": "S9-large-dib",
+      "stderr_tails": {
+        "client": [
+          "1792654341798 INFO openergy::runtime: openergy 0.1.0 daemon listening on /tmp/oe7-48294-1792654330362/s11/client/ctl.sock",
+          "1792654341798 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792654341798 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792654341798 WARN openergy::runtime: plaintext connection: 127.0.0.1:26202"
+        ],
+        "server": [
+          "1792654341774 INFO openergy::runtime: openergy 0.1.0 daemon listening on /tmp/oe7-48294-1792654330362/s11/server/ctl.sock",
+          "1792654341774 INFO openergy::runtime: listening on 127.0.0.1:26202",
+          "1792654341798 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled",
+          "1792654341798 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None",
+          "1792654341798 WARN openergy::runtime: plaintext connection: 127.0.0.1:63767"
+        ]
+      }
+    }
+  ]
+}

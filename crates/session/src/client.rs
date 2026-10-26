@@ -93,6 +93,11 @@ impl Client {
         match ev {
             ClientEvent::ServerConnected { conn } => {
                 self.leave(out);
+                // CINN serials and clipboard ownership belong to this
+                // connection, including when the server restarted at zero.
+                self.sequence = 0;
+                self.clip_sequences = [0; 2];
+                self.local_owner = [false; 2];
                 let mut p = Peer::new(self.now);
                 p.name = "server".into();
                 p.options.heartbeat = self.config.client.heartbeat_ms;
@@ -137,13 +142,16 @@ impl Client {
                 }
             }
             ClientEvent::ConfigChanged(cfg) => {
+                let clipboard_changed = self.config.clipboard != cfg.clipboard;
                 let was_active = self.active;
                 self.leave(out);
                 self.active = was_active;
                 self.config = cfg;
                 self.screen_name = self.config.name.clone();
-                if let Some((_, p)) = &mut self.peer {
-                    p.transfers = Default::default();
+                if clipboard_changed {
+                    if let Some((_, p)) = &mut self.peer {
+                        p.transfers = Default::default();
+                    }
                 }
             }
             ClientEvent::LocalClipboardChanged { id } => {
@@ -166,6 +174,11 @@ impl Client {
                 }
             }
             ClientEvent::ClipboardPayload { id, data } => self.payload(id, data, out),
+            ClientEvent::ClipboardReadFailed { id } => {
+                if let Some(owner) = self.local_owner.get_mut(id.0 as usize) {
+                    *owner = false;
+                }
+            }
             ClientEvent::Shutdown => {
                 self.leave(out);
                 if let Some((c, _)) = &self.peer {
@@ -254,7 +267,7 @@ impl Client {
                         log::warn!("odd language list ignored");
                     }
                 } else {
-                    p.languages = languages.as_bytes().chunks_exact(2).map(|c| [c[0], c[1]]).collect();
+                    p.languages = languages.as_bytes().as_chunks::<2>().0.to_vec();
                 }
             }
             Message::KeepAlive => {
@@ -315,7 +328,7 @@ impl Client {
                 }
             }
             Message::Leave => self.leave(out),
-            Message::ClipboardGrab { id, sequence: _ } if id.0 == 0 => {
+            Message::ClipboardGrab { id, sequence: _ } if id.0 == 0 && p.phase == Phase::Ready => {
                 if let Some(v) = self.local_owner.get_mut(id.0 as usize) {
                     *v = false;
                 }
@@ -325,7 +338,10 @@ impl Client {
                 p.transfers.cancel(id);
             }
             Message::ClipboardData { id, sequence, chunk }
-                if id.0 == 0 && self.config.clipboard.enabled && self.config.clipboard.receive =>
+                if id.0 == 0
+                    && p.phase == Phase::Ready
+                    && self.config.clipboard.enabled
+                    && self.config.clipboard.receive =>
             {
                 let declared = if let openergy_protocol::Chunk::Start { total_len } = &chunk {
                     Some(*total_len as usize)
@@ -397,7 +413,7 @@ impl Client {
                             }
                             _ => {}
                         }
-                        if let InputEvent::KeyUp { key, modifiers, .. } = &ev {
+                        if let InputEvent::KeyUp { key, modifiers, button } = &ev {
                             let mask = match *key {
                                 0xefe1 | 0xefe2 => 1,
                                 0xefe3 | 0xefe4 => 2,
@@ -407,24 +423,36 @@ impl Client {
                                 0xef7e => 32,
                                 _ => 0,
                             };
+                            let synthetic_key = match mask {
+                                1 => 0xefe1,
+                                2 => 0xefe3,
+                                4 => 0xefe9,
+                                8 => 0xefe7,
+                                16 => 0xefeb,
+                                _ => 0xef7e,
+                            };
+                            // A second physical modifier may have been pressed
+                            // after entry. Its up must release that physical key,
+                            // not consume the modifier synthesized by CINN.
                             if self.synthetic_modifiers & mask != 0 {
-                                self.synthetic_modifiers &= !mask;
-                                let synthetic_key = match mask {
-                                    1 => 0xefe1,
-                                    2 => 0xefe3,
-                                    4 => 0xefe9,
-                                    8 => 0xefe7,
-                                    16 => 0xefeb,
-                                    _ => 0xef7e,
-                                };
-                                let release = InputEvent::KeyUp {
-                                    key: synthetic_key,
-                                    modifiers: *modifiers,
-                                    button: synthetic_key,
-                                };
-                                self.ledger.observe(&release);
-                                out.push(Action::Inject(release));
-                                return;
+                                let physical = *button != synthetic_key && self.ledger.has_key(*key, *button);
+                                // CINN has a modifier mask, not the identities
+                                // of keys held before entry. Either side may
+                                // release first; keep the synthetic key until
+                                // the aggregate modifier bit clears.
+                                if modifiers.0 & mask == 0 {
+                                    self.synthetic_modifiers &= !mask;
+                                    let release = InputEvent::KeyUp {
+                                        key: synthetic_key,
+                                        modifiers: *modifiers,
+                                        button: synthetic_key,
+                                    };
+                                    self.ledger.observe(&release);
+                                    out.push(Action::Inject(release));
+                                }
+                                if !physical {
+                                    return;
+                                }
                             }
                         }
                         self.ledger.observe(&ev);
@@ -435,7 +463,11 @@ impl Client {
         }
     }
     fn payload(&mut self, id: ClipboardId, data: ClipboardData, out: &mut Vec<Action>) {
-        if id.0 > 1 || !self.local_owner.get(id.0 as usize).copied().unwrap_or(false) {
+        if id.0 > 1
+            || !self.config.clipboard.enabled
+            || !self.config.clipboard.send
+            || !self.local_owner.get(id.0 as usize).copied().unwrap_or(false)
+        {
             return;
         }
         let Some((conn, p)) = &mut self.peer else { return };

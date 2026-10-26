@@ -1,0 +1,28 @@
+name: Feature request
+description: Describe a user need and its scope.
+title: "feat: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Openergy is alpha software. Feature requests do not establish support or delivery dates.
+        Read README.md and docs/plan/readiness.md for current limits.
+  - type: textarea
+    id: problem
+    attributes:
+      label: User need
+      description: What task cannot you complete today? Include the relevant platforms and host/client roles without personal details.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Describe the smallest useful change and how you would confirm it works.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives and constraints
+      description: Include security, privacy, permission, compatibility, and recovery needs when relevant.

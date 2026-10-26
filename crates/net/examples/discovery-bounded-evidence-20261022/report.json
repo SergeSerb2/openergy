@@ -1,0 +1,40 @@
+{
+  "source_base": "54aa50b9eafc51f6eef2589c100c509eaac7e415",
+  "runtime_base": "ac5c45081a9e060392cb850eddd625f07b591bfe",
+  "required_cherry_pick": "330d83f2f168644035c4a99ef3484675214d0e65",
+  "local_cherry_pick": "5d0391a",
+  "baseline_exit_status": 1,
+  "intermediate_probe_1_exit_status": 1,
+  "intermediate_probe_2_exit_status": 1,
+  "expanded_probe_3_exit_status": 0,
+  "final_probe_exit_status": 0,
+  "final_shutdown_exit_status": 0,
+  "toolchain": "1.99.1",
+  "deployment_target": "15.0",
+  "nice": 15,
+  "jobs": 2,
+  "probe_mdns_port": 25090,
+  "probe_service_port": 25091,
+  "shutdown_mdns_port": 25094,
+  "shutdown_service_port": 25095,
+  "expiry_runtime": "excluded; provider-stopped; unverified",
+  "whole_dns_cache_bound": false,
+  "independent_parent_acceptance": false,
+  "binary_sha256": {
+    "discovery_recovery": "b20bdaad5bae8cee4d87699e86f2f56a799cdbe614a3aba18d14c03da94bb988",
+    "discovery_owned_shutdown": "b911328ff77f2da675c2456bbe038034474422a1f7a411e0e2d3b56149f96de0"
+  },
+  "source_sha256": {
+    "Cargo.toml": "7ea29af11f38ac187df7fb78ecbfb5ba0f5c4d2248211efb857010b91412ea04",
+    "Cargo.lock": "6d57d3d84fcef4208a9ce657e511b07099187dcda084cd9decb9ab9a56756800",
+    "crates/net/src/discovery.rs": "7c861e1cbbc65b4e24b2e851db7b1e74044791be1565e510f5980531e3269f71",
+    "crates/net/examples/discovery_recovery.rs": "2dae0b78eff1ca95c2cd72808ba2a850696021de23fec9f5465b6b6662bba0b3",
+    "vendor/mdns-sd/src/lib.rs": "5828af0294e915fc600913d1fb7d9409f527c3ccda6e8fa4512d666743973ab0",
+    "vendor/mdns-sd/src/service_daemon.rs": "da9c4c8d7195136361ac89f24d83b624378fb06ed9f1a7d916eb1105ab5996e1",
+    "vendor/mdns-sd/OPENERGY.patch": "d0afe4580f19eb632dc3a7e017067d8f5bb01d992cfbe595aab37357c634ac21"
+  },
+  "final_probe_check_count": 19,
+  "repeat_probe_check_count": 19,
+  "repeat_probe_exit_status": 0,
+  "final_shutdown_check_count": 4
+}

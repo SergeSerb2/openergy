@@ -9,6 +9,7 @@ use x11rb::{
     connection::Connection,
     protocol::{
         xfixes::ConnectionExt as _,
+        xinput::ConnectionExt as _,
         xproto::{
             ConnectionExt as _, BUTTON_PRESS_EVENT, BUTTON_RELEASE_EVENT, KEY_PRESS_EVENT, KEY_RELEASE_EVENT,
             MOTION_NOTIFY_EVENT,
@@ -22,15 +23,16 @@ use x11rb::{
 #[derive(Clone)]
 struct Held {
     code: u8,
+    owned: bool,
     modifiers: Vec<u8>,
-    restore: Option<Vec<u32>>,
+    restore: Option<(Vec<u32>, Vec<u32>)>,
 }
 pub struct Sink {
     c: RustConnection,
     root: u32,
     map: Keymap,
     keys: BTreeMap<u16, Held>,
-    buttons: BTreeSet<u8>,
+    buttons: BTreeMap<u8, bool>,
     owned_modifiers: BTreeSet<u8>,
     pending_toggles: BTreeSet<u8>,
     wheel: [i64; 2],
@@ -41,13 +43,14 @@ impl Sink {
         let (c, root) = connect(display)?;
         c.xtest_get_version(2, 2).map_err(error)?.reply().map_err(error)?;
         c.xfixes_query_version(4, 0).map_err(error)?.reply().map_err(error)?;
+        c.xinput_xi_query_version(2, 0).map_err(error)?.reply().map_err(error)?;
         let map = Keymap::load(&c)?;
         Ok(Self {
             c,
             root,
             map,
             keys: BTreeMap::new(),
-            buttons: BTreeSet::new(),
+            buttons: BTreeMap::new(),
             owned_modifiers: BTreeSet::new(),
             pending_toggles: BTreeSet::new(),
             wheel: [0; 2],
@@ -80,6 +83,7 @@ impl Sink {
             .map_err(error)?
             .mask;
         let actual = self.map.modifiers(state.into()).0;
+        let physical = self.c.query_keymap().map_err(error)?.reply().map_err(error)?.keys;
         for (mask, lock_key) in [
             (Modifiers::CAPS_LOCK, keys::CAPS_LOCK),
             (Modifiers::NUM_LOCK, keys::NUM_LOCK),
@@ -87,6 +91,11 @@ impl Sink {
         ] {
             if (actual ^ mods.0) & mask != 0 && key != lock_key {
                 if let Some(code) = self.map.modifier_code(mask) {
+                    // A toggle is a press/release pair. Never use it to release
+                    // a lock key that another input path is still holding.
+                    if physical[usize::from(code) / 8] & (1 << (code % 8)) != 0 {
+                        return Err(error("Cannot synchronize X11 lock state while its key is held"));
+                    }
                     self.pending_toggles.insert(code);
                     self.key(code, true)?;
                     self.key(code, false)?;
@@ -94,7 +103,6 @@ impl Sink {
                 }
             }
         }
-        let physical = self.c.query_keymap().map_err(error)?.reply().map_err(error)?.keys;
         let sym = keysym(key);
         let (code, shift, altgr, restore) = if let Some((code, shift, altgr)) = self.map.find(sym) {
             (code, shift, altgr, None)
@@ -117,10 +125,27 @@ impl Sink {
                 .map_err(error)?
                 .check()
                 .map_err(error)?;
-            (code, false, false, Some(old))
+            let installed = match self
+                .c
+                .get_keyboard_mapping(code, 1)
+                .map_err(error)
+                .and_then(|c| c.reply().map_err(error))
+            {
+                Ok(reply) => reply.keysyms,
+                Err(e) => {
+                    if let Ok(cookie) = self.c.change_keyboard_mapping(1, code, old.len() as u8, &old) {
+                        let _ = cookie.check();
+                    }
+                    return Err(e);
+                }
+            };
+            (code, false, false, Some((old, installed)))
         };
         let held = Held {
             code,
+            owned: self.owned_modifiers.contains(&code)
+                || self.keys.values().any(|h| h.code == code && h.owned)
+                || physical[usize::from(code) / 8] & (1 << (code % 8)) == 0,
             modifiers: Vec::new(),
             restore,
         };
@@ -153,8 +178,8 @@ impl Sink {
                 if m == code {
                     continue;
                 }
-                let ours =
-                    self.owned_modifiers.contains(&m) || self.keys.iter().any(|(id, h)| *id != button && h.code == m);
+                let ours = self.owned_modifiers.contains(&m)
+                    || self.keys.iter().any(|(id, h)| *id != button && h.code == m && h.owned);
                 if ours || physical[usize::from(m) / 8] & (1 << (m % 8)) == 0 {
                     if let Some(held) = self.keys.get_mut(&button) {
                         held.modifiers.push(m);
@@ -166,7 +191,10 @@ impl Sink {
                 }
             }
         }
-        self.key(code, true)
+        if self.keys[&button].owned {
+            self.key(code, true)?;
+        }
+        Ok(())
     }
     fn up(&mut self, button: u16) -> Result<(), PlatformError> {
         if let Some(held) = self.keys.get(&button).cloned() {
@@ -174,7 +202,7 @@ impl Sink {
                 .keys
                 .iter()
                 .any(|(id, h)| *id != button && (h.code == held.code || h.modifiers.contains(&held.code)));
-            if !needed {
+            if held.owned && !needed {
                 self.key(held.code, false)?;
             }
             for m in held.modifiers.iter().rev() {
@@ -186,13 +214,26 @@ impl Sink {
                     self.key(*m, false)?;
                 }
             }
-            if let Some(row) = &held.restore {
+            if let Some((row, installed)) = &held.restore {
                 if !needed {
-                    self.c
-                        .change_keyboard_mapping(1, held.code, row.len() as u8, row)
+                    let current = self
+                        .c
+                        .get_keyboard_mapping(held.code, 1)
                         .map_err(error)?
-                        .check()
-                        .map_err(error)?;
+                        .reply()
+                        .map_err(error)?
+                        .keysyms;
+                    // XKB may change the global row width while this key is held.
+                    // Compare without trailing NoSymbol padding. Restore only our
+                    // mapping; a newer user/layout mapping belongs to its writer.
+                    let trimmed = |values: &[u32]| values.iter().rposition(|s| *s != 0).map_or(0, |i| i + 1);
+                    if current[..trimmed(&current)] == installed[..trimmed(installed)] {
+                        self.c
+                            .change_keyboard_mapping(1, held.code, row.len() as u8, row)
+                            .map_err(error)?
+                            .check()
+                            .map_err(error)?;
+                    }
                 }
             }
             self.keys.remove(&button);
@@ -215,7 +256,7 @@ impl InputSink for Sink {
             InputEvent::KeyDown { key, modifiers, button } => self.down(key, modifiers, button)?,
             InputEvent::KeyUp { button, .. } => self.up(button)?,
             InputEvent::KeyRepeat { button, count, .. } => {
-                if let Some(k) = self.keys.get(&button) {
+                if let Some(k) = self.keys.get(&button).filter(|k| k.owned) {
                     for _ in 0..count.max(0) {
                         self.key(k.code, false)?;
                         self.key(k.code, true)?;
@@ -231,15 +272,39 @@ impl InputSink for Sink {
                 };
                 let down = matches!(ev, InputEvent::MouseDown { .. });
                 if down {
-                    self.buttons.insert(code);
+                    if self.buttons.contains_key(&code) {
+                        return Ok(());
+                    }
+                    let pointer = self
+                        .c
+                        .xinput_xi_get_client_pointer(NONE)
+                        .map_err(error)?
+                        .reply()
+                        .map_err(error)?;
+                    if !pointer.set {
+                        return Err(error("X11 client has no master pointer"));
+                    }
+                    let state = self
+                        .c
+                        .xinput_xi_query_pointer(self.root, pointer.deviceid)
+                        .map_err(error)?
+                        .reply()
+                        .map_err(error)?
+                        .buttons;
+                    let owned = state
+                        .get(usize::from(code) / 32)
+                        .is_none_or(|bits| bits & (1 << (code % 32)) == 0);
+                    self.buttons.insert(code, owned);
                 }
-                self.fake(
-                    if down { BUTTON_PRESS_EVENT } else { BUTTON_RELEASE_EVENT },
-                    code,
-                    NONE,
-                    0,
-                    0,
-                )?;
+                if self.buttons.get(&code) == Some(&true) {
+                    self.fake(
+                        if down { BUTTON_PRESS_EVENT } else { BUTTON_RELEASE_EVENT },
+                        code,
+                        NONE,
+                        0,
+                        0,
+                    )?;
+                }
                 if !down {
                     self.buttons.remove(&code);
                 }
@@ -272,8 +337,8 @@ impl InputSink for Sink {
                 log::error!("X11 key release failed: {e}");
             }
         }
-        for button in self.buttons.clone() {
-            if self.fake(BUTTON_RELEASE_EVENT, button, NONE, 0, 0).is_ok() {
+        for (button, owned) in self.buttons.clone() {
+            if !owned || self.fake(BUTTON_RELEASE_EVENT, button, NONE, 0, 0).is_ok() {
                 self.buttons.remove(&button);
             }
         }

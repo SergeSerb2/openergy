@@ -129,6 +129,13 @@ impl Machine {
             _ => {}
         }
     }
+    fn clipboard_read_failed(&mut self, id: ClipboardId, out: &mut Vec<Action>) {
+        match self {
+            Self::Server(s) => s.handle(ServerEvent::ClipboardReadFailed { id }, out),
+            Self::Client(c) => c.handle(ClientEvent::ClipboardReadFailed { id }, out),
+            Self::Off => {}
+        }
+    }
 }
 struct Runtime {
     cfg: Config,
@@ -437,6 +444,7 @@ impl Runtime {
                             .try_send(ClipboardCommand::Read { id, max: max_bytes })
                             .is_err()
                         {
+                            self.machine.clipboard_read_failed(id, &mut self.actions);
                             self.error("clipboard_busy", "Clipboard worker queue is full");
                         }
                     }
@@ -549,6 +557,7 @@ impl Runtime {
                     self.suspended = false;
                     self.displays = self.screens.screens();
                     self.permissions = self.screens.permissions();
+                    self.sink.permissions_changed(&self.permissions);
                     self.local_secure = self.screens.secure_input_app();
                     self.enabled = self.resume_enabled;
                     self.close_at = None;
@@ -587,6 +596,7 @@ impl Runtime {
                 }
                 self.error("capture_unavailable", "Platform capture stopped or lost permission");
                 let _ = self.capture.commands.try_send(CaptureCommand::Enable(false));
+                self.capture.retry.store(true, Ordering::Release);
                 self.refresh_health();
             }
             Notice::NotificationError => {
@@ -626,7 +636,9 @@ impl Runtime {
     fn start_connection(&mut self) {
         // Connecting is idempotent, including a TLS connection waiting for approval.
         if (self.cfg.role == Role::Client
-            && (matches!(self.state.as_str(), "connecting" | "connected") || !self.pending.is_empty()))
+            && (matches!(self.state.as_str(), "connecting" | "connected")
+                || (self.state == "reconnecting" && self.retry.is_none())
+                || !self.pending.is_empty()))
             || (self.cfg.role == Role::Server && matches!(self.state.as_str(), "starting" | "listening" | "connected"))
         {
             return;
@@ -859,11 +871,11 @@ impl Runtime {
         );
         let permissions = self.screens.permissions();
         self.sink.permissions_changed(&permissions);
+        let denied = matches!(permissions.accessibility, Grant::Denied)
+            || matches!(permissions.input_monitoring, Grant::Denied)
+            || matches!(permissions.post_events, Grant::Denied);
         if permissions != self.permissions {
             self.status_dirty = true;
-            let denied = matches!(permissions.accessibility, Grant::Denied)
-                || matches!(permissions.input_monitoring, Grant::Denied)
-                || matches!(permissions.post_events, Grant::Denied);
             self.permissions = permissions;
             if denied {
                 match &mut self.machine {
@@ -883,6 +895,15 @@ impl Runtime {
                 serde_json::to_value(&self.permissions).unwrap_or(Value::Null),
             );
         }
+        if !denied
+            && !self.suspended
+            && self.enabled
+            && self.cfg.role == Role::Server
+            && self.capture.retry.swap(false, Ordering::AcqRel)
+            && self.capture.commands.try_send(CaptureCommand::Enable(true)).is_err()
+        {
+            self.capture.retry.store(true, Ordering::Release);
+        }
         if self.capture.overflow.swap(false, Ordering::Relaxed) {
             if let Machine::Server(s) = &mut self.machine {
                 s.handle(ServerEvent::CaptureOverflow, &mut self.actions);
@@ -890,14 +911,19 @@ impl Runtime {
             self.error("capture_overflow", "Capture channel full; event passed to the local OS");
         }
     }
-    fn apply_config(&mut self, mut cfg: Config) -> Result<(), String> {
+    fn apply_config(&mut self, mut cfg: Config, force_reconnect: bool) -> Result<(), String> {
         normalize(&mut cfg);
         cfg.validate().map_err(|e| e.to_string())?;
-        let reconnect = cfg.role != self.cfg.role
+        if self.platform == "macos" && cfg.macos != self.cfg.macos {
+            return Err("Changing macos.click_numbering requires a daemon restart; stop the daemon, edit the config, then start it again".into());
+        }
+        let reconnect = force_reconnect
+            || cfg.role != self.cfg.role
             || cfg.server != self.cfg.server
             || cfg.client.remote != self.cfg.client.remote
             || cfg.tls != self.cfg.tls
             || cfg.name != self.cfg.name;
+        let mut durability_warning = None;
         if reconnect {
             let listen = if cfg.role == Role::Server {
                 Some(cfg.server.listen.parse().map_err(|_| "Invalid listen address")?)
@@ -908,7 +934,10 @@ impl Runtime {
                 .reconfigure_transaction(
                     adapter::net_config(&cfg, &self.dir, self.platform == "virtual"),
                     listen,
-                    || write_config(&self.path, &cfg).map_err(openergy_net::NetError::Failed),
+                    || {
+                        durability_warning = write_config(&self.path, &cfg).map_err(openergy_net::NetError::Failed)?;
+                        Ok(())
+                    },
                 )
                 .map_err(|error| error.to_string())?;
             self.machine.shutdown(&mut self.actions);
@@ -942,10 +971,13 @@ impl Runtime {
             }
             // Apply to the live state before saving. Platform/network effects
             // remain queued until persistence commits; rollback preserves peers.
-            if let Err(error) = write_config(&self.path, &cfg) {
-                self.machine = previous;
-                self.actions.truncate(action_count);
-                return Err(error);
+            match write_config(&self.path, &cfg) {
+                Ok(warning) => durability_warning = warning,
+                Err(error) => {
+                    self.machine = previous;
+                    self.actions.truncate(action_count);
+                    return Err(error);
+                }
             }
             self.cfg = Arc::unwrap_or_clone(cfg);
         }
@@ -964,6 +996,11 @@ impl Runtime {
             .commands
             .try_send(ClipboardCommand::Enabled(self.enabled && self.cfg.clipboard.enabled));
         self.update_sleep_assertion();
+        if let Some(warning) = durability_warning {
+            // Rename has committed. Keep disk and live state aligned and report
+            // uncertain crash durability instead of rolling back only live state.
+            self.error("config_durability_uncertain", warning);
+        }
         self.publish(
             "config.changed",
             json!({"config":self.cfg.to_json(),"derived_links":openergy_config::derive_links(&self.cfg.screens)}),
@@ -983,7 +1020,7 @@ impl Runtime {
                 let (mut cfg, warnings) = openergy_config::apply_merge_patch(&self.cfg, patch)
                     .map_err(|e| IpcError::new("invalid_config", e.to_string()))?;
                 normalize(&mut cfg);
-                self.apply_config(cfg)
+                self.apply_config(cfg, false)
                     .map_err(|e| IpcError::new("config_apply_failed", e))?;
                 Ok(json!({"config":self.cfg.to_json(),"warnings":warnings}))
             }
@@ -995,7 +1032,7 @@ impl Runtime {
                     .and_then(Value::as_str)
                     .ok_or_else(|| invalid("toml text is required"))?;
                 let cfg = Config::load_toml(text).map_err(|e| IpcError::new("invalid_config", e.to_string()))?;
-                self.apply_config(cfg)
+                self.apply_config(cfg, false)
                     .map_err(|e| IpcError::new("config_apply_failed", e))?;
                 Ok(json!({"config":self.cfg.to_json(),"warnings":[]}))
             }
@@ -1009,7 +1046,7 @@ impl Runtime {
                     .map_err(|e| IpcError::new("import_failed", e.to_string()))?;
                 let result = json!({"config":cfg.to_json(),"warnings":report.warnings});
                 if req.params.get("apply").and_then(Value::as_bool) == Some(true) {
-                    self.apply_config(cfg)
+                    self.apply_config(cfg, false)
                         .map_err(|e| IpcError::new("config_apply_failed", e))?;
                 }
                 Ok(result)
@@ -1027,7 +1064,8 @@ impl Runtime {
                     cfg.role = Role::Client;
                     cfg.client.remote = host_port(&host, port);
                     cfg.client.autoconnect = true;
-                    if let Some(text) = req.params.get("fingerprint") {
+                    let previous_pin = self.expected_pin.clone();
+                    let pinned = if let Some(text) = req.params.get("fingerprint") {
                         let fingerprint = text
                             .as_str()
                             .and_then(Fingerprint::parse)
@@ -1038,17 +1076,16 @@ impl Runtime {
                             return Err(invalid("an explicit fingerprint requires TLS"));
                         }
                         self.expected_pin = Some((cfg.client.remote.clone(), fingerprint));
-                        self.enabled = false;
-                        self.machine.shutdown(&mut self.actions);
-                        self.apply_actions();
-                        self.execute(NetCommand::Shutdown);
-                        self.process_net();
-                        self.state = "idle".into();
+                        true
+                    } else {
+                        false
+                    };
+                    if let Err(error) = self.apply_config(cfg, pinned) {
+                        self.expected_pin = previous_pin;
+                        return Err(IpcError::new("connect_failed", error));
                     }
-                    self.apply_config(cfg).map_err(|e| IpcError::new("connect_failed", e))?;
                 }
                 self.enabled = true;
-                self.retry = None;
                 self.start_connection();
                 let _ = self
                     .capture
@@ -1090,6 +1127,14 @@ impl Runtime {
                 self.retry = None;
                 self.state = "idle".into();
                 self.start_connection();
+                let _ = self
+                    .capture
+                    .commands
+                    .try_send(CaptureCommand::Enable(self.cfg.role == Role::Server));
+                let _ = self
+                    .clipboard
+                    .commands
+                    .try_send(ClipboardCommand::Enabled(self.cfg.clipboard.enabled));
                 Ok(json!({"restarting":true}))
             }
             m::TRUST_LIST => Ok(
@@ -1111,9 +1156,9 @@ impl Runtime {
                         } else {
                             let store = self.driver.trust_store_mut();
                             let result = if self.cfg.role == Role::Server {
-                                store.trust_client(fp)
+                                store.try_trust_client(fp)
                             } else {
-                                store.trust_server(fp)
+                                store.try_trust_server(fp)
                             };
                             result.map_err(|e| IpcError::new("trust_failed", e.to_string()))?;
                         }
@@ -1122,8 +1167,11 @@ impl Runtime {
                     _ => {
                         self.driver
                             .trust_store_mut()
-                            .revoke(&fp)
+                            .try_revoke(&fp)
                             .map_err(|e| IpcError::new("trust_failed", e.to_string()))?;
+                        if self.expected_pin.as_ref().is_some_and(|(_, pin)| *pin == fp) {
+                            self.expected_pin = None;
+                        }
                         self.driver.reject_held(&fp, &mut self.net_events);
                         let conns = self
                             .connections
@@ -1133,7 +1181,10 @@ impl Runtime {
                             })
                             .collect::<Vec<_>>();
                         for conn in conns {
-                            self.execute(NetCommand::Close { conn });
+                            // Revocation must cut off application reads before the
+                            // IPC reply, including connections authenticated by an
+                            // explicit pin. Graceful close can still read peer input.
+                            self.execute(NetCommand::Reject { conn });
                         }
                     }
                 }
@@ -1296,11 +1347,19 @@ fn host_name() -> String {
     }
 }
 
-fn write_config(path: &Path, cfg: &Config) -> Result<(), String> {
+fn write_config(path: &Path, cfg: &Config) -> Result<Option<String>, String> {
     use std::io::Write;
-    if let Some(parent) = path.parent() {
-        std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+    let text = cfg.to_toml();
+    if text.len() as u64 > crate::MAX_CONFIG_FILE_LEN {
+        return Err("config exceeds 16 MiB (16777216 bytes)".into());
     }
+    let parent = path
+        .parent()
+        .filter(|p| !p.as_os_str().is_empty())
+        .unwrap_or(Path::new("."));
+    std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+    #[cfg(unix)]
+    let parent = std::fs::File::open(parent).map_err(|e| e.to_string())?;
     let tmp = path.with_extension(format!("toml.{}.tmp", std::process::id()));
     let mut options = std::fs::OpenOptions::new();
     options.create_new(true).write(true);
@@ -1313,9 +1372,16 @@ fn write_config(path: &Path, cfg: &Config) -> Result<(), String> {
     let result = (|| {
         let mut file = options.open(&tmp).map_err(|e| e.to_string())?;
         created = true;
-        file.write_all(cfg.to_toml().as_bytes()).map_err(|e| e.to_string())?;
+        file.write_all(text.as_bytes()).map_err(|e| e.to_string())?;
         file.sync_all().map_err(|e| e.to_string())?;
-        std::fs::rename(&tmp, path).map_err(|e| e.to_string())
+        std::fs::rename(&tmp, path).map_err(|e| e.to_string())?;
+        #[cfg(unix)]
+        if let Err(error) = parent.sync_all() {
+            return Ok(Some(format!(
+                "Config was saved, but syncing its directory failed; crash durability is uncertain: {error}"
+            )));
+        }
+        Ok(None)
     })();
     if result.is_err() && created {
         let _ = std::fs::remove_file(tmp);
@@ -1331,8 +1397,20 @@ pub fn run_daemon(
     parent_pid: Option<i64>,
 ) -> Result<i32, String> {
     normalize(&mut config);
+    config.validate().map_err(|e| format!("config: {e}"))?;
+    if matches!(platform.as_str(), "macos" | "x11" | "windows")
+        && std::env::var_os("OPENERGY_ALLOW_PORT_24800").is_none()
+    {
+        // Startup is still single-threaded. Explicit lab denials and virtual
+        // backends retain the transport's protected-port guard.
+        std::env::set_var("OPENERGY_ALLOW_PORT_24800", "1");
+    }
     let path = config_path.unwrap_or_else(crate::default_config_path);
-    let dir = path.parent().unwrap_or(Path::new(".")).to_path_buf();
+    let dir = path
+        .parent()
+        .filter(|p| !p.as_os_str().is_empty())
+        .unwrap_or(Path::new("."))
+        .to_path_buf();
     std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
     let (listener, _lock) = ipc_server::bind(&socket_path)?;
     let bus = Arc::new(EventBus::default());
@@ -1427,7 +1505,7 @@ pub fn run_daemon(
     rt.update_sleep_assertion();
     rt.start_connection();
     log::info!("openergy {VERSION} daemon listening on {}", socket_path.display());
-    while !stop.load(Ordering::Relaxed) && !lifetime::SIGNALLED.load(Ordering::Relaxed) && !parent.exited() {
+    'running: while !stop.load(Ordering::Relaxed) && !lifetime::SIGNALLED.load(Ordering::Relaxed) && !parent.exited() {
         for notice in (rt.notices)() {
             rt.notice(notice);
         }
@@ -1460,13 +1538,32 @@ pub fn run_daemon(
             rt.apply_actions();
             rt.process_net();
             let _ = reply.send(response);
+            // Acknowledge public stop before entering the full shutdown path.
+            // Its request wake may already be consumed; do not poll again first.
+            if stop.load(Ordering::Relaxed) {
+                break 'running;
+            }
+        }
+        let failed_reads = rt.clipboard.failed_reads.swap(0, Ordering::AcqRel);
+        for id in 0..2 {
+            if failed_reads & (1 << id) != 0 {
+                rt.machine.clipboard_read_failed(ClipboardId(id), &mut rt.actions);
+                rt.error("clipboard_busy", "Clipboard result queue is full");
+            }
         }
         while let Ok(event) = rt.clipboard.events.try_recv() {
             match event {
                 ClipboardEvent::Changed => rt.machine.clipboard_changed(&mut rt.actions),
                 ClipboardEvent::Payload { id, data } => rt.machine.payload(id, data, &mut rt.actions),
-                ClipboardEvent::Failure(error) => rt.error("clipboard_failed", error),
-                ClipboardEvent::Blocked { bytes, limit } => {
+                ClipboardEvent::ReadUnavailable { id } => rt.machine.clipboard_read_failed(id, &mut rt.actions),
+                ClipboardEvent::Failure { read_id, error } => {
+                    if let Some(id) = read_id {
+                        rt.machine.clipboard_read_failed(id, &mut rt.actions);
+                    }
+                    rt.error("clipboard_failed", error);
+                }
+                ClipboardEvent::Blocked { id, bytes, limit } => {
+                    rt.machine.clipboard_read_failed(id, &mut rt.actions);
                     let blocked = ipc::ClipboardBlocked {
                         bytes: Some(bytes),
                         limit: Some(limit),
@@ -1560,8 +1657,6 @@ pub fn run_daemon(
     rt.sink.set_cursor_visible(true);
     rt.execute(NetCommand::Shutdown);
     stop.store(true, Ordering::Relaxed);
-    #[cfg(unix)]
-    let _ = std::os::unix::net::UnixStream::connect(&socket_path);
     let _ = rt.capture.commands.send(CaptureCommand::Stop);
     let _ = rt.clipboard.commands.send(ClipboardCommand::Stop);
     let _ = accept.join();

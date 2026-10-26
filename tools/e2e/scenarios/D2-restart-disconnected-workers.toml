@@ -1,0 +1,71 @@
+name = "D2-restart-disconnected-workers"
+requirement = "Restart after disconnect enables the real virtual capture and clipboard workers as well as reconnecting the transport."
+timeout_ms = 3000
+
+[[node]]
+id = "server"
+role = "server"
+tls = false
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+tls = false
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "connection.disconnect"
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "connection.restart"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "sleep"
+ms = 100
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{type = "mouse_move_abs", x = 1919, y = 540}, {type = "mouse_move_rel", dx = 20, dy = 0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {active_screen = "client"}
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{type = "key_down", key = 97, modifiers = 0, button = 1}, {type = "key_up", key = 97, modifiers = 0, button = 1}]
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+expect = [{event = {type = "key_down", key = 97}}, {event = {type = "key_up", key = 97}}]
+
+[[step]]
+do = "clipboard_set"
+node = "server"
+text = "restart resumes clipboard polling"
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+kind = "text_utf8"
+text = "restart resumes clipboard polling"

@@ -1,0 +1,453 @@
+{
+  "format_version": 1,
+  "date": "2026-10-21",
+  "scope": [
+    "crates/daemon except windows_pipe.rs and scripts/verify_app.py",
+    "crates/ipc",
+    "new D2 scenario"
+  ],
+  "baseline_commit": "06b61287afd7f31aa3002d252389f2c2b17f73f5",
+  "validation": "real daemon and CLI, virtual backend, isolated config/socket/TLS paths, no production port access",
+  "joint_dependencies": {
+    "session": "c064338",
+    "platform": "ffdd07a",
+    "config": "a8cd6d9",
+    "rust_msrv": "1.99.1"
+  },
+  "port_ranges": {
+    "direct_checks": [
+      25130,
+      25139
+    ],
+    "scenarios": [
+      25120,
+      25129
+    ],
+    "unused_lab_range": [
+      25140,
+      25159
+    ]
+  },
+  "before_fixes": {
+    "initial_cli_ipc": [
+      {
+        "check": "preserve_socket_file",
+        "passed": false,
+        "error": "daemon replaced an existing regular file with its socket"
+      },
+      {
+        "check": "preserve_socket_symlink",
+        "passed": false,
+        "error": "daemon replaced an existing symlink with its socket"
+      },
+      {
+        "check": "relative_paths",
+        "passed": false,
+        "error": "daemon exited before IPC startup"
+      },
+      {
+        "check": "replaced_socket_shutdown",
+        "passed": false,
+        "error": "daemon shutdown hangs after its socket path is replaced"
+      },
+      {
+        "check": "log_symlink",
+        "passed": false,
+        "error": "logger followed a symlink and changed an unrelated file"
+      },
+      {
+        "check": "log_permissions",
+        "passed": false,
+        "error": "existing log remains readable by other users"
+      },
+      {
+        "check": "oversized_response",
+        "passed": false,
+        "error": "daemon sent a frame above the IPC cap"
+      },
+      {
+        "check": "cli_validation",
+        "passed": false,
+        "error": "CLI did not reject invalid arguments: ('status', '--foreground')"
+      },
+      {
+        "check": "pinned_connect_rollback",
+        "passed": false,
+        "error": "failed pinned connect destroyed the existing TLS session"
+      }
+    ],
+    "retry_handshake": [
+      {
+        "check": "connecting_idempotence",
+        "passed": false,
+        "error": "connect opened duplicate TCP sessions during a retry handshake"
+      }
+    ],
+    "review_cli_and_revoke": [
+      {
+        "check": "cli_connect_host",
+        "passed": false,
+        "error": "connect HOST rejected the documented host argument"
+      },
+      {
+        "check": "pinned_trust_revoke",
+        "passed": false,
+        "error": "TLS pair did not reach expected status"
+      }
+    ],
+    "clipboard_readback": {
+      "scenario": "Q13-clipboard-readback-recovery",
+      "outcome": "FAIL",
+      "failed_step": 14,
+      "failure": {
+        "kind": "product",
+        "message": "bounded wait failed: predicate did not match"
+      }
+    }
+  },
+  "limitations": [
+    "No native runtime, input, clipboard, TCC, or production port verification.",
+    "Native startup port opt-in, macOS lifecycle/settings and Linux default path have source/compile review only.",
+    "Post-rename directory fsync failure and clipboard result-channel saturation were not forced.",
+    "The parent must run the complete suite and platform release checks."
+  ],
+  "after_fixes": {
+    "direct_checks": {
+      "passed": 15,
+      "failed": 0,
+      "checks": [
+        {
+          "check": "preserve_socket_file",
+          "passed": true
+        },
+        {
+          "check": "preserve_socket_symlink",
+          "passed": true
+        },
+        {
+          "check": "relative_paths",
+          "passed": true
+        },
+        {
+          "check": "replaced_socket_shutdown",
+          "passed": true
+        },
+        {
+          "check": "log_symlink",
+          "passed": true
+        },
+        {
+          "check": "log_permissions",
+          "passed": true
+        },
+        {
+          "check": "ipc_framing",
+          "passed": true
+        },
+        {
+          "check": "oversized_response",
+          "passed": true
+        },
+        {
+          "check": "cli_validation",
+          "passed": true
+        },
+        {
+          "check": "pinned_connect_rollback",
+          "passed": true
+        },
+        {
+          "check": "stale_socket_and_single_instance",
+          "passed": true
+        },
+        {
+          "check": "connecting_idempotence",
+          "passed": true
+        },
+        {
+          "check": "cli_connect_host",
+          "passed": true
+        },
+        {
+          "check": "pinned_trust_revoke",
+          "passed": true
+        },
+        {
+          "check": "daemon_argument_validation",
+          "passed": true
+        }
+      ]
+    },
+    "focused_scenarios": {
+      "passed": 29,
+      "failed": 0,
+      "scenarios": [
+        {
+          "scenario": "A1-modifier-and-receiver-wheel",
+          "requirement": "Held Shift crosses once, releases once without recovery; receiver alone transforms wheel.",
+          "outcome": "PASS",
+          "elapsed_ms": 771,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "A10-unsupported-hello-close",
+          "requirement": "Client closes an unsupported major without sending EICV and exposes a plain protocol error.",
+          "outcome": "PASS",
+          "elapsed_ms": 374,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "A11-input-backpressure-release",
+          "requirement": "Lost input repeats report an error without dropping peers; a lost up leaves only that peer and flushes ups/COUT before FIN.",
+          "outcome": "PASS",
+          "elapsed_ms": 5806,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "A12-restart-connected-roles",
+          "requirement": "Restart while already connected opens a real replacement connection for either role, with one adopted peer.",
+          "outcome": "PASS",
+          "elapsed_ms": 947,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "A2-client-direction-version-heartbeat-sequence",
+          "requirement": "Client caps its hello at 1.8, accepts mixed-case future server, sends no options or spontaneous heartbeat, and accepts sequence-zero push.",
+          "outcome": "PASS",
+          "elapsed_ms": 3706,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "A3-heartbeat-close-flush",
+          "requirement": "A raw peer sees ordinary DKDN, matching release ups and COUT before FIN on heartbeat death.",
+          "outcome": "PASS",
+          "elapsed_ms": 1825,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "A4-config-live-rollback",
+          "requirement": "An occupied replacement port preserves exact TOML, live config, and an existing connection.",
+          "outcome": "PASS",
+          "elapsed_ms": 621,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "A5-unavailable-clipboard-readback",
+          "requirement": "A remote payload stays available to a late peer even when the server cannot read its pasteboard back.",
+          "outcome": "PASS",
+          "elapsed_ms": 1960,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "A6-clipboard-backpressure",
+          "requirement": "A real stopped reader fills the bounded Bulk queue; transfer abort is visible while IPC stays responsive.",
+          "outcome": "PASS",
+          "elapsed_ms": 593,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "A7-trust-lock-crash",
+          "requirement": "SIGKILL of an approval holding the real trust-file lock releases it; a second CLI approval saves the pin.",
+          "outcome": "PASS",
+          "elapsed_ms": 1168,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "A8-config-save-rollback",
+          "requirement": "A real atomic-save failure rolls back session-only and transport config without closing the old peer.",
+          "outcome": "PASS",
+          "elapsed_ms": 679,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "A9-tls-trusted-status",
+          "requirement": "Server connected state clears old errors; TLS status distinguishes an unverified client from a verified server pin.",
+          "outcome": "PASS",
+          "elapsed_ms": 1188,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "D2-restart-disconnected-workers",
+          "requirement": "Restart after disconnect enables the real virtual capture and clipboard workers as well as reconnecting the transport.",
+          "outcome": "PASS",
+          "elapsed_ms": 1021,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "Q13-clipboard-readback-recovery",
+          "requirement": "A late peer receives the retained local clipboard after an unavailable backend recovers and the host enters another peer.",
+          "outcome": "PASS",
+          "elapsed_ms": 1847,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "Q18-empty-clipboard-clear",
+          "requirement": "Host and client text followed by an empty format list clears stale remote clipboard data.",
+          "outcome": "PASS",
+          "elapsed_ms": 1464,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "Q19-unavailable-is-not-clear",
+          "requirement": "Unavailable readback on screen entry preserves the remote clipboard and emits no backend error.",
+          "outcome": "PASS",
+          "elapsed_ms": 1802,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "R1-control-files",
+          "requirement": "Real daemon control, typed errors, TOML/file hashes/modes, restart and CLI paths exercise the runner.",
+          "outcome": "PASS",
+          "elapsed_ms": 2192,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "R2-lifecycle",
+          "requirement": "Owned process STOP/CONT/KILL, forced stop, start, restart and exit status operate on real virtual daemons.",
+          "outcome": "PASS",
+          "elapsed_ms": 1141,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "S0-smoke",
+          "requirement": "Isolated virtual IPC status has all frozen fields; daemon.stop exits zero.",
+          "outcome": "PASS",
+          "elapsed_ms": 386,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "S1-connect",
+          "requirement": "Two real plain virtual daemons exchange hello/QINF/DINF, report names/screens, and stop cleanly.",
+          "outcome": "PASS",
+          "elapsed_ms": 1692,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "S10-clipboard-cap",
+          "requirement": "Local and receiver clipboard caps emit clipboard.blocked, deliver no partial, and recover for a small clip.",
+          "outcome": "PASS",
+          "elapsed_ms": 2532,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "S16-permissions",
+          "requirement": "Virtual permission revoke leaves and releases; granting again resumes capture without a daemon restart.",
+          "outcome": "PASS",
+          "elapsed_ms": 690,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "S19-config-patch",
+          "requirement": "Merge patch writes TOML and changes the live role/port; invalid patch reports an error and preserves exact file bytes.",
+          "outcome": "PASS",
+          "elapsed_ms": 680,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "S20-parent-exit",
+          "requirement": "Watched parent exit triggers release-all, CBYE observed on a real socket, and daemon exit code zero.",
+          "outcome": "PASS",
+          "elapsed_ms": 748,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "S20-parent-off",
+          "requirement": "A real daemon watches a gated parent, then exits zero; observer records its actual exit code.",
+          "outcome": "PASS",
+          "elapsed_ms": 393,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "S3-input-order",
+          "requirement": "Modifier keys, repeats, buttons and horizontal-first Deskflow wheel units arrive in order.",
+          "outcome": "PASS",
+          "elapsed_ms": 686,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "S5-disconnect-release",
+          "requirement": "Abrupt server death releases held drag button and reconnect permits fresh input.",
+          "outcome": "PASS",
+          "elapsed_ms": 991,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "S6-trust-approval",
+          "requirement": "Unknown TLS identity holds input; approval persists trust and permits reconnect.",
+          "outcome": "PASS",
+          "elapsed_ms": 1622,
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "S9-large-dib",
+          "requirement": "8 MiB DIB pixels plus 40-byte header retain SHA-256; typing arrives before transfer completion.",
+          "outcome": "PASS",
+          "elapsed_ms": 7279,
+          "failed_step": null,
+          "failure": null
+        }
+      ]
+    },
+    "build": {
+      "passed": true,
+      "profile": "debug",
+      "rustc": "1.99.1 (58cf8f9c3 2026-10-13)",
+      "cargo_build_jobs": 2,
+      "nice": 15,
+      "daemon_sha256": "2590399be4872347d032aa4cbf43ce7833289c5fb77c944908ade3d3b5fab436",
+      "source_files_verified_equal_to_joint_fixture": [
+        "crates/daemon/src/runtime.rs",
+        "crates/daemon/src/logger.rs",
+        "crates/daemon/src/adapter.rs",
+        "crates/daemon/src/events.rs",
+        "crates/daemon/src/ipc_server.rs",
+        "crates/daemon/src/interfaces.rs",
+        "crates/daemon/src/lifetime.rs",
+        "crates/daemon/src/allocator.rs",
+        "crates/daemon/src/workers.rs",
+        "crates/daemon/src/main.rs",
+        "crates/daemon/src/clipboard_json.rs",
+        "crates/ipc/src/lib.rs"
+      ]
+    },
+    "clippy": {
+      "passed": true,
+      "packages": [
+        "openergy-daemon",
+        "openergy-ipc"
+      ],
+      "no_deps": true,
+      "deny_warnings": true
+    },
+    "rustfmt_check": true,
+    "git_diff_check": true
+  }
+}

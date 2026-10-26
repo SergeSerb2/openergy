@@ -1,0 +1,499 @@
+{
+  "source_commit": "dddf9fef012f9d56ea6435be36bd5c74a08087d7",
+  "candidate_commits": [
+    "884ff876b98e38d7380e119c67de8acbb86f6331",
+    "da668c3aac3fc2c74354d136733d4db8464a6144"
+  ],
+  "integration_commits": [
+    "efca42e44dfc0b24a642c1f703462934123006b0",
+    "dddf9fef012f9d56ea6435be36bd5c74a08087d7"
+  ],
+  "source_inputs_unchanged": 129,
+  "source_input_sha256": {
+    "Cargo.lock": "6d57d3d84fcef4208a9ce657e511b07099187dcda084cd9decb9ab9a56756800",
+    "Cargo.toml": "7ea29af11f38ac187df7fb78ecbfb5ba0f5c4d2248211efb857010b91412ea04",
+    "crates/config/Cargo.toml": "2a747685780dabe93f139c609859005c2baad60e6599c4b8442273f5dea79968",
+    "crates/config/src/cli.rs": "21df1802c13c89bb4569f1e0f3b0290aa212dfdb1a6d2e7ce9aa5e32d0262246",
+    "crates/config/src/layout.rs": "04b27afdd4cb1e05c321845c79370aabeb79d0afd2574a29ee3d357412c46c06",
+    "crates/config/src/lib.rs": "214d8694a6d1b93bffd10b3ccb150da95191b6ce64b83a7a9e347ea9290979a4",
+    "crates/config/src/model.rs": "06eba7851d8a9789a342dc7d374880eedadcfc9a106026b7c3f3e69a4cf7b0b3",
+    "crates/config/src/synergy.rs": "8e1650d35a9a20c87504832e81b1b0fdd0dcb9a289e39d988c9c9f4f4e86f3e0",
+    "crates/config/src/synergy3.rs": "9faca911b846568795c23d01b768d6de3113d90f73e65e24418c79bdc44621fc",
+    "crates/daemon/Cargo.toml": "4cb03349cb6d9cf4a6f95dce64cd0e3ed5306a7faa7762326fdc00d28a48aefa",
+    "crates/daemon/src/adapter.rs": "874a75cebedcc5120306f4dec0d9d326932379fceb6ca072451bc8cf04d6185a",
+    "crates/daemon/src/allocator.rs": "1b0193bd0f658b47d219bb931cb045df7f25ee9f61ba11c4cd2c1f653a006ffd",
+    "crates/daemon/src/clipboard_json.rs": "5ec7fc4e24fd1d8054a60bffa0d7ac671d4357fc73c44abf59c81d9c26343299",
+    "crates/daemon/src/events.rs": "cee67a01d3ef29d5dc6aa300169ec61287c7edd0e492913de7f0fa3bb800dfad",
+    "crates/daemon/src/interfaces.rs": "80e2a11a6eb67be30ce263635c85edcee0d4e6185fc64514add27d3ee96df550",
+    "crates/daemon/src/ipc_server.rs": "4ceb1dc908211fd0b6493c55787f32582b8b248bedff20c99d800fed41a2301e",
+    "crates/daemon/src/lifetime.rs": "922a15a92661fdb6ca5f848852b79cc67e34c9b9b2ad266f7f4d4e7fd6f194e5",
+    "crates/daemon/src/logger.rs": "2faf11b9ec28a1d12ced24b662014e21aa86bae798dec6f4a15a0fd2a728e298",
+    "crates/daemon/src/main.rs": "ba5a5d6ae3817bed2a9fd6955b9fee751983bc6b1f53c0df9f9e12f76519bb61",
+    "crates/daemon/src/runtime.rs": "187c2301efa9873791597289a45247abc6221c9cf8538db492d20e4b0d202af9",
+    "crates/daemon/src/windows_pipe.rs": "9234c4be2e35e228cd8dba0b6b5c153ff419b1eeb15ad96b9dd6b7a531711a6c",
+    "crates/daemon/src/workers.rs": "5109cd76c0a1911b74512b3d8d2cf4d49df27fed417a55d3ac68a1f1ca8028b2",
+    "crates/ipc/Cargo.toml": "6ba4201f9b8b94fa813fc3699d422165b7db6102e14c2b70292c7cc83f7073d3",
+    "crates/ipc/src/lib.rs": "04d612b9256a8229932d76900b75671f6b66a23e242491077ed73212e16aeaec",
+    "crates/net/Cargo.toml": "c74312dcc7dc550825d7c247961e2fd44f7ca1dbbdfc7bb6c28e7351ef30637c",
+    "crates/net/examples/audit_transport.rs": "5c4e2986ccce3b2fccdb8c71df1d34d15d22292f857c5bc9574d673fa5033c5e",
+    "crates/net/examples/discovery.rs": "685ca4b9e1e4abf6aad00489c957eb1ab813b55609c2f417808455169f19f77b",
+    "crates/net/examples/discovery_owned_shutdown.rs": "2fa1eac9e9899c89940eeb520ce2d7fbcd11b00293fea866367181018335d740",
+    "crates/net/examples/discovery_recovery.rs": "602593c2e97c1ca1646ef5bf5a3a3abcd05b4cd2f50a23489f635aa3260dbb80",
+    "crates/net/examples/dns_queue_cancel_c4806a3d.rs": "a7dbab22249c7c65443c6943d04ab3c078d9d3f02a97016f5596fd0f6e6d4a2f",
+    "crates/net/examples/guardrails.rs": "8ebd7471140b4157964109fdaaeeb63513c95fab5ed112e22dae2a8860134202",
+    "crates/net/examples/lifecycle.rs": "f143c2eb29f20fc1f0ed80b17a3b44a8fa6782293b8b88607245e8288c98b9dd",
+    "crates/net/examples/priority_peer.rs": "37f5a97dcf4a37bccc8f13acdc92f9e2bcb16794c410e09352d596fd0c7061df",
+    "crates/net/examples/tls_peer.rs": "03849b13c29090840707dd8b343cdbefc5fe9d42ae25095a7e61bc1db34c790d",
+    "crates/net/examples/trust_directories.rs": "61d7dd28b7288c86606d6df851893ecfa6b5f03c01f0c4b1fab8e27c0ebbdcd8",
+    "crates/net/src/cli.rs": "b22cef41a524d556c81afb98e7b6d5d57557749ce9ca586145881995b82acb41",
+    "crates/net/src/connect_error.rs": "a3c944fefddc2b4a9e759298b5a4c9d5637503bf88fcbbf5dc0baf7e78929568",
+    "crates/net/src/discovery.rs": "7c861e1cbbc65b4e24b2e851db7b1e74044791be1565e510f5980531e3269f71",
+    "crates/net/src/identity.rs": "102aa396739087ce2f117f775f18508475ff3b4326fe702b7ad4d1a4d886b07c",
+    "crates/net/src/lib.rs": "1bfcda0c11d7bb5be7f23005d9db9170e62317161877e52b616c79c655317ac9",
+    "crates/net/src/reactor.rs": "397691db37fb5e0a6b223ad7c447964346973eb5549f7eacbfadb41e787ffc61",
+    "crates/net/src/tls.rs": "b6c852d4d03ea27549e24eeba5d80ca65432dd6a90ea6f2cf1cf33dda1157abe",
+    "crates/net/src/trust.rs": "830010af377e5b93a32334d8386f325cc10e19fe83520dda26b267a0a81ee6ff",
+    "crates/net/src/windows_permissions.rs": "2dbca5dc28eb51dc87c89bb2b0a8b7f009037094db45c7085db635ae598090c4",
+    "crates/platform-linux/Cargo.toml": "d9f8772dc001e12d2fe9f1489d35918deeeeead9daab8131371ea91cf0b1a4ac",
+    "crates/platform-linux/examples/x11_probe.rs": "d61e6bf76b0d7802a0ad124110feb1991239a90b1008b0edad3bb62cdbc0e761",
+    "crates/platform-linux/src/clipboard.rs": "c30058611fc426f3f2b0bc5d4c9f53bf8ef48ea4cb3915098894c22277fdf88c",
+    "crates/platform-linux/src/image.rs": "085b0a326643393ce926234a249d2b9baeb21a62d77ceaab7d2468a0422d1eb8",
+    "crates/platform-linux/src/keymap.rs": "e30286da66b02322186f9c3cdc808a6a347691e0e7c458184517a1507604f42e",
+    "crates/platform-linux/src/lib.rs": "3c34c73f6ab833b843195e5c2a99bee7affc7d46bd7fe7fd3786be3cb033e441",
+    "crates/platform-linux/src/native.rs": "00588627b702216ab2a35ee288d83241cb8705456a101b7e904e8c47107d6579",
+    "crates/platform-linux/src/sink.rs": "0144d18b20dbd1fa55727ff59e4daa9f6e7a89c3f25a7ada027bfb260e791be3",
+    "crates/platform-linux/src/source.rs": "e1429aab6c7549219cdca6a844cd944061909e93ca5d32e6d009e23acd74b5f8",
+    "crates/platform-linux/src/unicode_keysyms.rs": "b632ddb45d402b9045b0d6003a71e1ea5a9448ddfea7780dfc3cb3028571d58f",
+    "crates/platform-macos/Cargo.toml": "7b2607a96c77a79f3e8f6ab482fc39249e74a0ea8a283e3b6db5cf0cffdb2280",
+    "crates/platform-macos/examples/focuslab_inject.rs": "d8ba4769e3c54bb904ab9c54eb4e3d0437f3d84c1d261b0429df59b33f4f60ad",
+    "crates/platform-macos/examples/mac_probe.rs": "93e5dbde8d0a2d7f6c4f6a980baafa60a305b1e6df73272c44e5db0218f92c5c",
+    "crates/platform-macos/src/displays.rs": "1d6860ac0ceb6ebf9234eb7e7bbabeb789584a33b7b85134515d4111ce34ae5e",
+    "crates/platform-macos/src/ffi.rs": "6b106e9e9d2e0b1453f2d846d991182914ce6a4a87acb0e400637b65aeeb6ef8",
+    "crates/platform-macos/src/inject.rs": "2604c4e71c7f7713ef71a0e6c5d558422f97f5eea81307861dcfce144c9bddbc",
+    "crates/platform-macos/src/keymap.rs": "0dc9a9583802b154f87b4dd68a41c87a4b6902024218b2accee47d8d917fe314",
+    "crates/platform-macos/src/lib.rs": "aafa994a8696824968671f1cda6a2f06933bdc2f9e472606d783ae86d8b0801e",
+    "crates/platform-macos/src/pasteboard.rs": "6b53e3063f6a4a015a4761dcc9a9399d5a47d73b87c92947d036cbf7e2f62d39",
+    "crates/platform-macos/src/permissions.rs": "ee6111c35d5985a55b8187c6f573bff7bb372397e32ed3dcbaf87d48e15d3914",
+    "crates/platform-macos/src/screens.rs": "384cc286565139bc0605cc6493222c7c52621f7ace2701a0471242160deb55b0",
+    "crates/platform-macos/src/tap.rs": "fd28e13ff29fa5fe453ad8b4cba3b85c80e013c9971021a088546d491e96a571",
+    "crates/platform-macos/src/types.rs": "71cbea2c52890d808d32412d9b33e095033dfe570e20387d38d4a2df3228284a",
+    "crates/platform-windows/Cargo.toml": "080605b569ed545650abd65a3cc551dbb5c3231f8eb3d8589b5598fc3f6cf460",
+    "crates/platform-windows/src/clipboard.rs": "451bc0555457ce95f7f5d2ba7ae657834925cd708b186e14678686b12ce8dc80",
+    "crates/platform-windows/src/keymap.rs": "a9d531bbe6ed9916a389de4b384aa2321f7f04848c73e378fc61da7aca400aeb",
+    "crates/platform-windows/src/lib.rs": "1ce695c6f22dbd55d4cdded98f147a32812ffae7b1eb7f2ff8ad7f319daaeedb",
+    "crates/platform-windows/src/native.rs": "3aeddda52041991234e601dab0afe7c388b1aa9e858b308004d24bda84810cc1",
+    "crates/platform-windows/src/sink.rs": "1ca075dd2e12e9d383ae29254138573a9ea6bfa190bc94ce233b9f1043f5d7fb",
+    "crates/platform-windows/src/source.rs": "c5726f8d3ba7903903bdfe671252a622ceb3784356583784dd23a20ac76975ab",
+    "crates/platform/Cargo.toml": "88ee6e62955081ae5017549067c0055bd3ebd7a7e52b739b4b59455cebcc02ce",
+    "crates/platform/examples/virtual_demo.rs": "a4ab3a3995e1799f233375861ad4512085b8318427d0721a4793475eb32028e0",
+    "crates/platform/src/click.rs": "08801f4736e89a7512bf33a017fa92c66fc3dcb8221e6703ffbbf8321b8feee7",
+    "crates/platform/src/lib.rs": "77cf31c3b30f62eddbe89051702a95d7b529ffaef4eafea5214916b54b5652b5",
+    "crates/platform/src/script.rs": "bbe2991d5f2152f7bb6f3314bec2601b1e58a1318b14ba753f72f3043e5d3c01",
+    "crates/platform/src/virtual_backend.rs": "ae8c8ca58f828b6b106d09079e5b960bb9e4b035567917b5e0da682663d97a18",
+    "crates/protocol/Cargo.toml": "c91717334a50d2e68057c5e306b685e95a1506fc4d0bd9b08f443b62d6897445",
+    "crates/protocol/examples/wire_probe.rs": "f59443a83fef0d835259b5d8a9fd34b22f027d66cbb1049f19c7b9edb5abec68",
+    "crates/protocol/src/clipboard.rs": "4fb846e2fe3812f4136e77b64a509f120f5ba25675a8fcca9392269c672583da",
+    "crates/protocol/src/codec.rs": "9641df927d3391e26279bd138307192b6e04feb785e8f459b27cb57a748b7c0e",
+    "crates/protocol/src/keys.rs": "bdcde8427a2534a8e2e96987da21ca792bdf38d60415d5d32b52f949293fbaff",
+    "crates/protocol/src/lib.rs": "82cccc4173141f0a597431e27179d088007c9d0ada50dc6d0f5716dabe49c103",
+    "crates/session/Cargo.toml": "a1c5e86b885cb1cf079c19600bf180fb04fb3847173b9d5324426047865fae18",
+    "crates/session/src/client.rs": "9905587a134a14c3ac0da9c1efab8c78f2ed0702e53905f9a9ad399f425a0084",
+    "crates/session/src/clipboard.rs": "b65912bcdc8e852d2b03e4955966bf127f3b6f02ad52ae790ff1ba469c37ef18",
+    "crates/session/src/common.rs": "cb5a10b02ea47486643f82c8c8484f952ce2234b27dbe805ef20a49c1cb3f46d",
+    "crates/session/src/hotkey.rs": "709cf340dec0b839bc8a97d3b11fd796a45add44107a35e93db63622991b2c7a",
+    "crates/session/src/layout.rs": "8408d750040ebe5b7357859219ce416888e77fb3ed005894b32f36ad69f94fab",
+    "crates/session/src/lib.rs": "a1acd5fa946c692f758a9eea75f19b73e81eb5c0cabc4b5835ffeb14c0a561a5",
+    "crates/session/src/server.rs": "c7a7f2597c174de865734e2e09c1db7f5e7ff3b0efecfb711cafe507e18357c3",
+    "rust-toolchain.toml": "f715f440167e20fd8ea9afa0498c3d1ab80174cfcb8cbc895f106a34d907a1e1",
+    "spikes/macos-input/Cargo.lock": "6b2bdaafd2c7cf3442398c0244d8a9ebfe140202aef0b61afd0d4227f6e70d26",
+    "spikes/macos-input/Cargo.toml": "66fa2711dc2075ff1d9b2cfd65e870f7162af4b7644406ab6df956ea440d64eb",
+    "spikes/macos-input/src/displays.rs": "097255ecbb3479ef3a415cd5d88f87d3c88bfd256704a3e37bc6eb762b9f597d",
+    "spikes/macos-input/src/ffi.rs": "d36d47365bdd1892d360ebb895f3188b4f565c8be74658f83cb1748f97c5bbea",
+    "spikes/macos-input/src/inject.rs": "28805a5ca112d88d643e0b9d4438b23d581010689395e1298627644c946a2e05",
+    "spikes/macos-input/src/keymap.rs": "92e7f3b1d0bbedeea88f5e6ac4fea656a7f81553d09188aafd9af50e861412b7",
+    "spikes/macos-input/src/lib.rs": "8f535b679342e67334c540d7f9157b7bbe18463504f04fdd397f864a457c3c3d",
+    "spikes/macos-input/src/main.rs": "1f27d60bf5ecf8ef9eca5dcac926fbcb6b7554d93e9dba3af69cad487c537136",
+    "spikes/macos-input/src/pasteboard.rs": "1a2f8d72c09493dfe72096820a7a79771bef3a9abec45bda6d7de06c116a829e",
+    "spikes/macos-input/src/permissions.rs": "f429d183c05cc3673bf8e0c99126575e37cee029b3b4abacf9ba3eb485893afd",
+    "spikes/macos-input/src/tap.rs": "41d71dd216657056f405c837f6f308bb10809bae73ca70c1c2c097f14932d19f",
+    "spikes/macos-input/src/types.rs": "099b05491e7d85ed04bcec133ffc2164f995f486064fe637172174dcc4741abf",
+    "tools/e2e/Cargo.toml": "78bb98248bc0c14ead549803d241fd912b95b068b894b2040d1d36d6ac55b83c",
+    "tools/e2e/src/guardian.rs": "8b48c734c7f4f111ff0e9c17461d8a02d2d0e9e6c51317b9d19279cf61c8e00a",
+    "tools/e2e/src/main.rs": "040aad45785929237a7c40e38942f97663a75e686ee15fdfa788538ddc2abdd3",
+    "tools/e2e/src/model.rs": "f7b7004ad68da192e3e094ed49a554d9d4741fc89ab068cc34fe5e4c661236c4",
+    "tools/e2e/src/process.rs": "10ee9511a9ef68a81f4a4ac9c199a186e62b995d479d2e2e61004e32d89f9f0b",
+    "tools/e2e/src/runner.rs": "cd42127261573a5a6ce0b9d8a31a9d1013aa34b1486db97af0decb871970d564",
+    "tools/e2e/src/steps.rs": "de99717892fa32348af6d24bdb44b84097feb3b4e14c4316ec18219369621184",
+    "tools/e2e/src/util.rs": "c2d962c283abae42984bd310fbab30d286a0664d6f9752aeba3f47cb81b16fc6",
+    "tools/e2e/src/wire.rs": "60593d4a4461ce5f81ddbe94c4f19976cde2c14e46a6d48f0a431a5d5a7ef22c",
+    "vendor/mdns-sd/Cargo.toml": "0fcc79974fb49f2c670668dc24380e6c43207fa50d79588c1b49550a406a5ae4",
+    "vendor/mdns-sd/examples/query.rs": "03b58f189cdd0925a68ef3afe1bdbfe7e9c47c439691db478f4253113f9407b9",
+    "vendor/mdns-sd/examples/register.rs": "a43d82301ec0ddcb6bbb3e8cb7c2b52384af9c4e3e98679f2014d57331213bdd",
+    "vendor/mdns-sd/src/dns_cache.rs": "27b2ed4b6b70441884ee3c17a8be52287a7b36086abef6882070a7ec33f0b67a",
+    "vendor/mdns-sd/src/dns_parser.rs": "42ddbe32ed1924f0c5790c456eed191c573d6a1a76efd97614bdacd841bf3158",
+    "vendor/mdns-sd/src/error.rs": "8cf4d9d315aca440b35618f5fd670cbfc0b0a331207e5edaf8f57b3b2f0d055d",
+    "vendor/mdns-sd/src/fuzz_api.rs": "6d16f18f4e5b59b9194da86f0562b1ddb5cdc1151f43d80fe06bcde65e4b19a4",
+    "vendor/mdns-sd/src/lib.rs": "5828af0294e915fc600913d1fb7d9409f527c3ccda6e8fa4512d666743973ab0",
+    "vendor/mdns-sd/src/service_daemon.rs": "3f1bf0a78767e928db84c19a005718869208c68747eee5f7ff05fce6e73ac4a5",
+    "vendor/mdns-sd/src/service_info.rs": "97b64268a004e1040889ce7771de40a84b06503ec41d62cd4842523b2b6cdba4",
+    "vendor/mdns-sd/tests/addr_parse.rs": "531256c64c9287a5cf45b80401747a211d271b58d8783ae079149cbff8608ccb",
+    "vendor/mdns-sd/tests/mdns_test.rs": "709e7926b8b6e5d88139e6e493000787620e56864d2b5b740e5c492bb23724aa",
+    "vendor/mdns-sd/tests/shutdown_test.rs": "edc9ed4a70dd32b32165911248ce26a62eaed336952bbdd6505c247d5ff6fe3a"
+  },
+  "toolchain": "Rust 1.99.1",
+  "deployment_target": "15.0",
+  "priority": {
+    "nice": 15,
+    "jobs": 2
+  },
+  "artifacts": {
+    "discovery_recovery": {
+      "bytes": 1025456,
+      "sha256": "37d9f3971965722837e80ab0795b5792c3fcfd6a22c07c181708886f239ec475"
+    },
+    "discovery_owned_shutdown": {
+      "bytes": 923392,
+      "sha256": "bb28bbc34798807b542b2ec73da6fc6c57224eca496dde07c80a40fa9bc2fad7"
+    }
+  },
+  "commands": [
+    {
+      "name": "vendor-source",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "python3",
+        "vendor/mdns-sd/verify-source.py",
+        "<registry-cache>/index.crates.io-1949cf8c6b5b557f/mdns-sd-0.21.6.crate"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.079
+    },
+    {
+      "name": "notices",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "python3",
+        "docs/verification/public-release-audit-2026-10-21/generate-notices.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.296
+    },
+    {
+      "name": "format",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "cargo",
+        "+1.99.1",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.444
+    },
+    {
+      "name": "build",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "cargo",
+        "+1.99.1",
+        "build",
+        "--locked",
+        "--offline",
+        "--release",
+        "-p",
+        "openergy-net",
+        "--example",
+        "discovery_recovery",
+        "--example",
+        "discovery_owned_shutdown",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 14.563
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "cargo",
+        "+1.99.1",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--release",
+        "--workspace",
+        "--all-targets",
+        "--no-deps",
+        "-j",
+        "2",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 4.869
+    },
+    {
+      "name": "vendor-clippy",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "cargo",
+        "+1.99.1",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--release",
+        "-p",
+        "mdns-sd",
+        "--lib",
+        "--no-deps",
+        "-j",
+        "2",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.134
+    },
+    {
+      "name": "startup",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "<private-integration-evidence>/discovery_recovery",
+        "startup",
+        "<private-integration-evidence>/startup",
+        "25090",
+        "25091"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 13.386
+    },
+    {
+      "name": "retained",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "<private-integration-evidence>/discovery_recovery",
+        "probe",
+        "<private-integration-evidence>/retained",
+        "25094",
+        "25095"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 40.946
+    },
+    {
+      "name": "owned-shutdown",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "python3",
+        "crates/net/examples/discovery_owned_shutdown.py",
+        "<private-integration-evidence>/discovery_owned_shutdown",
+        "<private-integration-evidence>/owned-shutdown",
+        "25096",
+        "25097"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 5.188
+    }
+  ],
+  "flows": {
+    "startup": {
+      "passed": 14,
+      "total": 14,
+      "checks": [
+        "CHECK ordinary-replay-cache-overflow=true",
+        "CHECK live-handle-resolves=true",
+        "CHECK ordinary-replay-commands-drained=true",
+        "CHECK cancelled-distinct-types-retain-no-state=true",
+        "CHECK cancelled-replacements-preserve-identity=true",
+        "CHECK surviving-handle-receives-live-update=true",
+        "CHECK successful-limited-replacement-has-new-identity=true",
+        "CHECK successful-standard-replacement-releases-state=true",
+        "CHECK cancelled-replacements-preserve-standard-identity=true",
+        "CHECK surviving-standard-handle-receives-live-update=true",
+        "CHECK standard-to-limited-replacement=true",
+        "CHECK final-stop-clears-worker-state=true",
+        "CHECK publisher-exits-zero=true",
+        "CHECK worker-shutdown-ack=true"
+      ],
+      "raw_stdout": "STARTUP_METRICS={\"dns-registry-active\": 0, \"known-answer-suppression\": 0, \"dns-registry-timer\": 0, \"cached-ptr\": 802, \"cached-srv\": 500, \"dns-registry-probe\": 0, \"cache-refresh-addr\": 0, \"limited-view-states\": 1, \"cache-refresh-srv-txt\": 0, \"browse\": 3, \"cache-refresh-ptr\": 0, \"cached-txt\": 500, \"timer\": 7714, \"cached-nsec\": 0, \"cached-subtype\": 0, \"dns-registry-name-change\": 0, \"cached-addr\": 2}\nSTARTUP_METRICS={\"dns-registry-active\": 0, \"known-answer-suppression\": 0, \"dns-registry-timer\": 0, \"cached-ptr\": 802, \"cached-srv\": 500, \"dns-registry-probe\": 0, \"cache-refresh-addr\": 0, \"limited-view-states\": 1, \"cache-refresh-srv-txt\": 0, \"browse\": 3, \"cache-refresh-ptr\": 0, \"cached-txt\": 500, \"timer\": 8016, \"cached-nsec\": 0, \"cached-subtype\": 0, \"dns-registry-name-change\": 0, \"cached-addr\": 2}\nSTARTUP_METRICS={\"dns-registry-active\": 0, \"known-answer-suppression\": 0, \"dns-registry-timer\": 0, \"cached-ptr\": 802, \"cached-srv\": 802, \"dns-registry-probe\": 0, \"cache-refresh-addr\": 0, \"limited-view-states\": 1, \"cache-refresh-srv-txt\": 0, \"browse\": 4, \"cache-refresh-ptr\": 0, \"cached-txt\": 802, \"timer\": 9828, \"cached-nsec\": 0, \"cached-subtype\": 0, \"dns-registry-name-change\": 0, \"cached-addr\": 3}\nCANCELLED_STARTUPS distinct=32 replay_commands=16 replayed_overflows=16 before=1 after_barrier=1 after_settle=1 live_closed=false\nSTARTUP_METRICS={\"dns-registry-active\": 0, \"known-answer-suppression\": 0, \"dns-registry-timer\": 0, \"cached-ptr\": 802, \"cached-srv\": 802, \"dns-registry-probe\": 0, \"cache-refresh-addr\": 0, \"limited-view-states\": 1, \"cache-refresh-srv-txt\": 0, \"browse\": 5, \"cache-refresh-ptr\": 0, \"cached-txt\": 803, \"timer\": 9538, \"cached-nsec\": 0, \"cached-subtype\": 0, \"dns-registry-name-change\": 0, \"cached-addr\": 3}\nSTARTUP_METRICS={\"dns-registry-active\": 0, \"known-answer-suppression\": 0, \"dns-registry-timer\": 0, \"cached-ptr\": 802, \"cached-srv\": 802, \"dns-registry-probe\": 0, \"cache-refresh-addr\": 0, \"limited-view-states\": 0, \"cache-refresh-srv-txt\": 0, \"browse\": 6, \"cache-refresh-ptr\": 0, \"cached-txt\": 803, \"timer\": 9539, \"cached-nsec\": 0, \"cached-subtype\": 0, \"dns-registry-name-change\": 0, \"cached-addr\": 3}\nSTARTUP_METRICS={\"dns-registry-active\": 0, \"known-answer-suppression\": 0, \"dns-registry-timer\": 0, \"cached-ptr\": 802, \"cached-srv\": 802, \"dns-registry-probe\": 0, \"cache-refresh-addr\": 0, \"limited-view-states\": 0, \"cache-refresh-srv-txt\": 0, \"browse\": 6, \"cache-refresh-ptr\": 0, \"cached-txt\": 803, \"timer\": 9539, \"cached-nsec\": 0, \"cached-subtype\": 0, \"dns-registry-name-change\": 0, \"cached-addr\": 3}\nSTARTUP_METRICS={\"dns-registry-active\": 0, \"known-answer-suppression\": 0, \"dns-registry-timer\": 0, \"cached-ptr\": 802, \"cached-srv\": 802, \"dns-registry-probe\": 0, \"cache-refresh-addr\": 0, \"limited-view-states\": 1, \"cache-refresh-srv-txt\": 0, \"browse\": 7, \"cache-refresh-ptr\": 0, \"cached-txt\": 803, \"timer\": 9538, \"cached-nsec\": 0, \"cached-subtype\": 0, \"dns-registry-name-change\": 0, \"cached-addr\": 3}\nSTARTUP_METRICS={\"dns-registry-active\": 0, \"known-answer-suppression\": 0, \"dns-registry-timer\": 0, \"cached-ptr\": 801, \"cached-srv\": 801, \"dns-registry-probe\": 0, \"cache-refresh-addr\": 0, \"limited-view-states\": 0, \"cache-refresh-srv-txt\": 0, \"browse\": 7, \"cache-refresh-ptr\": 0, \"cached-txt\": 801, \"timer\": 9538, \"cached-nsec\": 0, \"cached-subtype\": 0, \"dns-registry-name-change\": 0, \"cached-addr\": 2}\nCHECK ordinary-replay-cache-overflow=true\nCHECK live-handle-resolves=true\nCHECK ordinary-replay-commands-drained=true\nCHECK cancelled-distinct-types-retain-no-state=true\nCHECK cancelled-replacements-preserve-identity=true\nCHECK surviving-handle-receives-live-update=true\nCHECK successful-limited-replacement-has-new-identity=true\nCHECK successful-standard-replacement-releases-state=true\nCHECK cancelled-replacements-preserve-standard-identity=true\nCHECK surviving-standard-handle-receives-live-update=true\nCHECK standard-to-limited-replacement=true\nCHECK final-stop-clears-worker-state=true\nCHECK publisher-exits-zero=true\nCHECK worker-shutdown-ack=true\n",
+      "raw_stdout_sha256": "7e133b1d00fa8931def56ac4f94de0293d3107aec291369d766597958c5f872f",
+      "raw_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "retained": {
+      "passed": 19,
+      "total": 19,
+      "checks": [
+        "CHECK initial-resolution=true",
+        "CHECK real-upstream-channel-overflow=true",
+        "CHECK limited-retained-replay=true",
+        "CHECK retained-namespace-stays-useful=true",
+        "CHECK retained-selection-stable=true",
+        "CHECK retained-selected-peer-live-update=true",
+        "CHECK retained-selected-peer-goodbye=true",
+        "CHECK retained-first-peer-goodbye-and-new-peer=true",
+        "CHECK retained-selected-survivors-stable=true",
+        "CHECK paused-update-coalesces-to-latest=true",
+        "CHECK paused-goodbye-replaces-view=true",
+        "CHECK fresh-advertisement-after-overflow=true",
+        "CHECK updated-port-and-untrusted-hint=true",
+        "CHECK goodbye-removes-all-peers=true",
+        "CHECK publisher-exits-zero=true",
+        "CHECK discovery-shutdown-submitted=true",
+        "CHECK sentinel-worker-shutdown-ack=true",
+        "CHECK snapshot-cap=true",
+        "CHECK snapshot-emission-spacing=true"
+      ],
+      "raw_stdout": "RETAINED_CACHE_METRICS={\"known-answer-suppression\": 0, \"limited-view-states\": 0, \"dns-registry-active\": 0, \"dns-registry-timer\": 0, \"cache-refresh-ptr\": 0, \"cached-txt\": 499, \"cached-ptr\": 801, \"cache-refresh-addr\": 0, \"cached-subtype\": 0, \"browse\": 2, \"cached-addr\": 1, \"cached-srv\": 499, \"cache-refresh-srv-txt\": 0, \"dns-registry-name-change\": 0, \"timer\": 7704, \"dns-registry-probe\": 0, \"cached-nsec\": 0}\nRETAINED_REPLAY attempt=1 drained=1000 disconnected=true elapsed_ms=96\nRETAINED_REPLAY attempt=2 drained=1000 disconnected=true elapsed_ms=99\nRETAINED_CACHE_AFTER_STOP={\"known-answer-suppression\": 0, \"limited-view-states\": 0, \"dns-registry-active\": 0, \"dns-registry-timer\": 0, \"cache-refresh-ptr\": 0, \"cached-txt\": 499, \"cached-ptr\": 801, \"cache-refresh-addr\": 0, \"cached-subtype\": 0, \"browse\": 2, \"cached-addr\": 1, \"cached-srv\": 499, \"cache-refresh-srv-txt\": 0, \"dns-registry-name-change\": 0, \"timer\": 8006, \"dns-registry-probe\": 0, \"cached-nsec\": 0}\nLIMITED_REPLAY peak=64 closed=false\nRETAINED_NAMESPACE burst=800 selected=burst-0002 full_polls=170 empty_polls=0 update_seen=true update_stays_fresh=true removal_seen=true removal_regressed=false\nAFTER_REMOVAL peers=[\"after-removal\", \"burst-0010\", \"burst-0019\", \"burst-0027\", \"burst-0029\", \"burst-0033\", \"burst-0036\", \"burst-0043\", \"burst-0055\", \"burst-0081\", \"burst-0086\", \"burst-0090\", \"burst-0106\", \"burst-0120\", \"burst-0121\", \"burst-0130\", \"burst-0132\", \"burst-0136\", \"burst-0176\", \"burst-0190\", \"burst-0195\", \"burst-0196\", \"burst-0207\", \"burst-0215\", \"burst-0221\", \"burst-0225\", \"burst-0260\", \"burst-0272\", \"burst-0276\", \"burst-0292\", \"burst-0297\", \"burst-0306\", \"burst-0313\", \"burst-0321\", \"burst-0323\", \"burst-0336\", \"burst-0337\", \"burst-0346\", \"burst-0352\", \"burst-0362\", \"burst-0383\", \"burst-0397\", \"burst-0407\", \"burst-0427\", \"burst-0430\", \"burst-0454\", \"burst-0461\", \"burst-0466\", \"burst-0469\", \"burst-0491\", \"burst-0512\", \"burst-0553\", \"burst-0582\", \"burst-0586\", \"burst-0600\", \"burst-0621\", \"burst-0634\", \"burst-0693\", \"burst-0745\", \"burst-0755\", \"burst-0763\", \"burst-0766\", \"burst-0791\", \"burst-replacement\"]\nAFTER_REMOVAL_CACHE={\"known-answer-suppression\": 0, \"limited-view-states\": 1, \"dns-registry-active\": 0, \"dns-registry-timer\": 0, \"cache-refresh-ptr\": 0, \"cached-txt\": 499, \"cached-ptr\": 801, \"cache-refresh-addr\": 0, \"cached-subtype\": 0, \"browse\": 7, \"cached-addr\": 1, \"cached-srv\": 499, \"cache-refresh-srv-txt\": 0, \"dns-registry-name-change\": 0, \"timer\": 7748, \"dns-registry-probe\": 0, \"cached-nsec\": 0}\nRECOVERY_OBSERVATION_MS=0\nSNAPSHOTS count=13 peak=64 too_close=false\nCHECK initial-resolution=true\nCHECK real-upstream-channel-overflow=true\nCHECK limited-retained-replay=true\nCHECK retained-namespace-stays-useful=true\nCHECK retained-selection-stable=true\nCHECK retained-selected-peer-live-update=true\nCHECK retained-selected-peer-goodbye=true\nCHECK retained-first-peer-goodbye-and-new-peer=true\nCHECK retained-selected-survivors-stable=true\nCHECK paused-update-coalesces-to-latest=true\nCHECK paused-goodbye-replaces-view=true\nCHECK fresh-advertisement-after-overflow=true\nCHECK updated-port-and-untrusted-hint=true\nCHECK goodbye-removes-all-peers=true\nCHECK publisher-exits-zero=true\nCHECK discovery-shutdown-submitted=true\nCHECK sentinel-worker-shutdown-ack=true\nCHECK snapshot-cap=true\nCHECK snapshot-emission-spacing=true\nBURST_SERVICES=800 SNAPSHOT_PEAK=64\n",
+      "raw_stdout_sha256": "88de995841798ba69f0f0f35a9ccf0360dd8c64cd7222388547961b32ecd8db8",
+      "raw_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "owned_shutdown": {
+    "passed": 4,
+    "total": 4,
+    "cases": [
+      {
+        "case": "normal-drop",
+        "pid": 34593,
+        "baseline": {
+          "threads": 1,
+          "udp": []
+        },
+        "live": {
+          "threads": 2,
+          "udp": [
+            "127.0.0.1:63541",
+            "*:25096",
+            "*:25096",
+            "*:25096",
+            "*:25096"
+          ]
+        },
+        "after_release": {
+          "threads": 1,
+          "udp": []
+        },
+        "cleanup_ms": 47,
+        "child_still_alive": true,
+        "owned_worker_and_sockets_cleaned": true
+      },
+      {
+        "case": "normal-shutdown",
+        "pid": 34608,
+        "baseline": {
+          "threads": 1,
+          "udp": []
+        },
+        "live": {
+          "threads": 2,
+          "udp": [
+            "127.0.0.1:60015",
+            "*:25096",
+            "*:25096",
+            "*:25096",
+            "*:25096"
+          ]
+        },
+        "after_release": {
+          "threads": 1,
+          "udp": []
+        },
+        "cleanup_ms": 46,
+        "child_still_alive": true,
+        "owned_worker_and_sockets_cleaned": true
+      },
+      {
+        "case": "exhausted-drop",
+        "pid": 34646,
+        "baseline": {
+          "threads": 1,
+          "udp": []
+        },
+        "live": {
+          "threads": 2,
+          "udp": [
+            "127.0.0.1:53003",
+            "*:25096",
+            "*:25096",
+            "*:25096",
+            "*:25096"
+          ]
+        },
+        "after_release": {
+          "threads": 1,
+          "udp": []
+        },
+        "cleanup_ms": 805,
+        "child_still_alive": true,
+        "owned_worker_and_sockets_cleaned": true
+      },
+      {
+        "case": "exhausted-shutdown",
+        "pid": 34668,
+        "baseline": {
+          "threads": 1,
+          "udp": []
+        },
+        "live": {
+          "threads": 2,
+          "udp": [
+            "127.0.0.1:49449",
+            "*:25096",
+            "*:25096",
+            "*:25096",
+            "*:25096"
+          ]
+        },
+        "after_release": {
+          "threads": 1,
+          "udp": []
+        },
+        "cleanup_ms": 801,
+        "child_still_alive": true,
+        "owned_worker_and_sockets_cleaned": true
+      }
+    ],
+    "raw_report_sha256": "8fc94873927d4991d8bb7619825aca5e531e1a692ca5afc8af0a57739277f720"
+  },
+  "postflight": {
+    "assigned_udp_25090_through_25097_absent": true,
+    "owned_fixture_executables_absent": true
+  },
+  "review": {
+    "task": "oe-bounded-discovery-startup-review-r5-20261022",
+    "candidate": "da668c3aac3fc2c74354d136733d4db8464a6144",
+    "result": "No concrete P1/P2 findings; prior cancelled-startup finding closed.",
+    "scope": "independent source and saved evidence review, not independent runtime reproduction"
+  },
+  "limits": [
+    "Delivery state is limited to 64 selected services, not whole-cache or variable-record bytes.",
+    "No automatic refill from unselected cache is guaranteed.",
+    "Expiry, timer and query-work bounds remain open.",
+    "Full combined daemon E2E and fresh native Windows discovery acceptance have not run on this integrated source.",
+    "Native input/clipboard, positive Windows migration, original release-provenance security acceptance and trusted distribution remain release gates."
+  ]
+}

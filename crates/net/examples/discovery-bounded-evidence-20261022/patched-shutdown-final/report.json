@@ -1,0 +1,102 @@
+[
+  {
+    "case": "normal-drop",
+    "pid": 22239,
+    "baseline": {
+      "threads": 1,
+      "udp": []
+    },
+    "live": {
+      "threads": 2,
+      "udp": [
+        "127.0.0.1:54471",
+        "*:25094",
+        "*:25094",
+        "*:25094",
+        "*:25094"
+      ]
+    },
+    "after_release": {
+      "threads": 1,
+      "udp": []
+    },
+    "cleanup_ms": 51,
+    "child_still_alive": true,
+    "owned_worker_and_sockets_cleaned": true
+  },
+  {
+    "case": "normal-shutdown",
+    "pid": 22249,
+    "baseline": {
+      "threads": 1,
+      "udp": []
+    },
+    "live": {
+      "threads": 2,
+      "udp": [
+        "127.0.0.1:57549",
+        "*:25094",
+        "*:25094",
+        "*:25094",
+        "*:25094"
+      ]
+    },
+    "after_release": {
+      "threads": 1,
+      "udp": []
+    },
+    "cleanup_ms": 51,
+    "child_still_alive": true,
+    "owned_worker_and_sockets_cleaned": true
+  },
+  {
+    "case": "exhausted-drop",
+    "pid": 22271,
+    "baseline": {
+      "threads": 1,
+      "udp": []
+    },
+    "live": {
+      "threads": 2,
+      "udp": [
+        "127.0.0.1:55141",
+        "*:25094",
+        "*:25094",
+        "*:25094",
+        "*:25094"
+      ]
+    },
+    "after_release": {
+      "threads": 1,
+      "udp": []
+    },
+    "cleanup_ms": 834,
+    "child_still_alive": true,
+    "owned_worker_and_sockets_cleaned": true
+  },
+  {
+    "case": "exhausted-shutdown",
+    "pid": 23157,
+    "baseline": {
+      "threads": 1,
+      "udp": []
+    },
+    "live": {
+      "threads": 2,
+      "udp": [
+        "127.0.0.1:64485",
+        "*:25094",
+        "*:25094",
+        "*:25094",
+        "*:25094"
+      ]
+    },
+    "after_release": {
+      "threads": 1,
+      "udp": []
+    },
+    "cleanup_ms": 821,
+    "child_still_alive": true,
+    "owned_worker_and_sockets_cleaned": true
+  }
+]

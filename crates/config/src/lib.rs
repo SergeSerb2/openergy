@@ -12,6 +12,12 @@ pub use model::{apply_merge_patch, merge_patch};
 pub use synergy::{export_synergy_conf, import_synergy_conf};
 pub use synergy3::{import_synergy3_db, import_synergy_dir};
 
+/// Maximum serialized daemon TOML size, shared by startup and config writers.
+pub const MAX_CONFIG_FILE_LEN: usize = 16 * 1024 * 1024;
+
+/// Maximum clipboard payload supported by the session's transfer implementation.
+pub const MAX_CLIPBOARD_BYTES: usize = 64 * 1024 * 1024;
+
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Role {
@@ -170,7 +176,7 @@ impl Default for ClipboardCfg {
             enabled: true,
             send: true,
             receive: true,
-            max_bytes: 64 * 1024 * 1024,
+            max_bytes: MAX_CLIPBOARD_BYTES,
         }
     }
 }

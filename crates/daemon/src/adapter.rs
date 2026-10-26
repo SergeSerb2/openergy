@@ -195,6 +195,12 @@ pub fn virtual_request(
             if let Some(available) = params.get("read_available").and_then(Value::as_bool) {
                 control.set_clipboard_read_available(available);
             }
+            if let Some(error) = params.get("read_error") {
+                let error = error
+                    .as_bool()
+                    .ok_or_else(|| invalid("read_error must be a boolean".into()))?;
+                control.set_clipboard_read_error(error);
+            }
             if let Some(data) = params.get("set") {
                 let data = crate::clipboard_json::decode(data)?;
                 control.clipboard_set(data).map_err(failed)?;

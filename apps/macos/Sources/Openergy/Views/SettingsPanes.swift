@@ -55,7 +55,16 @@ struct ConnectionPane: View {
         }
         .formStyle(.grouped)
         .onAppear(perform: load)
-        .onChange(of: model.config) { load() }
+        // A clipboard toggle or a layout update must not erase text the user is editing.
+        .onChange(of: model.config.name) { old, next in
+            if name == (old ?? "") { name = next ?? "" }
+        }
+        .onChange(of: model.config.client?.remote) { old, next in
+            if address == (old ?? "") { address = next ?? "" }
+        }
+        .onChange(of: model.config.server?.port) { old, next in
+            if port == String(old ?? 24800) { port = String(next ?? 24800) }
+        }
     }
 
     private func load() {
@@ -85,7 +94,7 @@ struct ConnectionPane: View {
             HStack {
                 Button("Reconnect") { model.reconnect() }
                 Button("Disconnect") { model.disconnect() }
-                    .disabled(model.connectedPeers.isEmpty)
+                    .disabled(![.connecting, .reconnecting, .connected, .starting].contains(model.state))
             }
             if !model.discovered.isEmpty {
                 ForEach(model.discovered) { peer in
@@ -298,7 +307,7 @@ struct ClipboardPane: View {
                 ValuePicker(title: "Largest item",
                             value: model.number("clipboard.max_bytes", { $0.clipboard?.maxBytes }, default: 64 * 1024 * 1024),
                             options: [("4 MB", 4 * 1024 * 1024), ("16 MB", 16 * 1024 * 1024),
-                                      ("64 MB", 64 * 1024 * 1024), ("256 MB", 256 * 1024 * 1024)],
+                                      ("64 MB", 64 * 1024 * 1024)],
                             custom: { ByteText.string($0) })
                     .disabled(model.config.clipboard?.enabled == false)
             } footer: {
@@ -462,6 +471,7 @@ struct PermissionRow: View {
 
 struct AdvancedPane: View {
     let model: AppModel
+    var updater: AppUpdater? = nil
 
     var body: some View {
         Form {
@@ -471,12 +481,12 @@ struct AdvancedPane: View {
                     set: { model.patch("macos.click_numbering", .string($0)) }
                 )) {
                     Text("Numbered clicks (recommended)").tag("native")
-                    Text("Legacy, like Synergy").tag("legacy")
+                    Text("Legacy clicks").tag("legacy")
                 }
             } header: {
                 Text("Window Focus")
             } footer: {
-                FooterText("macOS 27 brings a window to the front only when each click carries its own number. Numbered clicks fix the Synergy bug where a click in a window did not activate it.")
+                FooterText("Numbered clicks are the default for window activation. Use Legacy only for compatibility troubleshooting.")
             }
 
             Section("General") {
@@ -500,6 +510,25 @@ struct AdvancedPane: View {
                     LabeledContent("Process", value: "openergy (\(pid))")
                 }
                 Button("Restart Connection") { model.reconnect() }
+            }
+
+            Section {
+                Toggle("Automatically check for updates", isOn: Binding(
+                    get: { updater?.automaticallyChecksForUpdates ?? false },
+                    set: { updater?.setAutomaticallyChecksForUpdates($0) }
+                ))
+                .disabled(updater?.started != true)
+                Toggle("Automatically download and install updates", isOn: Binding(
+                    get: { updater?.automaticallyDownloadsUpdates ?? false },
+                    set: { updater?.setAutomaticallyDownloadsUpdates($0) }
+                ))
+                .disabled(updater?.allowsAutomaticUpdates != true)
+                Button("Check for Updates…") { updater?.checkForUpdates() }
+                    .disabled(updater?.canCheckForUpdates != true)
+            } header: {
+                Text("Updates")
+            } footer: {
+                FooterText(updater?.status ?? "Updates are disabled in this mode.")
             }
         }
         .formStyle(.grouped)

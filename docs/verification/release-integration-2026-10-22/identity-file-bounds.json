@@ -1,0 +1,1179 @@
+{
+  "date": "2026-10-22",
+  "baseline_source_commit": "a0447c3a8c7d8210d6ef5d6a8bb85fe14708b1e0",
+  "read_fix_commit": "1a4ea4a01214eb4ba680e724ccde222c4c4b5a34",
+  "code_commit": "bbaf747e21f138c5ed6d2aba0e2a17912766d648",
+  "environment": {
+    "os": "macOS 27.2",
+    "architecture": "aarch64",
+    "platform": "virtual",
+    "rust": "1.99.1",
+    "macos_deployment_target": "15.0",
+    "cargo_jobs": 2,
+    "priority": "reduced",
+    "docker_available": false
+  },
+  "baseline": {
+    "binary_sha256": "b3525c0e2ba5c584f01771b0267b38604cab3fce154be892f38ff6c734746597",
+    "script_sha256": "98236ad5f5c5932553371f1ffe414cb9360c3ad74f70294dc5945f53c1af4216",
+    "identity_file_limit_bytes": 1048576,
+    "cases": [
+      {
+        "case": "offline_cert.pem_1048575_suffix",
+        "file_bytes": 1048575,
+        "expected_acceptance": true,
+        "passed": true,
+        "exit": 0,
+        "elapsed_ms": 7.998207999999993,
+        "max_rss_bytes": 9601024,
+        "accepted_same_identity": true,
+        "size_refusal": false,
+        "files_preserved": true,
+        "retry_succeeded": true
+      },
+      {
+        "case": "offline_cert.pem_1048576_suffix",
+        "file_bytes": 1048576,
+        "expected_acceptance": true,
+        "passed": true,
+        "exit": 0,
+        "elapsed_ms": 7.950666999999995,
+        "max_rss_bytes": 9601024,
+        "accepted_same_identity": true,
+        "size_refusal": false,
+        "files_preserved": true,
+        "retry_succeeded": true
+      },
+      {
+        "case": "offline_cert.pem_1048577_suffix",
+        "file_bytes": 1048577,
+        "expected_acceptance": false,
+        "passed": false,
+        "exit": 0,
+        "elapsed_ms": 9.436,
+        "max_rss_bytes": 9601024,
+        "accepted_same_identity": true,
+        "size_refusal": false,
+        "files_preserved": true,
+        "error_detail": "AssertionError: identity size policy was not enforced"
+      },
+      {
+        "case": "offline_cert.pem_16777216_suffix",
+        "file_bytes": 16777216,
+        "expected_acceptance": false,
+        "passed": false,
+        "exit": 0,
+        "elapsed_ms": 19.475167000000017,
+        "max_rss_bytes": 41091072,
+        "accepted_same_identity": true,
+        "size_refusal": false,
+        "files_preserved": true,
+        "error_detail": "AssertionError: identity size policy was not enforced"
+      },
+      {
+        "case": "offline_key.pem_1048575_prefix",
+        "file_bytes": 1048575,
+        "expected_acceptance": true,
+        "passed": true,
+        "exit": 0,
+        "elapsed_ms": 8.305209000000009,
+        "max_rss_bytes": 9142272,
+        "accepted_same_identity": true,
+        "size_refusal": false,
+        "files_preserved": true,
+        "retry_succeeded": true
+      },
+      {
+        "case": "offline_key.pem_1048576_prefix",
+        "file_bytes": 1048576,
+        "expected_acceptance": true,
+        "passed": true,
+        "exit": 0,
+        "elapsed_ms": 8.978999999999987,
+        "max_rss_bytes": 9142272,
+        "accepted_same_identity": true,
+        "size_refusal": false,
+        "files_preserved": true,
+        "retry_succeeded": true
+      },
+      {
+        "case": "offline_key.pem_1048577_prefix",
+        "file_bytes": 1048577,
+        "expected_acceptance": false,
+        "passed": false,
+        "exit": 0,
+        "elapsed_ms": 8.51291600000001,
+        "max_rss_bytes": 9142272,
+        "accepted_same_identity": true,
+        "size_refusal": false,
+        "files_preserved": true,
+        "error_detail": "AssertionError: identity size policy was not enforced"
+      },
+      {
+        "case": "offline_key.pem_16777216_prefix",
+        "file_bytes": 16777216,
+        "expected_acceptance": false,
+        "passed": false,
+        "exit": 0,
+        "elapsed_ms": 18.029249999999998,
+        "max_rss_bytes": 24870912,
+        "accepted_same_identity": true,
+        "size_refusal": false,
+        "files_preserved": true,
+        "error_detail": "AssertionError: identity size policy was not enforced"
+      },
+      {
+        "case": "offline_key.pem_1048577_suffix",
+        "file_bytes": 1048577,
+        "expected_acceptance": false,
+        "passed": false,
+        "exit": 0,
+        "elapsed_ms": 7.502333,
+        "max_rss_bytes": 8224768,
+        "accepted_same_identity": true,
+        "size_refusal": false,
+        "files_preserved": true,
+        "error_detail": "AssertionError: identity size policy was not enforced"
+      },
+      {
+        "case": "refuse_cert.pem_fifo",
+        "passed": true,
+        "elapsed_ms": 5.341874999999996,
+        "fixture_preserved": true
+      },
+      {
+        "case": "refuse_cert.pem_symlink",
+        "passed": true,
+        "elapsed_ms": 5.446417000000009,
+        "fixture_preserved": true
+      },
+      {
+        "case": "refuse_cert.pem_directory",
+        "passed": true,
+        "elapsed_ms": 5.257708999999999,
+        "fixture_preserved": true
+      },
+      {
+        "case": "refuse_key.pem_fifo",
+        "passed": true,
+        "elapsed_ms": 6.3389169999999995,
+        "fixture_preserved": true
+      },
+      {
+        "case": "refuse_key.pem_symlink",
+        "passed": true,
+        "elapsed_ms": 5.654958999999987,
+        "fixture_preserved": true
+      },
+      {
+        "case": "refuse_key.pem_directory",
+        "passed": true,
+        "elapsed_ms": 5.379500000000009,
+        "fixture_preserved": true
+      },
+      {
+        "case": "startup_cert.pem",
+        "passed": false,
+        "exit": null,
+        "elapsed_ms": 307.90654100000006,
+        "socket_removed": false,
+        "size_refusal": false,
+        "file_preserved": true,
+        "error_detail": "AssertionError: startup did not refuse oversized identity",
+        "cleanup": true
+      },
+      {
+        "case": "startup_key.pem",
+        "passed": false,
+        "exit": null,
+        "elapsed_ms": 305.598625,
+        "socket_removed": false,
+        "size_refusal": false,
+        "file_preserved": true,
+        "error_detail": "AssertionError: startup did not refuse oversized identity",
+        "cleanup": true
+      },
+      {
+        "case": "startup_generated_oversize",
+        "passed": false,
+        "exit": 1,
+        "no_identity_written": false,
+        "size_refusal": false,
+        "error_detail": "AssertionError: generated identity was written before size validation",
+        "cleanup": true
+      },
+      {
+        "case": "live_cert.pem",
+        "passed": false,
+        "error": null,
+        "mutation_ms": 9.003666999999993,
+        "status_ms": 0.13379199999996594,
+        "input_seen": false,
+        "config_preserved": false,
+        "file_preserved": true,
+        "peers_preserved": false,
+        "held_key_preserved": false,
+        "error_detail": "AssertionError: live refusal did not preserve the session",
+        "cleanup": true
+      },
+      {
+        "case": "live_key.pem",
+        "passed": false,
+        "error": null,
+        "mutation_ms": 11.790874999999978,
+        "status_ms": 0.14637500000036496,
+        "input_seen": false,
+        "config_preserved": false,
+        "file_preserved": true,
+        "peers_preserved": false,
+        "held_key_preserved": false,
+        "error_detail": "AssertionError: live refusal did not preserve the session",
+        "cleanup": true
+      }
+    ],
+    "passed": false
+  },
+  "fixed": {
+    "binary_sha256": "96a53a0136e9e96aaa881ef71b94a33f2851a8d829710678f654175bc389f005",
+    "script_sha256": "98236ad5f5c5932553371f1ffe414cb9360c3ad74f70294dc5945f53c1af4216",
+    "identity_file_limit_bytes": 1048576,
+    "cases": [
+      {
+        "case": "offline_cert.pem_1048575_suffix",
+        "file_bytes": 1048575,
+        "expected_acceptance": true,
+        "passed": true,
+        "exit": 0,
+        "elapsed_ms": 18.069166,
+        "max_rss_bytes": 10043392,
+        "accepted_same_identity": true,
+        "size_refusal": false,
+        "files_preserved": true,
+        "retry_succeeded": true
+      },
+      {
+        "case": "offline_cert.pem_1048576_suffix",
+        "file_bytes": 1048576,
+        "expected_acceptance": true,
+        "passed": true,
+        "exit": 0,
+        "elapsed_ms": 13.190833000000012,
+        "max_rss_bytes": 10043392,
+        "accepted_same_identity": true,
+        "size_refusal": false,
+        "files_preserved": true,
+        "retry_succeeded": true
+      },
+      {
+        "case": "offline_cert.pem_1048577_suffix",
+        "file_bytes": 1048577,
+        "expected_acceptance": false,
+        "passed": true,
+        "exit": 1,
+        "elapsed_ms": 12.491291999999987,
+        "max_rss_bytes": 7405568,
+        "accepted_same_identity": false,
+        "size_refusal": true,
+        "files_preserved": true,
+        "retry_succeeded": true
+      },
+      {
+        "case": "offline_cert.pem_16777216_suffix",
+        "file_bytes": 16777216,
+        "expected_acceptance": false,
+        "passed": true,
+        "exit": 1,
+        "elapsed_ms": 10.389457999999962,
+        "max_rss_bytes": 7405568,
+        "accepted_same_identity": false,
+        "size_refusal": true,
+        "files_preserved": true,
+        "retry_succeeded": true
+      },
+      {
+        "case": "offline_key.pem_1048575_prefix",
+        "file_bytes": 1048575,
+        "expected_acceptance": true,
+        "passed": true,
+        "exit": 0,
+        "elapsed_ms": 14.287084000000005,
+        "max_rss_bytes": 10125312,
+        "accepted_same_identity": true,
+        "size_refusal": false,
+        "files_preserved": true,
+        "retry_succeeded": true
+      },
+      {
+        "case": "offline_key.pem_1048576_prefix",
+        "file_bytes": 1048576,
+        "expected_acceptance": true,
+        "passed": true,
+        "exit": 0,
+        "elapsed_ms": 10.614459000000021,
+        "max_rss_bytes": 10108928,
+        "accepted_same_identity": true,
+        "size_refusal": false,
+        "files_preserved": true,
+        "retry_succeeded": true
+      },
+      {
+        "case": "offline_key.pem_1048577_prefix",
+        "file_bytes": 1048577,
+        "expected_acceptance": false,
+        "passed": true,
+        "exit": 1,
+        "elapsed_ms": 14.727165999999958,
+        "max_rss_bytes": 7503872,
+        "accepted_same_identity": false,
+        "size_refusal": true,
+        "files_preserved": true,
+        "retry_succeeded": true
+      },
+      {
+        "case": "offline_key.pem_16777216_prefix",
+        "file_bytes": 16777216,
+        "expected_acceptance": false,
+        "passed": true,
+        "exit": 1,
+        "elapsed_ms": 14.109541999999974,
+        "max_rss_bytes": 7520256,
+        "accepted_same_identity": false,
+        "size_refusal": true,
+        "files_preserved": true,
+        "retry_succeeded": true
+      },
+      {
+        "case": "offline_key.pem_1048577_suffix",
+        "file_bytes": 1048577,
+        "expected_acceptance": false,
+        "passed": true,
+        "exit": 1,
+        "elapsed_ms": 13.850917000000019,
+        "max_rss_bytes": 7503872,
+        "accepted_same_identity": false,
+        "size_refusal": true,
+        "files_preserved": true,
+        "retry_succeeded": true
+      },
+      {
+        "case": "refuse_cert.pem_fifo",
+        "passed": true,
+        "elapsed_ms": 8.998500000000021,
+        "fixture_preserved": true
+      },
+      {
+        "case": "refuse_cert.pem_symlink",
+        "passed": true,
+        "elapsed_ms": 8.581082999999989,
+        "fixture_preserved": true
+      },
+      {
+        "case": "refuse_cert.pem_directory",
+        "passed": true,
+        "elapsed_ms": 8.97995800000001,
+        "fixture_preserved": true
+      },
+      {
+        "case": "refuse_key.pem_fifo",
+        "passed": true,
+        "elapsed_ms": 8.081709000000048,
+        "fixture_preserved": true
+      },
+      {
+        "case": "refuse_key.pem_symlink",
+        "passed": true,
+        "elapsed_ms": 7.425042000000048,
+        "fixture_preserved": true
+      },
+      {
+        "case": "refuse_key.pem_directory",
+        "passed": true,
+        "elapsed_ms": 7.251208999999981,
+        "fixture_preserved": true
+      },
+      {
+        "case": "startup_cert.pem",
+        "passed": true,
+        "exit": 1,
+        "elapsed_ms": 12.858167000000087,
+        "socket_removed": true,
+        "size_refusal": true,
+        "file_preserved": true,
+        "retry_succeeded": true,
+        "cleanup": true
+      },
+      {
+        "case": "startup_key.pem",
+        "passed": true,
+        "exit": 1,
+        "elapsed_ms": 14.01074999999996,
+        "socket_removed": true,
+        "size_refusal": true,
+        "file_preserved": true,
+        "retry_succeeded": true,
+        "cleanup": true
+      },
+      {
+        "case": "startup_generated_oversize",
+        "passed": true,
+        "exit": 1,
+        "no_identity_written": true,
+        "size_refusal": true,
+        "retry_succeeded": true,
+        "cleanup": true
+      },
+      {
+        "case": "live_cert.pem",
+        "passed": true,
+        "error": "config_apply_failed",
+        "mutation_ms": 0.6187909999999519,
+        "status_ms": 0.15658300000009895,
+        "input_seen": true,
+        "config_preserved": true,
+        "file_preserved": true,
+        "peers_preserved": true,
+        "held_key_preserved": true,
+        "retry_succeeded": true,
+        "cleanup": true
+      },
+      {
+        "case": "live_key.pem",
+        "passed": true,
+        "error": "connect_failed",
+        "mutation_ms": 0.2791250000000467,
+        "status_ms": 0.10066600000024906,
+        "input_seen": true,
+        "config_preserved": true,
+        "file_preserved": true,
+        "peers_preserved": true,
+        "held_key_preserved": true,
+        "retry_succeeded": true,
+        "cleanup": true
+      }
+    ],
+    "passed": true
+  },
+  "intermediate_read_fix": {
+    "source_commit": "1a4ea4a01214eb4ba680e724ccde222c4c4b5a34",
+    "binary_sha256": "a3ec634f41311cda4c5a88caacd7894f0dd2f15d40b275b116f459b836193acd",
+    "script_sha256": "98236ad5f5c5932553371f1ffe414cb9360c3ad74f70294dc5945f53c1af4216",
+    "passed": false,
+    "passed_cases": 19,
+    "total_cases": 20,
+    "generated_writer_case": {
+      "case": "startup_generated_oversize",
+      "passed": false,
+      "exit": 1,
+      "no_identity_written": false,
+      "size_refusal": true,
+      "error_detail": "AssertionError: generated identity was written before size validation",
+      "cleanup": true
+    },
+    "write_probe": {
+      "source": "1a4ea4a01214eb4ba680e724ccde222c4c4b5a34",
+      "exit": 1,
+      "elapsed_ms": 87.447125,
+      "key_written": true,
+      "cert_written": true,
+      "cert_bytes": 2840392,
+      "size_refusal": true,
+      "cleanup": true
+    }
+  },
+  "initial_sizing_probe": {
+    "baseline_source_commit": "a0447c3a8c7d8210d6ef5d6a8bb85fe14708b1e0",
+    "binary_sha256": "b3525c0e2ba5c584f01771b0267b38604cab3fce154be892f38ff6c734746597",
+    "cases": [
+      {
+        "file": "cert.pem",
+        "padding_bytes": 0,
+        "exit": 0,
+        "elapsed_ms": 11.461374999999997,
+        "max_rss_bytes": 8192000,
+        "same_fingerprint": true
+      },
+      {
+        "file": "cert.pem",
+        "padding_bytes": 1048576,
+        "exit": 0,
+        "elapsed_ms": 11.272874999999988,
+        "max_rss_bytes": 9601024,
+        "same_fingerprint": true
+      },
+      {
+        "file": "cert.pem",
+        "padding_bytes": 16777216,
+        "exit": 0,
+        "elapsed_ms": 20.987000000000005,
+        "max_rss_bytes": 41041920,
+        "same_fingerprint": true
+      },
+      {
+        "file": "key.pem",
+        "padding_bytes": 0,
+        "exit": 0,
+        "elapsed_ms": 9.44679200000001,
+        "max_rss_bytes": 8224768,
+        "same_fingerprint": true
+      },
+      {
+        "file": "key.pem",
+        "padding_bytes": 1048576,
+        "exit": 0,
+        "elapsed_ms": 10.657833000000005,
+        "max_rss_bytes": 8241152,
+        "same_fingerprint": true
+      },
+      {
+        "file": "key.pem",
+        "padding_bytes": 16777216,
+        "exit": 0,
+        "elapsed_ms": 8.64537500000001,
+        "max_rss_bytes": 8175616,
+        "same_fingerprint": true
+      }
+    ]
+  },
+  "key_prefix_probe": {
+    "file": "key.pem",
+    "padding": "before PEM",
+    "padding_bytes": 16777216,
+    "exit": 0,
+    "elapsed_ms": 25.878290999999997,
+    "max_rss_bytes": 41615360
+  },
+  "path_replacement_probe": {
+    "source_commit": "a0447c3a8c7d8210d6ef5d6a8bb85fe14708b1e0",
+    "trials": 80,
+    "hangs": 0,
+    "racer_errors": [],
+    "conclusion": "No stall reproduced; no race acceptance claimed"
+  },
+  "identity_contention": {
+    "binary_sha256": "96a53a0136e9e96aaa881ef71b94a33f2851a8d829710678f654175bc389f005",
+    "script_sha256": "5c21d6574592c4d3e4ff9a347177211917d49b7bca289f9ca5e61a96da8b1ec6",
+    "held_lock_ms": 1200,
+    "response_budget_ms": 300,
+    "cases": [
+      {
+        "case": "server_patch",
+        "passed": true,
+        "lock_only_status_ms": 0.11758299999997668,
+        "mutation_ms": 0.4049999999999887,
+        "status_ms": 0.5464580000000274,
+        "input_seen": true,
+        "input_ms": 1.0423749999999843,
+        "error": "config_apply_failed",
+        "config_unchanged": true,
+        "identity_unchanged": true,
+        "peers_unchanged": true,
+        "held_key_preserved": true,
+        "retry_succeeded": true,
+        "cleanup": true
+      },
+      {
+        "case": "client_pinned_connect",
+        "passed": true,
+        "lock_only_status_ms": 0.10550000000009163,
+        "mutation_ms": 0.24958299999999767,
+        "status_ms": 0.22879099999961738,
+        "input_seen": true,
+        "input_ms": 0.37895799999976276,
+        "error": "connect_failed",
+        "config_unchanged": true,
+        "identity_unchanged": true,
+        "peers_unchanged": true,
+        "held_key_preserved": true,
+        "retry_succeeded": true,
+        "cleanup": true
+      },
+      {
+        "case": "startup_existing",
+        "passed": true,
+        "first_exit": 1,
+        "first_wait_ms": 13.668540999999479,
+        "socket_removed": true,
+        "busy_reported": true,
+        "no_partial_identity": true,
+        "retry_succeeded": true,
+        "partial_pair_refused": true,
+        "cleanup": true
+      },
+      {
+        "case": "startup_missing",
+        "passed": true,
+        "first_exit": 1,
+        "first_wait_ms": 12.488665999999427,
+        "socket_removed": true,
+        "busy_reported": true,
+        "no_partial_identity": true,
+        "retry_succeeded": true,
+        "cleanup": true
+      }
+    ],
+    "passed": true
+  },
+  "trust_contention": {
+    "binary_sha256": "96a53a0136e9e96aaa881ef71b94a33f2851a8d829710678f654175bc389f005",
+    "script_sha256": "30be6a71afde80da879aea5acd33af7c685678bd396e1c073fbe4570661d68f8",
+    "held_lock_ms": 1200,
+    "response_budget_ms": 300,
+    "cases": [
+      {
+        "case": "server_approve",
+        "passed": true,
+        "lock_only_status_ms": 0.3675000000000206,
+        "lock_only_input_ms": 0.30362499999997405,
+        "lock_only_control_passed": true,
+        "mutation_ms": 0.301875000000007,
+        "status_ms": 0.6236669999999944,
+        "input_ms": 0.8209999999999607,
+        "error": "trust_failed",
+        "trust_files_unchanged": true,
+        "retry_succeeded": true,
+        "cleanup": true
+      },
+      {
+        "case": "client_approve",
+        "passed": true,
+        "lock_only_status_ms": 0.09670800000005642,
+        "lock_only_input_ms": 0.264000000000042,
+        "lock_only_control_passed": true,
+        "mutation_ms": 0.19208299999995404,
+        "status_ms": 0.2526250000003394,
+        "input_ms": 0.4121669999999078,
+        "error": "trust_failed",
+        "trust_files_unchanged": true,
+        "retry_succeeded": true,
+        "cleanup": true
+      },
+      {
+        "case": "client_revoke",
+        "passed": true,
+        "lock_only_status_ms": 0.18962499999997107,
+        "lock_only_input_ms": 0.4949999999999122,
+        "lock_only_control_passed": true,
+        "mutation_ms": 0.23208399999941065,
+        "status_ms": 0.2848750000001843,
+        "input_ms": 0.4738330000000346,
+        "error": "trust_failed",
+        "trust_files_unchanged": true,
+        "retry_succeeded": true,
+        "cleanup": true
+      },
+      {
+        "case": "held_client_approve",
+        "passed": true,
+        "lock_only_status_ms": 0.1087079999999574,
+        "lock_only_input_ms": null,
+        "lock_only_control_passed": true,
+        "mutation_ms": 0.2061659999998966,
+        "status_ms": 0.2459169999999844,
+        "input_ms": null,
+        "error": "trust_failed",
+        "trust_files_unchanged": true,
+        "retry_succeeded": true,
+        "cleanup": true
+      },
+      {
+        "case": "held_server_approve",
+        "passed": true,
+        "lock_only_status_ms": 0.13845799999856467,
+        "lock_only_input_ms": null,
+        "lock_only_control_passed": true,
+        "mutation_ms": 0.20516700000072774,
+        "status_ms": 0.2220840000006774,
+        "input_ms": null,
+        "error": "trust_failed",
+        "trust_files_unchanged": true,
+        "retry_succeeded": true,
+        "cleanup": true
+      },
+      {
+        "case": "offline_concurrency",
+        "passed": true,
+        "initial_approvals": 24,
+        "mixed_updates": 24,
+        "identity_creators": 24,
+        "identical_identity": true,
+        "pins_per_role": 24
+      }
+    ],
+    "passed": true
+  },
+  "parse_refusals": {
+    "binary_sha256": "96a53a0136e9e96aaa881ef71b94a33f2851a8d829710678f654175bc389f005",
+    "cases": [
+      {
+        "case": "corrupt_certificate",
+        "exit": 1,
+        "files_preserved": true,
+        "same_identity_on_retry": true,
+        "passed": true
+      },
+      {
+        "case": "corrupt_key",
+        "exit": 1,
+        "files_preserved": true,
+        "same_identity_on_retry": true,
+        "passed": true
+      },
+      {
+        "case": "mismatched_pair",
+        "exit": 1,
+        "files_preserved": true,
+        "same_identity_on_retry": true,
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  "daemon_cli_audit": [
+    {
+      "check": "preserve_socket_file",
+      "passed": true
+    },
+    {
+      "check": "preserve_socket_symlink",
+      "passed": true
+    },
+    {
+      "check": "relative_paths",
+      "passed": true
+    },
+    {
+      "check": "replaced_socket_shutdown",
+      "passed": true
+    },
+    {
+      "check": "log_symlink",
+      "passed": true
+    },
+    {
+      "check": "log_permissions",
+      "passed": true
+    },
+    {
+      "check": "ipc_framing",
+      "passed": true
+    },
+    {
+      "check": "oversized_response",
+      "passed": true
+    },
+    {
+      "check": "cli_validation",
+      "passed": true
+    },
+    {
+      "check": "pinned_connect_rollback",
+      "passed": true
+    },
+    {
+      "check": "stale_socket_and_single_instance",
+      "passed": true
+    },
+    {
+      "check": "connecting_idempotence",
+      "passed": true
+    },
+    {
+      "check": "cli_connect_host",
+      "passed": true
+    },
+    {
+      "check": "pinned_trust_revoke",
+      "passed": true
+    },
+    {
+      "check": "daemon_argument_validation",
+      "passed": true
+    }
+  ],
+  "binary_sizes": {
+    "baseline_bytes": 3674160,
+    "fixed_bytes": 3674000
+  },
+  "rust_inputs": {
+    "Cargo.lock": "0cc466112ead33a26cb59fce717d83c202bd470e6ba64394ab7c81ac560c6f3f",
+    "Cargo.toml": "1249baacd47b641edbab7350fa10f94d5a08624223c0ef1d7c8e49707c96fb0d",
+    "crates/config/Cargo.toml": "2a747685780dabe93f139c609859005c2baad60e6599c4b8442273f5dea79968",
+    "crates/config/src/cli.rs": "21df1802c13c89bb4569f1e0f3b0290aa212dfdb1a6d2e7ce9aa5e32d0262246",
+    "crates/config/src/layout.rs": "04b27afdd4cb1e05c321845c79370aabeb79d0afd2574a29ee3d357412c46c06",
+    "crates/config/src/lib.rs": "214d8694a6d1b93bffd10b3ccb150da95191b6ce64b83a7a9e347ea9290979a4",
+    "crates/config/src/model.rs": "06eba7851d8a9789a342dc7d374880eedadcfc9a106026b7c3f3e69a4cf7b0b3",
+    "crates/config/src/synergy.rs": "8e1650d35a9a20c87504832e81b1b0fdd0dcb9a289e39d988c9c9f4f4e86f3e0",
+    "crates/config/src/synergy3.rs": "9faca911b846568795c23d01b768d6de3113d90f73e65e24418c79bdc44621fc",
+    "crates/daemon/Cargo.toml": "4cb03349cb6d9cf4a6f95dce64cd0e3ed5306a7faa7762326fdc00d28a48aefa",
+    "crates/daemon/src/adapter.rs": "874a75cebedcc5120306f4dec0d9d326932379fceb6ca072451bc8cf04d6185a",
+    "crates/daemon/src/allocator.rs": "1b0193bd0f658b47d219bb931cb045df7f25ee9f61ba11c4cd2c1f653a006ffd",
+    "crates/daemon/src/clipboard_json.rs": "5ec7fc4e24fd1d8054a60bffa0d7ac671d4357fc73c44abf59c81d9c26343299",
+    "crates/daemon/src/events.rs": "cee67a01d3ef29d5dc6aa300169ec61287c7edd0e492913de7f0fa3bb800dfad",
+    "crates/daemon/src/interfaces.rs": "80e2a11a6eb67be30ce263635c85edcee0d4e6185fc64514add27d3ee96df550",
+    "crates/daemon/src/ipc_server.rs": "4ceb1dc908211fd0b6493c55787f32582b8b248bedff20c99d800fed41a2301e",
+    "crates/daemon/src/lifetime.rs": "922a15a92661fdb6ca5f848852b79cc67e34c9b9b2ad266f7f4d4e7fd6f194e5",
+    "crates/daemon/src/logger.rs": "2faf11b9ec28a1d12ced24b662014e21aa86bae798dec6f4a15a0fd2a728e298",
+    "crates/daemon/src/main.rs": "ba5a5d6ae3817bed2a9fd6955b9fee751983bc6b1f53c0df9f9e12f76519bb61",
+    "crates/daemon/src/runtime.rs": "187c2301efa9873791597289a45247abc6221c9cf8538db492d20e4b0d202af9",
+    "crates/daemon/src/windows_pipe.rs": "9234c4be2e35e228cd8dba0b6b5c153ff419b1eeb15ad96b9dd6b7a531711a6c",
+    "crates/daemon/src/workers.rs": "5109cd76c0a1911b74512b3d8d2cf4d49df27fed417a55d3ac68a1f1ca8028b2",
+    "crates/ipc/Cargo.toml": "6ba4201f9b8b94fa813fc3699d422165b7db6102e14c2b70292c7cc83f7073d3",
+    "crates/ipc/src/lib.rs": "04d612b9256a8229932d76900b75671f6b66a23e242491077ed73212e16aeaec",
+    "crates/net/Cargo.toml": "c74312dcc7dc550825d7c247961e2fd44f7ca1dbbdfc7bb6c28e7351ef30637c",
+    "crates/net/examples/audit_transport.rs": "5c4e2986ccce3b2fccdb8c71df1d34d15d22292f857c5bc9574d673fa5033c5e",
+    "crates/net/examples/discovery.rs": "685ca4b9e1e4abf6aad00489c957eb1ab813b55609c2f417808455169f19f77b",
+    "crates/net/examples/guardrails.rs": "cd543cf6d051f8b43fa84931572ce5bca6ff1466cdc2f02108743c866e72a742",
+    "crates/net/examples/lifecycle.rs": "f143c2eb29f20fc1f0ed80b17a3b44a8fa6782293b8b88607245e8288c98b9dd",
+    "crates/net/examples/priority_peer.rs": "37f5a97dcf4a37bccc8f13acdc92f9e2bcb16794c410e09352d596fd0c7061df",
+    "crates/net/examples/tls_peer.rs": "44cff4d2e6f435af88a22264f3e7f337d7714efc6ea27f850cc4d0890b731968",
+    "crates/net/src/cli.rs": "b22cef41a524d556c81afb98e7b6d5d57557749ce9ca586145881995b82acb41",
+    "crates/net/src/connect_error.rs": "a3c944fefddc2b4a9e759298b5a4c9d5637503bf88fcbbf5dc0baf7e78929568",
+    "crates/net/src/discovery.rs": "bdbf309bc7f2b63ab72e03c19b20f75a1d397acdd452a288592739fd71fe0897",
+    "crates/net/src/identity.rs": "102aa396739087ce2f117f775f18508475ff3b4326fe702b7ad4d1a4d886b07c",
+    "crates/net/src/lib.rs": "fdd572210834494d152cb62a3d44ba422d8570ad451ce3b2a32e128b9f4b2d2e",
+    "crates/net/src/reactor.rs": "1f35209c505cfa49e74a28d8f7051f55cc69b0b9a84271df9aa5e8ebebf2b8df",
+    "crates/net/src/tls.rs": "b6c852d4d03ea27549e24eeba5d80ca65432dd6a90ea6f2cf1cf33dda1157abe",
+    "crates/net/src/trust.rs": "b3db44f83e01e8e3edc03dff361d7fa90b10fd44e63ebf20acd01284a43ef7ba",
+    "crates/net/src/windows_permissions.rs": "2dbca5dc28eb51dc87c89bb2b0a8b7f009037094db45c7085db635ae598090c4",
+    "crates/platform-linux/Cargo.toml": "d9f8772dc001e12d2fe9f1489d35918deeeeead9daab8131371ea91cf0b1a4ac",
+    "crates/platform-linux/examples/x11_probe.rs": "d61e6bf76b0d7802a0ad124110feb1991239a90b1008b0edad3bb62cdbc0e761",
+    "crates/platform-linux/src/clipboard.rs": "c30058611fc426f3f2b0bc5d4c9f53bf8ef48ea4cb3915098894c22277fdf88c",
+    "crates/platform-linux/src/image.rs": "085b0a326643393ce926234a249d2b9baeb21a62d77ceaab7d2468a0422d1eb8",
+    "crates/platform-linux/src/keymap.rs": "e30286da66b02322186f9c3cdc808a6a347691e0e7c458184517a1507604f42e",
+    "crates/platform-linux/src/lib.rs": "3c34c73f6ab833b843195e5c2a99bee7affc7d46bd7fe7fd3786be3cb033e441",
+    "crates/platform-linux/src/native.rs": "00588627b702216ab2a35ee288d83241cb8705456a101b7e904e8c47107d6579",
+    "crates/platform-linux/src/sink.rs": "0144d18b20dbd1fa55727ff59e4daa9f6e7a89c3f25a7ada027bfb260e791be3",
+    "crates/platform-linux/src/source.rs": "e1429aab6c7549219cdca6a844cd944061909e93ca5d32e6d009e23acd74b5f8",
+    "crates/platform-linux/src/unicode_keysyms.rs": "b632ddb45d402b9045b0d6003a71e1ea5a9448ddfea7780dfc3cb3028571d58f",
+    "crates/platform-macos/Cargo.toml": "7b2607a96c77a79f3e8f6ab482fc39249e74a0ea8a283e3b6db5cf0cffdb2280",
+    "crates/platform-macos/examples/focuslab_inject.rs": "d8ba4769e3c54bb904ab9c54eb4e3d0437f3d84c1d261b0429df59b33f4f60ad",
+    "crates/platform-macos/examples/mac_probe.rs": "93e5dbde8d0a2d7f6c4f6a980baafa60a305b1e6df73272c44e5db0218f92c5c",
+    "crates/platform-macos/src/displays.rs": "1d6860ac0ceb6ebf9234eb7e7bbabeb789584a33b7b85134515d4111ce34ae5e",
+    "crates/platform-macos/src/ffi.rs": "6b106e9e9d2e0b1453f2d846d991182914ce6a4a87acb0e400637b65aeeb6ef8",
+    "crates/platform-macos/src/inject.rs": "2604c4e71c7f7713ef71a0e6c5d558422f97f5eea81307861dcfce144c9bddbc",
+    "crates/platform-macos/src/keymap.rs": "0dc9a9583802b154f87b4dd68a41c87a4b6902024218b2accee47d8d917fe314",
+    "crates/platform-macos/src/lib.rs": "aafa994a8696824968671f1cda6a2f06933bdc2f9e472606d783ae86d8b0801e",
+    "crates/platform-macos/src/pasteboard.rs": "6b53e3063f6a4a015a4761dcc9a9399d5a47d73b87c92947d036cbf7e2f62d39",
+    "crates/platform-macos/src/permissions.rs": "ee6111c35d5985a55b8187c6f573bff7bb372397e32ed3dcbaf87d48e15d3914",
+    "crates/platform-macos/src/screens.rs": "384cc286565139bc0605cc6493222c7c52621f7ace2701a0471242160deb55b0",
+    "crates/platform-macos/src/tap.rs": "fd28e13ff29fa5fe453ad8b4cba3b85c80e013c9971021a088546d491e96a571",
+    "crates/platform-macos/src/types.rs": "71cbea2c52890d808d32412d9b33e095033dfe570e20387d38d4a2df3228284a",
+    "crates/platform-windows/Cargo.toml": "080605b569ed545650abd65a3cc551dbb5c3231f8eb3d8589b5598fc3f6cf460",
+    "crates/platform-windows/src/clipboard.rs": "451bc0555457ce95f7f5d2ba7ae657834925cd708b186e14678686b12ce8dc80",
+    "crates/platform-windows/src/keymap.rs": "a9d531bbe6ed9916a389de4b384aa2321f7f04848c73e378fc61da7aca400aeb",
+    "crates/platform-windows/src/lib.rs": "1ce695c6f22dbd55d4cdded98f147a32812ffae7b1eb7f2ff8ad7f319daaeedb",
+    "crates/platform-windows/src/native.rs": "3aeddda52041991234e601dab0afe7c388b1aa9e858b308004d24bda84810cc1",
+    "crates/platform-windows/src/sink.rs": "1ca075dd2e12e9d383ae29254138573a9ea6bfa190bc94ce233b9f1043f5d7fb",
+    "crates/platform-windows/src/source.rs": "c5726f8d3ba7903903bdfe671252a622ceb3784356583784dd23a20ac76975ab",
+    "crates/platform/Cargo.toml": "88ee6e62955081ae5017549067c0055bd3ebd7a7e52b739b4b59455cebcc02ce",
+    "crates/platform/examples/virtual_demo.rs": "a4ab3a3995e1799f233375861ad4512085b8318427d0721a4793475eb32028e0",
+    "crates/platform/src/click.rs": "08801f4736e89a7512bf33a017fa92c66fc3dcb8221e6703ffbbf8321b8feee7",
+    "crates/platform/src/lib.rs": "77cf31c3b30f62eddbe89051702a95d7b529ffaef4eafea5214916b54b5652b5",
+    "crates/platform/src/script.rs": "bbe2991d5f2152f7bb6f3314bec2601b1e58a1318b14ba753f72f3043e5d3c01",
+    "crates/platform/src/virtual_backend.rs": "ae8c8ca58f828b6b106d09079e5b960bb9e4b035567917b5e0da682663d97a18",
+    "crates/protocol/Cargo.toml": "c91717334a50d2e68057c5e306b685e95a1506fc4d0bd9b08f443b62d6897445",
+    "crates/protocol/examples/wire_probe.rs": "f59443a83fef0d835259b5d8a9fd34b22f027d66cbb1049f19c7b9edb5abec68",
+    "crates/protocol/src/clipboard.rs": "4fb846e2fe3812f4136e77b64a509f120f5ba25675a8fcca9392269c672583da",
+    "crates/protocol/src/codec.rs": "9641df927d3391e26279bd138307192b6e04feb785e8f459b27cb57a748b7c0e",
+    "crates/protocol/src/keys.rs": "bdcde8427a2534a8e2e96987da21ca792bdf38d60415d5d32b52f949293fbaff",
+    "crates/protocol/src/lib.rs": "82cccc4173141f0a597431e27179d088007c9d0ada50dc6d0f5716dabe49c103",
+    "crates/session/Cargo.toml": "a1c5e86b885cb1cf079c19600bf180fb04fb3847173b9d5324426047865fae18",
+    "crates/session/src/client.rs": "9905587a134a14c3ac0da9c1efab8c78f2ed0702e53905f9a9ad399f425a0084",
+    "crates/session/src/clipboard.rs": "b65912bcdc8e852d2b03e4955966bf127f3b6f02ad52ae790ff1ba469c37ef18",
+    "crates/session/src/common.rs": "cb5a10b02ea47486643f82c8c8484f952ce2234b27dbe805ef20a49c1cb3f46d",
+    "crates/session/src/hotkey.rs": "709cf340dec0b839bc8a97d3b11fd796a45add44107a35e93db63622991b2c7a",
+    "crates/session/src/layout.rs": "8408d750040ebe5b7357859219ce416888e77fb3ed005894b32f36ad69f94fab",
+    "crates/session/src/lib.rs": "a1acd5fa946c692f758a9eea75f19b73e81eb5c0cabc4b5835ffeb14c0a561a5",
+    "crates/session/src/server.rs": "c7a7f2597c174de865734e2e09c1db7f5e7ff3b0efecfb711cafe507e18357c3",
+    "rust-toolchain.toml": "f715f440167e20fd8ea9afa0498c3d1ab80174cfcb8cbc895f106a34d907a1e1",
+    "spikes/macos-input/Cargo.lock": "6b2bdaafd2c7cf3442398c0244d8a9ebfe140202aef0b61afd0d4227f6e70d26",
+    "spikes/macos-input/Cargo.toml": "66fa2711dc2075ff1d9b2cfd65e870f7162af4b7644406ab6df956ea440d64eb",
+    "spikes/macos-input/src/displays.rs": "097255ecbb3479ef3a415cd5d88f87d3c88bfd256704a3e37bc6eb762b9f597d",
+    "spikes/macos-input/src/ffi.rs": "d36d47365bdd1892d360ebb895f3188b4f565c8be74658f83cb1748f97c5bbea",
+    "spikes/macos-input/src/inject.rs": "28805a5ca112d88d643e0b9d4438b23d581010689395e1298627644c946a2e05",
+    "spikes/macos-input/src/keymap.rs": "92e7f3b1d0bbedeea88f5e6ac4fea656a7f81553d09188aafd9af50e861412b7",
+    "spikes/macos-input/src/lib.rs": "8f535b679342e67334c540d7f9157b7bbe18463504f04fdd397f864a457c3c3d",
+    "spikes/macos-input/src/main.rs": "1f27d60bf5ecf8ef9eca5dcac926fbcb6b7554d93e9dba3af69cad487c537136",
+    "spikes/macos-input/src/pasteboard.rs": "1a2f8d72c09493dfe72096820a7a79771bef3a9abec45bda6d7de06c116a829e",
+    "spikes/macos-input/src/permissions.rs": "f429d183c05cc3673bf8e0c99126575e37cee029b3b4abacf9ba3eb485893afd",
+    "spikes/macos-input/src/tap.rs": "41d71dd216657056f405c837f6f308bb10809bae73ca70c1c2c097f14932d19f",
+    "spikes/macos-input/src/types.rs": "099b05491e7d85ed04bcec133ffc2164f995f486064fe637172174dcc4741abf",
+    "tools/e2e/Cargo.toml": "78bb98248bc0c14ead549803d241fd912b95b068b894b2040d1d36d6ac55b83c",
+    "tools/e2e/src/guardian.rs": "8b48c734c7f4f111ff0e9c17461d8a02d2d0e9e6c51317b9d19279cf61c8e00a",
+    "tools/e2e/src/main.rs": "a38b74212fc8ccda9388da68f5a3d4da558ff872df56d0ab3251b2f7c0bd18f3",
+    "tools/e2e/src/model.rs": "f7b7004ad68da192e3e094ed49a554d9d4741fc89ab068cc34fe5e4c661236c4",
+    "tools/e2e/src/process.rs": "10ee9511a9ef68a81f4a4ac9c199a186e62b995d479d2e2e61004e32d89f9f0b",
+    "tools/e2e/src/runner.rs": "cd42127261573a5a6ce0b9d8a31a9d1013aa34b1486db97af0decb871970d564",
+    "tools/e2e/src/steps.rs": "de99717892fa32348af6d24bdb44b84097feb3b4e14c4316ec18219369621184",
+    "tools/e2e/src/util.rs": "c2d962c283abae42984bd310fbab30d286a0664d6f9752aeba3f47cb81b16fc6",
+    "tools/e2e/src/wire.rs": "60593d4a4461ce5f81ddbe94c4f19976cde2c14e46a6d48f0a431a5d5a7ef22c"
+  },
+  "script_sha256": {
+    "crates/daemon/scripts/verify_identity_files.py": "98236ad5f5c5932553371f1ffe414cb9360c3ad74f70294dc5945f53c1af4216",
+    "crates/daemon/scripts/verify_identity_contention.py": "5c21d6574592c4d3e4ff9a347177211917d49b7bca289f9ca5e61a96da8b1ec6",
+    "crates/daemon/scripts/verify_trust_contention.py": "30be6a71afde80da879aea5acd33af7c685678bd396e1c073fbe4570661d68f8",
+    "crates/daemon/scripts/verify_daemon_audit.py": "f95a1060d94b96aaff65480508d74dbbd85e41768a49ea7cb5c2e2011e839315"
+  },
+  "runner_sha256": "00380769d60d66ca86963b229186dd1fd568f438d3f8d6274eda6473075a64e5",
+  "validation": {
+    "locked_release_build": "PASS",
+    "strict_release_workspace_all_targets_clippy": "PASS",
+    "fmt": "PASS",
+    "python_ast": "PASS"
+  },
+  "raw_report_sha256": {
+    "baseline-final-20.json": "450f76c9033188cadca16a0fa3ec4af6d5ee17558043acb226f9195b95751528",
+    "fixed-final-20.json": "9a9f263c98ff799107657a23616046288aef0f26827c3f35a807c2921c01421b",
+    "before-preflight-final.json": "b5b4cd66151ed190503b24a731dc2604fce8329aaefdce441ff8ac8dc79c29ef",
+    "generated-write-baseline.json": "4e2f02f5e98db39c13b21ed1a83d02129ac2d1d8bc1b6342341004d5c1937a67",
+    "sizing-baseline.json": "360d499cf66c93f6342e28e2f7b6ec2023098a2530ae4692d72a7d6ad82b9934",
+    "prefix-baseline.json": "da080c0e95a4a114c8421ed8548ce07abdd5b3e5350ba707ddaeea4fdb8581c2",
+    "replacement-baseline.json": "1e5e3ac869fa0954669ce1d236deeb30c17eed229b128c09a62de1094ac5d6d3",
+    "identity-final.json": "c4e4434c214d15e95f5749a34a522d19d0db038f9e468b48984162fc4ba31a09",
+    "trust-final.json": "8e54653b57bc2106d6f1e93777dc301211583a2c0373e4ce3948b61f3a1db4b5",
+    "parse-refusals.json": "4e898746392c90bb42e8e2919ce1c35ae23027f97fdf43ff643c753339d2621e",
+    "daemon-final.json": "7079602e6c43626c3bde662a4cd1124caeb9d6ef86b485570af9dd570bba6c42",
+    "virtual-final.json": "e530a7052acbfeb514617183b8f33e75931725b10900650c0df4b2dad16a32ea"
+  },
+  "virtual_suite": {
+    "passed": 89,
+    "failed": 0,
+    "excluded_count": 30,
+    "excluded": [
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I1-barrier-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I1-barrier-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I1-deskflow-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I1-deskflow-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-barrier-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-barrier-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-barrier-wrong-pin"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-deskflow-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-deskflow-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-deskflow-wrong-pin"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I3-barrier-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I3-barrier-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I3-deskflow-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I3-deskflow-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I4-barrier-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I4-barrier-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I4-deskflow-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I4-deskflow-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I5-barrier-export"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I5-deskflow-export"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L1-barrier-hello"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L1-deskflow-hello"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L2-barrier-clipboard"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L2-deskflow-clipboard"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L3-barrier-pair"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L3-deskflow-pair"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L4-barrier-raw-client"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L4-deskflow-raw-client"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "P03-barrier-held-key-repeat"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "P08-deskflow-held-key-repeat"
+      }
+    ],
+    "cleanup_failure_count": 0,
+    "outcomes": {
+      "A1-modifier-and-receiver-wheel": "PASS",
+      "A10-unsupported-hello-close": "PASS",
+      "A11-input-backpressure-release": "PASS",
+      "A12-restart-connected-roles": "PASS",
+      "A13-pinned-revoke-cutoff": "PASS",
+      "A2-client-direction-version-heartbeat-sequence": "PASS",
+      "A3-heartbeat-close-flush": "PASS",
+      "A4-config-live-rollback": "PASS",
+      "A5-unavailable-clipboard-readback": "PASS",
+      "A6-clipboard-backpressure": "PASS",
+      "A7-trust-lock-crash": "PASS",
+      "A8-config-save-rollback": "PASS",
+      "A9-tls-trusted-status": "PASS",
+      "C1-import-client-port": "PASS",
+      "C2-import-final-identity": "PASS",
+      "C3-clipboard-supported-cap": "PASS",
+      "D2-restart-disconnected-workers": "PASS",
+      "E1-repeated-ledger-tail": "PASS",
+      "N2-queued-release-reentry": "PASS",
+      "P01-impossible-hello-prefixes": "PASS",
+      "P02-short-established-frame": "PASS",
+      "P04-legacy-repeat-dialects": "PASS",
+      "P05-modern-repeat-truncated": "PASS",
+      "P06-legacy-repeat-truncated": "PASS",
+      "P07-hostile-field-bounds": "PASS",
+      "P09-clipboard-wire-containers": "PASS",
+      "Q1-primary-screen-name": "PASS",
+      "Q10-clipboard-policy-cancels-chunks": "PASS",
+      "Q11-layout-delay-unmapped-edge": "PASS",
+      "Q12-client-cannot-disable-heartbeat": "PASS",
+      "Q13-clipboard-readback-recovery": "PASS",
+      "Q14-client-duplicate-clipboard-formats": "PASS",
+      "Q15-server-duplicate-clipboard-formats": "PASS",
+      "Q16-lock-hotkey-grammar": "PASS",
+      "Q17-preentry-modifier-mask": "PASS",
+      "Q18-empty-clipboard-clear": "PASS",
+      "Q19-unavailable-is-not-clear": "PASS",
+      "Q2-client-setup-clipboard": "PASS",
+      "Q20-client-unsupported-only-clipboard": "PASS",
+      "Q20-server-unsupported-only-clipboard": "PASS",
+      "Q21-client-unsupported-only-local-clipboard": "PASS",
+      "Q21-server-unsupported-only-local-clipboard": "PASS",
+      "Q3-server-setup-clipboard": "PASS",
+      "Q4-two-held-shift-keys": "PASS",
+      "Q5-live-layout-peer-geometry": "PASS",
+      "Q6-disabled-clipboard-enter": "PASS",
+      "Q7-receive-disabled-ownership": "PASS",
+      "Q8-zero-button-key-release": "PASS",
+      "Q9-reconnect-clipboard-sequence": "PASS",
+      "R1-control-files": "PASS",
+      "R2-lifecycle": "PASS",
+      "R5-client-config-retains-clipboard": "PASS",
+      "R5-dead-corner-negative-origin": "PASS",
+      "R5-dead-corner-positive-origin": "PASS",
+      "R5-double-tap-stationary-timeout": "PASS",
+      "R5-incoming-clipboard-cancellation": "PASS",
+      "R5-server-live-alias-merge": "PASS",
+      "R5-server-live-alias-rename": "PASS",
+      "S0-smoke": "PASS",
+      "S1-connect": "PASS",
+      "S10-clipboard-cap": "PASS",
+      "S11-heartbeat": "PASS",
+      "S12-display-change": "PASS",
+      "S13-flood": "PASS",
+      "S13-garbage": "PASS",
+      "S13-oversized": "PASS",
+      "S13-truncated-hello": "PASS",
+      "S13-truncated": "PASS",
+      "S13-unknown": "PASS",
+      "S14-import-roundtrip": "PASS",
+      "S15-resources-latency": "PASS",
+      "S16-permissions": "PASS",
+      "S17-healthy": "PASS",
+      "S17-same-fingerprint": "PASS",
+      "S17-stale": "PASS",
+      "S18-click-numbering": "PASS",
+      "S19-config-patch": "PASS",
+      "S2-edge-mapping": "PASS",
+      "S2-wire-order": "PASS",
+      "S20-parent-exit": "PASS",
+      "S20-parent-off": "PASS",
+      "S21-fingerprint-import": "PASS",
+      "S3-input-order": "PASS",
+      "S4-disconnect-release": "PASS",
+      "S5-disconnect-release": "PASS",
+      "S6-trust-approval": "PASS",
+      "S7-wrong-pin": "PASS",
+      "S8-text-clipboard": "PASS",
+      "S9-large-dib": "PASS"
+    },
+    "S15_measurements": [
+      {
+        "cpu_percent": 0.033304101698820365,
+        "kind": "resources",
+        "rss_peak_bytes": 9420800,
+        "window_ms": 60052
+      },
+      {
+        "cpu_percent": 0.016646088979546263,
+        "kind": "resources",
+        "rss_peak_bytes": 9388032,
+        "window_ms": 60074
+      },
+      {
+        "kind": "capture_to_recorded_upper_bound",
+        "max_ms": 2.8492919999999997,
+        "p50_ms": 0.818458,
+        "p95_ms": 0.9282090000000001,
+        "p99_ms": 1.0040419999999999,
+        "samples": 1000
+      }
+    ]
+  }
+}

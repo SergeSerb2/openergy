@@ -1,0 +1,1171 @@
+{
+  "date": "2026-10-22",
+  "baseline_source_commit": "2592e3906f9845ab45269dc70f22c7fa1871567b",
+  "code_commit": "e1798698320ebf1fb3b45e4005e1abc5c767666a",
+  "environment": {
+    "os": "macOS 27.2",
+    "architecture": "aarch64",
+    "platform": "virtual",
+    "rust": "1.99.1",
+    "macos_deployment_target": "15.0",
+    "cargo_jobs": 2,
+    "priority": "reduced",
+    "paired_timing": "sequential cohort commands; no concurrent build"
+  },
+  "baseline": {
+    "binary_sha256": "0f7dc7030b18b361c5b634885f0c3b31c9e6f35038b3910840a043e4f0bdcf9e",
+    "script_sha256": "b46137a44ecf3b6715694c0e328bc408bb66d5e1d563382e4934624018a1f022",
+    "connection_cap": 16,
+    "cpu_budget_percent": 5.0,
+    "p99_budget_ms": 100,
+    "cases": [
+      {
+        "case": "large_store_alone",
+        "held_peers": 0,
+        "extra_pins_per_role": 16000,
+        "passed": true,
+        "input": {
+          "samples": 120,
+          "p50_ms": 0.3310420000000036,
+          "p95_ms": 0.6777920000002879,
+          "p99_ms": 0.7328339999999045,
+          "max_ms": 0.9485419999997191
+        },
+        "status": {
+          "samples": 120,
+          "p50_ms": 0.21270799999983936,
+          "p95_ms": 0.4062500000001634,
+          "p99_ms": 0.41920899999947636,
+          "max_ms": 0.441957999999687
+        },
+        "window_ms": 5273.854459000001,
+        "server_cpu_percent": 0.9480731861053429,
+        "pending_preserved": true,
+        "held_key_preserved": true,
+        "config_preserved": true,
+        "files_preserved": true,
+        "within_budgets": true,
+        "cleanup": true
+      },
+      {
+        "case": "small_store_15_held",
+        "held_peers": 15,
+        "extra_pins_per_role": 0,
+        "passed": true,
+        "input": {
+          "samples": 120,
+          "p50_ms": 0.33662499999920215,
+          "p95_ms": 0.6395829999998881,
+          "p99_ms": 0.7368329999994927,
+          "max_ms": 0.9915419999995123
+        },
+        "status": {
+          "samples": 120,
+          "p50_ms": 0.23858400000165148,
+          "p95_ms": 0.4892079999994081,
+          "p99_ms": 0.5192080000000487,
+          "max_ms": 1.7017499999987251
+        },
+        "window_ms": 5251.010165999999,
+        "server_cpu_percent": 1.1426372850789108,
+        "pending_preserved": true,
+        "held_key_preserved": true,
+        "config_preserved": true,
+        "files_preserved": true,
+        "within_budgets": true,
+        "cleanup": true
+      },
+      {
+        "case": "large_store_15_held",
+        "held_peers": 15,
+        "extra_pins_per_role": 16000,
+        "passed": false,
+        "input": {
+          "samples": 120,
+          "p50_ms": 0.3480419999988271,
+          "p95_ms": 54.946958000002155,
+          "p99_ms": 66.39804199999944,
+          "max_ms": 71.73845799999867
+        },
+        "status": {
+          "samples": 120,
+          "p50_ms": 0.2323329999995849,
+          "p95_ms": 57.36791600000046,
+          "p99_ms": 66.06958300000088,
+          "max_ms": 68.57808300000201
+        },
+        "window_ms": 5863.233083000001,
+        "server_cpu_percent": 15.349892921867317,
+        "pending_preserved": true,
+        "held_key_preserved": true,
+        "config_preserved": true,
+        "files_preserved": true,
+        "fresh_file_approval": true,
+        "wrong_role_stays_held": true,
+        "read_failure_closed_required_peers": true,
+        "read_failure_recovered": true,
+        "within_budgets": false,
+        "error_detail": "AssertionError: cohort exceeded declared workload CPU or p99 budget",
+        "cleanup": true
+      },
+      {
+        "case": "bypass_read_failure",
+        "passed": true,
+        "explicit_pin_preserved": true,
+        "optional_client_trust_preserved": true,
+        "real_refresh_error_seen": true,
+        "input_ms": 0.15499999999946112,
+        "valid_store_retry_succeeded": true,
+        "cleanup": true
+      }
+    ],
+    "passed": false
+  },
+  "fixed": {
+    "binary_sha256": "4ba143a7f99f03e2a0c5a844b6c40589ac10dc0c8543d6ca3f3f0341effc3091",
+    "script_sha256": "b46137a44ecf3b6715694c0e328bc408bb66d5e1d563382e4934624018a1f022",
+    "connection_cap": 16,
+    "cpu_budget_percent": 5.0,
+    "p99_budget_ms": 100,
+    "cases": [
+      {
+        "case": "large_store_alone",
+        "held_peers": 0,
+        "extra_pins_per_role": 16000,
+        "passed": true,
+        "input": {
+          "samples": 120,
+          "p50_ms": 0.36833299999994296,
+          "p95_ms": 0.6013750000000151,
+          "p99_ms": 0.6883329999999299,
+          "max_ms": 0.7953340000000919
+        },
+        "status": {
+          "samples": 120,
+          "p50_ms": 0.24062499999999432,
+          "p95_ms": 0.4381249999999559,
+          "p99_ms": 0.49429199999995177,
+          "max_ms": 0.5875829999999471
+        },
+        "window_ms": 5276.089375,
+        "server_cpu_percent": 0.9476715886754669,
+        "pending_preserved": true,
+        "held_key_preserved": true,
+        "config_preserved": true,
+        "files_preserved": true,
+        "within_budgets": true,
+        "cleanup": true
+      },
+      {
+        "case": "small_store_15_held",
+        "held_peers": 15,
+        "extra_pins_per_role": 0,
+        "passed": true,
+        "input": {
+          "samples": 120,
+          "p50_ms": 0.4970000000010799,
+          "p95_ms": 0.7782499999997583,
+          "p99_ms": 1.7616670000002443,
+          "max_ms": 1.9851660000007598
+        },
+        "status": {
+          "samples": 120,
+          "p50_ms": 0.3347090000005437,
+          "p95_ms": 0.5282080000004186,
+          "p99_ms": 0.5942499999989082,
+          "max_ms": 0.6200410000012369
+        },
+        "window_ms": 5283.14425,
+        "server_cpu_percent": 1.1356873324062655,
+        "pending_preserved": true,
+        "held_key_preserved": true,
+        "config_preserved": true,
+        "files_preserved": true,
+        "within_budgets": true,
+        "cleanup": true
+      },
+      {
+        "case": "large_store_15_held",
+        "held_peers": 15,
+        "extra_pins_per_role": 16000,
+        "passed": true,
+        "input": {
+          "samples": 120,
+          "p50_ms": 0.422832999998235,
+          "p95_ms": 0.9327920000004042,
+          "p99_ms": 6.438374999998331,
+          "max_ms": 7.079916999998659
+        },
+        "status": {
+          "samples": 120,
+          "p50_ms": 0.2853330000007759,
+          "p95_ms": 0.6187920000009228,
+          "p99_ms": 3.243333000000348,
+          "max_ms": 6.99604199999726
+        },
+        "window_ms": 5276.132915999998,
+        "server_cpu_percent": 2.653458550588191,
+        "pending_preserved": true,
+        "held_key_preserved": true,
+        "config_preserved": true,
+        "files_preserved": true,
+        "fresh_file_approval": true,
+        "wrong_role_stays_held": true,
+        "read_failure_closed_required_peers": true,
+        "read_failure_recovered": true,
+        "within_budgets": true,
+        "cleanup": true
+      },
+      {
+        "case": "bypass_read_failure",
+        "passed": true,
+        "explicit_pin_preserved": true,
+        "optional_client_trust_preserved": true,
+        "real_refresh_error_seen": true,
+        "input_ms": 0.2575000000000216,
+        "valid_store_retry_succeeded": true,
+        "cleanup": true
+      }
+    ],
+    "passed": true
+  },
+  "exploratory_cohort": {
+    "source_commit": "2592e3906f9845ab45269dc70f22c7fa1871567b",
+    "binary_sha256": "0f7dc7030b18b361c5b634885f0c3b31c9e6f35038b3910840a043e4f0bdcf9e",
+    "cases": [
+      {
+        "held_peers": 0,
+        "input": {
+          "samples": 120,
+          "p50_ms": 0.43795799999990503,
+          "p95_ms": 0.7533749999999451,
+          "p99_ms": 0.8880420000001443,
+          "max_ms": 23.56324999999998
+        },
+        "status": {
+          "samples": 120,
+          "p50_ms": 0.27354099999987724,
+          "p95_ms": 0.46966699999995143,
+          "p99_ms": 0.49083399999994004,
+          "max_ms": 0.5567500000001058
+        },
+        "server_cpu_percent": 1.7262531864476005,
+        "window_ms": 2896.4465,
+        "pending_after": 0,
+        "cleanup": true
+      },
+      {
+        "held_peers": 15,
+        "input": {
+          "samples": 120,
+          "p50_ms": 0.3374999999996575,
+          "p95_ms": 0.8504169999996591,
+          "p99_ms": 81.11891700000041,
+          "max_ms": 99.43900000000028
+        },
+        "status": {
+          "samples": 120,
+          "p50_ms": 0.27416599999963154,
+          "p95_ms": 0.566458000000658,
+          "p99_ms": 87.20104099999926,
+          "max_ms": 96.03829200000024
+        },
+        "server_cpu_percent": 17.46168996969787,
+        "window_ms": 3321.5570829999992,
+        "pending_after": 15,
+        "cleanup": true
+      }
+    ]
+  },
+  "trust_scaling": {
+    "binary_sha256": "4ba143a7f99f03e2a0c5a844b6c40589ac10dc0c8543d6ca3f3f0341effc3091",
+    "script_sha256": "87514f36b3aff7c6ab0387530aae982f73aaa3b4749d4df0490bff454c50975e",
+    "response_budget_ms": 100,
+    "max_trust_file_bytes": 1048576,
+    "cases": [
+      {
+        "case": "small_order_and_legacy",
+        "passed": true,
+        "unique_pins_per_role": 3,
+        "bytes_per_file": 479,
+        "elapsed_ms": [
+          7.021624999999997,
+          7.671332999999995,
+          7.334915999999997
+        ],
+        "median_ms": 7.334915999999997,
+        "max_rss_bytes": 7569408,
+        "files_preserved": true,
+        "exact_order_and_roles": true
+      },
+      {
+        "case": "large_compact_list",
+        "passed": true,
+        "unique_pins_per_role": 16000,
+        "bytes_per_file": 1044314,
+        "elapsed_ms": [
+          30.774083000000008,
+          32.18462500000001,
+          31.576625000000025
+        ],
+        "median_ms": 31.576625000000025,
+        "max_rss_bytes": 9797632,
+        "files_preserved": true,
+        "exact_order_and_roles": true
+      },
+      {
+        "case": "bulk_same_lists",
+        "passed": true,
+        "elapsed_ms": [
+          28.78429199999999,
+          24.409000000000013,
+          24.48791699999997
+        ],
+        "median_ms": 24.48791699999997,
+        "max_rss_bytes": 12435456,
+        "exit": 0,
+        "exact_order_and_roles": true,
+        "pins_per_role": 13000
+      },
+      {
+        "case": "bulk_overlap",
+        "passed": true,
+        "elapsed_ms": [
+          35.58904099999999,
+          33.88704200000004,
+          33.820124999999976
+        ],
+        "median_ms": 33.88704200000004,
+        "max_rss_bytes": 12763136,
+        "exit": 0,
+        "exact_order_and_roles": true,
+        "pins_per_role": 12000
+      },
+      {
+        "case": "bulk_canonical_expansion_refused",
+        "passed": true,
+        "elapsed_ms": [
+          16.358541000000002,
+          15.44670799999992,
+          15.96141700000009
+        ],
+        "median_ms": 15.96141700000009,
+        "max_rss_bytes": 11698176,
+        "exit": 1,
+        "files_preserved": true
+      },
+      {
+        "case": "compact_revoke",
+        "passed": true,
+        "elapsed_ms": [
+          43.50683300000002,
+          46.32995799999995,
+          45.39433300000007
+        ],
+        "median_ms": 45.39433300000007,
+        "max_rss_bytes": 14942208,
+        "exit": 0,
+        "exact_order_and_roles": true,
+        "pins_per_role": 15999
+      },
+      {
+        "case": "live_server_approve",
+        "passed": true,
+        "mutation_ms": 13.173917000000035,
+        "status_ms": 0.2254999999999896,
+        "input_ms": 0.3954999999999931,
+        "mutation_ok": true,
+        "status_ok": true,
+        "exact_role_files": true,
+        "config_preserved": true,
+        "held_key_preserved": true,
+        "cleanup": true
+      },
+      {
+        "case": "live_client_approve",
+        "passed": true,
+        "mutation_ms": 13.948958999999927,
+        "status_ms": 0.2798330000000071,
+        "input_ms": 0.3627090000000166,
+        "mutation_ok": true,
+        "status_ok": true,
+        "exact_role_files": true,
+        "config_preserved": true,
+        "held_key_preserved": true,
+        "cleanup": true
+      },
+      {
+        "case": "live_server_revoke",
+        "passed": true,
+        "mutation_ms": 25.919707999999986,
+        "status_ms": 0.21466700000027927,
+        "input_ms": 0.42466699999987867,
+        "mutation_ok": true,
+        "status_ok": true,
+        "exact_role_files": true,
+        "config_preserved": true,
+        "held_key_preserved": true,
+        "cleanup": true
+      }
+    ],
+    "passed": true
+  },
+  "trust_contention": {
+    "binary_sha256": "4ba143a7f99f03e2a0c5a844b6c40589ac10dc0c8543d6ca3f3f0341effc3091",
+    "script_sha256": "30be6a71afde80da879aea5acd33af7c685678bd396e1c073fbe4570661d68f8",
+    "held_lock_ms": 1200,
+    "response_budget_ms": 300,
+    "cases": [
+      {
+        "case": "server_approve",
+        "passed": true,
+        "lock_only_status_ms": 0.18962499999999882,
+        "lock_only_input_ms": 0.2819579999999988,
+        "lock_only_control_passed": true,
+        "mutation_ms": 0.18933299999999986,
+        "status_ms": 0.2392499999999964,
+        "input_ms": 0.4102089999999947,
+        "error": "trust_failed",
+        "trust_files_unchanged": true,
+        "retry_succeeded": true,
+        "cleanup": true
+      },
+      {
+        "case": "client_approve",
+        "passed": true,
+        "lock_only_status_ms": 0.12745800000013574,
+        "lock_only_input_ms": 0.22666700000018025,
+        "lock_only_control_passed": true,
+        "mutation_ms": 0.16275000000010031,
+        "status_ms": 0.27808299999998454,
+        "input_ms": 0.37900000000012923,
+        "error": "trust_failed",
+        "trust_files_unchanged": true,
+        "retry_succeeded": true,
+        "cleanup": true
+      },
+      {
+        "case": "client_revoke",
+        "passed": true,
+        "lock_only_status_ms": 0.11670900000027018,
+        "lock_only_input_ms": 0.23004100000001415,
+        "lock_only_control_passed": true,
+        "mutation_ms": 0.14279199999922554,
+        "status_ms": 0.2962499999998869,
+        "input_ms": 0.3900420000002569,
+        "error": "trust_failed",
+        "trust_files_unchanged": true,
+        "retry_succeeded": true,
+        "cleanup": true
+      },
+      {
+        "case": "held_client_approve",
+        "passed": true,
+        "lock_only_status_ms": 0.09825000000063255,
+        "lock_only_input_ms": null,
+        "lock_only_control_passed": true,
+        "mutation_ms": 0.16470799999979135,
+        "status_ms": 0.238290999999613,
+        "input_ms": null,
+        "error": "trust_failed",
+        "trust_files_unchanged": true,
+        "retry_succeeded": true,
+        "cleanup": true
+      },
+      {
+        "case": "held_server_approve",
+        "passed": true,
+        "lock_only_status_ms": 0.1392500000001462,
+        "lock_only_input_ms": null,
+        "lock_only_control_passed": true,
+        "mutation_ms": 0.25549999999974204,
+        "status_ms": 0.29449999999897614,
+        "input_ms": null,
+        "error": "trust_failed",
+        "trust_files_unchanged": true,
+        "retry_succeeded": true,
+        "cleanup": true
+      },
+      {
+        "case": "offline_concurrency",
+        "passed": true,
+        "initial_approvals": 24,
+        "mixed_updates": 24,
+        "identity_creators": 24,
+        "identical_identity": true,
+        "pins_per_role": 24
+      }
+    ],
+    "passed": true
+  },
+  "identity_files": {
+    "binary_sha256": "4ba143a7f99f03e2a0c5a844b6c40589ac10dc0c8543d6ca3f3f0341effc3091",
+    "script_sha256": "98236ad5f5c5932553371f1ffe414cb9360c3ad74f70294dc5945f53c1af4216",
+    "identity_file_limit_bytes": 1048576,
+    "cases": [
+      {
+        "case": "offline_cert.pem_1048575_suffix",
+        "file_bytes": 1048575,
+        "expected_acceptance": true,
+        "passed": true,
+        "exit": 0,
+        "elapsed_ms": 11.768209000000002,
+        "max_rss_bytes": 10108928,
+        "accepted_same_identity": true,
+        "size_refusal": false,
+        "files_preserved": true,
+        "retry_succeeded": true
+      },
+      {
+        "case": "offline_cert.pem_1048576_suffix",
+        "file_bytes": 1048576,
+        "expected_acceptance": true,
+        "passed": true,
+        "exit": 0,
+        "elapsed_ms": 15.657167,
+        "max_rss_bytes": 10108928,
+        "accepted_same_identity": true,
+        "size_refusal": false,
+        "files_preserved": true,
+        "retry_succeeded": true
+      },
+      {
+        "case": "offline_cert.pem_1048577_suffix",
+        "file_bytes": 1048577,
+        "expected_acceptance": false,
+        "passed": true,
+        "exit": 1,
+        "elapsed_ms": 12.866709000000004,
+        "max_rss_bytes": 7503872,
+        "accepted_same_identity": false,
+        "size_refusal": true,
+        "files_preserved": true,
+        "retry_succeeded": true
+      },
+      {
+        "case": "offline_cert.pem_16777216_suffix",
+        "file_bytes": 16777216,
+        "expected_acceptance": false,
+        "passed": true,
+        "exit": 1,
+        "elapsed_ms": 14.59733299999999,
+        "max_rss_bytes": 7536640,
+        "accepted_same_identity": false,
+        "size_refusal": true,
+        "files_preserved": true,
+        "retry_succeeded": true
+      },
+      {
+        "case": "offline_key.pem_1048575_prefix",
+        "file_bytes": 1048575,
+        "expected_acceptance": true,
+        "passed": true,
+        "exit": 0,
+        "elapsed_ms": 12.158208000000004,
+        "max_rss_bytes": 10174464,
+        "accepted_same_identity": true,
+        "size_refusal": false,
+        "files_preserved": true,
+        "retry_succeeded": true
+      },
+      {
+        "case": "offline_key.pem_1048576_prefix",
+        "file_bytes": 1048576,
+        "expected_acceptance": true,
+        "passed": true,
+        "exit": 0,
+        "elapsed_ms": 12.549749999999998,
+        "max_rss_bytes": 10174464,
+        "accepted_same_identity": true,
+        "size_refusal": false,
+        "files_preserved": true,
+        "retry_succeeded": true
+      },
+      {
+        "case": "offline_key.pem_1048577_prefix",
+        "file_bytes": 1048577,
+        "expected_acceptance": false,
+        "passed": true,
+        "exit": 1,
+        "elapsed_ms": 11.382375,
+        "max_rss_bytes": 7602176,
+        "accepted_same_identity": false,
+        "size_refusal": true,
+        "files_preserved": true,
+        "retry_succeeded": true
+      },
+      {
+        "case": "offline_key.pem_16777216_prefix",
+        "file_bytes": 16777216,
+        "expected_acceptance": false,
+        "passed": true,
+        "exit": 1,
+        "elapsed_ms": 11.570541999999989,
+        "max_rss_bytes": 7602176,
+        "accepted_same_identity": false,
+        "size_refusal": true,
+        "files_preserved": true,
+        "retry_succeeded": true
+      },
+      {
+        "case": "offline_key.pem_1048577_suffix",
+        "file_bytes": 1048577,
+        "expected_acceptance": false,
+        "passed": true,
+        "exit": 1,
+        "elapsed_ms": 9.61083300000004,
+        "max_rss_bytes": 7602176,
+        "accepted_same_identity": false,
+        "size_refusal": true,
+        "files_preserved": true,
+        "retry_succeeded": true
+      },
+      {
+        "case": "refuse_cert.pem_fifo",
+        "passed": true,
+        "elapsed_ms": 7.719667000000041,
+        "fixture_preserved": true
+      },
+      {
+        "case": "refuse_cert.pem_symlink",
+        "passed": true,
+        "elapsed_ms": 9.291790999999993,
+        "fixture_preserved": true
+      },
+      {
+        "case": "refuse_cert.pem_directory",
+        "passed": true,
+        "elapsed_ms": 8.380249999999979,
+        "fixture_preserved": true
+      },
+      {
+        "case": "refuse_key.pem_fifo",
+        "passed": true,
+        "elapsed_ms": 7.76820899999997,
+        "fixture_preserved": true
+      },
+      {
+        "case": "refuse_key.pem_symlink",
+        "passed": true,
+        "elapsed_ms": 8.372290999999976,
+        "fixture_preserved": true
+      },
+      {
+        "case": "refuse_key.pem_directory",
+        "passed": true,
+        "elapsed_ms": 8.027624999999983,
+        "fixture_preserved": true
+      },
+      {
+        "case": "startup_cert.pem",
+        "passed": true,
+        "exit": 1,
+        "elapsed_ms": 13.072625000000004,
+        "socket_removed": true,
+        "size_refusal": true,
+        "file_preserved": true,
+        "retry_succeeded": true,
+        "cleanup": true
+      },
+      {
+        "case": "startup_key.pem",
+        "passed": true,
+        "exit": 1,
+        "elapsed_ms": 12.212333000000019,
+        "socket_removed": true,
+        "size_refusal": true,
+        "file_preserved": true,
+        "retry_succeeded": true,
+        "cleanup": true
+      },
+      {
+        "case": "startup_generated_oversize",
+        "passed": true,
+        "exit": 1,
+        "no_identity_written": true,
+        "size_refusal": true,
+        "retry_succeeded": true,
+        "cleanup": true
+      },
+      {
+        "case": "live_cert.pem",
+        "passed": true,
+        "error": "config_apply_failed",
+        "mutation_ms": 0.26037499999986835,
+        "status_ms": 0.09516599999992437,
+        "input_seen": true,
+        "config_preserved": true,
+        "file_preserved": true,
+        "peers_preserved": true,
+        "held_key_preserved": true,
+        "retry_succeeded": true,
+        "cleanup": true
+      },
+      {
+        "case": "live_key.pem",
+        "passed": true,
+        "error": "connect_failed",
+        "mutation_ms": 0.44370800000015365,
+        "status_ms": 0.1429170000002422,
+        "input_seen": true,
+        "config_preserved": true,
+        "file_preserved": true,
+        "peers_preserved": true,
+        "held_key_preserved": true,
+        "retry_succeeded": true,
+        "cleanup": true
+      }
+    ],
+    "passed": true
+  },
+  "daemon_cli_audit": [
+    {
+      "check": "preserve_socket_file",
+      "passed": true
+    },
+    {
+      "check": "preserve_socket_symlink",
+      "passed": true
+    },
+    {
+      "check": "relative_paths",
+      "passed": true
+    },
+    {
+      "check": "replaced_socket_shutdown",
+      "passed": true
+    },
+    {
+      "check": "log_symlink",
+      "passed": true
+    },
+    {
+      "check": "log_permissions",
+      "passed": true
+    },
+    {
+      "check": "ipc_framing",
+      "passed": true
+    },
+    {
+      "check": "oversized_response",
+      "passed": true
+    },
+    {
+      "check": "cli_validation",
+      "passed": true
+    },
+    {
+      "check": "pinned_connect_rollback",
+      "passed": true
+    },
+    {
+      "check": "stale_socket_and_single_instance",
+      "passed": true
+    },
+    {
+      "check": "connecting_idempotence",
+      "passed": true
+    },
+    {
+      "check": "cli_connect_host",
+      "passed": true
+    },
+    {
+      "check": "pinned_trust_revoke",
+      "passed": true
+    },
+    {
+      "check": "daemon_argument_validation",
+      "passed": true
+    }
+  ],
+  "binary_sizes": {
+    "baseline_bytes": 3690816,
+    "fixed_bytes": 3707520
+  },
+  "rust_inputs": {
+    "Cargo.lock": "0cc466112ead33a26cb59fce717d83c202bd470e6ba64394ab7c81ac560c6f3f",
+    "Cargo.toml": "1249baacd47b641edbab7350fa10f94d5a08624223c0ef1d7c8e49707c96fb0d",
+    "crates/config/Cargo.toml": "2a747685780dabe93f139c609859005c2baad60e6599c4b8442273f5dea79968",
+    "crates/config/src/cli.rs": "21df1802c13c89bb4569f1e0f3b0290aa212dfdb1a6d2e7ce9aa5e32d0262246",
+    "crates/config/src/layout.rs": "04b27afdd4cb1e05c321845c79370aabeb79d0afd2574a29ee3d357412c46c06",
+    "crates/config/src/lib.rs": "214d8694a6d1b93bffd10b3ccb150da95191b6ce64b83a7a9e347ea9290979a4",
+    "crates/config/src/model.rs": "06eba7851d8a9789a342dc7d374880eedadcfc9a106026b7c3f3e69a4cf7b0b3",
+    "crates/config/src/synergy.rs": "8e1650d35a9a20c87504832e81b1b0fdd0dcb9a289e39d988c9c9f4f4e86f3e0",
+    "crates/config/src/synergy3.rs": "9faca911b846568795c23d01b768d6de3113d90f73e65e24418c79bdc44621fc",
+    "crates/daemon/Cargo.toml": "4cb03349cb6d9cf4a6f95dce64cd0e3ed5306a7faa7762326fdc00d28a48aefa",
+    "crates/daemon/src/adapter.rs": "874a75cebedcc5120306f4dec0d9d326932379fceb6ca072451bc8cf04d6185a",
+    "crates/daemon/src/allocator.rs": "1b0193bd0f658b47d219bb931cb045df7f25ee9f61ba11c4cd2c1f653a006ffd",
+    "crates/daemon/src/clipboard_json.rs": "5ec7fc4e24fd1d8054a60bffa0d7ac671d4357fc73c44abf59c81d9c26343299",
+    "crates/daemon/src/events.rs": "cee67a01d3ef29d5dc6aa300169ec61287c7edd0e492913de7f0fa3bb800dfad",
+    "crates/daemon/src/interfaces.rs": "80e2a11a6eb67be30ce263635c85edcee0d4e6185fc64514add27d3ee96df550",
+    "crates/daemon/src/ipc_server.rs": "4ceb1dc908211fd0b6493c55787f32582b8b248bedff20c99d800fed41a2301e",
+    "crates/daemon/src/lifetime.rs": "922a15a92661fdb6ca5f848852b79cc67e34c9b9b2ad266f7f4d4e7fd6f194e5",
+    "crates/daemon/src/logger.rs": "2faf11b9ec28a1d12ced24b662014e21aa86bae798dec6f4a15a0fd2a728e298",
+    "crates/daemon/src/main.rs": "ba5a5d6ae3817bed2a9fd6955b9fee751983bc6b1f53c0df9f9e12f76519bb61",
+    "crates/daemon/src/runtime.rs": "187c2301efa9873791597289a45247abc6221c9cf8538db492d20e4b0d202af9",
+    "crates/daemon/src/windows_pipe.rs": "9234c4be2e35e228cd8dba0b6b5c153ff419b1eeb15ad96b9dd6b7a531711a6c",
+    "crates/daemon/src/workers.rs": "5109cd76c0a1911b74512b3d8d2cf4d49df27fed417a55d3ac68a1f1ca8028b2",
+    "crates/ipc/Cargo.toml": "6ba4201f9b8b94fa813fc3699d422165b7db6102e14c2b70292c7cc83f7073d3",
+    "crates/ipc/src/lib.rs": "04d612b9256a8229932d76900b75671f6b66a23e242491077ed73212e16aeaec",
+    "crates/net/Cargo.toml": "c74312dcc7dc550825d7c247961e2fd44f7ca1dbbdfc7bb6c28e7351ef30637c",
+    "crates/net/examples/audit_transport.rs": "5c4e2986ccce3b2fccdb8c71df1d34d15d22292f857c5bc9574d673fa5033c5e",
+    "crates/net/examples/discovery.rs": "685ca4b9e1e4abf6aad00489c957eb1ab813b55609c2f417808455169f19f77b",
+    "crates/net/examples/guardrails.rs": "cd543cf6d051f8b43fa84931572ce5bca6ff1466cdc2f02108743c866e72a742",
+    "crates/net/examples/lifecycle.rs": "f143c2eb29f20fc1f0ed80b17a3b44a8fa6782293b8b88607245e8288c98b9dd",
+    "crates/net/examples/priority_peer.rs": "37f5a97dcf4a37bccc8f13acdc92f9e2bcb16794c410e09352d596fd0c7061df",
+    "crates/net/examples/tls_peer.rs": "44cff4d2e6f435af88a22264f3e7f337d7714efc6ea27f850cc4d0890b731968",
+    "crates/net/src/cli.rs": "b22cef41a524d556c81afb98e7b6d5d57557749ce9ca586145881995b82acb41",
+    "crates/net/src/connect_error.rs": "a3c944fefddc2b4a9e759298b5a4c9d5637503bf88fcbbf5dc0baf7e78929568",
+    "crates/net/src/discovery.rs": "bdbf309bc7f2b63ab72e03c19b20f75a1d397acdd452a288592739fd71fe0897",
+    "crates/net/src/identity.rs": "102aa396739087ce2f117f775f18508475ff3b4326fe702b7ad4d1a4d886b07c",
+    "crates/net/src/lib.rs": "1bfcda0c11d7bb5be7f23005d9db9170e62317161877e52b616c79c655317ac9",
+    "crates/net/src/reactor.rs": "d2a23367db9df32a551a6cafe16f2ff8cb28416a5458ea0674a5e5f5e9e853be",
+    "crates/net/src/tls.rs": "b6c852d4d03ea27549e24eeba5d80ca65432dd6a90ea6f2cf1cf33dda1157abe",
+    "crates/net/src/trust.rs": "830010af377e5b93a32334d8386f325cc10e19fe83520dda26b267a0a81ee6ff",
+    "crates/net/src/windows_permissions.rs": "2dbca5dc28eb51dc87c89bb2b0a8b7f009037094db45c7085db635ae598090c4",
+    "crates/platform-linux/Cargo.toml": "d9f8772dc001e12d2fe9f1489d35918deeeeead9daab8131371ea91cf0b1a4ac",
+    "crates/platform-linux/examples/x11_probe.rs": "d61e6bf76b0d7802a0ad124110feb1991239a90b1008b0edad3bb62cdbc0e761",
+    "crates/platform-linux/src/clipboard.rs": "c30058611fc426f3f2b0bc5d4c9f53bf8ef48ea4cb3915098894c22277fdf88c",
+    "crates/platform-linux/src/image.rs": "085b0a326643393ce926234a249d2b9baeb21a62d77ceaab7d2468a0422d1eb8",
+    "crates/platform-linux/src/keymap.rs": "e30286da66b02322186f9c3cdc808a6a347691e0e7c458184517a1507604f42e",
+    "crates/platform-linux/src/lib.rs": "3c34c73f6ab833b843195e5c2a99bee7affc7d46bd7fe7fd3786be3cb033e441",
+    "crates/platform-linux/src/native.rs": "00588627b702216ab2a35ee288d83241cb8705456a101b7e904e8c47107d6579",
+    "crates/platform-linux/src/sink.rs": "0144d18b20dbd1fa55727ff59e4daa9f6e7a89c3f25a7ada027bfb260e791be3",
+    "crates/platform-linux/src/source.rs": "e1429aab6c7549219cdca6a844cd944061909e93ca5d32e6d009e23acd74b5f8",
+    "crates/platform-linux/src/unicode_keysyms.rs": "b632ddb45d402b9045b0d6003a71e1ea5a9448ddfea7780dfc3cb3028571d58f",
+    "crates/platform-macos/Cargo.toml": "7b2607a96c77a79f3e8f6ab482fc39249e74a0ea8a283e3b6db5cf0cffdb2280",
+    "crates/platform-macos/examples/focuslab_inject.rs": "d8ba4769e3c54bb904ab9c54eb4e3d0437f3d84c1d261b0429df59b33f4f60ad",
+    "crates/platform-macos/examples/mac_probe.rs": "93e5dbde8d0a2d7f6c4f6a980baafa60a305b1e6df73272c44e5db0218f92c5c",
+    "crates/platform-macos/src/displays.rs": "1d6860ac0ceb6ebf9234eb7e7bbabeb789584a33b7b85134515d4111ce34ae5e",
+    "crates/platform-macos/src/ffi.rs": "6b106e9e9d2e0b1453f2d846d991182914ce6a4a87acb0e400637b65aeeb6ef8",
+    "crates/platform-macos/src/inject.rs": "2604c4e71c7f7713ef71a0e6c5d558422f97f5eea81307861dcfce144c9bddbc",
+    "crates/platform-macos/src/keymap.rs": "0dc9a9583802b154f87b4dd68a41c87a4b6902024218b2accee47d8d917fe314",
+    "crates/platform-macos/src/lib.rs": "aafa994a8696824968671f1cda6a2f06933bdc2f9e472606d783ae86d8b0801e",
+    "crates/platform-macos/src/pasteboard.rs": "6b53e3063f6a4a015a4761dcc9a9399d5a47d73b87c92947d036cbf7e2f62d39",
+    "crates/platform-macos/src/permissions.rs": "ee6111c35d5985a55b8187c6f573bff7bb372397e32ed3dcbaf87d48e15d3914",
+    "crates/platform-macos/src/screens.rs": "384cc286565139bc0605cc6493222c7c52621f7ace2701a0471242160deb55b0",
+    "crates/platform-macos/src/tap.rs": "fd28e13ff29fa5fe453ad8b4cba3b85c80e013c9971021a088546d491e96a571",
+    "crates/platform-macos/src/types.rs": "71cbea2c52890d808d32412d9b33e095033dfe570e20387d38d4a2df3228284a",
+    "crates/platform-windows/Cargo.toml": "080605b569ed545650abd65a3cc551dbb5c3231f8eb3d8589b5598fc3f6cf460",
+    "crates/platform-windows/src/clipboard.rs": "451bc0555457ce95f7f5d2ba7ae657834925cd708b186e14678686b12ce8dc80",
+    "crates/platform-windows/src/keymap.rs": "a9d531bbe6ed9916a389de4b384aa2321f7f04848c73e378fc61da7aca400aeb",
+    "crates/platform-windows/src/lib.rs": "1ce695c6f22dbd55d4cdded98f147a32812ffae7b1eb7f2ff8ad7f319daaeedb",
+    "crates/platform-windows/src/native.rs": "3aeddda52041991234e601dab0afe7c388b1aa9e858b308004d24bda84810cc1",
+    "crates/platform-windows/src/sink.rs": "1ca075dd2e12e9d383ae29254138573a9ea6bfa190bc94ce233b9f1043f5d7fb",
+    "crates/platform-windows/src/source.rs": "c5726f8d3ba7903903bdfe671252a622ceb3784356583784dd23a20ac76975ab",
+    "crates/platform/Cargo.toml": "88ee6e62955081ae5017549067c0055bd3ebd7a7e52b739b4b59455cebcc02ce",
+    "crates/platform/examples/virtual_demo.rs": "a4ab3a3995e1799f233375861ad4512085b8318427d0721a4793475eb32028e0",
+    "crates/platform/src/click.rs": "08801f4736e89a7512bf33a017fa92c66fc3dcb8221e6703ffbbf8321b8feee7",
+    "crates/platform/src/lib.rs": "77cf31c3b30f62eddbe89051702a95d7b529ffaef4eafea5214916b54b5652b5",
+    "crates/platform/src/script.rs": "bbe2991d5f2152f7bb6f3314bec2601b1e58a1318b14ba753f72f3043e5d3c01",
+    "crates/platform/src/virtual_backend.rs": "ae8c8ca58f828b6b106d09079e5b960bb9e4b035567917b5e0da682663d97a18",
+    "crates/protocol/Cargo.toml": "c91717334a50d2e68057c5e306b685e95a1506fc4d0bd9b08f443b62d6897445",
+    "crates/protocol/examples/wire_probe.rs": "f59443a83fef0d835259b5d8a9fd34b22f027d66cbb1049f19c7b9edb5abec68",
+    "crates/protocol/src/clipboard.rs": "4fb846e2fe3812f4136e77b64a509f120f5ba25675a8fcca9392269c672583da",
+    "crates/protocol/src/codec.rs": "9641df927d3391e26279bd138307192b6e04feb785e8f459b27cb57a748b7c0e",
+    "crates/protocol/src/keys.rs": "bdcde8427a2534a8e2e96987da21ca792bdf38d60415d5d32b52f949293fbaff",
+    "crates/protocol/src/lib.rs": "82cccc4173141f0a597431e27179d088007c9d0ada50dc6d0f5716dabe49c103",
+    "crates/session/Cargo.toml": "a1c5e86b885cb1cf079c19600bf180fb04fb3847173b9d5324426047865fae18",
+    "crates/session/src/client.rs": "9905587a134a14c3ac0da9c1efab8c78f2ed0702e53905f9a9ad399f425a0084",
+    "crates/session/src/clipboard.rs": "b65912bcdc8e852d2b03e4955966bf127f3b6f02ad52ae790ff1ba469c37ef18",
+    "crates/session/src/common.rs": "cb5a10b02ea47486643f82c8c8484f952ce2234b27dbe805ef20a49c1cb3f46d",
+    "crates/session/src/hotkey.rs": "709cf340dec0b839bc8a97d3b11fd796a45add44107a35e93db63622991b2c7a",
+    "crates/session/src/layout.rs": "8408d750040ebe5b7357859219ce416888e77fb3ed005894b32f36ad69f94fab",
+    "crates/session/src/lib.rs": "a1acd5fa946c692f758a9eea75f19b73e81eb5c0cabc4b5835ffeb14c0a561a5",
+    "crates/session/src/server.rs": "c7a7f2597c174de865734e2e09c1db7f5e7ff3b0efecfb711cafe507e18357c3",
+    "rust-toolchain.toml": "f715f440167e20fd8ea9afa0498c3d1ab80174cfcb8cbc895f106a34d907a1e1",
+    "spikes/macos-input/Cargo.lock": "6b2bdaafd2c7cf3442398c0244d8a9ebfe140202aef0b61afd0d4227f6e70d26",
+    "spikes/macos-input/Cargo.toml": "66fa2711dc2075ff1d9b2cfd65e870f7162af4b7644406ab6df956ea440d64eb",
+    "spikes/macos-input/src/displays.rs": "097255ecbb3479ef3a415cd5d88f87d3c88bfd256704a3e37bc6eb762b9f597d",
+    "spikes/macos-input/src/ffi.rs": "d36d47365bdd1892d360ebb895f3188b4f565c8be74658f83cb1748f97c5bbea",
+    "spikes/macos-input/src/inject.rs": "28805a5ca112d88d643e0b9d4438b23d581010689395e1298627644c946a2e05",
+    "spikes/macos-input/src/keymap.rs": "92e7f3b1d0bbedeea88f5e6ac4fea656a7f81553d09188aafd9af50e861412b7",
+    "spikes/macos-input/src/lib.rs": "8f535b679342e67334c540d7f9157b7bbe18463504f04fdd397f864a457c3c3d",
+    "spikes/macos-input/src/main.rs": "1f27d60bf5ecf8ef9eca5dcac926fbcb6b7554d93e9dba3af69cad487c537136",
+    "spikes/macos-input/src/pasteboard.rs": "1a2f8d72c09493dfe72096820a7a79771bef3a9abec45bda6d7de06c116a829e",
+    "spikes/macos-input/src/permissions.rs": "f429d183c05cc3673bf8e0c99126575e37cee029b3b4abacf9ba3eb485893afd",
+    "spikes/macos-input/src/tap.rs": "41d71dd216657056f405c837f6f308bb10809bae73ca70c1c2c097f14932d19f",
+    "spikes/macos-input/src/types.rs": "099b05491e7d85ed04bcec133ffc2164f995f486064fe637172174dcc4741abf",
+    "tools/e2e/Cargo.toml": "78bb98248bc0c14ead549803d241fd912b95b068b894b2040d1d36d6ac55b83c",
+    "tools/e2e/src/guardian.rs": "8b48c734c7f4f111ff0e9c17461d8a02d2d0e9e6c51317b9d19279cf61c8e00a",
+    "tools/e2e/src/main.rs": "a38b74212fc8ccda9388da68f5a3d4da558ff872df56d0ab3251b2f7c0bd18f3",
+    "tools/e2e/src/model.rs": "f7b7004ad68da192e3e094ed49a554d9d4741fc89ab068cc34fe5e4c661236c4",
+    "tools/e2e/src/process.rs": "10ee9511a9ef68a81f4a4ac9c199a186e62b995d479d2e2e61004e32d89f9f0b",
+    "tools/e2e/src/runner.rs": "cd42127261573a5a6ce0b9d8a31a9d1013aa34b1486db97af0decb871970d564",
+    "tools/e2e/src/steps.rs": "de99717892fa32348af6d24bdb44b84097feb3b4e14c4316ec18219369621184",
+    "tools/e2e/src/util.rs": "c2d962c283abae42984bd310fbab30d286a0664d6f9752aeba3f47cb81b16fc6",
+    "tools/e2e/src/wire.rs": "60593d4a4461ce5f81ddbe94c4f19976cde2c14e46a6d48f0a431a5d5a7ef22c"
+  },
+  "script_sha256": {
+    "crates/daemon/scripts/verify_trust_refresh.py": "b46137a44ecf3b6715694c0e328bc408bb66d5e1d563382e4934624018a1f022",
+    "crates/daemon/scripts/verify_trust_scaling.py": "87514f36b3aff7c6ab0387530aae982f73aaa3b4749d4df0490bff454c50975e",
+    "crates/daemon/scripts/verify_trust_contention.py": "30be6a71afde80da879aea5acd33af7c685678bd396e1c073fbe4570661d68f8",
+    "crates/daemon/scripts/verify_identity_files.py": "98236ad5f5c5932553371f1ffe414cb9360c3ad74f70294dc5945f53c1af4216",
+    "crates/daemon/scripts/verify_daemon_audit.py": "f95a1060d94b96aaff65480508d74dbbd85e41768a49ea7cb5c2e2011e839315"
+  },
+  "runner_sha256": "00380769d60d66ca86963b229186dd1fd568f438d3f8d6274eda6473075a64e5",
+  "validation": {
+    "locked_release_build": "PASS",
+    "strict_release_workspace_all_targets_clippy": "PASS",
+    "fmt": "PASS",
+    "python_ast": "PASS"
+  },
+  "limits": [
+    "Other captured trust directories after direct NetDriver reconfiguration were source-reviewed, not runtime-exercised",
+    "Linux CPU counter was not executed; no new Linux or Windows runtime acceptance",
+    "Native/security-review/distribution gates remain open"
+  ],
+  "raw_report_sha256": {
+    "baseline.json": "0ee24a72ae4c5ee7460bf6820ff8b91fafebeae29ac97d1d9156a728aec86abd",
+    "fixed.json": "26928f8fd1a4f32efc4f2dcee46035bb5aeb1201668049e39eecef43a22d7e1e",
+    "cohort-baseline.json": "d3d34c73446d05067586ae95b096fbb6d6f3f27f3e92d4abf0b049da0cdb46ae",
+    "trust-scaling.json": "a634a0807a53187fe9176fb5e6648e46baceeee7ed48002d8dcc39af03bf7b3d",
+    "trust-contention.json": "74f4f0f9b0b0cee2eb451df610bb36e275eb36f89e28e1732d25115ec9f1ee6b",
+    "identity-files.json": "2259a246c03ef91f57d3017aa04a5828b365302263f0955f16d5bb673e188fe4",
+    "daemon-audit.json": "7079602e6c43626c3bde662a4cd1124caeb9d6ef86b485570af9dd570bba6c42",
+    "virtual-final.json": "72bc41f52330186e6f1fc5b92ba7309fc94b81bc1e28676906c050ae73adbd64"
+  },
+  "virtual_suite": {
+    "passed": 89,
+    "failed": 0,
+    "excluded_count": 30,
+    "excluded": [
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I1-barrier-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I1-barrier-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I1-deskflow-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I1-deskflow-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-barrier-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-barrier-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-barrier-wrong-pin"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-deskflow-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-deskflow-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I2-deskflow-wrong-pin"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I3-barrier-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I3-barrier-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I3-deskflow-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I3-deskflow-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I4-barrier-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I4-barrier-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I4-deskflow-plain"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I4-deskflow-tls"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I5-barrier-export"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "I5-deskflow-export"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L1-barrier-hello"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L1-deskflow-hello"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L2-barrier-clipboard"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L2-deskflow-clipboard"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L3-barrier-pair"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L3-deskflow-pair"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L4-barrier-raw-client"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "L4-deskflow-raw-client"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "P03-barrier-held-key-repeat"
+      },
+      {
+        "reason": "Docker lab excluded by --no-docker",
+        "scenario": "P08-deskflow-held-key-repeat"
+      }
+    ],
+    "cleanup_failure_count": 0,
+    "outcomes": {
+      "A1-modifier-and-receiver-wheel": "PASS",
+      "A10-unsupported-hello-close": "PASS",
+      "A11-input-backpressure-release": "PASS",
+      "A12-restart-connected-roles": "PASS",
+      "A13-pinned-revoke-cutoff": "PASS",
+      "A2-client-direction-version-heartbeat-sequence": "PASS",
+      "A3-heartbeat-close-flush": "PASS",
+      "A4-config-live-rollback": "PASS",
+      "A5-unavailable-clipboard-readback": "PASS",
+      "A6-clipboard-backpressure": "PASS",
+      "A7-trust-lock-crash": "PASS",
+      "A8-config-save-rollback": "PASS",
+      "A9-tls-trusted-status": "PASS",
+      "C1-import-client-port": "PASS",
+      "C2-import-final-identity": "PASS",
+      "C3-clipboard-supported-cap": "PASS",
+      "D2-restart-disconnected-workers": "PASS",
+      "E1-repeated-ledger-tail": "PASS",
+      "N2-queued-release-reentry": "PASS",
+      "P01-impossible-hello-prefixes": "PASS",
+      "P02-short-established-frame": "PASS",
+      "P04-legacy-repeat-dialects": "PASS",
+      "P05-modern-repeat-truncated": "PASS",
+      "P06-legacy-repeat-truncated": "PASS",
+      "P07-hostile-field-bounds": "PASS",
+      "P09-clipboard-wire-containers": "PASS",
+      "Q1-primary-screen-name": "PASS",
+      "Q10-clipboard-policy-cancels-chunks": "PASS",
+      "Q11-layout-delay-unmapped-edge": "PASS",
+      "Q12-client-cannot-disable-heartbeat": "PASS",
+      "Q13-clipboard-readback-recovery": "PASS",
+      "Q14-client-duplicate-clipboard-formats": "PASS",
+      "Q15-server-duplicate-clipboard-formats": "PASS",
+      "Q16-lock-hotkey-grammar": "PASS",
+      "Q17-preentry-modifier-mask": "PASS",
+      "Q18-empty-clipboard-clear": "PASS",
+      "Q19-unavailable-is-not-clear": "PASS",
+      "Q2-client-setup-clipboard": "PASS",
+      "Q20-client-unsupported-only-clipboard": "PASS",
+      "Q20-server-unsupported-only-clipboard": "PASS",
+      "Q21-client-unsupported-only-local-clipboard": "PASS",
+      "Q21-server-unsupported-only-local-clipboard": "PASS",
+      "Q3-server-setup-clipboard": "PASS",
+      "Q4-two-held-shift-keys": "PASS",
+      "Q5-live-layout-peer-geometry": "PASS",
+      "Q6-disabled-clipboard-enter": "PASS",
+      "Q7-receive-disabled-ownership": "PASS",
+      "Q8-zero-button-key-release": "PASS",
+      "Q9-reconnect-clipboard-sequence": "PASS",
+      "R1-control-files": "PASS",
+      "R2-lifecycle": "PASS",
+      "R5-client-config-retains-clipboard": "PASS",
+      "R5-dead-corner-negative-origin": "PASS",
+      "R5-dead-corner-positive-origin": "PASS",
+      "R5-double-tap-stationary-timeout": "PASS",
+      "R5-incoming-clipboard-cancellation": "PASS",
+      "R5-server-live-alias-merge": "PASS",
+      "R5-server-live-alias-rename": "PASS",
+      "S0-smoke": "PASS",
+      "S1-connect": "PASS",
+      "S10-clipboard-cap": "PASS",
+      "S11-heartbeat": "PASS",
+      "S12-display-change": "PASS",
+      "S13-flood": "PASS",
+      "S13-garbage": "PASS",
+      "S13-oversized": "PASS",
+      "S13-truncated-hello": "PASS",
+      "S13-truncated": "PASS",
+      "S13-unknown": "PASS",
+      "S14-import-roundtrip": "PASS",
+      "S15-resources-latency": "PASS",
+      "S16-permissions": "PASS",
+      "S17-healthy": "PASS",
+      "S17-same-fingerprint": "PASS",
+      "S17-stale": "PASS",
+      "S18-click-numbering": "PASS",
+      "S19-config-patch": "PASS",
+      "S2-edge-mapping": "PASS",
+      "S2-wire-order": "PASS",
+      "S20-parent-exit": "PASS",
+      "S20-parent-off": "PASS",
+      "S21-fingerprint-import": "PASS",
+      "S3-input-order": "PASS",
+      "S4-disconnect-release": "PASS",
+      "S5-disconnect-release": "PASS",
+      "S6-trust-approval": "PASS",
+      "S7-wrong-pin": "PASS",
+      "S8-text-clipboard": "PASS",
+      "S9-large-dib": "PASS"
+    },
+    "S15_measurements": [
+      {
+        "cpu_percent": 0.03330665361687908,
+        "kind": "resources",
+        "rss_peak_bytes": 9469952,
+        "window_ms": 60048
+      },
+      {
+        "cpu_percent": 0.01664941968321658,
+        "kind": "resources",
+        "rss_peak_bytes": 9388032,
+        "window_ms": 60062
+      },
+      {
+        "kind": "capture_to_recorded_upper_bound",
+        "max_ms": 1.3870829999999998,
+        "p50_ms": 0.6950419999999999,
+        "p95_ms": 0.800625,
+        "p99_ms": 0.9767079999999999,
+        "samples": 1000
+      }
+    ]
+  }
+}

@@ -1,7 +1,7 @@
 # Requirement: Merge patch writes TOML and changes the live role/port; invalid patch reports an error and preserves exact file bytes.
 name = "S19-config-patch"
 requirement = "Merge patch writes TOML and changes the live role/port; invalid patch reports an error and preserves exact file bytes."
-blocked_by = ["WP2", "WP6"]
+blocked_by = []
 timeout_ms = 1800
 
 [[node]]

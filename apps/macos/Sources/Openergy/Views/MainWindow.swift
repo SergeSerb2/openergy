@@ -33,16 +33,17 @@ enum Pane: String, CaseIterable, Identifiable, Hashable {
 
 struct MainWindow: View {
     let model: AppModel
+    let updater: AppUpdater?
     var initialPane: Pane?
     @State private var pane: Pane?
 
-    init(model: AppModel, initialPane: Pane? = nil) {
+    init(model: AppModel, initialPane: Pane? = nil, updater: AppUpdater? = nil) {
         self.model = model
+        self.updater = updater
         self.initialPane = initialPane
         // Start on the requested pane so no other pane (and its side effects) renders first.
         _pane = State(initialValue: initialPane ?? .layout)
     }
-    @SceneStorage("pane") private var storedPane = Pane.layout.rawValue
 
     var body: some View {
         NavigationSplitView {
@@ -65,7 +66,7 @@ struct MainWindow: View {
             .navigationSplitViewColumnWidth(min: 190, ideal: 210, max: 260)
         } detail: {
             Group {
-                if model.isReady || pane == .activity || pane == .permissions {
+                if model.isReady || pane == .activity || pane == .permissions || pane == .advanced {
                     detail(for: pane ?? .layout)
                 } else {
                     ServiceStartingView(model: model)
@@ -93,10 +94,14 @@ struct MainWindow: View {
             } else if !model.missingPermissions.isEmpty {
                 pane = .permissions
             } else {
-                pane = Pane(rawValue: storedPane) ?? .layout
+                pane = model.allowsSystemIntegration
+                    ? Pane(rawValue: UserDefaults.standard.string(forKey: "pane") ?? "") ?? .layout
+                    : .layout
             }
         }
-        .onChange(of: pane) { _, next in storedPane = (next ?? .layout).rawValue }
+        .onChange(of: pane) { _, next in
+            if model.allowsSystemIntegration { UserDefaults.standard.set((next ?? .layout).rawValue, forKey: "pane") }
+        }
     }
 
     private func sidebarRow(_ item: Pane) -> some View {
@@ -130,7 +135,7 @@ struct MainWindow: View {
         case .clipboard: ClipboardPane(model: model)
         case .security: SecurityPane(model: model)
         case .permissions: PermissionsPane(model: model)
-        case .advanced: AdvancedPane(model: model)
+        case .advanced: AdvancedPane(model: model, updater: updater)
         case .activity: ActivityPane(model: model)
         }
     }

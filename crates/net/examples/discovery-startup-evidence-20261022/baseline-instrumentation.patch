@@ -1,0 +1,32 @@
+diff --git a/vendor/mdns-sd/src/service_daemon.rs b/vendor/mdns-sd/src/service_daemon.rs
+index 8ffc4d8..2041cd7 100644
+--- a/vendor/mdns-sd/src/service_daemon.rs
++++ b/vendor/mdns-sd/src/service_daemon.rs
+@@ -206,6 +206,8 @@ pub enum DaemonStatus {
+ /// Currently all counters are for outgoing packets.
+ #[derive(Hash, Eq, PartialEq)]
+ enum Counter {
++    /// Number of shared limited-view states currently owned by the worker.
++    LimitedViewStates,
+     Register,
+     RegisterResend,
+     Unregister,
+@@ -233,6 +235,7 @@ enum Counter {
+ impl fmt::Display for Counter {
+     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+         match self {
++            Self::LimitedViewStates => write!(f, "limited-view-states"),
+             Self::Register => write!(f, "register"),
+             Self::RegisterResend => write!(f, "register-resend"),
+             Self::Unregister => write!(f, "unregister"),
+@@ -4149,6 +4152,10 @@ impl Zeroconf {
+     }
+ 
+     fn exec_command_get_metrics(&mut self, resp_s: Sender<HashMap<String, i64>>) {
++        self.set_counter(
++            Counter::LimitedViewStates,
++            self.limited_browses.len() as i64,
++        );
+         self.set_counter(Counter::CachedPTR, self.cache.ptr_count() as i64);
+         self.set_counter(Counter::CachedSRV, self.cache.srv_count() as i64);
+         self.set_counter(Counter::CachedAddr, self.cache.addr_count() as i64);

@@ -1,0 +1,299 @@
+{
+  "date": "2026-10-22",
+  "time_zone": "America/Vancouver",
+  "script_source_commit": "798f6867f3720ef5ceaafc168f7e6a7225dc1a16",
+  "runtime_source_commit": "c2d14a695ef9b4e4bcd9bd70c29ee393fe9286e2",
+  "runtime_build_record": "windows-transport-current.json",
+  "baseline_source_commit": "1ef54fcf8e866a5799ba38a42674ddeff8452b5c",
+  "baseline_build_record": "../../../tools/windows/ROUND5-1ef54fc.md",
+  "runtime_changed": false,
+  "environment": {
+    "architecture": "x86_64-pc-windows-msvc",
+    "process_session_id": 0,
+    "platform": "virtual",
+    "transport": "private Windows named pipes",
+    "priority": "BelowNormal",
+    "role": "off",
+    "source_compiler": "Rust 1.99.1"
+  },
+  "current": {
+    "binary_sha256": "dbfb1d619a9ed04a90a17bc6509d1419fc2402aad5ebb05464fe2bc3297437fb",
+    "script_sha256": "4b5407202e8c68a62670dd746723a596b95a30f48310d13b6a73e2cc6c46abbe",
+    "platform": "virtual",
+    "transport": "private Windows named pipe",
+    "session_id": 0,
+    "checks": [
+      {
+        "name": "initial public CLI status",
+        "passed": true
+      },
+      {
+        "name": "persistent client initial reply",
+        "passed": true
+      },
+      {
+        "name": "all 63 pending clients initially admitted",
+        "passed": true
+      },
+      {
+        "name": "empty clients expire",
+        "passed": true,
+        "min_observed_ms": 10026.0,
+        "max_observed_ms": 10068.0,
+        "closed": 16,
+        "total": 16
+      },
+      {
+        "name": "partial_header clients expire",
+        "passed": true,
+        "min_observed_ms": 10030.0,
+        "max_observed_ms": 10077.0,
+        "closed": 16,
+        "total": 16
+      },
+      {
+        "name": "partial_body clients expire",
+        "passed": true,
+        "min_observed_ms": 10023.0,
+        "max_observed_ms": 10065.0,
+        "closed": 16,
+        "total": 16
+      },
+      {
+        "name": "drip clients expire",
+        "passed": true,
+        "min_observed_ms": 10028.0,
+        "max_observed_ms": 10080.0,
+        "closed": 15,
+        "total": 15
+      },
+      {
+        "name": "public CLI recovers while incomplete clients stay open",
+        "passed": true
+      },
+      {
+        "name": "completed-request idle client remains usable",
+        "passed": true
+      },
+      {
+        "name": "releasing one held client slot restores CLI access",
+        "passed": true
+      },
+      {
+        "name": "fragmented complete request succeeds",
+        "passed": true
+      },
+      {
+        "name": "pipelined complete requests preserve reply order",
+        "passed": true
+      },
+      {
+        "name": "unknown method returns an error",
+        "passed": true
+      },
+      {
+        "name": "valid request after method error succeeds",
+        "passed": true
+      },
+      {
+        "name": "partial frame after a completed request expires",
+        "passed": true
+      },
+      {
+        "name": "oversized header is refused",
+        "passed": true
+      },
+      {
+        "name": "public CLI works after refusal",
+        "passed": true
+      },
+      {
+        "name": "shutdown with a partial client exits cleanly",
+        "passed": true
+      },
+      {
+        "name": "owned IPC endpoint removed",
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "daemon_exit": 0,
+    "cleanup": true,
+    "evidence_dir": "<private Windows fixture>\\ipc-deadlines-second-runtime"
+  },
+  "baseline": {
+    "binary_sha256": "9b68bd675b25210790292cca365671e96b1ef0368f53bf43e05057f7cc70f4d9",
+    "script_sha256": "4b5407202e8c68a62670dd746723a596b95a30f48310d13b6a73e2cc6c46abbe",
+    "platform": "virtual",
+    "transport": "private Windows named pipe",
+    "session_id": 0,
+    "checks": [
+      {
+        "name": "initial public CLI status",
+        "passed": true
+      },
+      {
+        "name": "persistent client initial reply",
+        "passed": true
+      },
+      {
+        "name": "all 63 pending clients initially admitted",
+        "passed": true
+      },
+      {
+        "name": "empty clients expire",
+        "passed": false,
+        "total": 16,
+        "max_observed_ms": null,
+        "min_observed_ms": null,
+        "closed": 0
+      },
+      {
+        "name": "partial_header clients expire",
+        "passed": false,
+        "total": 16,
+        "max_observed_ms": null,
+        "min_observed_ms": null,
+        "closed": 0
+      },
+      {
+        "name": "partial_body clients expire",
+        "passed": false,
+        "total": 16,
+        "max_observed_ms": null,
+        "min_observed_ms": null,
+        "closed": 0
+      },
+      {
+        "name": "drip clients expire",
+        "passed": false,
+        "total": 15,
+        "max_observed_ms": null,
+        "min_observed_ms": null,
+        "closed": 0
+      },
+      {
+        "name": "public CLI recovers while incomplete clients stay open",
+        "passed": false
+      },
+      {
+        "name": "completed-request idle client remains usable",
+        "passed": true
+      },
+      {
+        "name": "releasing one held client slot restores CLI access",
+        "passed": true
+      },
+      {
+        "name": "fragmented complete request succeeds",
+        "passed": true
+      },
+      {
+        "name": "pipelined complete requests preserve reply order",
+        "passed": true
+      },
+      {
+        "name": "unknown method returns an error",
+        "passed": true
+      },
+      {
+        "name": "valid request after method error succeeds",
+        "passed": true
+      },
+      {
+        "name": "partial frame after a completed request expires",
+        "passed": false
+      },
+      {
+        "name": "oversized header is refused",
+        "passed": true
+      },
+      {
+        "name": "public CLI works after refusal",
+        "passed": true
+      },
+      {
+        "name": "shutdown with a partial client exits cleanly",
+        "passed": true
+      },
+      {
+        "name": "owned IPC endpoint removed",
+        "passed": true
+      }
+    ],
+    "passed": false,
+    "daemon_exit": 0,
+    "cleanup": true,
+    "evidence_dir": "<private Windows fixture>\\ipc-deadlines-baseline-runtime"
+  },
+  "initial_wrapper_failure": {
+    "report": {
+      "binary_sha256": "dbfb1d619a9ed04a90a17bc6509d1419fc2402aad5ebb05464fe2bc3297437fb",
+      "script_sha256": "e1f825ec2adc9d911ab8567b8712055f38205c811bfba3448e8fb4a95da0bbb2",
+      "platform": "virtual",
+      "transport": "private Windows named pipe",
+      "session_id": 0,
+      "checks": [
+        {
+          "name": "verification completed",
+          "passed": false,
+          "error": "Cannot find path '<Windows profile>\\status.get' because it does not exist."
+        }
+      ],
+      "passed": false,
+      "daemon_exit": -1,
+      "cleanup": true,
+      "evidence_dir": "<private Windows fixture>\\ipc-deadlines-first-runtime"
+    },
+    "cleanup": {
+      "cli_command": "Clear-Item",
+      "status_get_file_exists": false,
+      "daemon_stop_file_exists": false,
+      "owned_process_count": 0
+    },
+    "cause": "RPC helper name Cli resolved to the built-in Clear-Item alias. The final helper uses a distinct name and a private working directory; no status.get or daemon.stop file existed at the initial working directory."
+  },
+  "final_audit": {
+    "owned_process_count": 0,
+    "current_binary_sha256": "dbfb1d619a9ed04a90a17bc6509d1419fc2402aad5ebb05464fe2bc3297437fb",
+    "baseline_copy_sha256": "9b68bd675b25210790292cca365671e96b1ef0368f53bf43e05057f7cc70f4d9",
+    "original_baseline_sha256": "9b68bd675b25210790292cca365671e96b1ef0368f53bf43e05057f7cc70f4d9",
+    "script_sha256": "4b5407202e8c68a62670dd746723a596b95a30f48310d13b6a73e2cc6c46abbe"
+  },
+  "validation": {
+    "full_file_powershell_parse": "PASS",
+    "actual_current_execution": "19/19 PASS",
+    "retained_baseline_execution": "13/19; six expected timeout/recovery failures",
+    "script_hash_equal_across_paired_runs": true,
+    "local_markdown_links": {
+      "checked": 40,
+      "passed": true
+    },
+    "changed_file_personal_path_and_private_key_marker_scan": {
+      "files": 6,
+      "passed": true
+    },
+    "diff_check": "PASS"
+  },
+  "limits": [
+    "The baseline predates several other hardening changes; it is a held-client recovery control, not a build differing only by the deadline patch",
+    "No new runtime code, dependency, native desktop, Windows migration or distribution acceptance",
+    "The Unix full-suite and Windows transport records keep their original source/artifact scope",
+    "Native/security-review/distribution gates remain open; GitHub private reporting remains deferred"
+  ],
+  "raw_report_sha256": {
+    "current-first.json": "c2ea59bc9085a7d7029e5b813c43c0e16fd52d222a317f2f870e84ce48f9af97",
+    "baseline.json": "75f360fb5507fa5551069ba19e5fa71b392d675f74a39d466effc1abd7e2f689",
+    "first.json": "e325fd4e9243d8f60207b9aa1aecdc1638708471ef08f3fbdf9e05918cc3c714",
+    "first-cleanup.json": "97292a8dbc67062002ee49610513ce5aa61bf836c41e3f11f1a77968c0616f58",
+    "final-audit.json": "80ed99ed9f150f2dd872ab23ad6d0219e1d2992854f68abc6d36191c0f7a7914",
+    "first-script.ps1": "e1f825ec2adc9d911ab8567b8712055f38205c811bfba3448e8fb4a95da0bbb2"
+  },
+  "source_integrity": {
+    "fresh_clone_source_commit": "798f6867f3720ef5ceaafc168f7e6a7225dc1a16",
+    "script_hash_matched": true,
+    "rust_cargo_toolchain_files": 113,
+    "all_hashes_match_prior_runtime_record": true,
+    "fresh_clone_clean": true
+  }
+}

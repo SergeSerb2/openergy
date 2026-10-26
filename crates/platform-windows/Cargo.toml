@@ -6,9 +6,9 @@ license.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-openergy-platform = { path = "../platform" }
+openergy-platform = { version = "0.1.0", path = "../platform" }
 log.workspace = true
 
 [target.'cfg(target_os = "windows")'.dependencies]
-openergy-protocol = { path = "../protocol" }
+openergy-protocol = { version = "0.1.0", path = "../protocol" }
 windows-sys = { version = "=0.61.2", features = ["Win32_Foundation", "Win32_Graphics_Gdi", "Win32_System_DataExchange", "Win32_System_Memory", "Win32_System_LibraryLoader", "Win32_System_Threading", "Win32_UI_Input_KeyboardAndMouse", "Win32_UI_Input", "Win32_UI_WindowsAndMessaging", "Win32_UI_HiDpi", "Win32_System_Power"] }

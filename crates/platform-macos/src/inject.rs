@@ -308,6 +308,9 @@ impl EventPoster for NativePoster {
         if self.inspect {
             return Err(error("inspection mode cannot change cursor visibility"));
         }
+        if visible == self.hidden_display.is_none() {
+            return Ok(());
+        }
         // Safety: public main-display query has no pointer arguments or mutation.
         let display = self.hidden_display.unwrap_or_else(|| unsafe { ffi::CGMainDisplayID() });
         // Safety: explicit live visibility request balances this poster's own cursor hide.
@@ -731,7 +734,14 @@ impl<P: EventPoster> Injector<P> {
             .is_some_and(|dirty| dirty.swap(false, std::sync::atomic::Ordering::AcqRel))
         {
             if let Some(keymap) = &mut self.keymap {
-                keymap.refresh()?;
+                if let Err(err) = keymap.refresh() {
+                    // A transient TIS failure must not permanently consume the
+                    // notification and leave later keys on the stale layout.
+                    if let Some(dirty) = &self.layout_dirty {
+                        dirty.store(true, std::sync::atomic::Ordering::Release);
+                    }
+                    return Err(err);
+                }
             }
         }
         let plan = self

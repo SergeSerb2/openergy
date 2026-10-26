@@ -12,12 +12,13 @@ struct Stroke {
 }
 impl Stroke {
     fn vk(key: u16, vk: u16) -> Self {
-        // Safety: MapVirtualKeyW only translates the scalar virtual key.
+        // Use the same foreground layout for VK-to-scan translation and
+        // VkKeyScanExW. Our worker's layout can differ (for example AZERTY).
         let scan = if vk == VK_PAUSE {
             0
         } else {
-            // Safety: the scalar virtual key is valid for MapVirtualKeyW.
-            unsafe { MapVirtualKeyW(u32::from(vk), MAPVK_VK_TO_VSC_EX) }
+            // Safety: the scalar VK and borrowed keyboard layout are valid.
+            unsafe { MapVirtualKeyExW(u32::from(vk), MAPVK_VK_TO_VSC_EX, crate::native::keyboard_layout()) }
         };
         Self {
             vk: if scan == 0 { vk } else { 0 },
@@ -112,7 +113,7 @@ impl Sink {
                 return Err(error("Unsupported Windows KeyID"));
             }
             // Safety: current keyboard layout is a borrowed OS handle; VkKeyScanExW reads scalars.
-            let mapping = unsafe { VkKeyScanExW(key, GetKeyboardLayout(0)) };
+            let mapping = unsafe { VkKeyScanExW(key, crate::native::keyboard_layout()) };
             if mapping == -1 {
                 Stroke {
                     vk: 0,
@@ -226,6 +227,7 @@ impl InputSink for Sink {
                 Ok(())
             }
             InputEvent::MouseMoveAbs { x, y } => {
+                crate::native::dpi_awareness();
                 // Safety: GetSystemMetrics reads scalar virtual-desktop metrics.
                 let (left, top, width, height) = unsafe {
                     (

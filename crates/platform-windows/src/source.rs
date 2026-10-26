@@ -172,7 +172,7 @@ unsafe extern "system" fn keyboard(code: i32, w: WPARAM, l: LPARAM) -> LRESULT {
                                 text.as_mut_ptr(),
                                 8,
                                 4,
-                                GetKeyboardLayout(0),
+                                native::keyboard_layout(),
                             );
                             if count != 0 && !(0xd800..=0xdfff).contains(&text[0]) {
                                 Some(text[0])
@@ -382,6 +382,7 @@ impl InputSource for Source {
                             .with(|s| s.borrow_mut().as_mut().map(|s| s.grab(captured)))
                             .unwrap_or(Ok(()));
                         if let Err(e) = initial {
+                            unregister_mouse();
                             UnhookWindowsHookEx(kh);
                             UnhookWindowsHookEx(mh);
                             DestroyWindow(hwnd);
@@ -419,6 +420,7 @@ impl InputSource for Source {
                         });
                         UnhookWindowsHookEx(kh);
                         UnhookWindowsHookEx(mh);
+                        unregister_mouse();
                         DestroyWindow(hwnd);
                     }
                     Ok(())
@@ -444,6 +446,7 @@ impl InputSource for Source {
     fn stop(&mut self) {
         self.thread = None;
         self.tx = None;
+        self.captured = false;
     }
     fn set_cursor_captured(&mut self, captured: bool) -> Result<(), PlatformError> {
         if self.thread.is_some() {
@@ -454,5 +457,17 @@ impl InputSource for Source {
     }
     fn warp_cursor(&mut self, x: i32, y: i32) -> Result<(), PlatformError> {
         self.command(|r| Command::Warp(x, y, r))
+    }
+}
+fn unregister_mouse() {
+    let device = Input::RAWINPUTDEVICE {
+        usUsagePage: 1,
+        usUsage: 2,
+        dwFlags: Input::RIDEV_REMOVE,
+        hwndTarget: null_mut(),
+    };
+    // Safety: RIDEV_REMOVE requires a null target and unregisters this process's mouse sink.
+    if unsafe { Input::RegisterRawInputDevices(&device, 1, std::mem::size_of::<Input::RAWINPUTDEVICE>() as u32) } == 0 {
+        log::warn!("Unregister raw mouse input: {}", std::io::Error::last_os_error());
     }
 }

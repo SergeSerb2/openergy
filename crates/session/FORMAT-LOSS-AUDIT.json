@@ -1,0 +1,159 @@
+{
+  "date_local": "2026-10-22",
+  "parent_commit": "b36e840ea40b0c455db41afa6617d376b3b31898",
+  "scope": "clipboard format-loss ambiguity in session marshal/unmarshal only",
+  "strategy": "Exact parent git archive, followed by owned clipboard.rs overlay and external TOML scenarios",
+  "port_range": [
+    26040,
+    26059
+  ],
+  "lab_port_range": [
+    26060,
+    26079
+  ],
+  "backend": "virtual",
+  "e2e_profile": "debug daemon and external debug runner",
+  "root_manifest_and_lock_unchanged": true,
+  "root_file_sha256": {
+    "Cargo.toml": "1249baacd47b641edbab7350fa10f94d5a08624223c0ef1d7c8e49707c96fb0d",
+    "Cargo.lock": "7c293887f5785f252387741d9e47ffab39e016e699ad0e14ed3c29992c5bb2d0"
+  },
+  "baseline_daemon_sha256": "e1a60d31e958b130fe6fff89d76d1d6f9d02533bfab96e4373d6e0ff82bd09df",
+  "fixed_debug_daemon_sha256": "79864c5e21edd356bd0b7cac4b16ade793df3aa2eb5738882f180db730c11e4c",
+  "fixed_clipboard_rs_sha256": "b65912bcdc8e852d2b03e4955966bf127f3b6f02ad52ae790ff1ba469c37ef18",
+  "before": {
+    "passed": 0,
+    "failed": 4,
+    "scenarios": [
+      {
+        "scenario": "Q20-client-unsupported-only-clipboard",
+        "outcome": "FAIL",
+        "failed_step": 14,
+        "failure": {
+          "kind": "product",
+          "message": "bounded wait failed: predicate did not match"
+        },
+        "elapsed_ms": 2169
+      },
+      {
+        "scenario": "Q20-server-unsupported-only-clipboard",
+        "outcome": "FAIL",
+        "failed_step": 13,
+        "failure": {
+          "kind": "product",
+          "message": "bounded wait failed: predicate did not match"
+        },
+        "elapsed_ms": 1906
+      },
+      {
+        "scenario": "Q21-client-unsupported-only-local-clipboard",
+        "outcome": "FAIL",
+        "failed_step": 8,
+        "failure": {
+          "kind": "product",
+          "message": "bounded wait failed: predicate did not match"
+        },
+        "elapsed_ms": 3140
+      },
+      {
+        "scenario": "Q21-server-unsupported-only-local-clipboard",
+        "outcome": "FAIL",
+        "failed_step": 8,
+        "failure": {
+          "kind": "product",
+          "message": "bounded wait failed: predicate did not match"
+        },
+        "elapsed_ms": 3111
+      }
+    ]
+  },
+  "after": {
+    "passed": 10,
+    "failed": 0,
+    "scenarios": [
+      {
+        "scenario": "A5-unavailable-clipboard-readback",
+        "outcome": "PASS",
+        "failed_step": null,
+        "failure": null,
+        "elapsed_ms": 2272
+      },
+      {
+        "scenario": "Q13-clipboard-readback-recovery",
+        "outcome": "PASS",
+        "failed_step": null,
+        "failure": null,
+        "elapsed_ms": 1836
+      },
+      {
+        "scenario": "Q14-client-duplicate-clipboard-formats",
+        "outcome": "PASS",
+        "failed_step": null,
+        "failure": null,
+        "elapsed_ms": 549
+      },
+      {
+        "scenario": "Q15-server-duplicate-clipboard-formats",
+        "outcome": "PASS",
+        "failed_step": null,
+        "failure": null,
+        "elapsed_ms": 498
+      },
+      {
+        "scenario": "Q18-empty-clipboard-clear",
+        "outcome": "PASS",
+        "failed_step": null,
+        "failure": null,
+        "elapsed_ms": 1462
+      },
+      {
+        "scenario": "Q19-unavailable-is-not-clear",
+        "outcome": "PASS",
+        "failed_step": null,
+        "failure": null,
+        "elapsed_ms": 1822
+      },
+      {
+        "scenario": "Q20-client-unsupported-only-clipboard",
+        "outcome": "PASS",
+        "failed_step": null,
+        "failure": null,
+        "elapsed_ms": 498
+      },
+      {
+        "scenario": "Q20-server-unsupported-only-clipboard",
+        "outcome": "PASS",
+        "failed_step": null,
+        "failure": null,
+        "elapsed_ms": 505
+      },
+      {
+        "scenario": "Q21-client-unsupported-only-local-clipboard",
+        "outcome": "PASS",
+        "failed_step": null,
+        "failure": null,
+        "elapsed_ms": 1626
+      },
+      {
+        "scenario": "Q21-server-unsupported-only-local-clipboard",
+        "outcome": "PASS",
+        "failed_step": null,
+        "failure": null,
+        "elapsed_ms": 1651
+      }
+    ]
+  },
+  "checks": {
+    "debug_build": "PASS",
+    "session_clippy_no_deps_deny_warnings": "PASS",
+    "rustfmt": "PASS",
+    "git_diff_check": "PASS",
+    "release_build": "PASS"
+  },
+  "limits": [
+    "No native input/clipboard or installed application access.",
+    "No Docker peers or production port use.",
+    "Focused scenarios only; full integrated suite remains parent-owned."
+  ],
+  "fixed_release_daemon_sha256": "be10eeb1df4ff939f52c1069c4c48119163155149bc299fe5b5eaa4357057409"
+}

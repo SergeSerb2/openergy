@@ -1,0 +1,48 @@
+RETAINED_CACHE_METRICS={"cache-refresh-addr": 0, "timer": 7704, "cached-addr": 1, "cache-refresh-srv-txt": 0, "dns-registry-active": 0, "cache-refresh-ptr": 0, "known-answer-suppression": 0, "cached-srv": 499, "dns-registry-name-change": 0, "browse": 2, "dns-registry-timer": 0, "cached-nsec": 0, "cached-subtype": 0, "cached-ptr": 801, "cached-txt": 499, "dns-registry-probe": 0}
+RETAINED_REPLAY attempt=1 drained=1000 disconnected=true elapsed_ms=95
+RETAINED_REPLAY attempt=2 drained=1000 disconnected=true elapsed_ms=100
+RETAINED_CACHE_AFTER_STOP={"cache-refresh-addr": 0, "timer": 8006, "cached-addr": 1, "cache-refresh-srv-txt": 0, "dns-registry-active": 0, "cache-refresh-ptr": 0, "known-answer-suppression": 0, "cached-srv": 499, "dns-registry-name-change": 0, "browse": 2, "dns-registry-timer": 0, "cached-nsec": 0, "cached-subtype": 0, "cached-ptr": 801, "cached-txt": 499, "dns-registry-probe": 0}
+LIMITED_REPLAY peak=64 closed=false
+RETAINED_NAMESPACE burst=800 selected=burst-0002 full_polls=168 empty_polls=0 update_seen=true update_stays_fresh=true removal_seen=true removal_regressed=false
+AFTER_REMOVAL peers=["after-removal", "burst-0019", "burst-0031", "burst-0042", "burst-0046", "burst-0051", "burst-0063", "burst-0072", "burst-0074", "burst-0076", "burst-0078", "burst-0081", "burst-0084", "burst-0088", "burst-0098", "burst-0105", "burst-0112", "burst-0115", "burst-0124", "burst-0125", "burst-0130", "burst-0161", "burst-0178", "burst-0184", "burst-0190", "burst-0216", "burst-0222", "burst-0232", "burst-0249", "burst-0263", "burst-0264", "burst-0287", "burst-0317", "burst-0323", "burst-0333", "burst-0334", "burst-0375", "burst-0382", "burst-0407", "burst-0417", "burst-0426", "burst-0434", "burst-0444", "burst-0450", "burst-0477", "burst-0481", "burst-0484", "burst-0505", "burst-0533", "burst-0582", "burst-0611", "burst-0634", "burst-0636", "burst-0649", "burst-0652", "burst-0656", "burst-0678", "burst-0690", "burst-0692", "burst-0703", "burst-0714", "burst-0720", "burst-0779", "burst-replacement"]
+AFTER_REMOVAL_CACHE={"cache-refresh-addr": 0, "timer": 7748, "cached-addr": 1, "cache-refresh-srv-txt": 0, "dns-registry-active": 0, "cache-refresh-ptr": 0, "known-answer-suppression": 0, "cached-srv": 499, "dns-registry-name-change": 0, "browse": 7, "dns-registry-timer": 0, "cached-nsec": 0, "cached-subtype": 0, "cached-ptr": 801, "cached-txt": 499, "dns-registry-probe": 0}
+RECOVERY_OBSERVATION_MS=0
+SNAPSHOTS count=13 peak=64 too_close=false
+CHECK initial-resolution=true
+CHECK real-upstream-channel-overflow=true
+CHECK limited-retained-replay=true
+CHECK retained-namespace-stays-useful=true
+CHECK retained-selection-stable=true
+CHECK retained-selected-peer-live-update=true
+CHECK retained-selected-peer-goodbye=true
+CHECK retained-first-peer-goodbye-and-new-peer=true
+CHECK retained-selected-survivors-stable=true
+CHECK paused-update-coalesces-to-latest=true
+CHECK paused-goodbye-replaces-view=true
+CHECK fresh-advertisement-after-overflow=true
+CHECK updated-port-and-untrusted-hint=true
+CHECK goodbye-removes-all-peers=true
+CHECK publisher-exits-zero=true
+CHECK discovery-shutdown-submitted=true
+CHECK sentinel-worker-shutdown-ack=true
+CHECK snapshot-cap=true
+CHECK snapshot-emission-spacing=true
+BURST_SERVICES=800 SNAPSHOT_PEAK=64
+       41.08 real         3.30 user         0.38 sys
+            11911168  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                1736  page reclaims
+                   9  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+               13425  messages sent
+               30437  messages received
+                   0  signals received
+                  11  voluntary context switches
+               16510  involuntary context switches
+         35404279592  instructions retired
+         10218007479  cycles elapsed
+             9437664  peak memory footprint

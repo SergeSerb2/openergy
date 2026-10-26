@@ -1,0 +1,277 @@
+{
+  "source_commit": "d598e21b8ffb2fab4908ea802932f18b3ad300d9",
+  "implementation_commit": "91247ca",
+  "observation_date_local": "2026-10-22",
+  "timezone": "America/Vancouver",
+  "catalogue": {
+    "scenarios": 119,
+    "max_local_nodes": 13,
+    "max_lab_nodes": 2,
+    "only_scenario_exceeding_old_ten_port_default": "P07-hostile-field-bounds"
+  },
+  "runner": {
+    "sha256": "a9134eadcaed5889a21b0ef3dfb2c777e994f736f486a22d7ae1a99616efe7f8",
+    "bytes": 1049904
+  },
+  "daemon": {
+    "source_commit": "07adb0a3cdc4cff1aa77ce31dbe078a48db56bd5",
+    "sha256": "aaa10f3e5f9e0a38ac9fba2737dcd13d486c177fc580a5924a18d4f10552f434",
+    "bytes": 3707680
+  },
+  "checks": {
+    "fmt": {
+      "source_commit": "d598e21b8ffb2fab4908ea802932f18b3ad300d9",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "cargo",
+        "+1.99.1",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds": 0.402
+    },
+    "clippy": {
+      "source_commit": "d598e21b8ffb2fab4908ea802932f18b3ad300d9",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "cargo",
+        "+1.99.1",
+        "clippy",
+        "--release",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "-p",
+        "openergy-e2e",
+        "-j",
+        "2",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds": 1.938
+    },
+    "build": {
+      "source_commit": "d598e21b8ffb2fab4908ea802932f18b3ad300d9",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "cargo",
+        "+1.99.1",
+        "build",
+        "--release",
+        "--locked",
+        "--offline",
+        "-p",
+        "openergy-e2e",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds": 7.77
+    },
+    "undersized": {
+      "source_commit": "d598e21b8ffb2fab4908ea802932f18b3ad300d9",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "<private>/openergy-e2e",
+        "run",
+        "--openergy",
+        "<frozen-daemon>/openergy",
+        "--no-docker",
+        "--scenario",
+        "P07-hostile-field-bounds",
+        "--port-range",
+        "24990-24999",
+        "--report",
+        "<private>/undersized-report.json"
+      ],
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "elapsed_seconds": 0.131
+    },
+    "default": {
+      "source_commit": "d598e21b8ffb2fab4908ea802932f18b3ad300d9",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "<private>/openergy-e2e",
+        "run",
+        "--openergy",
+        "<frozen-daemon>/openergy",
+        "--no-docker",
+        "--scenario",
+        "P07-hostile-field-bounds",
+        "--report",
+        "<private>/default-report.json"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds": 0.35
+    },
+    "exact-minimum": {
+      "source_commit": "d598e21b8ffb2fab4908ea802932f18b3ad300d9",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "<private>/openergy-e2e",
+        "run",
+        "--openergy",
+        "<frozen-daemon>/openergy",
+        "--no-docker",
+        "--scenario",
+        "P07-hostile-field-bounds",
+        "--port-range",
+        "25950-25962",
+        "--report",
+        "<private>/exact-minimum-report.json"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds": 0.345
+    },
+    "list-small": {
+      "source_commit": "d598e21b8ffb2fab4908ea802932f18b3ad300d9",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "<private>/openergy-e2e",
+        "list",
+        "--no-docker",
+        "--scenario",
+        "P07-hostile-field-bounds",
+        "--port-range",
+        "24990-24999"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds": 0.022
+    }
+  },
+  "undersized_error": "openergy-e2e: runner: P07-hostile-field-bounds needs 13 node ports, but --port-range 24990-24999 has 10; choose a wider range\n",
+  "undersized_started_scenarios": false,
+  "undersized_report_created": false,
+  "passed_reports": {
+    "default": {
+      "binary": "/private<frozen-daemon>/openergy",
+      "excluded": [],
+      "excluded_count": 0,
+      "failed": 0,
+      "format_version": 1,
+      "lab_port_range": [
+        24930,
+        24939
+      ],
+      "no_docker": true,
+      "passed": 1,
+      "port_range": [
+        24980,
+        24999
+      ],
+      "scenarios": [
+        {
+          "artifact_dir": null,
+          "blocked_by": [],
+          "cleanup_failures": [],
+          "elapsed_ms": 307,
+          "failed_step": null,
+          "failure": null,
+          "measurements": [],
+          "outcome": "PASS",
+          "requirement": "Bound DSOP counts, UTF-8 text and DCLP fields and reject trailing bytes without daemon failure.",
+          "scenario": "P07-hostile-field-bounds",
+          "stderr_tails": {
+            "server": [
+              "1792730574802 WARN openergy::runtime: transport error peer=Some(ConnId(9)): connection no longer exists",
+              "1792730574802 WARN openergy::runtime: network_failed: Network operation failed: connection no longer exists.",
+              "1792730574802 WARN openergy::runtime: transport error peer=Some(ConnId(9)): connection no longer exists",
+              "1792730574802 WARN openergy::runtime: network_failed: Network operation failed: connection no longer exists.",
+              "1792730574803 WARN openergy::runtime: transport error peer=Some(ConnId(10)): connection no longer exists",
+              "1792730574803 WARN openergy::runtime: network_failed: Network operation failed: connection no longer exists.",
+              "1792730574803 WARN openergy::runtime: transport error peer=Some(ConnId(10)): connection no longer exists",
+              "1792730574803 WARN openergy::runtime: network_failed: Network operation failed: connection no longer exists.",
+              "1792730574803 WARN openergy::runtime: transport error peer=Some(ConnId(11)): connection no longer exists",
+              "1792730574803 WARN openergy::runtime: network_failed: Network operation failed: connection no longer exists.",
+              "1792730574803 WARN openergy::runtime: transport error peer=Some(ConnId(11)): connection no longer exists",
+              "1792730574803 WARN openergy::runtime: network_failed: Network operation failed: connection no longer exists."
+            ]
+          }
+        }
+      ]
+    },
+    "exact-minimum": {
+      "binary": "/private<frozen-daemon>/openergy",
+      "excluded": [],
+      "excluded_count": 0,
+      "failed": 0,
+      "format_version": 1,
+      "lab_port_range": [
+        24930,
+        24939
+      ],
+      "no_docker": true,
+      "passed": 1,
+      "port_range": [
+        25950,
+        25962
+      ],
+      "scenarios": [
+        {
+          "artifact_dir": null,
+          "blocked_by": [],
+          "cleanup_failures": [],
+          "elapsed_ms": 307,
+          "failed_step": null,
+          "failure": null,
+          "measurements": [],
+          "outcome": "PASS",
+          "requirement": "Bound DSOP counts, UTF-8 text and DCLP fields and reject trailing bytes without daemon failure.",
+          "scenario": "P07-hostile-field-bounds",
+          "stderr_tails": {
+            "server": [
+              "1792730575152 WARN openergy::runtime: transport error peer=Some(ConnId(9)): connection no longer exists",
+              "1792730575152 WARN openergy::runtime: network_failed: Network operation failed: connection no longer exists.",
+              "1792730575152 WARN openergy::runtime: transport error peer=Some(ConnId(9)): connection no longer exists",
+              "1792730575152 WARN openergy::runtime: network_failed: Network operation failed: connection no longer exists.",
+              "1792730575153 WARN openergy::runtime: transport error peer=Some(ConnId(10)): connection no longer exists",
+              "1792730575153 WARN openergy::runtime: network_failed: Network operation failed: connection no longer exists.",
+              "1792730575153 WARN openergy::runtime: transport error peer=Some(ConnId(10)): connection no longer exists",
+              "1792730575153 WARN openergy::runtime: network_failed: Network operation failed: connection no longer exists.",
+              "1792730575153 WARN openergy::runtime: transport error peer=Some(ConnId(11)): connection no longer exists",
+              "1792730575153 WARN openergy::runtime: network_failed: Network operation failed: connection no longer exists.",
+              "1792730575153 WARN openergy::runtime: transport error peer=Some(ConnId(11)): connection no longer exists",
+              "1792730575153 WARN openergy::runtime: network_failed: Network operation failed: connection no longer exists."
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "source_and_scenario_inputs_unchanged": 235,
+  "owned_fixture_processes_remaining": 0,
+  "assigned_tcp_listeners_remaining": 0,
+  "initial_metadata_reader_failure": "Default Python lacked tomllib; the unchanged catalogue was then inspected with the already installed Python3.11. No package/toolchain installation or default change.",
+  "limits": [
+    "Capacity preflight does not guarantee that unrelated processes leave configured ports free.",
+    "No daemon product source changed in this fix.",
+    "Original full regression remains88/89 exit1; these are separate focused command-path checks.",
+    "Windows direct OS refusal prerequisite remains failed; native/distribution gates remain open."
+  ]
+}

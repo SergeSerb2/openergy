@@ -1,6 +1,6 @@
 # Synergy 3.7.0-beta: Electron UI reverse-engineering report
 
-Static analysis date: 2026-10-21. Target: `/Applications/Synergy.app/Contents/Resources/app.asar`. Scope: Electron renderer, preload, and main process only. This is a clean-room behavior specification, not an implementation or a source-code reproduction.
+Static analysis date: 2026-10-21. Target: `/Applications/Synergy.app/Contents/Resources/app.asar`. Scope: Electron renderer, preload, and main process only. This is a source-informed behavior specification, not an implementation. The method includes inspecting bundled source maps. It does not establish a separated clean-room development process. See [research provenance](README.md).
 
 ## Evidence, scope, and confidence
 

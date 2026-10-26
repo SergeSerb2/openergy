@@ -1,0 +1,116 @@
+name = "N2-queued-release-reentry"
+requirement = "A queued key down precedes its safety release, which precedes leave, same-peer reentry and a new down."
+timeout_ms = 2000
+
+[[node]]
+id = "server"
+role = "server"
+tls = false
+config = { screen = [{ name = "server", rect = { x = 0, y = 0, w = 1920, h = 1080 } }, { name = "client", rect = { x = 1920, y = 0, w = 1920, h = 1080 } }] }
+
+[[node]]
+id = "probe"
+kind = "raw"
+role = "client"
+remote = "server"
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "hello_back"
+name = "client"
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "QINF"
+payload_only = true
+framed = true
+scan = true
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "screen_info"
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "DSOP"
+payload_only = true
+framed = true
+scan = true
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "mouse_move_abs", x = 1919, y = 540 }, { type = "mouse_move_rel", dx = 20, dy = 0 }]
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "CINN"
+payload_only = true
+framed = true
+scan = true
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "key_down", key = 97, modifiers = 0, button = 4 }, { type = "mouse_move_abs", x = 0, y = 540 }, { type = "mouse_move_rel", dx = -20, dy = 0 }, { type = "mouse_move_abs", x = 1919, y = 540 }, { type = "mouse_move_rel", dx = 20, dy = 0 }, { type = "key_down", key = 97, modifiers = 0, button = 4 }]
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "DKDN"
+payload_only = true
+framed = true
+scan = true
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "DKUP"
+payload_only = true
+framed = true
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "COUT"
+payload_only = true
+framed = true
+scan = true
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "CINN"
+payload_only = true
+framed = true
+scan = true
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "DKDN"
+payload_only = true
+framed = true
+scan = true

@@ -5,8 +5,10 @@
 //! `Decoder::feed` checks frame lengths before copying payload bytes; drain
 //! `next_message` after each feed and close the connection on any error.
 //! Each connection starts with Hello or HelloBack. The decoder classifies it
-//! from the first frame; a later hello is an error. Version/role policy and
-//! clipboard transfer reassembly belong to session, outside this codec.
+//! from the first frame; a later hello is an error. The hello version enables
+//! decoding legacy key repeats without a language suffix for wire 1.1–1.7.
+//! Version/role acceptance policy and clipboard transfer reassembly belong
+//! to session, outside this codec.
 #![forbid(unsafe_code)]
 
 mod clipboard;

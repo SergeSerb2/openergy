@@ -1,0 +1,191 @@
+# Requirement: A nonempty unsupported-only wire container must not become a clipboard clear.
+name = "Q20-server-unsupported-only-clipboard"
+requirement = "Preserve receiver text for unsupported-only data, accept supported plus unknown formats, and retain a genuine count-zero clear."
+timeout_ms = 1400
+
+[[node]]
+id = "server"
+role = "server"
+config = { server = { heartbeat_ms = 3000 }, screen = [{ name = "server", rect = { x = 0, y = 0, w = 1920, h = 1080 } }, { name = "client", rect = { x = 1920, y = 0, w = 1920, h = 1080 } }] }
+
+[[node]]
+id = "wire-client"
+kind = "raw"
+role = "client"
+remote = "server"
+name = "client"
+
+[[step]]
+do = "raw_expect"
+node = "wire-client"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "wire-client"
+builder = "hello_back"
+name = "client"
+
+[[step]]
+do = "raw_send"
+node = "wire-client"
+builder = "screen_info"
+
+[[step]]
+do = "raw_expect"
+node = "wire-client"
+builder = "code"
+code = "DSOP"
+payload_only = true
+framed = true
+scan = true
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "clipboard_set"
+node = "server"
+text = "keep-me!"
+
+[[step]]
+do = "assert_clipboard"
+node = "server"
+text = "keep-me!"
+
+[[step]]
+do = "raw_send"
+node = "wire-client"
+builder = "code"
+code = "CCLP"
+payload_hex = "0000000000"
+
+[[step]]
+do = "raw_send"
+node = "wire-client"
+builder = "code"
+code = "DCLP"
+payload_hex = "000000000001000000023135"
+
+[[step]]
+do = "raw_send"
+node = "wire-client"
+builder = "code"
+code = "DCLP"
+payload_hex = "0000000000020000000f00000001000000630000000378797a"
+
+[[step]]
+do = "raw_send"
+node = "wire-client"
+builder = "code"
+code = "DCLP"
+payload_hex = "00000000000300000000"
+
+[[step]]
+do = "sleep"
+ms = 150
+
+[[step]]
+do = "assert_clipboard"
+node = "server"
+text = "keep-me!"
+
+[[step]]
+do = "raw_send"
+node = "wire-client"
+builder = "code"
+code = "CCLP"
+payload_hex = "0000000000"
+
+[[step]]
+do = "raw_send"
+node = "wire-client"
+builder = "code"
+code = "DCLP"
+payload_hex = "000000000001000000023238"
+
+[[step]]
+do = "raw_send"
+node = "wire-client"
+builder = "code"
+code = "DCLP"
+payload_hex = "0000000000020000001c00000002000000630000000378797a00000000000000056d69786564"
+
+[[step]]
+do = "raw_send"
+node = "wire-client"
+builder = "code"
+code = "DCLP"
+payload_hex = "00000000000300000000"
+
+[[step]]
+do = "assert_clipboard"
+node = "server"
+text = "mixed"
+
+[[step]]
+do = "raw_send"
+node = "wire-client"
+builder = "code"
+code = "CCLP"
+payload_hex = "0000000000"
+
+[[step]]
+do = "raw_send"
+node = "wire-client"
+builder = "code"
+code = "DCLP"
+payload_hex = "000000000001000000023233"
+
+[[step]]
+do = "raw_send"
+node = "wire-client"
+builder = "code"
+code = "DCLP"
+payload_hex = "0000000000020000001700000002000000630000000378797a0000000000000000"
+
+[[step]]
+do = "raw_send"
+node = "wire-client"
+builder = "code"
+code = "DCLP"
+payload_hex = "00000000000300000000"
+
+[[step]]
+do = "assert_clipboard"
+node = "server"
+text = ""
+
+[[step]]
+do = "raw_send"
+node = "wire-client"
+builder = "code"
+code = "CCLP"
+payload_hex = "0000000000"
+
+[[step]]
+do = "raw_send"
+node = "wire-client"
+builder = "code"
+code = "DCLP"
+payload_hex = "0000000000010000000134"
+
+[[step]]
+do = "raw_send"
+node = "wire-client"
+builder = "code"
+code = "DCLP"
+payload_hex = "0000000000020000000400000000"
+
+[[step]]
+do = "raw_send"
+node = "wire-client"
+builder = "code"
+code = "DCLP"
+payload_hex = "00000000000300000000"
+
+[[step]]
+do = "assert_clipboard"
+node = "server"
+empty = true

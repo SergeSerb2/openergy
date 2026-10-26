@@ -1,0 +1,12 @@
+# The client receives keyboard and mouse input from the host.
+# This name must match its screen entry in the host config.
+version = 1
+name = "studio-client"
+role = "client"
+
+[client]
+# 192.0.2.10 is a documentation address. Replace it with the host's LAN IP.
+remote = "192.0.2.10:24800"
+
+[tls]
+enabled = true

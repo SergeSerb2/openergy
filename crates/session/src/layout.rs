@@ -220,10 +220,18 @@ impl Layout {
             .and_then(Option::as_ref)
             .unwrap_or(&self.corners);
         if corners.iter().any(|c| match c {
-            Corner::TopLeft => x < r.x + n && y < r.y + n,
-            Corner::TopRight => x > right - n && y < r.y + n,
-            Corner::BottomLeft => x < r.x + n && y > bottom - n,
-            Corner::BottomRight => x > right - n && y > bottom - n,
+            Corner::TopLeft => {
+                i64::from(x) < i64::from(r.x) + i64::from(n) && i64::from(y) < i64::from(r.y) + i64::from(n)
+            }
+            Corner::TopRight => {
+                i64::from(x) > i64::from(right) - i64::from(n) && i64::from(y) < i64::from(r.y) + i64::from(n)
+            }
+            Corner::BottomLeft => {
+                i64::from(x) < i64::from(r.x) + i64::from(n) && i64::from(y) > i64::from(bottom) - i64::from(n)
+            }
+            Corner::BottomRight => {
+                i64::from(x) > i64::from(right) - i64::from(n) && i64::from(y) > i64::from(bottom) - i64::from(n)
+            }
         }) {
             self.candidate = None;
             return None;
@@ -233,7 +241,7 @@ impl Layout {
             _ => (x - r.x, r.w),
         };
         let fraction = f64::from(coordinate.clamp(0, extent - 1)) / f64::from(extent);
-        let link = self
+        let Some(link) = self
             .links
             .iter()
             .find(|l| {
@@ -241,8 +249,12 @@ impl Layout {
                     && l.edge == edge
                     && fraction * 100.0 >= f64::from(l.from_range.0)
                     && fraction * 100.0 < f64::from(l.from_range.1)
-            })?
-            .clone();
+            })
+            .cloned()
+        else {
+            self.candidate = None;
+            return None;
+        };
         let since = match self.candidate {
             Some((s, e, t, since)) if s == current && e == edge && t == link.to => since,
             _ => {
@@ -260,10 +272,14 @@ impl Layout {
                 Some((s, e, t, false))
                     if s == current && e == edge && now_ms.saturating_sub(t) <= self.double_tap_ms =>
                 {
-                    return None
+                    self.candidate = None;
+                    return None;
                 }
                 _ => {
                     self.tap = Some((current, edge, now_ms, false));
+                    // The next hit requires physical retreat and return. A
+                    // timer replay must not renew this hit while stationary.
+                    self.candidate = None;
                     return None;
                 }
             }

@@ -1,0 +1,426 @@
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -185,8 +185,9 @@
+ pub use error::{Error, Result};
+ pub use service_daemon::{
+     DaemonEvent, DaemonStatus, DnsNameChange, HostnameResolutionEvent, IfKind, IfPredicate,
+-    Metrics, ServiceDaemon, ServiceEvent, UnregisterStatus, IP_CHECK_INTERVAL_IN_SECS_DEFAULT,
+-    MDNS_PORT, SERVICE_NAME_LEN_MAX_DEFAULT, VERIFY_TIMEOUT_DEFAULT,
++    LimitedBrowse, Metrics, ServiceDaemon, ServiceEvent, UnregisterStatus,
++    IP_CHECK_INTERVAL_IN_SECS_DEFAULT, MDNS_PORT, SERVICE_NAME_LEN_MAX_DEFAULT,
++    VERIFY_TIMEOUT_DEFAULT,
+ };
+ pub use service_info::{
+     AsIpAddrs, IntoTxtProperties, ResolvedService, ServiceInfo, TxtProperties, TxtProperty,
+--- a/src/service_daemon.rs
++++ b/src/service_daemon.rs
+@@ -52,13 +52,52 @@
+ use socket_pktinfo::PktInfoUdpSocket;
+ use std::{
+     cmp::{self, Reverse},
+-    collections::{BinaryHeap, HashMap, HashSet},
++    collections::{BTreeMap, BinaryHeap, HashMap, HashSet},
+     fmt, io,
+     net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr, SocketAddrV4, SocketAddrV6, UdpSocket},
+-    str, thread,
++    str,
++    sync::{Arc, Mutex},
++    thread,
+     time::{Duration, Instant, SystemTime},
+     vec,
+ };
++
++/// A coalesced view of at most 64 resolved services, updated on the daemon worker.
++/// Existing selected services keep their slots until removal. Unselected services
++/// do not displace them. This bounds delivery state, not the daemon's DNS cache.
++pub struct LimitedBrowse {
++    // The standard subscription channel supplies identity and lifetime only.
++    // Its single SearchStarted event is never used for state delivery.
++    lifetime: Receiver<ServiceEvent>,
++    state: Arc<Mutex<LimitedServiceState>>,
++}
++
++#[derive(Debug)]
++struct LimitedServiceState {
++    limit: usize,
++    dirty: bool,
++    services: BTreeMap<String, ResolvedService>,
++}
++
++impl LimitedBrowse {
++    /// Returns the latest complete selected view after a change. Intermediate
++    /// updates coalesce; removals are represented by absence in the next view.
++    /// A caller must replace its prior view, rather than merge snapshots.
++    pub fn take_snapshot(&self) -> Option<Vec<ResolvedService>> {
++        let mut state = self.state.lock().unwrap_or_else(|e| e.into_inner());
++        if !state.dirty {
++            return None;
++        }
++        let snapshot = state.services.values().cloned().collect();
++        state.dirty = false;
++        Some(snapshot)
++    }
++
++    /// A closed view must be discarded; it can no longer report removals.
++    pub fn is_closed(&self) -> bool {
++        self.lifetime.is_disconnected()
++    }
++}
+ 
+ /// The default max length of the service name without domain, not including the
+ /// leading underscore (`_`). It is set to 15 per
+@@ -167,6 +206,8 @@
+ /// Currently all counters are for outgoing packets.
+ #[derive(Hash, Eq, PartialEq)]
+ enum Counter {
++    /// Number of shared limited-view states currently owned by the worker.
++    LimitedViewStates,
+     Register,
+     RegisterResend,
+     Unregister,
+@@ -194,6 +235,7 @@
+ impl fmt::Display for Counter {
+     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+         match self {
++            Self::LimitedViewStates => write!(f, "limited-view-states"),
+             Self::Register => write!(f, "register"),
+             Self::RegisterResend => write!(f, "register-resend"),
+             Self::Unregister => write!(f, "unregister"),
+@@ -478,6 +520,31 @@
+         Ok(resp_r)
+     }
+ 
++    /// Starts a stable, bounded view of resolved services on the existing worker.
++    /// `limit` must be in 1..=64. Updates coalesce even if the caller pauses.
++    /// Removal frees a slot for a later resolved service; there is no waiting list
++    /// or automatic refill from the unselected cache. Replaces any browse of the
++    /// same service type. Uses the same errors as [`browse`](Self::browse).
++    /// This does not bound DNS records, timers, or pending resolution work.
++    pub fn browse_limited(&self, service_type: &str, limit: usize) -> Result<LimitedBrowse> {
++        check_domain_suffix(service_type)?;
++        if !(1..=64).contains(&limit) {
++            return Err(e_fmt!("limited browse requires 1..=64 services"));
++        }
++        let state = Arc::new(Mutex::new(LimitedServiceState {
++            limit,
++            dirty: true,
++            services: BTreeMap::new(),
++        }));
++        let (sender, lifetime) = bounded(1);
++        self.send_cmd(Command::BrowseLimited(
++            service_type.to_string(),
++            sender,
++            state.clone(),
++        ))?;
++        Ok(LimitedBrowse { lifetime, state })
++    }
++
+     /// Stops searching for a specific service type.
+     ///
+     /// # Errors
+@@ -1165,6 +1232,9 @@
+ 
+     /// Active "Browse" commands.
+     service_queriers: HashMap<String, Sender<ServiceEvent>>, // <ty_domain, channel::sender>
++
++    /// Optional bounded delivery state, sharing the subscription's lifetime.
++    limited_browses: HashMap<String, Arc<Mutex<LimitedServiceState>>>,
+ 
+     /// Active "ResolveHostname" commands.
+     ///
+@@ -1432,6 +1502,7 @@
+             dns_registry_map,
+             hostname_resolvers: HashMap::new(),
+             service_queriers: HashMap::new(),
++            limited_browses: HashMap::new(),
+             retransmissions: Vec::new(),
+             delayed_responses: Vec::new(),
+             counters: HashMap::new(),
+@@ -1502,6 +1573,7 @@
+ 
+     fn remove_service_subscription(&mut self, ty_domain: &str) -> Option<Sender<ServiceEvent>> {
+         let sender = self.service_queriers.remove(ty_domain);
++        self.limited_browses.remove(ty_domain);
+         self.clear_service_retransmissions(ty_domain);
+         sender
+     }
+@@ -1532,6 +1604,31 @@
+         let Some(sender) = self.service_queriers.get(ty_domain).cloned() else {
+             return;
+         };
++        if let Some(state) = self.limited_browses.get(ty_domain) {
++            if sender.is_disconnected() {
++                self.remove_service_subscription(ty_domain);
++                trace!(target: "mdns_sd::cleanup",
++                    "type={} kind=limited reason=Disconnected completed=true", ty_domain
++                );
++                return;
++            }
++            let mut state = state.lock().unwrap_or_else(|e| e.into_inner());
++            match event {
++                ServiceEvent::ServiceResolved(info) => {
++                    if state.services.len() < state.limit
++                        || state.services.contains_key(info.get_fullname())
++                    {
++                        state.services.insert(info.get_fullname().to_owned(), *info);
++                        state.dirty = true;
++                    }
++                }
++                ServiceEvent::ServiceRemoved(_, name) => {
++                    state.dirty |= state.services.remove(&name).is_some();
++                }
++                _ => {}
++            }
++            return;
++        }
+         match sender.try_send(event) {
+             Ok(()) => {}
+             Err(TrySendError::Full(_)) => {
+@@ -1540,9 +1637,15 @@
+                     ty_domain
+                 );
+                 self.remove_service_subscription(ty_domain);
++                trace!(target: "mdns_sd::cleanup",
++                    "type={} kind=standard reason=Full completed=true", ty_domain
++                );
+             }
+             Err(TrySendError::Disconnected(_)) => {
+                 self.remove_service_subscription(ty_domain);
++                trace!(target: "mdns_sd::cleanup",
++                    "type={} kind=standard reason=Disconnected completed=true", ty_domain
++                );
+             }
+         }
+     }
+@@ -1602,11 +1705,11 @@
+ 
+                 for intf in self.my_intfs.values() {
+                     if let Some(sock) = self.ipv4_sock.as_ref() {
+-                        self.unregister_service(info, intf, &sock.pktinfo);
++                        self.unregister_service(info, intf, &sock.pktinfo, false);
+                     }
+ 
+                     if let Some(sock) = self.ipv6_sock.as_ref() {
+-                        self.unregister_service(info, intf, &sock.pktinfo);
++                        self.unregister_service(info, intf, &sock.pktinfo, false);
+                     }
+                 }
+             }
+@@ -2638,6 +2741,7 @@
+         info: &ServiceInfo,
+         intf: &MyIntf,
+         sock: &PktInfoUdpSocket,
++        preserve_shared_addresses: bool,
+     ) -> Vec<u8> {
+         let is_ipv4 = sock.domain() == Domain::IPV4;
+ 
+@@ -2699,6 +2803,26 @@
+         }
+ 
+         for address in if_addrs {
++            // Removing one service must not withdraw an address still owned by
++            // another local registration on this interface. A shared-host
++            // goodbye otherwise invalidates every selected service at that host.
++            if preserve_shared_addresses
++                && self.my_services.values().any(|other| {
++                    let other_host = self
++                        .dns_registry_map
++                        .get(&intf.index)
++                        .map(|r| r.resolve_name(other.get_hostname()))
++                        .unwrap_or_else(|| other.get_hostname());
++                    let other_addrs = if is_ipv4 {
++                        other.get_addrs_on_my_intf_v4(intf)
++                    } else {
++                        other.get_addrs_on_my_intf_v6(intf)
++                    };
++                    other_host.eq_ignore_ascii_case(hostname) && other_addrs.contains(&address)
++                })
++            {
++                continue;
++            }
+             out.add_answer_record(DnsAddress::new(
+                 hostname,
+                 ip_address_rr_type(&address),
+@@ -2993,24 +3117,28 @@
+         sender: &Sender<ServiceEvent>,
+         now: Instant,
+     ) {
+-        let aliases: Vec<String> = self
+-            .cache
+-            .get_ptr(ty_domain)
+-            .map(|records| {
+-                records
+-                    .iter()
+-                    .filter(|r| !r.record.expires_soon(now))
+-                    .filter_map(|r| {
+-                        r.record
+-                            .any()
+-                            .downcast_ref::<DnsPointer>()
+-                            .map(|p| p.alias().to_string())
+-                    })
+-                    .collect()
+-            })
+-            .unwrap_or_default();
+-
+-        for alias in aliases {
++        let replay_limit = self
++            .limited_browses
++            .get(ty_domain)
++            .map(|s| s.lock().unwrap_or_else(|e| e.into_inner()).limit)
++            .unwrap_or(usize::MAX);
++        // Read one alias at a time from the existing cache. Do not allocate a
++        // namespace-sized replay backlog. Limited views select ready services,
++        // so incomplete records near the front cannot consume the replay budget.
++        let mut cursor = 0;
++        let mut replayed = 0;
++        while replayed < replay_limit {
++            let Some(record) = self.cache.get_ptr(ty_domain).and_then(|r| r.get(cursor)) else {
++                break;
++            };
++            cursor += 1;
++            if record.record.expires_soon(now) {
++                continue;
++            }
++            let Some(ptr) = record.record.any().downcast_ref::<DnsPointer>() else {
++                continue;
++            };
++            let alias = ptr.alias().to_owned();
+             let resolved_event = match self.resolve_service_from_cache(ty_domain, &alias) {
+                 Ok(resolved_service) if resolved_service.is_valid() => {
+                     debug!("Resolved service from cache: {}", alias);
+@@ -3031,6 +3159,10 @@
+                 }
+             };
+ 
++            if replay_limit != usize::MAX && resolved_event.is_none() {
++                continue;
++            }
++            replayed += 1;
+             self.push_service(
+                 ty_domain,
+                 ServiceEvent::ServiceFound(ty_domain.to_string(), alias.clone()),
+@@ -3919,7 +4051,9 @@
+                     );
+                     self.push_service(&ty_domain, event);
+                     if self.service_queriers.contains_key(&ty_domain) {
+-                        debug!("notify_service_removal: sent ServiceRemoved to listener of {ty_domain}: {instance_name}");
++                        debug!(
++                            "notify_service_removal: sent ServiceRemoved to listener of {ty_domain}: {instance_name}"
++                        );
+                     }
+                 }
+             }
+@@ -3934,6 +4068,10 @@
+         match command {
+             Command::Browse(ty, next_delay, cache_only, listener) => {
+                 self.exec_command_browse(repeating, ty, next_delay, cache_only, listener);
++            }
++
++            Command::BrowseLimited(ty, listener, state) => {
++                self.exec_command_browse_with_state(false, ty, 1, false, listener, Some(state));
+             }
+ 
+             Command::ResolveHostname(hostname, next_delay, listener, timeout) => {
+@@ -4018,6 +4156,10 @@
+     }
+ 
+     fn exec_command_get_metrics(&mut self, resp_s: Sender<HashMap<String, i64>>) {
++        self.set_counter(
++            Counter::LimitedViewStates,
++            self.limited_browses.len() as i64,
++        );
+         self.set_counter(Counter::CachedPTR, self.cache.ptr_count() as i64);
+         self.set_counter(Counter::CachedSRV, self.cache.srv_count() as i64);
+         self.set_counter(Counter::CachedAddr, self.cache.addr_count() as i64);
+@@ -4071,6 +4213,18 @@
+         cache_only: bool,
+         listener: Sender<ServiceEvent>,
+     ) {
++        self.exec_command_browse_with_state(repeating, ty, next_delay, cache_only, listener, None);
++    }
++
++    fn exec_command_browse_with_state(
++        &mut self,
++        repeating: bool,
++        ty: String,
++        next_delay: u32,
++        cache_only: bool,
++        listener: Sender<ServiceEvent>,
++        limited_state: Option<Arc<Mutex<LimitedServiceState>>>,
++    ) {
+         let pretty_addrs: Vec<String> = self
+             .my_intfs
+             .iter()
+@@ -4083,14 +4237,31 @@
+             pretty_addrs.join(", ")
+         ));
+         if !repeating {
+-            if let Err(e) = listener.try_send(started) {
++            let initial_send = listener.try_send(started);
++            trace!(target: "mdns_sd::startup",
++                "type={} kind={} outcome={}", &ty,
++                if limited_state.is_some() { "limited" } else { "standard" },
++                match &initial_send {
++                    Ok(()) => "Accepted",
++                    Err(TrySendError::Disconnected(_)) => "Disconnected",
++                    Err(TrySendError::Full(_)) => "Full",
++                }
++            );
++            if let Err(e) = initial_send {
+                 debug!(
+                     "Failed to send SearchStarted({})(repeating:{}): {}",
+                     &ty, repeating, e
+                 );
+                 return;
+             }
+-            self.clear_service_retransmissions(&ty);
++            // Commit replacement only after the initial send succeeds. A caller
++            // can drop its receiver while this command is queued. In that case
++            // leave the prior sender, state, and retransmissions intact, and
++            // drop the new state with the cancelled command.
++            self.remove_service_subscription(&ty);
++            if let Some(state) = limited_state {
++                self.limited_browses.insert(ty.clone(), state);
++            }
+             // Binds a `listener` to querying mDNS domain type `ty`.
+             //
+             // If there is already a `listener`, it will be updated, i.e. overwritten.
+@@ -4243,7 +4414,7 @@
+ 
+                 for (if_index, intf) in self.my_intfs.iter() {
+                     if let Some(sock) = self.ipv4_sock.as_ref() {
+-                        let packet = self.unregister_service(&info, intf, &sock.pktinfo);
++                        let packet = self.unregister_service(&info, intf, &sock.pktinfo, true);
+                         // repeat for one time just in case some peers miss the message
+                         if !repeating && !packet.is_empty() {
+                             let next_time = Instant::now() + Duration::from_millis(120);
+@@ -4257,7 +4428,7 @@
+ 
+                     // ipv6
+                     if let Some(sock) = self.ipv6_sock.as_ref() {
+-                        let packet = self.unregister_service(&info, intf, &sock.pktinfo);
++                        let packet = self.unregister_service(&info, intf, &sock.pktinfo, true);
+                         if !repeating && !packet.is_empty() {
+                             let next_time = Instant::now() + Duration::from_millis(120);
+                             self.retransmissions.push(ReRun {
+@@ -4713,6 +4884,12 @@
+     /// Browsing for a service type (ty_domain, next_time_delay_in_seconds, channel::sender)
+     Browse(String, u32, bool, Sender<ServiceEvent>),
+ 
++    BrowseLimited(
++        String,
++        Sender<ServiceEvent>,
++        Arc<Mutex<LimitedServiceState>>,
++    ),
++
+     /// Resolve a hostname to IP addresses.
+     ResolveHostname(String, u32, Sender<HostnameResolutionEvent>, Option<u64>), // (hostname, next_time_delay_in_seconds, sender, timeout_in_milliseconds)
+ 
+@@ -4767,6 +4944,7 @@
+     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+         match self {
+             Self::Browse(_, _, _, _) => write!(f, "Command Browse"),
++            Self::BrowseLimited(_, _, _) => write!(f, "Command BrowseLimited"),
+             Self::ResolveHostname(_, _, _, _) => write!(f, "Command ResolveHostname"),
+             Self::Exit(_) => write!(f, "Command Exit"),
+             Self::GetStatus(_) => write!(f, "Command GetStatus"),

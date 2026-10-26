@@ -1,0 +1,134 @@
+# Requirement: A live alias merge retains one owner for each layout screen.
+name = "R5-server-live-alias-merge"
+requirement = "Merging two connected screens through aliases keeps one canonical owner, closes the duplicate, and routes input to the retained owner."
+timeout_ms = 1200
+
+[[node]]
+id = "server"
+role = "server"
+config = { screen = [{ name = "server", rect = { x = 0, y = 0, w = 1920, h = 1080 } }, { name = "first", rect = { x = 1920, y = 0, w = 1920, h = 1080 } }, { name = "second", rect = { x = 3840, y = 0, w = 1920, h = 1080 } }] }
+
+[[node]]
+id = "first"
+kind = "raw"
+role = "client"
+remote = "server"
+
+[[node]]
+id = "second"
+kind = "raw"
+role = "client"
+remote = "server"
+
+[[step]]
+do = "raw_expect"
+node = "first"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "first"
+builder = "hello_back"
+name = "first"
+
+[[step]]
+do = "raw_send"
+node = "first"
+builder = "screen_info"
+
+[[step]]
+do = "raw_expect"
+node = "first"
+builder = "code"
+code = "DSOP"
+payload_only = true
+framed = true
+scan = true
+
+[[step]]
+do = "raw_expect"
+node = "second"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "second"
+builder = "hello_back"
+name = "second"
+
+[[step]]
+do = "raw_send"
+node = "second"
+builder = "screen_info"
+
+[[step]]
+do = "raw_expect"
+node = "second"
+builder = "code"
+code = "DSOP"
+payload_only = true
+framed = true
+scan = true
+
+[[step]]
+do = "assert_status"
+node = "server"
+fields = { peers = { "$len" = 2 } }
+
+[[step]]
+do = "config_patch"
+node = "server"
+patch = { screen = [{ name = "server", rect = { x = 0, y = 0, w = 1920, h = 1080 } }, { name = "merged", aliases = ["first", "second"], rect = { x = 1920, y = 0, w = 1920, h = 1080 } }] }
+
+[[step]]
+do = "raw_expect_closed"
+node = "second"
+timeout_ms = 600
+
+[[step]]
+do = "assert_status"
+node = "server"
+fields = { peers = [{ name = "merged", connected = true }] }
+
+[[step]]
+do = "raw_send"
+node = "first"
+builder = "code"
+code = "CALV"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "mouse_move_abs", x = 1919, y = 540 }, { type = "mouse_move_rel", dx = 20, dy = 0 }]
+
+[[step]]
+do = "raw_expect"
+node = "first"
+builder = "code"
+code = "CINN"
+payload_only = true
+framed = true
+scan = true
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "key_down", key = 97, modifiers = 0, button = 4 }, { type = "key_up", key = 97, modifiers = 0, button = 4 }]
+
+[[step]]
+do = "raw_expect"
+node = "first"
+builder = "code"
+code = "DKDN"
+payload_only = true
+framed = true
+scan = true
+
+[[step]]
+do = "raw_expect"
+node = "first"
+builder = "code"
+code = "DKUP"
+payload_only = true
+framed = true
+scan = true

@@ -85,21 +85,39 @@ def main():
                 time.sleep(0.025)
             if not daemon_pid:
                 raise SystemExit(f"readiness timed out; artifacts: {directory}")
-            print("Real daemon and Docker lab ready; sending SIGKILL to owned runner", child.pid)
+            name = f"oe-lab-wp6-{child.pid}-s0-lab"
+            inspect = subprocess.run(
+                ["docker", "inspect", name], capture_output=True, text=True, timeout=3,
+            )
+            if inspect.returncode != 0:
+                raise SystemExit(f"owned lab was not observed before interruption; artifacts: {directory}")
+            container = json.loads(inspect.stdout)[0]
+            expected_root = str((path.parent.parent / "lab").resolve())
+            labels = container.get("Config", {}).get("Labels", {}) or {}
+            if (not container.get("State", {}).get("Running")
+                    or labels.get("org.openergy.interop-lab") != "1"
+                    or labels.get("org.openergy.interop-lab.root") != expected_root):
+                raise SystemExit(f"lab ownership/readiness mismatch; artifacts: {directory}")
+            container_id = container["Id"]
+            print("Real daemon and owned Docker lab observed; sending SIGKILL to owned runner", child.pid)
             child.kill()
             child.wait(timeout=5)
-            name = f"oe-lab-wp7-{child.pid}-s0-lab"
-            deadline = time.monotonic() + 12
+            # Guardian bounds allow 10 s for stop, 5 s for removal, and process grace.
+            deadline = time.monotonic() + 20
             while time.monotonic() < deadline:
                 try:
                     os.kill(daemon_pid, 0)
                     alive = True
                 except ProcessLookupError:
                     alive = False
-                exists = subprocess.run(
-                    ["docker", "inspect", name], stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL, timeout=2,
-                ).returncode == 0
+                containers = subprocess.run(
+                    ["docker", "container", "ls", "--all", "--quiet", "--no-trunc",
+                     "--filter", f"id={container_id}"],
+                    capture_output=True, text=True, timeout=2,
+                )
+                if containers.returncode != 0:
+                    raise SystemExit("Docker could not confirm cleanup; refusing to report success")
+                exists = container_id in containers.stdout.splitlines()
                 if not alive and not exists:
                     print("PASS: daemon gone; owned lab stopped and removed after runner SIGKILL")
                     return

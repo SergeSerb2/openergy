@@ -320,7 +320,11 @@ impl Context {
         })
     }
     pub fn timeout(&self, step: &Step) -> Duration {
-        Duration::from_millis(step.number("timeout_ms", self.scenario.timeout_ms).clamp(1, 180_000))
+        self.scaled(step.number("timeout_ms", self.scenario.timeout_ms))
+    }
+    /// A scenario or step deadline, stretched by `--slowdown` for slower machines.
+    pub fn scaled(&self, ms: u64) -> Duration {
+        Duration::from_millis(((ms as f64 * self.options.slowdown).round() as u64).clamp(1, 180_000))
     }
     pub fn start(&mut self, id: &str) -> Result<()> {
         let spec = self.state(id)?.spec.clone();
@@ -337,6 +341,7 @@ impl Context {
             self.state_mut(id)?.raw = Some(Raw {
                 listener: Some(listener),
                 stream: None,
+                pending: Default::default(),
             });
         } else if spec.kind == "raw" {
             self.state_mut(id)?.reservation.take();
@@ -345,7 +350,7 @@ impl Context {
                 .as_deref()
                 .ok_or_else(|| Failure::runner("raw client requires remote"))?;
             let addr = self.safe_address(&self.remote(remote, false)?, true)?;
-            let deadline = Instant::now() + Duration::from_millis(self.scenario.timeout_ms);
+            let deadline = Instant::now() + self.scaled(self.scenario.timeout_ms);
             let stream = loop {
                 match TcpStream::connect_timeout(&addr, Duration::from_millis(100)) {
                     Ok(stream) => break stream,
@@ -357,6 +362,7 @@ impl Context {
             self.state_mut(id)?.raw = Some(Raw {
                 listener: None,
                 stream: Some(stream),
+                pending: Default::default(),
             });
         } else if spec.kind == "openergy" {
             let text = std::fs::read_to_string(&self.state(id)?.config)?;
@@ -388,7 +394,7 @@ impl Context {
             self.commands += 1;
             let child = Process::spawn(&mut command, &dir, &format!("daemon-{}", self.commands))?;
             self.state_mut(id)?.process = Some(child);
-            let deadline = Instant::now() + Duration::from_millis(self.scenario.timeout_ms);
+            let deadline = Instant::now() + self.scaled(self.scenario.timeout_ms);
             loop {
                 if let Ok(status) = self.ipc(id, "status.get", json!({}), Duration::from_millis(200)) {
                     self.state_mut(id)?.pid = status.pointer("/daemon/pid").and_then(Value::as_u64).map(|v| v as u32);
@@ -538,22 +544,14 @@ impl Context {
                     return Err(Failure::product("daemon.stop did not exit successfully"));
                 }
             }
-            self.state_mut(id)?.process.take();
+            if let Some(mut process) = self.state_mut(id)?.process.take() {
+                process.terminate()?;
+            }
         } else if kind == "lab" && self.state(id)?.lab.is_some() {
             self.lab(id, &["down".into()])?;
             util::sanitize_lab_logs(&self.state(id)?.dir)?;
+            self.lab(id, &["remove".into()])?;
             if let Some(name) = self.state_mut(id)?.lab.take() {
-                let mut command = Command::new("docker");
-                command.args(["rm", &name]);
-                let (code, _) = command_output(
-                    &mut command,
-                    &self.state(id)?.dir,
-                    "lab-remove",
-                    Duration::from_secs(10),
-                )?;
-                if code != 0 {
-                    return Err(Failure::environment("cannot remove the owned lab container"));
-                }
                 crate::guardian::lab(&name, &self.state(id)?.dir, self.state(id)?.port, false)?;
             }
         } else {
@@ -569,7 +567,24 @@ impl Context {
             .ok_or_else(|| Failure::runner("raw node is not started"))
     }
     pub fn ledger(&self, id: &str, since: u64, timeout: Duration) -> Result<Vec<Value>> {
+        self.ledger_checked(id, since, timeout, false)
+    }
+    pub fn ledger_checked(&self, id: &str, since: u64, timeout: Duration, complete: bool) -> Result<Vec<Value>> {
         let value = self.ipc(id, "virtual.recorded", json!({"since":since}), timeout)?;
+        if complete
+            && value
+                .pointer("/stats/dropped")
+                .and_then(Value::as_u64)
+                .is_some_and(|n| n > 0)
+            && value
+                .pointer("/stats/oldest_sequence")
+                .and_then(Value::as_u64)
+                .is_none_or(|oldest| since < oldest.saturating_sub(1))
+        {
+            return Err(Failure::product(
+                "ledger overflow prevents a complete empty/exact assertion",
+            ));
+        }
         value
             .as_array()
             .or_else(|| value.get("events").and_then(Value::as_array))
@@ -691,6 +706,7 @@ fn copy_tree(source: &Path, dest: &Path) -> Result<()> {
 }
 pub fn isolated_env(command: &mut Command, dir: &Path, socket: &Path) {
     command
+        .env("OPENERGY_CONFIG", dir.join("config.toml"))
         .env("OPENERGY_CONFIG_DIR", dir)
         .env("OPENERGY_TLS_DIR", dir.join("tls"))
         .env("OPENERGY_SOCKET", socket)
@@ -741,6 +757,7 @@ pub fn run_scenario(options: &Options, scenario: Scenario, dir: PathBuf) -> Scen
         failed_step: None,
         elapsed_ms: 0,
         failure: None,
+        cleanup_failures: Vec::new(),
         artifact_dir: None,
         stderr_tails: BTreeMap::new(),
         measurements: Vec::new(),
@@ -760,6 +777,7 @@ pub fn run_scenario(options: &Options, scenario: Scenario, dir: PathBuf) -> Scen
                         op: original.op,
                         fields: serde_json::from_value(expanded)?,
                     };
+                    step.validate()?;
                     let value = context.execute(&step)?;
                     if let Some(name) = step.fields.get("save").and_then(Value::as_str) {
                         context.vars.insert(name.into(), value);
@@ -780,6 +798,7 @@ pub fn run_scenario(options: &Options, scenario: Scenario, dir: PathBuf) -> Scen
                 }
             }
             let cleanup_errors = context.cleanup();
+            report.cleanup_failures = cleanup_errors.clone();
             let result = result.and_then(|()| cleanup_errors.into_iter().next().map_or(Ok(()), Err));
             if let Err(error) = result {
                 report.failure = Some(error);
@@ -814,32 +833,51 @@ pub fn run_scenario(options: &Options, scenario: Scenario, dir: PathBuf) -> Scen
     report
 }
 
+/// Run socket I/O in blocking mode, bounded per call by the absolute deadline.
+/// Polling with short sleeps costs one timer wakeup per socket-buffer refill
+/// (8 KiB on macOS); hosted VMs stretch those wakeups enough that an 11 MiB
+/// clipboard fixture misses its deadline. The kernel wakes a blocked call as
+/// soon as the peer makes progress, so this measures the daemon, not timers.
+#[cfg(unix)]
+fn blocking_io<T>(stream: &mut UnixStream, io: impl FnOnce(&mut UnixStream) -> Result<T>) -> Result<T> {
+    stream.set_nonblocking(false)?;
+    let result = io(stream);
+    stream.set_nonblocking(true)?;
+    result
+}
 #[cfg(unix)]
 fn read_ipc(stream: &mut UnixStream, deadline: Instant) -> Result<Value> {
     fn exact(stream: &mut UnixStream, bytes: &mut [u8], deadline: Instant) -> Result<()> {
         use std::io::Read;
         let mut offset = 0;
         while offset < bytes.len() {
-            util::check_deadline(deadline, "IPC read")?;
+            // macOS rejects socket options with EINVAL once both directions are shut
+            // down; the next call then reports EOF or EPIPE without blocking.
+            let _ = stream.set_read_timeout(util::io_budget(deadline, "IPC read")?);
             match stream.read(&mut bytes[offset..]) {
                 Ok(0) => return Err(Failure::product("IPC connection closed inside frame")),
                 Ok(count) => offset += count,
-                Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => util::wait_io(deadline, "IPC read")?,
-                Err(e) if e.kind() == std::io::ErrorKind::Interrupted => {}
+                Err(e)
+                    if matches!(
+                        e.kind(),
+                        std::io::ErrorKind::WouldBlock | std::io::ErrorKind::TimedOut | std::io::ErrorKind::Interrupted
+                    ) => {}
                 Err(e) => return Err(Failure::product(format!("IPC read: {e}"))),
             }
         }
         Ok(())
     }
-    let mut header = [0; 4];
-    exact(stream, &mut header, deadline)?;
-    let len = u32::from_be_bytes(header) as usize;
-    if len > 16 * 1024 * 1024 {
-        return Err(Failure::product("IPC response exceeds frozen 16 MiB cap"));
-    }
-    let mut bytes = vec![0; len];
-    exact(stream, &mut bytes, deadline)?;
-    serde_json::from_slice(&bytes).map_err(|_| Failure::product("IPC response is invalid JSON"))
+    blocking_io(stream, |stream| {
+        let mut header = [0; 4];
+        exact(stream, &mut header, deadline)?;
+        let len = u32::from_be_bytes(header) as usize;
+        if len > 16 * 1024 * 1024 {
+            return Err(Failure::product("IPC response exceeds frozen 16 MiB cap"));
+        }
+        let mut bytes = vec![0; len];
+        exact(stream, &mut bytes, deadline)?;
+        serde_json::from_slice(&bytes).map_err(|_| Failure::product("IPC response is invalid JSON"))
+    })
 }
 #[cfg(unix)]
 fn write_ipc(stream: &mut UnixStream, value: &Value, deadline: Instant) -> Result<()> {
@@ -849,18 +887,27 @@ fn write_ipc(stream: &mut UnixStream, value: &Value, deadline: Instant) -> Resul
         return Err(Failure::runner("request exceeds frozen 16 MiB IPC cap"));
     }
     let header = (bytes.len() as u32).to_be_bytes();
-    for slice in [header.as_slice(), bytes.as_slice()] {
-        let mut offset = 0;
-        while offset < slice.len() {
-            util::check_deadline(deadline, "IPC write")?;
-            match stream.write(&slice[offset..]) {
-                Ok(0) => return Err(Failure::product("IPC write returned zero")),
-                Ok(count) => offset += count,
-                Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => util::wait_io(deadline, "IPC write")?,
-                Err(e) if e.kind() == std::io::ErrorKind::Interrupted => {}
-                Err(e) => return Err(Failure::product(format!("IPC write: {e}"))),
+    blocking_io(stream, |stream| {
+        for slice in [header.as_slice(), bytes.as_slice()] {
+            let mut offset = 0;
+            while offset < slice.len() {
+                // macOS rejects socket options with EINVAL once both directions are shut
+                // down; the next call then reports EOF or EPIPE without blocking.
+                let _ = stream.set_write_timeout(util::io_budget(deadline, "IPC write")?);
+                match stream.write(&slice[offset..]) {
+                    Ok(0) => return Err(Failure::product("IPC write returned zero")),
+                    Ok(count) => offset += count,
+                    Err(e)
+                        if matches!(
+                            e.kind(),
+                            std::io::ErrorKind::WouldBlock
+                                | std::io::ErrorKind::TimedOut
+                                | std::io::ErrorKind::Interrupted
+                        ) => {}
+                    Err(e) => return Err(Failure::product(format!("IPC write: {e}"))),
+                }
             }
         }
-    }
-    Ok(())
+        Ok(())
+    })
 }

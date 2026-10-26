@@ -1,7 +1,7 @@
 # Requirement: Wrong TLS pin refuses connection, reports a trust error, and sends no plaintext fallback.
 name = "S7-wrong-pin"
 requirement = "Wrong TLS pin refuses connection, reports a trust error, and sends no plaintext fallback."
-blocked_by = ["WP4", "WP6"]
+blocked_by = []
 timeout_ms = 1800
 
 [[node]]

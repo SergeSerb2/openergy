@@ -1,0 +1,440 @@
+{
+  "date_local": "2026-10-22",
+  "source": "b50a7786d1064e07a2e02a7f3de1dc17e205501d",
+  "rust_build_source": "84bd43b91502b1da65208655436179f808ff2a29",
+  "scope": "AMD64 container execution on an ARM64 macOS host; virtual daemons and real public CLI/IPC/network; not physical AMD64 desktop or performance acceptance",
+  "official_base_image": "rust@sha256:54e39a2f4480fd827ebfa47736212703a1e46be0fddf7e1590aa0e94b8d0cae1",
+  "prepared_image_id": "sha256:f60932a96e22f2dbc3bc6d0645822ba837eedccbabca13b8a3c2fee8d2a74c15",
+  "compiler": "rustc1.99.1 (58cf8f9c3 2026-10-13)",
+  "target": "x86_64-unknown-linux-gnu",
+  "python": "3.11.2",
+  "build": {
+    "locked_offline_workspace_release": "passed",
+    "strict_workspace_all_targets_clippy": "passed",
+    "formatting": "passed",
+    "cargo_jobs": 2,
+    "memory_cap_bytes": 4294967296,
+    "cpus": 2,
+    "runtime_network": "none",
+    "rust_cargo_files_matched_after_execution": 112,
+    "input_manifest_sha256": "32edb86d8b25a30a99f8a782179bba42f8a49caa524855a9a32a47edce35017a",
+    "source_status_clean": true,
+    "unchanged_cargo_lock_sha256": "0cc466112ead33a26cb59fce717d83c202bd470e6ba64394ab7c81ac560c6f3f",
+    "priority": "Driver and command launchers use nice -n15; nested adjustments are capped by Linux, so this is reduced-priority execution, not a measured exact nice15 claim."
+  },
+  "initial_package_failures": [
+    {
+      "kind": "cache prerequisite",
+      "result": "offline cargo fetch lacked windows-sys0.61.2; locked sources fetched in a preparation-only container, then runtime network disabled",
+      "log_sha256": "0b0b68ca3ce751f2fa8b82b20fefdd0fe696afb4ec0efdf7bfeea08b855aeae0"
+    },
+    {
+      "kind": "product compatibility defect",
+      "result": "TypeError: TarFile.extractall() got an unexpected keyword argument 'filter'",
+      "source": "84bd43b91502b1da65208655436179f808ff2a29",
+      "log_sha256": "358cfe38a1fb29984b7fc7757abe1f44dd1ed25957f8915a4256b7557fb665ec"
+    }
+  ],
+  "fix": {
+    "commit": "b50a7786d1064e07a2e02a7f3de1dc17e205501d",
+    "file": "tools/release/release.py",
+    "sha256": "df93c46798a266fc0581b459913e88e05d2a644768be07c738c07b633928efba",
+    "behavior": "Extract only exact staged regular-file names; reject unexpected/duplicate/missing/special entries and size/content mismatch; derive destinations from staging, create exclusively, normalize permissions; retain Python3.11 minimum",
+    "review": "r14 no concrete introducedP1/P2 scoped source review; no runtime independently reproduced",
+    "review_nuance": "Empty sparse metadata [] is not rejected by the truthiness check. The local writer does not emit sparse entries and staged size/digest constrain bytes. No claim of an arbitrary archive extractor."
+  },
+  "package": {
+    "manifest": {
+      "commit": "b50a7786d1064e07a2e02a7f3de1dc17e205501d",
+      "compiler": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "dirty": false,
+      "notarized": false,
+      "rust": "1.99.1",
+      "signing": "unsigned",
+      "source_date_epoch": 1792664981,
+      "tag": null,
+      "target": "x86_64-unknown-linux-gnu",
+      "third_party_notices": true,
+      "verification": "packaged daemon CLI/virtual IPC smoke; native input not tested",
+      "version": "0.1.0"
+    },
+    "archive_sha256": "e021d50d0ea68da826ac51ebd7d6331dd51f79776816be06c6747812fa5560d6",
+    "archive_bytes": 2260648,
+    "daemon_sha256": "62fd1a9568e50589db274193f9360b50ce45099bc0eea3d40488af6f98097af7",
+    "daemon_bytes": 4889464,
+    "regular_files": 9,
+    "payload_bytes": 5036287,
+    "embedded_matches_sidecar": true,
+    "elf_class": 64,
+    "elf_machine": 62,
+    "elf_little_endian": true,
+    "rust_cargo_input_files_match": 112
+  },
+  "direct_cli": [
+    {
+      "check": "preserve_socket_file",
+      "passed": true
+    },
+    {
+      "check": "preserve_socket_symlink",
+      "passed": true
+    },
+    {
+      "check": "relative_paths",
+      "passed": true
+    },
+    {
+      "check": "replaced_socket_shutdown",
+      "passed": true
+    },
+    {
+      "check": "log_symlink",
+      "passed": true
+    },
+    {
+      "check": "log_permissions",
+      "passed": true
+    },
+    {
+      "check": "ipc_framing",
+      "passed": true
+    },
+    {
+      "check": "oversized_response",
+      "passed": true
+    },
+    {
+      "check": "cli_validation",
+      "passed": true
+    },
+    {
+      "check": "pinned_connect_rollback",
+      "passed": true
+    },
+    {
+      "check": "stale_socket_and_single_instance",
+      "passed": true
+    },
+    {
+      "check": "connecting_idempotence",
+      "passed": true
+    },
+    {
+      "check": "cli_connect_host",
+      "passed": true
+    },
+    {
+      "check": "pinned_trust_revoke",
+      "passed": true
+    },
+    {
+      "check": "daemon_argument_validation",
+      "passed": true
+    }
+  ],
+  "focused_suites": [
+    {
+      "selection": "S20-*",
+      "report_sha256": "d69cd67255144c91757911b5b1cc9077c75c15c79bd5c804b188df5008d0e1e0",
+      "passed": 2,
+      "failed": 0,
+      "excluded": 0,
+      "cleanup_failures": 0,
+      "scenarios": [
+        {
+          "scenario": "S20-parent-exit",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "S20-parent-off",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        }
+      ]
+    },
+    {
+      "selection": "S6-*",
+      "report_sha256": "2a497732d39e2e3ea52a08428087fa7307ad2054bd04475b5bd33b0c74b501f7",
+      "passed": 1,
+      "failed": 0,
+      "excluded": 0,
+      "cleanup_failures": 0,
+      "scenarios": [
+        {
+          "scenario": "S6-trust-approval",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        }
+      ]
+    },
+    {
+      "selection": "S19-*",
+      "report_sha256": "2b69da2f9329cb9f84af3935f5818c0ec2d8340741f99594927f25d511b3775a",
+      "passed": 1,
+      "failed": 0,
+      "excluded": 0,
+      "cleanup_failures": 0,
+      "scenarios": [
+        {
+          "scenario": "S19-config-patch",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        }
+      ]
+    },
+    {
+      "selection": "D2-*",
+      "report_sha256": "45f4ae6bd78973567fa3ccbcb2585c4d9eb1d377af1b9446d91b690a740a9581",
+      "passed": 1,
+      "failed": 0,
+      "excluded": 0,
+      "cleanup_failures": 0,
+      "scenarios": [
+        {
+          "scenario": "D2-restart-disconnected-workers",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        }
+      ]
+    },
+    {
+      "selection": "Q*",
+      "report_sha256": "9c9e17e8708f75790a81e225128abc73bce105daf62e9a4e17fe3c2bbbb57391",
+      "passed": 23,
+      "failed": 0,
+      "excluded": 0,
+      "cleanup_failures": 0,
+      "scenarios": [
+        {
+          "scenario": "Q1-primary-screen-name",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "Q10-clipboard-policy-cancels-chunks",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "Q11-layout-delay-unmapped-edge",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "Q12-client-cannot-disable-heartbeat",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "Q13-clipboard-readback-recovery",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "Q14-client-duplicate-clipboard-formats",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "Q15-server-duplicate-clipboard-formats",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "Q16-lock-hotkey-grammar",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "Q17-preentry-modifier-mask",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "Q18-empty-clipboard-clear",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "Q19-unavailable-is-not-clear",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "Q2-client-setup-clipboard",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "Q20-client-unsupported-only-clipboard",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "Q20-server-unsupported-only-clipboard",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "Q21-client-unsupported-only-local-clipboard",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "Q21-server-unsupported-only-local-clipboard",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "Q3-server-setup-clipboard",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "Q4-two-held-shift-keys",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "Q5-live-layout-peer-geometry",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "Q6-disabled-clipboard-enter",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "Q7-receive-disabled-ownership",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "Q8-zero-button-key-release",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        },
+        {
+          "scenario": "Q9-reconnect-clipboard-sequence",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        }
+      ]
+    },
+    {
+      "selection": "A1-*",
+      "report_sha256": "0578f107ddfb9d4bbe67d52b5c2accfc02d181cfdeed1137c02302246cab52ad",
+      "passed": 1,
+      "failed": 0,
+      "excluded": 0,
+      "cleanup_failures": 0,
+      "scenarios": [
+        {
+          "scenario": "A1-modifier-and-receiver-wheel",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        }
+      ]
+    },
+    {
+      "selection": "A2-*",
+      "report_sha256": "5ce8ec6b7715051f78945036b518f933926cc8584530e2fdf3cc4d254a8bb10b",
+      "passed": 1,
+      "failed": 0,
+      "excluded": 0,
+      "cleanup_failures": 0,
+      "scenarios": [
+        {
+          "scenario": "A2-client-direction-version-heartbeat-sequence",
+          "outcome": "PASS",
+          "failed_step": null,
+          "failure": null
+        }
+      ]
+    }
+  ],
+  "multithread_parent": {
+    "scope": "real virtual daemon + ctl; private files; real pthread parent; no native backend",
+    "pass": true,
+    "pidfd_present": true,
+    "leader_state": "Z",
+    "threads_while_worker_alive": 2,
+    "survived_leader_exit_ms": 4045,
+    "daemon_exit_code": 0,
+    "socket_removed": true,
+    "parent_final_state": "Z",
+    "parent_final_threads": 1,
+    "cleanup_complete": true,
+    "successful_status_calls": 30
+  },
+  "collision": {
+    "exit": 1,
+    "expected_refusal": true,
+    "archive_unchanged": true,
+    "log_sha256": "8bed2677b619fbe35337b962acd02119d05568f0fbd52ec99e19c9ea349a15cd"
+  },
+  "elf": {
+    "needed_libraries": [
+      "libgcc_s.so.1",
+      "libc.so.6",
+      "ld-linux-x86-64.so.2"
+    ],
+    "highest_recorded_glibc_symbol": "2.34",
+    "limit": "This symbol inventory does not prove support for every distribution or library configuration."
+  },
+  "logs_sha256": {
+    "build": "f9c91e50168d12b9416ac976de0ae62ed8a3c3f43c5aa826e3d2e2a8fd41b7b7",
+    "clippy": "a66bd3872148d4f770beff507c2ea61e4a311ce208ceece15af30ac106c14463",
+    "fmt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "package-fixed": "623ca37079e62f97eb71cbd3f94f15b13aabd2df0bc6c372d8348f37690ec9b7",
+    "direct": "7ac29fab2496d295394c28ca821b8772f71c4c953ae9568a3f15e892fe0c12c4",
+    "thread-parent": "4ba7df8345f08d25cc21ba1e4f459a94790eab064a71130cb77997491ebe4cd6"
+  },
+  "published": false,
+  "installed_software_changed": false,
+  "remaining_gates": [
+    "Physical native macOS/Windows/Linux desktop, permissions, focus, input, clipboard, login/wake acceptance",
+    "Positive Windows migration/service restoration",
+    "Two original PR security findings remain open; provider-stopped extra provenance review has no verdict",
+    "Verified confidential vulnerability reporting route",
+    "Trusted signed/notarized distribution"
+  ],
+  "cleanup": {
+    "owned_containers_removed": 6,
+    "owned_local_images_removed": 2,
+    "newly_pulled_base_tag_removed": true,
+    "existing_cargo_cache_preserved": true,
+    "raw_reports_and_artifact_retained_privately": true
+  }
+}

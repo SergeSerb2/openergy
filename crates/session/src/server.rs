@@ -1,13 +1,17 @@
 use crate::{
     clipboard::{self},
     common::*,
+    hotkey::Hotkey,
     layout::{Layout, Rect},
     notify, Action, CloseReason, ConnId, ServerEvent,
 };
 use openergy_config::{Config, Role};
 use openergy_platform::{ClipboardData, InputEvent};
 use openergy_protocol::{ClipboardId, Message, ProtocolVersion};
-use std::{collections::BTreeMap, sync::Arc};
+use std::{
+    collections::{BTreeMap, BTreeSet},
+    sync::Arc,
+};
 
 #[derive(Default, Clone)]
 struct Slot {
@@ -31,6 +35,8 @@ pub struct Server {
     now: u64,
     sequence: u32,
     local: Ledger,
+    hotkey: Option<Hotkey>,
+    hotkey_held: Ledger,
     opts: Options,
     slots: [Slot; 2],
 }
@@ -44,6 +50,7 @@ impl Server {
         let cursor = layout.rect(primary).center();
         let mut opts = Options::default();
         opts.apply(&config_options(&config, true));
+        let hotkey = config.hotkeys.lock_to_screen.as_deref().and_then(Hotkey::parse);
         Self {
             config,
             peers: BTreeMap::new(),
@@ -56,6 +63,8 @@ impl Server {
             now: 0,
             sequence: 0,
             local: Ledger::default(),
+            hotkey,
+            hotkey_held: Ledger::default(),
             opts,
             slots: [Slot::default(), Slot::default()],
         }
@@ -126,6 +135,7 @@ impl Server {
         }
         self.active = self.primary;
         self.local.clear();
+        self.hotkey_held.clear();
         self.layout.reset();
         self.cursor = self.layout.rect(self.primary).center();
         out.push(Action::ReleaseAllLocal);
@@ -219,6 +229,11 @@ impl Server {
                 }
             }
             ServerEvent::ClipboardPayload { id, data } => self.payload(None, id, data, out),
+            ServerEvent::ClipboardReadFailed { id } => {
+                if let Some(slot) = self.slots.get_mut(id.0 as usize) {
+                    slot.readback = false;
+                }
+            }
             ServerEvent::TimerTick { now_ms } => {
                 self.now = now_ms;
                 let dead = self
@@ -250,6 +265,7 @@ impl Server {
             }
             ServerEvent::ConfigChanged(cfg) => {
                 self.leave(out);
+                let clipboard_changed = self.config.clipboard != cfg.clipboard;
                 self.config = cfg;
                 self.primary = self
                     .config
@@ -261,16 +277,48 @@ impl Server {
                 self.layout = Layout::from_config(&self.config).unwrap_or_else(|_| Layout::empty());
                 self.opts = Options::default();
                 self.opts.apply(&config_options(&self.config, true));
-                let invalid = self
-                    .peers
-                    .iter()
-                    .filter_map(|(&c, p)| self.screen(&p.name).is_none().then_some(c))
-                    .collect::<Vec<_>>();
+                self.hotkey = self.config.hotkeys.lock_to_screen.as_deref().and_then(Hotkey::parse);
+                // Resolve aliases against the new layout before routing by its
+                // canonical names. A merge must retain only one screen owner.
+                let mut owners = BTreeSet::new();
+                let mut adopted = Vec::new();
+                let mut invalid = Vec::new();
+                for (&c, p) in &self.peers {
+                    if p.phase == Phase::Ready {
+                        if let Some(screen) = self.screen(&p.name).filter(|s| *s != self.primary && owners.insert(*s)) {
+                            adopted.push((c, self.name(screen).to_string()));
+                        } else {
+                            invalid.push(c);
+                        }
+                    }
+                }
                 for c in invalid {
                     self.remove(c, out);
                     close(c, CloseReason::Normal, out);
                 }
+                for (c, name) in adopted {
+                    if let Some(p) = self.peers.get_mut(&c) {
+                        p.name = name;
+                    }
+                }
+                // Config rectangles describe layout placement. DINF supplies
+                // the actual screen-local dimensions and origin for each peer.
+                for p in self.peers.values() {
+                    if p.phase == Phase::Ready {
+                        if let Some(screen) = self.screen(&p.name) {
+                            self.layout.set_rect(screen, p.screen);
+                        }
+                    }
+                }
+                if clipboard_changed {
+                    for slot in &mut self.slots {
+                        slot.readback = false;
+                    }
+                }
                 for (&c, p) in &mut self.peers {
+                    if clipboard_changed {
+                        p.transfers = Default::default();
+                    }
                     if p.phase == Phase::Ready {
                         send(c, Message::ResetOptions, out);
                         send(
@@ -382,6 +430,10 @@ impl Server {
                     self.fail(conn, Message::ErrorUnknown, out);
                     return;
                 };
+                if screen == self.primary {
+                    self.fail(conn, Message::ErrorUnknown, out);
+                    return;
+                }
                 let canonical = self.name(screen).to_string();
                 let existing = self
                     .peers
@@ -424,18 +476,20 @@ impl Server {
             return;
         }
         let Some(p) = self.peers.get_mut(&conn) else { return };
+        // A hello alone does not adopt a screen or grant clipboard ownership.
+        if p.phase != Phase::Ready {
+            return;
+        }
         match msg {
             Message::KeepAlive => {
                 p.alive(self.now);
             }
-            Message::SetOptions { options } => {
-                p.options.apply(&options);
-            }
-            Message::ResetOptions => {
-                p.options = Options::default();
-                p.last_alive = self.now;
-            }
-            Message::ClipboardGrab { id, sequence } if id.0 == 0 && self.config.clipboard.enabled => {
+            // CROP and DSOP only travel from server to client. Accepting them
+            // here lets a peer disable the host's heartbeat and timeout.
+            Message::SetOptions { .. } | Message::ResetOptions => {}
+            Message::ClipboardGrab { id, sequence }
+                if id.0 == 0 && self.config.clipboard.enabled && self.config.clipboard.receive =>
+            {
                 if let Some(slot) = self.slots.get_mut(id.0 as usize) {
                     if sequence >= slot.sequence {
                         slot.sequence = sequence;
@@ -489,37 +543,31 @@ impl Server {
         }
     }
     fn input(&mut self, ev: InputEvent, out: &mut Vec<Action>) {
-        let hotkey = if let InputEvent::KeyDown { key, modifiers, .. } = &ev {
-            self.config.hotkeys.lock_to_screen.as_deref().is_some_and(|chord| {
-                let mut mask = 0;
-                let mut code = None;
-                for part in chord.split('+').map(str::trim) {
-                    match part.to_ascii_lowercase().as_str() {
-                        "ctrl" | "control" => mask |= 2,
-                        "alt" => mask |= 4,
-                        "shift" => mask |= 1,
-                        "super" | "command" | "cmd" => mask |= 16,
-                        k => {
-                            let mut chars = k.chars();
-                            if let (Some(c), None) = (chars.next(), chars.next()) {
-                                code = Some(c as u16);
-                            }
-                        }
-                    }
-                }
-                code == Some(*key) && modifiers.0 & 0x3f == mask
-            })
-        } else {
-            false
+        // Capture state still observes consumed triggers, so mouse-button and
+        // modifier switch gates reflect the physical input until its release.
+        self.local.observe(&ev);
+        let held = match ev {
+            InputEvent::KeyDown { key, button, .. }
+            | InputEvent::KeyUp { key, button, .. }
+            | InputEvent::KeyRepeat { key, button, .. } => self.hotkey_held.has_key(key, button),
+            InputEvent::MouseDown { button } | InputEvent::MouseUp { button } => {
+                self.hotkey_held.buttons.contains(&button)
+            }
+            _ => false,
         };
+        if held {
+            self.hotkey_held.observe(&ev);
+            return;
+        }
+        let hotkey = !self.opts.disable_lock && self.hotkey.is_some_and(|key| key.matches(&ev, self.local.modifiers));
         if (matches!(ev, InputEvent::KeyDown { key: 0xef14, .. }) || hotkey) && !self.opts.disable_lock {
             self.opts.locked = !self.opts.locked;
             self.layout.reset();
         }
         if hotkey {
+            self.hotkey_held.observe(&ev);
             return;
         }
-        self.local.observe(&ev);
         match ev {
             InputEvent::MouseMoveAbs { x, y } => {
                 let dx = x.saturating_sub(self.cursor.0);
@@ -615,7 +663,12 @@ impl Server {
     }
     fn push_slots(&mut self, conn: ConnId, out: &mut Vec<Action>) {
         let Some(p) = self.peers.get_mut(&conn) else { return };
-        if p.version.minor < 6 || !p.options.clipboard || !self.config.clipboard.send {
+        if p.phase != Phase::Ready
+            || p.version.minor < 6
+            || !p.options.clipboard
+            || !self.config.clipboard.enabled
+            || !self.config.clipboard.send
+        {
             return;
         }
         for (i, s) in self.slots.iter_mut().enumerate() {
@@ -657,18 +710,23 @@ impl Server {
         }
     }
     fn payload(&mut self, owner: Option<ConnId>, id: ClipboardId, data: ClipboardData, out: &mut Vec<Action>) {
+        if !self.config.clipboard.enabled
+            || (owner.is_none() && !self.config.clipboard.send)
+            || (owner.is_some() && !self.config.clipboard.receive)
+        {
+            return;
+        }
         let Some(slot) = self.slots.get_mut(id.0 as usize) else {
             return;
         };
         let readback = owner.is_none() && slot.readback;
         let owner = if readback { slot.owner } else { owner };
         slot.readback = false;
-        if data.formats.is_empty() {
-            return;
-        }
         if slot.owner != owner {
             return;
         }
+        // A readable empty clipboard is a clear. Unavailable and own-write
+        // reads must arrive as ClipboardReadFailed, never an empty payload.
         match clipboard::marshal(&data, self.config.clipboard.max_bytes) {
             Ok(bytes) => {
                 slot.data = Some(Arc::new(bytes));

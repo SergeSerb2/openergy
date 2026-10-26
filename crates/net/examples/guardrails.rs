@@ -1,6 +1,6 @@
 //! Exercises real failed connects, a stalled socket, connect deadline, and a
 //! cross-thread wake. No platform code or production/LAN sockets are used.
-use openergy_net::{NetCommand, NetConfig, NetDriver, NetEvent, Priority, TransportMode};
+use openergy_net::{ConnectErrorKind, NetCommand, NetConfig, NetDriver, NetError, NetEvent, Priority, TransportMode};
 use openergy_session::DisconnectReason;
 use std::{
     net::{TcpListener, TcpStream},
@@ -21,7 +21,11 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         ..NetConfig::default()
     })?;
     driver.set_transport_mode(TransportMode::Frames)?;
+    // Windows can take just over two seconds to report a refused loopback
+    // connect. Keep this probe bounded and require refusal, not timeout.
+    driver.set_connect_timeout(Duration::from_secs(5))?;
     let mut out = Vec::new();
+    let refusal_started = Instant::now();
     driver.execute(
         NetCommand::Connect {
             host: "127.0.0.1".into(),
@@ -29,7 +33,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         },
         &mut out,
     );
-    let deadline = Instant::now() + Duration::from_secs(2);
+    let deadline = refusal_started + Duration::from_secs(6);
     while !out.iter().any(|e| matches!(e, NetEvent::ConnectFailed { .. })) && Instant::now() < deadline {
         driver.poll(Some(Duration::from_millis(20)), &mut out)?;
     }
@@ -39,10 +43,17 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         .count()
         != 1
         || out.iter().any(|e| matches!(e, NetEvent::Connected { .. }))
+        || !out.iter().any(|e| {
+            matches!(e, NetEvent::ConnectFailed { error, .. }
+                if ConnectErrorKind::from_message(error) == ConnectErrorKind::Refused)
+        })
     {
         return Err("failed connect did not produce exactly one ConnectFailed".into());
     }
-    println!("REFUSED exactly_one_ConnectFailed=PASS");
+    println!(
+        "REFUSED exactly_one_ConnectFailed=PASS classified_refused=PASS elapsed_ms={}",
+        refusal_started.elapsed().as_millis()
+    );
     out.clear();
     driver.execute(
         NetCommand::Listen {
@@ -67,17 +78,40 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     };
     out.clear();
     let start = Instant::now();
+    let mut refused = 0;
     for _ in 0..5 {
         let mut payload = b"SLOW".to_vec();
         payload.resize(1024 * 1024, 0);
-        driver.execute(
+        match driver.execute_checked(
             NetCommand::SendFrame {
                 conn,
                 payload,
                 priority: Priority::Input,
             },
             &mut out,
-        );
+        ) {
+            Ok(()) => {}
+            Err(NetError::QueueFull) => refused += 1,
+            Err(error) => return Err(error.into()),
+        }
+    }
+    if refused == 0 || driver.conn_info(conn).is_none() {
+        return Err("input budget did not refuse excess input while preserving its peer".into());
+    }
+    println!("INPUT_BUDGET refused={refused} peer_preserved=PASS");
+    // Input is refused before crossing the high-water limit. Control keeps its
+    // reserved allowance and must still trigger the slow-peer watchdog.
+    for _ in 0..2 {
+        let mut payload = b"SLOW".to_vec();
+        payload.resize(1024 * 1024, 0);
+        driver.execute_checked(
+            NetCommand::SendFrame {
+                conn,
+                payload,
+                priority: Priority::Control,
+            },
+            &mut out,
+        )?;
     }
     while start.elapsed() < Duration::from_secs(4)
         && !out.iter().any(|e| {

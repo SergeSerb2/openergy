@@ -65,9 +65,12 @@ pub fn lookup<'a>(value: &'a Value, path: &str) -> Option<&'a Value> {
 /// Object expectations are subsets. Arrays preserve order and length.
 pub fn matches(actual: &Value, expected: &Value) -> bool {
     match expected {
-        Value::Object(map) => map
-            .iter()
-            .all(|(key, value)| actual.get(key).is_some_and(|a| matches(a, value))),
+        Value::Object(map) => {
+            actual.is_object()
+                && map
+                    .iter()
+                    .all(|(key, value)| actual.get(key).is_some_and(|a| matches(a, value)))
+        }
         Value::Array(items) => actual
             .as_array()
             .is_some_and(|a| a.len() == items.len() && a.iter().zip(items).all(|(a, e)| matches(a, e))),
@@ -256,6 +259,16 @@ pub fn check_deadline(deadline: std::time::Instant, label: &str) -> Result<()> {
         return Err(Failure::product(format!("{label} absolute deadline expired")));
     }
     Ok(())
+}
+/// Timeout for one blocking socket call that must finish by `deadline`.
+pub fn io_budget(deadline: std::time::Instant, label: &str) -> Result<Option<std::time::Duration>> {
+    check_deadline(deadline, label)?;
+    // A zero timeout means "block forever" to the OS; keep at least 1 ms.
+    Ok(Some(
+        deadline
+            .saturating_duration_since(std::time::Instant::now())
+            .max(std::time::Duration::from_millis(1)),
+    ))
 }
 pub fn wait_io(deadline: std::time::Instant, label: &str) -> Result<()> {
     check_deadline(deadline, label)?;

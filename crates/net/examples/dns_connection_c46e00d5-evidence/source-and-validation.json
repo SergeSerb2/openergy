@@ -1,0 +1,184 @@
+{
+  "parent_head": "54aa50b9eafc51f6eef2589c100c509eaac7e415",
+  "runtime_source": "ac5c45081a9e060392cb850eddd625f07b591bfe",
+  "parent_descendants_only_evidence": true,
+  "candidate_commit": "a8a40f45cf66948bf1cda1f8b859de81f13f0c94",
+  "candidate_cherry_pick": "615c16e1df71bc0b350aeee4f1f34bceba5a59e0",
+  "candidate_reactor_sha256": "e03db331700926cac6ed75300ae3c4e7eb69d204a0299298f4179ca7457d88b0",
+  "fixed_reactor_sha256": "397691db37fb5e0a6b223ad7c447964346973eb5549f7eacbfadb41e787ffc61",
+  "candidate_probe_sha256": "8d43166cd621ef57dcaec206134af531666d56e5d70722634a1df7c9e776836b",
+  "final_probe_sha256": "a7dbab22249c7c65443c6943d04ab3c078d9d3f02a97016f5596fd0f6e6d4a2f",
+  "unchanged_candidate_probe_after_sha256": "8d43166cd621ef57dcaec206134af531666d56e5d70722634a1df7c9e776836b",
+  "fixed_rlib_sha256": "380b4cc628cdc5c343ef3156ab3d3bc718db37ab88863970685616f783872ce7",
+  "expanded_probe_binary_sha256": "53018f9c08095f04d4dc2b2ce15eb459387129f1d9508a6b466e40472df08896",
+  "unchanged_probe_binary_sha256": "99cc6930b23e1363a07980523057a6f8eca5c3fdaccd52c46f96d2face36e498",
+  "environment": {
+    "rustc": "1.99.1 (58cf8f9c3 2026-10-13)",
+    "nice": 15,
+    "jobs": 2,
+    "MACOSX_DEPLOYMENT_TARGET": "15.0",
+    "locked": true,
+    "offline": true
+  },
+  "reports": [
+    {
+      "path": "raw/original.log",
+      "source": "candidate reactor and unchanged candidate probe",
+      "exit_code": 1
+    },
+    {
+      "path": "raw/matrix-before.log",
+      "source": "candidate reactor and intermediate one-port refusal probe",
+      "exit_code": 1
+    },
+    {
+      "path": "raw/trace.log",
+      "source": "candidate reactor with temporary readiness trace and one-port probe",
+      "exit_code": 1
+    },
+    {
+      "path": "raw/matrix-after.log",
+      "source": "fixed reactor and intermediate one-port refusal probe",
+      "exit_code": 0
+    },
+    {
+      "path": "raw/original-probe-after.log",
+      "source": "fixed library and byte-identical candidate probe compiled with rustc",
+      "exit_code": 0
+    },
+    {
+      "path": "raw/full-final.log",
+      "source": "fixed reactor and final expanded probe",
+      "exit_code": 0
+    }
+  ],
+  "original_candidate_reports": {
+    "baseline-report.log": {
+      "unchanged": true,
+      "sha256": "0422f1da11c8342479c3217debe5d4d334e5b101963509df52f76e1bc4352e94",
+      "exit_code": 1
+    },
+    "patched-report.log": {
+      "unchanged": true,
+      "sha256": "cde066aae177c5f4349485be512b15dc017f0bc225856033c11cba1fc7c5242f",
+      "exit_code": 1
+    }
+  },
+  "checks": [
+    {
+      "label": "final-build",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "$HOME/.cargo/bin/cargo",
+        "+1.99.1",
+        "build",
+        "--locked",
+        "--offline",
+        "-j",
+        "2",
+        "-p",
+        "openergy-net",
+        "--lib",
+        "--example",
+        "dns_queue_cancel_c4806a3d"
+      ],
+      "exit_code": 0
+    },
+    {
+      "label": "full-final",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "target/debug/examples/dns_queue_cancel_c4806a3d",
+        "<PRIVATE_FIXTURE>/full-final"
+      ],
+      "exit_code": 0
+    },
+    {
+      "label": "final-clippy",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "$HOME/.cargo/bin/cargo",
+        "+1.99.1",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-j",
+        "2",
+        "-p",
+        "openergy-net",
+        "--lib",
+        "--example",
+        "dns_queue_cancel_c4806a3d",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0
+    },
+    {
+      "label": "final-format",
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "$HOME/.cargo/bin/rustfmt",
+        "+1.99.1",
+        "--check",
+        "--edition",
+        "2021",
+        "crates/net/src/reactor.rs",
+        "crates/net/examples/dns_queue_cancel_c4806a3d.rs"
+      ],
+      "exit_code": 0
+    },
+    {
+      "label": "final-whitespace",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "scope": {
+    "TCP": "loopback 25100..25119",
+    "mdns": false,
+    "TLS": false,
+    "native_backend": false,
+    "unit_tests_or_mocks_added": false
+  },
+  "limits": [
+    "Slow active OS DNS lookup and deterministic slow-DNS queue latency not measured.",
+    "Cache expiry runtime remains unverified; no crafted expiry work performed.",
+    "Native, positive Windows migration, provenance/security and trusted distribution gates remain open."
+  ],
+  "sanitization": {
+    "new_logs": "Replace absolute worktree prefix with <WORKTREE>; preserve result values.",
+    "historical_metadata": "Replace personal Cargo prefix with $HOME/.cargo/bin/ only; retain originals privately.",
+    "historical_raw": "Baseline/patched failure reports unchanged. Compiler-log worktree paths only replaced with <WORKTREE>; exact originals retained privately.",
+    "historical_logs_with_path_redactions": [
+      "raw/clippy-final.log",
+      "raw/baseline-build-2.log",
+      "raw/baseline-build-3.log",
+      "raw/clippy.log",
+      "raw/baseline-build-4.log",
+      "raw/baseline-build.log",
+      "raw/patched-report-build.log",
+      "raw/validation-clippy.log",
+      "raw/after-build.log"
+    ]
+  },
+  "evidence_audit": {
+    "initial_exit_code": 1,
+    "reason": "Personal worktree prefix remained in inherited compiler log.",
+    "final_exit_code": 0,
+    "corrective_action": "Redact paths only in compiler logs; retain private originals and unchanged baseline/patched failure reports."
+  }
+}

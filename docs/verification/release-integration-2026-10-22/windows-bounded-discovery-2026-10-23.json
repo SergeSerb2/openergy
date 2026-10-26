@@ -1,0 +1,2705 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-23",
+  "timezone": "America/Vancouver",
+  "result": "FAIL: native cancelled-startup acceptance; retained delivery and virtual control pass separately",
+  "source": {
+    "commit": "e4f48ba47ea69aa76a08de5cf0cf61c68d903c03",
+    "starting_worktree_clean": true,
+    "isolated_branch": "t3/windows-bounded-discovery-verification",
+    "archive_command": "git archive --format=tar --output <LOCAL_EVIDENCE>/source.tar e4f48ba47ea69aa76a08de5cf0cf61c68d903c03",
+    "archive_sha256": "21a551059f2dbbd7fc694e668512efb99805b33029490f424156c92c762ccf08",
+    "manifest_sha256": "53cf3242666110a06275cd01eb5b01495bf7be65a48ff3066da08bdd8682e556",
+    "source_manifest": "windows-bounded-discovery-2026-10-23/source-manifest.json",
+    "files": 801,
+    "git_exact_byte_matches": 800,
+    "git_clean_conversions": [
+      {
+        "path": "tools/windows/openergy-run.cmd",
+        "rule": "*.cmd text eol=crlf",
+        "git_bytes": 502,
+        "archive_bytes": 511,
+        "git_sha256": "74772411a85032212c7f4ba1be1948233804dcb21166c5caef0a6611ea2c3210",
+        "archive_sha256": "f784708ca8aa30160c34a96c406ee3b666d3d82d3cad6756f7aa8d6b6b21d11e",
+        "clean_blob": "9cd6f37ce26dde4edcad6f808492171f8daf3462",
+        "clean_blob_matches": true
+      }
+    ],
+    "all_git_tree_regular_files_present": true,
+    "product_or_probe_edits": false,
+    "source_before_build": {
+      "files": 801,
+      "all_hashes_match": true,
+      "all_readonly": true,
+      "archive_sha256": "21a551059f2dbbd7fc694e668512efb99805b33029490f424156c92c762ccf08",
+      "manifest_sha256": "53cf3242666110a06275cd01eb5b01495bf7be65a48ff3066da08bdd8682e556"
+    },
+    "source_after_build": {
+      "files": 801,
+      "all_hashes_match": true,
+      "all_readonly": true,
+      "archive_sha256": "21a551059f2dbbd7fc694e668512efb99805b33029490f424156c92c762ccf08",
+      "manifest_sha256": "53cf3242666110a06275cd01eb5b01495bf7be65a48ff3066da08bdd8682e556"
+    },
+    "source_after_runtime": {
+      "files": 801,
+      "all_hashes_match": true,
+      "all_readonly": true,
+      "archive_sha256": "21a551059f2dbbd7fc694e668512efb99805b33029490f424156c92c762ccf08",
+      "manifest_sha256": "53cf3242666110a06275cd01eb5b01495bf7be65a48ff3066da08bdd8682e556"
+    },
+    "control_script_sha256": "264d6a71e54de650498f6dcf46b806acaf5cc20f2022222082372cf614ab8aeb"
+  },
+  "fixture": {
+    "new_current_user_only_acl_protected": true,
+    "subdirectories": [
+      "source",
+      "target",
+      "bin",
+      "runtime",
+      "temp",
+      "logs"
+    ],
+    "temp_tmp": "<WINDOWS_FIXTURE>/temp",
+    "parent_temp_private": true,
+    "transport_alias": "<CURRENT_USER>code-windows",
+    "ssh_options": [
+      "BatchMode=yes",
+      "ConnectTimeout=8"
+    ],
+    "powershell_encoding": "UTF-16LE EncodedCommand, then protected script paths",
+    "preflight": {
+      "acl": {
+        "root_protected": true,
+        "current_user_only_items": 14,
+        "reparse_points": 0
+      },
+      "source_files_before_extraction": 0,
+      "target_files": 0,
+      "bin_files": 0,
+      "session": 0,
+      "priority": "BelowNormal",
+      "jobs": 2,
+      "recorded_utc": "2026-10-23T16:43:23.6051496Z",
+      "inventory": {
+        "recorded_utc": "2026-10-23T16:43:22.9362747Z",
+        "tcp_inventory_lines": 314,
+        "udp_inventory_lines": 61,
+        "process_inventory_count": 389,
+        "tcp_exit": 0,
+        "udp_exit": 0,
+        "assigned_tcp_listeners": [],
+        "assigned_udp_endpoints": [],
+        "fixture_processes": [],
+        "build_processes": []
+      }
+    },
+    "old_source_and_binary_fixtures_written_or_reused": false,
+    "tool_install_or_global_default_change": false,
+    "runtime_loopback_ports": [
+      25090,
+      25092,
+      25094,
+      25095,
+      25096,
+      25097,
+      25241
+    ],
+    "inventory_ports": "25080..25099 and 25241",
+    "production_ports_24800_5353_used": false,
+    "os_assigned_command_wake_sockets": "Existing library behavior; not a global network setting change."
+  },
+  "build": {
+    "source_commit": "e4f48ba47ea69aa76a08de5cf0cf61c68d903c03",
+    "started_utc": "2026-10-23T16:43:26.8084706Z",
+    "source_before": {
+      "files": 801,
+      "all_hashes_match": true,
+      "all_readonly": true,
+      "archive_sha256": "21a551059f2dbbd7fc694e668512efb99805b33029490f424156c92c762ccf08",
+      "manifest_sha256": "53cf3242666110a06275cd01eb5b01495bf7be65a48ff3066da08bdd8682e556"
+    },
+    "preflight_sha256": "1148c454eb8467a8a22321a8e8f55783014c77673ca04bcfa1ae330aa3e6e67c",
+    "session": 0,
+    "priority": "BelowNormal",
+    "jobs": 2,
+    "target": "x86_64-pc-windows-msvc",
+    "toolchain": "1.99.1-x86_64-pc-windows-msvc",
+    "passed": true,
+    "steps": [
+      {
+        "name": "clippy",
+        "arguments": [
+          "clippy",
+          "--locked",
+          "--offline",
+          "--release",
+          "--target",
+          "x86_64-pc-windows-msvc",
+          "--jobs",
+          "2",
+          "-p",
+          "openergy-net",
+          "-p",
+          "openergy-config",
+          "-p",
+          "openergy-session",
+          "-p",
+          "openergy-protocol",
+          "-p",
+          "openergy-ipc",
+          "-p",
+          "openergy-platform",
+          "-p",
+          "openergy-platform-windows",
+          "-p",
+          "openergy-daemon",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "started_utc": "2026-10-23T16:43:26.8159118Z",
+        "ended_utc": "2026-10-23T16:43:59.4740970Z",
+        "elapsed_ms": 32657,
+        "exit": 0,
+        "log_sha256": "ff11571b53dc9159dacc877da69616f487a5b3e6256d464e6ebb158d4b57d619",
+        "started_local": "2026-10-23T09:43:26.815911-07:00",
+        "ended_local": "2026-10-23T09:43:59.474097-07:00"
+      },
+      {
+        "name": "release",
+        "arguments": [
+          "build",
+          "--locked",
+          "--offline",
+          "--release",
+          "--target",
+          "x86_64-pc-windows-msvc",
+          "--jobs",
+          "2",
+          "-p",
+          "openergy-net",
+          "-p",
+          "openergy-config",
+          "-p",
+          "openergy-session",
+          "-p",
+          "openergy-protocol",
+          "-p",
+          "openergy-ipc",
+          "-p",
+          "openergy-platform",
+          "-p",
+          "openergy-platform-windows",
+          "-p",
+          "openergy-daemon"
+        ],
+        "started_utc": "2026-10-23T16:43:59.4801071Z",
+        "ended_utc": "2026-10-23T16:45:04.4330707Z",
+        "elapsed_ms": 64952,
+        "exit": 0,
+        "log_sha256": "6fc2c88fef093391de056702c70ad04032021d6f1648d6bb5e106f0489a430d9",
+        "started_local": "2026-10-23T09:43:59.480107-07:00",
+        "ended_local": "2026-10-23T09:45:04.433070-07:00"
+      },
+      {
+        "name": "examples",
+        "arguments": [
+          "build",
+          "--locked",
+          "--offline",
+          "--release",
+          "--target",
+          "x86_64-pc-windows-msvc",
+          "--jobs",
+          "2",
+          "-p",
+          "openergy-net",
+          "--example",
+          "discovery_recovery",
+          "--example",
+          "discovery"
+        ],
+        "started_utc": "2026-10-23T16:45:04.4359376Z",
+        "ended_utc": "2026-10-23T16:45:38.9199498Z",
+        "elapsed_ms": 34483,
+        "exit": 0,
+        "log_sha256": "6e6d65d6a694b96d38caf570ca1a4e5b05fb80f72ab64e0ed33ca97bedcedf31",
+        "started_local": "2026-10-23T09:45:04.435937-07:00",
+        "ended_local": "2026-10-23T09:45:38.919949-07:00"
+      }
+    ],
+    "source_after": {
+      "files": 801,
+      "all_hashes_match": true,
+      "all_readonly": true,
+      "archive_sha256": "21a551059f2dbbd7fc694e668512efb99805b33029490f424156c92c762ccf08",
+      "manifest_sha256": "53cf3242666110a06275cd01eb5b01495bf7be65a48ff3066da08bdd8682e556"
+    },
+    "ended_utc": "2026-10-23T16:45:39.2445872Z",
+    "started_local": "2026-10-23T09:43:26.808470-07:00",
+    "ended_local": "2026-10-23T09:45:39.244587-07:00",
+    "observed_processes": [
+      {
+        "name": "cargo.exe",
+        "session": 0,
+        "priority": "BelowNormal",
+        "path": "<USERPROFILE>\\.rustup\\toolchains\\1.99.1-x86_64-pc-windows-msvc\\bin\\cargo.exe"
+      },
+      {
+        "name": "rustc.exe",
+        "session": 0,
+        "priority": "BelowNormal",
+        "path": "<USERPROFILE>\\.rustup\\toolchains\\1.99.1-x86_64-pc-windows-msvc\\bin\\rustc.exe"
+      }
+    ]
+  },
+  "freeze": {
+    "frozen_utc": "2026-10-23T16:46:26.1958166Z",
+    "artifact_files": 1679,
+    "artifact_manifest_sha256": "251d8e933a0e619018709af42bb5f45445a01b5259e6f10e6e59713bc6dba110",
+    "frozen_bin": [
+      {
+        "path": "bin/discovery_recovery.exe",
+        "bytes": 1001472,
+        "sha256": "3bf1ae71aefc054a654fd362081c9d6055ca78dfb2072c0301c99f41b5b38f7f",
+        "readonly": true
+      },
+      {
+        "path": "bin/discovery.exe",
+        "bytes": 1589248,
+        "sha256": "ee74706c01147f095f03b4869c3e3ea4cb8d8fee0b92e4cd2b720f3c32a3195a",
+        "readonly": true
+      },
+      {
+        "path": "bin/openergy.exe",
+        "bytes": 4124672,
+        "sha256": "f1fada70f322a29df2d7a05762f456ca378dcad380ede927dd72a0d7e5768b4b",
+        "readonly": true
+      },
+      {
+        "path": "bin/libraries/libmdns_sd-97b021b8bc89fed1.rlib",
+        "bytes": 3936530,
+        "sha256": "db0a51cd4838e5451002577319b2a69153068d2b2c04a2040a296d5b31ba0a68",
+        "readonly": true
+      },
+      {
+        "path": "bin/libraries/libmdns_sd-d2bc7df45f7006c8.rlib",
+        "bytes": 3936466,
+        "sha256": "732f64bc9cb3eae88671f2902dbcb845e3dd473205feea8f52418ef2bab21cc4",
+        "readonly": true
+      },
+      {
+        "path": "bin/libraries/libopenergy_config.rlib",
+        "bytes": 4956948,
+        "sha256": "ae01a0925a13d0fc268aa480156ff7aa14df7f75239fe0230e285378fc81116c",
+        "readonly": true
+      },
+      {
+        "path": "bin/libraries/libopenergy_ipc.rlib",
+        "bytes": 1470710,
+        "sha256": "93b1c140748b608a72b8e6b30e9715015b812e79532dd068ee87fc61aafbd916",
+        "readonly": true
+      },
+      {
+        "path": "bin/libraries/libopenergy_net.rlib",
+        "bytes": 2033590,
+        "sha256": "c36d0a889628e3bfd84a60818df38ea1e3bb3ff0e78f5fd87d53249f64ef03ff",
+        "readonly": true
+      },
+      {
+        "path": "bin/libraries/libopenergy_platform_windows.rlib",
+        "bytes": 2502510,
+        "sha256": "0f3e4e2b2527800e50ba6d2f8e4c94b6203c344eaccd4583629d698c655f59c6",
+        "readonly": true
+      },
+      {
+        "path": "bin/libraries/libopenergy_platform.rlib",
+        "bytes": 2146008,
+        "sha256": "c2482f45a1f021a48aff0abd07f805f982297f1b6c444995e2f5a2e790bac10d",
+        "readonly": true
+      },
+      {
+        "path": "bin/libraries/libopenergy_protocol.rlib",
+        "bytes": 274640,
+        "sha256": "47f13bf3275dbe8d49fb2cce7fc2739f81ad665796db2753a2e2a97894fb6560",
+        "readonly": true
+      },
+      {
+        "path": "bin/libraries/libopenergy_session.rlib",
+        "bytes": 1036894,
+        "sha256": "95f21ca3a28b65dc63e03e4079288a920d3c269e33caf769b39e0c4d4581c1d2",
+        "readonly": true
+      }
+    ],
+    "source": {
+      "files": 801,
+      "all_hashes_match": true,
+      "all_readonly": true,
+      "archive_sha256": "21a551059f2dbbd7fc694e668512efb99805b33029490f424156c92c762ccf08",
+      "manifest_sha256": "53cf3242666110a06275cd01eb5b01495bf7be65a48ff3066da08bdd8682e556"
+    },
+    "acl": {
+      "root_protected": true,
+      "current_user_only_items": 2911,
+      "reparse_points": 0
+    },
+    "vendor_variants": [
+      {
+        "path": "target/x86_64-pc-windows-msvc/release/.fingerprint/mdns-sd-97b021b8bc89fed1/lib-mdns_sd.json",
+        "sha256": "7eb9e03a4feaf7b9c4f8444b2a0c4d760308d86f63135b5637ff1c0fe543671f",
+        "content": {
+          "rustc": 222933465615791797,
+          "features": "[\"async\", \"default\", \"log\", \"logging\"]",
+          "declared_features": "[\"async\", \"default\", \"log\", \"logging\", \"serde\", \"unstable-fuzz-api\"]",
+          "target": 5305059686108546846,
+          "profile": 6746928394341769436,
+          "path": 7333152853835898894,
+          "deps": [
+            [
+              332082171437474983,
+              "fastrand",
+              false,
+              11894197255579881765
+            ],
+            [
+              1412369323036719556,
+              "socket_pktinfo",
+              false,
+              17991999479642857154
+            ],
+            [
+              5634331288751192354,
+              "mio",
+              false,
+              11125354757030094375
+            ],
+            [
+              9796567635646162393,
+              "flume",
+              false,
+              9139307063616264026
+            ],
+            [
+              10227523052404841615,
+              "if_addrs",
+              false,
+              15420097756850437760
+            ],
+            [
+              11177420919098925944,
+              "log",
+              false,
+              8072086402137921374
+            ],
+            [
+              14976271205713915479,
+              "socket2",
+              false,
+              10177958102430848922
+            ]
+          ],
+          "local": [
+            {
+              "CheckDepInfo": {
+                "dep_info": "x86_64-pc-windows-msvc\\release\\.fingerprint\\mdns-sd-97b021b8bc89fed1\\dep-lib-mdns_sd",
+                "checksum": false
+              }
+            }
+          ],
+          "rustflags": [],
+          "config": 9396254390672932401,
+          "compile_kind": 9161124489350129226
+        }
+      },
+      {
+        "path": "target/x86_64-pc-windows-msvc/release/.fingerprint/mdns-sd-d2bc7df45f7006c8/lib-mdns_sd.json",
+        "sha256": "5379aad77dcef3cf11c81343f7aa43b03ed73e66085699c54b317adc505958f3",
+        "content": {
+          "rustc": 222933465615791797,
+          "features": "[\"async\", \"default\", \"log\", \"logging\"]",
+          "declared_features": "[\"async\", \"default\", \"log\", \"logging\", \"serde\", \"unstable-fuzz-api\"]",
+          "target": 5305059686108546846,
+          "profile": 6746928394341769436,
+          "path": 7333152853835898894,
+          "deps": [
+            [
+              332082171437474983,
+              "fastrand",
+              false,
+              11894197255579881765
+            ],
+            [
+              1412369323036719556,
+              "socket_pktinfo",
+              false,
+              6482032579839255425
+            ],
+            [
+              5634331288751192354,
+              "mio",
+              false,
+              16953893639256843999
+            ],
+            [
+              9796567635646162393,
+              "flume",
+              false,
+              9139307063616264026
+            ],
+            [
+              10227523052404841615,
+              "if_addrs",
+              false,
+              5124863510100344683
+            ],
+            [
+              11177420919098925944,
+              "log",
+              false,
+              13690508911201666601
+            ],
+            [
+              14976271205713915479,
+              "socket2",
+              false,
+              1828607246175399944
+            ]
+          ],
+          "local": [
+            {
+              "CheckDepInfo": {
+                "dep_info": "x86_64-pc-windows-msvc\\release\\.fingerprint\\mdns-sd-d2bc7df45f7006c8\\dep-lib-mdns_sd",
+                "checksum": false
+              }
+            }
+          ],
+          "rustflags": [],
+          "config": 9396254390672932401,
+          "compile_kind": 9161124489350129226
+        }
+      },
+      {
+        "path": "target/x86_64-pc-windows-msvc/release/.fingerprint/mdns-sd-e29bf40a622cc12e/lib-mdns_sd.json",
+        "sha256": "4c2e6e244e6cd91335f7724becd614bf0ee877fb01d683482adac310d063d55b",
+        "content": {
+          "rustc": 222933465615791797,
+          "features": "[\"async\", \"default\", \"log\", \"logging\"]",
+          "declared_features": "[\"async\", \"default\", \"log\", \"logging\", \"serde\", \"unstable-fuzz-api\"]",
+          "target": 5305059686108546846,
+          "profile": 15919458162580442393,
+          "path": 7333152853835898894,
+          "deps": [
+            [
+              332082171437474983,
+              "fastrand",
+              false,
+              369109002520409617
+            ],
+            [
+              1412369323036719556,
+              "socket_pktinfo",
+              false,
+              1789809399559049439
+            ],
+            [
+              5634331288751192354,
+              "mio",
+              false,
+              5986449586184505091
+            ],
+            [
+              9796567635646162393,
+              "flume",
+              false,
+              1058502420056986122
+            ],
+            [
+              10227523052404841615,
+              "if_addrs",
+              false,
+              15229449488832922178
+            ],
+            [
+              11177420919098925944,
+              "log",
+              false,
+              14226247476875081604
+            ],
+            [
+              14976271205713915479,
+              "socket2",
+              false,
+              16966336148735488563
+            ]
+          ],
+          "local": [
+            {
+              "CheckDepInfo": {
+                "dep_info": "x86_64-pc-windows-msvc\\release\\.fingerprint\\mdns-sd-e29bf40a622cc12e\\dep-lib-mdns_sd",
+                "checksum": false
+              }
+            }
+          ],
+          "rustflags": [],
+          "config": 9396254390672932401,
+          "compile_kind": 9161124489350129226
+        }
+      },
+      {
+        "path": "target/x86_64-pc-windows-msvc/release/.fingerprint/mdns-sd-ed5b31e481bb1d0b/lib-mdns_sd.json",
+        "sha256": "39c928c4250418dce3626b4268676e9d35ea9e80ab131b9bccb369e92393b250",
+        "content": {
+          "rustc": 222933465615791797,
+          "features": "[\"async\", \"default\", \"log\", \"logging\"]",
+          "declared_features": "[\"async\", \"default\", \"log\", \"logging\", \"serde\", \"unstable-fuzz-api\"]",
+          "target": 5305059686108546846,
+          "profile": 15644512558628479407,
+          "path": 7333152853835898894,
+          "deps": [
+            [
+              332082171437474983,
+              "fastrand",
+              false,
+              14722267306148548644
+            ],
+            [
+              1412369323036719556,
+              "socket_pktinfo",
+              false,
+              715658653851273061
+            ],
+            [
+              5634331288751192354,
+              "mio",
+              false,
+              858699467960289821
+            ],
+            [
+              9796567635646162393,
+              "flume",
+              false,
+              15720257798057732046
+            ],
+            [
+              10227523052404841615,
+              "if_addrs",
+              false,
+              14415510188418367260
+            ],
+            [
+              11177420919098925944,
+              "log",
+              false,
+              11066733454925896363
+            ],
+            [
+              14976271205713915479,
+              "socket2",
+              false,
+              2071259155540354193
+            ]
+          ],
+          "local": [
+            {
+              "CheckDepInfo": {
+                "dep_info": "x86_64-pc-windows-msvc\\release\\.fingerprint\\mdns-sd-ed5b31e481bb1d0b\\dep-lib-mdns_sd",
+                "checksum": false
+              }
+            }
+          ],
+          "rustflags": [],
+          "config": 9396254390672932401,
+          "compile_kind": 9161124489350129226
+        }
+      }
+    ],
+    "prior_freeze_failure": "Original build.ps1 expected eight libraries but observed seven selected libraries plus two mdns-sd variants. No build/probe/assertion rerun or source change."
+  },
+  "artifact_manifest": {
+    "path": "windows-bounded-discovery-2026-10-23/artifact-manifest.json",
+    "sha256": "67254ad8b623c6eb9db2d4f7793f25405c79ddafc3ba80d1871af57df30aa142",
+    "files": 1679,
+    "all_readonly_and_unchanged_after_runtime": true,
+    "original_and_frozen_binary_library_hash_pairs_verified": true,
+    "original_sha256": "251d8e933a0e619018709af42bb5f45445a01b5259e6f10e6e59713bc6dba110",
+    "copy_transform": "CRLF to LF for repository text policy; JSON values and file-entry hashes unchanged. Exact original Windows bytes retained privately."
+  },
+  "runtime": [
+    {
+      "name": "startup",
+      "executable": "<WINDOWS_FIXTURE>\\bin\\discovery_recovery.exe",
+      "executable_sha256": "3bf1ae71aefc054a654fd362081c9d6055ca78dfb2072c0301c99f41b5b38f7f",
+      "arguments": [
+        "startup",
+        "<WINDOWS_FIXTURE>\\runtime\\startup",
+        "25090",
+        "25094"
+      ],
+      "started_utc": "2026-10-23T16:47:12.1054896Z",
+      "session": 0,
+      "priority": "BelowNormal",
+      "timeout_seconds": 120,
+      "timed_out": false,
+      "forced_cleanup": [],
+      "observed_processes": [
+        {
+          "name": "discovery_recovery.exe",
+          "path": "<WINDOWS_FIXTURE>\\bin\\discovery_recovery.exe",
+          "created": "2026-10-23T09:47:12.1148420-07:00",
+          "session": 0,
+          "priority": "BelowNormal"
+        },
+        {
+          "name": "discovery_recovery.exe",
+          "path": "<WINDOWS_FIXTURE>\\bin\\discovery_recovery.exe",
+          "created": "2026-10-23T09:47:12.2011820-07:00",
+          "session": 0,
+          "priority": "BelowNormal"
+        }
+      ],
+      "exit": 1,
+      "elapsed_ms": 16720,
+      "ended_utc": "2026-10-23T16:47:28.8420492Z",
+      "stdout_sha256": "8feb2107ab300f4d7775bfb11300aecb772f387372374a310968358ce857f105",
+      "stderr_sha256": "da73ae23015c282730f234fc10483806e03ec6fc03247c9fbd849918d0069058",
+      "checks": [
+        "CHECK ordinary-replay-cache-overflow=true",
+        "CHECK live-handle-resolves=true",
+        "CHECK ordinary-replay-commands-drained=true",
+        "CHECK cancelled-distinct-types-retain-no-state=false",
+        "CHECK cancelled-replacements-preserve-identity=false",
+        "CHECK surviving-handle-receives-live-update=false",
+        "CHECK successful-limited-replacement-has-new-identity=true",
+        "CHECK successful-standard-replacement-releases-state=true",
+        "CHECK cancelled-replacements-preserve-standard-identity=true",
+        "CHECK surviving-standard-handle-receives-live-update=true",
+        "CHECK standard-to-limited-replacement=true",
+        "CHECK final-stop-clears-worker-state=true",
+        "CHECK publisher-exits-zero=true",
+        "CHECK worker-shutdown-ack=true"
+      ],
+      "check_count": 14,
+      "stdout": "STARTUP_METRICS={\"cached-ptr\": 802, \"cached-srv\": 567, \"cached-addr\": 3, \"cached-nsec\": 0, \"dns-registry-active\": 0, \"known-answer-suppression\": 0, \"cache-refresh-ptr\": 0, \"dns-registry-probe\": 0, \"cache-refresh-addr\": 0, \"cache-refresh-srv-txt\": 0, \"cached-subtype\": 0, \"timer\": 10561, \"dns-registry-timer\": 0, \"cached-txt\": 567, \"limited-view-states\": 1, \"browse\": 4, \"dns-registry-name-change\": 0}\nSTARTUP_METRICS={\"cached-ptr\": 802, \"cached-srv\": 567, \"cached-addr\": 3, \"cached-nsec\": 0, \"dns-registry-active\": 0, \"known-answer-suppression\": 0, \"cache-refresh-ptr\": 0, \"dns-registry-probe\": 0, \"cache-refresh-addr\": 0, \"cache-refresh-srv-txt\": 0, \"cached-subtype\": 0, \"timer\": 10905, \"dns-registry-timer\": 0, \"cached-txt\": 567, \"limited-view-states\": 0, \"browse\": 4, \"dns-registry-name-change\": 0}\nSTARTUP_METRICS={\"cached-ptr\": 802, \"cached-srv\": 860, \"cached-addr\": 3, \"cached-nsec\": 0, \"dns-registry-active\": 0, \"known-answer-suppression\": 0, \"cache-refresh-ptr\": 0, \"dns-registry-probe\": 0, \"cache-refresh-addr\": 0, \"cache-refresh-srv-txt\": 0, \"cached-subtype\": 0, \"timer\": 12661, \"dns-registry-timer\": 0, \"cached-txt\": 860, \"limited-view-states\": 0, \"browse\": 4, \"dns-registry-name-change\": 0}\nCANCELLED_STARTUPS distinct=32 replay_commands=16 replayed_overflows=16 before=1 after_barrier=0 after_settle=0 live_closed=true\nSTARTUP_METRICS={\"cached-ptr\": 801, \"cached-srv\": 802, \"cached-addr\": 3, \"cached-nsec\": 0, \"dns-registry-active\": 0, \"known-answer-suppression\": 0, \"cache-refresh-ptr\": 0, \"dns-registry-probe\": 0, \"cache-refresh-addr\": 0, \"cache-refresh-srv-txt\": 0, \"cached-subtype\": 0, \"timer\": 9419, \"dns-registry-timer\": 0, \"cached-txt\": 802, \"limited-view-states\": 1, \"browse\": 4, \"dns-registry-name-change\": 0}\nSTARTUP_METRICS={\"cached-ptr\": 801, \"cached-srv\": 802, \"cached-addr\": 3, \"cached-nsec\": 0, \"dns-registry-active\": 0, \"known-answer-suppression\": 0, \"cache-refresh-ptr\": 0, \"dns-registry-probe\": 0, \"cache-refresh-addr\": 0, \"cache-refresh-srv-txt\": 0, \"cached-subtype\": 0, \"timer\": 9419, \"dns-registry-timer\": 0, \"cached-txt\": 802, \"limited-view-states\": 0, \"browse\": 5, \"dns-registry-name-change\": 0}\nSTARTUP_METRICS={\"cached-ptr\": 801, \"cached-srv\": 802, \"cached-addr\": 3, \"cached-nsec\": 0, \"dns-registry-active\": 0, \"known-answer-suppression\": 0, \"cache-refresh-ptr\": 0, \"dns-registry-probe\": 0, \"cache-refresh-addr\": 0, \"cache-refresh-srv-txt\": 0, \"cached-subtype\": 0, \"timer\": 9419, \"dns-registry-timer\": 0, \"cached-txt\": 802, \"limited-view-states\": 0, \"browse\": 5, \"dns-registry-name-change\": 0}\nSTARTUP_METRICS={\"cached-ptr\": 801, \"cached-srv\": 802, \"cached-addr\": 3, \"cached-nsec\": 0, \"dns-registry-active\": 0, \"known-answer-suppression\": 0, \"cache-refresh-ptr\": 0, \"dns-registry-probe\": 0, \"cache-refresh-addr\": 0, \"cache-refresh-srv-txt\": 0, \"cached-subtype\": 0, \"timer\": 9431, \"dns-registry-timer\": 0, \"cached-txt\": 803, \"limited-view-states\": 1, \"browse\": 5, \"dns-registry-name-change\": 0}\nSTARTUP_METRICS={\"cached-ptr\": 800, \"cached-srv\": 801, \"cached-addr\": 2, \"cached-nsec\": 0, \"dns-registry-active\": 0, \"known-answer-suppression\": 0, \"cache-refresh-ptr\": 0, \"dns-registry-probe\": 0, \"cache-refresh-addr\": 0, \"cache-refresh-srv-txt\": 0, \"cached-subtype\": 0, \"timer\": 9431, \"dns-registry-timer\": 0, \"cached-txt\": 801, \"limited-view-states\": 0, \"browse\": 5, \"dns-registry-name-change\": 0}\nCHECK ordinary-replay-cache-overflow=true\nCHECK live-handle-resolves=true\nCHECK ordinary-replay-commands-drained=true\nCHECK cancelled-distinct-types-retain-no-state=false\nCHECK cancelled-replacements-preserve-identity=false\nCHECK surviving-handle-receives-live-update=false\nCHECK successful-limited-replacement-has-new-identity=true\nCHECK successful-standard-replacement-releases-state=true\nCHECK cancelled-replacements-preserve-standard-identity=true\nCHECK surviving-standard-handle-receives-live-update=true\nCHECK standard-to-limited-replacement=true\nCHECK final-stop-clears-worker-state=true\nCHECK publisher-exits-zero=true\nCHECK worker-shutdown-ack=true\n",
+      "stderr": "discovery_recovery: limited startup checks failed\n",
+      "started_local": "2026-10-23T09:47:12.105489-07:00",
+      "ended_local": "2026-10-23T09:47:28.842049-07:00",
+      "passed_checks": 11,
+      "failed_checks": [
+        "CHECK cancelled-distinct-types-retain-no-state=false",
+        "CHECK cancelled-replacements-preserve-identity=false",
+        "CHECK surviving-handle-receives-live-update=false"
+      ],
+      "run_count": 1,
+      "before": {
+        "recorded_utc": "2026-10-23T16:47:12.0017807Z",
+        "tcp_inventory_lines": 433,
+        "udp_inventory_lines": 64,
+        "process_inventory_count": 412,
+        "tcp_exit": 0,
+        "udp_exit": 0,
+        "assigned_tcp_listeners": [],
+        "assigned_udp_endpoints": [],
+        "fixture_processes": [],
+        "build_processes": []
+      },
+      "after": {
+        "recorded_utc": "2026-10-23T16:47:29.1106142Z",
+        "tcp_inventory_lines": 421,
+        "udp_inventory_lines": 62,
+        "process_inventory_count": 412,
+        "tcp_exit": 0,
+        "udp_exit": 0,
+        "assigned_tcp_listeners": [],
+        "assigned_udp_endpoints": [],
+        "fixture_processes": [],
+        "build_processes": []
+      },
+      "all_observed_processes_session_zero": true,
+      "all_observed_processes_below_normal": true
+    },
+    {
+      "name": "retained",
+      "executable": "<WINDOWS_FIXTURE>\\bin\\discovery_recovery.exe",
+      "executable_sha256": "3bf1ae71aefc054a654fd362081c9d6055ca78dfb2072c0301c99f41b5b38f7f",
+      "arguments": [
+        "probe",
+        "<WINDOWS_FIXTURE>\\runtime\\retained",
+        "25092",
+        "25096"
+      ],
+      "started_utc": "2026-10-23T16:47:29.3930656Z",
+      "session": 0,
+      "priority": "BelowNormal",
+      "timeout_seconds": 120,
+      "timed_out": false,
+      "forced_cleanup": [],
+      "observed_processes": [
+        {
+          "name": "discovery_recovery.exe",
+          "path": "<WINDOWS_FIXTURE>\\bin\\discovery_recovery.exe",
+          "created": "2026-10-23T09:47:29.4123930-07:00",
+          "session": 0,
+          "priority": "BelowNormal"
+        },
+        {
+          "name": "discovery_recovery.exe",
+          "path": "<WINDOWS_FIXTURE>\\bin\\discovery_recovery.exe",
+          "created": "2026-10-23T09:47:29.3937710-07:00",
+          "session": 0,
+          "priority": "BelowNormal"
+        }
+      ],
+      "exit": 0,
+      "elapsed_ms": 41471,
+      "ended_utc": "2026-10-23T16:48:10.8687828Z",
+      "stdout_sha256": "0048e0c0e472e327044734b9a9319cf01baf37e65b71f68ab33b7d14354116fe",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "checks": [
+        "CHECK initial-resolution=true",
+        "CHECK real-upstream-channel-overflow=true",
+        "CHECK limited-retained-replay=true",
+        "CHECK retained-namespace-stays-useful=true",
+        "CHECK retained-selection-stable=true",
+        "CHECK retained-selected-peer-live-update=true",
+        "CHECK retained-selected-peer-goodbye=true",
+        "CHECK retained-first-peer-goodbye-and-new-peer=true",
+        "CHECK retained-selected-survivors-stable=true",
+        "CHECK paused-update-coalesces-to-latest=true",
+        "CHECK paused-goodbye-replaces-view=true",
+        "CHECK fresh-advertisement-after-overflow=true",
+        "CHECK updated-port-and-untrusted-hint=true",
+        "CHECK goodbye-removes-all-peers=true",
+        "CHECK publisher-exits-zero=true",
+        "CHECK discovery-shutdown-submitted=true",
+        "CHECK sentinel-worker-shutdown-ack=true",
+        "CHECK snapshot-cap=true",
+        "CHECK snapshot-emission-spacing=true"
+      ],
+      "check_count": 19,
+      "stdout": "RETAINED_CACHE_METRICS={\"cached-srv\": 499, \"cached-nsec\": 0, \"cached-txt\": 499, \"browse\": 2, \"timer\": 7704, \"cached-addr\": 1, \"dns-registry-timer\": 0, \"cached-subtype\": 0, \"dns-registry-probe\": 0, \"known-answer-suppression\": 0, \"limited-view-states\": 0, \"cached-ptr\": 801, \"cache-refresh-addr\": 0, \"cache-refresh-srv-txt\": 0, \"cache-refresh-ptr\": 0, \"dns-registry-active\": 0, \"dns-registry-name-change\": 0}\nRETAINED_REPLAY attempt=1 drained=1000 disconnected=true elapsed_ms=80\nRETAINED_REPLAY attempt=2 drained=1000 disconnected=true elapsed_ms=81\nRETAINED_CACHE_AFTER_STOP={\"cached-srv\": 499, \"cached-nsec\": 0, \"cached-txt\": 499, \"browse\": 2, \"timer\": 8006, \"cached-addr\": 1, \"dns-registry-timer\": 0, \"cached-subtype\": 0, \"dns-registry-probe\": 0, \"known-answer-suppression\": 0, \"limited-view-states\": 0, \"cached-ptr\": 801, \"cache-refresh-addr\": 0, \"cache-refresh-srv-txt\": 0, \"cache-refresh-ptr\": 0, \"dns-registry-active\": 0, \"dns-registry-name-change\": 0}\nLIMITED_REPLAY peak=64 closed=false\nRETAINED_NAMESPACE burst=800 selected=burst-0002 full_polls=196 empty_polls=0 update_seen=true update_stays_fresh=true removal_seen=true removal_regressed=false\nAFTER_REMOVAL peers=[\"after-removal\", \"burst-0003\", \"burst-0005\", \"burst-0008\", \"burst-0010\", \"burst-0014\", \"burst-0016\", \"burst-0017\", \"burst-0019\", \"burst-0021\", \"burst-0026\", \"burst-0033\", \"burst-0040\", \"burst-0041\", \"burst-0043\", \"burst-0048\", \"burst-0049\", \"burst-0057\", \"burst-0059\", \"burst-0061\", \"burst-0064\", \"burst-0066\", \"burst-0072\", \"burst-0076\", \"burst-0089\", \"burst-0099\", \"burst-0103\", \"burst-0108\", \"burst-0109\", \"burst-0110\", \"burst-0126\", \"burst-0130\", \"burst-0131\", \"burst-0133\", \"burst-0136\", \"burst-0140\", \"burst-0144\", \"burst-0145\", \"burst-0150\", \"burst-0152\", \"burst-0155\", \"burst-0157\", \"burst-0168\", \"burst-0177\", \"burst-0182\", \"burst-0185\", \"burst-0186\", \"burst-0190\", \"burst-0197\", \"burst-0200\", \"burst-0207\", \"burst-0218\", \"burst-0227\", \"burst-0241\", \"burst-0245\", \"burst-0249\", \"burst-0281\", \"burst-0293\", \"burst-0299\", \"burst-0305\", \"burst-0308\", \"burst-0329\", \"burst-0333\", \"burst-replacement\"]\nAFTER_REMOVAL_CACHE={\"cached-srv\": 499, \"cached-nsec\": 0, \"cached-txt\": 499, \"browse\": 7, \"timer\": 7748, \"cached-addr\": 1, \"dns-registry-timer\": 0, \"cached-subtype\": 0, \"dns-registry-probe\": 0, \"known-answer-suppression\": 0, \"limited-view-states\": 1, \"cached-ptr\": 801, \"cache-refresh-addr\": 0, \"cache-refresh-srv-txt\": 0, \"cache-refresh-ptr\": 0, \"dns-registry-active\": 0, \"dns-registry-name-change\": 0}\nRECOVERY_OBSERVATION_MS=0\nSNAPSHOTS count=13 peak=64 too_close=false\nCHECK initial-resolution=true\nCHECK real-upstream-channel-overflow=true\nCHECK limited-retained-replay=true\nCHECK retained-namespace-stays-useful=true\nCHECK retained-selection-stable=true\nCHECK retained-selected-peer-live-update=true\nCHECK retained-selected-peer-goodbye=true\nCHECK retained-first-peer-goodbye-and-new-peer=true\nCHECK retained-selected-survivors-stable=true\nCHECK paused-update-coalesces-to-latest=true\nCHECK paused-goodbye-replaces-view=true\nCHECK fresh-advertisement-after-overflow=true\nCHECK updated-port-and-untrusted-hint=true\nCHECK goodbye-removes-all-peers=true\nCHECK publisher-exits-zero=true\nCHECK discovery-shutdown-submitted=true\nCHECK sentinel-worker-shutdown-ack=true\nCHECK snapshot-cap=true\nCHECK snapshot-emission-spacing=true\nBURST_SERVICES=800 SNAPSHOT_PEAK=64\n",
+      "stderr": "",
+      "started_local": "2026-10-23T09:47:29.393065-07:00",
+      "ended_local": "2026-10-23T09:48:10.868782-07:00",
+      "passed_checks": 19,
+      "failed_checks": [],
+      "run_count": 1,
+      "before": {
+        "recorded_utc": "2026-10-23T16:47:29.3836243Z",
+        "tcp_inventory_lines": 424,
+        "udp_inventory_lines": 62,
+        "process_inventory_count": 412,
+        "tcp_exit": 0,
+        "udp_exit": 0,
+        "assigned_tcp_listeners": [],
+        "assigned_udp_endpoints": [],
+        "fixture_processes": [],
+        "build_processes": []
+      },
+      "after": {
+        "recorded_utc": "2026-10-23T16:48:11.1309567Z",
+        "tcp_inventory_lines": 366,
+        "udp_inventory_lines": 62,
+        "process_inventory_count": 418,
+        "tcp_exit": 0,
+        "udp_exit": 0,
+        "assigned_tcp_listeners": [],
+        "assigned_udp_endpoints": [],
+        "fixture_processes": [],
+        "build_processes": []
+      },
+      "all_observed_processes_session_zero": true,
+      "all_observed_processes_below_normal": true
+    },
+    {
+      "name": "control",
+      "executable": "c:\\program files\\powershell\\7\\pwsh.exe",
+      "executable_sha256": "db6dd81183fe57d22e03b911ec9a30a2fd7c40542e97743615355a6fb44f458f",
+      "arguments": [
+        "-NoLogo",
+        "-NoProfile",
+        "-NonInteractive",
+        "-File",
+        "<WINDOWS_FIXTURE>\\source\\tools\\windows\\verify-control.ps1",
+        "-BinaryPath",
+        "<WINDOWS_FIXTURE>\\bin\\openergy.exe",
+        "-Port",
+        "25241"
+      ],
+      "started_utc": "2026-10-23T16:48:11.4066575Z",
+      "session": 0,
+      "priority": "BelowNormal",
+      "timeout_seconds": 120,
+      "timed_out": false,
+      "forced_cleanup": [],
+      "observed_processes": [
+        {
+          "name": "openergy.exe",
+          "path": "<WINDOWS_FIXTURE>\\bin\\openergy.exe",
+          "created": "2026-10-23T09:48:15.0326120-07:00",
+          "session": 0,
+          "priority": "BelowNormal"
+        },
+        {
+          "name": "openergy.exe",
+          "path": "<WINDOWS_FIXTURE>\\bin\\openergy.exe",
+          "created": "2026-10-23T09:48:15.0660390-07:00",
+          "session": 0,
+          "priority": "BelowNormal"
+        },
+        {
+          "name": "openergy.exe",
+          "path": "<WINDOWS_FIXTURE>\\bin\\openergy.exe",
+          "created": "2026-10-23T09:48:12.5992640-07:00",
+          "session": 0,
+          "priority": "BelowNormal"
+        }
+      ],
+      "exit": 0,
+      "elapsed_ms": 6196,
+      "ended_utc": "2026-10-23T16:48:17.6065508Z",
+      "stdout_sha256": "cff5f35f8108ea7ead35e8776684a1e4df40b3694c71ff67c7c57d72cc7ac915",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "checks": [
+        "PASS ctl status alias",
+        "PASS status command",
+        "PASS disconnect command",
+        "PASS connect command",
+        "PASS config patch saves and applies",
+        "PASS second daemon rejected",
+        "PASS kernel DACL: protected, one allow ACE, current user SID only",
+        "PASS events subscribe response",
+        "PASS event bus subscription delivery",
+        "PASS logs subscribe response",
+        "PASS logs subscription delivery",
+        "PASS fragmented frame survives read timeouts",
+        "PASS unknown method returns typed error",
+        "PASS 65th client rejected",
+        "PASS client slot recovers",
+        "PASS ipc-stop exit deadline",
+        "PASS ipc-stop exit=0",
+        "PASS absent daemon error",
+        "PASS watched daemon stays alive with parent",
+        "PASS parent exit deadline",
+        "PASS parent exit=0",
+        "PASS parent-watched exit deadline",
+        "PASS parent-watched exit=0"
+      ],
+      "check_count": 23,
+      "stdout": "PASS ctl status alias\nPASS status command\nPASS disconnect command\nPASS connect command\nPASS config patch saves and applies\nPASS second daemon rejected\nPASS kernel DACL: protected, one allow ACE, current user SID only\nPASS events subscribe response\nPASS event bus subscription delivery\nPASS logs subscribe response\nPASS logs subscription delivery\nPASS fragmented frame survives read timeouts\nPASS unknown method returns typed error\nPASS 65th client rejected\nPASS client slot recovers\nPASS ipc-stop exit deadline\nPASS ipc-stop exit=0\nPASS absent daemon error\nPASS watched daemon stays alive with parent\nPASS parent exit deadline\nPASS parent exit=0\nPASS parent-watched exit deadline\nPASS parent-watched exit=0\nWINDOWS_CONTROL_PASS\n",
+      "stderr": "",
+      "started_local": "2026-10-23T09:48:11.406657-07:00",
+      "ended_local": "2026-10-23T09:48:17.606550-07:00",
+      "passed_checks": 23,
+      "failed_checks": [],
+      "run_count": 1,
+      "before": {
+        "recorded_utc": "2026-10-23T16:48:11.3966497Z",
+        "tcp_inventory_lines": 366,
+        "udp_inventory_lines": 62,
+        "process_inventory_count": 419,
+        "tcp_exit": 0,
+        "udp_exit": 0,
+        "assigned_tcp_listeners": [],
+        "assigned_udp_endpoints": [],
+        "fixture_processes": [],
+        "build_processes": []
+      },
+      "after": {
+        "recorded_utc": "2026-10-23T16:48:17.8089762Z",
+        "tcp_inventory_lines": 391,
+        "udp_inventory_lines": 62,
+        "process_inventory_count": 408,
+        "tcp_exit": 0,
+        "udp_exit": 0,
+        "assigned_tcp_listeners": [],
+        "assigned_udp_endpoints": [],
+        "fixture_processes": [],
+        "build_processes": []
+      },
+      "all_observed_processes_session_zero": true,
+      "all_observed_processes_below_normal": true
+    }
+  ],
+  "startup_finding": {
+    "accepted": false,
+    "failure_count": 3,
+    "passed_checks": 11,
+    "total_checks": 14,
+    "exact_metric": "CANCELLED_STARTUPS distinct=32 replay_commands=16 replayed_overflows=16 before=1 after_barrier=0 after_settle=0 live_closed=true",
+    "observation": "The previous live limited subscription was lost. The actual gauge fell from 1 to 0, rather than preserving the one existing state. This run does not show 32 orphan states.",
+    "root_cause": "Not established by this one unchanged acceptance run; no product diagnosis or fix was attempted.",
+    "repeated": false
+  },
+  "cleanup": {
+    "postflight": {
+      "recorded_utc": "2026-10-23T16:48:35.5369832Z",
+      "passed": true,
+      "source": {
+        "files": 801,
+        "all_hashes_match": true,
+        "all_readonly": true,
+        "archive_sha256": "21a551059f2dbbd7fc694e668512efb99805b33029490f424156c92c762ccf08",
+        "manifest_sha256": "53cf3242666110a06275cd01eb5b01495bf7be65a48ff3066da08bdd8682e556"
+      },
+      "artifacts_unchanged_readonly": 1679,
+      "inputs_unchanged": 8,
+      "acl": {
+        "root_protected": true,
+        "current_user_only_items": 2976,
+        "reparse_points": 0
+      },
+      "toolchain_defaults_unchanged": true,
+      "temp_entries": [],
+      "inventory": {
+        "recorded_utc": "2026-10-23T16:48:35.2759109Z",
+        "tcp_inventory_lines": 366,
+        "udp_inventory_lines": 61,
+        "process_inventory_count": 408,
+        "tcp_exit": 0,
+        "udp_exit": 0,
+        "assigned_tcp_listeners": [],
+        "assigned_udp_endpoints": [],
+        "fixture_processes": [],
+        "build_processes": []
+      }
+    },
+    "supplemental": {
+      "recorded_utc": "2026-10-23T16:48:35.5511413Z",
+      "extra_inputs_unchanged": 1,
+      "live_sharing_inventory_before_count": 1,
+      "live_sharing_inventory_after_count": 1,
+      "live_sharing_process_identity_unchanged": true,
+      "source_archive_sha256": "21a551059f2dbbd7fc694e668512efb99805b33029490f424156c92c762ccf08"
+    },
+    "final_retention_audit": {
+      "recorded_utc": "2026-10-23T16:49:29.6230410Z",
+      "acl": {
+        "root_protected": true,
+        "current_user_only_items": 2982,
+        "reparse_points": 0
+      },
+      "remaining_fixture_processes": 0,
+      "remaining_assigned_tcp_listeners": 0,
+      "remaining_assigned_udp_endpoints": 0,
+      "temp_entries": 0,
+      "bundle_sha256": "269cc9d05b5b9c01b6a4e110b3887cbd54604a6841d9478d5d06608d128ee7ad",
+      "source_archive_sha256": "21a551059f2dbbd7fc694e668512efb99805b33029490f424156c92c762ccf08",
+      "readonly_artifacts": 1679
+    },
+    "forced_process_cleanup": false,
+    "fixture_retained_for_review": true
+  },
+  "tool_identity": {
+    "pinned_before": {
+      "tools": [
+        {
+          "name": "cargo.exe",
+          "bytes": 27543552,
+          "sha256": "aa5b8980be3681899fde765ba47e2ed361463ae9dd8ee7cd1963c18d23743a0f"
+        },
+        {
+          "name": "rustc.exe",
+          "bytes": 110592,
+          "sha256": "ba03e3ba03a73d9fef19ab3659140f94b43615ec1d587fe9befc9aed3bd5aa72"
+        },
+        {
+          "name": "cargo-clippy.exe",
+          "bytes": 1175040,
+          "sha256": "bea1e468b531a389f6fe164d76ba98f73a2dac3495998dd085365df92105134f"
+        },
+        {
+          "name": "clippy-driver.exe",
+          "bytes": 11308544,
+          "sha256": "648db1897ec48a9f64bae9e0624761abab7b2904a6ab25d53cc2869a0245f99e"
+        },
+        {
+          "name": "rustfmt.exe",
+          "bytes": 4735488,
+          "sha256": "231e4b294d5f6d9f025a9025514e3e6b0ee5defa524fd016498e1c77eb96980a"
+        }
+      ],
+      "rustup_settings_sha256": "af11a5540001371324994abaa9ea1e69d50fed1acb1a87e4abef179e8816058f",
+      "cargo_configs": [],
+      "toolchains": [
+        "stable-x86_64-pc-windows-msvc (active, default)",
+        "nightly-x86_64-pc-windows-msvc",
+        "nightly-2026-08-10-x86_64-pc-windows-msvc",
+        "1.98.0-x86_64-pc-windows-msvc",
+        "1.99.1-x86_64-pc-windows-msvc"
+      ],
+      "rustc": [
+        "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+        "binary: rustc",
+        "commit-hash: 58cf8f9c35b355199727627d07ae34a4e2846d67",
+        "commit-date: 2026-10-13",
+        "host: x86_64-pc-windows-msvc",
+        "release: 1.99.1",
+        "LLVM version: 23.1.1"
+      ],
+      "cargo": [
+        "cargo 1.99.1 (5f94df478 2026-08-27)"
+      ],
+      "powershell": "7.6.4",
+      "powershell_path": "c:\\program files\\powershell\\7\\pwsh.exe",
+      "powershell_sha256": "db6dd81183fe57d22e03b911ec9a30a2fd7c40542e97743615355a6fb44f458f",
+      "os": "Microsoft Windows NT 10.0.26340.0",
+      "architecture": "AMD64"
+    },
+    "pinned_after": {
+      "tools": [
+        {
+          "name": "cargo.exe",
+          "bytes": 27543552,
+          "sha256": "aa5b8980be3681899fde765ba47e2ed361463ae9dd8ee7cd1963c18d23743a0f"
+        },
+        {
+          "name": "rustc.exe",
+          "bytes": 110592,
+          "sha256": "ba03e3ba03a73d9fef19ab3659140f94b43615ec1d587fe9befc9aed3bd5aa72"
+        },
+        {
+          "name": "cargo-clippy.exe",
+          "bytes": 1175040,
+          "sha256": "bea1e468b531a389f6fe164d76ba98f73a2dac3495998dd085365df92105134f"
+        },
+        {
+          "name": "clippy-driver.exe",
+          "bytes": 11308544,
+          "sha256": "648db1897ec48a9f64bae9e0624761abab7b2904a6ab25d53cc2869a0245f99e"
+        },
+        {
+          "name": "rustfmt.exe",
+          "bytes": 4735488,
+          "sha256": "231e4b294d5f6d9f025a9025514e3e6b0ee5defa524fd016498e1c77eb96980a"
+        }
+      ],
+      "rustup_settings_sha256": "af11a5540001371324994abaa9ea1e69d50fed1acb1a87e4abef179e8816058f",
+      "cargo_configs": [],
+      "toolchains": [
+        "stable-x86_64-pc-windows-msvc (active, default)",
+        "nightly-x86_64-pc-windows-msvc",
+        "nightly-2026-08-10-x86_64-pc-windows-msvc",
+        "1.98.0-x86_64-pc-windows-msvc",
+        "1.99.1-x86_64-pc-windows-msvc"
+      ],
+      "rustc": [
+        "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+        "binary: rustc",
+        "commit-hash: 58cf8f9c35b355199727627d07ae34a4e2846d67",
+        "commit-date: 2026-10-13",
+        "host: x86_64-pc-windows-msvc",
+        "release: 1.99.1",
+        "LLVM version: 23.1.1"
+      ],
+      "cargo": [
+        "cargo 1.99.1 (5f94df478 2026-08-27)"
+      ],
+      "powershell": "7.6.4",
+      "powershell_path": "c:\\program files\\powershell\\7\\pwsh.exe",
+      "powershell_sha256": "db6dd81183fe57d22e03b911ec9a30a2fd7c40542e97743615355a6fb44f458f",
+      "os": "Microsoft Windows NT 10.0.26340.0",
+      "architecture": "AMD64"
+    },
+    "native_tools_before": {
+      "recorded_utc": "2026-10-23T16:45:28.0770036Z",
+      "phase": "before",
+      "msvc_version": "14.44.35207",
+      "tools": [
+        {
+          "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\vswhere.exe",
+          "name": "vswhere.exe",
+          "bytes": 469456,
+          "sha256": "c54f3b7c9164ea9a0db8641e81ecdda80c2664ef5a47c4191406f848cc07c662",
+          "file_version": "3.1.7.39155"
+        },
+        {
+          "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+          "name": "cl.exe",
+          "bytes": 677736,
+          "sha256": "88c8344236a27a6e727e0a8edc49aaa2690bdc7a9464b9d18cc7abe70a9f1c0d",
+          "file_version": "19.44.35228.0"
+        },
+        {
+          "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\link.exe",
+          "name": "link.exe",
+          "bytes": 3252576,
+          "sha256": "ca11e6c45debd34bf652dfe984c5360a531a005ed78bf72852330c9c2590cf0d",
+          "file_version": "14.44.35228.0"
+        },
+        {
+          "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\lib.exe",
+          "name": "lib.exe",
+          "bytes": 23376,
+          "sha256": "3d694c782f93e998fec5db0c2df78153565da23a028ee4618561fa0c33408489",
+          "file_version": "14.44.35228.0"
+        },
+        {
+          "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\c1.dll",
+          "name": "c1.dll",
+          "bytes": 3430200,
+          "sha256": "48bb561939cfd8fbf194bb73b111b2083912da4fb81af2c181cbe8f4b89e5ad1",
+          "file_version": "19.44.35228.0"
+        },
+        {
+          "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\c1xx.dll",
+          "name": "c1xx.dll",
+          "bytes": 12332384,
+          "sha256": "688fe28f3065283edf668868e76aeab28f03f80e2171c14c7d4e37f64513f623",
+          "file_version": "19.44.35228.0"
+        },
+        {
+          "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\c2.dll",
+          "name": "c2.dll",
+          "bytes": 10462008,
+          "sha256": "98050f97d60f7e95fcaf3525a7103e4818fba498a43563922476819ce88ed162",
+          "file_version": "19.44.35228.0"
+        },
+        {
+          "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\mspdbcore.dll",
+          "name": "mspdbcore.dll",
+          "bytes": 1321824,
+          "sha256": "ff7482bf01d1dcad8d5e368333e4495ed3572713edeec7044623e5f5fff999b9",
+          "file_version": "14.44.35228.0"
+        },
+        {
+          "path": "C:\\WINDOWS\\system32\\tar.exe",
+          "name": "tar.exe",
+          "bytes": 93136,
+          "sha256": "d36370bff102d58e0ef192d68e3c4241b2f44feeaa441e84129045532b71fd93",
+          "file_version": "3.8.9 (WinBuild.160101.0800)"
+        },
+        {
+          "path": "C:\\WINDOWS\\system32\\NETSTAT.EXE",
+          "name": "NETSTAT.EXE",
+          "bytes": 73728,
+          "sha256": "250113401692823b970de94ff46a8d9c9c686d8e8e6dfbd10d3fc00d1f462f11",
+          "file_version": "10.0.26100.8951 (WinBuild.160101.0800)"
+        },
+        {
+          "path": "<USERPROFILE>\\.cargo\\bin\\rustup.exe",
+          "name": "rustup.exe",
+          "bytes": 12724224,
+          "sha256": "00f139da614dced87d3c3d4121c43eebdac3c1bf8a5ee86b9d80dfd71c8d70fd",
+          "file_version": null
+        },
+        {
+          "path": "C:\\program files\\powershell\\7\\pwsh.exe",
+          "name": "pwsh.exe",
+          "bytes": 301368,
+          "sha256": "db6dd81183fe57d22e03b911ec9a30a2fd7c40542e97743615355a6fb44f458f",
+          "file_version": "7.6.4.500"
+        },
+        {
+          "path": "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+          "name": "powershell.exe",
+          "bytes": 495616,
+          "sha256": "30d263415d5e12f148500e2765b7cfef99adaab04f7681057ac859b785a535fa",
+          "file_version": "10.0.26100.9596 (WinBuild.160101.0800)"
+        },
+        {
+          "path": "C:\\WINDOWS\\System32\\OpenSSH\\ssh.exe",
+          "name": "ssh.exe",
+          "bytes": 1256448,
+          "sha256": "98d447730047f5df91373e852d057928a921c3d1e89938700ab656ba84b19dc8",
+          "file_version": "9.5.6.4"
+        }
+      ],
+      "registry_checksum_manifests": [],
+      "scope": "Tool versions/hashes, installed cached crate checksum manifests; no tool installation or default mutation."
+    },
+    "native_tools_after": {
+      "recorded_utc": "2026-10-23T16:48:29.9013387Z",
+      "phase": "after",
+      "msvc_version": "14.44.35207",
+      "tools": [
+        {
+          "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\vswhere.exe",
+          "name": "vswhere.exe",
+          "bytes": 469456,
+          "sha256": "c54f3b7c9164ea9a0db8641e81ecdda80c2664ef5a47c4191406f848cc07c662",
+          "file_version": "3.1.7.39155"
+        },
+        {
+          "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+          "name": "cl.exe",
+          "bytes": 677736,
+          "sha256": "88c8344236a27a6e727e0a8edc49aaa2690bdc7a9464b9d18cc7abe70a9f1c0d",
+          "file_version": "19.44.35228.0"
+        },
+        {
+          "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\link.exe",
+          "name": "link.exe",
+          "bytes": 3252576,
+          "sha256": "ca11e6c45debd34bf652dfe984c5360a531a005ed78bf72852330c9c2590cf0d",
+          "file_version": "14.44.35228.0"
+        },
+        {
+          "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\lib.exe",
+          "name": "lib.exe",
+          "bytes": 23376,
+          "sha256": "3d694c782f93e998fec5db0c2df78153565da23a028ee4618561fa0c33408489",
+          "file_version": "14.44.35228.0"
+        },
+        {
+          "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\c1.dll",
+          "name": "c1.dll",
+          "bytes": 3430200,
+          "sha256": "48bb561939cfd8fbf194bb73b111b2083912da4fb81af2c181cbe8f4b89e5ad1",
+          "file_version": "19.44.35228.0"
+        },
+        {
+          "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\c1xx.dll",
+          "name": "c1xx.dll",
+          "bytes": 12332384,
+          "sha256": "688fe28f3065283edf668868e76aeab28f03f80e2171c14c7d4e37f64513f623",
+          "file_version": "19.44.35228.0"
+        },
+        {
+          "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\c2.dll",
+          "name": "c2.dll",
+          "bytes": 10462008,
+          "sha256": "98050f97d60f7e95fcaf3525a7103e4818fba498a43563922476819ce88ed162",
+          "file_version": "19.44.35228.0"
+        },
+        {
+          "path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\mspdbcore.dll",
+          "name": "mspdbcore.dll",
+          "bytes": 1321824,
+          "sha256": "ff7482bf01d1dcad8d5e368333e4495ed3572713edeec7044623e5f5fff999b9",
+          "file_version": "14.44.35228.0"
+        },
+        {
+          "path": "C:\\WINDOWS\\system32\\tar.exe",
+          "name": "tar.exe",
+          "bytes": 93136,
+          "sha256": "d36370bff102d58e0ef192d68e3c4241b2f44feeaa441e84129045532b71fd93",
+          "file_version": "3.8.9 (WinBuild.160101.0800)"
+        },
+        {
+          "path": "C:\\WINDOWS\\system32\\NETSTAT.EXE",
+          "name": "NETSTAT.EXE",
+          "bytes": 73728,
+          "sha256": "250113401692823b970de94ff46a8d9c9c686d8e8e6dfbd10d3fc00d1f462f11",
+          "file_version": "10.0.26100.8951 (WinBuild.160101.0800)"
+        },
+        {
+          "path": "<USERPROFILE>\\.cargo\\bin\\rustup.exe",
+          "name": "rustup.exe",
+          "bytes": 12724224,
+          "sha256": "00f139da614dced87d3c3d4121c43eebdac3c1bf8a5ee86b9d80dfd71c8d70fd",
+          "file_version": null
+        },
+        {
+          "path": "C:\\program files\\powershell\\7\\pwsh.exe",
+          "name": "pwsh.exe",
+          "bytes": 301368,
+          "sha256": "db6dd81183fe57d22e03b911ec9a30a2fd7c40542e97743615355a6fb44f458f",
+          "file_version": "7.6.4.500"
+        },
+        {
+          "path": "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+          "name": "powershell.exe",
+          "bytes": 495616,
+          "sha256": "30d263415d5e12f148500e2765b7cfef99adaab04f7681057ac859b785a535fa",
+          "file_version": "10.0.26100.9596 (WinBuild.160101.0800)"
+        },
+        {
+          "path": "C:\\WINDOWS\\System32\\OpenSSH\\ssh.exe",
+          "name": "ssh.exe",
+          "bytes": 1256448,
+          "sha256": "98d447730047f5df91373e852d057928a921c3d1e89938700ab656ba84b19dc8",
+          "file_version": "9.5.6.4"
+        }
+      ],
+      "registry_checksum_manifests": [],
+      "scope": "Tool versions/hashes, installed cached crate checksum manifests; no tool installation or default mutation."
+    },
+    "local_transport_and_packaging": [
+      {
+        "name": "ssh",
+        "path": "/usr/bin/ssh",
+        "bytes": 1748944,
+        "sha256": "e8566266a67f8fc474fb3d93ca086f9f7db8fc3e313086e7071c2ef6b92efda5"
+      },
+      {
+        "name": "scp",
+        "path": "/usr/bin/scp",
+        "bytes": 338000,
+        "sha256": "3a7aa774b418fdd0a84586177a8c0919a3cddaa0df785cdb4e52886cddf86cda"
+      },
+      {
+        "name": "git",
+        "path": "/usr/bin/git",
+        "bytes": 200560,
+        "sha256": "5f593b5dfc0e9e583d326d25a27e1a268419d4ae9440866da0bd94096a58b76d"
+      },
+      {
+        "name": "python3",
+        "path": "/usr/bin/python3",
+        "bytes": 200560,
+        "sha256": "5f593b5dfc0e9e583d326d25a27e1a268419d4ae9440866da0bd94096a58b76d"
+      }
+    ],
+    "native_tool_hash_note": "The supplemental native tool snapshot was first taken during the release build, then rechecked after runtime. Pinned Rust hashes and global defaults were captured before all cargo steps and rechecked after runtime.",
+    "cached_external_crate_inputs": "Cargo --locked --offline used existing cached sources and exact Cargo.lock checksums. The supplemental registry-checksum scan returned zero entries; it is not an external-cache provenance audit. All project and vendored source files are in the Git-verified source manifest, and all produced dependency artifacts are hash-recorded. Original provenance/security acceptance remains open."
+  },
+  "archived_workflow_scripts": [
+    {
+      "path": "workflow/build.ps1",
+      "bytes": 5044,
+      "sha256": "576b10c61d732f326e6208d9f63315197513c18b478577612b006b543914c725"
+    },
+    {
+      "path": "workflow/common.ps1",
+      "bytes": 4838,
+      "sha256": "96c40a4e7921633a7853984eb973b76b4a387207b9aa9e4b8a3eb39785ebf7b9"
+    },
+    {
+      "path": "workflow/freeze-after-build.ps1",
+      "bytes": 2906,
+      "sha256": "21288eea1b3464b11322319aae58f2f85d9f7dad8ff57ce0d7c5a7113683b811"
+    },
+    {
+      "path": "workflow/postflight.ps1",
+      "bytes": 2070,
+      "sha256": "d5923878336d28c0158a05e21a094185d83b7b161934a8a8269648264da27357"
+    },
+    {
+      "path": "workflow/run-v2.ps1",
+      "bytes": 5495,
+      "sha256": "1110c64cde68649e12fd565bca2edabe314898b07f9836c099c035554fe890b2"
+    },
+    {
+      "path": "workflow/run.ps1",
+      "bytes": 5494,
+      "sha256": "9e02ad02eb787aae5d7fb02b7dd1e705be6a218f70b838b1739df3bbf71e73de"
+    },
+    {
+      "path": "workflow/setup.input.ps1",
+      "bytes": 1467,
+      "sha256": "b3abd52cf878008b8876db9ffeed4ec9e40731a3233f20e35e82d268a4aee854"
+    },
+    {
+      "path": "workflow/tool-audit.ps1",
+      "bytes": 2388,
+      "sha256": "1f3da77a00bfa4e6903bf5f88c9ea327e21fd8e4168d6e0386aaecc78ecaf368"
+    }
+  ],
+  "script_syntax_checks": [
+    {
+      "name": "common.ps1",
+      "errors": [],
+      "error_count": 0
+    },
+    {
+      "name": "build.ps1",
+      "errors": [],
+      "error_count": 0
+    },
+    {
+      "name": "run-v2.ps1",
+      "errors": [],
+      "error_count": 0
+    },
+    {
+      "name": "postflight.ps1",
+      "errors": [],
+      "error_count": 0
+    },
+    {
+      "name": "tool-audit.ps1",
+      "errors": [],
+      "error_count": 0
+    },
+    {
+      "name": "freeze-after-build.ps1",
+      "errors": [],
+      "error_count": 0
+    }
+  ],
+  "preserved_failures": [
+    {
+      "stage": "original build helper, freeze only",
+      "transport_exit": 1,
+      "remote_exit_unknown": false,
+      "cargo_steps_all_exit_zero": true,
+      "error": "expected seven selected libraries and one vendored mdns-sd library",
+      "observed": "Seven selected root rlibs and two mdns-sd dependency rlibs. All nine library artifacts are frozen, with the full target inventory.",
+      "response": "New freeze-after-build.ps1 inventories the observed variants. No cargo invocation was repeated. Original build.ps1 and stderr are retained.",
+      "stderr_original_sha256": "719fd15069669d4e5619bae91729639903c226fdca9615fcac29e7eaf6c0467a",
+      "transport_record": {
+        "started_utc": "2026-10-23T16:43:24.517121+00:00",
+        "elapsed_ms": 137799,
+        "transport_exit": 1,
+        "remote_exit_unknown": false,
+        "script_sha256": "c0582ea107d12f2d8945faf590c4e440951676ee557e6c7edb3d5a547a5e9ed5",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "719fd15069669d4e5619bae91729639903c226fdca9615fcac29e7eaf6c0467a"
+      }
+    },
+    {
+      "stage": "original runtime launch helper, before any probe",
+      "transport_exit": 1,
+      "remote_exit_unknown": false,
+      "error": "Missing closing '}' in statement block or type definition.",
+      "response": "run-v2.ps1 adds the missing foreach closing brace on original line 24. PowerShell parser checks passed for the helpers, and run-start.json was absent before launch. Original helper is retained. No probe had started or was repeated.",
+      "stderr_original_sha256": "92fa530879684a70ef540745a3332f05e01129541cc6ef6d98a8bffc2faf0f5e",
+      "transport_record": {
+        "started_utc": "2026-10-23T16:46:32.308594+00:00",
+        "elapsed_ms": 804,
+        "transport_exit": 1,
+        "remote_exit_unknown": false,
+        "script_sha256": "a3eeb007ccce51c50c74a7bc7958c68edfd7401580e13c2926f271a6fcb7e947",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "92fa530879684a70ef540745a3332f05e01129541cc6ef6d98a8bffc2faf0f5e"
+      }
+    },
+    {
+      "stage": "native startup acceptance",
+      "exit": 1,
+      "failed_checks": [
+        "CHECK cancelled-distinct-types-retain-no-state=false",
+        "CHECK cancelled-replacements-preserve-identity=false",
+        "CHECK surviving-handle-receives-live-update=false"
+      ],
+      "response": "Preserved as FAIL. No probe timing, assertion, capacity or product source changed. No repeat run. Native startup acceptance remains open.",
+      "stderr_original_sha256": "da73ae23015c282730f234fc10483806e03ec6fc03247c9fbd849918d0069058"
+    },
+    {
+      "stage": "aggregate runtime helper",
+      "transport_exit": 1,
+      "remote_exit_unknown": false,
+      "response": "RUNTIME_FAILURE_PRESERVED after one startup, one retained and one control run. Later passing modes do not clear the startup failure.",
+      "transport_record": {
+        "started_utc": "2026-10-23T16:47:13.250764+00:00",
+        "elapsed_ms": 67441,
+        "transport_exit": 1,
+        "remote_exit_unknown": false,
+        "script_sha256": "13ed4cb3028f8cbedc41604de6ed013cf2bec98daa90c6dcbd7a398082a25026",
+        "stdout_sha256": "6ff7024b613db7c5c497e9b891ea8113c3186385e21c6a9aa3ba9b00c31f9568",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "transport_records": [
+    {
+      "started_utc": "2026-10-23T16:43:24.517121+00:00",
+      "elapsed_ms": 137799,
+      "transport_exit": 1,
+      "remote_exit_unknown": false,
+      "script_sha256": "c0582ea107d12f2d8945faf590c4e440951676ee557e6c7edb3d5a547a5e9ed5",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "719fd15069669d4e5619bae91729639903c226fdca9615fcac29e7eaf6c0467a",
+      "name": "build-attached",
+      "decoded_command_input": "& '<WINDOWS_FIXTURE>\\build.ps1'",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <CURRENT_USER>code-windows <POWERSHELL> -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T16:44:39.449361+00:00",
+      "elapsed_ms": 968,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "c873618675048599fd7d665e30b2d3a417f77b473956e3af483b30a7b2be83d0",
+      "stdout_sha256": "08229bddbe34cdfbecd1f1dbecbe9fff73f1e263e24d49c4f55be7e3f0e9c455",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "build-observe",
+      "decoded_command_input": "$root='<WINDOWS_FIXTURE>'; $ErrorActionPreference='Stop'; $all=@(Get-CimInstance Win32_Process -ErrorAction Stop|Where-Object {$_.Name -in @('cargo.exe','rustc.exe','cargo-clippy.exe','clippy-driver.exe')}); $items=@(foreach($p in $all){$n=Get-Process -Id $p.ProcessId -ErrorAction SilentlyContinue;if($n){[ordered]@{name=$p.Name;pid=$p.ProcessId;session=$p.SessionId;priority=$n.PriorityClass.ToString();path=$p.ExecutablePath;command_line=$p.CommandLine}}}); $items|ConvertTo-Json -Depth 5 | Set-Content (Join-Path $root 'build-observed.json'); [ordered]@{observed_count=$items.Count;sessions=@($items.session|Select-Object -Unique);priorities=@($items.priority|Select-Object -Unique);progress=(Get-Content -Raw (Join-Path $root 'build-progress.json')|ConvertFrom-Json)}|ConvertTo-Json -Depth 6",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <CURRENT_USER>code-windows <POWERSHELL> -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T16:44:15.199784+00:00",
+      "elapsed_ms": 812,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "b0ec7cf3fe1b1348b757a87ba565b63282964b68c0aaf947cf3d4ff0c090052e",
+      "stdout_sha256": "05a8d16d52e1ee79a8fda5478603dec2e046f25ce0419ca5f5e64527f350e193",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "build-status-1",
+      "decoded_command_input": "$root='<WINDOWS_FIXTURE>'; $ErrorActionPreference='Stop'; if(Test-Path (Join-Path $root 'build-result.json')){Get-Content -Raw (Join-Path $root 'build-result.json')} elseif(Test-Path (Join-Path $root 'build-progress.json')){Get-Content -Raw (Join-Path $root 'build-progress.json')} else {'NO_BUILD_RECORD'}",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <CURRENT_USER>code-windows <POWERSHELL> -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T16:46:26.148851+00:00",
+      "elapsed_ms": 6158,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "f5e10458fde090fd585a7943cfb89154ea34393ff0727b836a6a3239f63184c2",
+      "stdout_sha256": "6cb7f7ef01d552ae3b925e08236d052712ce58d33060d1e03f5b20006d863cc1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "freeze-corrected",
+      "decoded_command_input": "$root='<WINDOWS_FIXTURE>'; $ErrorActionPreference='Stop'; $inputs=Get-Content -Raw (Join-Path $root 'input-hashes.json')|ConvertFrom-Json; foreach($e in $inputs){$p=Join-Path $root $e.path;if((Get-FileHash -LiteralPath $p -Algorithm SHA256).Hash -ne $e.sha256){throw 'input transfer mismatch'};(Get-Item -LiteralPath $p).IsReadOnly=$true}; (Get-Item (Join-Path $root 'input-hashes.json')).IsReadOnly=$true; & (Join-Path $root 'freeze-after-build.ps1')",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <CURRENT_USER>code-windows <POWERSHELL> -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T16:45:50.861449+00:00",
+      "elapsed_ms": 925,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "ede18241972fb3f71eef188eaf055e7930ff717690971a04bc362eaf257232db",
+      "stdout_sha256": "245d3bedc248d2055a18c6237e8512b0bc432b9444ce0b455173755f0528d6f4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "freeze-failure-inspect",
+      "decoded_command_input": "$root='<WINDOWS_FIXTURE>'; $ErrorActionPreference='Stop'; [ordered]@{build=(Get-Content -Raw (Join-Path $root 'build-result.json')|ConvertFrom-Json);libraries=@(Get-ChildItem -LiteralPath (Join-Path $root 'target/x86_64-pc-windows-msvc/release') -File -Filter '*openergy*.rlib'|Select-Object Name,Length);mdns=@(Get-ChildItem -LiteralPath (Join-Path $root 'target/x86_64-pc-windows-msvc/release/deps') -File -Filter '*mdns_sd*.rlib'|Select-Object Name,Length);owned=@(Get-CimInstance Win32_Process|Where-Object {$_.Name -in @('cargo.exe','rustc.exe','cargo-clippy.exe','clippy-driver.exe')})}|ConvertTo-Json -Depth 9",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <CURRENT_USER>code-windows <POWERSHELL> -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T16:48:31.658696+00:00",
+      "elapsed_ms": 6940,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "7a49e028948536e3253ad8f5c876cc6fcd4df90f8fb50ea00b745d1cd7d0ed18",
+      "stdout_sha256": "d0c3d87c6af6fa62857718c1144f45e28e9dc9cea55e6515e170ab92725f08c3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "postflight-attached",
+      "decoded_command_input": "$root='<WINDOWS_FIXTURE>'; $ErrorActionPreference='Stop'; if(-not (Test-Path (Join-Path $root 'run-result.json'))){throw 'runtime did not finish; inspect before final audit'}; & (Join-Path $root 'tool-audit.ps1') -Phase after; if($LASTEXITCODE -and $LASTEXITCODE -ne 0){throw 'tool audit exit'}; & (Join-Path $root 'postflight.ps1'); $extra=Get-Content -Raw (Join-Path $root 'extra-input-hashes.json')|ConvertFrom-Json; foreach($e in $extra){$p=Join-Path $root $e.path;if(-not (Get-Item $p).IsReadOnly -or (Get-FileHash -LiteralPath $p -Algorithm SHA256).Hash -ne $e.sha256){throw 'extra helper changed'}}; $pre=Get-Content -Raw (Join-Path $root 'preflight.json')|ConvertFrom-Json;$post=Get-Content -Raw (Join-Path $root 'postflight.json')|ConvertFrom-Json; $original=@($pre.inventory.sharing_processes|Select-Object Name,ProcessId,CreationDate,SessionId,ExecutablePath);$after=@($post.inventory.sharing_processes|Select-Object Name,ProcessId,CreationDate,SessionId,ExecutablePath); [ordered]@{recorded_utc=[DateTime]::UtcNow.ToString('o');extra_inputs_unchanged=$extra.Count;live_sharing_inventory_before_count=$original.Count;live_sharing_inventory_after_count=$after.Count;live_sharing_process_identity_unchanged=(($original|ConvertTo-Json -Compress) -eq ($after|ConvertTo-Json -Compress));source_archive_sha256=(Get-FileHash (Join-Path $root 'source.tar') -Algorithm SHA256).Hash.ToLower()}|ConvertTo-Json|Set-Content (Join-Path $root 'supplemental-postflight.json'); $entries=@(Get-ChildItem -LiteralPath $root -File|Where-Object {$_.Extension -in @('.json','.ps1')}|Select-Object -ExpandProperty Name)+@('logs','runtime'); & tar.exe -cf (Join-Path $root 'raw-evidence.tar') -C $root @entries; if($LASTEXITCODE -ne 0){throw 'evidence archive failed'}; [ordered]@{archive_sha256=(Get-FileHash (Join-Path $root 'raw-evidence.tar') -Algorithm SHA256).Hash.ToLower();archive_bytes=(Get-Item (Join-Path $root 'raw-evidence.tar')).Length;postflight=$post.passed;extra_inputs_unchanged=$extra.Count}|ConvertTo-Json",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <CURRENT_USER>code-windows <POWERSHELL> -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T16:49:28.265274+00:00",
+      "elapsed_ms": 4341,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "bb823314b9df663167cac3dc30e3a608ecbeb2aced9803a01f9690ab2805abba",
+      "stdout_sha256": "49701a7da50cf398b5f96c48971e96aea9e73c19c61d8cbe92f6d6c8f164ed09",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "retention-final",
+      "decoded_command_input": "$root='<WINDOWS_FIXTURE>'; . (Join-Path $root 'common.ps1'); Set-Location -LiteralPath $root; $acl=Assert-ACL;$inv=Inventory 'retention-final';$result=[ordered]@{recorded_utc=[DateTime]::UtcNow.ToString('o');acl=$acl;remaining_fixture_processes=$inv.fixture_processes.Count;remaining_assigned_tcp_listeners=$inv.assigned_tcp_listeners.Count;remaining_assigned_udp_endpoints=$inv.assigned_udp_endpoints.Count;temp_entries=@(Get-ChildItem -LiteralPath (Join-Path $root 'temp') -Force).Count;bundle_sha256=(Hash (Join-Path $root 'raw-evidence.tar'));source_archive_sha256=(Hash (Join-Path $root 'source.tar'));readonly_artifacts=@(Get-Content -Raw (Join-Path $root 'artifact-manifest.json')|ConvertFrom-Json).Count};if($result.remaining_fixture_processes -ne 0 -or $result.remaining_assigned_tcp_listeners -ne 0 -or $result.remaining_assigned_udp_endpoints -ne 0 -or $result.temp_entries -ne 0){throw 'final retention cleanup failed'};Save-Json $result (Join-Path $root 'retention-final.json');$result|ConvertTo-Json -Depth 6",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <CURRENT_USER>code-windows <POWERSHELL> -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T16:46:32.308594+00:00",
+      "elapsed_ms": 804,
+      "transport_exit": 1,
+      "remote_exit_unknown": false,
+      "script_sha256": "a3eeb007ccce51c50c74a7bc7958c68edfd7401580e13c2926f271a6fcb7e947",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "92fa530879684a70ef540745a3332f05e01129541cc6ef6d98a8bffc2faf0f5e",
+      "name": "runtime-attached",
+      "decoded_command_input": "& '<WINDOWS_FIXTURE>\\run.ps1'",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <CURRENT_USER>code-windows <POWERSHELL> -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T16:47:26.490625+00:00",
+      "elapsed_ms": 684,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "aef24984f7d74f336943fe23b1b88c96913281802d8b2b72f535b08d28c5f877",
+      "stdout_sha256": "5325d4166a5f1f6c5245363f994be76d367cc55af57080aa9a4fb5bf5e4fcacc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "runtime-status-1",
+      "decoded_command_input": "$root='<WINDOWS_FIXTURE>'; $ErrorActionPreference='Stop'; [ordered]@{startup_exists=(Test-Path (Join-Path $root 'startup-result.json'));retained_exists=(Test-Path (Join-Path $root 'retained-result.json'));control_exists=(Test-Path (Join-Path $root 'control-result.json'));results=@(foreach($n in @('startup','retained','control')){if(Test-Path (Join-Path $root ($n+'-result.json'))){$r=Get-Content -Raw (Join-Path $root ($n+'-result.json'))|ConvertFrom-Json;[ordered]@{name=$n;exit=$r.exit;elapsed_ms=$r.elapsed_ms;check_count=$r.check_count;timed_out=$r.timed_out;checks=$r.checks}}})}|ConvertTo-Json -Depth 6",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <CURRENT_USER>code-windows <POWERSHELL> -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T16:48:13.522828+00:00",
+      "elapsed_ms": 745,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "aeabfe021e6df18da35e3787e2c594824281f95ec06744512f06b355a3a0820f",
+      "stdout_sha256": "e00f474318f9e1242ea7cb6714134e21fd32215f71f7c5b70b6e02697ed8c3e2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "runtime-status-2",
+      "decoded_command_input": "$root='<WINDOWS_FIXTURE>'; $ErrorActionPreference='Stop'; [ordered]@{results=@(foreach($n in @('startup','retained','control')){if(Test-Path (Join-Path $root ($n+'-result.json'))){$r=Get-Content -Raw (Join-Path $root ($n+'-result.json'))|ConvertFrom-Json;[ordered]@{name=$n;exit=$r.exit;elapsed_ms=$r.elapsed_ms;check_count=$r.check_count;timed_out=$r.timed_out;checks=$r.checks}}})}|ConvertTo-Json -Depth 6",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <CURRENT_USER>code-windows <POWERSHELL> -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T16:47:13.250764+00:00",
+      "elapsed_ms": 67441,
+      "transport_exit": 1,
+      "remote_exit_unknown": false,
+      "script_sha256": "13ed4cb3028f8cbedc41604de6ed013cf2bec98daa90c6dcbd7a398082a25026",
+      "stdout_sha256": "6ff7024b613db7c5c497e9b891ea8113c3186385e21c6a9aa3ba9b00c31f9568",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "runtime-v2-attached",
+      "decoded_command_input": "$root='<WINDOWS_FIXTURE>'; $ErrorActionPreference='Stop'; if(Test-Path (Join-Path $root 'run-start.json')){throw 'original runtime started; refuse repeat'}; $records=@(foreach($n in @('common.ps1','build.ps1','run-v2.ps1','postflight.ps1','tool-audit.ps1','freeze-after-build.ps1')){$tokens=$null;$errors=$null;$null=[System.Management.Automation.Language.Parser]::ParseFile((Join-Path $root $n),[ref]$tokens,[ref]$errors);[ordered]@{name=$n;errors=@($errors|ForEach-Object {$_.ToString()});error_count=@($errors).Count}}); $records|ConvertTo-Json -Depth 5|Set-Content (Join-Path $root 'syntax-check.json');if(@($records|Where-Object {$_.error_count -gt 0}).Count -gt 0){throw 'helper syntax failed'}; $extra=Get-Content -Raw (Join-Path $root 'extra-input-hashes.json')|ConvertFrom-Json;foreach($e in $extra){$p=Join-Path $root $e.path;if((Get-FileHash -LiteralPath $p -Algorithm SHA256).Hash -ne $e.sha256){throw 'helper transfer mismatch'};(Get-Item $p).IsReadOnly=$true};(Get-Item (Join-Path $root 'extra-input-hashes.json')).IsReadOnly=$true; & (Join-Path $root 'run-v2.ps1')",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <CURRENT_USER>code-windows <POWERSHELL> -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T16:41:36.065068+00:00",
+      "elapsed_ms": 883,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "b3abd52cf878008b8876db9ffeed4ec9e40731a3233f20e35e82d268a4aee854",
+      "stdout_sha256": "7ee0ea9a32c54f49cc0e33eaf3ac76a35261d5e89bc317d5f098a19ac77b25f6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "setup",
+      "decoded_command_input": "$ErrorActionPreference='Stop';$ProgressPreference='SilentlyContinue'\n$tool=Join-Path $env:USERPROFILE '.rustup/toolchains/1.99.1-x86_64-pc-windows-msvc/bin/rustc.exe'\nif(-not (Test-Path -LiteralPath $tool)){throw 'pinned existing Rust unavailable'}\n$pwsh=(Get-Command pwsh.exe -ErrorAction Stop).Source\nif((Get-Process -Id $PID).SessionId -ne 0){throw 'session 0 required'}\n$sid=[Security.Principal.WindowsIdentity]::GetCurrent().User\n$root=Join-Path ([IO.Path]::GetTempPath()) ('oe-win-bounded-e4f48ba-'+[guid]::NewGuid().ToString('N'))\nif(Test-Path -LiteralPath $root){throw 'fixture exists'}\n$acl=New-Object Security.AccessControl.DirectorySecurity\n$acl.SetAccessRuleProtection($true,$false)\n$rule=New-Object Security.AccessControl.FileSystemAccessRule($sid,'FullControl','ContainerInherit,ObjectInherit','None','Allow')\n$acl.AddAccessRule($rule)\n[IO.Directory]::CreateDirectory($root,$acl)|Out-Null\nforeach($name in @('source','target','bin','runtime','temp','logs')){[IO.Directory]::CreateDirectory((Join-Path $root $name))|Out-Null}\n$a=Get-Acl -LiteralPath $root\nif(-not $a.AreAccessRulesProtected -or @($a.Access).Count -ne 1 -or $a.Access[0].IdentityReference.Translate([Security.Principal.SecurityIdentifier]).Value -ne $sid.Value){throw 'fixture ACL mismatch'}\n[ordered]@{root=$root;pwsh=$pwsh;created_utc=[DateTime]::UtcNow.ToString('o');session=(Get-Process -Id $PID).SessionId;protected=$a.AreAccessRulesProtected;current_user_only=$true}|ConvertTo-Json\n",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <CURRENT_USER>code-windows <POWERSHELL> -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T16:48:20.715841+00:00",
+      "elapsed_ms": 700,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "5d45268ca2bef98fab5f2fb4e6c2466c00f89d4357d485ba86b085ef4ed221b1",
+      "stdout_sha256": "7a486ff22986dc78d84337659c40c4b7dccf6e614913d85f8a631c6f140351ce",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "startup-failure-output",
+      "decoded_command_input": "$root='<WINDOWS_FIXTURE>'; Get-Content -Raw -LiteralPath (Join-Path $root 'logs/startup.stdout')",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <CURRENT_USER>code-windows <POWERSHELL> -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T16:45:29.619845+00:00",
+      "elapsed_ms": 1406,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "ec85ba1e23b81ae6c87bd128298b32f0af8d045444bbd0905cc76f152687bab7",
+      "stdout_sha256": "f32891adb27524110701ec184e037098ab76e1a237a58b758fa1d48278c60e00",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "tool-before",
+      "decoded_command_input": "& '<WINDOWS_FIXTURE>\\tool-audit.ps1' -Phase before",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <CURRENT_USER>code-windows <POWERSHELL> -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    }
+  ],
+  "sanitization": {
+    "originals_retained": true,
+    "original_hash_index": "private-evidence-sha256.json in <LOCAL_EVIDENCE>; exact hashes copied below",
+    "transforms": [
+      "Replace actual fixture root, user profile, local-appdata path, Windows computer name, username and SID with named placeholders, including case and slash variants.",
+      "Omit numeric process IDs and command-line fields from copied process records. Exact runtime argument arrays remain, with private paths replaced.",
+      "Omit unrelated whole-machine process/socket inventories and live sharing command lines from committed copies; keep their original private file hashes and aggregate counts.",
+      "Read copied text as UTF-8 with optional BOM; write UTF-8 with LF newlines. Original bytes and hashes remain private.",
+      "Archived workflow scripts and source-manifest bytes are copied without changes. Artifact-manifest CRLF is normalized to LF for the repository text policy; both original and copied SHA-256 are recorded."
+    ],
+    "placeholder_map_file": "<LOCAL_EVIDENCE>/raw/private-identity.json; never committed",
+    "copied_output_files": [
+      {
+        "path": "outputs/startup.stdout",
+        "original_bytes": 3990,
+        "original_sha256": "8feb2107ab300f4d7775bfb11300aecb772f387372374a310968358ce857f105",
+        "copied_bytes": 3990,
+        "copied_sha256": "8feb2107ab300f4d7775bfb11300aecb772f387372374a310968358ce857f105",
+        "transform": "UTF-8 text read and write, newline normalization, identity replacement if present"
+      },
+      {
+        "path": "outputs/startup.stderr",
+        "original_bytes": 50,
+        "original_sha256": "da73ae23015c282730f234fc10483806e03ec6fc03247c9fbd849918d0069058",
+        "copied_bytes": 50,
+        "copied_sha256": "da73ae23015c282730f234fc10483806e03ec6fc03247c9fbd849918d0069058",
+        "transform": "UTF-8 text read and write, newline normalization, identity replacement if present"
+      },
+      {
+        "path": "outputs/retained.stdout",
+        "original_bytes": 3349,
+        "original_sha256": "0048e0c0e472e327044734b9a9319cf01baf37e65b71f68ab33b7d14354116fe",
+        "copied_bytes": 3349,
+        "copied_sha256": "0048e0c0e472e327044734b9a9319cf01baf37e65b71f68ab33b7d14354116fe",
+        "transform": "UTF-8 text read and write, newline normalization, identity replacement if present"
+      },
+      {
+        "path": "outputs/retained.stderr",
+        "original_bytes": 0,
+        "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "copied_bytes": 0,
+        "copied_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "transform": "UTF-8 text read and write, newline normalization, identity replacement if present"
+      },
+      {
+        "path": "outputs/control.stdout",
+        "original_bytes": 752,
+        "original_sha256": "cff5f35f8108ea7ead35e8776684a1e4df40b3694c71ff67c7c57d72cc7ac915",
+        "copied_bytes": 728,
+        "copied_sha256": "db3d1b5da6005f65a60bbae7c9ad8f93c9bbb851d482676303648903df85b99f",
+        "transform": "UTF-8 text read and write, newline normalization, identity replacement if present"
+      },
+      {
+        "path": "outputs/control.stderr",
+        "original_bytes": 0,
+        "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "copied_bytes": 0,
+        "copied_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "transform": "UTF-8 text read and write, newline normalization, identity replacement if present"
+      },
+      {
+        "path": "outputs/clippy.log",
+        "original_bytes": 3407,
+        "original_sha256": "ff11571b53dc9159dacc877da69616f487a5b3e6256d464e6ebb158d4b57d619",
+        "copied_bytes": 2686,
+        "copied_sha256": "c1a4d5a4486d5156b6e191c00aecf539bba6c5db61d966921341387f356f5cf9",
+        "transform": "UTF-8 text read and write, newline normalization, identity replacement if present"
+      },
+      {
+        "path": "outputs/release.log",
+        "original_bytes": 3158,
+        "original_sha256": "6fc2c88fef093391de056702c70ad04032021d6f1648d6bb5e106f0489a430d9",
+        "copied_bytes": 2445,
+        "copied_sha256": "612ba8c9a13b246bed1416b32adc1eec3a36c32321dfc356c4565e76579f5993",
+        "transform": "UTF-8 text read and write, newline normalization, identity replacement if present"
+      },
+      {
+        "path": "outputs/examples.log",
+        "original_bytes": 1133,
+        "original_sha256": "6e6d65d6a694b96d38caf570ca1a4e5b05fb80f72ab64e0ed33ca97bedcedf31",
+        "copied_bytes": 688,
+        "copied_sha256": "72084c6b642663e491d06ed4148e4850c530e4cea3a47287bc1bf4a1e0209468",
+        "transform": "UTF-8 text read and write, newline normalization, identity replacement if present"
+      },
+      {
+        "path": "outputs/startup-publisher.log",
+        "original_bytes": 0,
+        "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "copied_bytes": 0,
+        "copied_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "transform": "UTF-8 text read and write, newline normalization, identity replacement if present"
+      },
+      {
+        "path": "outputs/retained-publisher.log",
+        "original_bytes": 0,
+        "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "copied_bytes": 0,
+        "copied_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "transform": "UTF-8 text read and write, newline normalization, identity replacement if present"
+      }
+    ]
+  },
+  "private_retention": {
+    "local_directory": "/tmp/oe-win-bounded-20261023-MI4BOy",
+    "windows_directory": "%LOCALAPPDATA%/Temp/oe-win-bounded-e4f48ba-<RANDOM>; exact locator in private local state.json",
+    "raw_bundle": {
+      "archive_sha256": "269cc9d05b5b9c01b6a4e110b3887cbd54604a6841d9478d5d06608d128ee7ad",
+      "archive_bytes": 2977792,
+      "postflight": true,
+      "extra_inputs_unchanged": 1
+    },
+    "original_file_sha256": [
+      {
+        "path": "audit-tools.py",
+        "bytes": 594,
+        "sha256": "6e7beb473efecc12f75d9be48f9d5789b67d0c9b2b456c09c34fffd53209c2e5"
+      },
+      {
+        "path": "build-attached.input.ps1",
+        "bytes": 103,
+        "sha256": "c0582ea107d12f2d8945faf590c4e440951676ee557e6c7edb3d5a547a5e9ed5"
+      },
+      {
+        "path": "build-attached.stderr",
+        "bytes": 1051,
+        "sha256": "719fd15069669d4e5619bae91729639903c226fdca9615fcac29e7eaf6c0467a"
+      },
+      {
+        "path": "build-attached.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "build-attached.transport.json",
+        "bytes": 396,
+        "sha256": "e6576827df5236ac992aff22876d7e0540a770348f492d66360d5b364d70c795"
+      },
+      {
+        "path": "build-observe.input.ps1",
+        "bytes": 868,
+        "sha256": "c873618675048599fd7d665e30b2d3a417f77b473956e3af483b30a7b2be83d0"
+      },
+      {
+        "path": "build-observe.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "build-observe.stdout",
+        "bytes": 724,
+        "sha256": "08229bddbe34cdfbecd1f1dbecbe9fff73f1e263e24d49c4f55be7e3f0e9c455"
+      },
+      {
+        "path": "build-observe.transport.json",
+        "bytes": 393,
+        "sha256": "22204bab0b55ca3ca91ba3babcb9deac8f4802c92dd798634e6ad42f5dcb696e"
+      },
+      {
+        "path": "build-status-1.input.ps1",
+        "bytes": 378,
+        "sha256": "b0ec7cf3fe1b1348b757a87ba565b63282964b68c0aaf947cf3d4ff0c090052e"
+      },
+      {
+        "path": "build-status-1.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "build-status-1.stdout",
+        "bytes": 1618,
+        "sha256": "05a8d16d52e1ee79a8fda5478603dec2e046f25ce0419ca5f5e64527f350e193"
+      },
+      {
+        "path": "build-status-1.transport.json",
+        "bytes": 393,
+        "sha256": "55566004f777f68b224c82be86d6ba93f3ba9c66b59c3393c175b2d90c1e9a1d"
+      },
+      {
+        "path": "build.ps1",
+        "bytes": 5044,
+        "sha256": "576b10c61d732f326e6208d9f63315197513c18b478577612b006b543914c725"
+      },
+      {
+        "path": "common.ps1",
+        "bytes": 4838,
+        "sha256": "96c40a4e7921633a7853984eb973b76b4a387207b9aa9e4b8a3eb39785ebf7b9"
+      },
+      {
+        "path": "download.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "extra-input-hashes.json",
+        "bytes": 119,
+        "sha256": "1980643a25f9835490beb759192e0ed6a1d22a9d62fdb466f229117e0d3bdfa7"
+      },
+      {
+        "path": "finish.py",
+        "bytes": 3190,
+        "sha256": "ea96c6e39c2323c4bf8ca237281ad9794e719e44e29ae6e9837620d30596b556"
+      },
+      {
+        "path": "freeze-after-build.ps1",
+        "bytes": 2906,
+        "sha256": "21288eea1b3464b11322319aae58f2f85d9f7dad8ff57ce0d7c5a7113683b811"
+      },
+      {
+        "path": "freeze-corrected.input.ps1",
+        "bytes": 523,
+        "sha256": "f5e10458fde090fd585a7943cfb89154ea34393ff0727b836a6a3239f63184c2"
+      },
+      {
+        "path": "freeze-corrected.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "freeze-corrected.stdout",
+        "bytes": 13,
+        "sha256": "6cb7f7ef01d552ae3b925e08236d052712ce58d33060d1e03f5b20006d863cc1"
+      },
+      {
+        "path": "freeze-corrected.transport.json",
+        "bytes": 394,
+        "sha256": "a064a19a31bd49d3cc4d378b2f06d0fbd39404106fee0e7fd124178dcbd65d82"
+      },
+      {
+        "path": "freeze-failure-inspect.input.ps1",
+        "bytes": 688,
+        "sha256": "ede18241972fb3f71eef188eaf055e7930ff717690971a04bc362eaf257232db"
+      },
+      {
+        "path": "freeze-failure-inspect.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "freeze-failure-inspect.stdout",
+        "bytes": 4493,
+        "sha256": "245d3bedc248d2055a18c6237e8512b0bc432b9444ce0b455173755f0528d6f4"
+      },
+      {
+        "path": "freeze-failure-inspect.transport.json",
+        "bytes": 393,
+        "sha256": "6c7ec7edff1836ba833ca34712768a07b87fe807011d40160db6d9df25e97b52"
+      },
+      {
+        "path": "input-hashes.json",
+        "bytes": 957,
+        "sha256": "5ec93e58a4b29ecdcc5a07ff9b0bdd99cfc9c76b862c788e2983ba2a18360447"
+      },
+      {
+        "path": "launch-build.py",
+        "bytes": 972,
+        "sha256": "f3fb57f74d5083948ed2aa3a43d6884ab9028bf80b0d62d593ef6bec5162c77f"
+      },
+      {
+        "path": "launch-runtime.py",
+        "bytes": 1480,
+        "sha256": "c49b863dc37d9b96c4568b289d9db615c9cba7ede2ca0f940d3fc3d0392650b8"
+      },
+      {
+        "path": "local-tools.json",
+        "bytes": 644,
+        "sha256": "44e20cc0a8f8dbcbd26ebe36d235a650ea4d2c6c6b3df5104dfcffca48f15d62"
+      },
+      {
+        "path": "make-evidence.py",
+        "bytes": 15959,
+        "sha256": "c2156f79078a2b3a309416914a0485643bb4f43538c805b80f0da92a3be56e85"
+      },
+      {
+        "path": "package.py",
+        "bytes": 2074,
+        "sha256": "30364f946ad65d4c08461735b14f9235cc71b236ffb92f4369f4f22409317908"
+      },
+      {
+        "path": "postflight-attached.input.ps1",
+        "bytes": 2084,
+        "sha256": "7a49e028948536e3253ad8f5c876cc6fcd4df90f8fb50ea00b745d1cd7d0ed18"
+      },
+      {
+        "path": "postflight-attached.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "postflight-attached.stdout",
+        "bytes": 212,
+        "sha256": "d0c3d87c6af6fa62857718c1144f45e28e9dc9cea55e6515e170ab92725f08c3"
+      },
+      {
+        "path": "postflight-attached.transport.json",
+        "bytes": 394,
+        "sha256": "6c8b0cec9ebbc60c613663c3aecd06707a16121b7175082ee31984149907d8c3"
+      },
+      {
+        "path": "postflight.ps1",
+        "bytes": 2070,
+        "sha256": "d5923878336d28c0158a05e21a094185d83b7b161934a8a8269648264da27357"
+      },
+      {
+        "path": "prepare-run.py",
+        "bytes": 1693,
+        "sha256": "664d71d7e7d9c403d83177829aa39332d21231495506bd830226aa49b010cb03"
+      },
+      {
+        "path": "raw/artifact-manifest.json",
+        "bytes": 399731,
+        "sha256": "251d8e933a0e619018709af42bb5f45445a01b5259e6f10e6e59713bc6dba110"
+      },
+      {
+        "path": "raw/build-observed.json",
+        "bytes": 4536,
+        "sha256": "0b8d5259c8057dce868905a80dd242bb7f6e543cb1d4d30d2dec467666e4a976"
+      },
+      {
+        "path": "raw/build-progress.json",
+        "bytes": 371,
+        "sha256": "3be9d5c329a189a3b62fe8fa24b72eb021091e6bb80756709e781f1b223b0f9e"
+      },
+      {
+        "path": "raw/build-result.json",
+        "bytes": 3408,
+        "sha256": "d44832300082f6af7b603c9f4b9131d0259028b7390f7e9c787dcc379947a07b"
+      },
+      {
+        "path": "raw/build-start.json",
+        "bytes": 699,
+        "sha256": "e7bade624a1eb835f167aa757f023ec9b93e7a1fc01631421bc88a666074a6e1"
+      },
+      {
+        "path": "raw/build.ps1",
+        "bytes": 5044,
+        "sha256": "576b10c61d732f326e6208d9f63315197513c18b478577612b006b543914c725"
+      },
+      {
+        "path": "raw/common.ps1",
+        "bytes": 4838,
+        "sha256": "96c40a4e7921633a7853984eb973b76b4a387207b9aa9e4b8a3eb39785ebf7b9"
+      },
+      {
+        "path": "raw/control-after.json",
+        "bytes": 694,
+        "sha256": "33a66587d7f6e9c20551b98acaa07e0969f777e5b1e25ae4a0a87bb1d37e155a"
+      },
+      {
+        "path": "raw/control-before.json",
+        "bytes": 694,
+        "sha256": "0b4178b0bf5243c0a24dbf50f13cc8cd0666d41bc975c1595edacda22082df67"
+      },
+      {
+        "path": "raw/control-process.json",
+        "bytes": 815,
+        "sha256": "d681aa7381507cfbf4ad4959ff471c2b4c254b2bcdda0250d87bc99d2f3b8fbe"
+      },
+      {
+        "path": "raw/control-result.json",
+        "bytes": 4392,
+        "sha256": "ba2691dcd0fca06a725bc3495806cf941d1efefdc252437a2d41740f3a07e80d"
+      },
+      {
+        "path": "raw/extra-input-hashes.json",
+        "bytes": 119,
+        "sha256": "1980643a25f9835490beb759192e0ed6a1d22a9d62fdb466f229117e0d3bdfa7"
+      },
+      {
+        "path": "raw/freeze-after-build.ps1",
+        "bytes": 2906,
+        "sha256": "21288eea1b3464b11322319aae58f2f85d9f7dad8ff57ce0d7c5a7113683b811"
+      },
+      {
+        "path": "raw/freeze.json",
+        "bytes": 11043,
+        "sha256": "c9f00920b65bf0823550edd0f05a4d7e56455ccc9d2c713f8693c5b792c5add8"
+      },
+      {
+        "path": "raw/input-hashes.json",
+        "bytes": 957,
+        "sha256": "5ec93e58a4b29ecdcc5a07ff9b0bdd99cfc9c76b862c788e2983ba2a18360447"
+      },
+      {
+        "path": "raw/logs/before-freeze-processes.json",
+        "bytes": 192539,
+        "sha256": "77b82961862b13fb2f4df3014d1d4cb8c2daf21ce78ecb716ea40250c71847fc"
+      },
+      {
+        "path": "raw/logs/before-freeze-tcp.txt",
+        "bytes": 34302,
+        "sha256": "9acbbf25ab74984d2ba81a36d7e919ee43809aa07323d9e95ebc8f495dc33c9f"
+      },
+      {
+        "path": "raw/logs/before-freeze-udp.txt",
+        "bytes": 4648,
+        "sha256": "b9538257aad689158590888ccbdc331afa2c8c069b937dc6114dfc140ed545b0"
+      },
+      {
+        "path": "raw/logs/clippy.log",
+        "bytes": 3407,
+        "sha256": "ff11571b53dc9159dacc877da69616f487a5b3e6256d464e6ebb158d4b57d619"
+      },
+      {
+        "path": "raw/logs/control-after-processes.json",
+        "bytes": 196650,
+        "sha256": "fae3e4b9e90ac06f6c1460f8624df1731cea3ca703f6b41f482f2c344bb120e3"
+      },
+      {
+        "path": "raw/logs/control-after-tcp.txt",
+        "bytes": 29354,
+        "sha256": "058c91f8bfa16bb8dd2b7c9fb1cfc9df9581e51b61a710024cd73f5c77986580"
+      },
+      {
+        "path": "raw/logs/control-after-udp.txt",
+        "bytes": 4571,
+        "sha256": "41e0790852e71511cd57b6d68243a1447c648dcf19eb03ddd6c2b6a394be07e5"
+      },
+      {
+        "path": "raw/logs/control-before-processes.json",
+        "bytes": 203778,
+        "sha256": "4eb5ade401b6cb3134dfd7088ded56e167e558de8b9c26ad69bdc0f6a080144f"
+      },
+      {
+        "path": "raw/logs/control-before-tcp.txt",
+        "bytes": 27505,
+        "sha256": "cbc9c192946ab2538f597f649f43a2ee0a309fb1aea4833970dae41e9b9764a1"
+      },
+      {
+        "path": "raw/logs/control-before-udp.txt",
+        "bytes": 4571,
+        "sha256": "41e0790852e71511cd57b6d68243a1447c648dcf19eb03ddd6c2b6a394be07e5"
+      },
+      {
+        "path": "raw/logs/control.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "raw/logs/control.stdout",
+        "bytes": 752,
+        "sha256": "cff5f35f8108ea7ead35e8776684a1e4df40b3694c71ff67c7c57d72cc7ac915"
+      },
+      {
+        "path": "raw/logs/examples.log",
+        "bytes": 1133,
+        "sha256": "6e6d65d6a694b96d38caf570ca1a4e5b05fb80f72ab64e0ed33ca97bedcedf31"
+      },
+      {
+        "path": "raw/logs/postflight-processes.json",
+        "bytes": 201628,
+        "sha256": "e9ed29570a0b0a21ae1baa11a33e3d3062e3a9080c1699521415c7d9c2fe09ee"
+      },
+      {
+        "path": "raw/logs/postflight-tcp.txt",
+        "bytes": 27494,
+        "sha256": "38f7bffd79c25883aea50689eebab587bb881e4c581168ed20f5105e32d16a66"
+      },
+      {
+        "path": "raw/logs/postflight-udp.txt",
+        "bytes": 4494,
+        "sha256": "76396721c01b08c0f8ec549b9078474e74958f4fab043f0f0eac7b36151c938c"
+      },
+      {
+        "path": "raw/logs/preflight-processes.json",
+        "bytes": 181463,
+        "sha256": "cf79b47ec03479d03bd06c768f16a5f00fe4bd22e2b2eeaa99c66e3ddf6cc8ec"
+      },
+      {
+        "path": "raw/logs/preflight-tcp.txt",
+        "bytes": 23577,
+        "sha256": "eb35f0ad151a283761898a5d09e2326d9dd38d47c8461aeb17ccc6a584495e3b"
+      },
+      {
+        "path": "raw/logs/preflight-udp.txt",
+        "bytes": 4494,
+        "sha256": "26fc42727c3ee0dbfe00e671f4cf7f34571e2092df4d6be073c7af921c9fb560"
+      },
+      {
+        "path": "raw/logs/release.log",
+        "bytes": 3158,
+        "sha256": "6fc2c88fef093391de056702c70ad04032021d6f1648d6bb5e106f0489a430d9"
+      },
+      {
+        "path": "raw/logs/retained-after-processes.json",
+        "bytes": 202139,
+        "sha256": "713e99ee8f7b435fbfa6f0a94825445d28be82cccebb3c3bbb2463d775687f64"
+      },
+      {
+        "path": "raw/logs/retained-after-tcp.txt",
+        "bytes": 27505,
+        "sha256": "cbc9c192946ab2538f597f649f43a2ee0a309fb1aea4833970dae41e9b9764a1"
+      },
+      {
+        "path": "raw/logs/retained-after-udp.txt",
+        "bytes": 4571,
+        "sha256": "41e0790852e71511cd57b6d68243a1447c648dcf19eb03ddd6c2b6a394be07e5"
+      },
+      {
+        "path": "raw/logs/retained-before-processes.json",
+        "bytes": 198807,
+        "sha256": "f4b9386bd802721845dddbdfb153b85198efced7b87ba353fc80717aeb902f84"
+      },
+      {
+        "path": "raw/logs/retained-before-tcp.txt",
+        "bytes": 31794,
+        "sha256": "cf5bdc1b197535ddbd82e61eae1d662cf9796e858bd9693548018fc05723a117"
+      },
+      {
+        "path": "raw/logs/retained-before-udp.txt",
+        "bytes": 4571,
+        "sha256": "940830de9455b804d418e3f83e83fef9a6fb6d80b07347128be408a46e6884a8"
+      },
+      {
+        "path": "raw/logs/retained.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "raw/logs/retained.stdout",
+        "bytes": 3349,
+        "sha256": "0048e0c0e472e327044734b9a9319cf01baf37e65b71f68ab33b7d14354116fe"
+      },
+      {
+        "path": "raw/logs/startup-after-processes.json",
+        "bytes": 198807,
+        "sha256": "f4b9386bd802721845dddbdfb153b85198efced7b87ba353fc80717aeb902f84"
+      },
+      {
+        "path": "raw/logs/startup-after-tcp.txt",
+        "bytes": 31566,
+        "sha256": "348907358903dd38f369e05ae8fdeef869ac2e1be08c06c148dde0b7d4c43752"
+      },
+      {
+        "path": "raw/logs/startup-after-udp.txt",
+        "bytes": 4571,
+        "sha256": "940830de9455b804d418e3f83e83fef9a6fb6d80b07347128be408a46e6884a8"
+      },
+      {
+        "path": "raw/logs/startup-before-processes.json",
+        "bytes": 198814,
+        "sha256": "b81681c4e25a115bbcd532afff9790c5a04e1559b648f48b6b74812f6341cb07"
+      },
+      {
+        "path": "raw/logs/startup-before-tcp.txt",
+        "bytes": 32492,
+        "sha256": "c4e6b26a61efb38173780e1793e02d989e1ed742d06d43219c2c18dbfadd8180"
+      },
+      {
+        "path": "raw/logs/startup-before-udp.txt",
+        "bytes": 4725,
+        "sha256": "fe154704dc1b9e6c8e316910d8ab03560f3fe059596a27872fc06982f2567bf9"
+      },
+      {
+        "path": "raw/logs/startup.stderr",
+        "bytes": 50,
+        "sha256": "da73ae23015c282730f234fc10483806e03ec6fc03247c9fbd849918d0069058"
+      },
+      {
+        "path": "raw/logs/startup.stdout",
+        "bytes": 3990,
+        "sha256": "8feb2107ab300f4d7775bfb11300aecb772f387372374a310968358ce857f105"
+      },
+      {
+        "path": "raw/postflight.json",
+        "bytes": 3230,
+        "sha256": "f425db46ca82032f3ae0cf048504ebcc24de4f956b47cd114e1d2dcca877f2c0"
+      },
+      {
+        "path": "raw/postflight.ps1",
+        "bytes": 2070,
+        "sha256": "d5923878336d28c0158a05e21a094185d83b7b161934a8a8269648264da27357"
+      },
+      {
+        "path": "raw/preflight.json",
+        "bytes": 2940,
+        "sha256": "1148c454eb8467a8a22321a8e8f55783014c77673ca04bcfa1ae330aa3e6e67c"
+      },
+      {
+        "path": "raw/private-identity.json",
+        "bytes": 387,
+        "sha256": "ada5d353a6dd358b717835cb9642d1c7067bf96287f598247c50f993bffe901c"
+      },
+      {
+        "path": "raw/retained-after.json",
+        "bytes": 694,
+        "sha256": "79b22f04be4e97bd9336446261444da3d5168e1e7c113195ed3c157e13241a54"
+      },
+      {
+        "path": "raw/retained-before.json",
+        "bytes": 694,
+        "sha256": "650a44a9a448eac01e372c72119615c5a9a514365c0641b49897dd8e9947c588"
+      },
+      {
+        "path": "raw/retained-process.json",
+        "bytes": 671,
+        "sha256": "34fe68661a424b6302e7677260d94824d419036c6a63daa35c9f5356f75f08a4"
+      },
+      {
+        "path": "raw/retained-result.json",
+        "bytes": 3180,
+        "sha256": "40f8e5b2831779f2d0a1a53069a061f5c399dac13c9b87c8f95b5cce22d52644"
+      },
+      {
+        "path": "raw/run-result.json",
+        "bytes": 11051,
+        "sha256": "580fc63d6813c8eb9700c674bc477de17ad1290214fc004577c2c2d315f53f45"
+      },
+      {
+        "path": "raw/run-start.json",
+        "bytes": 418,
+        "sha256": "4dabb22857a6a5affa832fe823ca5d04ee204d7c5457a78ae1d4bc3e476a56e7"
+      },
+      {
+        "path": "raw/run-v2.ps1",
+        "bytes": 5495,
+        "sha256": "1110c64cde68649e12fd565bca2edabe314898b07f9836c099c035554fe890b2"
+      },
+      {
+        "path": "raw/run.ps1",
+        "bytes": 5494,
+        "sha256": "9e02ad02eb787aae5d7fb02b7dd1e705be6a218f70b838b1739df3bbf71e73de"
+      },
+      {
+        "path": "raw/runtime/retained/publisher.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "raw/runtime/retained/ready-burst",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/retained/ready-clear",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/retained/ready-finish",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/retained/ready-initial",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/retained/ready-recover",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/retained/ready-restore-initial",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/retained/ready-retained-new",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/retained/ready-retained-paused-remove",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/retained/ready-retained-paused-update",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/retained/ready-retained-remove",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/retained/ready-retained-update",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/retained/ready-update",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/startup/publisher.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "raw/runtime/startup/ready-burst",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/startup/ready-finish",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/startup/ready-guard-final",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/startup/ready-guard-start",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/startup/ready-guard-update",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/startup/ready-initial",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/source-manifest.json",
+        "bytes": 299804,
+        "sha256": "53cf3242666110a06275cd01eb5b01495bf7be65a48ff3066da08bdd8682e556"
+      },
+      {
+        "path": "raw/startup-after.json",
+        "bytes": 694,
+        "sha256": "41b5e96827e7b5f94e238b2285c96bc3d8e9cfda906d78a0756109ec23bb0e59"
+      },
+      {
+        "path": "raw/startup-before.json",
+        "bytes": 694,
+        "sha256": "fe251c4958ade951b4ecf066a459ba0bd6a63f063e38f9716532a98dc2c8f6f2"
+      },
+      {
+        "path": "raw/startup-process.json",
+        "bytes": 671,
+        "sha256": "ac1897a16bc3380a11759fcc085622c99aa09734836b69b5e005eb2004d13aad"
+      },
+      {
+        "path": "raw/startup-result.json",
+        "bytes": 3041,
+        "sha256": "ffc95fd24536c3b39f836093adf36bfa0f8a12b81419a8601d6de2719f3b29cd"
+      },
+      {
+        "path": "raw/supplemental-postflight.json",
+        "bytes": 325,
+        "sha256": "221babef9409b4b62c4d6eba55d5680f4fc53a016894f0761010d144b77aa70c"
+      },
+      {
+        "path": "raw/syntax-check.json",
+        "bytes": 498,
+        "sha256": "0261995f51bb6c07138fc2ad4246f25141238796af0868d18c247fb6120483bb"
+      },
+      {
+        "path": "raw/tool-audit-after.json",
+        "bytes": 4468,
+        "sha256": "80be5d6d3e6e68795452a80668cbd91e9e879ac4d0f3fe274c4d2a194095d08a"
+      },
+      {
+        "path": "raw/tool-audit-before.json",
+        "bytes": 4469,
+        "sha256": "bbf635ef55d278a2534707d07ed65b0e2be266e977b68afd18197d0eaccbffa7"
+      },
+      {
+        "path": "raw/tool-audit.ps1",
+        "bytes": 2388,
+        "sha256": "1f3da77a00bfa4e6903bf5f88c9ea327e21fd8e4168d6e0386aaecc78ecaf368"
+      },
+      {
+        "path": "raw-evidence.tar",
+        "bytes": 2977792,
+        "sha256": "269cc9d05b5b9c01b6a4e110b3887cbd54604a6841d9478d5d06608d128ee7ad"
+      },
+      {
+        "path": "recover-runtime.py",
+        "bytes": 1641,
+        "sha256": "55ec6a3820833d6a9bb65545e378f48f7462d99a4ab07d4d1c5bfed5c9c85d77"
+      },
+      {
+        "path": "remote-bundle.json",
+        "bytes": 172,
+        "sha256": "93842e4870b59ef3bbb055c6000185ebb086168190ab72f2bb19ae2d6228ccc6"
+      },
+      {
+        "path": "retention-final.input.ps1",
+        "bytes": 1094,
+        "sha256": "bb823314b9df663167cac3dc30e3a608ecbeb2aced9803a01f9690ab2805abba"
+      },
+      {
+        "path": "retention-final.json",
+        "bytes": 524,
+        "sha256": "49701a7da50cf398b5f96c48971e96aea9e73c19c61d8cbe92f6d6c8f164ed09"
+      },
+      {
+        "path": "retention-final.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "retention-final.stdout",
+        "bytes": 524,
+        "sha256": "49701a7da50cf398b5f96c48971e96aea9e73c19c61d8cbe92f6d6c8f164ed09"
+      },
+      {
+        "path": "retention-final.transport.json",
+        "bytes": 394,
+        "sha256": "945c2a0c3cb714a798786aa84a228c97110e326a344892cec838cb8687f97f64"
+      },
+      {
+        "path": "run-v2.ps1",
+        "bytes": 5495,
+        "sha256": "1110c64cde68649e12fd565bca2edabe314898b07f9836c099c035554fe890b2"
+      },
+      {
+        "path": "run.ps1",
+        "bytes": 5494,
+        "sha256": "9e02ad02eb787aae5d7fb02b7dd1e705be6a218f70b838b1739df3bbf71e73de"
+      },
+      {
+        "path": "runtime-attached.input.ps1",
+        "bytes": 101,
+        "sha256": "a3eeb007ccce51c50c74a7bc7958c68edfd7401580e13c2926f271a6fcb7e947"
+      },
+      {
+        "path": "runtime-attached.stderr",
+        "bytes": 939,
+        "sha256": "92fa530879684a70ef540745a3332f05e01129541cc6ef6d98a8bffc2faf0f5e"
+      },
+      {
+        "path": "runtime-attached.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "runtime-attached.transport.json",
+        "bytes": 393,
+        "sha256": "01354ab0197cce5405f717d468504727b2fae3b9be95d221e52fe24593680914"
+      },
+      {
+        "path": "runtime-status-1.input.ps1",
+        "bytes": 682,
+        "sha256": "aef24984f7d74f336943fe23b1b88c96913281802d8b2b72f535b08d28c5f877"
+      },
+      {
+        "path": "runtime-status-1.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "runtime-status-1.stdout",
+        "bytes": 108,
+        "sha256": "5325d4166a5f1f6c5245363f994be76d367cc55af57080aa9a4fb5bf5e4fcacc"
+      },
+      {
+        "path": "runtime-status-1.transport.json",
+        "bytes": 393,
+        "sha256": "eb8089c63fa9109f27c6685929d031a93a000f1007b325f8732c8051c8a13e8d"
+      },
+      {
+        "path": "runtime-status-2.input.ps1",
+        "bytes": 479,
+        "sha256": "aeabfe021e6df18da35e3787e2c594824281f95ec06744512f06b355a3a0820f"
+      },
+      {
+        "path": "runtime-status-2.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "runtime-status-2.stdout",
+        "bytes": 2172,
+        "sha256": "e00f474318f9e1242ea7cb6714134e21fd32215f71f7c5b70b6e02697ed8c3e2"
+      },
+      {
+        "path": "runtime-status-2.transport.json",
+        "bytes": 393,
+        "sha256": "00703487bbdef3026e917e8c97ed58d4d146cf28a71ba0ce23ac91effa096bba"
+      },
+      {
+        "path": "runtime-v2-attached.input.ps1",
+        "bytes": 1151,
+        "sha256": "13ed4cb3028f8cbedc41604de6ed013cf2bec98daa90c6dcbd7a398082a25026"
+      },
+      {
+        "path": "runtime-v2-attached.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "runtime-v2-attached.stdout",
+        "bytes": 27,
+        "sha256": "6ff7024b613db7c5c497e9b891ea8113c3186385e21c6a9aa3ba9b00c31f9568"
+      },
+      {
+        "path": "runtime-v2-attached.transport.json",
+        "bytes": 395,
+        "sha256": "f76975e9f99f33bf886e6fe91ea7aa05f0f7f6d61e91453f4813ea3b9c328c1e"
+      },
+      {
+        "path": "setup.input.ps1",
+        "bytes": 1467,
+        "sha256": "b3abd52cf878008b8876db9ffeed4ec9e40731a3233f20e35e82d268a4aee854"
+      },
+      {
+        "path": "setup.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "setup.stdout",
+        "bytes": 309,
+        "sha256": "7ee0ea9a32c54f49cc0e33eaf3ac76a35261d5e89bc317d5f098a19ac77b25f6"
+      },
+      {
+        "path": "setup.transport.json",
+        "bytes": 393,
+        "sha256": "b563011dab5279b391daac366af976b6a2c02889ad89858e7d0dc9609ee5cf87"
+      },
+      {
+        "path": "source-manifest.json",
+        "bytes": 299804,
+        "sha256": "53cf3242666110a06275cd01eb5b01495bf7be65a48ff3066da08bdd8682e556"
+      },
+      {
+        "path": "source.tar",
+        "bytes": 7680000,
+        "sha256": "21a551059f2dbbd7fc694e668512efb99805b33029490f424156c92c762ccf08"
+      },
+      {
+        "path": "startup-failure-output.input.ps1",
+        "bytes": 168,
+        "sha256": "5d45268ca2bef98fab5f2fb4e6c2466c00f89d4357d485ba86b085ef4ed221b1"
+      },
+      {
+        "path": "startup-failure-output.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "startup-failure-output.stdout",
+        "bytes": 3992,
+        "sha256": "7a486ff22986dc78d84337659c40c4b7dccf6e614913d85f8a631c6f140351ce"
+      },
+      {
+        "path": "startup-failure-output.transport.json",
+        "bytes": 393,
+        "sha256": "1076991a6d1a360cf0014b342d41384598466bcb86acbb91a2497f65332cf4e9"
+      },
+      {
+        "path": "state.json",
+        "bytes": 283,
+        "sha256": "8edfa9315663b6fddea0ab15c56628cd71a4aa37f7180dc7378a1ee27fd62e13"
+      },
+      {
+        "path": "tool-audit.ps1",
+        "bytes": 2388,
+        "sha256": "1f3da77a00bfa4e6903bf5f88c9ea327e21fd8e4168d6e0386aaecc78ecaf368"
+      },
+      {
+        "path": "tool-before.input.ps1",
+        "bytes": 122,
+        "sha256": "ec85ba1e23b81ae6c87bd128298b32f0af8d045444bbd0905cc76f152687bab7"
+      },
+      {
+        "path": "tool-before.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "tool-before.stdout",
+        "bytes": 17,
+        "sha256": "f32891adb27524110701ec184e037098ab76e1a237a58b758fa1d48278c60e00"
+      },
+      {
+        "path": "tool-before.transport.json",
+        "bytes": 394,
+        "sha256": "9968fab229be4f25b721e9ab88f20b489d4cb108c5510a1e791ad60b59f4bbf1"
+      },
+      {
+        "path": "transfer-freeze.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "transfer-run-v2.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "transfer-run.json",
+        "bytes": 794,
+        "sha256": "41ababc9f08848e41c37b03836f7aaa8d74d2d64d8fb03ccb7b615e5dba3cba1"
+      },
+      {
+        "path": "transfer-run.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "transfer-tools.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "transfer.json",
+        "bytes": 559,
+        "sha256": "6e7a5ef4ac221c219c57dfcb8d114181da0d2c2ab4e15125746799c66d9d66f0"
+      },
+      {
+        "path": "transfer.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "transfer.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "transport.py",
+        "bytes": 3234,
+        "sha256": "3b6457b433b3991c8afaa1f5481ff77791a4cd50b60467f2e21250f3fb291dca"
+      }
+    ]
+  },
+  "remaining_limits": [
+    "Windows MSVC library/process behavior on exact e4f48ba parent only.",
+    "The unchanged virtual control script covers the old IPC implementation in this source. It does not validate a later IPC change; later combined acceptance is required.",
+    "One unchanged run per mode, each with a 120-second deadline. No repeated soak, baseline comparison, unit test or mock.",
+    "Owned process and assigned endpoint absence after exit is separate from actual worker/socket teardown while the process remains alive. No Windows equivalent of the macOS owned-worker observer ran. Submission and sentinel acknowledgement do not supply that acceptance.",
+    "The 64-entry delivery-state cap does not bound the whole cache, expiry, timers, query work or variable bytes. Cached unselected services have no automatic refill guarantee. Standard browse still overflows at 1000 events.",
+    "RECOVERY_OBSERVATION_MS=0 is a post-phase observation after publisher waits; it is not network latency. Probe/wrapper durations are not product performance benchmarks.",
+    "Native input/clipboard, positive interactive Windows migration, restricted privilege, provenance/security review and trusted signed distribution remain open.",
+    "Slow DNS and the original provider-stopped expiry/NSEC/orphan-record experiment were not run. DNS source 07adb builds/refusal supplements were not rerun or relabelled.",
+    "No installed live backend, sharing/config/TLS/default IPC, desktop/windowstation/TCC/login, service/task, elevation/account/credential, firewall/network/global limits, Docker, signing/publication/GitHub/push/merge or other-thread change. GitHub private reporting stays deferred."
+  ],
+  "typescript_validation": "Not applicable: Rust-only verification; no TypeScript package changed.",
+  "evidence_copy_adjustments": [
+    {
+      "stage": "Git evidence staging",
+      "warning": "warning: in the working copy of 'docs/verification/release-integration-2026-10-22/windows-bounded-discovery-2026-10-23/artifact-manifest.json', CRLF will be replaced by LF the next time Git touches it",
+      "original_warning_sha256": "bab071d8db76dd73ec2e90672d426e9b1fb74cdba03dc8ec4d544af76a6946fe",
+      "response": "Normalize only the copied artifact-manifest to repository LF and record original/copied hashes. JSON entries, private originals, source files, binaries and probe results remain unchanged."
+    }
+  ]
+}

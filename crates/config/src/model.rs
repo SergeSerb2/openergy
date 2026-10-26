@@ -55,8 +55,10 @@ impl Config {
                 return Err(invalid(format!("{key}: exceeds signed 32-bit wire range")));
             }
         }
-        if self.clipboard.max_bytes as u128 > i32::MAX as u128 * 1024 {
-            return Err(invalid("clipboard.max_bytes: exceeds signed 32-bit KiB wire range"));
+        if self.clipboard.max_bytes > MAX_CLIPBOARD_BYTES {
+            return Err(invalid(
+                "clipboard.max_bytes: exceeds supported maximum of 64 MiB (67108864 bytes)",
+            ));
         }
         if !self.input.scroll_sensitivity.is_finite() || self.input.scroll_sensitivity <= 0.0 {
             return Err(invalid("input.scroll_sensitivity: must be finite and positive"));
@@ -183,7 +185,7 @@ impl Config {
         if self.server.heartbeat_ms == 0 || self.client.heartbeat_ms == 0 {
             warnings.push("A zero heartbeat disables liveness timers".into());
         }
-        if self.clipboard.max_bytes % 1024 != 0 {
+        if !self.clipboard.max_bytes.is_multiple_of(1024) {
             warnings.push("clipboard.max_bytes is rounded down to whole KiB for Synergy peers".into());
         }
         if self.role == Role::Client && self.client.remote.is_empty() {

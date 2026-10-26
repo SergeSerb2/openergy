@@ -1,0 +1,38 @@
+STARTUP_METRICS={"cache-refresh-ptr": 0, "timer": 7714, "cached-txt": 500, "limited-view-states": 1, "cache-refresh-addr": 0, "known-answer-suppression": 0, "cached-ptr": 802, "cached-srv": 500, "dns-registry-active": 0, "cached-subtype": 0, "dns-registry-probe": 0, "cached-nsec": 0, "dns-registry-timer": 0, "cached-addr": 2, "dns-registry-name-change": 0, "cache-refresh-srv-txt": 0, "browse": 3}
+STARTUP_METRICS={"cache-refresh-ptr": 0, "timer": 8016, "cached-txt": 500, "limited-view-states": 1, "cache-refresh-addr": 0, "known-answer-suppression": 0, "cached-ptr": 802, "cached-srv": 500, "dns-registry-active": 0, "cached-subtype": 0, "dns-registry-probe": 0, "cached-nsec": 0, "dns-registry-timer": 0, "cached-addr": 2, "dns-registry-name-change": 0, "cache-refresh-srv-txt": 0, "browse": 3}
+STARTUP_METRICS={"cache-refresh-ptr": 0, "timer": 9828, "cached-txt": 802, "limited-view-states": 1, "cache-refresh-addr": 0, "known-answer-suppression": 0, "cached-ptr": 802, "cached-srv": 802, "dns-registry-active": 0, "cached-subtype": 0, "dns-registry-probe": 0, "cached-nsec": 0, "dns-registry-timer": 0, "cached-addr": 3, "dns-registry-name-change": 0, "cache-refresh-srv-txt": 0, "browse": 4}
+CANCELLED_STARTUPS distinct=32 replay_commands=16 replayed_overflows=16 before=1 after_barrier=1 after_settle=1 live_closed=false
+STARTUP_METRICS={"cache-refresh-ptr": 0, "timer": 9538, "cached-txt": 803, "limited-view-states": 1, "cache-refresh-addr": 0, "known-answer-suppression": 0, "cached-ptr": 802, "cached-srv": 802, "dns-registry-active": 0, "cached-subtype": 0, "dns-registry-probe": 0, "cached-nsec": 0, "dns-registry-timer": 0, "cached-addr": 3, "dns-registry-name-change": 0, "cache-refresh-srv-txt": 0, "browse": 4}
+STARTUP_METRICS={"cache-refresh-ptr": 0, "timer": 9538, "cached-txt": 803, "limited-view-states": 0, "cache-refresh-addr": 0, "known-answer-suppression": 0, "cached-ptr": 802, "cached-srv": 802, "dns-registry-active": 0, "cached-subtype": 0, "dns-registry-probe": 0, "cached-nsec": 0, "dns-registry-timer": 0, "cached-addr": 3, "dns-registry-name-change": 0, "cache-refresh-srv-txt": 0, "browse": 5}
+STARTUP_METRICS={"cache-refresh-ptr": 0, "timer": 9539, "cached-txt": 803, "limited-view-states": 1, "cache-refresh-addr": 0, "known-answer-suppression": 0, "cached-ptr": 802, "cached-srv": 802, "dns-registry-active": 0, "cached-subtype": 0, "dns-registry-probe": 0, "cached-nsec": 0, "dns-registry-timer": 0, "cached-addr": 3, "dns-registry-name-change": 0, "cache-refresh-srv-txt": 0, "browse": 6}
+STARTUP_METRICS={"cache-refresh-ptr": 0, "timer": 9539, "cached-txt": 801, "limited-view-states": 0, "cache-refresh-addr": 0, "known-answer-suppression": 0, "cached-ptr": 801, "cached-srv": 801, "dns-registry-active": 0, "cached-subtype": 0, "dns-registry-probe": 0, "cached-nsec": 0, "dns-registry-timer": 0, "cached-addr": 2, "dns-registry-name-change": 0, "cache-refresh-srv-txt": 0, "browse": 6}
+CHECK ordinary-replay-cache-overflow=true
+CHECK live-handle-resolves=true
+CHECK ordinary-replay-commands-drained=true
+CHECK cancelled-distinct-types-retain-no-state=true
+CHECK cancelled-replacements-preserve-identity=true
+CHECK surviving-handle-receives-live-update=true
+CHECK successful-limited-replacement-has-new-identity=true
+CHECK successful-standard-replacement-releases-state=true
+CHECK standard-to-limited-replacement=true
+CHECK final-stop-clears-worker-state=true
+CHECK publisher-exits-zero=true
+CHECK worker-shutdown-ack=true
+       12.70 real         1.05 user         0.19 sys
+            14221312  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                1782  page reclaims
+                   9  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                6257  messages sent
+               10538  messages received
+                   0  signals received
+                   4  voluntary context switches
+                5730  involuntary context switches
+          7236374167  instructions retired
+          2113996500  cycles elapsed
+            11698632  peak memory footprint

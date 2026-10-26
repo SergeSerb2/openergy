@@ -1,7 +1,7 @@
 # Requirement: Malformed flood closes only the offending connection; the daemon still serves a new client.
 name = "S13-flood"
 requirement = "Malformed flood closes only the offending connection; the daemon still serves a new client."
-blocked_by = ["WP1", "WP6"]
+blocked_by = []
 timeout_ms = 1800
 
 [[node]]

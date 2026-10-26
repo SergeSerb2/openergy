@@ -1,0 +1,101 @@
+{
+  "baseline_commit": "ac5c45081a9e060392cb850eddd625f07b591bfe",
+  "baseline_reactor_sha256": "43476e3ab801096113d91632c9b0426ff0221fade860a18f46f7120594d44887",
+  "patched_reactor_sha256": "e03db331700926cac6ed75300ae3c4e7eb69d204a0299298f4179ca7457d88b0",
+  "probe_sha256": "8d43166cd621ef57dcaec206134af531666d56e5d70722634a1df7c9e776836b",
+  "archived_probe_sha256": "8d43166cd621ef57dcaec206134af531666d56e5d70722634a1df7c9e776836b",
+  "build_environment": {
+    "RUSTUP_TOOLCHAIN": "1.99.1",
+    "MACOSX_DEPLOYMENT_TARGET": "15.0",
+    "CARGO_BUILD_JOBS": "2",
+    "nice": 15
+  },
+  "build_arguments": [
+    "build",
+    "--locked",
+    "--offline",
+    "-j",
+    "2",
+    "-p",
+    "openergy-net",
+    "--example",
+    "dns_queue_cancel_c4806a3d"
+  ],
+  "clippy_arguments": [
+    "clippy",
+    "--locked",
+    "--offline",
+    "-j",
+    "2",
+    "-p",
+    "openergy-net",
+    "--lib",
+    "--example",
+    "dns_queue_cancel_c4806a3d",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "baseline_report": {
+    "path": "raw/baseline-report.log",
+    "exit_code": 1,
+    "reason": "refused_localhost_control"
+  },
+  "patched_report": {
+    "path": "raw/patched-report.log",
+    "exit_code": 1,
+    "reason": "refused_localhost_control"
+  },
+  "checks": [
+    {
+      "command": [
+        "$HOME/.cargo/bin/rustc",
+        "+1.99.1",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "rustc 1.99.1 (58cf8f9c3 2026-10-13)\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "$HOME/.cargo/bin/cargo",
+        "+1.99.1",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "cargo 1.99.1 (5f94df478 2026-08-27)\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "$HOME/.cargo/bin/rustfmt",
+        "+1.99.1",
+        "--check",
+        "crates/net/src/reactor.rs",
+        "crates/net/examples/dns_queue_cancel_c4806a3d.rs"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "sw_vers"
+      ],
+      "exit_code": 0,
+      "stdout": "ProductName:\t\tmacOS\nProductVersion:\t\t27.2\nBuildVersion:\t\t26B5112a\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -2,10 +2,8 @@
 use crate::native::{self, error, MessageThread};
 use openergy_platform::{ClipboardBackend, ClipboardData, ClipboardFormat, FormatKind, PlatformError};
 use std::{
-    cell::RefCell,
     ptr::null_mut,
     sync::{
-        atomic::{AtomicU64, Ordering},
         mpsc::{self, SyncSender},
         Arc,
     },
@@ -28,45 +26,24 @@ pub struct Clipboard {
 struct Inner {
     tx: SyncSender<Command>,
     thread: MessageThread,
-    stamp: Arc<AtomicU64>,
 }
 enum Command {
     Read(usize, SyncSender<Result<ClipboardData, PlatformError>>),
     Write(ClipboardData, SyncSender<Result<(), PlatformError>>),
 }
-thread_local! { static STAMP: RefCell<Option<Arc<AtomicU64>>> = const { RefCell::new(None) }; }
-unsafe extern "system" fn proc(hwnd: HWND, msg: u32, w: WPARAM, l: LPARAM) -> LRESULT {
-    if msg == WM_CLIPBOARDUPDATE {
-        STAMP.with(|s| {
-            if let Some(s) = s.borrow().as_ref() {
-                s.fetch_add(1, Ordering::AcqRel);
-            }
-        });
-    }
-    // Safety: unknown messages are forwarded unchanged to DefWindowProcW.
-    unsafe { DefWindowProcW(hwnd, msg, w, l) }
-}
 impl Clipboard {
     pub fn new() -> Result<Self, PlatformError> {
         let (ready, rx) = mpsc::sync_channel(1);
         let (tx, commands) = mpsc::sync_channel(16);
-        let stamp = Arc::new(AtomicU64::new(0));
-        let shared = stamp.clone();
         let h = std::thread::Builder::new()
             .name("oe-win-clipboard".into())
             .spawn(move || {
-                STAMP.with(|s| *s.borrow_mut() = Some(shared));
                 let result = (|| -> Result<(), PlatformError> {
-                    let hwnd = native::window("OpenergyClipboard", Some(proc), true)?;
+                    let hwnd = native::window("OpenergyClipboard", Some(DefWindowProcW), true)?;
                     // Safety: hwnd belongs to this message thread and the registered format name is terminated.
                     unsafe {
-                        if AddClipboardFormatListener(hwnd) == 0 {
-                            DestroyWindow(hwnd);
-                            return Err(error("AddClipboardFormatListener"));
-                        }
                         let html = RegisterClipboardFormatW(native::wide("HTML Format").as_ptr());
                         if html == 0 {
-                            RemoveClipboardFormatListener(hwnd);
                             DestroyWindow(hwnd);
                             return Err(error("Register HTML Format"));
                         }
@@ -90,7 +67,6 @@ impl Clipboard {
                                 DispatchMessageW(&msg);
                             }
                         }
-                        RemoveClipboardFormatListener(hwnd);
                         DestroyWindow(hwnd);
                     }
                     Ok(())
@@ -98,7 +74,6 @@ impl Clipboard {
                 if let Err(e) = result {
                     let _ = ready.send(Err(e));
                 }
-                STAMP.with(|s| *s.borrow_mut() = None);
             })
             .map_err(error)?;
         match rx.recv().map_err(error)? {
@@ -106,7 +81,6 @@ impl Clipboard {
                 inner: Arc::new(Inner {
                     tx,
                     thread: MessageThread { id, handle: Some(h) },
-                    stamp,
                 }),
             }),
             Err(e) => {
@@ -130,7 +104,10 @@ impl Clipboard {
 }
 impl ClipboardBackend for Clipboard {
     fn change_stamp(&self) -> u64 {
-        self.inner.stamp.load(Ordering::Acquire)
+        // Read the kernel sequence synchronously. WM_CLIPBOARDUPDATE is queued
+        // after write() returns and can otherwise echo our own write as a grab.
+        // Safety: this query has no pointer arguments and does not open the clipboard.
+        u64::from(unsafe { GetClipboardSequenceNumber() })
     }
     fn read(&mut self, max_bytes: usize) -> Result<ClipboardData, PlatformError> {
         self.command(|r| Command::Read(max_bytes, r))
@@ -166,7 +143,12 @@ impl Drop for Open {
 fn get(format: u32, max: usize) -> Result<Option<Vec<u8>>, PlatformError> {
     // Safety: caller holds OpenClipboard; GlobalLock gives size bytes until GlobalUnlock.
     unsafe {
+        SetLastError(ERROR_SUCCESS);
         if IsClipboardFormatAvailable(format) == 0 {
+            let code = GetLastError();
+            if code != ERROR_SUCCESS {
+                return Err(error(std::io::Error::from_raw_os_error(code as i32)));
+            }
             return Ok(None);
         }
         let handle = GetClipboardData(format);
@@ -194,17 +176,26 @@ fn get(format: u32, max: usize) -> Result<Option<Vec<u8>>, PlatformError> {
 }
 fn read(hwnd: HWND, html: u32, max: usize) -> Result<ClipboardData, PlatformError> {
     let _open = Open::acquire(hwnd)?;
+    // OpenClipboard excludes other normal writers. Also check the sequence:
+    // delayed rendering can change clipboard data during GetClipboardData.
+    // Safety: this query does not open or mutate the clipboard.
+    let sequence = unsafe { GetClipboardSequenceNumber() };
     let mut data = ClipboardData::default();
     if let Some(bytes) = get(CF_UNICODETEXT, max.saturating_mul(2).saturating_add(2))? {
         if bytes.len() % 2 != 0 {
             return Err(error("CF_UNICODETEXT has odd byte length"));
         }
         let units: Vec<u16> = bytes
-            .chunks_exact(2)
+            .as_chunks::<2>()
+            .0
+            .iter()
             .map(|v| u16::from_le_bytes([v[0], v[1]]))
-            .take_while(|v| *v != 0)
             .collect();
-        let text = String::from_utf16(&units)
+        let end = units
+            .iter()
+            .position(|v| *v == 0)
+            .ok_or_else(|| error("CF_UNICODETEXT lacks NUL terminator"))?;
+        let text = String::from_utf16(&units[..end])
             .map_err(error)?
             .replace("\r\n", "\n")
             .replace('\r', "\n");
@@ -237,6 +228,33 @@ fn read(hwnd: HWND, html: u32, max: usize) -> Result<ClipboardData, PlatformErro
             bytes: data.total_bytes(),
             limit: max,
         });
+    }
+    let empty = if data.formats.is_empty() {
+        // Unsupported-only contents must not become a remote clear. Zero can
+        // also indicate an API failure, so do not mistake a stale/error code
+        // for a successful empty snapshot.
+        // Safety: the Open guard still holds the clipboard on this thread.
+        unsafe {
+            SetLastError(ERROR_SUCCESS);
+            let count = CountClipboardFormats();
+            if count == 0 {
+                let code = GetLastError();
+                if code != ERROR_SUCCESS {
+                    return Err(error(std::io::Error::from_raw_os_error(code as i32)));
+                }
+            }
+            count == 0
+        }
+    } else {
+        false
+    };
+    // Safety: the guard is still live; reject a changed generation as a failed
+    // read even when the final count is zero, rather than forwarding a clear.
+    if unsafe { GetClipboardSequenceNumber() } != sequence {
+        return Err(error("Clipboard changed during read"));
+    }
+    if data.formats.is_empty() && !empty {
+        return Err(PlatformError::ClipboardUnavailable);
     }
     Ok(data)
 }
@@ -320,10 +338,128 @@ fn write(hwnd: HWND, html: u32, data: ClipboardData) -> Result<(), PlatformError
     Ok(())
 }
 fn validate_dib(bytes: &[u8]) -> Result<(), PlatformError> {
-    let head = bytes.get(..4).ok_or_else(|| error("Truncated DIB"))?;
-    let size = u32::from_le_bytes(head.try_into().map_err(error)?) as usize;
+    let word = |at| -> Result<u16, PlatformError> {
+        Ok(u16::from_le_bytes(
+            bytes
+                .get(at..at + 2)
+                .ok_or_else(|| error("Truncated DIB"))?
+                .try_into()
+                .map_err(error)?,
+        ))
+    };
+    let dword = |at| -> Result<u32, PlatformError> {
+        Ok(u32::from_le_bytes(
+            bytes
+                .get(at..at + 4)
+                .ok_or_else(|| error("Truncated DIB"))?
+                .try_into()
+                .map_err(error)?,
+        ))
+    };
+    let size = dword(0)? as usize;
     if ![12, 40, 52, 56, 108, 124].contains(&size) || size > bytes.len() {
         return Err(error("Invalid DIB header"));
+    }
+    let (width, height, planes, bpp, compression, declared, colors) = if size == 12 {
+        (i32::from(word(4)?), i32::from(word(6)?), word(8)?, word(10)?, 0, 0, 0)
+    } else {
+        (
+            dword(4)? as i32,
+            dword(8)? as i32,
+            word(12)?,
+            word(14)?,
+            dword(16)?,
+            dword(20)? as usize,
+            dword(32)? as usize,
+        )
+    };
+    if width <= 0 || height == 0 || height == i32::MIN || planes != 1 {
+        return Err(error("Invalid DIB dimensions or planes"));
+    }
+    let valid = match compression {
+        0 => [1, 4, 8, 16, 24, 32].contains(&bpp),
+        1 => bpp == 8 && height > 0,
+        2 => bpp == 4 && height > 0,
+        3 | 6 => [16, 32].contains(&bpp),
+        4 | 5 => bpp == 0 && height > 0,
+        _ => false,
+    };
+    if !valid || (size == 12 && ![1, 4, 8, 24].contains(&bpp)) {
+        return Err(error("Invalid DIB depth or compression"));
+    }
+    let palette = if bpp != 0 && bpp <= 8 {
+        let maximum = 1usize << bpp;
+        if colors > maximum {
+            return Err(error("Invalid DIB palette size"));
+        }
+        if colors == 0 {
+            maximum
+        } else {
+            colors
+        }
+    } else {
+        colors
+    };
+    let masks = if size == 40 {
+        match compression {
+            3 => 12,
+            6 => 16,
+            _ => 0,
+        }
+    } else {
+        0
+    };
+    let offset = size
+        .checked_add(masks)
+        .and_then(|n| {
+            palette
+                .checked_mul(if size == 12 { 3 } else { 4 })
+                .and_then(|p| n.checked_add(p))
+        })
+        .ok_or_else(|| error("DIB offset overflow"))?;
+    if compression == 3 || compression == 6 {
+        let count = if compression == 6 { 4 } else { 3 };
+        if size != 40 && size < 40 + count * 4 {
+            return Err(error("Truncated DIB masks"));
+        }
+        let mut used = 0;
+        for at in (40..40 + count * 4).step_by(4) {
+            let mask = dword(at)?;
+            let shifted = mask.checked_shr(mask.trailing_zeros()).unwrap_or(0);
+            if mask == 0 || used & mask != 0 || shifted & shifted.wrapping_add(1) != 0 || (bpp == 16 && mask > 0xffff) {
+                return Err(error("Invalid DIB masks"));
+            }
+            used |= mask;
+        }
+    }
+    let length = if [0, 3, 6].contains(&compression) {
+        let stride = (width as usize)
+            .checked_mul(usize::from(bpp))
+            .and_then(|n| n.checked_add(31))
+            .map(|n| (n / 32) * 4)
+            .ok_or_else(|| error("DIB row overflow"))?;
+        let required = stride
+            .checked_mul(height.unsigned_abs() as usize)
+            .ok_or_else(|| error("DIB size overflow"))?;
+        if declared != 0 && declared < required {
+            return Err(error("DIB image size is too small"));
+        }
+        required.max(declared)
+    } else {
+        if declared == 0 {
+            return Err(error("Compressed DIB lacks image size"));
+        }
+        declared
+    };
+    if offset.checked_add(length).is_none_or(|end| end > bytes.len()) {
+        return Err(error("Truncated DIB palette or pixels"));
+    }
+    if size == 124 {
+        let profile = dword(112)? as usize;
+        let length = dword(116)? as usize;
+        if length != 0 && (profile < size || profile.checked_add(length).is_none_or(|end| end > bytes.len())) {
+            return Err(error("DIB profile is out of bounds"));
+        }
     }
     Ok(())
 }

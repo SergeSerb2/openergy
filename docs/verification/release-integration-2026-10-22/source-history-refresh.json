@@ -1,0 +1,654 @@
+{
+  "scope": "Reachable Git history through the exact source commit; no uncommitted, unreachable, external or installed-state scan.",
+  "source_commit": "54aa50b9eafc51f6eef2589c100c509eaac7e415",
+  "observation_date_local": "2026-10-22",
+  "timezone": "America/Vancouver",
+  "started_at_utc": "2026-10-23T04:11:36.895377+00:00",
+  "ended_at_utc": "2026-10-23T04:11:37.242900+00:00",
+  "tool": {
+    "version": "8.30.1",
+    "archive_url": "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_darwin_arm64.tar.gz",
+    "checksums_url": "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_checksums.txt",
+    "archive_sha256": "b40ab0ae55c505963e365f271a8d3846efbc170aa17f2607f13df610a9aeb6a5",
+    "binary_sha256": "ba52fb1bfabbcde42f032afad3d6e0b19dff8ed105229a16e7caa338bbc0e84f"
+  },
+  "raw_scan": {
+    "exit_code": 1,
+    "elapsed_seconds": 0.347,
+    "reachable_commit_count": 216,
+    "findings_count": 64,
+    "report_sha256": "01f8e7d34d82cd11e98381f652fdba3caadee99bed64786434ef40a8aa65cdfb",
+    "empty_ignore_file_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "config_env_names_removed": [],
+    "worktree_status_after": ""
+  },
+  "command_path_redaction": "Only absolute checkout and private temporary paths below are replaced by <repo> and <private>. The raw arguments remain local.",
+  "command": [
+    "gitleaks",
+    "git",
+    "<repo>",
+    "--log-opts=54aa50b9eafc51f6eef2589c100c509eaac7e415",
+    "--redact=100",
+    "--ignore-gitleaks-allow",
+    "--gitleaks-ignore-path",
+    "<private>/empty.gitleaksignore",
+    "--max-archive-depth",
+    "2",
+    "--max-decode-depth",
+    "5",
+    "--timeout",
+    "120",
+    "--no-banner",
+    "--no-color",
+    "--report-format",
+    "json",
+    "--report-path",
+    "<private>/findings.json"
+  ],
+  "policy": {
+    "rules": "Gitleaks built-in defaults including built-in allowlists",
+    "ignore_gitleaks_allow": true,
+    "ignore_file": "Empty dedicated file",
+    "project_config_files_found": false,
+    "added_allowlists": false,
+    "baseline": false,
+    "history_rewrite": false
+  },
+  "triage": {
+    "method": "For every raw generic-api-key finding, parse its exact line from the committed evidence JSON, require a Rust source path and 64 lowercase hex digest, then compute SHA-256 of that Rust Git blob at the same evidence commit. No allowlist, baseline or history rewrite is applied.",
+    "verified_source_hash_false_positives": 64,
+    "unverified_findings": [],
+    "source_paths": {
+      "crates/platform-linux/src/keymap.rs": 11,
+      "crates/platform-linux/src/unicode_keysyms.rs": 11,
+      "crates/platform-macos/src/keymap.rs": 11,
+      "crates/platform-windows/src/keymap.rs": 11,
+      "crates/protocol/src/keys.rs": 11,
+      "spikes/macos-input/src/keymap.rs": 9
+    },
+    "findings": [
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/discovery-recovery-initial.json",
+        "line": 265,
+        "evidence_commit": "b632b541ec5ce4cd6a1861e3276d7637c729d727",
+        "source_path": "crates/platform-linux/src/keymap.rs",
+        "source_blob_sha256": "e30286da66b02322186f9c3cdc808a6a347691e0e7c458184517a1507604f42e",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/discovery-recovery-initial.json",
+        "line": 270,
+        "evidence_commit": "b632b541ec5ce4cd6a1861e3276d7637c729d727",
+        "source_path": "crates/platform-linux/src/unicode_keysyms.rs",
+        "source_blob_sha256": "b632ddb45d402b9045b0d6003a71e1ea5a9448ddfea7780dfc3cb3028571d58f",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/discovery-recovery-initial.json",
+        "line": 277,
+        "evidence_commit": "b632b541ec5ce4cd6a1861e3276d7637c729d727",
+        "source_path": "crates/platform-macos/src/keymap.rs",
+        "source_blob_sha256": "0dc9a9583802b154f87b4dd68a41c87a4b6902024218b2accee47d8d917fe314",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/discovery-recovery-initial.json",
+        "line": 286,
+        "evidence_commit": "b632b541ec5ce4cd6a1861e3276d7637c729d727",
+        "source_path": "crates/platform-windows/src/keymap.rs",
+        "source_blob_sha256": "a9d531bbe6ed9916a389de4b384aa2321f7f04848c73e378fc61da7aca400aeb",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/discovery-recovery-initial.json",
+        "line": 301,
+        "evidence_commit": "b632b541ec5ce4cd6a1861e3276d7637c729d727",
+        "source_path": "crates/protocol/src/keys.rs",
+        "source_blob_sha256": "bdcde8427a2534a8e2e96987da21ca792bdf38d60415d5d32b52f949293fbaff",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/discovery-recovery-initial.json",
+        "line": 316,
+        "evidence_commit": "b632b541ec5ce4cd6a1861e3276d7637c729d727",
+        "source_path": "spikes/macos-input/src/keymap.rs",
+        "source_blob_sha256": "92e7f3b1d0bbedeea88f5e6ac4fea656a7f81553d09188aafd9af50e861412b7",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/windows-transport-current.json",
+        "line": 510,
+        "evidence_commit": "14b554837ffc03e20536b3cb95a2152b1e0586b3",
+        "source_path": "crates/platform-linux/src/keymap.rs",
+        "source_blob_sha256": "e30286da66b02322186f9c3cdc808a6a347691e0e7c458184517a1507604f42e",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/windows-transport-current.json",
+        "line": 515,
+        "evidence_commit": "14b554837ffc03e20536b3cb95a2152b1e0586b3",
+        "source_path": "crates/platform-linux/src/unicode_keysyms.rs",
+        "source_blob_sha256": "b632ddb45d402b9045b0d6003a71e1ea5a9448ddfea7780dfc3cb3028571d58f",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/windows-transport-current.json",
+        "line": 522,
+        "evidence_commit": "14b554837ffc03e20536b3cb95a2152b1e0586b3",
+        "source_path": "crates/platform-macos/src/keymap.rs",
+        "source_blob_sha256": "0dc9a9583802b154f87b4dd68a41c87a4b6902024218b2accee47d8d917fe314",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/windows-transport-current.json",
+        "line": 531,
+        "evidence_commit": "14b554837ffc03e20536b3cb95a2152b1e0586b3",
+        "source_path": "crates/platform-windows/src/keymap.rs",
+        "source_blob_sha256": "a9d531bbe6ed9916a389de4b384aa2321f7f04848c73e378fc61da7aca400aeb",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/windows-transport-current.json",
+        "line": 546,
+        "evidence_commit": "14b554837ffc03e20536b3cb95a2152b1e0586b3",
+        "source_path": "crates/protocol/src/keys.rs",
+        "source_blob_sha256": "bdcde8427a2534a8e2e96987da21ca792bdf38d60415d5d32b52f949293fbaff",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/windows-transport-current.json",
+        "line": 562,
+        "evidence_commit": "14b554837ffc03e20536b3cb95a2152b1e0586b3",
+        "source_path": "spikes/macos-input/src/keymap.rs",
+        "source_blob_sha256": "92e7f3b1d0bbedeea88f5e6ac4fea656a7f81553d09188aafd9af50e861412b7",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/trust-directory-reconfiguration.json",
+        "line": 247,
+        "evidence_commit": "e07ecca5e662acb037b5f195455727c983225ec8",
+        "source_path": "crates/platform-linux/src/keymap.rs",
+        "source_blob_sha256": "e30286da66b02322186f9c3cdc808a6a347691e0e7c458184517a1507604f42e",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/trust-directory-reconfiguration.json",
+        "line": 252,
+        "evidence_commit": "e07ecca5e662acb037b5f195455727c983225ec8",
+        "source_path": "crates/platform-linux/src/unicode_keysyms.rs",
+        "source_blob_sha256": "b632ddb45d402b9045b0d6003a71e1ea5a9448ddfea7780dfc3cb3028571d58f",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/trust-directory-reconfiguration.json",
+        "line": 259,
+        "evidence_commit": "e07ecca5e662acb037b5f195455727c983225ec8",
+        "source_path": "crates/platform-macos/src/keymap.rs",
+        "source_blob_sha256": "0dc9a9583802b154f87b4dd68a41c87a4b6902024218b2accee47d8d917fe314",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/trust-directory-reconfiguration.json",
+        "line": 268,
+        "evidence_commit": "e07ecca5e662acb037b5f195455727c983225ec8",
+        "source_path": "crates/platform-windows/src/keymap.rs",
+        "source_blob_sha256": "a9d531bbe6ed9916a389de4b384aa2321f7f04848c73e378fc61da7aca400aeb",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/trust-directory-reconfiguration.json",
+        "line": 283,
+        "evidence_commit": "e07ecca5e662acb037b5f195455727c983225ec8",
+        "source_path": "crates/protocol/src/keys.rs",
+        "source_blob_sha256": "bdcde8427a2534a8e2e96987da21ca792bdf38d60415d5d32b52f949293fbaff",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/trust-directory-reconfiguration.json",
+        "line": 299,
+        "evidence_commit": "e07ecca5e662acb037b5f195455727c983225ec8",
+        "source_path": "spikes/macos-input/src/keymap.rs",
+        "source_blob_sha256": "92e7f3b1d0bbedeea88f5e6ac4fea656a7f81553d09188aafd9af50e861412b7",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/dependency-policy-refresh.json",
+        "line": 4776,
+        "evidence_commit": "ba7881904b1e49c42067ba340c441056cdeb33f8",
+        "source_path": "crates/platform-linux/src/keymap.rs",
+        "source_blob_sha256": "e30286da66b02322186f9c3cdc808a6a347691e0e7c458184517a1507604f42e",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/dependency-policy-refresh.json",
+        "line": 4781,
+        "evidence_commit": "ba7881904b1e49c42067ba340c441056cdeb33f8",
+        "source_path": "crates/platform-linux/src/unicode_keysyms.rs",
+        "source_blob_sha256": "b632ddb45d402b9045b0d6003a71e1ea5a9448ddfea7780dfc3cb3028571d58f",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/dependency-policy-refresh.json",
+        "line": 4788,
+        "evidence_commit": "ba7881904b1e49c42067ba340c441056cdeb33f8",
+        "source_path": "crates/platform-macos/src/keymap.rs",
+        "source_blob_sha256": "0dc9a9583802b154f87b4dd68a41c87a4b6902024218b2accee47d8d917fe314",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/dependency-policy-refresh.json",
+        "line": 4797,
+        "evidence_commit": "ba7881904b1e49c42067ba340c441056cdeb33f8",
+        "source_path": "crates/platform-windows/src/keymap.rs",
+        "source_blob_sha256": "a9d531bbe6ed9916a389de4b384aa2321f7f04848c73e378fc61da7aca400aeb",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/dependency-policy-refresh.json",
+        "line": 4812,
+        "evidence_commit": "ba7881904b1e49c42067ba340c441056cdeb33f8",
+        "source_path": "crates/protocol/src/keys.rs",
+        "source_blob_sha256": "bdcde8427a2534a8e2e96987da21ca792bdf38d60415d5d32b52f949293fbaff",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/dependency-policy-refresh.json",
+        "line": 4828,
+        "evidence_commit": "ba7881904b1e49c42067ba340c441056cdeb33f8",
+        "source_path": "spikes/macos-input/src/keymap.rs",
+        "source_blob_sha256": "92e7f3b1d0bbedeea88f5e6ac4fea656a7f81553d09188aafd9af50e861412b7",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/receive-fairness.json",
+        "line": 2878,
+        "evidence_commit": "c2d14a695ef9b4e4bcd9bd70c29ee393fe9286e2",
+        "source_path": "crates/platform-linux/src/keymap.rs",
+        "source_blob_sha256": "e30286da66b02322186f9c3cdc808a6a347691e0e7c458184517a1507604f42e",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/receive-fairness.json",
+        "line": 2883,
+        "evidence_commit": "c2d14a695ef9b4e4bcd9bd70c29ee393fe9286e2",
+        "source_path": "crates/platform-linux/src/unicode_keysyms.rs",
+        "source_blob_sha256": "b632ddb45d402b9045b0d6003a71e1ea5a9448ddfea7780dfc3cb3028571d58f",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/receive-fairness.json",
+        "line": 2890,
+        "evidence_commit": "c2d14a695ef9b4e4bcd9bd70c29ee393fe9286e2",
+        "source_path": "crates/platform-macos/src/keymap.rs",
+        "source_blob_sha256": "0dc9a9583802b154f87b4dd68a41c87a4b6902024218b2accee47d8d917fe314",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/receive-fairness.json",
+        "line": 2899,
+        "evidence_commit": "c2d14a695ef9b4e4bcd9bd70c29ee393fe9286e2",
+        "source_path": "crates/platform-windows/src/keymap.rs",
+        "source_blob_sha256": "a9d531bbe6ed9916a389de4b384aa2321f7f04848c73e378fc61da7aca400aeb",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/receive-fairness.json",
+        "line": 2914,
+        "evidence_commit": "c2d14a695ef9b4e4bcd9bd70c29ee393fe9286e2",
+        "source_path": "crates/protocol/src/keys.rs",
+        "source_blob_sha256": "bdcde8427a2534a8e2e96987da21ca792bdf38d60415d5d32b52f949293fbaff",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/receive-fairness.json",
+        "line": 2930,
+        "evidence_commit": "c2d14a695ef9b4e4bcd9bd70c29ee393fe9286e2",
+        "source_path": "spikes/macos-input/src/keymap.rs",
+        "source_blob_sha256": "92e7f3b1d0bbedeea88f5e6ac4fea656a7f81553d09188aafd9af50e861412b7",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/trust-refresh.json",
+        "line": 832,
+        "evidence_commit": "a04a9d190c1d6c1c16a328af2ba3b3600e63130c",
+        "source_path": "crates/platform-linux/src/keymap.rs",
+        "source_blob_sha256": "e30286da66b02322186f9c3cdc808a6a347691e0e7c458184517a1507604f42e",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/trust-refresh.json",
+        "line": 837,
+        "evidence_commit": "a04a9d190c1d6c1c16a328af2ba3b3600e63130c",
+        "source_path": "crates/platform-linux/src/unicode_keysyms.rs",
+        "source_blob_sha256": "b632ddb45d402b9045b0d6003a71e1ea5a9448ddfea7780dfc3cb3028571d58f",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/trust-refresh.json",
+        "line": 844,
+        "evidence_commit": "a04a9d190c1d6c1c16a328af2ba3b3600e63130c",
+        "source_path": "crates/platform-macos/src/keymap.rs",
+        "source_blob_sha256": "0dc9a9583802b154f87b4dd68a41c87a4b6902024218b2accee47d8d917fe314",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/trust-refresh.json",
+        "line": 853,
+        "evidence_commit": "a04a9d190c1d6c1c16a328af2ba3b3600e63130c",
+        "source_path": "crates/platform-windows/src/keymap.rs",
+        "source_blob_sha256": "a9d531bbe6ed9916a389de4b384aa2321f7f04848c73e378fc61da7aca400aeb",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/trust-refresh.json",
+        "line": 868,
+        "evidence_commit": "a04a9d190c1d6c1c16a328af2ba3b3600e63130c",
+        "source_path": "crates/protocol/src/keys.rs",
+        "source_blob_sha256": "bdcde8427a2534a8e2e96987da21ca792bdf38d60415d5d32b52f949293fbaff",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/trust-refresh.json",
+        "line": 884,
+        "evidence_commit": "a04a9d190c1d6c1c16a328af2ba3b3600e63130c",
+        "source_path": "spikes/macos-input/src/keymap.rs",
+        "source_blob_sha256": "92e7f3b1d0bbedeea88f5e6ac4fea656a7f81553d09188aafd9af50e861412b7",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/trust-scaling.json",
+        "line": 1018,
+        "evidence_commit": "2592e3906f9845ab45269dc70f22c7fa1871567b",
+        "source_path": "crates/platform-linux/src/keymap.rs",
+        "source_blob_sha256": "e30286da66b02322186f9c3cdc808a6a347691e0e7c458184517a1507604f42e",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/trust-scaling.json",
+        "line": 1023,
+        "evidence_commit": "2592e3906f9845ab45269dc70f22c7fa1871567b",
+        "source_path": "crates/platform-linux/src/unicode_keysyms.rs",
+        "source_blob_sha256": "b632ddb45d402b9045b0d6003a71e1ea5a9448ddfea7780dfc3cb3028571d58f",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/trust-scaling.json",
+        "line": 1030,
+        "evidence_commit": "2592e3906f9845ab45269dc70f22c7fa1871567b",
+        "source_path": "crates/platform-macos/src/keymap.rs",
+        "source_blob_sha256": "0dc9a9583802b154f87b4dd68a41c87a4b6902024218b2accee47d8d917fe314",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/trust-scaling.json",
+        "line": 1039,
+        "evidence_commit": "2592e3906f9845ab45269dc70f22c7fa1871567b",
+        "source_path": "crates/platform-windows/src/keymap.rs",
+        "source_blob_sha256": "a9d531bbe6ed9916a389de4b384aa2321f7f04848c73e378fc61da7aca400aeb",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/trust-scaling.json",
+        "line": 1054,
+        "evidence_commit": "2592e3906f9845ab45269dc70f22c7fa1871567b",
+        "source_path": "crates/protocol/src/keys.rs",
+        "source_blob_sha256": "bdcde8427a2534a8e2e96987da21ca792bdf38d60415d5d32b52f949293fbaff",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/trust-scaling.json",
+        "line": 1070,
+        "evidence_commit": "2592e3906f9845ab45269dc70f22c7fa1871567b",
+        "source_path": "spikes/macos-input/src/keymap.rs",
+        "source_blob_sha256": "92e7f3b1d0bbedeea88f5e6ac4fea656a7f81553d09188aafd9af50e861412b7",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/identity-file-bounds.json",
+        "line": 842,
+        "evidence_commit": "4c9cb8c63a2b89c8b14ed273766adf09f5fea9ec",
+        "source_path": "crates/platform-linux/src/keymap.rs",
+        "source_blob_sha256": "e30286da66b02322186f9c3cdc808a6a347691e0e7c458184517a1507604f42e",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/identity-file-bounds.json",
+        "line": 847,
+        "evidence_commit": "4c9cb8c63a2b89c8b14ed273766adf09f5fea9ec",
+        "source_path": "crates/platform-linux/src/unicode_keysyms.rs",
+        "source_blob_sha256": "b632ddb45d402b9045b0d6003a71e1ea5a9448ddfea7780dfc3cb3028571d58f",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/identity-file-bounds.json",
+        "line": 854,
+        "evidence_commit": "4c9cb8c63a2b89c8b14ed273766adf09f5fea9ec",
+        "source_path": "crates/platform-macos/src/keymap.rs",
+        "source_blob_sha256": "0dc9a9583802b154f87b4dd68a41c87a4b6902024218b2accee47d8d917fe314",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/identity-file-bounds.json",
+        "line": 863,
+        "evidence_commit": "4c9cb8c63a2b89c8b14ed273766adf09f5fea9ec",
+        "source_path": "crates/platform-windows/src/keymap.rs",
+        "source_blob_sha256": "a9d531bbe6ed9916a389de4b384aa2321f7f04848c73e378fc61da7aca400aeb",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/identity-file-bounds.json",
+        "line": 878,
+        "evidence_commit": "4c9cb8c63a2b89c8b14ed273766adf09f5fea9ec",
+        "source_path": "crates/protocol/src/keys.rs",
+        "source_blob_sha256": "bdcde8427a2534a8e2e96987da21ca792bdf38d60415d5d32b52f949293fbaff",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/identity-file-bounds.json",
+        "line": 894,
+        "evidence_commit": "4c9cb8c63a2b89c8b14ed273766adf09f5fea9ec",
+        "source_path": "spikes/macos-input/src/keymap.rs",
+        "source_blob_sha256": "92e7f3b1d0bbedeea88f5e6ac4fea656a7f81553d09188aafd9af50e861412b7",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/identity-lock-contention.json",
+        "line": 439,
+        "evidence_commit": "a0447c3a8c7d8210d6ef5d6a8bb85fe14708b1e0",
+        "source_path": "crates/platform-linux/src/keymap.rs",
+        "source_blob_sha256": "e30286da66b02322186f9c3cdc808a6a347691e0e7c458184517a1507604f42e",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/identity-lock-contention.json",
+        "line": 444,
+        "evidence_commit": "a0447c3a8c7d8210d6ef5d6a8bb85fe14708b1e0",
+        "source_path": "crates/platform-linux/src/unicode_keysyms.rs",
+        "source_blob_sha256": "b632ddb45d402b9045b0d6003a71e1ea5a9448ddfea7780dfc3cb3028571d58f",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/identity-lock-contention.json",
+        "line": 451,
+        "evidence_commit": "a0447c3a8c7d8210d6ef5d6a8bb85fe14708b1e0",
+        "source_path": "crates/platform-macos/src/keymap.rs",
+        "source_blob_sha256": "0dc9a9583802b154f87b4dd68a41c87a4b6902024218b2accee47d8d917fe314",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/identity-lock-contention.json",
+        "line": 460,
+        "evidence_commit": "a0447c3a8c7d8210d6ef5d6a8bb85fe14708b1e0",
+        "source_path": "crates/platform-windows/src/keymap.rs",
+        "source_blob_sha256": "a9d531bbe6ed9916a389de4b384aa2321f7f04848c73e378fc61da7aca400aeb",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/identity-lock-contention.json",
+        "line": 475,
+        "evidence_commit": "a0447c3a8c7d8210d6ef5d6a8bb85fe14708b1e0",
+        "source_path": "crates/protocol/src/keys.rs",
+        "source_blob_sha256": "bdcde8427a2534a8e2e96987da21ca792bdf38d60415d5d32b52f949293fbaff",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/identity-lock-contention.json",
+        "line": 491,
+        "evidence_commit": "a0447c3a8c7d8210d6ef5d6a8bb85fe14708b1e0",
+        "source_path": "spikes/macos-input/src/keymap.rs",
+        "source_blob_sha256": "92e7f3b1d0bbedeea88f5e6ac4fea656a7f81553d09188aafd9af50e861412b7",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/trust-lock-contention.json",
+        "line": 403,
+        "evidence_commit": "e499eec1b097c996a39164d9773e9b903ee9d431",
+        "source_path": "crates/platform-linux/src/keymap.rs",
+        "source_blob_sha256": "e30286da66b02322186f9c3cdc808a6a347691e0e7c458184517a1507604f42e",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/trust-lock-contention.json",
+        "line": 408,
+        "evidence_commit": "e499eec1b097c996a39164d9773e9b903ee9d431",
+        "source_path": "crates/platform-linux/src/unicode_keysyms.rs",
+        "source_blob_sha256": "b632ddb45d402b9045b0d6003a71e1ea5a9448ddfea7780dfc3cb3028571d58f",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/trust-lock-contention.json",
+        "line": 415,
+        "evidence_commit": "e499eec1b097c996a39164d9773e9b903ee9d431",
+        "source_path": "crates/platform-macos/src/keymap.rs",
+        "source_blob_sha256": "0dc9a9583802b154f87b4dd68a41c87a4b6902024218b2accee47d8d917fe314",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/trust-lock-contention.json",
+        "line": 424,
+        "evidence_commit": "e499eec1b097c996a39164d9773e9b903ee9d431",
+        "source_path": "crates/platform-windows/src/keymap.rs",
+        "source_blob_sha256": "a9d531bbe6ed9916a389de4b384aa2321f7f04848c73e378fc61da7aca400aeb",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/trust-lock-contention.json",
+        "line": 433,
+        "evidence_commit": "e499eec1b097c996a39164d9773e9b903ee9d431",
+        "source_path": "crates/protocol/src/keys.rs",
+        "source_blob_sha256": "bdcde8427a2534a8e2e96987da21ca792bdf38d60415d5d32b52f949293fbaff",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/ipc-read-deadlines.json",
+        "line": 322,
+        "evidence_commit": "f9e3f25ee1fe1647d7c26224c4eba3ab6c92cca0",
+        "source_path": "crates/platform-linux/src/keymap.rs",
+        "source_blob_sha256": "e30286da66b02322186f9c3cdc808a6a347691e0e7c458184517a1507604f42e",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/ipc-read-deadlines.json",
+        "line": 327,
+        "evidence_commit": "f9e3f25ee1fe1647d7c26224c4eba3ab6c92cca0",
+        "source_path": "crates/platform-linux/src/unicode_keysyms.rs",
+        "source_blob_sha256": "b632ddb45d402b9045b0d6003a71e1ea5a9448ddfea7780dfc3cb3028571d58f",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/ipc-read-deadlines.json",
+        "line": 334,
+        "evidence_commit": "f9e3f25ee1fe1647d7c26224c4eba3ab6c92cca0",
+        "source_path": "crates/platform-macos/src/keymap.rs",
+        "source_blob_sha256": "0dc9a9583802b154f87b4dd68a41c87a4b6902024218b2accee47d8d917fe314",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/ipc-read-deadlines.json",
+        "line": 343,
+        "evidence_commit": "f9e3f25ee1fe1647d7c26224c4eba3ab6c92cca0",
+        "source_path": "crates/platform-windows/src/keymap.rs",
+        "source_blob_sha256": "a9d531bbe6ed9916a389de4b384aa2321f7f04848c73e378fc61da7aca400aeb",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      },
+      {
+        "rule": "generic-api-key",
+        "evidence_file": "docs/verification/release-integration-2026-10-22/ipc-read-deadlines.json",
+        "line": 352,
+        "evidence_commit": "f9e3f25ee1fe1647d7c26224c4eba3ab6c92cca0",
+        "source_path": "crates/protocol/src/keys.rs",
+        "source_blob_sha256": "bdcde8427a2534a8e2e96987da21ca792bdf38d60415d5d32b52f949293fbaff",
+        "classification": "verified tracked-source SHA-256, not a credential"
+      }
+    ]
+  },
+  "limits": [
+    "Raw scanner exited 1; this is not a zero-finding or passing raw scan.",
+    "All 64 reported values were verified against the exact historical Rust Git blobs; no credential was identified among these findings.",
+    "No universal secret-free or vulnerability-free claim. Subsequent candidate commits are outside this exact scan.",
+    "Native input/clipboard, positive Windows migration, original security-review acceptance and trusted distribution remain open."
+  ]
+}

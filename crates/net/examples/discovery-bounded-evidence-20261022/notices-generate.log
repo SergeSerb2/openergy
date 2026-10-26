@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "<WORKTREE>/docs/verification/public-release-audit-2026-10-21/generate-notices.py", line 184, in <module>
+    main()
+  File "<WORKTREE>/docs/verification/public-release-audit-2026-10-21/generate-notices.py", line 171, in main
+    body, inventory = generate(metadata)
+  File "<WORKTREE>/docs/verification/public-release-audit-2026-10-21/generate-notices.py", line 144, in generate
+    rows.append('| [' + package['name'] + ' ' + package['version'] + ']('
+TypeError: can only concatenate str (not "NoneType") to str

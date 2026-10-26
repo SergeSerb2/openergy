@@ -1,0 +1,120 @@
+# Requirement: Impossible frame lengths close from their prefixes without a body or EOF.
+name = "P01-impossible-hello-prefixes"
+requirement = "Reject zero, short and impossible hello payload sizes as soon as their length prefixes arrive."
+timeout_ms = 3000
+
+[[node]]
+id = "server"
+role = "server"
+platform = "virtual"
+config = { server = { heartbeat_ms = 3000 } }
+
+[[node]]
+id = "probe0"
+kind = "raw"
+role = "client"
+remote = "server"
+
+[[node]]
+id = "probe3"
+kind = "raw"
+role = "client"
+remote = "server"
+
+[[node]]
+id = "probe10"
+kind = "raw"
+role = "client"
+remote = "server"
+
+[[node]]
+id = "probe12"
+kind = "raw"
+role = "client"
+remote = "server"
+
+[[node]]
+id = "probe14"
+kind = "raw"
+role = "client"
+remote = "server"
+
+[[step]]
+do = "raw_expect"
+node = "probe0"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "probe0"
+hex = "00000000"
+
+[[step]]
+do = "raw_expect_closed"
+node = "probe0"
+timeout_ms = 500
+
+[[step]]
+do = "raw_expect"
+node = "probe3"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "probe3"
+hex = "00000003"
+
+[[step]]
+do = "raw_expect_closed"
+node = "probe3"
+timeout_ms = 500
+
+[[step]]
+do = "raw_expect"
+node = "probe10"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "probe10"
+hex = "0000000a"
+
+[[step]]
+do = "raw_expect_closed"
+node = "probe10"
+timeout_ms = 500
+
+[[step]]
+do = "raw_expect"
+node = "probe12"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "probe12"
+hex = "0000000c"
+
+[[step]]
+do = "raw_expect_closed"
+node = "probe12"
+timeout_ms = 500
+
+[[step]]
+do = "raw_expect"
+node = "probe14"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "probe14"
+hex = "0000000e"
+
+[[step]]
+do = "raw_expect_closed"
+node = "probe14"
+timeout_ms = 500
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { role = "server" }

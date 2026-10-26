@@ -1,0 +1,53 @@
+name: Native verification
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native:
+    # No entrypoint can run selected-ref code on persistent local workers.
+    # Private runs skip; public code runs on standard disposable hosted VMs.
+    if: github.event.repository.private == false
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: linux
+            hosted: ubuntu-24.04
+            python: python3
+          - os: macos
+            hosted: macos-15
+            python: python3
+          - os: windows
+            hosted: windows-2025
+            python: python
+    runs-on: ${{ matrix.hosted }}
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    env:
+      CARGO_BUILD_JOBS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      # Hosted VMs are slower than a developer machine for timer- and IPC-heavy
+      # work, so deadlines and latency/CPU budgets are stretched 3x. Memory
+      # budgets are not. Local runs keep the strict defaults.
+      - name: Verify native build and isolated virtual runtime
+        run: >-
+          ${{ matrix.python }} tools/release/release.py verify
+          --port-range 25440-25459 --lab-port-range 25460-25479
+          --report dist/verification.json
+          --e2e-slowdown 3

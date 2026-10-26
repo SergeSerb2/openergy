@@ -1,6 +1,7 @@
 //! The Openergy daemon and hand-rolled command-line interface.
 
 use std::collections::BTreeMap;
+use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -25,6 +26,8 @@ mod windows_pipe;
 mod workers;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
+// Use the same daemon TOML policy for startup, live saves, and offline import.
+const MAX_CONFIG_FILE_LEN: u64 = openergy_config::MAX_CONFIG_FILE_LEN as u64;
 
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -45,7 +48,7 @@ fn main() {
 }
 
 fn usage() -> &'static str {
-    "usage: openergy daemon|server|client [--config <path>] [--platform macos|x11|windows|virtual|auto] [--socket <path>] [--parent-pid <pid>] [--foreground] [--remote host:port]\n       openergy ctl <method> [--socket <path>] [--json '{...}'] [--raw]\n       openergy status|connect|disconnect|restart [--socket <path>]\n       openergy trust list|approve <fp>|reject <fp>|revoke <fp>\n       openergy fingerprint [--synergy]\n       openergy import-synergy --from <dir> [--out <path>] [--apply]\n       openergy export-synergy-conf [--out <path>]\n       openergy version"
+    "usage: openergy daemon|server|client [--config <path>] [--platform macos|x11|windows|virtual|auto] [--socket <path>] [--parent-pid <pid>] [--foreground] [--remote host:port]\n       openergy ctl <method> [--socket <path>] [--json '{...}'] [--raw]\n       openergy connect [host:port] [--socket <path>]\n       openergy status|disconnect|restart [--socket <path>]\n       openergy trust list|approve <fp>|reject <fp>|revoke <fp>\n       openergy fingerprint [--synergy]\n       openergy import-synergy --from <dir> [--out <path>] [--apply]\n       openergy export-synergy-conf [--out <path>]\n       openergy version"
 }
 
 fn run(args: &[String]) -> Result<i32, String> {
@@ -54,13 +57,16 @@ fn run(args: &[String]) -> Result<i32, String> {
     };
     match cmd {
         "version" | "--version" | "-V" => {
+            if args.len() != 1 {
+                return Err("usage: version accepts no arguments".into());
+            }
             println!("openergy {VERSION}");
             Ok(0)
         }
         "daemon" | "server" | "client" => cmd_daemon(cmd, &args[1..]),
         "ctl" => cmd_ctl(&args[1..]),
         "status" => ctl_call(&args[1..], methods::STATUS_GET, serde_json::json!({}), false),
-        "connect" => ctl_call(&args[1..], methods::CONNECTION_CONNECT, serde_json::json!({}), false),
+        "connect" => cmd_connect(&args[1..]),
         "disconnect" => ctl_call(&args[1..], methods::CONNECTION_DISCONNECT, serde_json::json!({}), false),
         "restart" => ctl_call(&args[1..], methods::CONNECTION_RESTART, serde_json::json!({}), false),
         "trust" => openergy_net::cli::trust(&args[1..]),
@@ -80,7 +86,7 @@ struct Opts {
     flags: Vec<String>,
     positional: Vec<String>,
 }
-fn parse_opts(args: &[String], value_flags: &[&str]) -> Result<Opts, String> {
+fn parse_opts(args: &[String], value_flags: &[&str], bool_flags: &[&str]) -> Result<Opts, String> {
     let mut map = BTreeMap::new();
     let mut flags = Vec::new();
     let mut positional = Vec::new();
@@ -92,14 +98,24 @@ fn parse_opts(args: &[String], value_flags: &[&str]) -> Result<Opts, String> {
                 if !value_flags.contains(&k) {
                     return Err(format!("unknown option --{k}"));
                 }
-                map.insert(k.to_string(), val.to_string());
+                if val.is_empty() || map.insert(k.to_string(), val.to_string()).is_some() {
+                    return Err(format!("usage: empty or duplicate option --{k}"));
+                }
             } else if value_flags.contains(&v) {
                 i += 1;
-                let val = args.get(i).ok_or_else(|| format!("--{v} requires a value"))?;
-                map.insert(v.to_string(), val.clone());
+                let val = args
+                    .get(i)
+                    .filter(|val| !val.starts_with("--"))
+                    .ok_or_else(|| format!("usage: --{v} requires a value"))?;
+                if val.is_empty() || map.insert(v.to_string(), val.clone()).is_some() {
+                    return Err(format!("usage: empty or duplicate option --{v}"));
+                }
             } else {
-                if !["foreground", "raw"].contains(&v) {
+                if !bool_flags.contains(&v) {
                     return Err(format!("unknown flag --{v}"));
+                }
+                if flags.iter().any(|flag| flag == v) {
+                    return Err(format!("usage: duplicate flag --{v}"));
                 }
                 flags.push(v.to_string());
             }
@@ -155,7 +171,10 @@ fn default_config_path() -> PathBuf {
     }
     #[cfg(not(any(target_os = "macos", windows)))]
     {
-        PathBuf::from(home).join(".config/openergy/config.toml")
+        std::env::var_os("XDG_CONFIG_HOME")
+            .map(PathBuf::from)
+            .unwrap_or_else(|| PathBuf::from(home).join(".config"))
+            .join("openergy/config.toml")
     }
 }
 
@@ -172,11 +191,16 @@ fn platform_name(given: Option<&str>) -> String {
 }
 
 fn cmd_daemon(cmd: &str, args: &[String]) -> Result<i32, String> {
-    let opts = parse_opts(args, &["config", "platform", "socket", "parent-pid", "remote"])?;
-    for f in &opts.flags {
-        if f != "foreground" {
-            return Err(format!("unknown flag --{f}"));
-        }
+    let opts = parse_opts(
+        args,
+        &["config", "platform", "socket", "parent-pid", "remote"],
+        &["foreground"],
+    )?;
+    if !opts.positional.is_empty() {
+        return Err(format!("usage: unexpected daemon argument {:?}", opts.positional[0]));
+    }
+    if cmd != "client" && opts.map.contains_key("remote") {
+        return Err("usage: --remote is only supported by client".into());
     }
     let socket_path = opts.map.get("socket").map(PathBuf::from).unwrap_or_else(default_socket);
     let config_path = opts.map.get("config").map(PathBuf::from);
@@ -211,26 +235,51 @@ fn cmd_daemon(cmd: &str, args: &[String]) -> Result<i32, String> {
 }
 
 fn load_config(path: Option<&Path>) -> Result<Config, String> {
-    match path {
-        Some(p) if p.exists() => {
-            let text = std::fs::read_to_string(p).map_err(|e| format!("read {}: {e}", p.display()))?;
-            Config::load_toml(&text).map_err(|e| format!("config {}: {e}", p.display()))
-        }
-        Some(_) => Ok(Config::default()),
-        None => {
-            let p = default_config_path();
-            if p.exists() {
-                let text = std::fs::read_to_string(&p).map_err(|e| format!("read {}: {e}", p.display()))?;
-                Config::load_toml(&text).map_err(|e| format!("config {}: {e}", p.display()))
-            } else {
-                Ok(Config::default())
-            }
-        }
+    let path = path.map(Path::to_owned).unwrap_or_else(default_config_path);
+    if path.as_os_str().is_empty() {
+        return Err("config path must not be empty".into());
     }
+    match std::fs::metadata(&path) {
+        Ok(metadata) if metadata.is_file() => {}
+        Ok(_) => return Err(format!("config {} must be a regular file", path.display())),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(Config::default()),
+        Err(error) => return Err(format!("read {}: {error}", path.display())),
+    }
+    let read = || -> std::io::Result<String> {
+        let mut options = std::fs::OpenOptions::new();
+        options.read(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            // A path changed to a FIFO after metadata must not block startup.
+            options.custom_flags(libc::O_NONBLOCK);
+        }
+        let file = options.open(&path)?;
+        let metadata = file.metadata()?;
+        if !metadata.is_file() {
+            return Err(std::io::Error::other("config must be a regular file"));
+        }
+        let too_large = || std::io::Error::other("config exceeds 16 MiB (16777216 bytes)");
+        if metadata.len() > MAX_CONFIG_FILE_LEN {
+            return Err(too_large());
+        }
+        let mut text = String::new();
+        file.take(MAX_CONFIG_FILE_LEN + 1).read_to_string(&mut text)?;
+        // The file can grow after metadata; never parse a truncated config.
+        if text.len() as u64 > MAX_CONFIG_FILE_LEN {
+            return Err(too_large());
+        }
+        Ok(text)
+    };
+    let text = read().map_err(|e| format!("read {}: {e}", path.display()))?;
+    Config::load_toml(&text).map_err(|e| format!("config {}: {e}", path.display()))
 }
 
 fn cmd_ctl(args: &[String]) -> Result<i32, String> {
-    let opts = parse_opts(args, &["socket", "json"])?;
+    let opts = parse_opts(args, &["socket", "json"], &["raw"])?;
+    if opts.positional.len() != 1 {
+        return Err("usage: ctl requires exactly one method".into());
+    }
     let method = opts
         .positional
         .first()
@@ -253,10 +302,29 @@ fn cmd_ctl(args: &[String]) -> Result<i32, String> {
 }
 
 fn ctl_call(args: &[String], method: &str, params: serde_json::Value, raw: bool) -> Result<i32, String> {
-    let opts = parse_opts(args, &["socket"])?;
+    let opts = parse_opts(args, &["socket"], &[])?;
+    if !opts.positional.is_empty() {
+        return Err(format!("usage: unexpected control argument {:?}", opts.positional[0]));
+    }
     let socket = opts.map.get("socket").map(PathBuf::from).unwrap_or_else(default_socket);
     let resp = ipc_request(&socket, method, params)?;
     print_response(&resp, raw);
+    Ok(if resp.error.is_some() { 1 } else { 0 })
+}
+
+fn cmd_connect(args: &[String]) -> Result<i32, String> {
+    let opts = parse_opts(args, &["socket"], &[])?;
+    if opts.positional.len() > 1 {
+        return Err("usage: connect accepts at most one host".into());
+    }
+    let params = opts
+        .positional
+        .first()
+        .map(|host| serde_json::json!({"host":host}))
+        .unwrap_or_else(|| serde_json::json!({}));
+    let socket = opts.map.get("socket").map(PathBuf::from).unwrap_or_else(default_socket);
+    let resp = ipc_request(&socket, methods::CONNECTION_CONNECT, params)?;
+    print_response(&resp, false);
     Ok(if resp.error.is_some() { 1 } else { 0 })
 }
 
@@ -285,9 +353,14 @@ fn ipc_request(socket: &Path, method: &str, params: serde_json::Value) -> Result
     let mut stream = windows_pipe::Stream::connect(socket)
         .map_err(|e| format!("connect {}: {e} (is the daemon running?)", socket.display()))?;
     #[cfg(unix)]
-    stream
-        .set_read_timeout(Some(std::time::Duration::from_secs(10)))
-        .map_err(|e| e.to_string())?;
+    {
+        stream
+            .set_read_timeout(Some(std::time::Duration::from_secs(10)))
+            .map_err(|e| e.to_string())?;
+        stream
+            .set_write_timeout(Some(std::time::Duration::from_secs(10)))
+            .map_err(|e| e.to_string())?;
+    }
     let id = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map(|d| d.as_millis() as u64)
@@ -300,5 +373,9 @@ fn ipc_request(socket: &Path, method: &str, params: serde_json::Value) -> Result
     let v = serde_json::to_value(&req).map_err(|e| e.to_string())?;
     write_frame(&mut stream, &v).map_err(|e| e.to_string())?;
     let resp_v = read_frame(&mut stream).map_err(|e| e.to_string())?;
-    serde_json::from_value(resp_v).map_err(|e| format!("bad IPC response: {e}"))
+    let response: Response = serde_json::from_value(resp_v).map_err(|e| format!("bad IPC response: {e}"))?;
+    if response.id != id {
+        return Err("bad IPC response: request ID does not match".into());
+    }
+    Ok(response)
 }

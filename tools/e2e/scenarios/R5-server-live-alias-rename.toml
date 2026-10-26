@@ -1,0 +1,79 @@
+# Requirement: A live layout rename retains routing through the old name's alias.
+name = "R5-server-live-alias-rename"
+requirement = "A connected client remains reachable after its layout name changes with the previous name as an alias, including input and a later reconnect."
+timeout_ms = 1500
+
+[[node]]
+id = "server"
+role = "server"
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "config_patch"
+node = "server"
+patch = { screen = [{ name = "server", rect = { x = 0, y = 0, w = 1920, h = 1080 } }, { name = "renamed", aliases = ["client"], rect = { x = 1920, y = 0, w = 1920, h = 1080 } }] }
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "mouse_move_abs", x = 1919, y = 540 }, { type = "mouse_move_rel", dx = 20, dy = 0 }]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { active_screen = "renamed", peers = { "$contains" = { name = "renamed", connected = true } } }
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "key_down", key = 97, modifiers = 0, button = 4 }, { type = "key_up", key = 97, modifiers = 0, button = 4 }]
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+expect = [{ event = { type = "key_down", key = 97 } }, { event = { type = "key_up", key = 97 } }]
+
+[[step]]
+do = "restart"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { peers = { "$contains" = { name = "renamed", connected = true } } }
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "mouse_move_abs", x = 1919, y = 540 }, { type = "mouse_move_rel", dx = 20, dy = 0 }]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { active_screen = "renamed" }
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "key_down", key = 98, modifiers = 0, button = 5 }, { type = "key_up", key = 98, modifiers = 0, button = 5 }]
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+expect = [{ event = { type = "key_down", key = 98 } }, { event = { type = "key_up", key = 98 } }]

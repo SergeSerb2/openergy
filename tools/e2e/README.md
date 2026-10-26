@@ -12,12 +12,14 @@ cargo build --release
 cargo clippy --release -p openergy-e2e -- -D warnings
 target/release/openergy-e2e list
 target/release/openergy-e2e run
+# Unix CI without Docker: real virtual daemons and raw TCP probes only.
+target/release/openergy-e2e run --no-docker --report /tmp/native-results.json
 # Quote shell globs. Match the scenario name or TOML filename.
 target/release/openergy-e2e run --scenario 'S13-*' --keep
 target/release/openergy-e2e run --scenario 'L*' --report /tmp/lab-results.json
 ```
 
-Default destination ports are **24990–24999** for local peers and
+Default destination ports are **24980–24999** for local peers and
 **24930–24939** for Docker publications. Change them with `--port-range A-B`
 and `--lab-port-range A-B`. Ranges must not overlap. Both have at most 101
 ports. The lab range starts at 24900 or above. Port 24800 is always refused,
@@ -26,11 +28,33 @@ startup. It releases a reservation immediately before launching its owner.
 Another program can still claim a port during that unavoidable handoff;
 startup then fails with retained artifacts.
 
+Each declared node needs one reserved port, including raw client nodes. Before
+starting a run, the runner checks that each selected scenario fits its local
+and lab ranges. For example, `P07-hostile-field-bounds` needs 13 local ports;
+a ten-port range is rejected as a CLI error before any scenario starts.
+This capacity check does not guarantee that other processes leave ports free.
+
 `OPENERGY_BIN=/absolute/path/openergy` or `--openergy PATH` selects the daemon.
 The default is the binary beside the runner. `--scenario-dir DIR` selects an
 external catalogue. `--json PATH` is an alias for `--report PATH`. List/help
 exit 0; a completed run with any failed scenario exits 1; CLI/schema errors
 exit 2. An empty selection is an error and never reports a green run.
+
+`--slowdown N` (1 to 10, default 1) is for slower machines such as hosted CI
+VMs. It multiplies scenario and step deadlines and the latency and CPU budgets
+by N. Memory budgets and measurement windows do not change. The console and
+the JSON report record the factor, so a stretched run is never mistaken for a
+strict one.
+
+`--no-docker` works with both `run` and `list`. It excludes any scenario
+that declares a `kind = "lab"` node, including nodes with autostart disabled.
+The console names every exclusion. JSON reports include `no_docker`,
+`excluded_count`, and `excluded` entries with the scenario name and reason.
+Excluded scenarios never count as passes. A selection containing only
+excluded scenarios exits 2. This mode does not verify Deskflow/Barrier,
+Docker networking, X11, or native desktop input. Execution requires Unix
+control sockets and process groups; Windows can list scenarios but cannot
+run this harness. Use the separate Windows verification workflow there.
 
 Scenarios run in filename order, one at a time. Each gets a private 0700
 `/tmp/oe7-PID-TIMESTAMP/sN` directory. Configs, sockets, TLS files, logs,
@@ -61,12 +85,17 @@ files. Docker clients use the lab-approved `host.docker.internal:assigned-port`
 alias; host listeners and publications remain bound to 127.0.0.1.
 
 Cleanup calls the copied `lab.sh down`, then removes only that owned container.
+Both operations check the container's lab label and exact canonical owning
+directory. Cleanup never uses an unchecked `docker rm` fallback.
 It never kills another user's process or touches another container. Process
 nodes have separate process groups. Cleanup resumes stopped children, sends
 TERM, waits, then sweeps the whole owned group with KILL. A separate cleanup
 guardian watches an EOF pipe. It also tears down registered groups and labs
 if the runner receives SIGINT, SIGTERM, or SIGKILL. Normal cleanup failures
-make a scenario fail. The guardian is best effort if Docker itself is down.
+make a scenario fail and appear in `cleanup_failures`, including when the
+scenario already failed. Cleanup is idempotent; Drop does not signal a
+previously cleaned process group again. The guardian is best effort if
+Docker itself is down.
 
 ## Scenario format
 
@@ -74,6 +103,9 @@ A scenario is TOML data. Each file starts with a requirement comment and has
 `name`, `requirement`, optional `blocked_by = ["WP6"]`, and `timeout_ms` (default
 5000). `blocked_by` only annotates a product failure. It does **not** skip a
 scenario or turn failure into success. `node` and `step` are arrays of tables.
+Unknown step fields, mistyped flags, invalid field predicates, and missing
+JSON expectations are errors. Validation runs before startup and again after
+variable expansion. Scenario and step timeouts must be within 1–180000 ms.
 Every step is schema-checked before any child starts, even after earlier
 steps that currently depend on unfinished work packages.
 
@@ -154,6 +186,17 @@ are harmless. Array expectations preserve order and length. Field predicates
 use dotted paths or JSON pointers and `$exists`, `$ne`, `$gte`, `$lte`,
 `$contains` (array subset or string substring), and `$len`. TOML has no null;
 use `$exists` on a nested leaf to distinguish absent/null-parent data.
+
+Object expectations require an actual object, including an empty `{}`
+expectation. An empty or `exact = true` ledger assertion fails when ring
+overflow has removed part of the requested interval. Nonempty subsequence
+and tail assertions can still use the retained records.
+
+Offline CLI path options must use separate flag/value arguments, not
+`--flag=value`. Imports require both `--from` and `--out` inside the scenario
+directory. `--dir`, `--config`, and trust-import sources are also confined,
+regardless of argument order. Content checks on a directory or socket fail;
+use `exists`/`mode` alone to check those artifacts.
 
 ```toml
 [[step]]

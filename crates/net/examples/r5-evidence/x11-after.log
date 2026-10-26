@@ -1,0 +1,35 @@
+085b0a326643393ce926234a249d2b9baeb21a62d77ceaab7d2468a0422d1eb8  /work/crates/platform-linux/src/image.rs
+c30058611fc426f3f2b0bc5d4c9f53bf8ef48ea4cb3915098894c22277fdf88c  /work/crates/platform-linux/src/clipboard.rs
+   Compiling openergy-platform-linux v0.1.0 (/work/crates/platform-linux)
+    Finished `release` profile [optimized] target(s) in 4.16s
+R5 side=4096 input_bytes=2097200 rejected=true prior_text_readable=true
+R5 side=8192 input_bytes=8388656 rejected=true prior_text_readable=true
+PASS r5-clipboard-expansion
+{"scenario": "R5-x11-clipboard-expansion", "source": "22edbad37881a6b05c0bb91f1cff2b0670331c79", "binary_sha256": "4ffece6820bceebbef0f05e5932a5b6e855d6310108eabd5c93b7be2692f58e6", "peak_rss_bytes": 18833408, "elapsed_s": 0.008538, "exit_code": 0, "passed": true}
+fixtures: small dynamic-DEFLATE PNG; large PNG bytes=10498508
+    Finished `release` profile [optimized] target(s) in 0.01s
+     Running `/target/release/examples/x11_probe clipboard`
+clipboard backend -> xclip: text, HTML, PNG and headerless little-endian DIB/BMP passed
+clipboard xclip -> backend INCR: PNG=10498508 DIB=10496108
+clipboard backend -> xclip INCR: 10498508 bytes equal; oversize read rejected
+clipboard v1 routing: PRIMARY does not change shared CLIPBOARD data or stamp
+clipboard PRIMARY, XFixes change stamp, empty selection, invalid PNG: passed
+clipboard contract: stable ownerless selection is a real clear
+clipboard contract: external text and zero-byte UTF-8/HTML remain readable
+clipboard contract: unsupported-only owner is unavailable
+clipboard contract: refuse conversion/snapshot is unavailable
+clipboard contract: missing conversion/snapshot is unavailable
+clipboard contract: replace conversion/snapshot is unavailable
+clipboard contract: reacquire conversion/snapshot is unavailable
+clipboard contract: explicit backend clear remains successful empty data
+PASS clipboard
+independent pixels: PNG -> DIB -> PNG preserves RGBA; 10 MB INCR DIB pixels equal source PNG
+fixtures: small dynamic-DEFLATE PNG; large PNG bytes=10498508
+    Finished `release` profile [optimized] target(s) in 0.00s
+     Running `/target/release/examples/x11_probe clipboard-recovery`
+recovery: own-write change stamp stays stable (1000 writes)
+recovery: 32 destroyed INCR requestors release slots; next xclip read succeeds
+recovery: same xclip owner can be read after an oversized INCR abort
+PASS clipboard-recovery
+    Checking openergy-platform-linux v0.1.0 (/work/crates/platform-linux)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.14s

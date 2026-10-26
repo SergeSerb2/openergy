@@ -33,9 +33,13 @@ pub fn active() -> Result<Displays> {
         for _ in 0..3 {
             let mut count = 0;
             check(ffi::CGGetActiveDisplayList(0, std::ptr::null_mut(), &mut count))?;
-            let mut ids = vec![0; count as usize];
+            // The API reports only the number actually written, never a count
+            // above the supplied capacity. One spare slot detects hot-plug
+            // growth, including a display appearing after an empty first query.
+            let capacity = count.checked_add(1).ok_or_else(|| error("display count overflow"))?;
+            let mut ids = vec![0; capacity as usize];
             let mut actual = 0;
-            check(ffi::CGGetActiveDisplayList(count, ids.as_mut_ptr(), &mut actual))?;
+            check(ffi::CGGetActiveDisplayList(capacity, ids.as_mut_ptr(), &mut actual))?;
             if actual > count {
                 continue;
             }

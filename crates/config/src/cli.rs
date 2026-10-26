@@ -50,6 +50,13 @@ fn home() -> Result<PathBuf, String> {
         .ok_or_else(|| "home directory is unavailable; supply an explicit path".into())
 }
 fn default_config() -> Result<PathBuf, String> {
+    // Use the daemon's explicit environment selector before platform defaults.
+    if let Some(path) = std::env::var_os("OPENERGY_CONFIG") {
+        if path.is_empty() {
+            return Err("OPENERGY_CONFIG is empty; use --config".into());
+        }
+        return Ok(PathBuf::from(path));
+    }
     #[cfg(target_os = "macos")]
     {
         Ok(home()?.join("Library/Application Support/Openergy/config.toml"))
@@ -72,7 +79,8 @@ fn default_config() -> Result<PathBuf, String> {
 }
 
 /// Persist one complete document through a same-directory, exclusive 0600 temp file.
-/// On failure the old destination remains intact and our temp file is removed.
+/// Failures before rename preserve the old destination and remove our temp file.
+/// A directory-sync error after rename reports uncertain durability of the new file.
 pub fn write_atomic(path: &Path, text: &str) -> Result<(), ConfigError> {
     static NEXT: AtomicU64 = AtomicU64::new(0);
     let parent = path
@@ -107,7 +115,11 @@ pub fn write_atomic(path: &Path, text: &str) -> Result<(), ConfigError> {
             file.write_all(text.as_bytes())?;
             file.sync_all()?;
             drop(file);
-            fs::rename(&tmp, path)
+            fs::rename(&tmp, path)?;
+            // Sync the directory entry as well as the data before reporting success.
+            #[cfg(unix)]
+            fs::File::open(parent)?.sync_all()?;
+            Ok(())
         })();
         if result.is_err() {
             let _ = fs::remove_file(&tmp);
@@ -130,9 +142,20 @@ pub fn import_synergy(args: &[String]) -> Result<i32, String> {
         .map(Ok)
         .unwrap_or_else(|| home().map(|p| p.join("Library/Preferences/Synergy")))?;
     let (cfg, report) = import_synergy_dir(&from).map_err(|e| e.to_string())?;
-    if let Some(path) = opts.get("--out") {
-        write_atomic(Path::new(path), &cfg.to_toml()).map_err(|e| e.to_string())?;
-    }
+    // Check daemon TOML before touching disk or emitting output for redirection.
+    // JSON-only inspection does not produce a daemon config file.
+    let toml = if opts.contains_key("--out") || !as_json {
+        let text = cfg.to_toml();
+        if text.len() > MAX_CONFIG_FILE_LEN {
+            return Err("config exceeds 16 MiB (16777216 bytes)".into());
+        }
+        if let Some(path) = opts.get("--out") {
+            write_atomic(Path::new(path), &text).map_err(|e| e.to_string())?;
+        }
+        Some(text)
+    } else {
+        None
+    };
     if as_json {
         println!(
             "{}",
@@ -154,8 +177,8 @@ pub fn import_synergy(args: &[String]) -> Result<i32, String> {
         }
         if let Some(path) = opts.get("--out") {
             println!("Wrote {path}");
-        } else {
-            println!("{}", cfg.to_toml());
+        } else if let Some(text) = toml {
+            println!("{text}");
         }
     }
     Ok(0)

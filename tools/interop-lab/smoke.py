@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Exercise real reference peers over TCP/TLS and X11. No host input APIs."""
+import argparse
 import datetime
+import os
 import hashlib
 import json
 import pathlib
@@ -13,7 +15,15 @@ import time
 
 ROOT = pathlib.Path(__file__).resolve().parent
 LAB = str(ROOT / "lab.sh")
+SERVER_PORT = 24900
+HOST_PORT = 24901
+CONTAINER = os.environ.get("LAB_NAME", "openergy-interop")
 REPORT = {"verified_at": datetime.datetime.now(datetime.timezone.utc).isoformat(), "peers": {}}
+
+
+def require(condition, message):
+    if not condition:
+        raise AssertionError(message)
 
 
 def run(*args, check=True):
@@ -30,9 +40,13 @@ def lab(*args):
     return result.stdout
 
 
-def exact(conn, count):
+def exact(conn, count, deadline):
     data = b""
     while len(data) < count:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise TimeoutError("frame absolute deadline expired")
+        conn.settimeout(remaining)
         part = conn.recv(count - len(data))
         if not part:
             raise EOFError("peer closed before the complete frame arrived")
@@ -41,11 +55,16 @@ def exact(conn, count):
 
 
 def receive(conn):
-    head = exact(conn, 4)
-    size = struct.unpack("!I", head)[0]
-    if size > 65536:
-        raise ValueError("unexpected frame length")
-    return head + exact(conn, size)
+    timeout = conn.gettimeout()
+    deadline = time.monotonic() + min(timeout if timeout is not None else 6, 6)
+    try:
+        head = exact(conn, 4, deadline)
+        size = struct.unpack("!I", head)[0]
+        if size > 65536:
+            raise ValueError("unexpected frame length")
+        return head + exact(conn, size, deadline)
+    finally:
+        conn.settimeout(timeout)
 
 
 def send(conn, payload):
@@ -53,7 +72,7 @@ def send(conn, payload):
 
 
 def probe(tls=False):
-    with socket.create_connection(("127.0.0.1", 24900), timeout=6) as raw:
+    with socket.create_connection(("127.0.0.1", SERVER_PORT), timeout=6) as raw:
         if not tls:
             return {"hello": receive(raw).hex()}
         # The inherited peer accept path can race an immediate ClientHello.
@@ -77,7 +96,7 @@ def client_round(impl, tls=False, wrong_pin=False):
     with socket.socket() as listener:
         listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         # OrbStack forwards host.docker.internal to a host interface, not :99.
-        listener.bind(("0.0.0.0", 24901))
+        listener.bind(("0.0.0.0", HOST_PORT))
         listener.listen(1)
         listener.settimeout(12)
 
@@ -104,10 +123,10 @@ def client_round(impl, tls=False, wrong_pin=False):
                         if wrong_pin:
                             raise AssertionError("client accepted a wrong TLS fingerprint")
                         result["hello_back"] = hello_back.hex()
-                        assert hello_back == struct.pack("!I", 18) + hello + struct.pack("!I", 3) + b"lab"
+                        require(hello_back == struct.pack("!I", 18) + hello + struct.pack("!I", 3) + b"lab", 'client hello-back does not match the expected name and protocol')
                         send(conn, b"QINF")
                         info = receive(conn)
-                        assert info[4:8] == b"DINF", info.hex()
+                        require(info[4:8] == b"DINF", info.hex())
                         result["screen_info"] = info.hex()
                         send(conn, b"CIAK")
                         send(conn, b"CROP")
@@ -119,7 +138,7 @@ def client_round(impl, tls=False, wrong_pin=False):
                         send(conn, b"DMUP\x01")
                         time.sleep(.3)
                         result["pointer"] = run(LAB, "pointer").stdout.strip()
-                        assert "X=321\nY=234" in result["pointer"], result
+                        require("X=321\nY=234" in result["pointer"], result)
                         # Leave the client screen before closing the protocol session.
                         send(conn, b"COUT")
             except Exception as error:
@@ -127,7 +146,7 @@ def client_round(impl, tls=False, wrong_pin=False):
 
         worker = threading.Thread(target=serve, daemon=True)
         worker.start()
-        args = ["client", impl, "--server", "host.docker.internal:24901", "--name", "lab",
+        args = ["client", impl, "--server", f"host.docker.internal:{HOST_PORT}", "--name", "lab",
                 "--tls", "on" if tls else "off"]
         if tls:
             args += ["--trust-fingerprint", "0" * 64 if wrong_pin else REPORT["peers"]["deskflow"]["tls_server"]["sha256"]]
@@ -140,7 +159,7 @@ def client_round(impl, tls=False, wrong_pin=False):
                 raise errors[0]
             if wrong_pin:
                 log = run(LAB, "logs", impl).stdout.lower()
-                assert "fingerprint does not match" in log, log[-2000:]
+                require("fingerprint does not match" in log, log[-2000:])
         finally:
             lab("stop", impl)
         return result
@@ -148,8 +167,8 @@ def client_round(impl, tls=False, wrong_pin=False):
 
 def server_edge(impl, magic, minor):
     """Join the real server as a wire probe, then move Xvfb input off its edge."""
-    with socket.create_connection(("127.0.0.1", 24900), timeout=3) as conn:
-        assert receive(conn)[4:] == magic + struct.pack("!HH", 1, minor)
+    with socket.create_connection(("127.0.0.1", SERVER_PORT), timeout=3) as conn:
+        require(receive(conn)[4:] == magic + struct.pack("!HH", 1, minor), 'server hello does not match the edge probe protocol')
         name = b"openergy-mac"
         send(conn, magic + struct.pack("!HHI", 1, minor, len(name)) + name)
         messages = []
@@ -177,33 +196,42 @@ def server_edge(impl, magic, minor):
 
 
 def main():
-    lab("up")
+    global SERVER_PORT, HOST_PORT
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--port", type=int, default=24900, help="Docker publication port")
+    parser.add_argument("--host-port", type=int, default=24901, help="Host protocol listener port")
+    args = parser.parse_args()
+    if not (24900 <= args.port <= 65535 and 24900 <= args.host_port <= 65535) or args.port == args.host_port:
+        parser.error("use two distinct ports within 24900..65535")
+    SERVER_PORT, HOST_PORT = args.port, args.host_port
+    os.environ["LAB_PORT_RANGE"] = f"{SERVER_PORT}-{SERVER_PORT}"
     try:
-        REPORT["architecture"] = run("docker", "exec", "openergy-interop", "uname", "-m").stdout.strip()
+        lab("up")
+        REPORT["architecture"] = run("docker", "exec", CONTAINER, "uname", "-m").stdout.strip()
         REPORT["image"] = run("docker", "image", "inspect", "openergy-interop:latest", "--format", "{{.Id}}").stdout.strip()
         for impl, magic, minor in [("deskflow", b"Synergy", 8), ("barrier", b"Barrier", 6)]:
             peer = REPORT["peers"][impl] = {}
-            lab("server", impl, "--port", "24900", "--screens", "lab,openergy-mac", "--tls", "off")
-            again = lab("server", impl, "--port", "24900", "--screens", "lab,openergy-mac", "--tls", "off")
-            assert "already running" in again
+            lab("server", impl, "--port", str(SERVER_PORT), "--screens", "lab,openergy-mac", "--tls", "off")
+            again = lab("server", impl, "--port", str(SERVER_PORT), "--screens", "lab,openergy-mac", "--tls", "off")
+            require("already running" in again, 'unchanged peer launch must retain its running process')
             peer["plain_server"] = probe()
             expected = (struct.pack("!I", 11) + magic + struct.pack("!HH", 1, minor)).hex()
-            assert peer["plain_server"]["hello"] == expected
+            require(peer["plain_server"]["hello"] == expected, 'plain server hello does not match the expected protocol')
             print(impl, "server hello:", expected, flush=True)
             peer["server_edge"] = server_edge(impl, magic, minor)
-            lab("server", impl, "--port", "24900", "--tls", "on")
+            lab("server", impl, "--port", str(SERVER_PORT), "--tls", "on")
             peer["tls_server"] = probe(tls=True)
-            assert peer["tls_server"]["hello"] == expected
+            require(peer["tls_server"]["hello"] == expected, 'TLS server hello does not match the expected protocol')
             fingerprint = run(LAB, "fingerprint", impl).stdout.splitlines()
-            assert fingerprint[0] == "v2:sha256:" + peer["tls_server"]["sha256"]
+            require(fingerprint[0] == "v2:sha256:" + peer["tls_server"]["sha256"], 'certificate digest does not match the fingerprint command')
             peer["fingerprint"] = fingerprint
             # An incomplete hello-only TLS session can leave Barrier 2.4's next
             # SSL_accept retrying. Give the independent OpenSSL check a fresh peer.
             lab("stop", impl)
-            lab("server", impl, "--port", "24900", "--tls", "on")
+            lab("server", impl, "--port", str(SERVER_PORT), "--tls", "on")
             for attempt in range(3):
                 try:
-                    openssl = subprocess.run(["openssl", "s_client", "-4", "-tls1_2", "-connect", "localhost:24900"],
+                    openssl = subprocess.run(["openssl", "s_client", "-4", "-tls1_2", "-connect", f"localhost:{SERVER_PORT}"],
                                              input=b"", capture_output=True, timeout=4)
                     break
                 except subprocess.TimeoutExpired:
@@ -213,8 +241,8 @@ def main():
                     time.sleep(.2)
             peer["openssl_attempts"] = attempt + 1
             transcript = openssl.stdout.decode(errors="replace") + openssl.stderr.decode(errors="replace")
-            assert openssl.returncode == 0, transcript
-            assert "TLSv1.2" in transcript or "TLSv1.3" in transcript, transcript
+            require(openssl.returncode == 0, transcript)
+            require("TLSv1.2" in transcript or "TLSv1.3" in transcript, transcript)
             peer["openssl_handshake_exit"] = openssl.returncode
             peer["openssl_tls"] = "TLSv1.2"
             # Retain handshake evidence without session keys or ticket dumps.
@@ -226,13 +254,13 @@ def main():
             lab("stop", impl)
 
         # A wildcard host listener cannot share a port with a Docker localhost
-        # publication. Reserve 24901 for the host by publishing only 24900 here.
+        # publication. Only SERVER_PORT is published; HOST_PORT stays free.
         lab("down")
-        print(run("env", "LAB_PORT_RANGE=24900-24900", LAB, "up").stdout.strip(), flush=True)
+        lab("up")
         lab("events", "start")
         lab("events", "start")
         lab("drive", "mousemove", "120", "220", "click", "1", "type", "--clearmodifiers", "virtual-only")
-        assert "X=120\nY=220" in lab("pointer")
+        require("X=120\nY=220" in lab("pointer"), 'X pointer did not reach the requested coordinates')
         for impl in ["deskflow", "barrier"]:
             peer = REPORT["peers"][impl]
             peer["plain_client"] = client_round(impl)
@@ -242,22 +270,22 @@ def main():
         lab("events", "stop")
         lab("events", "stop")
         event_log = run(LAB, "events", "dump").stdout
-        assert "Motion" in event_log and "ButtonPress" in event_log and "KeyPress" in event_log
+        require("Motion" in event_log and "ButtonPress" in event_log and "KeyPress" in event_log, 'X event recorder did not capture motion, button, and key events')
         REPORT["events"] = {"motion": event_log.count("Motion"), "button_press": event_log.count("ButtonPress"),
                             "key_press": event_log.count("KeyPress"), "wire_pointer": "321,234"}
         lab("clipboard", "set", "Openergy virtual clipboard ✓")
-        assert run(LAB, "clipboard", "get").stdout == "Openergy virtual clipboard ✓"
+        require(run(LAB, "clipboard", "get").stdout == "Openergy virtual clipboard ✓", 'X clipboard readback does not match the written text')
         REPORT["clipboard"] = "UTF-8 set/get passed"
         for args in [("server", "deskflow", "--port", "24800"),
                      ("client", "deskflow", "--server", "192.0.2.10:24901")]:
-            assert run(LAB, *args, check=False).returncode != 0
+            require(run(LAB, *args, check=False).returncode != 0, 'unsafe peer endpoint was accepted')
         REPORT["safety_rejections"] = "port 24800 and non-host server address rejected before launch"
         REPORT["passed"] = True
     finally:
         lab("down")
-        state = run("docker", "inspect", "-f", "{{.State.Running}}", "openergy-interop").stdout.strip()
+        state = run("docker", "inspect", "-f", "{{.State.Running}}", CONTAINER).stdout.strip()
         REPORT["container_running_at_end"] = state
-        assert state == "false"
+        require(state == "false", 'owned lab container is still running after cleanup')
         (ROOT / "verification.json").write_text(json.dumps(REPORT, indent=2) + "\n")
     print("All Docker protocol, TLS, host networking, X input, clipboard, and rejection checks passed.")
 

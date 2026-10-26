@@ -1,0 +1,13 @@
+SCOPE resolver=real_std_to_socket_addrs host=localhost ports=25100..25118 discovery=OFF tls=OFF native=NONE slow_lookup_control=UNAVAILABLE
+QUEUE mode=shutdown round=0 jobs=16 admission_us=236 overflow_rejected=PASS dns_budget_rejections=14 recovery_admission_us=1640 recovery_connected_us=2050 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS
+QUEUE mode=disconnect_all round=1 jobs=16 admission_us=22 overflow_rejected=PASS dns_budget_rejections=3 recovery_admission_us=279 recovery_connected_us=618 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS
+QUEUE mode=shutdown round=2 jobs=16 admission_us=14 overflow_rejected=PASS dns_budget_rejections=2 recovery_admission_us=159 recovery_connected_us=373 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS
+QUEUE mode=disconnect_all round=3 jobs=16 admission_us=20 overflow_rejected=PASS dns_budget_rejections=3 recovery_admission_us=293 recovery_connected_us=651 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS
+QUEUE mode=deadline round=0 jobs=16 admission_us=18 overflow_rejected=PASS dns_budget_rejections=0 recovery_admission_us=2 recovery_connected_us=363 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS
+QUEUE mode=deadline round=1 jobs=16 admission_us=30 overflow_rejected=PASS dns_budget_rejections=0 recovery_admission_us=4 recovery_connected_us=378 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS
+QUEUE mode=deadline round=2 jobs=16 admission_us=51 overflow_rejected=PASS dns_budget_rejections=0 recovery_admission_us=8 recovery_connected_us=457 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS
+QUEUE mode=deadline round=3 jobs=16 admission_us=53 overflow_rejected=PASS dns_budget_rejections=0 recovery_admission_us=8 recovery_connected_us=678 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS
+FAILURE case=invalid_hostname events=[ConnectFailed { host: "invalid\0hostname", port: 25117, error: "dns_failed: file name contained an unexpected NUL byte" }] classified_dns=PASS
+FAILURE case=refused_localhost events=[ConnectFailed { host: "localhost", port: 25117, error: "connect_refused: Connection refused (os error 61)" }] classified_refused=PASS
+CONTRACTS same_driver=PASS same_handle=PASS same_waker=PASS disconnect_all_keeps_listener=PASS shutdown_closes_listener=PASS reconfigure=PASS invalid_reconfigure_recovery=PASS localhost=PASS numeric_loopback=PASS driver_drop=PASS
+RESULT queue_and_lifecycle=PASS refused_localhost_control=PASS slow_dns_head_of_line_regression=NOT_MEASURED

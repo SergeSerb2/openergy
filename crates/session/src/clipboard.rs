@@ -40,8 +40,14 @@ pub fn marshal(data: &ClipboardData, cap: usize) -> Result<Vec<u8>, ClipboardErr
             })
         })
         .collect::<Vec<_>>();
+    // Losing every unsupported format is not an explicit clipboard clear.
+    if !data.formats.is_empty() && formats.is_empty() {
+        return Err(ClipboardError::Malformed);
+    }
     formats.sort_by_key(|(id, _)| *id);
-    formats.dedup_by_key(|(id, _)| *id);
+    if formats.windows(2).any(|pair| pair[0].0 == pair[1].0) {
+        return Err(ClipboardError::Malformed);
+    }
     let total = formats
         .iter()
         .try_fold(4usize, |n, (_, b)| n.checked_add(8)?.checked_add(b.len()))
@@ -78,6 +84,7 @@ pub fn unmarshal(bytes: &[u8]) -> Result<ClipboardData, ClipboardError> {
         return Err(ClipboardError::Malformed);
     }
     let mut data = ClipboardData::default();
+    let mut seen = 0u8;
     for _ in 0..count {
         let id = take_u32(bytes, &mut p)?;
         let len = take_u32(bytes, &mut p)? as usize;
@@ -85,6 +92,11 @@ pub fn unmarshal(bytes: &[u8]) -> Result<ClipboardData, ClipboardError> {
         let b = bytes.get(p..end).ok_or(ClipboardError::Malformed)?;
         p = end;
         if let Some(kind) = FormatKind::from_wire_id(id) {
+            let bit = 1u8 << id;
+            if seen & bit != 0 {
+                return Err(ClipboardError::Malformed);
+            }
+            seen |= bit;
             if id < 2 && std::str::from_utf8(b).is_err() {
                 return Err(ClipboardError::InvalidUtf8);
             }
@@ -95,6 +107,11 @@ pub fn unmarshal(bytes: &[u8]) -> Result<ClipboardData, ClipboardError> {
         }
     }
     if p != bytes.len() {
+        return Err(ClipboardError::Malformed);
+    }
+    // Only a genuine count-zero container may clear the clipboard. Unknown
+    // formats remain forward-compatible when a supported format is present.
+    if count != 0 && data.formats.is_empty() {
         return Err(ClipboardError::Malformed);
     }
     Ok(data)

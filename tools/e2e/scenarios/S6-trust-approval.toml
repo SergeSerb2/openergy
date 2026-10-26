@@ -1,7 +1,7 @@
 # Requirement: Unknown TLS identity holds input; approval persists trust and permits reconnect.
 name = "S6-trust-approval"
 requirement = "Unknown TLS identity holds input; approval persists trust and permits reconnect."
-blocked_by = ["WP4", "WP6"]
+blocked_by = []
 timeout_ms = 1800
 
 [[node]]
@@ -10,6 +10,9 @@ kind = "openergy"
 role = "server"
 platform = "virtual"
 tls = true
+# Start the server only after the client subscribes, so peer.untrusted cannot
+# fire before the subscription exists.
+autostart = false
 
 [[node]]
 id = "client"
@@ -22,6 +25,10 @@ tls = true
 [[step]]
 do = "subscribe"
 node = "client"
+
+[[step]]
+do = "start"
+node = "server"
 
 [[step]]
 do = "wait_status"

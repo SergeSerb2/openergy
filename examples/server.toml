@@ -1,0 +1,22 @@
+# The host owns the physical keyboard and mouse.
+# Replace the names and screen sizes on BOTH computers before use.
+version = 1
+name = "studio-host"
+role = "server"
+
+[server]
+# Listens on all IPv4 interfaces. Limit access with your host firewall.
+listen = "0.0.0.0:24800"
+port = 24800
+
+[tls]
+enabled = true
+
+[[screen]]
+name = "studio-host"
+rect = { x = 0, y = 0, w = 1920, h = 1080 }
+
+[[screen]]
+name = "studio-client"
+# The client sits to the right of the host. Touching edges create links.
+rect = { x = 1920, y = 0, w = 1920, h = 1080 }

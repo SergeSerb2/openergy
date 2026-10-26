@@ -31,20 +31,27 @@ pub(crate) enum Phase {
 }
 #[derive(Default, Clone)]
 pub(crate) struct Ledger {
-    keys: BTreeMap<u16, (u16, u16)>,
+    keys: BTreeMap<(u16, u16), (u16, u16)>,
     pub buttons: BTreeSet<u8>,
     pub modifiers: u16,
 }
 impl Ledger {
+    fn key_id(key: u16, button: u16) -> (u16, u16) {
+        // Button zero has no physical identity; distinguish these keys by KeyID.
+        (button, if button == 0 { key } else { 0 })
+    }
+    pub fn has_key(&self, key: u16, button: u16) -> bool {
+        self.keys.contains_key(&Self::key_id(key, button))
+    }
     pub fn observe(&mut self, ev: &InputEvent) {
         match *ev {
             InputEvent::KeyDown { key, modifiers, button } => {
-                self.keys.insert(button, (key, modifiers.0));
+                self.keys.insert(Self::key_id(key, button), (key, modifiers.0));
                 self.modifiers = modifiers.0;
             }
             InputEvent::KeyRepeat { modifiers, .. } => self.modifiers = modifiers.0,
-            InputEvent::KeyUp { modifiers, button, .. } => {
-                self.keys.remove(&button);
+            InputEvent::KeyUp { key, modifiers, button } => {
+                self.keys.remove(&Self::key_id(key, button));
                 self.modifiers = modifiers.0;
             }
             InputEvent::MouseDown { button } => {
@@ -57,7 +64,7 @@ impl Ledger {
         }
     }
     pub fn release_remote(&mut self, conn: ConnId, out: &mut Vec<Action>) {
-        for (button, (key, modifiers)) in std::mem::take(&mut self.keys) {
+        for ((button, _), (key, modifiers)) in std::mem::take(&mut self.keys) {
             out.push(Action::SendControl {
                 conn,
                 msg: Message::KeyUp { key, modifiers, button },

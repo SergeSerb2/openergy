@@ -1,0 +1,26 @@
+PASS  connect — link=connected daemon=0.1.0 pid=88161
+PASS  starts from safe off config — role=off remote=
+PASS  role off — status.role=off config.role=off error=none
+PASS  join 127.0.0.1:25530 — role=client state=connecting remote=127.0.0.1:25530 error=none
+PASS  real peer connected — state=connected peers=1
+PASS  disconnect peer — state=idle peers=0
+PASS  rejoin same address — state=connected peers=1
+PASS  clipboard off — config.clipboard.enabled=Optional(false)
+PASS  clipboard on — config.clipboard.enabled=Optional(true)
+PASS  test port — server=127.0.0.1:25531
+PASS  role server — role=server state=listening listen=127.0.0.1:25531
+PASS  layout seeded — screens=["app", "e2e-pc"] error=none
+PASS  layout left of this Mac — rects=["app@1920,49", "e2e-pc@0,0"] error=none
+PASS  layout keeps imported fields — raw e2e-pc=object(["name": Openergy.JSONValue.string("e2e-pc"), "links": Openergy.JSONValue.object(["ranges": Openergy.JSONValue.array([Openergy.JSONValue.object(["to": Openergy.JSONValue.string("app"), "to_range": Openergy.JSONValue.array([Openergy.JSONValue.number(50.0), Openergy.JSONValue.number(100.0)]), "from_range": Openergy.JSONValue.array([Openergy.JSONValue.number(0.0), Openergy.JSONValue.number(50.0)]), "edge": Openergy.JSONValue.string("top")])]), "left": Openergy.JSONValue.string("app")]), "rect": Openergy.JSONValue.object(["y": Openergy.JSONValue.number(0.0), "w": Openergy.JSONValue.number(1920.0), "h": Openergy.JSONValue.number(1080.0), "x": Openergy.JSONValue.number(1512.0)]), "aliases": Openergy.JSONValue.array([Openergy.JSONValue.string("e2e-pc-alias")])])
+PASS  derived links arrive — links=["app.left→e2e-pc", "e2e-pc.left→app", "e2e-pc.right→app", "e2e-pc.top→app"]
+PASS  rename keeps layout entry — name=e2e-mac screens=["e2e-mac", "e2e-pc"]
+PASS  rename keeps explicit links — direct=e2e-mac ranged=e2e-mac
+PASS  live log lines — tail=9 now=10 last=4:20:14 PM INFO openergy::runtime: listening on 127.0.0.1:25531
+PASS  rejected layout rolls back — error=invalid config: screen "e2e-pc".rect: need nonnegative finite origins and positive sizes within i32 bounds
+PASS  join then off preserves intent — role=off
+PASS  stalled IPC remains responsive — responsive=true bounded=true requestFailed=true
+PASS  owned daemon crash recovers — cleared=true recovered=true
+PASS  role off again — role=off
+PASS  import warning notice — notice=Imported with notes: synergy.conf has no local identity: selected its first screen as server; confirm role and name synergy.conf line 6: unsupported option "e2eUnsupportedSetting"
+PASS  empty import reports error — error=I/O error: no db.json or synergy.conf found in import directory
+E2E PASSED (25 steps)

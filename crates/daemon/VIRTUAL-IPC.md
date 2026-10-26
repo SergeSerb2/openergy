@@ -21,7 +21,8 @@ clipboard frames (ID 1) without changing the platform's normal clipboard.
 
 On macOS the daemon maps allocations of at least 1 MiB directly, then unmaps
 them when dropped. Smaller allocations use the system allocator. This prevents
-Darwin's malloc cache from retaining freed clipboard and IPC copies. The server
+Darwin's malloc cache from retaining those large freed allocations. Smaller
+diagnostic JSON allocations can leave free allocator pages resident. The server
 also drops its marshalled cache after all senders drain; later entry reads the
 current platform clipboard again. No allocator work runs for input events.
 
@@ -31,6 +32,14 @@ capture and sink timestamps across two local daemons without timing its IPC
 observer. `timestamp_us` remains monotonic relative to backend creation. The
 latency driver checks a 1,000-move same-host sample and reports both measurements;
 wall-clock comparison assumes the host clock does not step during that sample.
+
+For stats without event history, send
+`virtual.recorded {"since":18446744073709551615}`. For event polling, keep the
+last returned sequence and pass it as `since` on the next request. Repeated
+`since:0` requests copy and serialize the full retained history, even when the
+caller only uses `stats`. The default ring holds at most 4096 records. A
+[controlled memory check](../../docs/verification/release-integration-2026-10-22/sustained-memory.md)
+measured the diagnostic overhead separately from clipboard transfers.
 
 `connection.connect` accepts an optional SHA-256 `fingerprint` with `host` and
 `port`. It requires TLS and pins that address through retries for the daemon's

@@ -305,6 +305,7 @@ struct State {
     clipboard: Arc<ClipboardData>,
     clipboard_stamp: u64,
     clipboard_read_available: bool,
+    clipboard_read_error: bool,
     own_write_stamp: Option<u64>,
     max_clipboard_bytes: usize,
 }
@@ -599,6 +600,7 @@ impl VirtualPlatform {
                 clipboard: Arc::new(ClipboardData::default()),
                 clipboard_stamp: 0,
                 clipboard_read_available: true,
+                clipboard_read_error: false,
                 own_write_stamp: None,
                 max_clipboard_bytes: config.max_clipboard_bytes,
             }),
@@ -702,6 +704,11 @@ impl VirtualControl {
     /// Script an unavailable read without changing clipboard ownership or bytes.
     pub fn set_clipboard_read_available(&self, available: bool) {
         lock(&self.shared.state).clipboard_read_available = available;
+    }
+    /// Script a backend failure separately from an unavailable or empty read.
+    /// Clipboard contents, ownership, and the change stamp remain unchanged.
+    pub fn set_clipboard_read_error(&self, error: bool) {
+        lock(&self.shared.state).clipboard_read_error = error;
     }
     /// Sizes and stamps without cloning clipboard payload buffers.
     pub fn clipboard_summary(&self) -> ClipboardSummary {
@@ -990,8 +997,11 @@ impl ClipboardBackend for VirtualClipboard {
     }
     fn read(&mut self, max_bytes: usize) -> Result<ClipboardData, PlatformError> {
         let state = lock(&self.shared.state);
+        if state.clipboard_read_error {
+            return Err(failed("virtual clipboard read failed (scripted)"));
+        }
         if !state.clipboard_read_available {
-            return Ok(ClipboardData::default());
+            return Err(PlatformError::ClipboardUnavailable);
         }
         if state.clipboard.total_bytes() > max_bytes {
             return Err(PlatformError::ClipboardTooLarge {

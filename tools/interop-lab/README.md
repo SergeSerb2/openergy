@@ -50,6 +50,7 @@ optional smoke runner for network probes.
 ./lab.sh up                    # openergy-interop; Xvfb :99, 1920x1080x24
 ./lab.sh status
 ./lab.sh down                  # stop; keep the image, container, and state
+./lab.sh remove                # remove this directory's stopped container
 ```
 
 `up` publishes `127.0.0.1:24900-24910` by default. It never publishes the
@@ -59,6 +60,13 @@ production port. `LAB_PORT_RANGE` selects another range within 24900–65535
 unchanged peer start commands are safe to repeat. An unchanged running peer
 keeps its PID and connections. One peer owns this X display at a time;
 starting a different peer or configuration stops the previous one.
+
+Containers carry the canonical lab directory in an ownership label. `up`,
+`down`, peer commands, and `remove` reject a container from another directory,
+even when `LAB_NAME` is the same. A container from an older script without
+this label is also refused; inspect and stop that older instance with its
+original workflow before migration. State directories and new host files
+use a private umask (`077`).
 
 ```bash
 ./lab.sh down
@@ -264,6 +272,8 @@ no Openergy daemon-to-peer result is claimed here.
 ```bash
 ./lab.sh build
 python3 -I smoke.py
+# Select dedicated ports and a separate container name for parallel work.
+LAB_NAME=openergy-interop-private python3 -I -O smoke.py --port 25340 --host-port 25320
 ./lab.sh status                 # running=false
 ```
 
@@ -272,6 +282,14 @@ and X11. It writes `verification.json` and always calls `down` after an active
 run, including on failure. It does not import project internals, mock a peer
 binary, post native host input, or add unit tests. Its small raw-wire listener
 is an explicit protocol probe, not an Openergy substitute.
+
+The smoke publishes only `--port` and reserves `--host-port` for its host
+listener. Both must be distinct and within 24900–65535. `LAB_NAME` applies
+to startup, inspection, and cleanup. Checks remain active with Python `-O`;
+socket frames use an absolute deadline across their header and payload.
+For independent state as well as a distinct container, run copies of
+`lab.sh` and `smoke.py` from a private temporary directory. `LAB_NAME` alone
+does not give runs separate `.state` directories.
 
 Captured server hellos (includes the four-byte big-endian frame length):
 

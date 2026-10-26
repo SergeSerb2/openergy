@@ -3,6 +3,7 @@ import SwiftUI
 /// The panel that opens from the menu bar icon.
 struct MenuBarPanel: View {
     let model: AppModel
+    var updater: AppUpdater? = nil
     @Environment(\.openWindow) private var openWindow
 
     var body: some View {
@@ -26,6 +27,8 @@ struct MenuBarPanel: View {
             Divider().padding(.vertical, 2)
             VStack(spacing: 0) {
                 MenuRowButton(title: "Open Openergy…", shortcut: "⌘,") { openMain() }
+                MenuRowButton(title: "Check for Updates…") { updater?.checkForUpdates() }
+                    .disabled(updater?.canCheckForUpdates != true)
                 MenuRowButton(title: "Quit Openergy", shortcut: "⌘Q") { NSApp.terminate(nil) }
                     .keyboardShortcut("q")
             }
@@ -136,6 +139,7 @@ struct MenuRowButton: View {
     var shortcut: String?
     var action: () -> Void
     @State private var hovering = false
+    @Environment(\.isEnabled) private var isEnabled
 
     var body: some View {
         Button(action: action) {
@@ -147,7 +151,8 @@ struct MenuRowButton: View {
             .font(.callout)
             .padding(.horizontal, 8)
             .padding(.vertical, 5)
-            .background(hovering ? Color.primary.opacity(0.08) : .clear, in: RoundedRectangle(cornerRadius: 6, style: .continuous))
+            .background(hovering && isEnabled ? Color.primary.opacity(0.08) : .clear, in: RoundedRectangle(cornerRadius: 6, style: .continuous))
+            .opacity(isEnabled ? 1 : 0.5)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

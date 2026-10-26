@@ -240,7 +240,7 @@ impl Layout {
             )
         };
         if status != 0 {
-            return Err(error(format!("UCKeyTranslate({code:#x}) failed: {status}")));
+            return Err(error(format!("UCKeyTranslate failed: {status}")));
         }
         Ok(output[..length].to_vec())
     }
@@ -316,12 +316,10 @@ impl Keymap {
             }]));
         }
         if (0xE000..=0xEFFF).contains(&key) {
-            return Err(error(format!(
-                "named KeyID {key:#06x} has no public macOS virtual-key mapping"
-            )));
+            return Err(error("named key has no public macOS virtual-key mapping"));
         }
         if char::from_u32(u32::from(key)).is_none_or(char::is_control) {
-            return Err(error(format!("invalid printable BMP KeyID {key:#06x}")));
+            return Err(error("invalid printable BMP key"));
         }
         if let Some(candidates) = self.reverse.get(&key) {
             let best = candidates

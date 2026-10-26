@@ -1,0 +1,616 @@
+{
+  "date_local": "2026-10-21",
+  "source_base": "06b61287afd7f31aa3002d252389f2c2b17f73f5",
+  "session_commits": [
+    "e12c5d8",
+    "0b128a3",
+    "c064338"
+  ],
+  "port_range": [
+    25040,
+    25059
+  ],
+  "lab_port_range": [
+    25060,
+    25079
+  ],
+  "runner": "openergy-e2e (real daemons and raw TCP peers, virtual platform)",
+  "before": [
+    {
+      "scenario": "Q1-primary-screen-name",
+      "outcome": "FAIL",
+      "failed_step": 4,
+      "failure": {
+        "kind": "product",
+        "message": "raw read absolute deadline expired"
+      }
+    },
+    {
+      "scenario": "Q10-clipboard-policy-cancels-chunks",
+      "outcome": "FAIL",
+      "failed_step": 13,
+      "failure": {
+        "kind": "product",
+        "message": "bounded wait failed: predicate did not match"
+      }
+    },
+    {
+      "scenario": "Q11-layout-delay-unmapped-edge",
+      "outcome": "FAIL",
+      "failed_step": 9,
+      "failure": {
+        "kind": "product",
+        "message": "bounded wait failed: predicate did not match"
+      }
+    },
+    {
+      "scenario": "Q12-client-cannot-disable-heartbeat",
+      "outcome": "FAIL",
+      "failed_step": 7,
+      "failure": {
+        "kind": "product",
+        "message": "raw read absolute deadline expired"
+      }
+    },
+    {
+      "scenario": "Q2-client-setup-clipboard",
+      "outcome": "FAIL",
+      "failed_step": 10,
+      "failure": {
+        "kind": "product",
+        "message": "bounded wait failed: predicate did not match"
+      }
+    },
+    {
+      "scenario": "Q3-server-setup-clipboard",
+      "outcome": "FAIL",
+      "failed_step": 9,
+      "failure": {
+        "kind": "product",
+        "message": "bounded wait failed: predicate did not match"
+      }
+    },
+    {
+      "scenario": "Q4-two-held-shift-keys",
+      "outcome": "FAIL",
+      "failed_step": 6,
+      "failure": {
+        "kind": "product",
+        "message": "bounded wait failed: predicate did not match"
+      }
+    },
+    {
+      "scenario": "Q5-live-layout-peer-geometry",
+      "outcome": "FAIL",
+      "failed_step": 7,
+      "failure": {
+        "kind": "product",
+        "message": "bounded wait failed: predicate did not match"
+      }
+    },
+    {
+      "scenario": "Q6-disabled-clipboard-enter",
+      "outcome": "FAIL",
+      "failed_step": 11,
+      "failure": {
+        "kind": "product",
+        "message": "bounded wait failed: predicate did not match"
+      }
+    },
+    {
+      "scenario": "Q7-receive-disabled-ownership",
+      "outcome": "FAIL",
+      "failed_step": 10,
+      "failure": {
+        "kind": "product",
+        "message": "bounded wait failed: predicate did not match"
+      }
+    },
+    {
+      "scenario": "Q8-zero-button-key-release",
+      "outcome": "FAIL",
+      "failed_step": 11,
+      "failure": {
+        "kind": "product",
+        "message": "raw read absolute deadline expired"
+      }
+    },
+    {
+      "scenario": "Q9-reconnect-clipboard-sequence",
+      "outcome": "FAIL",
+      "failed_step": 20,
+      "failure": {
+        "kind": "product",
+        "message": "raw read absolute deadline expired"
+      }
+    },
+    {
+      "scenario": "Q14-client-duplicate-clipboard-formats",
+      "outcome": "FAIL",
+      "failed_step": 13,
+      "failure": {
+        "kind": "product",
+        "message": "bounded wait failed: predicate did not match"
+      }
+    },
+    {
+      "scenario": "Q15-server-duplicate-clipboard-formats",
+      "outcome": "FAIL",
+      "failed_step": 11,
+      "failure": {
+        "kind": "product",
+        "message": "bounded wait failed: predicate did not match"
+      }
+    },
+    {
+      "scenario": "Q16-lock-hotkey-grammar",
+      "outcome": "FAIL",
+      "failed_step": 5,
+      "failure": {
+        "kind": "product",
+        "message": "bounded wait failed: predicate did not match"
+      }
+    },
+    {
+      "scenario": "Q17-preentry-modifier-mask",
+      "outcome": "FAIL",
+      "failed_step": 8,
+      "failure": {
+        "kind": "product",
+        "message": "virtual.recorded field predicates did not match"
+      }
+    },
+    {
+      "scenario": "Q18-empty-clipboard-clear",
+      "outcome": "FAIL",
+      "failed_step": 6,
+      "failure": {
+        "kind": "product",
+        "message": "bounded wait failed: predicate did not match"
+      }
+    }
+  ],
+  "release_runs": [
+    {
+      "report": "release-focused-final",
+      "passed": 35,
+      "failed": 0,
+      "scenarios": [
+        {
+          "scenario": "A1-modifier-and-receiver-wheel",
+          "outcome": "PASS",
+          "elapsed_ms": 819
+        },
+        {
+          "scenario": "A11-input-backpressure-release",
+          "outcome": "PASS",
+          "elapsed_ms": 2492
+        },
+        {
+          "scenario": "A2-client-direction-version-heartbeat-sequence",
+          "outcome": "PASS",
+          "elapsed_ms": 3729
+        },
+        {
+          "scenario": "A3-heartbeat-close-flush",
+          "outcome": "PASS",
+          "elapsed_ms": 1812
+        },
+        {
+          "scenario": "A5-unavailable-clipboard-readback",
+          "outcome": "PASS",
+          "elapsed_ms": 1871
+        },
+        {
+          "scenario": "A6-clipboard-backpressure",
+          "outcome": "PASS",
+          "elapsed_ms": 533
+        },
+        {
+          "scenario": "Q1-primary-screen-name",
+          "outcome": "PASS",
+          "elapsed_ms": 295
+        },
+        {
+          "scenario": "Q10-clipboard-policy-cancels-chunks",
+          "outcome": "PASS",
+          "elapsed_ms": 513
+        },
+        {
+          "scenario": "Q11-layout-delay-unmapped-edge",
+          "outcome": "PASS",
+          "elapsed_ms": 1509
+        },
+        {
+          "scenario": "Q12-client-cannot-disable-heartbeat",
+          "outcome": "PASS",
+          "elapsed_ms": 2049
+        },
+        {
+          "scenario": "Q14-client-duplicate-clipboard-formats",
+          "outcome": "PASS",
+          "elapsed_ms": 502
+        },
+        {
+          "scenario": "Q15-server-duplicate-clipboard-formats",
+          "outcome": "PASS",
+          "elapsed_ms": 515
+        },
+        {
+          "scenario": "Q16-lock-hotkey-grammar",
+          "outcome": "PASS",
+          "elapsed_ms": 1059
+        },
+        {
+          "scenario": "Q2-client-setup-clipboard",
+          "outcome": "PASS",
+          "elapsed_ms": 430
+        },
+        {
+          "scenario": "Q3-server-setup-clipboard",
+          "outcome": "PASS",
+          "elapsed_ms": 413
+        },
+        {
+          "scenario": "Q4-two-held-shift-keys",
+          "outcome": "PASS",
+          "elapsed_ms": 602
+        },
+        {
+          "scenario": "Q5-live-layout-peer-geometry",
+          "outcome": "PASS",
+          "elapsed_ms": 715
+        },
+        {
+          "scenario": "Q6-disabled-clipboard-enter",
+          "outcome": "PASS",
+          "elapsed_ms": 1262
+        },
+        {
+          "scenario": "Q7-receive-disabled-ownership",
+          "outcome": "PASS",
+          "elapsed_ms": 1749
+        },
+        {
+          "scenario": "Q8-zero-button-key-release",
+          "outcome": "PASS",
+          "elapsed_ms": 299
+        },
+        {
+          "scenario": "Q9-reconnect-clipboard-sequence",
+          "outcome": "PASS",
+          "elapsed_ms": 883
+        },
+        {
+          "scenario": "S1-connect",
+          "outcome": "PASS",
+          "elapsed_ms": 1676
+        },
+        {
+          "scenario": "S10-clipboard-cap",
+          "outcome": "PASS",
+          "elapsed_ms": 1619
+        },
+        {
+          "scenario": "S11-heartbeat",
+          "outcome": "PASS",
+          "elapsed_ms": 2290
+        },
+        {
+          "scenario": "S12-display-change",
+          "outcome": "PASS",
+          "elapsed_ms": 587
+        },
+        {
+          "scenario": "S17-healthy",
+          "outcome": "PASS",
+          "elapsed_ms": 890
+        },
+        {
+          "scenario": "S17-same-fingerprint",
+          "outcome": "PASS",
+          "elapsed_ms": 1098
+        },
+        {
+          "scenario": "S17-stale",
+          "outcome": "PASS",
+          "elapsed_ms": 1530
+        },
+        {
+          "scenario": "S2-edge-mapping",
+          "outcome": "PASS",
+          "elapsed_ms": 618
+        },
+        {
+          "scenario": "S2-wire-order",
+          "outcome": "PASS",
+          "elapsed_ms": 315
+        },
+        {
+          "scenario": "S3-input-order",
+          "outcome": "PASS",
+          "elapsed_ms": 607
+        },
+        {
+          "scenario": "S4-disconnect-release",
+          "outcome": "PASS",
+          "elapsed_ms": 883
+        },
+        {
+          "scenario": "S5-disconnect-release",
+          "outcome": "PASS",
+          "elapsed_ms": 934
+        },
+        {
+          "scenario": "S8-text-clipboard",
+          "outcome": "PASS",
+          "elapsed_ms": 1173
+        },
+        {
+          "scenario": "S9-large-dib",
+          "outcome": "PASS",
+          "elapsed_ms": 2062
+        }
+      ],
+      "source_session_commit": "0b128a3"
+    },
+    {
+      "report": "q17-release",
+      "passed": 1,
+      "failed": 0,
+      "scenarios": [
+        {
+          "scenario": "Q17-preentry-modifier-mask",
+          "outcome": "PASS",
+          "elapsed_ms": 805
+        }
+      ],
+      "source_session_commit": "c064338"
+    },
+    {
+      "report": "q18-release",
+      "passed": 1,
+      "failed": 0,
+      "scenarios": [
+        {
+          "scenario": "Q18-empty-clipboard-clear",
+          "outcome": "PASS",
+          "elapsed_ms": 1370
+        }
+      ],
+      "source_session_commit": "c064338"
+    }
+  ],
+  "checks": {
+    "release_build": "PASS",
+    "rustfmt": "PASS",
+    "git_diff_check": "PASS",
+    "session_clippy_no_deps": "PASS",
+    "clippy_msrv_override": "1.99.1",
+    "root_msrv": "1.85 pending CI owner uplift",
+    "clippy_msrv_mismatch_warning": true,
+    "typescript": "Not applicable; assigned crate is Rust"
+  },
+  "integration_dependencies": {
+    "platform_read_error": "82efa10",
+    "platform_typed_unavailable": "ffdd07a",
+    "macos_typed_unavailable": "422ff6757bcf563951b9167c52c6b113711ba827",
+    "daemon": "0a30525",
+    "q13_q19": "PASS in the joint run"
+  },
+  "baseline_notes": [
+    "Q1-Q12: original 06b6128 daemon binary.",
+    "Q14-Q16: before their fixes; Q17-Q18: before c064338.",
+    "Q13: daemon owner replayed baseline runtime/workers with the new real backend read_error control; red at final retry, then fixed green. Initial unavailable-read control was not used as read-error evidence.",
+    "Q13 baseline replay and daemon-owned independent joint evidence are committed under crates/daemon/verification/2026-10-21-daemon-ipc-audit.json in 0a30525."
+  ],
+  "joint_run": {
+    "daemon_profile": "debug (daemon-owner joint source fixture)",
+    "runner_profile": "release",
+    "daemon_sha256": "2590399be4872347d032aa4cbf43ce7833289c5fb77c944908ade3d3b5fab436",
+    "passed": 39,
+    "failed": 0,
+    "session_commit": "c064338",
+    "daemon_commit": "0a30525",
+    "platform_commit": "ffdd07a",
+    "config_commit": "a8cd6d9",
+    "msrv": "1.99.1",
+    "scenarios": [
+      {
+        "scenario": "A1-modifier-and-receiver-wheel",
+        "outcome": "PASS",
+        "elapsed_ms": 935
+      },
+      {
+        "scenario": "A11-input-backpressure-release",
+        "outcome": "PASS",
+        "elapsed_ms": 4282
+      },
+      {
+        "scenario": "A2-client-direction-version-heartbeat-sequence",
+        "outcome": "PASS",
+        "elapsed_ms": 3770
+      },
+      {
+        "scenario": "A3-heartbeat-close-flush",
+        "outcome": "PASS",
+        "elapsed_ms": 1817
+      },
+      {
+        "scenario": "A5-unavailable-clipboard-readback",
+        "outcome": "PASS",
+        "elapsed_ms": 1881
+      },
+      {
+        "scenario": "A6-clipboard-backpressure",
+        "outcome": "PASS",
+        "elapsed_ms": 572
+      },
+      {
+        "scenario": "Q1-primary-screen-name",
+        "outcome": "PASS",
+        "elapsed_ms": 339
+      },
+      {
+        "scenario": "Q10-clipboard-policy-cancels-chunks",
+        "outcome": "PASS",
+        "elapsed_ms": 571
+      },
+      {
+        "scenario": "Q11-layout-delay-unmapped-edge",
+        "outcome": "PASS",
+        "elapsed_ms": 1608
+      },
+      {
+        "scenario": "Q12-client-cannot-disable-heartbeat",
+        "outcome": "PASS",
+        "elapsed_ms": 2043
+      },
+      {
+        "scenario": "Q13-clipboard-readback-recovery",
+        "outcome": "PASS",
+        "elapsed_ms": 1837
+      },
+      {
+        "scenario": "Q14-client-duplicate-clipboard-formats",
+        "outcome": "PASS",
+        "elapsed_ms": 568
+      },
+      {
+        "scenario": "Q15-server-duplicate-clipboard-formats",
+        "outcome": "PASS",
+        "elapsed_ms": 563
+      },
+      {
+        "scenario": "Q16-lock-hotkey-grammar",
+        "outcome": "PASS",
+        "elapsed_ms": 998
+      },
+      {
+        "scenario": "Q17-preentry-modifier-mask",
+        "outcome": "PASS",
+        "elapsed_ms": 787
+      },
+      {
+        "scenario": "Q18-empty-clipboard-clear",
+        "outcome": "PASS",
+        "elapsed_ms": 1453
+      },
+      {
+        "scenario": "Q19-unavailable-is-not-clear",
+        "outcome": "PASS",
+        "elapsed_ms": 1810
+      },
+      {
+        "scenario": "Q2-client-setup-clipboard",
+        "outcome": "PASS",
+        "elapsed_ms": 462
+      },
+      {
+        "scenario": "Q3-server-setup-clipboard",
+        "outcome": "PASS",
+        "elapsed_ms": 435
+      },
+      {
+        "scenario": "Q4-two-held-shift-keys",
+        "outcome": "PASS",
+        "elapsed_ms": 630
+      },
+      {
+        "scenario": "Q5-live-layout-peer-geometry",
+        "outcome": "PASS",
+        "elapsed_ms": 770
+      },
+      {
+        "scenario": "Q6-disabled-clipboard-enter",
+        "outcome": "PASS",
+        "elapsed_ms": 1298
+      },
+      {
+        "scenario": "Q7-receive-disabled-ownership",
+        "outcome": "PASS",
+        "elapsed_ms": 1851
+      },
+      {
+        "scenario": "Q8-zero-button-key-release",
+        "outcome": "PASS",
+        "elapsed_ms": 347
+      },
+      {
+        "scenario": "Q9-reconnect-clipboard-sequence",
+        "outcome": "PASS",
+        "elapsed_ms": 929
+      },
+      {
+        "scenario": "S1-connect",
+        "outcome": "PASS",
+        "elapsed_ms": 1662
+      },
+      {
+        "scenario": "S10-clipboard-cap",
+        "outcome": "PASS",
+        "elapsed_ms": 1913
+      },
+      {
+        "scenario": "S11-heartbeat",
+        "outcome": "PASS",
+        "elapsed_ms": 2487
+      },
+      {
+        "scenario": "S12-display-change",
+        "outcome": "PASS",
+        "elapsed_ms": 685
+      },
+      {
+        "scenario": "S17-healthy",
+        "outcome": "PASS",
+        "elapsed_ms": 979
+      },
+      {
+        "scenario": "S17-same-fingerprint",
+        "outcome": "PASS",
+        "elapsed_ms": 1186
+      },
+      {
+        "scenario": "S17-stale",
+        "outcome": "PASS",
+        "elapsed_ms": 1666
+      },
+      {
+        "scenario": "S2-edge-mapping",
+        "outcome": "PASS",
+        "elapsed_ms": 689
+      },
+      {
+        "scenario": "S2-wire-order",
+        "outcome": "PASS",
+        "elapsed_ms": 345
+      },
+      {
+        "scenario": "S3-input-order",
+        "outcome": "PASS",
+        "elapsed_ms": 673
+      },
+      {
+        "scenario": "S4-disconnect-release",
+        "outcome": "PASS",
+        "elapsed_ms": 963
+      },
+      {
+        "scenario": "S5-disconnect-release",
+        "outcome": "PASS",
+        "elapsed_ms": 980
+      },
+      {
+        "scenario": "S8-text-clipboard",
+        "outcome": "PASS",
+        "elapsed_ms": 1252
+      },
+      {
+        "scenario": "S9-large-dib",
+        "outcome": "PASS",
+        "elapsed_ms": 2862
+      }
+    ]
+  }
+}

@@ -23,9 +23,11 @@ final class AppModel {
     private(set) var lastActionError: String?
     /// Non-error information from the last action, e.g. config warnings or import notes.
     private(set) var notice: String?
-    private(set) var launchAtLogin = SMAppService.mainApp.status == .enabled
-    private(set) var launchAtLoginNeedsApproval = SMAppService.mainApp.status == .requiresApproval
+    private(set) var launchAtLogin = false
+    private(set) var launchAtLoginNeedsApproval = false
     let isDemo: Bool
+    let isEndToEnd = ProcessInfo.processInfo.arguments.contains("--e2e")
+    var allowsSystemIntegration: Bool { !isDemo && !isEndToEnd }
 
     static let shared = AppModel()
 
@@ -39,6 +41,13 @@ final class AppModel {
     private let supervisor = DaemonSupervisor()
     private let log = Logger(subsystem: "dev.openergy.app", category: "model")
     private var connectTask: Task<Void, Never>?
+    private var actionTask: Task<Void, Never>?
+    private var logSubscriptionTask: Task<Void, Never>?
+    private var running = false
+    private var session = UUID()
+    private var statusRevision = UUID()
+    private var configRevision = UUID()
+    private var discoveryRevision = UUID()
     /// What the Activity pane wants; re-applied after every reconnect.
     private var logsWanted = false
 
@@ -52,6 +61,7 @@ final class AppModel {
             logLines = demo.logs
             link = .connected
         }
+        if allowsSystemIntegration { refreshLoginItem() }
     }
 
     // MARK: Derived state
@@ -62,6 +72,8 @@ final class AppModel {
     var missingPermissions: [PermissionKind] { status.permissions?.missing(for: role) ?? [] }
     var pendingTrust: [PendingTrust] { status.pendingTrust ?? [] }
     var isReady: Bool { link == .connected }
+    /// A PID is returned only for this model's own child, never an attached external daemon.
+    var supervisedDaemonPID: Int32? { supervisor.processIdentifier }
 
     var localName: String {
         if let name = status.name, !name.isEmpty { return name }
@@ -127,6 +139,7 @@ final class AppModel {
 
     var tone: Tone {
         if case .unavailable = link { return .bad }
+        if link == .connecting { return .waiting }
         if !missingPermissions.isEmpty || !pendingTrust.isEmpty { return .warning }
         switch (role, state) {
         case (.off, _): return .neutral
@@ -142,17 +155,23 @@ final class AppModel {
     // MARK: Lifecycle
 
     func start() {
-        guard !isDemo, connectTask == nil else { return }
+        guard !isDemo, !running, connectTask == nil else { return }
+        running = true
         client.onEvent = { [weak self] name, data in self?.handleEvent(name, data) }
         client.onDisconnect = { [weak self] _ in self?.handleDisconnect() }
-        supervisor.onSpawn = { [weak self] in self?.link = .connecting }
         connectTask = Task { [weak self] in await self?.connectLoop() }
     }
 
     func shutdown() {
+        running = false
+        session = UUID()
         connectTask?.cancel()
+        actionTask?.cancel()
+        logSubscriptionTask?.cancel()
         client.disconnect()
         supervisor.stop()
+        status = .empty
+        link = .unavailable("The Openergy service has stopped.")
     }
 
     private func connectLoop() async {
@@ -161,21 +180,30 @@ final class AppModel {
         var delay: Duration = .milliseconds(100)
         var waited: Duration = .zero
         var lastError: Error?
-        while !Task.isCancelled {
+        while running, !Task.isCancelled {
+            var reachedDaemon = false
             do {
-                try client.connect(path: DaemonSupervisor.socketPath)
+                try await client.connect(path: DaemonSupervisor.socketPath)
+                reachedDaemon = true
                 try await client.call("events.subscribe")
-                link = .connected
-                supervisor.markHealthy()
-                await refreshAll()
-                if logsWanted { await applyLogSubscription() }
+                try await refreshCore()
+                try Task.checkCancellation()
                 // The socket can close while refreshing; then keep looping instead of stopping here.
-                if client.isConnected { return }
+                if running, client.isConnected {
+                    link = .connected
+                    supervisor.markHealthy()
+                    if logsWanted { scheduleLogSubscription() }
+                    return
+                }
                 link = .connecting
             } catch {
+                guard running, !Task.isCancelled else { return }
                 lastError = error
+                client.disconnect()
+                invalidateLiveState()
                 // Start the daemon once; after that the supervisor owns restarts and their backoff.
-                if !supervisor.hasStarted, DaemonSupervisor.executableURL != nil {
+                // A reachable socket with a failed handshake belongs to an existing daemon.
+                if !reachedDaemon, !supervisor.hasStarted, DaemonSupervisor.executableURL != nil {
                     supervisor.start()
                 } else if DaemonSupervisor.executableURL == nil {
                     link = .unavailable("The openergy service binary is missing from the app.")
@@ -192,25 +220,34 @@ final class AppModel {
     }
 
     private func handleDisconnect() {
+        guard running else { return }
+        invalidateLiveState()
         link = .connecting
         if connectTask == nil {
             connectTask = Task { [weak self] in await self?.connectLoop() }
         }
     }
 
+    private func invalidateLiveState() {
+        session = UUID()
+        status = .empty
+        discovered = []
+        trusted = TrustList()
+    }
+
     private func handleEvent(_ name: String, _ data: JSONValue) {
         switch name {
         case "status.changed":
-            if let next = try? data.decode(DaemonStatus.self) { status = next }
+            if let next = try? data.decode(DaemonStatus.self) { status = next; statusRevision = UUID() }
         case "config.changed":
-            if let next = try? OpenergyConfig.decode(fromResult: data) { config = next }
+            if let next = try? OpenergyConfig.decode(fromResult: data) { config = next; configRevision = UUID() }
         case "discovery.changed":
-            if let next = try? data.decode([DiscoveredPeer].self) { discovered = next }
+            if let next = try? data.decode([DiscoveredPeer].self) { discovered = next; discoveryRevision = UUID() }
         case "log.line":
             if let line = data["line"]?.stringValue ?? data.stringValue { appendLog(line) }
         case "peer.untrusted":
             // Bring the approval into view right away; the status event may be coalesced.
-            Task { if let next = try? await client.call("status.get").decode(DaemonStatus.self) { status = next } }
+            Task { try? await refreshStatus() }
         default:
             break
         }
@@ -218,14 +255,32 @@ final class AppModel {
 
     func refreshAll() async {
         guard !isDemo else { return }
-        async let status = try? client.call("status.get").decode(DaemonStatus.self)
-        async let config = try? OpenergyConfig.decode(fromResult: client.call("config.get"))
-        async let found = try? client.call("discovery.list").decode([DiscoveredPeer].self)
-        async let trust = try? client.call("trust.list").decode(TrustList.self)
-        if let value = await status { self.status = value }
-        if let value = await config { self.config = value }
-        if let value = await found { self.discovered = value }
-        if let value = await trust { self.trusted = value }
+        try? await refreshCore()
+    }
+
+    private func refreshStatus() async throws {
+        let current = session, revision = statusRevision
+        let next = try await client.call("status.get").decode(DaemonStatus.self)
+        try Task.checkCancellation()
+        guard session == current, client.isConnected else { throw IPCError.closed }
+        if statusRevision == revision { status = next; statusRevision = UUID() }
+    }
+
+    private func refreshCore() async throws {
+        try await refreshStatus()
+        let current = session, revision = configRevision
+        let next = try await OpenergyConfig.decode(fromResult: client.call("config.get"))
+        try Task.checkCancellation()
+        guard session == current, client.isConnected else { throw IPCError.closed }
+        if configRevision == revision { config = next; configRevision = UUID() }
+        let foundRevision = discoveryRevision
+        if let found = try? await client.call("discovery.list").decode([DiscoveredPeer].self),
+           session == current, discoveryRevision == foundRevision {
+            discovered = found
+            discoveryRevision = UUID()
+        }
+        if let trust = try? await client.call("trust.list").decode(TrustList.self), session == current { trusted = trust }
+        guard session == current, client.isConnected else { throw IPCError.closed }
     }
 
     // MARK: Intents
@@ -242,23 +297,21 @@ final class AppModel {
 
     /// Join a server. Works again after Disconnect, also with the same address.
     func join(_ address: String) {
-        let trimmed = address.trimmingCharacters(in: .whitespaces)
+        let trimmed = address.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         mutateDemo { $0.config.client = .init(remote: trimmed, autoconnect: true); $0.config.role = .client; $0.status.role = .client }
         guard !isDemo else { return }
-        Task {
-            do {
-                let result = try await client.call("config.patch", ["patch": [
-                    "role": "client", "client": ["remote": .string(trimmed), "autoconnect": true],
-                ]])
-                applyPatchResult(result)
-                // Disconnect switches connecting off; connect without a host switches it on again.
-                try await client.call("connection.connect")
-                if let next = try? await client.call("status.get").decode(DaemonStatus.self) { status = next }
-                lastActionError = nil
-            } catch {
-                lastActionError = error.localizedDescription
-            }
+        enqueueAction { [self] current in
+            let revision = self.configRevision
+            let result = try await client.call("config.patch", ["patch": [
+                "role": "client", "client": ["remote": .string(trimmed), "autoconnect": true],
+            ]])
+            try checkSession(current)
+            applyPatchResult(result, revision: revision)
+            // Disconnect switches connecting off; connect without a host switches it on again.
+            try await client.call("connection.connect")
+            try checkSession(current)
+            try await refreshCore()
         }
     }
 
@@ -284,26 +337,34 @@ final class AppModel {
     }
 
     func requestPermission(_ kind: PermissionKind) {
+        guard allowsSystemIntegration else { return }
         perform("permissions.request", ["kind": .string(kind.rawValue)])
         NSWorkspace.shared.open(kind.settingsURL)
     }
 
-    func importFromSynergy() {
-        let path = FileManager.default.homeDirectoryForCurrentUser
-            .appendingPathComponent("Library/Preferences/Synergy").path
-        Task {
-            do {
-                let result = try await client.call("config.import_synergy", ["path": .string(path), "apply": true])
-                if case .array(let items)? = result["report"]?["warnings"], !items.isEmpty {
-                    notice = "Imported with notes: " + items.compactMap(\.stringValue).joined(separator: " ")
-                } else {
-                    notice = "Imported your Synergy settings."
-                }
-                lastActionError = nil
-                await refreshAll()
-            } catch {
-                lastActionError = error.localizedDescription
+    func importFromSynergy(from directory: URL? = nil) {
+        guard !isDemo else { return }
+        let path: String
+        if isEndToEnd {
+            // E2E may import only an explicit fixture inside its already validated config dir.
+            guard let directory else { return }
+            let fixture = directory.standardizedFileURL.resolvingSymlinksInPath()
+            let root = DaemonSupervisor.supportDirectory.standardizedFileURL.resolvingSymlinksInPath()
+            guard fixture.path.hasPrefix(root.path + "/") else { return }
+            path = fixture.path
+        } else {
+            path = (directory ?? FileManager.default.homeDirectoryForCurrentUser
+                .appendingPathComponent("Library/Preferences/Synergy")).path
+        }
+        enqueueAction { [self] current in
+            let result = try await client.call("config.import_synergy", ["path": .string(path), "apply": true])
+            try checkSession(current)
+            if case .array(let items)? = result["warnings"], !items.isEmpty {
+                notice = "Imported with notes: " + items.compactMap(\.stringValue).joined(separator: " ")
+            } else {
+                notice = "Imported your Synergy settings."
             }
+            await refreshAll()
         }
     }
 
@@ -333,7 +394,7 @@ final class AppModel {
     /// Renames this Mac. While hosting, its layout entry is renamed in the same patch so its
     /// position and links stay attached.
     func renameLocal(to newName: String) {
-        let name = newName.trimmingCharacters(in: .whitespaces)
+        let name = newName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !name.isEmpty, name != localName else { return }
         guard !isDemo else { return }
         let oldName = localName
@@ -345,12 +406,29 @@ final class AppModel {
                 if screen.name == oldName { copy.name = name }
                 return (screen.name, copy)
             }
-            patch["screen"] = .array(screenObjects(renamed))
+            // Explicit imported links also refer to screen names. Rename their targets
+            // atomically, otherwise the daemon rejects the whole layout as a dangling link.
+            patch["screen"] = .array(screenObjects(renamed).map { item in
+                guard var object = item.objectValue, var links = object["links"]?.objectValue else { return item }
+                for edge in ["left", "right", "top", "bottom"] where links[edge]?.stringValue == oldName {
+                    links[edge] = .string(name)
+                }
+                if case .array(let ranges)? = links["ranges"] {
+                    links["ranges"] = .array(ranges.map { range in
+                        guard var entry = range.objectValue, entry["to"]?.stringValue == oldName else { return range }
+                        entry["to"] = .string(name)
+                        return .object(entry)
+                    })
+                }
+                object["links"] = .object(links)
+                return .object(object)
+            })
         }
         perform("config.patch", ["patch": .object(patch)])
     }
 
     func setLaunchAtLogin(_ enabled: Bool) {
+        guard allowsSystemIntegration else { return }
         do {
             if enabled { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
         } catch {
@@ -361,6 +439,7 @@ final class AppModel {
     }
 
     func refreshLoginItem() {
+        guard allowsSystemIntegration else { return }
         launchAtLogin = SMAppService.mainApp.status == .enabled
         launchAtLoginNeedsApproval = SMAppService.mainApp.status == .requiresApproval
     }
@@ -371,18 +450,28 @@ final class AppModel {
     func subscribeLogs(_ on: Bool) {
         guard !isDemo, on != logsWanted else { return }
         logsWanted = on
-        Task { await applyLogSubscription() }
+        scheduleLogSubscription()
+    }
+
+    private func scheduleLogSubscription() {
+        logSubscriptionTask?.cancel()
+        logSubscriptionTask = Task { await applyLogSubscription() }
     }
 
     private func applyLogSubscription() async {
-        if logsWanted, case .array(let items)? = try? await client.call("logs.tail", ["lines": 400]) {
+        let current = session, wanted = logsWanted
+        guard running, client.isConnected else { return }
+        if wanted, case .array(let items)? = try? await client.call("logs.tail", ["lines": 400]),
+           session == current, !Task.isCancelled {
             logLines = items.compactMap { $0["line"]?.stringValue ?? $0.stringValue }
         }
-        _ = try? await client.call(logsWanted ? "logs.subscribe" : "logs.unsubscribe")
+        guard session == current, !Task.isCancelled else { return }
+        _ = try? await client.call(wanted ? "logs.subscribe" : "logs.unsubscribe")
     }
 
     func revealConfigFile() {
-        let url = DaemonSupervisor.supportDirectory.appendingPathComponent("config.toml")
+        guard allowsSystemIntegration else { return }
+        let url = DaemonSupervisor.configURL
         NSWorkspace.shared.activateFileViewerSelecting([url])
     }
 
@@ -412,11 +501,11 @@ final class AppModel {
         perform("config.patch", ["patch": ["screen": .array(screenObjects(screens))]])
     }
 
-    private func applyPatchResult(_ result: JSONValue) {
+    private func applyPatchResult(_ result: JSONValue, revision: UUID) {
         guard var next = try? OpenergyConfig.decode(fromResult: result) else { return }
         // `config.patch` answers without derived links; keep the last ones until config.changed.
         if next.derivedLinks == nil { next.derivedLinks = config.derivedLinks }
-        config = next
+        if configRevision == revision { config = next; configRevision = UUID() }
         if case .array(let warnings)? = result["warnings"], !warnings.isEmpty {
             notice = warnings.compactMap(\.stringValue).joined(separator: " ")
         }
@@ -424,22 +513,42 @@ final class AppModel {
 
     private func perform(_ method: String, _ params: JSONValue = [:], refresh: Bool = false) {
         guard !isDemo else { return }
-        Task {
-            do {
-                let result = try await client.call(method, params)
-                if method == "config.patch" {
-                    applyPatchResult(result)
-                    // The daemon also pushes status.changed; fetching once keeps the UI in step even if
-                    // that event is coalesced or arrives after the next user action.
-                    if let next = try? await client.call("status.get").decode(DaemonStatus.self) { status = next }
-                }
-                lastActionError = nil
-                if refresh { await refreshAll() }
-            } catch {
-                log.error("\(method) failed: \(error.localizedDescription)")
-                lastActionError = error.localizedDescription
+        enqueueAction { [self] current in
+            let revision = configRevision
+            let result = try await client.call(method, params)
+            try checkSession(current)
+            if method == "config.patch" {
+                applyPatchResult(result, revision: revision)
+                try await refreshCore()
+            } else if refresh {
+                try await refreshCore()
             }
         }
+    }
+
+    /// Preserve user intent order across multi-request actions such as Join then Off.
+    private func enqueueAction(_ action: @escaping @MainActor (UUID) async throws -> Void) {
+        let previous = actionTask, current = session
+        actionTask = Task {
+            await previous?.value
+            guard running, session == current, !Task.isCancelled else { return }
+            do {
+                try await action(current)
+                guard running, session == current, !Task.isCancelled else { return }
+                lastActionError = nil
+            } catch {
+                guard running, session == current, !Task.isCancelled else { return }
+                log.error("Action failed: \(error.localizedDescription)")
+                lastActionError = error.localizedDescription
+                // A rejected drag must return to the daemon's actual persisted layout.
+                await refreshAll()
+            }
+        }
+    }
+
+    private func checkSession(_ current: UUID) throws {
+        try Task.checkCancellation()
+        guard running, session == current, client.isConnected else { throw IPCError.closed }
     }
 
     private func appendLog(_ line: String) {

@@ -1,0 +1,113 @@
+# Requirement: Validate a multi-file Synergy import after the final core identity has been applied.
+name = "C2-import-final-identity"
+requirement = "A valid server import may replace the db wire names with authoritative classic screens and a final core INI identity."
+timeout_ms = 3000
+
+[[node]]
+id = "server"
+role = "server"
+autostart = false
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+autostart = false
+
+[[step]]
+do = "write_file"
+path = "${fixtures}/server-import/db.json"
+text = '''
+{"version":{"schemaVersion":17},"data":{"computers":[{"id":"s","name":"server","misc":{"left":0,"top":0,"width":100,"height":100}},{"id":"c","name":"client","misc":{"left":101,"top":0,"width":100,"height":100}}],"mainID":{"id":"s"},"developers":{"corePort":${server.port}},"security":{"encryption":false}}}
+'''
+
+[[step]]
+do = "write_file"
+path = "${fixtures}/server-import/local.json"
+text = '{"version":7,"myId":"s","local_system":{"core_enabled":true}}'
+
+[[step]]
+do = "write_file"
+path = "${fixtures}/server-import/synergy.conf"
+text = """
+section: screens
+    server:
+    client:
+end
+section: links
+    server:
+        right = client
+    client:
+        left = server
+end
+"""
+
+[[step]]
+do = "write_file"
+path = "${fixtures}/server-import/synergy-core.conf"
+text = """
+[core]
+coreMode=2
+computerName=server
+interface=127.0.0.1
+port=${server.port}
+[security]
+tlsEnabled=false
+"""
+
+[[step]]
+do = "cli"
+node = "server"
+args = ["import-synergy", "--from", "${fixtures}/server-import", "--out", "${server.config}"]
+
+[[step]]
+do = "assert_file"
+path = "${server.config}"
+mode = "0600"
+toml_expect = {role = "server", name = "server", server = {listen = "127.0.0.1:${server.port}", port = "${server.port}"}}
+
+[[step]]
+do = "start"
+node = "server"
+
+[[step]]
+do = "start"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+peer = "client"
+
+[[step]]
+do = "assert_file"
+path = "${server.config}"
+save = "before"
+
+[[step]]
+do = "write_file"
+path = "${fixtures}/server-import/synergy-core.conf"
+text = """
+[core]
+coreMode=2
+computerName=absent
+interface=127.0.0.1
+port=${server.port}
+"""
+
+[[step]]
+do = "cli"
+node = "server"
+args = ["import-synergy", "--from", "${fixtures}/server-import", "--out", "${server.config}"]
+code = 1
+output_regex = "server must be a canonical screen"
+
+[[step]]
+do = "assert_file"
+path = "${server.config}"
+sha256 = "${before.sha256}"
+
+[[step]]
+do = "assert_status"
+node = "server"
+fields = {state = "connected"}

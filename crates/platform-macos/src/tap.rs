@@ -16,7 +16,8 @@ type Consumer = Box<dyn FnMut(InputEvent) -> CaptureDecision + Send>;
 
 #[derive(Default)]
 struct CursorCapture {
-    hidden: bool,
+    hidden_display: Option<u32>,
+    disassociated: bool,
 }
 struct Control {
     swallow: AtomicBool,
@@ -25,24 +26,39 @@ struct Control {
     cursor: Mutex<CursorCapture>,
 }
 impl Control {
-    fn leave(&self) {
+    fn leave(&self) -> Result<()> {
         self.swallow.store(false, Ordering::Release);
         self.captured.store(false, Ordering::Release);
-        if let Ok(mut cursor) = self.cursor.lock() {
-            if cursor.hidden {
-                // Safety: balance only this source's hide/disassociation on explicit leave.
-                unsafe {
-                    if ffi::CGAssociateMouseAndMouseCursorPosition(true) != 0 {
-                        log::error!("macOS capture leave could not restore cursor association");
-                    }
-                    if ffi::CGDisplayShowCursor(ffi::CGMainDisplayID()) == 0 {
-                        cursor.hidden = false;
-                    } else {
-                        log::error!("macOS capture leave could not show cursor; retry on stop");
-                    }
+        let mut cursor = self.cursor.lock().map_err(|_| error("cursor state poisoned"))?;
+        // A concurrent enter may have completed while leave waited for the lock.
+        self.swallow.store(false, Ordering::Release);
+        self.captured.store(false, Ordering::Release);
+        cursor.restore()
+    }
+}
+impl CursorCapture {
+    fn restore(&mut self) -> Result<()> {
+        let mut failure = None;
+        if self.disassociated {
+            // Safety: balance only this source's successful disassociation.
+            match check(
+                unsafe { ffi::CGAssociateMouseAndMouseCursorPosition(true) },
+                "restore cursor association",
+            ) {
+                Ok(()) => self.disassociated = false,
+                Err(err) => failure = Some(err),
+            }
+        }
+        if let Some(display) = self.hidden_display {
+            // Safety: balance this source's hide using its original display ID.
+            match check(unsafe { ffi::CGDisplayShowCursor(display) }, "show captured cursor") {
+                Ok(()) => self.hidden_display = None,
+                Err(err) => {
+                    failure.get_or_insert(err);
                 }
             }
         }
+        failure.map_or(Ok(()), Err)
     }
 }
 
@@ -94,20 +110,26 @@ impl InputSource for MacSource {
         if let Some(mut tap) = self.tap.take() {
             tap.shutdown();
         }
-        self.control.leave();
+        if self.control.leave().is_err() {
+            log::error!("macOS capture cleanup failed; cursor state retained for retry");
+        }
     }
     fn set_cursor_captured(&mut self, captured: bool) -> Result<()> {
         if !captured {
-            self.control.leave();
-            return Ok(());
+            return self.control.leave();
         }
         if self.tap.is_none() || self.control.stopping.load(Ordering::Acquire) {
             return Err(error("capture must be running before locking cursor"));
         }
         let mut cursor = self.control.cursor.lock().map_err(|_| error("cursor state poisoned"))?;
-        if cursor.hidden {
+        // The tap can stop while we wait for the cursor lock.
+        if self.control.stopping.load(Ordering::Acquire) {
+            return Err(error("capture stopped before locking cursor"));
+        }
+        if self.control.captured.load(Ordering::Acquire) {
             return Ok(());
         }
+        cursor.restore()?;
         let displays = crate::displays::active()?;
         // Safety: CGEventCreate queries metadata only; the owned event outlives the read.
         let point = unsafe {
@@ -151,13 +173,17 @@ impl InputSource for MacSource {
         // Safety: explicit captured-mode request, never called by safe probes.
         unsafe {
             check(ffi::CGWarpMouseCursorPosition(pin), "pin cursor")?;
-            check(ffi::CGDisplayHideCursor(ffi::CGMainDisplayID()), "hide captured cursor")?;
+            let display = ffi::CGMainDisplayID();
+            check(ffi::CGDisplayHideCursor(display), "hide captured cursor")?;
+            cursor.hidden_display = Some(display);
             if let Err(err) = check(ffi::CGAssociateMouseAndMouseCursorPosition(false), "lock cursor") {
-                ffi::CGDisplayShowCursor(ffi::CGMainDisplayID());
+                if cursor.restore().is_err() {
+                    log::error!("macOS capture rollback failed; cursor state retained for retry");
+                }
                 return Err(err);
             }
+            cursor.disassociated = true;
         }
-        cursor.hidden = true;
         self.control.captured.store(true, Ordering::Release);
         self.control.swallow.store(true, Ordering::Release);
         Ok(())
@@ -274,7 +300,7 @@ impl EventTap {
                     Err(err) => {
                         let _ = tx.send(Err(err));
                     }
-                    Ok((tap, source, mut state, wake, control_source)) => {
+                    Ok((tap, source, mut state, wake, _control_source)) => {
                         let loop_ref = wake.loop_ref as ffi::Ref;
                         if tx.send(Ok(wake)).is_ok() {
                             while !thread_control.stopping.load(Ordering::Acquire) {
@@ -302,12 +328,13 @@ impl EventTap {
                             ffi::CGEventTapEnable(tap.0, false);
                             ffi::CFMachPortInvalidate(tap.0);
                             ffi::CFRunLoopRemoveSource(loop_ref, source.0, ffi::kCFRunLoopCommonModes);
-                            ffi::CFRunLoopSourceInvalidate(control_source.0);
                         }
                     }
                 }
-                thread_control.leave();
                 thread_control.stopping.store(true, Ordering::Release);
+                if thread_control.leave().is_err() {
+                    log::error!("macOS capture thread cleanup failed; cursor state retained for retry");
+                }
                 notices.send(MacNotice::CaptureStopped);
             })
             .map_err(|e| error(format!("capture thread: {e}")))?;
@@ -394,11 +421,9 @@ unsafe extern "C" fn callback(_: ffi::MutRef, kind: u32, event: ffi::MutRef, use
     if unsafe { ffi::CGEventGetIntegerValueField(event.cast_const(), 42) } == INJECTION_TAG {
         return event;
     }
-    // A layout notification must be processed before looking up the next key.
-    // Pass it through until the outer loop rebuilds the table.
-    if state.layout_dirty && matches!(kind, 10..=12) {
-        return event;
-    }
+    // Keep using the complete old table until the outer loop replaces it.
+    // Passing keys through here would leak remote input into local apps and
+    // could lose the up of a key already forwarded with the old mapping.
     let events = state.translate(kind, event.cast_const());
     let mut swallow = state.control.swallow.load(Ordering::Acquire);
     let mut any = false;

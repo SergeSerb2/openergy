@@ -1,0 +1,11 @@
+Official API/source check — 2026-10-22 America/Vancouver
+Published latest documentation: https://docs.rs/mdns-sd/latest/mdns_sd/struct.ServiceDaemon.html
+Published documentation version observed: 0.21.6
+Official source: https://github.com/keepsimple1/mdns-sd/blob/a90c1382f45949338fe93eada953bd7b760cf538/src/service_daemon.rs
+Official main SHA observed: a90c1382f45949338fe93eada953bd7b760cf538
+Official published archive: https://static.crates.io/crates/mdns-sd/mdns-sd-0.21.6.crate
+Observed archive SHA256: 8562654710f72a9cbce4b0d5b7c366a2f94330ba1ce3740f15e932ea2d37b161
+This matches the pre-patch locked registry checksum.
+Both inspected APIs offer browse/browse_cache, not a service-limit/replay-budget API.
+Additional crates.io JSON API request: curl returned HTTP 403 (not used to establish latest version).
+Source-only read: no expiry runtime invocation.

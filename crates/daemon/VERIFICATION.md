@@ -1,3 +1,91 @@
+# Daemon and IPC release audit — 2026-10-21
+
+This audit covers `crates/daemon` except `windows_pipe.rs`, and `crates/ipc`.
+It adds real-process regressions and keeps the older WP6 results below as a
+dated historical record. It makes no new native input or release-performance
+claim.
+
+## Fixed behavior
+
+- Unix socket startup refuses regular files, symlinks, non-owned sockets, and unsafe
+  lock files. Shutdown removes only the socket inode created by this daemon.
+  The accept thread polls the stop flag, so replacing the socket path no longer
+  hangs shutdown. Pending IPC replies also observe shutdown.
+- Relative config/socket names work. Config saves sync the file and, on Unix,
+  its parent directory. A failure before rename rolls back live changes. A directory-sync
+  failure after rename keeps live state aligned with the saved config and logs
+  `config_durability_uncertain`; crash durability is then uncertain.
+- On Unix, logs reject symlinks and unsafe file types and enforce owner-only mode `0600`.
+  Rotation uses the same guarded open path.
+- IPC reads and writes share a 16 MiB frame limit. An oversized reply returns
+  `response_too_large`, and the caller can continue using that connection.
+- CLI parsing rejects extra arguments, duplicate/empty options, wrong flags,
+  and flags used as values. `connect HOST` forwards and saves the destination.
+  Startup validates role/remote overrides. Linux honors `XDG_CONFIG_HOME`.
+  Unix CLI writes have a timeout, and replies must match the request ID.
+- Pinned connects save config before replacing the current session. Save
+  failure preserves the exact config and TLS peer. Revocation clears a matching
+  temporary pin, so retry requires trust approval again. Connect is idempotent
+  during retry handshakes. Restart after disconnect enables capture and
+  clipboard workers again.
+- Clipboard read errors and size blocks retain their clipboard ID. Rejected
+  read commands and dropped result events release the same pending-read latch.
+  Write errors do not clear a read latch. `ClipboardUnavailable` silently clears
+  a pending read; a readable empty clipboard remains a real payload/clear.
+- On wake, the input sink receives the current permissions before reconnect.
+  Capture start failures and transient capture notices schedule a retry during
+  health checks even when the permission snapshot has not changed.
+- Changing `macos.click_numbering` through live config on the macOS backend is
+  rejected before save. Stop the daemon, edit that startup-only setting, and
+  start the daemon again. This avoids a successful config reply for an injector
+  setting that has not changed.
+- A resolved native backend opts into the normal production port only when
+  `OPENERGY_ALLOW_PORT_24800` is unset, before any worker starts. Explicit `0`
+  retains denial. The virtual backend never sets this opt-in.
+
+## Reproduction and validation
+
+The committed [audit evidence](verification/2026-10-21-daemon-ipc-audit.json)
+records the original failing checks and the final real-process results.
+`scripts/verify_daemon_audit.py` runs the actual daemon and CLI, with private
+configs, sockets, TLS directories, virtual input, and numeric loopback peers.
+The new `D2-restart-disconnected-workers` scenario checks real capture,
+forwarding, and clipboard polling after disconnect/restart.
+
+Corrected `Q13-clipboard-readback-recovery` was replayed against the baseline
+daemon runtime/workers with the same real backend error control. It failed at
+the final retry assertion (step 14). The fixed daemon passed. `read_available`
+and `read_error` remain distinct controls.
+
+Joint validation uses a private source copy with session commits through
+`c064338`, platform `ffdd07a`, config `a8cd6d9`, and the CI owner's Rust 1.99.1
+MSRV. No files in those other owners' worktrees were changed. The audit commit
+requires the session `ClipboardReadFailed` events and the platform
+`ClipboardUnavailable`/`set_clipboard_read_error` APIs from those commits.
+
+```sh
+export PATH="$HOME/.cargo/bin:$PATH"
+CARGO_BUILD_JOBS=2 nice -n 15 cargo build --locked -p openergy-daemon -p openergy-e2e
+CARGO_BUILD_JOBS=2 nice -n 15 cargo clippy --no-deps --locked -p openergy-daemon -p openergy-ipc -- -D warnings
+python3 crates/daemon/scripts/verify_daemon_audit.py --openergy target/debug/openergy --port-range 25130-25139
+target/debug/openergy-e2e run --scenario-dir "$OE_AUDIT_SCENARIOS" --port-range 25120-25129 --lab-port-range 25140-25159
+```
+
+The actual build/Clippy calls selected the private source copy with
+`--manifest-path "$OE_AUDIT_JOINT_DIR/Cargo.toml"` and reused `target` through
+`CARGO_TARGET_DIR`. The root manifest and lockfile in this worktree stayed
+unchanged. `OE_AUDIT_SCENARIOS` selects the focused catalogue listed in the JSON.
+
+Native startup/port opt-in, macOS wake/capture retry, and the macOS setting rejection
+have source/compile review only here. Linux default-path behavior has source review.
+Native
+runtime calls, desktop input, clipboard access, TCC, the installed app, and live
+port 24800 were forbidden and were not used. A directory-fsync failure after a
+successful rename and clipboard result-channel saturation were not forced.
+Parent integration must run the full suite and platform release checks.
+
+---
+
 # WP6 adversarial verification — 2026-10-21
 
 The final engine passes the complete 73-scenario catalogue, all standalone
@@ -220,13 +308,13 @@ E2E PASSED (14 steps)
 
 Real artifact reports:
 
-- virtual: `/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-wp6-7d14e9mf/report.json`
-- security: `/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-wp6-security-9j1zg21a/report.json`
-- errors: `/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-wp6-errors-9vk98kaz/report.json`
-- memory: `/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-wp6-memory-zjvtyck6/report.json`
-- latency: `/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-wp6-latency-p45ypdt3/report.json`
-- interop: `/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-wp6-interop-rxck9f4k/report.json`
-- app: `/var/folders/s6/_07cr4w13vsg_myjkv9ldpqc0000gn/T/oe-wp6-app-m_7hfm34/output/report.json`
+- virtual: `<temporary-directory>/oe-wp6/report.json`
+- security: `<temporary-directory>/oe-wp6-security/report.json`
+- errors: `<temporary-directory>/oe-wp6-errors/report.json`
+- memory: `<temporary-directory>/oe-wp6-memory/report.json`
+- latency: `<temporary-directory>/oe-wp6-latency/report.json`
+- interop: `<temporary-directory>/oe-wp6-interop/report.json`
+- app: `<temporary-directory>/oe-wp6-app/output/report.json`
 
 ## Docker interoperability and Linux
 

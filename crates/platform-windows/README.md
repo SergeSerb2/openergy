@@ -12,18 +12,25 @@ input capture/injection, screen enumeration and a real clipboard worker. On othe
   Capture decisions return nonzero to swallow remote input. A hidden window
   receives raw relative mouse input. Injected flags and an extra-info tag prevent
   capture of synthetic input. Source buttons retain their logical key identity.
+  Key translation follows the foreground application's keyboard layout, including per-application layout changes.
 - Remote capture clips/parks the cursor and balances its ShowCursor counter.
-  Stop/drop restores the clip, cursor position and visibility and removes hooks.
+  Stop/drop restores the clip, cursor position and visibility, removes hooks,
+  unregisters raw mouse input, and resets capture state before a restart.
 - SendInput uses scan codes and extended flags, VK fallback and Unicode packets.
   It normalizes absolute positions against the entire virtual desktop, supports
   buttons 1–5 and fractional wheel/hwheel accumulation, and retains a pressed
   ledger with shared modifier ownership for release-all. Keys and modifier masks
   use the shared `openergy_protocol::keys` KeyID constants. AltGr uses right Alt and the layout's Ctrl+Alt
   requirements; the capture mask identifies AltGr separately.
-- A message-only clipboard window uses AddClipboardFormatListener. CF_UNICODETEXT
-  converts UTF-16/CRLF to wire UTF-8/LF. `HTML Format` uses byte-correct CF_HTML
+- A message-only clipboard window owns clipboard operations. The kernel sequence
+  number identifies changes synchronously, so own writes cannot echo through
+  delayed notification messages. CF_UNICODETEXT converts UTF-16/CRLF to wire UTF-8/LF. `HTML Format` uses byte-correct CF_HTML
   offsets around the UTF-8 fragment. CF_DIB/CF_DIBV5 carry headerless wire DIBs.
+  Reads and writes check dimensions, pixel bounds, palettes, masks, and V5 profile bounds before use.
   Unsupported PNG input returns an error; protocol bitmap data must use DIB.
+  Unsupported-only native contents return `ClipboardUnavailable`. A successful
+  empty snapshot is a true clear only when the open clipboard has zero formats
+  and its sequence remains stable; busy/read failures remain errors.
 - EnumDisplayMonitors supplies physical rectangles and monitor scale, with virtual
   desktop metrics as fallback. The calling thread uses PerMonitorV2 coordinates.
   The final executable should declare PerMonitorV2 in its manifest. Display
@@ -61,3 +68,6 @@ The daemon now has per-user named-pipe IPC. Windows virtual peers pass real
 control and TLS network checks in both roles. Session-0 startup establishes
 backend initialization only; it does not establish desktop input correctness.
 See [Windows daemon verification](../../docs/verification/windows-daemon-2026-10-21/README.md).
+
+The standalone per-user Windows install/start/stop/uninstall path and current
+audit evidence are documented in [tools/windows](../../tools/windows/README.md).

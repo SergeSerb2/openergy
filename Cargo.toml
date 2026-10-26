@@ -11,12 +11,11 @@ members = [
 version = "0.1.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
-rust-version = "1.85"
+rust-version = "1.99.1"
 
 [workspace.dependencies]
 mio = { version = "1.2", features = ["os-poll", "net", "os-ext"] }
 rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
-rustls-pemfile = "2.2"
 rcgen = "0.14"
 sha2 = "0.11"
 serde = { version = "1.0", features = ["derive"] }
@@ -25,6 +24,9 @@ toml = "0.9"
 mdns-sd = "0.21"
 log = "0.4"
 libc = "0.2"
+
+[patch.crates-io]
+mdns-sd = { path = "vendor/mdns-sd" }
 
 [profile.release]
 opt-level = 3

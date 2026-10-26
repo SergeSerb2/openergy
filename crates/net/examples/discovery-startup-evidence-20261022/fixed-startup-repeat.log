@@ -1,0 +1,41 @@
+STARTUP_METRICS={"cached-addr": 2, "dns-registry-timer": 0, "cache-refresh-ptr": 0, "cached-nsec": 0, "dns-registry-active": 0, "dns-registry-probe": 0, "cache-refresh-addr": 0, "limited-view-states": 1, "browse": 3, "cached-srv": 500, "dns-registry-name-change": 0, "cached-txt": 500, "timer": 7714, "cached-subtype": 0, "cache-refresh-srv-txt": 0, "known-answer-suppression": 0, "cached-ptr": 802}
+STARTUP_METRICS={"cached-addr": 2, "dns-registry-timer": 0, "cache-refresh-ptr": 0, "cached-nsec": 0, "dns-registry-active": 0, "dns-registry-probe": 0, "cache-refresh-addr": 0, "limited-view-states": 1, "browse": 3, "cached-srv": 500, "dns-registry-name-change": 0, "cached-txt": 500, "timer": 8016, "cached-subtype": 0, "cache-refresh-srv-txt": 0, "known-answer-suppression": 0, "cached-ptr": 802}
+STARTUP_METRICS={"cached-addr": 3, "dns-registry-timer": 0, "cache-refresh-ptr": 0, "cached-nsec": 0, "dns-registry-active": 0, "dns-registry-probe": 0, "cache-refresh-addr": 0, "limited-view-states": 1, "browse": 4, "cached-srv": 802, "dns-registry-name-change": 0, "cached-txt": 802, "timer": 9828, "cached-subtype": 0, "cache-refresh-srv-txt": 0, "known-answer-suppression": 0, "cached-ptr": 802}
+CANCELLED_STARTUPS distinct=32 replay_commands=16 replayed_overflows=16 before=1 after_barrier=1 after_settle=1 live_closed=false
+STARTUP_METRICS={"cached-addr": 3, "dns-registry-timer": 0, "cache-refresh-ptr": 0, "cached-nsec": 0, "dns-registry-active": 0, "dns-registry-probe": 0, "cache-refresh-addr": 0, "limited-view-states": 1, "browse": 4, "cached-srv": 802, "dns-registry-name-change": 0, "cached-txt": 803, "timer": 9538, "cached-subtype": 0, "cache-refresh-srv-txt": 0, "known-answer-suppression": 0, "cached-ptr": 802}
+STARTUP_METRICS={"cached-addr": 3, "dns-registry-timer": 0, "cache-refresh-ptr": 0, "cached-nsec": 0, "dns-registry-active": 0, "dns-registry-probe": 0, "cache-refresh-addr": 0, "limited-view-states": 0, "browse": 5, "cached-srv": 802, "dns-registry-name-change": 0, "cached-txt": 803, "timer": 9538, "cached-subtype": 0, "cache-refresh-srv-txt": 0, "known-answer-suppression": 0, "cached-ptr": 802}
+STARTUP_METRICS={"cached-addr": 3, "dns-registry-timer": 0, "cache-refresh-ptr": 0, "cached-nsec": 0, "dns-registry-active": 0, "dns-registry-probe": 0, "cache-refresh-addr": 0, "limited-view-states": 0, "browse": 5, "cached-srv": 802, "dns-registry-name-change": 0, "cached-txt": 803, "timer": 9538, "cached-subtype": 0, "cache-refresh-srv-txt": 0, "known-answer-suppression": 0, "cached-ptr": 802}
+STARTUP_METRICS={"cached-addr": 3, "dns-registry-timer": 0, "cache-refresh-ptr": 0, "cached-nsec": 0, "dns-registry-active": 0, "dns-registry-probe": 0, "cache-refresh-addr": 0, "limited-view-states": 1, "browse": 6, "cached-srv": 802, "dns-registry-name-change": 0, "cached-txt": 803, "timer": 9537, "cached-subtype": 0, "cache-refresh-srv-txt": 0, "known-answer-suppression": 0, "cached-ptr": 802}
+STARTUP_METRICS={"cached-addr": 2, "dns-registry-timer": 0, "cache-refresh-ptr": 0, "cached-nsec": 0, "dns-registry-active": 0, "dns-registry-probe": 0, "cache-refresh-addr": 0, "limited-view-states": 0, "browse": 6, "cached-srv": 801, "dns-registry-name-change": 0, "cached-txt": 801, "timer": 9537, "cached-subtype": 0, "cache-refresh-srv-txt": 0, "known-answer-suppression": 0, "cached-ptr": 801}
+CHECK ordinary-replay-cache-overflow=true
+CHECK live-handle-resolves=true
+CHECK ordinary-replay-commands-drained=true
+CHECK cancelled-distinct-types-retain-no-state=true
+CHECK cancelled-replacements-preserve-identity=true
+CHECK surviving-handle-receives-live-update=true
+CHECK successful-limited-replacement-has-new-identity=true
+CHECK successful-standard-replacement-releases-state=true
+CHECK cancelled-replacements-preserve-standard-identity=true
+CHECK surviving-standard-handle-receives-live-update=true
+CHECK standard-to-limited-replacement=true
+CHECK final-stop-clears-worker-state=true
+CHECK publisher-exits-zero=true
+CHECK worker-shutdown-ack=true
+       13.17 real         1.10 user         0.19 sys
+            16596992  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                1833  page reclaims
+                 132  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                6275  messages sent
+               10554  messages received
+                   0  signals received
+                   5  voluntary context switches
+                7260  involuntary context switches
+          8297622704  instructions retired
+          2332316213  cycles elapsed
+            14107104  peak memory footprint

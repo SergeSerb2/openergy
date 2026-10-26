@@ -1,0 +1,1715 @@
+{
+  "date": "2026-10-22",
+  "timezone": "America/Vancouver",
+  "scope": "Source preparation and isolated checks; no public launch or native desktop acceptance",
+  "suites": [
+    {
+      "name": "round5_full",
+      "source": "a18f2ca functional code; fe44328 notice/prose refresh",
+      "binary_sha256": null,
+      "passed": 117,
+      "failed": 0,
+      "excluded_count": 0,
+      "docker_cases": 30,
+      "cleanup_failures": 0,
+      "scenarios": [
+        {
+          "scenario": "A1-modifier-and-receiver-wheel",
+          "outcome": "PASS",
+          "elapsed_ms": 804,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "A10-unsupported-hello-close",
+          "outcome": "PASS",
+          "elapsed_ms": 433,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "A11-input-backpressure-release",
+          "outcome": "PASS",
+          "elapsed_ms": 1164,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "A12-restart-connected-roles",
+          "outcome": "PASS",
+          "elapsed_ms": 989,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "A2-client-direction-version-heartbeat-sequence",
+          "outcome": "PASS",
+          "elapsed_ms": 3768,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "A3-heartbeat-close-flush",
+          "outcome": "PASS",
+          "elapsed_ms": 1839,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "A4-config-live-rollback",
+          "outcome": "PASS",
+          "elapsed_ms": 647,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "A5-unavailable-clipboard-readback",
+          "outcome": "PASS",
+          "elapsed_ms": 1869,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "A6-clipboard-backpressure",
+          "outcome": "PASS",
+          "elapsed_ms": 593,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "A7-trust-lock-crash",
+          "outcome": "PASS",
+          "elapsed_ms": 464,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "A8-config-save-rollback",
+          "outcome": "PASS",
+          "elapsed_ms": 647,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "A9-tls-trusted-status",
+          "outcome": "PASS",
+          "elapsed_ms": 1192,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "C1-import-client-port",
+          "outcome": "PASS",
+          "elapsed_ms": 1152,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "C2-import-final-identity",
+          "outcome": "PASS",
+          "elapsed_ms": 795,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "C3-clipboard-supported-cap",
+          "outcome": "PASS",
+          "elapsed_ms": 692,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "D2-restart-disconnected-workers",
+          "outcome": "PASS",
+          "elapsed_ms": 1145,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "E1-repeated-ledger-tail",
+          "outcome": "PASS",
+          "elapsed_ms": 638,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "I1-barrier-plain",
+          "outcome": "PASS",
+          "elapsed_ms": 31656,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "I1-barrier-tls",
+          "outcome": "PASS",
+          "elapsed_ms": 32206,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "I1-deskflow-plain",
+          "outcome": "PASS",
+          "elapsed_ms": 31530,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "I1-deskflow-tls",
+          "outcome": "PASS",
+          "elapsed_ms": 32232,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "I2-barrier-plain",
+          "outcome": "PASS",
+          "elapsed_ms": 2252,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "I2-barrier-tls",
+          "outcome": "PASS",
+          "elapsed_ms": 2952,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "I2-barrier-wrong-pin",
+          "outcome": "PASS",
+          "elapsed_ms": 1653,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "I2-deskflow-plain",
+          "outcome": "PASS",
+          "elapsed_ms": 2280,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "I2-deskflow-tls",
+          "outcome": "PASS",
+          "elapsed_ms": 2961,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "I2-deskflow-wrong-pin",
+          "outcome": "PASS",
+          "elapsed_ms": 1634,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "I3-barrier-plain",
+          "outcome": "PASS",
+          "elapsed_ms": 3726,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "I3-barrier-tls",
+          "outcome": "PASS",
+          "elapsed_ms": 4320,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "I3-deskflow-plain",
+          "outcome": "PASS",
+          "elapsed_ms": 3886,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "I3-deskflow-tls",
+          "outcome": "PASS",
+          "elapsed_ms": 4296,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "I4-barrier-plain",
+          "outcome": "PASS",
+          "elapsed_ms": 3376,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "I4-barrier-tls",
+          "outcome": "PASS",
+          "elapsed_ms": 3561,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "I4-deskflow-plain",
+          "outcome": "PASS",
+          "elapsed_ms": 3402,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "I4-deskflow-tls",
+          "outcome": "PASS",
+          "elapsed_ms": 3433,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "I5-barrier-export",
+          "outcome": "PASS",
+          "elapsed_ms": 1675,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "I5-deskflow-export",
+          "outcome": "PASS",
+          "elapsed_ms": 1720,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "L1-barrier-hello",
+          "outcome": "PASS",
+          "elapsed_ms": 1119,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "L1-deskflow-hello",
+          "outcome": "PASS",
+          "elapsed_ms": 1132,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "L2-barrier-clipboard",
+          "outcome": "PASS",
+          "elapsed_ms": 2471,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "L2-deskflow-clipboard",
+          "outcome": "PASS",
+          "elapsed_ms": 2475,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "L3-barrier-pair",
+          "outcome": "PASS",
+          "elapsed_ms": 3641,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "L3-deskflow-pair",
+          "outcome": "PASS",
+          "elapsed_ms": 3597,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "L4-barrier-raw-client",
+          "outcome": "PASS",
+          "elapsed_ms": 1019,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "L4-deskflow-raw-client",
+          "outcome": "PASS",
+          "elapsed_ms": 1046,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "N2-queued-release-reentry",
+          "outcome": "PASS",
+          "elapsed_ms": 352,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "P01-impossible-hello-prefixes",
+          "outcome": "PASS",
+          "elapsed_ms": 359,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "P02-short-established-frame",
+          "outcome": "PASS",
+          "elapsed_ms": 353,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "P03-barrier-held-key-repeat",
+          "outcome": "PASS",
+          "elapsed_ms": 3582,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "P04-legacy-repeat-dialects",
+          "outcome": "PASS",
+          "elapsed_ms": 306,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "P05-modern-repeat-truncated",
+          "outcome": "PASS",
+          "elapsed_ms": 346,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "P06-legacy-repeat-truncated",
+          "outcome": "PASS",
+          "elapsed_ms": 352,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "P07-hostile-field-bounds",
+          "outcome": "PASS",
+          "elapsed_ms": 349,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "P08-deskflow-held-key-repeat",
+          "outcome": "PASS",
+          "elapsed_ms": 3670,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "P09-clipboard-wire-containers",
+          "outcome": "PASS",
+          "elapsed_ms": 356,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q1-primary-screen-name",
+          "outcome": "PASS",
+          "elapsed_ms": 351,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q10-clipboard-policy-cancels-chunks",
+          "outcome": "PASS",
+          "elapsed_ms": 592,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q11-layout-delay-unmapped-edge",
+          "outcome": "PASS",
+          "elapsed_ms": 1559,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q12-client-cannot-disable-heartbeat",
+          "outcome": "PASS",
+          "elapsed_ms": 2065,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q13-clipboard-readback-recovery",
+          "outcome": "PASS",
+          "elapsed_ms": 1875,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q14-client-duplicate-clipboard-formats",
+          "outcome": "PASS",
+          "elapsed_ms": 574,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q15-server-duplicate-clipboard-formats",
+          "outcome": "PASS",
+          "elapsed_ms": 575,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q16-lock-hotkey-grammar",
+          "outcome": "PASS",
+          "elapsed_ms": 1032,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q17-preentry-modifier-mask",
+          "outcome": "PASS",
+          "elapsed_ms": 809,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q18-empty-clipboard-clear",
+          "outcome": "PASS",
+          "elapsed_ms": 1492,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q19-unavailable-is-not-clear",
+          "outcome": "PASS",
+          "elapsed_ms": 1844,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q2-client-setup-clipboard",
+          "outcome": "PASS",
+          "elapsed_ms": 454,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q20-client-unsupported-only-clipboard",
+          "outcome": "PASS",
+          "elapsed_ms": 562,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q20-server-unsupported-only-clipboard",
+          "outcome": "PASS",
+          "elapsed_ms": 489,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q21-client-unsupported-only-local-clipboard",
+          "outcome": "PASS",
+          "elapsed_ms": 1720,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q21-server-unsupported-only-local-clipboard",
+          "outcome": "PASS",
+          "elapsed_ms": 1685,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q3-server-setup-clipboard",
+          "outcome": "PASS",
+          "elapsed_ms": 470,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q4-two-held-shift-keys",
+          "outcome": "PASS",
+          "elapsed_ms": 689,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q5-live-layout-peer-geometry",
+          "outcome": "PASS",
+          "elapsed_ms": 713,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q6-disabled-clipboard-enter",
+          "outcome": "PASS",
+          "elapsed_ms": 1258,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q7-receive-disabled-ownership",
+          "outcome": "PASS",
+          "elapsed_ms": 1885,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q8-zero-button-key-release",
+          "outcome": "PASS",
+          "elapsed_ms": 377,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q9-reconnect-clipboard-sequence",
+          "outcome": "PASS",
+          "elapsed_ms": 929,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "R1-control-files",
+          "outcome": "PASS",
+          "elapsed_ms": 2111,
+          "cleanup_failures": [],
+          "measurements": [
+            {
+              "cpu_percent": 0.0,
+              "kind": "resources",
+              "rss_peak_bytes": 9207808,
+              "window_ms": 291
+            }
+          ]
+        },
+        {
+          "scenario": "R2-lifecycle",
+          "outcome": "PASS",
+          "elapsed_ms": 1151,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "R5-client-config-retains-clipboard",
+          "outcome": "PASS",
+          "elapsed_ms": 388,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "R5-dead-corner-negative-origin",
+          "outcome": "PASS",
+          "elapsed_ms": 815,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "R5-dead-corner-positive-origin",
+          "outcome": "PASS",
+          "elapsed_ms": 814,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "R5-double-tap-stationary-timeout",
+          "outcome": "PASS",
+          "elapsed_ms": 1379,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "R5-server-live-alias-merge",
+          "outcome": "PASS",
+          "elapsed_ms": 328,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "R5-server-live-alias-rename",
+          "outcome": "PASS",
+          "elapsed_ms": 1090,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S0-smoke",
+          "outcome": "PASS",
+          "elapsed_ms": 391,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S1-connect",
+          "outcome": "PASS",
+          "elapsed_ms": 1686,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S10-clipboard-cap",
+          "outcome": "PASS",
+          "elapsed_ms": 1902,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S11-heartbeat",
+          "outcome": "PASS",
+          "elapsed_ms": 2472,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S12-display-change",
+          "outcome": "PASS",
+          "elapsed_ms": 684,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S13-flood",
+          "outcome": "PASS",
+          "elapsed_ms": 9330,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S13-garbage",
+          "outcome": "PASS",
+          "elapsed_ms": 713,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S13-oversized",
+          "outcome": "PASS",
+          "elapsed_ms": 643,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S13-truncated-hello",
+          "outcome": "PASS",
+          "elapsed_ms": 358,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S13-truncated",
+          "outcome": "PASS",
+          "elapsed_ms": 696,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S13-unknown",
+          "outcome": "PASS",
+          "elapsed_ms": 1182,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S14-import-roundtrip",
+          "outcome": "PASS",
+          "elapsed_ms": 790,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S15-resources-latency",
+          "outcome": "PASS",
+          "elapsed_ms": 121697,
+          "cleanup_failures": [],
+          "measurements": [
+            {
+              "cpu_percent": 0.04996320168559854,
+              "kind": "resources",
+              "rss_peak_bytes": 9420800,
+              "window_ms": 60044
+            },
+            {
+              "cpu_percent": 0.049945941981145284,
+              "kind": "resources",
+              "rss_peak_bytes": 8224768,
+              "window_ms": 60064
+            },
+            {
+              "kind": "capture_to_recorded_upper_bound",
+              "max_ms": 2.068875,
+              "p50_ms": 0.793167,
+              "p95_ms": 0.929625,
+              "p99_ms": 1.3745420000000002,
+              "samples": 1000
+            }
+          ]
+        },
+        {
+          "scenario": "S16-permissions",
+          "outcome": "PASS",
+          "elapsed_ms": 700,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S17-healthy",
+          "outcome": "PASS",
+          "elapsed_ms": 997,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S17-same-fingerprint",
+          "outcome": "PASS",
+          "elapsed_ms": 1263,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S17-stale",
+          "outcome": "PASS",
+          "elapsed_ms": 1638,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S18-click-numbering",
+          "outcome": "PASS",
+          "elapsed_ms": 669,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S19-config-patch",
+          "outcome": "PASS",
+          "elapsed_ms": 728,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S2-edge-mapping",
+          "outcome": "PASS",
+          "elapsed_ms": 699,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S2-wire-order",
+          "outcome": "PASS",
+          "elapsed_ms": 295,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S20-parent-exit",
+          "outcome": "PASS",
+          "elapsed_ms": 753,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S20-parent-off",
+          "outcome": "PASS",
+          "elapsed_ms": 409,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S21-fingerprint-import",
+          "outcome": "PASS",
+          "elapsed_ms": 1218,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S3-input-order",
+          "outcome": "PASS",
+          "elapsed_ms": 655,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S4-disconnect-release",
+          "outcome": "PASS",
+          "elapsed_ms": 931,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S5-disconnect-release",
+          "outcome": "PASS",
+          "elapsed_ms": 927,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S6-trust-approval",
+          "outcome": "PASS",
+          "elapsed_ms": 1647,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S7-wrong-pin",
+          "outcome": "PASS",
+          "elapsed_ms": 789,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S8-text-clipboard",
+          "outcome": "PASS",
+          "elapsed_ms": 1287,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S9-large-dib",
+          "outcome": "PASS",
+          "elapsed_ms": 2402,
+          "cleanup_failures": [],
+          "measurements": []
+        }
+      ]
+    },
+    {
+      "name": "final_virtual",
+      "source": "655e59f69c490841dc2cd2c8128eca51545c15f7",
+      "binary_sha256": "1405abcc08a4f8b175d4116a413ac0426c5e708578e9e250487ff13d18ae97e5",
+      "passed": 88,
+      "failed": 0,
+      "excluded_count": 30,
+      "docker_cases": 0,
+      "cleanup_failures": 0,
+      "scenarios": [
+        {
+          "scenario": "A1-modifier-and-receiver-wheel",
+          "outcome": "PASS",
+          "elapsed_ms": 883,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "A10-unsupported-hello-close",
+          "outcome": "PASS",
+          "elapsed_ms": 377,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "A11-input-backpressure-release",
+          "outcome": "PASS",
+          "elapsed_ms": 1106,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "A12-restart-connected-roles",
+          "outcome": "PASS",
+          "elapsed_ms": 938,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "A2-client-direction-version-heartbeat-sequence",
+          "outcome": "PASS",
+          "elapsed_ms": 3847,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "A3-heartbeat-close-flush",
+          "outcome": "PASS",
+          "elapsed_ms": 1854,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "A4-config-live-rollback",
+          "outcome": "PASS",
+          "elapsed_ms": 703,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "A5-unavailable-clipboard-readback",
+          "outcome": "PASS",
+          "elapsed_ms": 1949,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "A6-clipboard-backpressure",
+          "outcome": "PASS",
+          "elapsed_ms": 639,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "A7-trust-lock-crash",
+          "outcome": "PASS",
+          "elapsed_ms": 437,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "A8-config-save-rollback",
+          "outcome": "PASS",
+          "elapsed_ms": 700,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "A9-tls-trusted-status",
+          "outcome": "PASS",
+          "elapsed_ms": 1194,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "C1-import-client-port",
+          "outcome": "PASS",
+          "elapsed_ms": 1092,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "C2-import-final-identity",
+          "outcome": "PASS",
+          "elapsed_ms": 794,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "C3-clipboard-supported-cap",
+          "outcome": "PASS",
+          "elapsed_ms": 678,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "D2-restart-disconnected-workers",
+          "outcome": "PASS",
+          "elapsed_ms": 1134,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "E1-repeated-ledger-tail",
+          "outcome": "PASS",
+          "elapsed_ms": 685,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "N2-queued-release-reentry",
+          "outcome": "PASS",
+          "elapsed_ms": 311,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "P01-impossible-hello-prefixes",
+          "outcome": "PASS",
+          "elapsed_ms": 352,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "P02-short-established-frame",
+          "outcome": "PASS",
+          "elapsed_ms": 303,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "P04-legacy-repeat-dialects",
+          "outcome": "PASS",
+          "elapsed_ms": 296,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "P05-modern-repeat-truncated",
+          "outcome": "PASS",
+          "elapsed_ms": 375,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "P06-legacy-repeat-truncated",
+          "outcome": "PASS",
+          "elapsed_ms": 319,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "P07-hostile-field-bounds",
+          "outcome": "PASS",
+          "elapsed_ms": 369,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "P09-clipboard-wire-containers",
+          "outcome": "PASS",
+          "elapsed_ms": 358,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q1-primary-screen-name",
+          "outcome": "PASS",
+          "elapsed_ms": 357,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q10-clipboard-policy-cancels-chunks",
+          "outcome": "PASS",
+          "elapsed_ms": 575,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q11-layout-delay-unmapped-edge",
+          "outcome": "PASS",
+          "elapsed_ms": 1624,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q12-client-cannot-disable-heartbeat",
+          "outcome": "PASS",
+          "elapsed_ms": 2112,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q13-clipboard-readback-recovery",
+          "outcome": "PASS",
+          "elapsed_ms": 1870,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q14-client-duplicate-clipboard-formats",
+          "outcome": "PASS",
+          "elapsed_ms": 567,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q15-server-duplicate-clipboard-formats",
+          "outcome": "PASS",
+          "elapsed_ms": 564,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q16-lock-hotkey-grammar",
+          "outcome": "PASS",
+          "elapsed_ms": 1263,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q17-preentry-modifier-mask",
+          "outcome": "PASS",
+          "elapsed_ms": 800,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q18-empty-clipboard-clear",
+          "outcome": "PASS",
+          "elapsed_ms": 1421,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q19-unavailable-is-not-clear",
+          "outcome": "PASS",
+          "elapsed_ms": 1832,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q2-client-setup-clipboard",
+          "outcome": "PASS",
+          "elapsed_ms": 454,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q20-client-unsupported-only-clipboard",
+          "outcome": "PASS",
+          "elapsed_ms": 503,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q20-server-unsupported-only-clipboard",
+          "outcome": "PASS",
+          "elapsed_ms": 506,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q21-client-unsupported-only-local-clipboard",
+          "outcome": "PASS",
+          "elapsed_ms": 1715,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q21-server-unsupported-only-local-clipboard",
+          "outcome": "PASS",
+          "elapsed_ms": 1710,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q3-server-setup-clipboard",
+          "outcome": "PASS",
+          "elapsed_ms": 417,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q4-two-held-shift-keys",
+          "outcome": "PASS",
+          "elapsed_ms": 719,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q5-live-layout-peer-geometry",
+          "outcome": "PASS",
+          "elapsed_ms": 726,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q6-disabled-clipboard-enter",
+          "outcome": "PASS",
+          "elapsed_ms": 1294,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q7-receive-disabled-ownership",
+          "outcome": "PASS",
+          "elapsed_ms": 1862,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q8-zero-button-key-release",
+          "outcome": "PASS",
+          "elapsed_ms": 353,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "Q9-reconnect-clipboard-sequence",
+          "outcome": "PASS",
+          "elapsed_ms": 941,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "R1-control-files",
+          "outcome": "PASS",
+          "elapsed_ms": 2149,
+          "cleanup_failures": [],
+          "measurements": [
+            {
+              "cpu_percent": 0.0,
+              "kind": "resources",
+              "rss_peak_bytes": 9256960,
+              "window_ms": 285
+            }
+          ]
+        },
+        {
+          "scenario": "R2-lifecycle",
+          "outcome": "PASS",
+          "elapsed_ms": 1166,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "R5-client-config-retains-clipboard",
+          "outcome": "PASS",
+          "elapsed_ms": 397,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "R5-dead-corner-negative-origin",
+          "outcome": "PASS",
+          "elapsed_ms": 813,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "R5-dead-corner-positive-origin",
+          "outcome": "PASS",
+          "elapsed_ms": 774,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "R5-double-tap-stationary-timeout",
+          "outcome": "PASS",
+          "elapsed_ms": 1415,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "R5-incoming-clipboard-cancellation",
+          "outcome": "PASS",
+          "elapsed_ms": 1448,
+          "cleanup_failures": [],
+          "measurements": [
+            {
+              "cpu_percent": 0.0,
+              "kind": "resources",
+              "rss_peak_bytes": 9289728,
+              "window_ms": 1062
+            }
+          ]
+        },
+        {
+          "scenario": "R5-server-live-alias-merge",
+          "outcome": "PASS",
+          "elapsed_ms": 360,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "R5-server-live-alias-rename",
+          "outcome": "PASS",
+          "elapsed_ms": 1072,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S0-smoke",
+          "outcome": "PASS",
+          "elapsed_ms": 384,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S1-connect",
+          "outcome": "PASS",
+          "elapsed_ms": 1694,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S10-clipboard-cap",
+          "outcome": "PASS",
+          "elapsed_ms": 1930,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S11-heartbeat",
+          "outcome": "PASS",
+          "elapsed_ms": 2428,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S12-display-change",
+          "outcome": "PASS",
+          "elapsed_ms": 694,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S13-flood",
+          "outcome": "PASS",
+          "elapsed_ms": 9190,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S13-garbage",
+          "outcome": "PASS",
+          "elapsed_ms": 695,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S13-oversized",
+          "outcome": "PASS",
+          "elapsed_ms": 699,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S13-truncated-hello",
+          "outcome": "PASS",
+          "elapsed_ms": 367,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S13-truncated",
+          "outcome": "PASS",
+          "elapsed_ms": 778,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S13-unknown",
+          "outcome": "PASS",
+          "elapsed_ms": 1172,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S14-import-roundtrip",
+          "outcome": "PASS",
+          "elapsed_ms": 818,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S15-resources-latency",
+          "outcome": "PASS",
+          "elapsed_ms": 121784,
+          "cleanup_failures": [],
+          "measurements": [
+            {
+              "cpu_percent": 0.06659705202895352,
+              "kind": "resources",
+              "rss_peak_bytes": 9420800,
+              "window_ms": 60062
+            },
+            {
+              "cpu_percent": 0.049953903509444904,
+              "kind": "resources",
+              "rss_peak_bytes": 7946240,
+              "window_ms": 60055
+            },
+            {
+              "kind": "capture_to_recorded_upper_bound",
+              "max_ms": 2.2234160000000003,
+              "p50_ms": 0.8369169999999999,
+              "p95_ms": 0.9883330000000001,
+              "p99_ms": 1.233625,
+              "samples": 1000
+            }
+          ]
+        },
+        {
+          "scenario": "S16-permissions",
+          "outcome": "PASS",
+          "elapsed_ms": 712,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S17-healthy",
+          "outcome": "PASS",
+          "elapsed_ms": 974,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S17-same-fingerprint",
+          "outcome": "PASS",
+          "elapsed_ms": 1223,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S17-stale",
+          "outcome": "PASS",
+          "elapsed_ms": 1669,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S18-click-numbering",
+          "outcome": "PASS",
+          "elapsed_ms": 678,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S19-config-patch",
+          "outcome": "PASS",
+          "elapsed_ms": 696,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S2-edge-mapping",
+          "outcome": "PASS",
+          "elapsed_ms": 722,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S2-wire-order",
+          "outcome": "PASS",
+          "elapsed_ms": 307,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S20-parent-exit",
+          "outcome": "PASS",
+          "elapsed_ms": 749,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S20-parent-off",
+          "outcome": "PASS",
+          "elapsed_ms": 416,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S21-fingerprint-import",
+          "outcome": "PASS",
+          "elapsed_ms": 1227,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S3-input-order",
+          "outcome": "PASS",
+          "elapsed_ms": 696,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S4-disconnect-release",
+          "outcome": "PASS",
+          "elapsed_ms": 946,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S5-disconnect-release",
+          "outcome": "PASS",
+          "elapsed_ms": 961,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S6-trust-approval",
+          "outcome": "PASS",
+          "elapsed_ms": 1688,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S7-wrong-pin",
+          "outcome": "PASS",
+          "elapsed_ms": 803,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S8-text-clipboard",
+          "outcome": "PASS",
+          "elapsed_ms": 1211,
+          "cleanup_failures": [],
+          "measurements": []
+        },
+        {
+          "scenario": "S9-large-dib",
+          "outcome": "PASS",
+          "elapsed_ms": 2410,
+          "cleanup_failures": [],
+          "measurements": []
+        }
+      ]
+    }
+  ],
+  "full_binary_hash_limit": "The old full-run hash was not captured before the next build replaced its output.",
+  "pinned_final": {
+    "source": "655e59f69c490841dc2cd2c8128eca51545c15f7",
+    "files": {
+      "openergy": "1405abcc08a4f8b175d4116a413ac0426c5e708578e9e250487ff13d18ae97e5",
+      "openergy-e2e": "a7cc57ddccbbc0d039e11872ca604d6ebc77680d7d79d25bb2d594ccc3f3993d"
+    },
+    "archive_bytes": 3612577,
+    "archive_sha256": "1e7f2f8912ae6cf33b59c12f2f5ccc89f58326c0989c6e1b0913f7e418fc85d1",
+    "app_regular_file_bytes": 6324424,
+    "app_regular_file_count": 9
+  },
+  "final_package": {
+    "source": "655e59f69c490841dc2cd2c8128eca51545c15f7",
+    "dirty": false,
+    "signing": "adhoc",
+    "notarized": false,
+    "published": false,
+    "staged_and_extracted_smoke": "PASS",
+    "extracted_codesign": "PASS",
+    "headless_app_steps_passed": 25,
+    "headless_preflight_refusals_passed": 7,
+    "native_ui_driven": false
+  },
+  "boundary_checks": {
+    "implementation_offline_import": {
+      "passed_scenarios": 22,
+      "cli_calls": 43,
+      "source": "ccf9847 / integrated 6f6a99c"
+    },
+    "independent_offline_review": {
+      "source": "6f6a99cf4dbdc953d845bcd1ca1b1d37d760c010",
+      "findings": [],
+      "binary_sha256": "22f116f5c54df27cbae2d11b7479770c56aa02060e0bfa7996f66d0aa0dc04f6",
+      "verified_source_inputs": 112,
+      "scenarios": 27,
+      "cli_calls": 67,
+      "virtual_starts": 6,
+      "accepted_serialized_bytes": [
+        16777215,
+        16777216
+      ],
+      "rejected_serialized_bytes": [
+        16777217
+      ]
+    },
+    "parent_runtime_save_replays": {
+      "config_peer_flows_passed": 2,
+      "trust_revoke_cases_passed": 6,
+      "source": "2052b58",
+      "binary_sha256": "32b47905d63132e138a8ea9f86bd18744cf3c7da18187067d87891f2e0f63810"
+    }
+  },
+  "stationary_edge_cpu": {
+    "baseline_source": "dfed3e9792731eae1c654f8effd0314c9bc1d0fa",
+    "fixed_source": "5b02f8c272db4b69bae9e816a3c14f0c7045ecb6",
+    "baseline_binary_sha256": "8168cb76dcdf023a33151bdfd77a1c1ae4582fbbfcff222695088de0d580208d",
+    "fixed_binary_sha256": "9f97798e62d3a12fc623ef304662dcc69fc6397c43c8a266d95b137d33d19372",
+    "samples": {
+      "resources-before": [
+        {
+          "cpu_percent": 0.34905333753943807,
+          "kind": "resources",
+          "rss_peak_bytes": 9453568,
+          "window_ms": 20054
+        }
+      ],
+      "resources-after": [
+        {
+          "cpu_percent": 0.04987080510621951,
+          "kind": "resources",
+          "rss_peak_bytes": 9388032,
+          "window_ms": 20051
+        }
+      ]
+    },
+    "limits": "One 20-second process CPU sample per version; virtual stationary edge workload only."
+  },
+  "resource_evidence": "../../../crates/net/examples/r5-evidence/README.md",
+  "review_fixes": [
+    {
+      "round": "5 runtime/delivery",
+      "finding": "Archive case-alias bypass",
+      "response": "a18f2ca; real ZIP/tar CLI rejection; no upload"
+    },
+    {
+      "round": "5 input bounds",
+      "finding": "Runtime write overflow and compact revoke failure",
+      "response": "1ef54fc; real peer and CLI paths; independent review passed"
+    },
+    {
+      "round": "5 resources/case alias",
+      "finding": null,
+      "response": "Repeated TCP/Xvfb/archive paths; no remaining P1/P2 in scope"
+    },
+    {
+      "round": "6 input fixes",
+      "finding": "Offline import could persist oversized TOML",
+      "response": "6f6a99c; shared limit checks before writes/stdout"
+    },
+    {
+      "round": "7 offline fix",
+      "finding": null,
+      "response": "27 scenarios; no concrete P1/P2 or material regression"
+    }
+  ],
+  "verification_corrections": [
+    {
+      "attempt": "prior virtual 88-case run",
+      "passed": 87,
+      "failed": 1,
+      "source": "2052b58",
+      "cause": "Short allocation check inherited a steady-state CPU gate. RAM and separate 60-second idle CPU checks passed.",
+      "response": "895efb5 sets explicit short-check CPU allowance; final 88-case run passes."
+    },
+    {
+      "attempt": "earlier overlapping verification",
+      "result": "cancelled",
+      "cause": "A package build could replace the binary under verification.",
+      "response": "Never counted as pass; final binary copies were pinned and hashed."
+    }
+  ],
+  "limits": [
+    "Virtual IPC-to-receiver latency is not physical input-to-screen latency.",
+    "Synergy native and Openergy virtual runtime workloads were not matched.",
+    "The full Docker suite preceded later config/trust/import fixes; final virtual and focused cross-platform checks cover those changes.",
+    "No installed-state, native input/clipboard, desktop, services, TCC, login items, or port 24800 used.",
+    "Historical personal paths remain in reachable history.",
+    "No unit tests or mocks were added."
+  ],
+  "platform_followups": {
+    "windows": {
+      "report": "../../../tools/windows/ROUND5-1ef54fc.md",
+      "base": "1ef54fcf8e866a5799ba38a42674ddeff8452b5c",
+      "base_inventory_files": 514,
+      "overlay_source": "ccf98477b6485dcd29d384c0444ec19c4ca76a6f",
+      "overlay_paths": [
+        "crates/config/src/cli.rs",
+        "crates/config/src/lib.rs",
+        "crates/daemon/src/main.rs"
+      ],
+      "overlay_binary_sha256": "6a9c83fd4902fd943ea1e184d49be266728e8bb004be58d566967c4e8a7a0b76",
+      "base_checks": "pinned MSVC release/strict Clippy, real private pipe/ACL/TLS/config/trust bounds",
+      "overlay_checks": "pinned release/strict Clippy, normal and oversized offline imports",
+      "owned_processes_remaining": 0,
+      "native_desktop_acceptance": false
+    },
+    "linux": {
+      "report": "../../../crates/platform-linux/FINAL-R5-VERIFICATION-2026-10-22.md",
+      "base": "1ef54fcf8e866a5799ba38a42674ddeff8452b5c",
+      "base_inventory_files": 514,
+      "overlay_source": "ccf98477b6485dcd29d384c0444ec19c4ca76a6f",
+      "overlay_paths": [
+        "crates/config/src/cli.rs",
+        "crates/config/src/lib.rs",
+        "crates/daemon/src/main.rs"
+      ],
+      "overlay_binary_sha256": "ce89bc95477bdeeb38d351dff8f0d03b2fd752c81a7156355dad67571cf28b82",
+      "base_external_scenarios_passed": 10,
+      "base_cli_bounds_checks_passed": 4,
+      "overlay_cli_checks_passed": 9,
+      "base_build": "ARM64 Rust1.99.1 locked workspace release and strict Clippy",
+      "overlay_build": "ARM64 locked daemon release and scoped strict Clippy",
+      "native_desktop_acceptance": false,
+      "xvfb_checks": "image expansion refusals, text/HTML/image clipboard, INCR, RGBA pixels"
+    }
+  },
+  "static_checks": {
+    "python_ast_scripts": 26,
+    "shell_syntax_scripts": 9,
+    "actionlint": "PASS",
+    "local_markdown_links": "PASS",
+    "changed_personal_path_matches": 0,
+    "notices_freshness": "PASS",
+    "no_external_package_version_changes": true,
+    "gitleaks": {
+      "version": "8.30.1",
+      "source_commit": "37178e5",
+      "log_scope": "all reachable refs",
+      "commits_scanned": 251,
+      "bytes_scanned": 28482050,
+      "leaks": 0,
+      "later_change": "Only this scan metadata is added afterward."
+    },
+    "markdown_files_checked": 71
+  }
+}

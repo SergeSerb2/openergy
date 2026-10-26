@@ -1,0 +1,13 @@
+SCOPE resolver=real_std_to_socket_addrs host=localhost ports=25100..25118 discovery=OFF tls=OFF native=NONE slow_lookup_control=UNAVAILABLE
+QUEUE mode=shutdown round=0 jobs=16 admission_us=220 overflow_rejected=PASS dns_budget_rejections=16 recovery_admission_us=1926 recovery_connected_us=2514 recovery_roundtrip_us=3795 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS
+QUEUE mode=disconnect_all round=1 jobs=16 admission_us=45 overflow_rejected=PASS dns_budget_rejections=3 recovery_admission_us=435 recovery_connected_us=975 recovery_roundtrip_us=2202 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS
+QUEUE mode=shutdown round=2 jobs=16 admission_us=22 overflow_rejected=PASS dns_budget_rejections=2 recovery_admission_us=228 recovery_connected_us=534 recovery_roundtrip_us=1751 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS
+QUEUE mode=disconnect_all round=3 jobs=16 admission_us=23 overflow_rejected=PASS dns_budget_rejections=1 recovery_admission_us=9 recovery_connected_us=647 recovery_roundtrip_us=1919 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS
+QUEUE mode=deadline round=0 jobs=16 admission_us=21 overflow_rejected=PASS dns_budget_rejections=0 recovery_admission_us=5 recovery_connected_us=568 recovery_roundtrip_us=1809 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS
+QUEUE mode=deadline round=1 jobs=16 admission_us=22 overflow_rejected=PASS dns_budget_rejections=0 recovery_admission_us=4 recovery_connected_us=437 recovery_roundtrip_us=1657 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS
+QUEUE mode=deadline round=2 jobs=16 admission_us=23 overflow_rejected=PASS dns_budget_rejections=0 recovery_admission_us=2 recovery_connected_us=446 recovery_roundtrip_us=1680 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS
+QUEUE mode=deadline round=3 jobs=16 admission_us=24 overflow_rejected=PASS dns_budget_rejections=0 recovery_admission_us=1 recovery_connected_us=625 recovery_roundtrip_us=1846 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS
+FAILURE case=invalid_hostname events=[ConnectFailed { host: "invalid\0hostname", port: 25117, error: "dns_failed: file name contained an unexpected NUL byte" }] classified_dns=PASS
+FAILURE case=refused_localhost events=[ConnectFailed { host: "localhost", port: 25117, error: "connect_refused: Connection refused (os error 61)" }] classified_refused=PASS
+CONTRACTS same_driver=PASS same_handle=PASS same_waker=PASS disconnect_all_keeps_listener=PASS shutdown_closes_listener=PASS reconfigure=PASS invalid_reconfigure_recovery=PASS localhost=PASS numeric_loopback=PASS driver_drop=PASS
+RESULT queue_and_lifecycle=PASS refused_localhost_control=PASS slow_dns_head_of_line_regression=NOT_MEASURED

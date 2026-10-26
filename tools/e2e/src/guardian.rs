@@ -61,6 +61,11 @@ pub fn finish() {
 }
 fn bounded(mut command: Command, timeout: Duration) {
     command.stdin(Stdio::null()).stdout(Stdio::null()).stderr(Stdio::null());
+    #[cfg(unix)]
+    {
+        use std::os::unix::process::CommandExt;
+        command.process_group(0);
+    }
     let Ok(mut child) = command.spawn() else { return };
     let deadline = Instant::now() + timeout;
     loop {
@@ -68,6 +73,8 @@ fn bounded(mut command: Command, timeout: Duration) {
             return;
         }
         if Instant::now() > deadline {
+            #[cfg(unix)]
+            let _ = signal_group(child.id(), "KILL");
             let _ = child.kill();
             let _ = child.wait();
             return;
@@ -119,8 +126,13 @@ pub fn guardian_main() {
                 .env("LAB_NAME", &name)
                 .env("LAB_PORT_RANGE", format!("{port}-{port}"));
             bounded(down, Duration::from_secs(10));
-            let mut rm = Command::new("docker");
-            rm.args(["rm", &name]);
+            // The script checks the exact owning directory before any removal.
+            // Never fall through to an unchecked `docker rm` after down fails.
+            let mut rm = Command::new("bash");
+            rm.arg(std::path::Path::new(dir).join("lab.sh"))
+                .arg("remove")
+                .env("LAB_NAME", &name)
+                .env("LAB_PORT_RANGE", format!("{port}-{port}"));
             bounded(rm, Duration::from_secs(5));
         }
     }

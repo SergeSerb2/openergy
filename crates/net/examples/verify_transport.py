@@ -2,6 +2,7 @@
 """Run real CLI processes and real TCP/TLS sockets. No unit tests or substitutes.
 Artifacts, including encrypted relay captures, remain in the printed temp dir.
 """
+import argparse
 import os
 from pathlib import Path
 import re
@@ -12,13 +13,30 @@ import threading
 import time
 
 ROOT = Path(__file__).resolve().parents[3]
-BIN = ROOT / "target/release/openergy"
-PEER = ROOT / "target/release/examples/tls_peer"
+parser = argparse.ArgumentParser()
+parser.add_argument("--openergy", type=Path, default=ROOT / "target/release/openergy")
+parser.add_argument("--peer", type=Path, default=ROOT / "target/release/examples/tls_peer")
+parser.add_argument("--port-base", type=int, default=24970)
+options = parser.parse_args()
+BIN, PEER = options.openergy.resolve(), options.peer.resolve()
+PORT, HOLD_PORT, RELAY_PORT = range(options.port_base, options.port_base + 3)
+if not any(low <= PORT and RELAY_PORT <= high for low, high in [(24970, 24979), (24980, 24989), (25080, 25099)]):
+    parser.error("three ports must fit an assigned integration range")
 ART = Path(tempfile.mkdtemp(prefix="oe-wp4-"))
 children = []
 
+def cli_command(args):
+    args = list(map(str, args))
+    index = args.index("--dir")
+    directory = Path(args[index + 1])
+    args[index:index + 2] = ["--config", str(directory / "config.toml")]
+    env = dict(os.environ, OPENERGY_CONFIG_DIR=str(directory), OPENERGY_TLS_DIR=str(directory / "tls"),
+               OPENERGY_SOCKET=str(directory / "ctl.sock"), OPENERGY_DISABLE_DISCOVERY="1")
+    return [str(BIN), *args], env
+
 def cli(*args):
-    return subprocess.check_output([str(BIN), *map(str, args)], text=True).strip()
+    command, env = cli_command(args)
+    return subprocess.check_output(command, env=env, text=True).strip()
 
 def identity(name):
     d = ART / name
@@ -65,18 +83,18 @@ try:
     require(cli("trust", "list", "--dir", a) == "", "new trust list is not empty")
     cli("trust", "approve", bfp, "--dir", a)
     cli("trust", "approve", afp, "--dir", b)
-    s, sl = start("trusted-server", "server", a, 24970)
+    s, sl = start("trusted-server", "server", a, PORT)
     wait_text(sl, "LISTENING")
-    c, cl = start("trusted-client", "client", b, 24970)
+    c, cl = start("trusted-client", "client", b, PORT)
     st, ct = finish(s, sl), finish(c, cl)
     require("delivered=1" in st and "delivered=1" in ct, "two-way TLS frames missing")
     require("HELD" not in st + ct, "pre-seeded peer held")
     print("TLS trusted two-way frames=PASS", flush=True)
 
     cli("trust", "revoke", afp, "--dir", b)
-    s, sl = start("held-api-server", "server", a, 24971)
+    s, sl = start("held-api-server", "server", a, HOLD_PORT)
     wait_text(sl, "LISTENING")
-    c, cl = start("held-api-client", "client", b, 24971, "--approve-after-ms", "700")
+    c, cl = start("held-api-client", "client", b, HOLD_PORT, "--approve-after-ms", "700")
     wait_text(cl, "HELD")
     require("FRAME" not in cl.read_text(), "held peer delivered a frame")
     st, ct = finish(s, sl), finish(c, cl)
@@ -84,9 +102,9 @@ try:
     print("S6 HELD no frames; API approve -> two-way frames=PASS", flush=True)
 
     cli("trust", "revoke", bfp, "--dir", a)
-    s, sl = start("server-held-api-server", "server", a, 24971, "--approve-after-ms", "700")
+    s, sl = start("server-held-api-server", "server", a, HOLD_PORT, "--approve-after-ms", "700")
     wait_text(sl, "LISTENING")
-    c, cl = start("server-held-api-client", "client", b, 24971)
+    c, cl = start("server-held-api-client", "client", b, HOLD_PORT)
     wait_text(sl, "HELD")
     require("FRAME" not in sl.read_text(), "server-held peer delivered before approval")
     st, ct = finish(s, sl), finish(c, cl)
@@ -95,9 +113,9 @@ try:
     print("server-side HELD -> API approve; only trusted-clients updated=PASS", flush=True)
 
     cli("trust", "revoke", afp, "--dir", b)
-    s, sl = start("held-file-server", "server", a, 24971)
+    s, sl = start("held-file-server", "server", a, HOLD_PORT)
     wait_text(sl, "LISTENING")
-    c, cl = start("held-file-client", "client", b, 24971)
+    c, cl = start("held-file-client", "client", b, HOLD_PORT)
     wait_text(cl, "HELD")
     time.sleep(.6)
     require("FRAME" not in cl.read_text(), "held peer delivered before file approval")
@@ -106,17 +124,17 @@ try:
     require("delivered=1" in ct and "delivered=1" in st, "file approval failed")
     print("HELD trust file reload -> two-way frames=PASS", flush=True)
 
-    s, sl = start("wrong-pin-server", "server", a, 24970)
+    s, sl = start("wrong-pin-server", "server", a, PORT)
     wait_text(sl, "LISTENING")
     capture = bytearray()
     ready = threading.Event()
     def relay():
         with socket.socket() as listener:
             listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            listener.bind(("127.0.0.1", 24972))
+            listener.bind(("127.0.0.1", RELAY_PORT))
             listener.listen(1)
             ready.set()
-            with listener.accept()[0] as down, socket.create_connection(("127.0.0.1",24970)) as up:
+            with listener.accept()[0] as down, socket.create_connection(("127.0.0.1",PORT)) as up:
                 def pump(source, target):
                     try:
                         while True:
@@ -138,35 +156,35 @@ try:
     worker = threading.Thread(target=relay)
     worker.start()
     ready.wait(timeout=2)
-    c, cl = start("wrong-pin-client", "client", b, 24972, "--pin", "00" * 32)
+    c, cl = start("wrong-pin-client", "client", b, RELAY_PORT, "--pin", "00" * 32)
     ct = finish(c,cl)
     worker.join(timeout=3)
     # The server terminates after the failed handshake, so no long-lived listener remains.
     st = finish(s,sl)
-    require("CONNECT_FAILED TlsFailure" in ct and "delivered=0" in ct, "wrong pin not refused")
+    require("CONNECT_FAILED" in ct and "fingerprint mismatch" in ct and "delivered=0" in ct, "wrong pin not refused")
     require(b"Synergy\x00\x01\x00\x08" not in capture, "plaintext application hello leaked")
     require(len(capture) > 300, "empty TLS capture")
     (ART/"wrong-pin.tls").write_bytes(capture)
     print(f"S7 wrong pin refused; captured_tls_bytes={len(capture)} plaintext_hello=absent", flush=True)
 
     cli("trust", "revoke", afp, "--dir", b)
-    s, sl = start("expiry-server", "server", a, 24970)
+    s, sl = start("expiry-server", "server", a, PORT)
     wait_text(sl, "LISTENING")
-    c, cl = start("expiry-client", "client", b, 24970, "--hold-ms", "500")
+    c, cl = start("expiry-client", "client", b, PORT, "--hold-ms", "500")
     st, ct = finish(s, sl), finish(c, cl)
     require("HELD" in ct and "DISCONNECTED TlsFailure delivered=0" in ct, "held deadline failed")
     print("HELD deadline -> close with no frame=PASS", flush=True)
 
-    s, sl = start("plain-server", "server", a, 24970, "--plain")
+    s, sl = start("plain-server", "server", a, PORT, "--plain")
     wait_text(sl, "LISTENING")
-    c, cl = start("plain-client", "client", b, 24970, "--plain")
+    c, cl = start("plain-client", "client", b, PORT, "--plain")
     st, ct = finish(s,sl), finish(c,cl)
     require("tls=false" in ct and "delivered=1" in st and "delivered=1" in ct, "explicit plaintext failed")
     print("explicit plaintext two-way frames=PASS", flush=True)
 
-    s, sl = start("hostile-server", "server", a, 24970, "--plain")
+    s, sl = start("hostile-server", "server", a, PORT, "--plain")
     wait_text(sl, "LISTENING")
-    with socket.create_connection(("127.0.0.1",24970)) as sock:
+    with socket.create_connection(("127.0.0.1",PORT)) as sock:
         sock.sendall((4 * 1024 * 1024 + 1).to_bytes(4,"big"))
         sock.settimeout(2)
         # The legitimate server hello can already be in flight before the bad prefix.
@@ -184,9 +202,11 @@ try:
     result = cli("trust", "import-synergy", src, "--dir", imported)
     listing = cli("trust", "list", "--dir", imported)
     require("imported 2" in result and len(listing.splitlines()) == 2, "Synergy import/dedup failed")
-    bad = subprocess.run([str(BIN),"trust","approve","invalid","--dir",str(imported)],capture_output=True)
+    command, env = cli_command(["trust", "approve", "invalid", "--dir", imported])
+    bad = subprocess.run(command, env=env, capture_output=True)
     require(bad.returncode != 0, "invalid fingerprint accepted")
-    unknown = subprocess.run([str(BIN),"fingerprint","--unknown","--dir",str(imported)],capture_output=True)
+    command, env = cli_command(["fingerprint", "--unknown", "--dir", imported])
+    unknown = subprocess.run(command, env=env, capture_output=True)
     require(unknown.returncode == 2, "unknown flag did not return usage status 2")
     print("trust import/dedup/SHA1 ignored/invalid CLI/usage status 2=PASS", flush=True)
     print(f"ARTIFACTS {ART}", flush=True)

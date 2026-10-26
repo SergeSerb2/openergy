@@ -2,13 +2,14 @@
 //! information only. mdns-sd owns its own internal worker thread; this wrapper
 //! is polled by the daemon io thread and does not create a forwarding thread.
 use crate::{identity::failed, DiscoveredPeer, Fingerprint, NetError};
-use mdns_sd::{DaemonEvent, IfKind, Receiver, ServiceDaemon, ServiceEvent, ServiceInfo};
+use mdns_sd::{DaemonEvent, IfKind, LimitedBrowse, Receiver, ServiceDaemon, ServiceInfo};
 use std::{
     collections::BTreeMap,
     time::{Duration, Instant},
 };
 
 pub const SERVICE_TYPE: &str = "_openergy._tcp.local.";
+const BROWSE_RETRY: Duration = Duration::from_secs(1);
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum DiscoveryScope {
     Loopback,
@@ -17,13 +18,14 @@ pub enum DiscoveryScope {
 
 pub struct Discovery {
     daemon: ServiceDaemon,
-    events: Option<Receiver<ServiceEvent>>,
+    events: Option<LimitedBrowse>,
     monitor: Receiver<DaemonEvent>,
     peers: BTreeMap<String, DiscoveredPeer>,
     published: Option<String>,
     scope: DiscoveryScope,
     dirty: bool,
     last_snapshot: Instant,
+    browse_retry: Option<Instant>,
 }
 impl Discovery {
     /// Loopback excludes all interfaces before browsing or advertising. A custom
@@ -43,7 +45,7 @@ impl Discovery {
             }
             let monitor = daemon.monitor().map_err(failed)?;
             let events = if browse {
-                Some(daemon.browse(SERVICE_TYPE).map_err(failed)?)
+                Some(daemon.browse_limited(SERVICE_TYPE, 64).map_err(failed)?)
             } else {
                 None
             };
@@ -65,6 +67,7 @@ impl Discovery {
             scope,
             dirty: false,
             last_snapshot: Instant::now() - Duration::from_secs(1),
+            browse_retry: None,
         })
     }
     pub fn advertise(&mut self, name: &str, port: u16, fp: Fingerprint) -> Result<(), NetError> {
@@ -91,16 +94,31 @@ impl Discovery {
     }
     /// Returns changed snapshots at most once per second.
     pub fn poll(&mut self) -> Option<Vec<DiscoveredPeer>> {
-        for _ in 0..256 {
-            let Some(events) = &self.events else {
-                break;
-            };
-            let Ok(event) = events.try_recv() else {
-                break;
-            };
-            match event {
-                ServiceEvent::ServiceResolved(info) => {
-                    if self.peers.len() < 64 || self.peers.contains_key(info.get_fullname()) {
+        if self.browse_retry.is_some_and(|deadline| Instant::now() >= deadline) {
+            // A closed subscription can be recreated on the existing worker.
+            // Back off even if its bounded command queue is still full.
+            self.browse_retry = Some(Instant::now() + BROWSE_RETRY);
+            match self.daemon.browse_limited(SERVICE_TYPE, 64) {
+                Ok(events) => {
+                    self.events = Some(events);
+                    self.browse_retry = None;
+                }
+                Err(error) => log::warn!("mDNS discovery browse retry failed: {error}"),
+            }
+        }
+        if let Some(events) = &self.events {
+            if events.is_closed() {
+                self.events = None;
+                self.browse_retry = Some(Instant::now() + BROWSE_RETRY);
+                log::warn!("mDNS discovery subscription closed; retrying");
+                self.dirty |= !self.peers.is_empty();
+                self.peers.clear();
+            } else if let Some(snapshot) = events.take_snapshot() {
+                // Replace the complete selected view. Absence conveys removal;
+                // merging would retain peers lost while the caller was paused.
+                let peers = snapshot
+                    .into_iter()
+                    .map(|info| {
                         let peer = DiscoveredPeer {
                             name: info
                                 .get_property_val_str("name")
@@ -113,16 +131,13 @@ impl Discovery {
                                 .filter(|s| s.len() == 16 && s.bytes().all(|b| b.is_ascii_hexdigit()))
                                 .map(str::to_owned),
                         };
-                        if self.peers.get(info.get_fullname()) != Some(&peer) {
-                            self.peers.insert(info.get_fullname().to_owned(), peer);
-                            self.dirty = true;
-                        }
-                    }
+                        (info.get_fullname().to_owned(), peer)
+                    })
+                    .collect();
+                if self.peers != peers {
+                    self.peers = peers;
+                    self.dirty = true;
                 }
-                ServiceEvent::ServiceRemoved(_, name) => {
-                    self.dirty |= self.peers.remove(&name).is_some();
-                }
-                _ => {}
             }
         }
         if self.dirty && self.last_snapshot.elapsed() >= Duration::from_secs(1) {
@@ -146,11 +161,15 @@ impl Discovery {
             })
             .collect()
     }
+    /// Requests worker shutdown; success means submission, not a worker join.
+    /// mdns-sd can also enqueue Exit and then report a wake-socket error.
     pub fn shutdown(&mut self) -> Result<(), NetError> {
-        if let Some(name) = self.published.take() {
-            self.daemon.unregister(&name).map_err(failed)?;
-        }
-        self.daemon.stop_browse(SERVICE_TYPE).map_err(failed)?;
+        self.events = None;
+        self.browse_retry = None;
+        self.published = None;
+        // Exit already unregisters services and stops browsing on the owned
+        // worker. Separate cleanup commands can fail before Exit is submitted
+        // (e.g. no descriptor for mdns-sd's temporary command-wake socket).
         self.daemon.shutdown().map_err(failed)?;
         Ok(())
     }

@@ -1,0 +1,191 @@
+# Requirement: Unrelated live settings preserve an accepted clipboard transfer.
+name = "R5-client-config-retains-clipboard"
+requirement = "A scroll setting change between clipboard Data and End keeps the transfer; clipboard policy changes still cancel it and a fresh transfer recovers."
+timeout_ms = 1200
+
+[[node]]
+id = "server"
+kind = "raw"
+role = "server"
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "hello"
+
+[[step]]
+do = "raw_expect"
+node = "server"
+builder = "hello_back"
+name = "client"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "QINF"
+
+[[step]]
+do = "raw_expect"
+node = "server"
+builder = "code"
+code = "DINF"
+payload_only = true
+framed = true
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "CIAK"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "options"
+values = [1212240468, 0]
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "000000000001000000023137"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "000000000002000000110000000100000000000000056672657368"
+
+# CALV is a wire-order barrier: the client processed the preceding chunks.
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "CALV"
+
+[[step]]
+do = "raw_expect"
+node = "server"
+builder = "code"
+code = "CALV"
+payload_only = true
+framed = true
+
+[[step]]
+do = "config_patch"
+node = "client"
+patch = { input = { scroll_sensitivity = 2.0 } }
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "00000000000300000000"
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+text = "fresh"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "000000000001000000023137"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "000000000002000000110000000100000000000000057374616c65"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "CALV"
+
+[[step]]
+do = "raw_expect"
+node = "server"
+builder = "code"
+code = "CALV"
+payload_only = true
+framed = true
+
+[[step]]
+do = "config_patch"
+node = "client"
+patch = { clipboard = { receive = false } }
+
+[[step]]
+do = "config_patch"
+node = "client"
+patch = { clipboard = { receive = true } }
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "00000000000300000000"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "CALV"
+
+[[step]]
+do = "raw_expect"
+node = "server"
+builder = "code"
+code = "CALV"
+payload_only = true
+framed = true
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+text = "fresh"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "000000000001000000023137"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "000000000002000000110000000100000000000000056166746572"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "00000000000300000000"
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+text = "after"

@@ -1,0 +1,134 @@
+{
+  "candidate_commit": "330d83f2f168644035c4a99ef3484675214d0e65",
+  "integrated_commit": "f0f2ee5b7701add5a6fcdf040b563a072a905865",
+  "transformations": [
+    "Replace own absolute checkout and private temporary paths with <repo> and <private>.",
+    "Use portable cargo command in reproduction instructions.",
+    "Replace local ps username with <user>.",
+    "Remove trailing whitespace and keep one final newline."
+  ],
+  "result_values_changed": false,
+  "originals": "Retained privately and in the original local candidate commit; no history rewrite.",
+  "files": [
+    {
+      "path": "crates/net/DISCOVERY-REPLAY-20261022.md",
+      "original_sha256": "985140057bfaa9b38ca0112231bb5b687d6d5f50a7a525d3d72c955093c86772",
+      "public_copy_sha256": "1cbe8e07ef19946e6cef392bf28cf7a06bf32d9691124a7ef4755b84d2fbdf75"
+    },
+    {
+      "path": "crates/net/examples/discovery-replay-evidence-20261022/baseline-shutdown-1/exhausted-drop.after-release.txt",
+      "original_sha256": "7d0c8ecacd4e55c3d1913f8e531abcae00388414a02d3d9cc2214cd47f08ae37",
+      "public_copy_sha256": "98d988eed5840f1d56b116a72635d3d8cbd967dc84e584f48b7e1ab166eb801c"
+    },
+    {
+      "path": "crates/net/examples/discovery-replay-evidence-20261022/baseline-shutdown-1/exhausted-drop.baseline.txt",
+      "original_sha256": "741489aaf812ee70f2b4d0be937834d938ff5133df2bea8b3932801189826927",
+      "public_copy_sha256": "d1f3008d9a916ece2c9219b79a88c649d605d6e6d62912348840a8db75929d4d"
+    },
+    {
+      "path": "crates/net/examples/discovery-replay-evidence-20261022/baseline-shutdown-1/exhausted-drop.live.txt",
+      "original_sha256": "7078e4630c192bbdbe00f9982258185fdf53b258bb98068164fb8db89056fd02",
+      "public_copy_sha256": "2ba572aa85fb4e30bfa040733ff95b027bd2fd19a1708a68ba57771b0956de10"
+    },
+    {
+      "path": "crates/net/examples/discovery-replay-evidence-20261022/baseline-shutdown-1/exhausted-shutdown.after-release.txt",
+      "original_sha256": "5f592a680033002c5d691ce54bec1a8db154215fc7ac38acae153ad1c11a6a0e",
+      "public_copy_sha256": "82b7cfce5a7ab0c78847472dd7a12a2df5c3f7d4d9c40a898e8aa6acfc297d9f"
+    },
+    {
+      "path": "crates/net/examples/discovery-replay-evidence-20261022/baseline-shutdown-1/exhausted-shutdown.baseline.txt",
+      "original_sha256": "8606e4532711cfd8dd616705eac6513bfb75e29093fa5d7e87510024c96ea4b3",
+      "public_copy_sha256": "8d86cd9dd84207b2eee440bd0ffec7503ab77874dab827d626dbdca39abbc8fd"
+    },
+    {
+      "path": "crates/net/examples/discovery-replay-evidence-20261022/baseline-shutdown-1/exhausted-shutdown.live.txt",
+      "original_sha256": "c536aaced68b59d6cbaa46216252a09ae8ba1522d0b42fefd46b9909ab63cfa1",
+      "public_copy_sha256": "aa5cda45b8a0a5ff239530d4b14a7ca280eb6fb2efde3dad27ae750fab79f024"
+    },
+    {
+      "path": "crates/net/examples/discovery-replay-evidence-20261022/baseline-shutdown-1/normal-drop.after-release.txt",
+      "original_sha256": "017ff6ec04d96dfb32e01e49130889ea5f1c02f8b4ed4070088349bea5d3c40f",
+      "public_copy_sha256": "94148498572bdaf43e7dac7e28fc3a6abb6be31e4c73225349f17e76602e0037"
+    },
+    {
+      "path": "crates/net/examples/discovery-replay-evidence-20261022/baseline-shutdown-1/normal-drop.baseline.txt",
+      "original_sha256": "2f75eeb7a695b7065725f42667e87904fde9a6327fb682a539500a4ebf5c777b",
+      "public_copy_sha256": "3d3ddeafc723e7119b9fa1d98b8541c0f0bf2b3eeb3329347c340ea7d6e37418"
+    },
+    {
+      "path": "crates/net/examples/discovery-replay-evidence-20261022/baseline-shutdown-1/normal-drop.live.txt",
+      "original_sha256": "0ba5721b370b9e4b44e2a790bfe1a54debdabdbf59b20f07fa483a9257c54fac",
+      "public_copy_sha256": "d3aa311a4ab1f76e76d2629e994c3712d8fd694bab20031adcfc2d1c5b9dfe99"
+    },
+    {
+      "path": "crates/net/examples/discovery-replay-evidence-20261022/build-scoped-final.log",
+      "original_sha256": "798f75ded161c5a06e3c762cddcae1ebc74df610084b277aae4a8d652914e9b2",
+      "public_copy_sha256": "705ff7f1d5277092e951f3ddfca7bb7d108beb082c7a46ffbed69db0d69386b4"
+    },
+    {
+      "path": "crates/net/examples/discovery-replay-evidence-20261022/clippy-scoped-final.log",
+      "original_sha256": "fcf171f8631fbe3b89aa4c3a611f7a9177acae79243274b161817a816b0bacd5",
+      "public_copy_sha256": "3614aa80c166be2b8998addd1ba222abce9a59c557e69c8230e14896ae29d7c2"
+    },
+    {
+      "path": "crates/net/examples/discovery-replay-evidence-20261022/fixed-shutdown-2/exhausted-drop.after-release.txt",
+      "original_sha256": "e842720f30de859bc380df1283a07ee78ed7c26f4ee8213e71c5ac062da443d1",
+      "public_copy_sha256": "e3966c239d3b065f11a12fa52b3ea8447a68d9a6b8fed01c692d8fdfa8a51710"
+    },
+    {
+      "path": "crates/net/examples/discovery-replay-evidence-20261022/fixed-shutdown-2/exhausted-drop.baseline.txt",
+      "original_sha256": "e842720f30de859bc380df1283a07ee78ed7c26f4ee8213e71c5ac062da443d1",
+      "public_copy_sha256": "e3966c239d3b065f11a12fa52b3ea8447a68d9a6b8fed01c692d8fdfa8a51710"
+    },
+    {
+      "path": "crates/net/examples/discovery-replay-evidence-20261022/fixed-shutdown-2/exhausted-drop.live.txt",
+      "original_sha256": "e66a04878a0f782de6315b7ec450ac082a1c33ca28bb2414723dceeef7b3c8f7",
+      "public_copy_sha256": "0977137a1f9911dafb4ed8d4aaf998c3a57dc8e73a5ab4e7af534804949c59e3"
+    },
+    {
+      "path": "crates/net/examples/discovery-replay-evidence-20261022/fixed-shutdown-2/exhausted-shutdown.after-release.txt",
+      "original_sha256": "5d264b571c9b96681bf727138845dcc716aab186d18f57a257178e0245fc0809",
+      "public_copy_sha256": "fb53e2a10eb2eb535462c4b3611becea86fecf6419dabbe1f67bddf701c8a9c2"
+    },
+    {
+      "path": "crates/net/examples/discovery-replay-evidence-20261022/fixed-shutdown-2/exhausted-shutdown.baseline.txt",
+      "original_sha256": "5d264b571c9b96681bf727138845dcc716aab186d18f57a257178e0245fc0809",
+      "public_copy_sha256": "fb53e2a10eb2eb535462c4b3611becea86fecf6419dabbe1f67bddf701c8a9c2"
+    },
+    {
+      "path": "crates/net/examples/discovery-replay-evidence-20261022/fixed-shutdown-2/exhausted-shutdown.live.txt",
+      "original_sha256": "6a6d5fe497f5bb02ba028d6a09b95b40d3e94ac76c390f7be3ed106ed24b1e18",
+      "public_copy_sha256": "2dbfd28b73d0235431897a5a64bc1fe3ff2ce3e540013bf17d7051130688a2f8"
+    },
+    {
+      "path": "crates/net/examples/discovery-replay-evidence-20261022/fixed-shutdown-2/normal-drop.after-release.txt",
+      "original_sha256": "0770f1d6cc1e8c08d7038a644c353bc5f5830e5c9f29f0cf63d89394de8d9fdd",
+      "public_copy_sha256": "017c1a93bdf347c56b8a82653039fe1e15b0270af44c4ebb573463a049785eb7"
+    },
+    {
+      "path": "crates/net/examples/discovery-replay-evidence-20261022/fixed-shutdown-2/normal-drop.baseline.txt",
+      "original_sha256": "bda1dde5237866d50b4867ef97995ceeeb264201e311eab4f77307412124e058",
+      "public_copy_sha256": "3c89265e0c670005705ef8bba1b00db710adcb1aa0a57753e408241764a14b1e"
+    },
+    {
+      "path": "crates/net/examples/discovery-replay-evidence-20261022/fixed-shutdown-2/normal-drop.live.txt",
+      "original_sha256": "05c8a74319a51db6d2d415c1c92c07f22c0b3fe075acbc203c5fb1d2f79c728e",
+      "public_copy_sha256": "e7b3523f681dc8f5d94cb7582d12fa257353136fbc7de2a2936d5345224bf38c"
+    },
+    {
+      "path": "crates/net/examples/discovery-replay-evidence-20261022/fixed-shutdown-2/normal-shutdown.after-release.txt",
+      "original_sha256": "a8ba390ce4747d25aa6f7aa4ca4b99c8386d611e4086f934f6bfd3374d2eab70",
+      "public_copy_sha256": "75a498b0b5d129c0cc24d3000000f5cb4e8fd625d4595531dc2d877806bb853e"
+    },
+    {
+      "path": "crates/net/examples/discovery-replay-evidence-20261022/fixed-shutdown-2/normal-shutdown.baseline.txt",
+      "original_sha256": "a8ba390ce4747d25aa6f7aa4ca4b99c8386d611e4086f934f6bfd3374d2eab70",
+      "public_copy_sha256": "75a498b0b5d129c0cc24d3000000f5cb4e8fd625d4595531dc2d877806bb853e"
+    },
+    {
+      "path": "crates/net/examples/discovery-replay-evidence-20261022/fixed-shutdown-2/normal-shutdown.live.txt",
+      "original_sha256": "30976342ccd9d48482f907081b33261ef38da68fe4dd63c1a78c944abbf9b0a0",
+      "public_copy_sha256": "566fe35692569da0b64e5da18356dfd1c7149ade28f61f845657f00498a30e51"
+    }
+  ]
+}

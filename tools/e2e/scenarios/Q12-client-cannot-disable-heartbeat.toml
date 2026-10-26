@@ -1,0 +1,72 @@
+# Requirement: Only the server sets the session heartbeat interval.
+name = "Q12-client-cannot-disable-heartbeat"
+requirement = "Client-originated CROP/DSOP cannot stop server CALV or its dead-peer timeout."
+timeout_ms = 2500
+
+[[node]]
+id = "server"
+role = "server"
+config = { screen = [{ name = "server", rect = { x = 0, y = 0, w = 1920, h = 1080 } }, { name = "client", rect = { x = 1920, y = 0, w = 1920, h = 1080 } }] }
+
+[[node]]
+id = "probe"
+kind = "raw"
+role = "client"
+remote = "server"
+name = "client"
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "hello_back"
+name = "client"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "screen_info"
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "DSOP"
+payload_only = true
+framed = true
+scan = true
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "code"
+code = "CROP"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "options"
+values = [1212240468, 0]
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "CALV"
+payload_only = true
+framed = true
+scan = true
+timeout_ms = 1000
+
+[[step]]
+do = "raw_expect_closed"
+node = "probe"
+
+[[step]]
+do = "assert_status"
+node = "server"
+fields = { active_screen = "server", peers = { "$len" = 0 } }

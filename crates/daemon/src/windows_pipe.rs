@@ -21,14 +21,17 @@ use windows_sys::Win32::{
     },
     Storage::FileSystem::{
         CreateFileW, ReadFile, WriteFile, FILE_FLAG_FIRST_PIPE_INSTANCE, FILE_FLAG_OVERLAPPED, OPEN_EXISTING,
-        PIPE_ACCESS_DUPLEX,
+        PIPE_ACCESS_DUPLEX, SECURITY_IDENTIFICATION, SECURITY_SQOS_PRESENT,
     },
     System::{
         Pipes::{
-            ConnectNamedPipe, CreateNamedPipeW, WaitNamedPipeW, PIPE_READMODE_BYTE, PIPE_REJECT_REMOTE_CLIENTS,
-            PIPE_TYPE_BYTE, PIPE_WAIT,
+            ConnectNamedPipe, CreateNamedPipeW, GetNamedPipeServerProcessId, WaitNamedPipeW, PIPE_READMODE_BYTE,
+            PIPE_REJECT_REMOTE_CLIENTS, PIPE_TYPE_BYTE, PIPE_WAIT,
         },
-        Threading::{CreateEventW, GetCurrentProcess, OpenProcessToken, WaitForSingleObject},
+        Threading::{
+            CreateEventW, GetCurrentProcess, OpenProcess, OpenProcessToken, WaitForSingleObject,
+            PROCESS_QUERY_LIMITED_INFORMATION,
+        },
         IO::{CancelIoEx, GetOverlappedResult, OVERLAPPED},
     },
 };
@@ -45,9 +48,13 @@ fn owned(handle: HANDLE) -> io::Result<OwnedHandle> {
     }
 }
 fn user_sid() -> io::Result<String> {
+    // Safety: GetCurrentProcess returns a borrowed pseudo-handle for this process.
+    process_sid(unsafe { GetCurrentProcess() })
+}
+fn process_sid(process: HANDLE) -> io::Result<String> {
     let mut token = null_mut();
-    // Safety: our process pseudo-handle is valid and token is writable output storage.
-    if unsafe { OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &mut token) } == 0 {
+    // Safety: process is a live process handle and token is writable output storage.
+    if unsafe { OpenProcessToken(process, TOKEN_QUERY, &mut token) } == 0 {
         return Err(io::Error::last_os_error());
     }
     let token = owned(token)?;
@@ -89,18 +96,24 @@ fn user_sid() -> io::Result<String> {
 }
 /// A socket path selects a stable pipe within the current user's namespace.
 fn pipe_name(path: &Path, sid: &str) -> io::Result<String> {
-    let text = path.to_string_lossy();
+    let text = path
+        .to_str()
+        .ok_or_else(|| io::Error::other("pipe path is not valid Unicode"))?;
     if text.contains('\0') {
         return Err(io::Error::other("pipe path contains NUL"));
     }
     if let Some(name) = text.strip_prefix(r"\\.\pipe\") {
-        if name.is_empty() || name.contains(['/', '\\']) {
+        if name.is_empty() || name.contains(['/', '\\']) || text.encode_utf16().count() > 256 {
             return Err(io::Error::other("invalid local pipe name"));
         }
-        return Ok(text.into_owned());
+        return Ok(text.to_owned());
     }
     let absolute = std::path::absolute(path)?;
-    let normalized = absolute.to_string_lossy().replace('/', "\\").to_ascii_lowercase();
+    let normalized = absolute
+        .to_str()
+        .ok_or_else(|| io::Error::other("absolute pipe path is not valid Unicode"))?
+        .replace('/', "\\")
+        .to_ascii_lowercase();
     let mut hash = 0xcbf29ce484222325u64;
     for byte in sid.bytes().chain(Some(0)).chain(normalized.bytes()) {
         hash = (hash ^ u64::from(byte)).wrapping_mul(0x100000001b3);
@@ -292,7 +305,9 @@ impl Stream {
                     0,
                     null(),
                     OPEN_EXISTING,
-                    FILE_FLAG_OVERLAPPED,
+                    // The control protocol never needs impersonation. A squatted pipe
+                    // must not receive the CLI's token with impersonation privileges.
+                    FILE_FLAG_OVERLAPPED | SECURITY_SQOS_PRESENT | SECURITY_IDENTIFICATION,
                     null_mut(),
                 )
             });
@@ -312,6 +327,21 @@ impl Stream {
                 Err(e) => return Err(e),
             }
         };
+        let mut pid = 0;
+        // The server DACL protects real listeners, but cannot authenticate a
+        // pipe created first by another account with a permissive DACL.
+        // Safety: handle is a connected local pipe and pid is writable output.
+        if unsafe { GetNamedPipeServerProcessId(handle.as_raw_handle(), &mut pid) } == 0 {
+            return Err(io::Error::last_os_error());
+        }
+        // Safety: query-only access retains the server process while inspecting its token.
+        let process = owned(unsafe { OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, 0, pid) })?;
+        if process_sid(process.as_raw_handle())? != sid {
+            return Err(io::Error::new(
+                io::ErrorKind::PermissionDenied,
+                "named pipe server belongs to another user",
+            ));
+        }
         Ok(Self {
             handle,
             read_timeout: Duration::from_secs(10),

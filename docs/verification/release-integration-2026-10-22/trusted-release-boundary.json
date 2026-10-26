@@ -1,0 +1,1759 @@
+{
+  "base": "2b902d9921d3dd5c93e997edb0b0335594fcde44",
+  "review_url": "https://github.com/SergeSerb2/openergy/pull/2#discussion_r4346064408",
+  "date": "2026-10-22",
+  "python": "Python 3.15.0",
+  "files_sha256": {
+    ".github/workflows/draft-release.yml": "9933bcf2fbcf58307561352534d34fd407f7a3160c9ddbeea54b3409a1a48393",
+    ".github/workflows/verify.yml": "5c85c1950b03892c8cefef749591227f7087b93f05c91da32e4c7819243b3998",
+    "tools/release/release.py": "6a742a05b043f48a96112c5859dce9f47a96652491d785777bbc2ffcc836ac1d",
+    "tools/release/trusted_release.py": "97c19c9a422df5dff39051dff72c335993669fef928db31c5e271ceccf882dbe",
+    "docs/releasing.md": "34a6a68891fa44c9501d80d0578afeae2fd78b0e7bf8d04c838df35d576f3eff"
+  },
+  "groups": [
+    {
+      "name": "archive-provenance-regression",
+      "cases": 48,
+      "passed": 48,
+      "results": [
+        {
+          "case": "baseline-mismatched-embedded",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/baseline/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/baseline-mismatch"
+          ],
+          "result": "release: draft needs all four native platform archives; no partial release"
+        },
+        {
+          "case": "zip-existing-mac-payload",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/zip-existing-mac-payload"
+          ],
+          "result": "release: draft needs all four native platform archives; no partial release"
+        },
+        {
+          "case": "tar-existing-mac-payload",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/tar-existing-mac-payload"
+          ],
+          "result": "release: draft needs all four native platform archives; no partial release"
+        },
+        {
+          "case": "zip-semantic-json-equality",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/zip-semantic-json-equality"
+          ],
+          "result": "release: draft needs all four native platform archives; no partial release"
+        },
+        {
+          "case": "zip-dos-regular",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/zip-dos-regular"
+          ],
+          "result": "release: draft needs all four native platform archives; no partial release"
+        },
+        {
+          "case": "zip-exactly-1MiB",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/zip-exactly-1MiB"
+          ],
+          "result": "release: draft needs all four native platform archives; no partial release"
+        },
+        {
+          "case": "zip-mismatched-embedded",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/zip-mismatched-embedded"
+          ],
+          "result": "release: archive BUILD.json does not match its provenance sidecar"
+        },
+        {
+          "case": "zip-missing",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/zip-missing"
+          ],
+          "result": "release: archive needs exactly one BUILD.json at its root"
+        },
+        {
+          "case": "zip-nested-only",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/zip-nested-only"
+          ],
+          "result": "release: archive needs exactly one BUILD.json at its root"
+        },
+        {
+          "case": "zip-duplicate-root",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/zip-duplicate-root"
+          ],
+          "result": "release: archive needs exactly one BUILD.json at its root"
+        },
+        {
+          "case": "zip-root-plus-alias",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/zip-root-plus-alias"
+          ],
+          "result": "release: archive needs exactly one BUILD.json at its root"
+        },
+        {
+          "case": "zip-root-plus-nested",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/zip-root-plus-nested"
+          ],
+          "result": "release: archive needs exactly one BUILD.json at its root"
+        },
+        {
+          "case": "zip-root-plus-backslash-alias",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/zip-root-plus-backslash-alias"
+          ],
+          "result": "release: archive needs exactly one BUILD.json at its root"
+        },
+        {
+          "case": "zip-oversize",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/zip-oversize"
+          ],
+          "result": "release: archive BUILD.json exceeds 1 MiB"
+        },
+        {
+          "case": "zip-malformed-json",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/zip-malformed-json"
+          ],
+          "result": "release: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)"
+        },
+        {
+          "case": "zip-truncated",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/zip-truncated"
+          ],
+          "result": "release: invalid release archive: File is not a zip file"
+        },
+        {
+          "case": "tar-exactly-1MiB",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/tar-exactly-1MiB"
+          ],
+          "result": "release: draft needs all four native platform archives; no partial release"
+        },
+        {
+          "case": "tar-mismatched-embedded",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/tar-mismatched-embedded"
+          ],
+          "result": "release: archive BUILD.json does not match its provenance sidecar"
+        },
+        {
+          "case": "tar-missing",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/tar-missing"
+          ],
+          "result": "release: archive needs exactly one BUILD.json at its root"
+        },
+        {
+          "case": "tar-nested-only",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/tar-nested-only"
+          ],
+          "result": "release: archive needs exactly one BUILD.json at its root"
+        },
+        {
+          "case": "tar-duplicate-root",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/tar-duplicate-root"
+          ],
+          "result": "release: archive needs exactly one BUILD.json at its root"
+        },
+        {
+          "case": "tar-root-plus-alias",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/tar-root-plus-alias"
+          ],
+          "result": "release: archive needs exactly one BUILD.json at its root"
+        },
+        {
+          "case": "tar-root-plus-nested",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/tar-root-plus-nested"
+          ],
+          "result": "release: archive needs exactly one BUILD.json at its root"
+        },
+        {
+          "case": "tar-root-plus-backslash-alias",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/tar-root-plus-backslash-alias"
+          ],
+          "result": "release: archive needs exactly one BUILD.json at its root"
+        },
+        {
+          "case": "tar-oversize",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/tar-oversize"
+          ],
+          "result": "release: archive BUILD.json exceeds 1 MiB"
+        },
+        {
+          "case": "tar-malformed-json",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/tar-malformed-json"
+          ],
+          "result": "release: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)"
+        },
+        {
+          "case": "tar-truncated",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/tar-truncated"
+          ],
+          "result": "release: invalid release archive: Compressed file ended before the end-of-stream marker was reached"
+        },
+        {
+          "case": "zip-symlink",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/zip-symlink"
+          ],
+          "result": "release: archive BUILD.json must be a regular file"
+        },
+        {
+          "case": "zip-unix-directory",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/zip-unix-directory"
+          ],
+          "result": "release: archive BUILD.json must be a regular file"
+        },
+        {
+          "case": "zip-dos-directory",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/zip-dos-directory"
+          ],
+          "result": "release: archive BUILD.json must be a regular file"
+        },
+        {
+          "case": "tar-symlink",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/tar-symlink"
+          ],
+          "result": "release: archive BUILD.json must be a regular file"
+        },
+        {
+          "case": "tar-hardlink",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/tar-hardlink"
+          ],
+          "result": "release: archive BUILD.json must be a regular file"
+        },
+        {
+          "case": "tar-directory",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/tar-directory"
+          ],
+          "result": "release: archive BUILD.json must be a regular file"
+        },
+        {
+          "case": "tar-fifo",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/tar-fifo"
+          ],
+          "result": "release: archive BUILD.json must be a regular file"
+        },
+        {
+          "case": "zip-with-tar-content",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/zip-with-tar-content"
+          ],
+          "result": "release: invalid release archive: File is not a zip file"
+        },
+        {
+          "case": "tar-with-zip-content",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/tar-with-zip-content"
+          ],
+          "result": "release: invalid release archive: not a gzip file"
+        },
+        {
+          "case": "tar-without-gzip",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/tar-without-gzip"
+          ],
+          "result": "release: invalid release archive: not a gzip file"
+        },
+        {
+          "case": "checksum-mismatch",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/checksum-mismatch"
+          ],
+          "result": "release: artifact checksum mismatch"
+        },
+        {
+          "case": "two-archive-candidates",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/two-archive-candidates"
+          ],
+          "result": "release: each platform needs exactly one archive"
+        },
+        {
+          "case": "sidecar-version",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/sidecar-version"
+          ],
+          "result": "release: artifact provenance does not match this draft release"
+        },
+        {
+          "case": "sidecar-commit",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/sidecar-commit"
+          ],
+          "result": "release: artifact provenance does not match this draft release"
+        },
+        {
+          "case": "sidecar-tag",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/sidecar-tag"
+          ],
+          "result": "release: artifact provenance does not match this draft release"
+        },
+        {
+          "case": "sidecar-dirty",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/sidecar-dirty"
+          ],
+          "result": "release: artifact provenance does not match this draft release"
+        },
+        {
+          "case": "sidecar-third_party_notices",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/sidecar-third_party_notices"
+          ],
+          "result": "release: artifact provenance does not match this draft release"
+        },
+        {
+          "case": "sidecar-signing",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/sidecar-signing"
+          ],
+          "result": "release: artifact provenance does not match this draft release"
+        },
+        {
+          "case": "sidecar-notarized",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/sidecar-notarized"
+          ],
+          "result": "release: artifact provenance does not match this draft release"
+        },
+        {
+          "case": "sidecar-target",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/sidecar-target"
+          ],
+          "result": "release: artifact provenance does not match this draft release"
+        },
+        {
+          "case": "empty-artifacts",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "/private$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "/private$REGRESSION_LAB/cases/empty"
+          ],
+          "result": "release: draft needs all four native platform archives; no partial release"
+        }
+      ]
+    },
+    {
+      "name": "archive-case-alias-regression",
+      "cases": 4,
+      "passed": 4,
+      "results": [
+        {
+          "case": "zip-control",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "$REGRESSION_LAB/aliases/zip-control"
+          ],
+          "result": "release: draft needs all four native platform archives; no partial release"
+        },
+        {
+          "case": "zip-alias",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "$REGRESSION_LAB/aliases/zip-alias"
+          ],
+          "result": "release: archive needs exactly one BUILD.json at its root"
+        },
+        {
+          "case": "tar.gz-control",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "$REGRESSION_LAB/aliases/tar.gz-control"
+          ],
+          "result": "release: draft needs all four native platform archives; no partial release"
+        },
+        {
+          "case": "tar.gz-alias",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "$REGRESSION_LAB/fixed/tools/release/release.py",
+            "draft",
+            "--tag",
+            "v0.1.0",
+            "--artifacts",
+            "$REGRESSION_LAB/aliases/tar.gz-alias"
+          ],
+          "result": "release: archive needs exactly one BUILD.json at its root"
+        }
+      ]
+    },
+    {
+      "name": "trusted-source-and-publisher",
+      "cases": 25,
+      "passed": 25,
+      "results": [
+        {
+          "case": "reviewed-non-HEAD-annotated-tag",
+          "exit": 0,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$TRUST_LAB/trusted/tools/release/trusted_release.py",
+            "validate",
+            "--tag",
+            "v0.1.0",
+            "--trusted-commit",
+            "adc20a6f26558a5380d90a35faa9551eb090b044",
+            "--default-branch",
+            "main",
+            "--output",
+            "$TRUST_LAB/source.json",
+            "--github-output",
+            "$TRUST_LAB/github-output"
+          ],
+          "result": "{\"rust\": \"1.99.1\", \"source_commit\": \"8d72ad5a6fc39b0aa9f3bedf90e4bfe2276d10bc\", \"tag\": \"v0.1.0\", \"tag_object\": \"00ff7e7133083b2d397e4bc41d7bd806d9af03ca\", \"trusted_commit\": \"adc20a6f26558a5380d90a35faa9551eb090b044\", \"version\": \"0.1.0\"}"
+        },
+        {
+          "case": "invalid-tag-'main'",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$TRUST_LAB/trusted/tools/release/trusted_release.py",
+            "validate",
+            "--tag",
+            "main",
+            "--trusted-commit",
+            "adc20a6f26558a5380d90a35faa9551eb090b044",
+            "--default-branch",
+            "main"
+          ],
+          "result": "trusted release: tag must be a literal version tag such as v0.1.0; branches and expressions are refused"
+        },
+        {
+          "case": "invalid-tag-'refs/tags/v0.1.0'",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$TRUST_LAB/trusted/tools/release/trusted_release.py",
+            "validate",
+            "--tag",
+            "refs/tags/v0.1.0",
+            "--trusted-commit",
+            "adc20a6f26558a5380d90a35faa9551eb090b044",
+            "--default-branch",
+            "main"
+          ],
+          "result": "trusted release: tag must be a literal version tag such as v0.1.0; branches and expressions are refused"
+        },
+        {
+          "case": "invalid-tag-'v0.1.0^{}'",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$TRUST_LAB/trusted/tools/release/trusted_release.py",
+            "validate",
+            "--tag",
+            "v0.1.0^{}",
+            "--trusted-commit",
+            "adc20a6f26558a5380d90a35faa9551eb090b044",
+            "--default-branch",
+            "main"
+          ],
+          "result": "trusted release: tag must be a literal version tag such as v0.1.0; branches and expressions are refused"
+        },
+        {
+          "case": "invalid-tag-'v0.1.0;$(touch ignored)'",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$TRUST_LAB/trusted/tools/release/trusted_release.py",
+            "validate",
+            "--tag",
+            "v0.1.0;$(touch ignored)",
+            "--trusted-commit",
+            "adc20a6f26558a5380d90a35faa9551eb090b044",
+            "--default-branch",
+            "main"
+          ],
+          "result": "trusted release: tag must be a literal version tag such as v0.1.0; branches and expressions are refused"
+        },
+        {
+          "case": "invalid-tag-'v0.1.0\\nsource_commit=bad'",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$TRUST_LAB/trusted/tools/release/trusted_release.py",
+            "validate",
+            "--tag",
+            "v0.1.0\nsource_commit=bad",
+            "--trusted-commit",
+            "adc20a6f26558a5380d90a35faa9551eb090b044",
+            "--default-branch",
+            "main"
+          ],
+          "result": "trusted release: tag must be a literal version tag such as v0.1.0; branches and expressions are refused"
+        },
+        {
+          "case": "unreviewed-nonancestor",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$TRUST_LAB/trusted/tools/release/trusted_release.py",
+            "validate",
+            "--tag",
+            "v0.2.0",
+            "--trusted-commit",
+            "adc20a6f26558a5380d90a35faa9551eb090b044",
+            "--default-branch",
+            "main"
+          ],
+          "result": "trusted release: release source is not a reviewed ancestor of the frozen default-branch workflow commit"
+        },
+        {
+          "case": "tag-version-mismatch",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$TRUST_LAB/trusted/tools/release/trusted_release.py",
+            "validate",
+            "--tag",
+            "v0.9.0",
+            "--trusted-commit",
+            "adc20a6f26558a5380d90a35faa9551eb090b044",
+            "--default-branch",
+            "main"
+          ],
+          "result": "trusted release: release tag and frozen version must match candidate workspace version"
+        },
+        {
+          "case": "invalid-default-branch",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$TRUST_LAB/trusted/tools/release/trusted_release.py",
+            "validate",
+            "--tag",
+            "v0.1.0",
+            "--trusted-commit",
+            "adc20a6f26558a5380d90a35faa9551eb090b044",
+            "--default-branch",
+            "bad..branch"
+          ],
+          "result": "trusted release: invalid default branch"
+        },
+        {
+          "case": "unfrozen-trusted-checkout",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$TRUST_LAB/trusted/tools/release/trusted_release.py",
+            "validate",
+            "--tag",
+            "v0.1.0",
+            "--trusted-commit",
+            "8d72ad5a6fc39b0aa9f3bedf90e4bfe2276d10bc",
+            "--default-branch",
+            "main"
+          ],
+          "result": "trusted release: use a clean trusted checkout pinned to the workflow commit"
+        },
+        {
+          "case": "dirty-trusted-checkout",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$TRUST_LAB/trusted/tools/release/trusted_release.py",
+            "validate",
+            "--tag",
+            "v0.1.0",
+            "--trusted-commit",
+            "adc20a6f26558a5380d90a35faa9551eb090b044",
+            "--default-branch",
+            "main"
+          ],
+          "result": "trusted release: use a clean trusted checkout pinned to the workflow commit"
+        },
+        {
+          "case": "empty-four-target-guard",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$TRUST_LAB/trusted/tools/release/trusted_release.py",
+            "publish",
+            "--tag",
+            "v0.1.0",
+            "--trusted-commit",
+            "adc20a6f26558a5380d90a35faa9551eb090b044",
+            "--default-branch",
+            "main",
+            "--source-commit",
+            "8d72ad5a6fc39b0aa9f3bedf90e4bfe2276d10bc",
+            "--tag-object",
+            "00ff7e7133083b2d397e4bc41d7bd806d9af03ca",
+            "--version",
+            "0.1.0",
+            "--artifacts",
+            "$TRUST_LAB/artifacts",
+            "--check-only"
+          ],
+          "result": "trusted release: draft needs all four native platform archives; no partial release"
+        },
+        {
+          "case": "four-target-data-only-publisher",
+          "exit": 0,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$TRUST_LAB/trusted/tools/release/trusted_release.py",
+            "publish",
+            "--tag",
+            "v0.1.0",
+            "--trusted-commit",
+            "adc20a6f26558a5380d90a35faa9551eb090b044",
+            "--default-branch",
+            "main",
+            "--source-commit",
+            "8d72ad5a6fc39b0aa9f3bedf90e4bfe2276d10bc",
+            "--tag-object",
+            "00ff7e7133083b2d397e4bc41d7bd806d9af03ca",
+            "--version",
+            "0.1.0",
+            "--artifacts",
+            "$TRUST_LAB/artifacts",
+            "--check-only"
+          ],
+          "result": "PASS: frozen source, remote tag, all four targets, checksums, and embedded manifests; no mutation"
+        },
+        {
+          "case": "embedded-manifest-tamper",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$TRUST_LAB/trusted/tools/release/trusted_release.py",
+            "publish",
+            "--tag",
+            "v0.1.0",
+            "--trusted-commit",
+            "adc20a6f26558a5380d90a35faa9551eb090b044",
+            "--default-branch",
+            "main",
+            "--source-commit",
+            "8d72ad5a6fc39b0aa9f3bedf90e4bfe2276d10bc",
+            "--tag-object",
+            "00ff7e7133083b2d397e4bc41d7bd806d9af03ca",
+            "--version",
+            "0.1.0",
+            "--artifacts",
+            "$TRUST_LAB/artifacts",
+            "--check-only"
+          ],
+          "result": "trusted release: archive BUILD.json does not match its provenance sidecar"
+        },
+        {
+          "case": "zip-case-alias",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$TRUST_LAB/trusted/tools/release/trusted_release.py",
+            "publish",
+            "--tag",
+            "v0.1.0",
+            "--trusted-commit",
+            "adc20a6f26558a5380d90a35faa9551eb090b044",
+            "--default-branch",
+            "main",
+            "--source-commit",
+            "8d72ad5a6fc39b0aa9f3bedf90e4bfe2276d10bc",
+            "--tag-object",
+            "00ff7e7133083b2d397e4bc41d7bd806d9af03ca",
+            "--version",
+            "0.1.0",
+            "--artifacts",
+            "$TRUST_LAB/artifacts",
+            "--check-only"
+          ],
+          "result": "trusted release: archive needs exactly one BUILD.json at its root"
+        },
+        {
+          "case": "tar-case-alias",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$TRUST_LAB/trusted/tools/release/trusted_release.py",
+            "publish",
+            "--tag",
+            "v0.1.0",
+            "--trusted-commit",
+            "adc20a6f26558a5380d90a35faa9551eb090b044",
+            "--default-branch",
+            "main",
+            "--source-commit",
+            "8d72ad5a6fc39b0aa9f3bedf90e4bfe2276d10bc",
+            "--tag-object",
+            "00ff7e7133083b2d397e4bc41d7bd806d9af03ca",
+            "--version",
+            "0.1.0",
+            "--artifacts",
+            "$TRUST_LAB/artifacts",
+            "--check-only"
+          ],
+          "result": "trusted release: archive needs exactly one BUILD.json at its root"
+        },
+        {
+          "case": "unexpected-publisher-file",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$TRUST_LAB/trusted/tools/release/trusted_release.py",
+            "publish",
+            "--tag",
+            "v0.1.0",
+            "--trusted-commit",
+            "adc20a6f26558a5380d90a35faa9551eb090b044",
+            "--default-branch",
+            "main",
+            "--source-commit",
+            "8d72ad5a6fc39b0aa9f3bedf90e4bfe2276d10bc",
+            "--tag-object",
+            "00ff7e7133083b2d397e4bc41d7bd806d9af03ca",
+            "--version",
+            "0.1.0",
+            "--artifacts",
+            "$TRUST_LAB/artifacts",
+            "--check-only"
+          ],
+          "result": "trusted release: publisher artifact directory contains unexpected files"
+        },
+        {
+          "case": "publisher-symlink",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$TRUST_LAB/trusted/tools/release/trusted_release.py",
+            "publish",
+            "--tag",
+            "v0.1.0",
+            "--trusted-commit",
+            "adc20a6f26558a5380d90a35faa9551eb090b044",
+            "--default-branch",
+            "main",
+            "--source-commit",
+            "8d72ad5a6fc39b0aa9f3bedf90e4bfe2276d10bc",
+            "--tag-object",
+            "00ff7e7133083b2d397e4bc41d7bd806d9af03ca",
+            "--version",
+            "0.1.0",
+            "--artifacts",
+            "$TRUST_LAB/artifacts",
+            "--check-only"
+          ],
+          "result": "trusted release: publisher artifact directory must contain regular files only"
+        },
+        {
+          "case": "checksum-tamper",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$TRUST_LAB/trusted/tools/release/trusted_release.py",
+            "publish",
+            "--tag",
+            "v0.1.0",
+            "--trusted-commit",
+            "adc20a6f26558a5380d90a35faa9551eb090b044",
+            "--default-branch",
+            "main",
+            "--source-commit",
+            "8d72ad5a6fc39b0aa9f3bedf90e4bfe2276d10bc",
+            "--tag-object",
+            "00ff7e7133083b2d397e4bc41d7bd806d9af03ca",
+            "--version",
+            "0.1.0",
+            "--artifacts",
+            "$TRUST_LAB/artifacts",
+            "--check-only"
+          ],
+          "result": "trusted release: artifact checksum mismatch"
+        },
+        {
+          "case": "remote-tag-move",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$TRUST_LAB/trusted/tools/release/trusted_release.py",
+            "publish",
+            "--tag",
+            "v0.1.0",
+            "--trusted-commit",
+            "adc20a6f26558a5380d90a35faa9551eb090b044",
+            "--default-branch",
+            "main",
+            "--source-commit",
+            "8d72ad5a6fc39b0aa9f3bedf90e4bfe2276d10bc",
+            "--tag-object",
+            "00ff7e7133083b2d397e4bc41d7bd806d9af03ca",
+            "--version",
+            "0.1.0",
+            "--artifacts",
+            "$TRUST_LAB/artifacts",
+            "--check-only"
+          ],
+          "result": "trusted release: release tag moved or differs from the fetched tag"
+        },
+        {
+          "case": "local-and-remote-tag-move",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$TRUST_LAB/trusted/tools/release/trusted_release.py",
+            "publish",
+            "--tag",
+            "v0.1.0",
+            "--trusted-commit",
+            "adc20a6f26558a5380d90a35faa9551eb090b044",
+            "--default-branch",
+            "main",
+            "--source-commit",
+            "8d72ad5a6fc39b0aa9f3bedf90e4bfe2276d10bc",
+            "--tag-object",
+            "00ff7e7133083b2d397e4bc41d7bd806d9af03ca",
+            "--version",
+            "0.1.0",
+            "--artifacts",
+            "$TRUST_LAB/artifacts",
+            "--check-only"
+          ],
+          "result": "trusted release: release tag moved from the frozen source commit"
+        },
+        {
+          "case": "same-source-annotated-tag-move",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$TRUST_LAB/trusted/tools/release/trusted_release.py",
+            "publish",
+            "--tag",
+            "v0.1.0",
+            "--trusted-commit",
+            "adc20a6f26558a5380d90a35faa9551eb090b044",
+            "--default-branch",
+            "main",
+            "--source-commit",
+            "8d72ad5a6fc39b0aa9f3bedf90e4bfe2276d10bc",
+            "--tag-object",
+            "00ff7e7133083b2d397e4bc41d7bd806d9af03ca",
+            "--version",
+            "0.1.0",
+            "--artifacts",
+            "$TRUST_LAB/artifacts",
+            "--check-only"
+          ],
+          "result": "trusted release: release tag object moved from the frozen validation output"
+        },
+        {
+          "case": "default-branch-history-rewritten",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$TRUST_LAB/trusted/tools/release/trusted_release.py",
+            "publish",
+            "--tag",
+            "v0.1.0",
+            "--trusted-commit",
+            "adc20a6f26558a5380d90a35faa9551eb090b044",
+            "--default-branch",
+            "main",
+            "--source-commit",
+            "8d72ad5a6fc39b0aa9f3bedf90e4bfe2276d10bc",
+            "--tag-object",
+            "00ff7e7133083b2d397e4bc41d7bd806d9af03ca",
+            "--version",
+            "0.1.0",
+            "--artifacts",
+            "$TRUST_LAB/artifacts",
+            "--check-only"
+          ],
+          "result": "trusted release: workflow commit is no longer on the remote default branch"
+        },
+        {
+          "case": "tag-moved-during-real-archive-validation",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$TRUST_LAB/trusted/tools/release/trusted_release.py",
+            "publish",
+            "--tag",
+            "v0.1.0",
+            "--trusted-commit",
+            "adc20a6f26558a5380d90a35faa9551eb090b044",
+            "--default-branch",
+            "main",
+            "--source-commit",
+            "8d72ad5a6fc39b0aa9f3bedf90e4bfe2276d10bc",
+            "--tag-object",
+            "00ff7e7133083b2d397e4bc41d7bd806d9af03ca",
+            "--version",
+            "0.1.0",
+            "--artifacts",
+            "$TRUST_LAB/artifacts",
+            "--check-only"
+          ],
+          "result": "trusted release: release tag moved or differs from the fetched tag"
+        },
+        {
+          "case": "final-stable-four-target-control",
+          "exit": 0,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$TRUST_LAB/trusted/tools/release/trusted_release.py",
+            "publish",
+            "--tag",
+            "v0.1.0",
+            "--trusted-commit",
+            "adc20a6f26558a5380d90a35faa9551eb090b044",
+            "--default-branch",
+            "main",
+            "--source-commit",
+            "8d72ad5a6fc39b0aa9f3bedf90e4bfe2276d10bc",
+            "--tag-object",
+            "00ff7e7133083b2d397e4bc41d7bd806d9af03ca",
+            "--version",
+            "0.1.0",
+            "--artifacts",
+            "$TRUST_LAB/artifacts",
+            "--check-only"
+          ],
+          "result": "PASS: frozen source, remote tag, all four targets, checksums, and embedded manifests; no mutation"
+        }
+      ]
+    },
+    {
+      "name": "candidate-metadata-as-data",
+      "cases": 5,
+      "passed": 5,
+      "results": [
+        {
+          "case": "toolchain-mismatch",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$SOURCE_LAB/toolchain-mismatch/trusted/tools/release/trusted_release.py",
+            "validate",
+            "--tag",
+            "v0.1.0",
+            "--trusted-commit",
+            "d56244b8d992b2a59433badc42ae86ad94850076",
+            "--default-branch",
+            "main"
+          ],
+          "result": "trusted release: workspace rust-version must match the pinned Rust toolchain"
+        },
+        {
+          "case": "stale-notice-inventory",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$SOURCE_LAB/stale-notice-inventory/trusted/tools/release/trusted_release.py",
+            "validate",
+            "--tag",
+            "v0.1.0",
+            "--trusted-commit",
+            "df0de6e7bb14c9800a7a48f64eef4691090eff7c",
+            "--default-branch",
+            "main"
+          ],
+          "result": "trusted release: candidate notice inventory is stale for Cargo.lock"
+        },
+        {
+          "case": "symlink-metadata",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$SOURCE_LAB/symlink-metadata/trusted/tools/release/trusted_release.py",
+            "validate",
+            "--tag",
+            "v0.1.0",
+            "--trusted-commit",
+            "737bb7844d66cf4d8af5659558cfd6930533a2ab",
+            "--default-branch",
+            "main"
+          ],
+          "result": "trusted release: source metadata must be a regular Git blob: Cargo.toml"
+        },
+        {
+          "case": "workspace-path-escape",
+          "exit": 1,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$SOURCE_LAB/workspace-path-escape/trusted/tools/release/trusted_release.py",
+            "validate",
+            "--tag",
+            "v0.1.0",
+            "--trusted-commit",
+            "ddf17f791804d4cda7783521dbfac31795f8c999",
+            "--default-branch",
+            "main"
+          ],
+          "result": "trusted release: source metadata needs a confined repository path"
+        },
+        {
+          "case": "swift-source-is-data",
+          "exit": 0,
+          "passed": true,
+          "command": [
+            "nice",
+            "-n",
+            "15",
+            "/opt/homebrew/bin/python3",
+            "-I",
+            "$SOURCE_LAB/swift-source-is-data/trusted/tools/release/trusted_release.py",
+            "validate",
+            "--tag",
+            "v0.1.0",
+            "--trusted-commit",
+            "7b6b1a707abcfd3ad52911632e0ecc49dd427367",
+            "--default-branch",
+            "main"
+          ],
+          "result": "{\"rust\": \"1.99.1\", \"source_commit\": \"93a3ef8d3a82e49fb1fd29082610bce75ca3dca4\", \"tag\": \"v0.1.0\", \"tag_object\": \"93a3ef8d3a82e49fb1fd29082610bce75ca3dca4\", \"trusted_commit\": \"7b6b1a707abcfd3ad52911632e0ecc49dd427367\", \"version\": \"0.1.0\"}"
+        }
+      ]
+    }
+  ],
+  "release_cli_invocations": 82,
+  "candidate_sentinel_executed": false,
+  "artifact_sentinel_executed": false,
+  "github_mutation": false,
+  "hosted_workflow_run": false,
+  "private_hosted_jobs_enabled": false,
+  "self_hosted_entrypoints": false,
+  "additional_checks": [
+    "actionlint: both workflow files passed without suppressions",
+    "real native-architecture command accepted Darwin/arm64 and refused Darwin/x86_64 on this ARM64 host",
+    "release.py check passed",
+    "git diff --check passed",
+    "Cargo.lock and dependency manifests unchanged"
+  ],
+  "limitations": [
+    "GitHub workflow execution was not attempted while the repository was private",
+    "Four-target publisher controls are archive data fixtures, not newly compiled native platform artifacts",
+    "No successful remote draft creation, publication, signing, keychain, visibility, or production-state operation",
+    "Remote ref revalidation is not an atomic server-side tag lock; release tags must remain immutable under repository controls"
+  ]
+}

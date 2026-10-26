@@ -74,11 +74,11 @@ fn digit(b: u8) -> Option<u8> {
     }
 }
 fn unbase64(text: &str, cap: usize) -> Result<Vec<u8>, IpcError> {
-    if text.len() % 4 != 0 || text.len() / 4 * 3 > cap.saturating_add(2) {
+    if !text.len().is_multiple_of(4) || text.len() / 4 * 3 > cap.saturating_add(2) {
         return Err(invalid());
     }
     let mut out = Vec::with_capacity((text.len() / 4 * 3).min(cap));
-    for (index, chunk) in text.as_bytes().chunks_exact(4).enumerate() {
+    for (index, chunk) in text.as_bytes().as_chunks::<4>().0.iter().enumerate() {
         let a = digit(*chunk.first().ok_or_else(invalid)?).ok_or_else(invalid)?;
         let b = digit(*chunk.get(1).ok_or_else(invalid)?).ok_or_else(invalid)?;
         let cb = *chunk.get(2).ok_or_else(invalid)?;

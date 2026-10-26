@@ -1,0 +1,148 @@
+# Requirement: Imported named-key and mouse lock bindings execute and consume their trigger pair.
+name = "Q16-lock-hotkey-grammar"
+requirement = "Meta/AltGr with F2 and Ctrl with mouse button 3 toggle lock once, suppress repeats/ups, and leave no held inputs."
+timeout_ms = 1200
+
+[[node]]
+id = "server"
+role = "server"
+config = { hotkeys = { lock_to_screen = "meta+altgr+F2" } }
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "key_down", key = 61415, modifiers = 8, button = 4 }, { type = "key_down", key = 61310, modifiers = 40, button = 5 }, { type = "key_down", key = 61375, modifiers = 40, button = 6 }, { type = "key_repeat", key = 61375, modifiers = 40, button = 6, count = 1 }, { type = "key_up", key = 61375, modifiers = 40, button = 6 }, { type = "key_up", key = 61310, modifiers = 8, button = 5 }, { type = "key_up", key = 61415, modifiers = 0, button = 4 }, { type = "mouse_move_abs", x = 1919, y = 540 }, { type = "mouse_move_rel", dx = 20, dy = 0 }]
+
+[[step]]
+do = "sleep"
+ms = 100
+
+[[step]]
+do = "assert_status"
+node = "server"
+fields = { active_screen = "server" }
+timeout_ms = 100
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "key_down", key = 61415, modifiers = 8, button = 4 }, { type = "key_down", key = 61310, modifiers = 40, button = 5 }, { type = "key_down", key = 61375, modifiers = 40, button = 6 }, { type = "key_up", key = 61375, modifiers = 40, button = 6 }, { type = "key_up", key = 61310, modifiers = 8, button = 5 }, { type = "key_up", key = 61415, modifiers = 0, button = 4 }, { type = "mouse_move_abs", x = 1919, y = 540 }, { type = "mouse_move_rel", dx = 20, dy = 0 }]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { active_screen = "client" }
+
+[[step]]
+do = "config_patch"
+node = "server"
+patch = { hotkeys = { lock_to_screen = "mousebutton(ctrl+3)" } }
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "mouse_move_abs", x = 1919, y = 540 }, { type = "mouse_move_rel", dx = 20, dy = 0 }]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { active_screen = "client" }
+
+[[step]]
+do = "ledger_mark"
+node = "client"
+save = "before_hotkey"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "key_down", key = 61411, modifiers = 2, button = 10 }, { type = "mouse_down", button = 3 }, { type = "mouse_up", button = 3 }, { type = "key_up", key = 61411, modifiers = 0, button = 10 }]
+
+[[step]]
+do = "sleep"
+ms = 100
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+since = "${before_hotkey.sequence}"
+exact = true
+input_only = true
+expect = [{ event = { type = "key_down", key = 61411, button = 10 } }, { event = { type = "key_up", key = 61411, button = 10 } }]
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "mouse_move_abs", x = 0, y = 540 }, { type = "mouse_move_rel", dx = -20, dy = 0 }]
+
+[[step]]
+do = "sleep"
+ms = 100
+
+[[step]]
+do = "assert_status"
+node = "server"
+fields = { active_screen = "client" }
+timeout_ms = 100
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "key_down", key = 61411, modifiers = 2, button = 10 }, { type = "mouse_down", button = 3 }, { type = "mouse_up", button = 3 }, { type = "key_up", key = 61411, modifiers = 0, button = 10 }, { type = "mouse_move_abs", x = 0, y = 540 }, { type = "mouse_move_rel", dx = -20, dy = 0 }]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { active_screen = "server" }
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "virtual.recorded"
+fields = { "stats.pressed_keys" = 0, "stats.pressed_buttons" = 0 }
+
+[[step]]
+do = "config_patch"
+node = "server"
+patch = { options = { disable_lock_to_screen = true } }
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "mouse_move_abs", x = 1919, y = 540 }, { type = "mouse_move_rel", dx = 20, dy = 0 }]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { active_screen = "client" }
+
+[[step]]
+do = "ledger_mark"
+node = "client"
+save = "disabled_hotkey"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "key_down", key = 61411, modifiers = 2, button = 10 }, { type = "mouse_down", button = 3 }, { type = "mouse_up", button = 3 }, { type = "key_up", key = 61411, modifiers = 0, button = 10 }]
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+since = "${disabled_hotkey.sequence}"
+exact = true
+input_only = true
+expect = [{ event = { type = "key_down", key = 61411, button = 10 } }, { event = { type = "mouse_down", button = 3 } }, { event = { type = "mouse_up", button = 3 } }, { event = { type = "key_up", key = 61411, button = 10 } }]

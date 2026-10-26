@@ -1,0 +1,11 @@
+SCOPE resolver=real_std_to_socket_addrs host=localhost ports=25100..25118 discovery=OFF tls=OFF native=NONE slow_lookup_control=UNAVAILABLE
+QUEUE mode=shutdown round=0 jobs=16 admission_us=288 dns_budget_rejections=16 recovery_admission_us=1940 recovery_connected_us=5202 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS
+QUEUE mode=disconnect_all round=1 jobs=16 admission_us=23 dns_budget_rejections=3 recovery_admission_us=290 recovery_connected_us=3552 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS
+QUEUE mode=shutdown round=2 jobs=16 admission_us=19 dns_budget_rejections=2 recovery_admission_us=222 recovery_connected_us=2554 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS
+QUEUE mode=disconnect_all round=3 jobs=16 admission_us=22 dns_budget_rejections=3 recovery_admission_us=280 recovery_connected_us=3896 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS
+QUEUE mode=deadline round=0 jobs=16 admission_us=21 dns_budget_rejections=2 recovery_admission_us=147 recovery_connected_us=2277 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS
+QUEUE mode=deadline round=1 jobs=16 admission_us=22 dns_budget_rejections=2 recovery_admission_us=252 recovery_connected_us=3321 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS
+QUEUE mode=deadline round=2 jobs=16 admission_us=24 dns_budget_rejections=3 recovery_admission_us=259 recovery_connected_us=3482 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS
+QUEUE mode=deadline round=3 jobs=16 admission_us=17 dns_budget_rejections=4 recovery_admission_us=591 recovery_connected_us=3558 exactly_one_failure=PASS stale_tcp=NONE frame_roundtrip=PASS
+FAILURE case=invalid_hostname events=[ConnectFailed { host: "invalid\0hostname", port: 25117, error: "dns_failed: file name contained an unexpected NUL byte" }] classified_dns=PASS
+dns_queue_cancel_c4806a3d: event deadline: [Connected { conn: ConnId(2), peer: 127.0.0.1:25117, fingerprint: None, tls: false, tls_version: None }, Disconnected { conn: ConnId(2), reason: ClosedByPeer }]

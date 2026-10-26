@@ -1,0 +1,57 @@
+# Requirement: Config cannot advertise a clipboard size above the session's 64 MiB hard cap.
+name = "C3-clipboard-supported-cap"
+requirement = "A real config patch accepts 64 MiB and rejects 64 MiB plus one byte without changing saved or live settings."
+timeout_ms = 3000
+
+[[node]]
+id = "local"
+role = "off"
+
+[[step]]
+do = "config_patch"
+node = "local"
+patch = {clipboard = {max_bytes = 67108864}}
+fields = {"config.clipboard.max_bytes" = 67108864}
+
+[[step]]
+do = "assert_file"
+path = "${local.config}"
+save = "before"
+
+[[step]]
+do = "config_patch"
+node = "local"
+patch = {clipboard = {max_bytes = 67108865}}
+expect_error = "invalid_config"
+
+[[step]]
+do = "assert_file"
+path = "${local.config}"
+sha256 = "${before.sha256}"
+
+[[step]]
+do = "ctl"
+node = "local"
+method = "config.get"
+fields = {"config.clipboard.max_bytes" = 67108864}
+
+[[step]]
+do = "config_patch"
+node = "local"
+patch = {clipboard = {max_bytes = 268435456}}
+expect_error = "invalid_config"
+
+[[step]]
+do = "assert_file"
+path = "${local.config}"
+sha256 = "${before.sha256}"
+
+[[step]]
+do = "restart"
+node = "local"
+
+[[step]]
+do = "ctl"
+node = "local"
+method = "config.get"
+fields = {"config.clipboard.max_bytes" = 67108864}

@@ -32,6 +32,10 @@ const WAKE: Token = Token(0);
 const LISTENER: Token = Token(1);
 const TRUST_POLL: Duration = Duration::from_millis(500);
 const CLOSE_TIMEOUT: Duration = Duration::from_millis(250);
+// A byte budget alone admits tens of thousands of tiny messages in one turn.
+// Yield after this many events, finishing the current <=16 KiB read so decoder
+// and TLS state stay intact. Large-frame throughput keeps the existing byte cap.
+const READ_EVENT_BATCH: usize = 1024;
 
 pub struct NetConfig {
     pub tls_enabled: bool,
@@ -86,10 +90,10 @@ struct Budget {
 struct Reservation {
     budget: Arc<Budget>,
     bytes: usize,
-    bulk_conn: Option<ConnId>,
+    bulk: Option<(ConnId, usize)>,
 }
 impl Reservation {
-    fn new(budget: &Arc<Budget>, bytes: usize, bulk_conn: Option<ConnId>, control: bool) -> Result<Self, NetError> {
+    fn new(budget: &Arc<Budget>, bytes: usize, bulk: Option<(ConnId, usize)>, control: bool) -> Result<Self, NetError> {
         budget
             .bytes
             .try_update(Ordering::AcqRel, Ordering::Acquire, |n| {
@@ -97,29 +101,29 @@ impl Reservation {
                     .filter(|v| *v <= MAILBOX_BYTES + if control { 1024 * 1024 } else { 0 })
             })
             .map_err(|_| NetError::QueueFull)?;
-        if let Some(conn) = bulk_conn {
+        if let Some((conn, wire_bytes)) = bulk {
             let mut bulk = budget.bulk.lock().unwrap_or_else(|e| e.into_inner());
             let current = bulk.entry(conn).or_default();
-            if *current + bytes > BULK_WINDOW {
+            if *current + wire_bytes > BULK_WINDOW {
                 budget.bytes.fetch_sub(bytes, Ordering::AcqRel);
                 return Err(NetError::QueueFull);
             }
-            *current += bytes;
+            *current += wire_bytes;
         }
         Ok(Self {
             budget: budget.clone(),
             bytes,
-            bulk_conn,
+            bulk,
         })
     }
 }
 impl Drop for Reservation {
     fn drop(&mut self) {
         self.budget.bytes.fetch_sub(self.bytes, Ordering::AcqRel);
-        if let Some(conn) = self.bulk_conn {
+        if let Some((conn, wire_bytes)) = self.bulk {
             let mut bulk = self.budget.bulk.lock().unwrap_or_else(|e| e.into_inner());
             if let Some(bytes) = bulk.get_mut(&conn) {
-                *bytes -= self.bytes;
+                *bytes -= wire_bytes;
                 if *bytes == 0 {
                     bulk.remove(&conn);
                 }
@@ -133,8 +137,19 @@ struct Packet {
     priority: Priority,
     absolute: bool,
     handshake_end: bool,
+    input_barrier: bool,
+    order: u64,
     raw: bool,
     _reservation: Reservation,
+}
+// Tiny frames still retain a Packet and a VecDeque slot. Allow room for
+// geometric queue growth as well, so byte limits cannot admit a million
+// eight-byte keepalive packets while omitting their much larger metadata.
+const PACKET_OVERHEAD: usize = 2 * std::mem::size_of::<Packet>();
+impl Packet {
+    fn queued_cost(&self) -> usize {
+        self.bytes.len() - self.offset + PACKET_OVERHEAD
+    }
 }
 enum Command {
     Public(NetCommand, Reservation),
@@ -151,13 +166,18 @@ impl Mailbox {
         if self.closed.load(Ordering::Acquire) {
             return Err(NetError::Shutdown);
         }
-        let (conn, bytes, priority, absolute, handshake_end, raw) = match cmd {
+        let (conn, bytes, priority, absolute, handshake_end, input_barrier, raw) = match cmd {
             NetCommand::Send { conn, msg, priority } => {
                 let mut bytes = Vec::new();
                 openergy_protocol::encode(&msg, &mut bytes).map_err(failed)?;
                 let absolute = priority == Priority::Input && matches!(msg, Message::MouseMoveAbs { .. });
                 let end = matches!(msg, Message::SetOptions { .. });
-                (conn, bytes, priority, absolute, end, false)
+                let input_barrier = priority == Priority::Control
+                    && matches!(
+                        msg,
+                        Message::KeyUp { .. } | Message::MouseUp { .. } | Message::Enter { .. } | Message::Leave
+                    );
+                (conn, bytes, priority, absolute, end, input_barrier, false)
             }
             NetCommand::SendFrame {
                 conn,
@@ -170,7 +190,7 @@ impl Mailbox {
                 let mut bytes = Vec::with_capacity(payload.len() + 4);
                 bytes.extend_from_slice(&(payload.len() as u32).to_be_bytes());
                 bytes.extend_from_slice(&payload);
-                (conn, bytes, priority, false, false, true)
+                (conn, bytes, priority, false, false, false, true)
             }
             other => {
                 return Ok(Command::Public(
@@ -187,8 +207,8 @@ impl Mailbox {
         }
         let reservation = Reservation::new(
             &self.budget,
-            bytes.len(),
-            (priority == Priority::Bulk).then_some(conn),
+            bytes.capacity() + PACKET_OVERHEAD,
+            (priority == Priority::Bulk).then_some((conn, bytes.len())),
             priority == Priority::Control,
         )?;
         Ok(Command::Packet(
@@ -199,6 +219,8 @@ impl Mailbox {
                 priority,
                 absolute,
                 handshake_end,
+                input_barrier,
+                order: 0,
                 raw,
                 _reservation: reservation,
             },
@@ -221,9 +243,16 @@ struct Queues {
     bulk: VecDeque<Packet>,
     active: Option<Packet>,
     high_bytes: usize,
+    next_order: u64,
+    control_barriers: VecDeque<u64>,
 }
 impl Queues {
-    fn push(&mut self, packet: Packet) {
+    fn push(&mut self, mut packet: Packet) {
+        packet.order = self.next_order;
+        self.next_order = self.next_order.wrapping_add(1);
+        if packet.input_barrier {
+            self.control_barriers.push_back(packet.order);
+        }
         let queue = match packet.priority {
             Priority::Input => &mut self.input,
             Priority::Control => &mut self.control,
@@ -231,11 +260,11 @@ impl Queues {
         };
         if packet.priority == Priority::Input && packet.absolute && queue.back().is_some_and(|p| p.absolute) {
             if let Some(old) = queue.pop_back() {
-                self.high_bytes -= old.bytes.len();
+                self.high_bytes -= old.queued_cost();
             }
         }
         if packet.priority != Priority::Bulk {
-            self.high_bytes += packet.bytes.len();
+            self.high_bytes += packet.queued_cost();
         }
         queue.push_back(packet);
     }
@@ -243,14 +272,29 @@ impl Queues {
         if self.active.is_some() {
             return;
         }
-        self.active = if slow || !handshake_done {
-            self.control.pop_front()
+        // Safety releases and screen transitions must follow older Input and
+        // precede newer Input. Unrelated Control traffic may still be overtaken.
+        // The byte budget bounds live packets well below half the u64 sequence space.
+        let barrier_first = self.input.front().is_some_and(|input| {
+            self.control_barriers
+                .front()
+                .is_some_and(|order| input.order.wrapping_sub(*order) < (1u64 << 63))
+        });
+        self.active = if slow || !handshake_done || barrier_first {
+            self.pop_control()
         } else {
-            self.control
+            self.input
                 .pop_front()
-                .or_else(|| self.input.pop_front())
+                .or_else(|| self.pop_control())
                 .or_else(|| self.bulk.pop_front())
         };
+    }
+    fn pop_control(&mut self) -> Option<Packet> {
+        let packet = self.control.pop_front()?;
+        if packet.input_barrier {
+            self.control_barriers.pop_front();
+        }
+        Some(packet)
     }
     fn len(&self) -> usize {
         self.input
@@ -270,7 +314,7 @@ impl Queues {
         self.active.is_some() || !self.input.is_empty() || !self.control.is_empty() || !self.bulk.is_empty()
     }
     fn discard_low(&mut self) {
-        self.high_bytes -= self.input.iter().map(|p| p.bytes.len()).sum::<usize>();
+        self.high_bytes -= self.input.iter().map(Packet::queued_cost).sum::<usize>();
         self.input.clear();
         self.bulk.clear();
     }
@@ -318,8 +362,9 @@ impl Connection {
     fn token(&self) -> Token {
         Token(self.id.0 as usize)
     }
-    fn retry_address(&mut self, registry: &mio::Registry) -> bool {
+    fn retry_address(&mut self, registry: &mio::Registry) -> Result<bool, NetError> {
         while let Some(addr) = self.alternate_addresses.pop_front() {
+            NetDriver::check_port(addr.port())?;
             let result = (|| {
                 let mut stream = TcpStream::connect(addr)?;
                 registry.register(&mut stream, self.token(), Interest::READABLE.add(Interest::WRITABLE))?;
@@ -335,10 +380,12 @@ impl Connection {
                 Ok::<_, io::Error>(())
             })();
             if result.is_ok() {
-                return true;
+                log::trace!(target: "openergy_net::connect_observer",
+                    "phase=fallback conn={} addr={} deadline={:?}", self.id.0, self.peer, self.deadline);
+                return Ok(true);
             }
         }
-        false
+        Ok(false)
     }
     fn interest(&self) -> Interest {
         if self.connecting
@@ -392,22 +439,33 @@ impl Connection {
                 }),
         }
     }
-    fn is_trusted(&self) -> Result<bool, NetError> {
+    fn trust_without_store(&self) -> Option<bool> {
         if !self.require_trust {
-            return Ok(true);
+            return Some(true);
         }
         let Some(fp) = self.fingerprint else {
-            return Ok(false);
+            return Some(false);
         };
         if self.expected == Some(fp) {
-            return Ok(true);
+            return Some(true);
+        }
+        None
+    }
+    fn trusted_by(&self, store: &TrustStore) -> bool {
+        self.fingerprint.is_some_and(|fp| {
+            if self.outbound {
+                store.is_trusted_server(&fp)
+            } else {
+                store.is_trusted_client(&fp)
+            }
+        })
+    }
+    fn is_trusted(&self) -> Result<bool, NetError> {
+        if let Some(trusted) = self.trust_without_store() {
+            return Ok(trusted);
         }
         let store = TrustStore::load(&self.trust_dir).map_err(failed)?;
-        Ok(if self.outbound {
-            store.is_trusted_server(&fp)
-        } else {
-            store.is_trusted_client(&fp)
-        })
+        Ok(self.trusted_by(&store))
     }
     fn announce(&mut self, out: &mut Vec<NetEvent>) {
         self.held = None;
@@ -508,7 +566,8 @@ impl Connection {
         }
         let mut budget: usize = 256 * 1024;
         let mut buffer = [0u8; 16 * 1024];
-        while budget > 0 {
+        let initial_events = out.len();
+        while budget > 0 && out.len() - initial_events < READ_EVENT_BATCH {
             if self.tls.is_some() {
                 if self.established {
                     loop {
@@ -526,12 +585,12 @@ impl Connection {
                         };
                         self.feed(&buffer[..count], mode, out)?;
                         budget = budget.saturating_sub(count);
-                        if budget == 0 {
+                        if budget == 0 || out.len() - initial_events >= READ_EVENT_BATCH {
                             break;
                         }
                     }
                 }
-                if budget == 0 {
+                if budget == 0 || out.len() - initial_events >= READ_EVENT_BATCH {
                     break;
                 }
                 if self.read_ready {
@@ -657,6 +716,9 @@ impl Connection {
                     }
                     let done = packet.offset == packet.bytes.len();
                     if done {
+                        if packet.priority != Priority::Bulk {
+                            self.queues.high_bytes -= PACKET_OVERHEAD;
+                        }
                         bulk_done |= packet.priority == Priority::Bulk;
                         self.handshake_done |= packet.handshake_end;
                         self.queues.active = None;
@@ -702,6 +764,8 @@ struct ResolveJob {
     id: u64,
     host: String,
     port: u16,
+    deadline: Instant,
+    cancelled: Arc<AtomicBool>,
 }
 struct ResolveResult {
     id: u64,
@@ -712,6 +776,7 @@ struct Pending {
     port: u16,
     expected: Option<Fingerprint>,
     deadline: Instant,
+    cancelled: Arc<AtomicBool>,
 }
 
 pub struct NetDriver {
@@ -800,7 +865,7 @@ impl NetDriver {
             return Err(failed("held_timeout must be positive and <=300 seconds"));
         }
         let identity = if config.tls_enabled || config.mdns.as_ref().is_some_and(|m| m.advertise.is_some()) {
-            Some(Identity::load_or_create_in(&config.tls_dir, &config.identity_name)?)
+            Some(Identity::try_load_or_create_in(&config.tls_dir, &config.identity_name)?)
         } else {
             None
         };
@@ -997,7 +1062,7 @@ impl NetDriver {
                 && self
                     .conns
                     .get(conn)
-                    .is_some_and(|c| c.queues.high_bytes.saturating_add(packet.bytes.len()) > HIGH_WATER)
+                    .is_some_and(|c| c.queues.high_bytes.saturating_add(packet.queued_cost()) > HIGH_WATER)
             {
                 return Err(NetError::QueueFull);
             }
@@ -1042,11 +1107,10 @@ impl NetDriver {
                     });
                     return;
                 }
-                let control = packet.priority == Priority::Control;
                 c.queues.push(packet);
-                if !control && c.queues.high_bytes > HIGH_WATER {
+                if c.queues.high_bytes > HIGH_WATER && c.slow.is_none() {
                     log::warn!(
-                        "connection {} exceeded 4 MiB input/control queue; closing SlowPeer after heartbeat",
+                        "connection {} exceeded 4 MiB input/control queue budget; closing SlowPeer after heartbeat",
                         id.0
                     );
                     c.slow = Some(Instant::now() + self.heartbeat);
@@ -1105,6 +1169,7 @@ impl NetDriver {
                         }
                     }
                     for (_, p) in std::mem::take(&mut self.pending) {
+                        p.cancelled.store(true, Ordering::Release);
                         out.push(NetEvent::ConnectFailed {
                             host: p.host,
                             port: p.port,
@@ -1151,6 +1216,10 @@ impl NetDriver {
     }
     fn connect(&mut self, host: String, port: u16, expected: Option<Fingerprint>, out: &mut Vec<NetEvent>) {
         let result = (|| {
+            Self::check_port(port)?;
+            if expected.is_some() && self.factory.is_none() {
+                return Err(failed("tls_pin_mismatch: a certificate pin requires TLS to be enabled"));
+            }
             if self.conns.len() + self.pending.len() >= MAX_CONNECTIONS {
                 return Err(failed("16-connection limit"));
             }
@@ -1171,6 +1240,8 @@ impl NetDriver {
                 .next_resolve
                 .checked_add(1)
                 .ok_or_else(|| failed("DNS id exhausted"))?;
+            let deadline = Instant::now() + self.connect_timeout;
+            let cancelled = Arc::new(AtomicBool::new(false));
             self.resolver
                 .as_ref()
                 .ok_or_else(|| failed("DNS worker unavailable"))?
@@ -1178,6 +1249,8 @@ impl NetDriver {
                     id,
                     host: host.clone(),
                     port,
+                    deadline,
+                    cancelled: cancelled.clone(),
                 })
                 .map_err(failed)?;
             self.pending.insert(
@@ -1186,7 +1259,8 @@ impl NetDriver {
                     host: host.clone(),
                     port,
                     expected,
-                    deadline: Instant::now() + self.connect_timeout,
+                    deadline,
+                    cancelled,
                 },
             );
             self.dns_outstanding += 1;
@@ -1208,15 +1282,23 @@ impl NetDriver {
         let results = self.resolved_sender.clone();
         let waker = self.waker();
         // getaddrinfo can block. One lazy, bounded worker keeps it off the io loop.
-        // Dropping the sender ends the worker after any in-flight OS lookup returns.
+        // Cancelled/expired queued jobs still send one completion to release their
+        // outstanding slot. An active OS lookup cannot be cancelled and keeps its
+        // slot until it returns. Dropping the driver also cancels queued work.
         std::thread::Builder::new()
             .name("openergy-dns".into())
             .spawn(move || {
                 while let Ok(job) = receiver.recv() {
-                    let addresses = (job.host.as_str(), job.port)
-                        .to_socket_addrs()
-                        .map(|a| a.collect())
-                        .map_err(|e| format!("dns_failed: {e}"));
+                    let addresses = if job.cancelled.load(Ordering::Acquire) {
+                        Err("shutdown".into())
+                    } else if job.deadline <= Instant::now() {
+                        Err("connect_timeout: no response before deadline".into())
+                    } else {
+                        (job.host.as_str(), job.port)
+                            .to_socket_addrs()
+                            .map(|a| a.collect())
+                            .map_err(|e| format!("dns_failed: {e}"))
+                    };
                     if results.send(ResolveResult { id: job.id, addresses }).is_err() {
                         break;
                     }
@@ -1234,6 +1316,13 @@ impl NetDriver {
         expected: Option<Fingerprint>,
         deadline: Instant,
     ) -> Result<(), NetError> {
+        // Check again after DNS: explicit lab denial can change while resolving.
+        Self::check_port(addr.port())?;
+        // Resolution may finish after reconfigure disabled TLS. Preserve the pin
+        // requirement across that asynchronous boundary before opening a socket.
+        if expected.is_some() && self.factory.is_none() {
+            return Err(failed("tls_pin_mismatch: a certificate pin requires TLS to be enabled"));
+        }
         let stream = TcpStream::connect(addr).map_err(crate::connect_error::io_failure)?;
         let tls = self.factory.as_ref().map(|f| f.client(&host, expected)).transpose()?;
         self.add_connection(
@@ -1318,6 +1407,8 @@ impl NetDriver {
                 close_notify: false,
             },
         );
+        log::trace!(target: "openergy_net::connect_observer",
+            "phase=attempt conn={} addr={} outbound={} deadline={:?}", id.0, peer, outbound, deadline);
         Ok(())
     }
     fn accept(&mut self, out: &mut Vec<NetEvent>) {
@@ -1377,7 +1468,7 @@ impl NetDriver {
             return;
         }
         c.queues.discard_low();
-        c.close_at = Some(Instant::now() + CLOSE_TIMEOUT);
+        c.close_at.get_or_insert_with(|| Instant::now() + CLOSE_TIMEOUT);
     }
     fn remove(&mut self, id: ConnId, reason: DisconnectReason, out: &mut Vec<NetEvent>) {
         if let Some(mut c) = self.conns.remove(&id) {
@@ -1416,9 +1507,9 @@ impl NetDriver {
                 }
                 let mut store = TrustStore::load(&c.trust_dir).map_err(failed)?;
                 if c.outbound {
-                    store.trust_server(*fp).map_err(failed)?;
+                    store.try_trust_server(*fp).map_err(failed)?;
                 } else {
-                    store.trust_client(*fp).map_err(failed)?;
+                    store.try_trust_client(*fp).map_err(failed)?;
                 }
                 c.announce(out);
                 c.read_ready = true;
@@ -1439,16 +1530,53 @@ impl NetDriver {
         }
     }
     fn refresh_trust(&mut self, out: &mut Vec<NetEvent>) {
-        if let Err(e) = self.trust.reload() {
+        let read_error = self.trust.reload().err().map(|error| error.to_string());
+        if let Some(message) = &read_error {
             out.push(NetEvent::Error {
                 conn: None,
-                message: e.to_string(),
+                message: message.clone(),
             });
         }
+        let active = |c: &Connection| {
+            c.held.is_some_and(|deadline| deadline > Instant::now()) || (c.established && c.require_trust)
+        };
+        let mut decisions = Vec::new();
+        let mut other_dirs = Vec::new();
+        for (&id, c) in &self.conns {
+            if !active(c) {
+                continue;
+            }
+            if let Some(trusted) = c.trust_without_store() {
+                decisions.push((id, Ok(trusted)));
+            } else if c.trust_dir.as_path() == self.trust.dir() {
+                // A failed reload must not fall back to the last good store.
+                decisions.push((
+                    id,
+                    match &read_error {
+                        Some(error) => Err(failed(error)),
+                        None => Ok(c.trusted_by(&self.trust)),
+                    },
+                ));
+            } else if !other_dirs.contains(&c.trust_dir) {
+                other_dirs.push(c.trust_dir.clone());
+            }
+        }
+        // Old connections can retain another directory after reconfiguration.
+        // Read each directory once per pass and drop it before reading the next;
+        // do not retain whole stores for every distinct connection directory.
+        for dir in other_dirs {
+            let store = TrustStore::load(&dir).map_err(|error| error.to_string());
+            for (&id, c) in &self.conns {
+                if active(c) && c.trust_dir == dir && c.trust_without_store().is_none() {
+                    decisions.push((id, store.as_ref().map(|store| c.trusted_by(store)).map_err(failed)));
+                }
+            }
+        }
         let mut failures = Vec::new();
-        for (id, c) in &mut self.conns {
+        for (id, trusted) in decisions {
+            let Some(c) = self.conns.get_mut(&id) else { continue };
             if c.held.is_some() && c.held.is_some_and(|d| d > Instant::now()) {
-                match c.is_trusted() {
+                match trusted {
                     Ok(true) => {
                         c.announce(out);
                         c.read_ready = true;
@@ -1456,22 +1584,22 @@ impl NetDriver {
                     Ok(false) => {}
                     Err(e) => {
                         out.push(NetEvent::Error {
-                            conn: Some(*id),
+                            conn: Some(id),
                             message: e.to_string(),
                         });
-                        failures.push(*id);
+                        failures.push(id);
                     }
                 }
             } else if c.established && c.require_trust {
-                match c.is_trusted() {
+                match trusted {
                     Ok(true) => {}
-                    Ok(false) => failures.push(*id),
+                    Ok(false) => failures.push(id),
                     Err(error) => {
                         out.push(NetEvent::Error {
-                            conn: Some(*id),
+                            conn: Some(id),
                             message: error.to_string(),
                         });
-                        failures.push(*id);
+                        failures.push(id);
                     }
                 }
             }
@@ -1529,6 +1657,7 @@ impl NetDriver {
             .collect();
         for id in expired {
             if let Some(p) = self.pending.remove(&id) {
+                p.cancelled.store(true, Ordering::Release);
                 out.push(NetEvent::ConnectFailed {
                     host: p.host,
                     port: p.port,
@@ -1678,21 +1807,35 @@ impl NetDriver {
                     c.write_blocked = false;
                 }
                 if c.connecting && (readable || writable || closed) {
-                    match c.stream.take_error() {
-                        Ok(None) => {
+                    // A retry keeps its token, so another event in this batch
+                    // can describe the previous socket. Empty SO_ERROR alone
+                    // does not prove the new nonblocking connect completed.
+                    let completion = c.stream.take_error().and_then(|error| match error {
+                        Some(error) => Err(error),
+                        None => c.stream.peer_addr().map(|_| ()),
+                    });
+                    match completion {
+                        Ok(()) => {
                             c.connecting = false;
+                            log::trace!(target: "openergy_net::connect_observer",
+                                "phase=tcp_ready conn={} addr={} tls={} deadline={:?}",
+                                c.id.0, c.peer, c.tls.is_some(), c.deadline);
                             let _ = c.stream.set_nodelay(true);
                             if c.tls.is_some() {
                                 c.client_hello_at = Some(Instant::now() + c.client_hello_delay);
                             }
                         }
-                        result => {
-                            if c.retry_address(self.poll.registry()) {
-                                continue;
-                            }
-                            c.failure = Some(match result {
-                                Ok(Some(e)) | Err(e) => crate::connect_error::io_failure(e).to_string(),
-                                _ => "TCP connect failed".into(),
+                        Err(error) if error.kind() == io::ErrorKind::NotConnected => continue,
+                        #[cfg(unix)]
+                        Err(error) if error.raw_os_error() == Some(libc::EINPROGRESS) => continue,
+                        Err(error) => {
+                            log::trace!(target: "openergy_net::connect_observer",
+                                "phase=failed conn={} addr={} kind={:?} deadline={:?}",
+                                c.id.0, c.peer, error.kind(), c.deadline);
+                            c.failure = Some(match c.retry_address(self.poll.registry()) {
+                                Ok(true) => continue,
+                                Err(error) => error.to_string(),
+                                Ok(false) => crate::connect_error::io_failure(error).to_string(),
                             });
                             self.remove(ConnId(token.0 as u64), DisconnectReason::Other, out);
                             continue;
@@ -1738,5 +1881,8 @@ impl NetDriver {
 impl Drop for NetDriver {
     fn drop(&mut self) {
         self.handle.inner.closed.store(true, Ordering::Release);
+        for pending in self.pending.values() {
+            pending.cancelled.store(true, Ordering::Release);
+        }
     }
 }

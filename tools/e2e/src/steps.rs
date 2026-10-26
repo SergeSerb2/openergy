@@ -82,7 +82,12 @@ impl Context {
                 let since = step.number("since", 0);
                 self.poll_value(timeout, || {
                     let actual = self
-                        .ledger(&id, since, Duration::from_millis(250))?
+                        .ledger_checked(
+                            &id,
+                            since,
+                            Duration::from_millis(250),
+                            step.flag("exact") || expected.is_empty(),
+                        )?
                         .into_iter()
                         .filter(|r| since == 0 || r["sequence"].as_u64().is_some_and(|n| n > since))
                         .filter(|r| !step.flag("input_only") || r.get("event").is_some_and(Value::is_object))
@@ -295,7 +300,11 @@ impl Context {
                             .ok_or_else(|| Failure::runner("code must be a string"))
                     })
                     .collect::<Result<Vec<_>>>()?;
-                self.raw(&id)?.expect_absent(&codes, timeout)?;
+                // An observation window, not a deadline: it is often sized against a
+                // protocol timer such as the heartbeat, so --slowdown must not stretch it.
+                let window =
+                    Duration::from_millis(step.number("timeout_ms", self.scenario.timeout_ms).clamp(1, 180_000));
+                self.raw(&id)?.expect_absent(&codes, window)?;
                 Ok(json!({"absent": codes}))
             }
             "raw_expect_closed" => {
@@ -547,22 +556,43 @@ impl Context {
                 "CLI command is outside the safe offline subcommand set",
             ));
         }
-        if args[0] == "import-synergy" && !args.iter().any(|s| s == "--out") {
-            return Err(Failure::runner("imports require an explicit confined --out"));
+        if args[0] == "import-synergy" && (!args.iter().any(|s| s == "--out") || !args.iter().any(|s| s == "--from")) {
+            return Err(Failure::runner("imports require explicit confined --from and --out"));
         }
-        if args[0] == "trust" && args.get(1).is_some_and(|s| s == "import-synergy") {
+        let mut positional = Vec::new();
+        let mut index = 1;
+        while index < args.len() {
+            if ["--dir", "--config", "--from", "--out"].contains(&args[index].as_str()) {
+                if args.get(index + 1).is_none() {
+                    return Err(Failure::runner("offline CLI path option requires a value"));
+                }
+                index += 2;
+            } else {
+                positional.push(args[index].as_str());
+                index += 1;
+            }
+        }
+        if args[0] == "trust" && positional.first() == Some(&"import-synergy") {
             self.confined(
-                args.get(2)
+                positional
+                    .get(1)
                     .ok_or_else(|| Failure::runner("trust import needs a confined directory"))?,
             )?;
         }
-        if !matches!(args[0].as_str(), "version" | "import-synergy") && !args.iter().any(|s| s == "--config") {
+        if !matches!(args[0].as_str(), "version" | "import-synergy")
+            && !args.iter().any(|s| s == "--config" || s == "--dir")
+        {
             args.extend(["--config".into(), state.config.to_string_lossy().into_owned()]);
         }
         for pair in args.windows(2) {
-            if ["--from", "--out", "--config"].contains(&pair[0].as_str()) {
+            if ["--from", "--out", "--config", "--dir"].contains(&pair[0].as_str()) {
                 self.confined(&pair[1])?;
             }
+        }
+        if args.iter().any(|arg| arg.starts_with("--") && arg.contains('=')) {
+            return Err(Failure::runner(
+                "CLI options must use separate flag and value arguments for confinement checks",
+            ));
         }
         let mut command = Command::new(&self.options.binary);
         command.args(&args);
@@ -625,6 +655,13 @@ impl Context {
             return Ok(json!({"exists":false}));
         }
         let metadata = std::fs::metadata(&path)?;
+        if !metadata.is_file()
+            && ["sha256", "regex", "toml_expect"]
+                .iter()
+                .any(|key| step.fields.contains_key(*key))
+        {
+            return Err(Failure::runner("content assertions require a regular file"));
+        }
         #[cfg(unix)]
         if let Some(mode) = step.fields.get("mode").and_then(Value::as_str) {
             use std::os::unix::fs::PermissionsExt;
@@ -750,9 +787,15 @@ impl Context {
             };
             let result = json!({"kind":"capture_to_recorded_upper_bound","samples":times.len(),"p50_ms":percentile(0.50),"p95_ms":percentile(0.95),"p99_ms":percentile(0.99),"max_ms":times[times.len()-1]});
             self.measurements.push(result.clone());
-            let max = step.fields.get("p99_ms").and_then(Value::as_f64).unwrap_or(5.0);
+            let max = step.fields.get("p99_ms").and_then(Value::as_f64).unwrap_or(5.0) * self.options.slowdown;
             if percentile(0.99) >= max {
-                return Err(Failure::product("capture-to-recorded p99 exceeded budget"));
+                // Hosted CI keeps only the console log, so report the measured values.
+                return Err(Failure::product(format!(
+                    "capture-to-recorded p99 {:.3} ms exceeded {max} ms budget (p50 {:.3} ms, max {:.3} ms)",
+                    percentile(0.99),
+                    percentile(0.50),
+                    times[times.len() - 1]
+                )));
             }
             Ok(result)
         } else {
@@ -773,9 +816,11 @@ impl Context {
             let result = json!({"kind":"resources","rss_peak_bytes":peak,"cpu_percent":cpu,"window_ms":started.elapsed().as_millis()});
             self.measurements.push(result.clone());
             let max_rss = step.number("rss_bytes", 30_000_000);
-            let max_cpu = step.fields.get("cpu_percent").and_then(Value::as_f64).unwrap_or(0.1);
+            let max_cpu = step.fields.get("cpu_percent").and_then(Value::as_f64).unwrap_or(0.1) * self.options.slowdown;
             if peak >= max_rss || cpu >= max_cpu {
-                return Err(Failure::product("RSS/CPU window exceeded budget"));
+                return Err(Failure::product(format!(
+                    "RSS/CPU window exceeded budget (RSS peak {peak} of {max_rss} bytes, CPU {cpu:.3}% of {max_cpu}%)"
+                )));
             }
             Ok(result)
         }
@@ -818,6 +863,19 @@ fn ordered(actual: &[Value], expected: &[Value], tail: bool, exact: bool) -> boo
     }
     if exact {
         return actual.len() == expected.len() && actual.iter().zip(expected).all(|(a, e)| matches(a, e));
+    }
+    if tail {
+        if !matches(&actual[actual.len() - 1], &expected[expected.len() - 1]) {
+            return false;
+        }
+        // Reserve the last record for the last expectation. Earlier matching
+        // subsequences must not hide a valid match that ends at the ledger tail.
+        return ordered(
+            &actual[..actual.len() - 1],
+            &expected[..expected.len() - 1],
+            false,
+            false,
+        ) || expected.len() == 1;
     }
     let mut next = 0;
     for (index, value) in actual.iter().enumerate() {

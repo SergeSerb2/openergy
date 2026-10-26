@@ -5,14 +5,31 @@ import SwiftUI
 @main
 enum Main {
     static func main() {
+        PrivateUpdateFixture.dispatchIfPresent()
         let arguments = ProcessInfo.processInfo.arguments
-        if let index = arguments.firstIndex(of: "--snapshot"), arguments.indices.contains(index + 1) {
+        let modes = ["--snapshot", "--e2e", "--updater-e2e", "--open-at-login"].filter(arguments.contains)
+        guard modes.count <= 1 else {
+            FileHandle.standardError.write(Data("Choose only one of --snapshot, --e2e, --updater-e2e, or --open-at-login.\n".utf8))
+            exit(64)
+        }
+        if arguments.contains("--updater-e2e") {
+            MainActor.assumeIsolated { UpdaterEndToEnd.run(arguments: arguments) }
+        }
+        if let index = arguments.firstIndex(of: "--snapshot") {
+            guard arguments.indices.contains(index + 1), !arguments[index + 1].hasPrefix("--") else {
+                FileHandle.standardError.write(Data("usage: Openergy --snapshot <directory>\n".utf8))
+                exit(64)
+            }
             MainActor.assumeIsolated {
                 SnapshotRenderer.run(outputDirectory: URL(fileURLWithPath: arguments[index + 1]))
             }
             return
         }
-        if let index = arguments.firstIndex(of: "--e2e"), arguments.indices.contains(index + 1) {
+        if let index = arguments.firstIndex(of: "--e2e") {
+            guard arguments.indices.contains(index + 1), !arguments[index + 1].hasPrefix("--") else {
+                FileHandle.standardError.write(Data("usage: Openergy --e2e <directory> --join 127.0.0.1:<port> --host-port <port>\n".utf8))
+                exit(64)
+            }
             MainActor.assumeIsolated {
                 AppEndToEnd.run(outputDirectory: URL(fileURLWithPath: arguments[index + 1]))
             }
@@ -56,24 +73,31 @@ enum LoginItemCommand {
 struct OpenergyApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
     @State private var model = AppModel.shared
+    @State private var updater = AppUpdater.shared
 
     var body: some Scene {
         MenuBarExtra {
-            MenuBarPanel(model: model)
+            MenuBarPanel(model: model, updater: updater)
+                .tracksWindowVisibility()
         } label: {
             MenuBarLabel(model: model)
         }
         .menuBarExtraStyle(.window)
 
         Window("Openergy", id: WindowID.main) {
-            MainWindow(model: model)
+            MainWindow(model: model, updater: updater)
                 .tint(Brand.accent)
+                .tracksWindowVisibility()
         }
         .defaultSize(width: 960, height: 640)
         .windowResizability(.contentMinSize)
         .defaultLaunchBehavior(.suppressed)
         .commands {
             CommandGroup(replacing: .newItem) {}
+            CommandGroup(after: .appInfo) {
+                Button("Check for Updates…") { updater.checkForUpdates() }
+                    .disabled(!updater.canCheckForUpdates)
+            }
             CommandGroup(replacing: .appSettings) {
                 OpenMainWindowButton(title: "Settings…")
                     .keyboardShortcut(",", modifiers: .command)
@@ -125,6 +149,11 @@ struct OpenMainWindowButton: View {
 }
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    @MainActor
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        AppUpdater.shared.startAfterNormalLaunch()
+    }
+
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { false }
 
     @MainActor

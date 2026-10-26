@@ -1,0 +1,1232 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-22",
+  "timezone": "America/Vancouver",
+  "result": "SUPPLEMENTARY driver and contracts PASS; strict short OS controls FAIL; original Windows acceptance remains FAIL",
+  "original_result_preserved": {
+    "source_commit": "07adb0a3cdc4cff1aa77ce31dbe078a48db56bd5",
+    "evidence_commit": "5d0d32c5ba8dbc94244c863db5beded7e5831cfb",
+    "record": "windows-dns-cancellation.md/.json",
+    "full_exit": 1,
+    "refusal_only_exit": 1,
+    "original_runs_repeated": false,
+    "original_runtime_failures_unchanged": true,
+    "original_evidence_files_hash_verified": 30,
+    "failure": "500 ms direct std OS numeric IPv4 control timed out before the NetDriver matrix",
+    "overall_windows_acceptance": "NOT_GRANTED"
+  },
+  "source_scope": {
+    "product_commit": "07adb0a3cdc4cff1aa77ce31dbe078a48db56bd5",
+    "original_archive_sha256": "23dfa9257d79c286cda94bf1381b60981ddb082a8edb24c0ba1ed54bc06c203f",
+    "original_manifest_sha256": "e3f31a782b3165c049ff7cbc360da894f599c7cd51b1cf68b9dc007bd1681e3c",
+    "original_probe_sha256": "a7dbab22249c7c65443c6943d04ab3c078d9d3f02a97016f5596fd0f6e6d4a2f",
+    "frozen_source_files": 658,
+    "frozen_source_readonly_before_after": true,
+    "product_edits": false,
+    "original_probe_edits": false,
+    "package_rebuild": false,
+    "original_strict_release_clippy": "Prior exact-source exit 0 retained; no package Clippy rerun needed for unchanged product source. Helper compiled with -D warnings.",
+    "parent_tools_e2e_changes_included": false,
+    "relationship": {
+      "product_source_commit": "07adb0a3cdc4cff1aa77ce31dbe078a48db56bd5",
+      "original_probe_sha256": "a7dbab22249c7c65443c6943d04ab3c078d9d3f02a97016f5596fd0f6e6d4a2f",
+      "helper_source_sha256": "009193b58d548fd5b2453599db81e7167ff35aee9f623aef1995c2fe70c92675",
+      "identical_shared_functions": [
+        {
+          "name": "config",
+          "source_sha256": "376eb85687e45666dcedffab3f9ffa42502e7a6c4c2f64ed5e868a66180b16f2",
+          "identical": true
+        },
+        {
+          "name": "connect",
+          "source_sha256": "196e2a37761396d507c664033f9bed800fc4333642c08f8ae9fc0320b43fbcde",
+          "identical": true
+        },
+        {
+          "name": "poll_until",
+          "source_sha256": "9603d53887d1eb76b945b8f28fcbcca8ac6568d6c73d770f6ff3f0fd710c424a",
+          "identical": true
+        },
+        {
+          "name": "connected",
+          "source_sha256": "db1873998763676dcc9621059c77959bd7c7953bb5d7e7a6e3c739451a2a47ef",
+          "identical": true
+        },
+        {
+          "name": "accept",
+          "source_sha256": "5fbf4645535893b7237476346b367ba93e35f1fa056b2e31d4b8afb9a3093cbf",
+          "identical": true
+        },
+        {
+          "name": "failure",
+          "source_sha256": "1ddd7ad1ea28cd1b7a6dc0bdfab4b00181061e645e9c60a8218a55959113b327",
+          "identical": true
+        },
+        {
+          "name": "exchange",
+          "source_sha256": "b3260fbfe97b2eb961b01e6e5f5109f7faecbb3da53008b35faf1d7afd773a82",
+          "identical": true
+        }
+      ],
+      "contracts_changes": [
+        "Return type Result<bool> becomes Result<()> because refusal matrix is now a separate mode.",
+        "Replace refusal_controls call with set_connect_timeout(LIMIT), preserving the 3-second deadline that refusal_controls restores before the later contracts.",
+        "Return Ok(()) instead of the removed refusal result."
+      ],
+      "contracts_otherwise_exact": true,
+      "standalone_matrix": [
+        "Real NetDriver; no mocks or resolver changes.",
+        "Keep 5-second connect deadline; observe all events for full 6 seconds per host case.",
+        "Require exactly one ConnectFailed with matching host/port, connect_refused prefix and Refused classification; reject any Connected or duplicate event."
+      ],
+      "direct_os_controls": "Explicit SO_EXCLUSIVEADDRUSE before loopback bind; verify option and duplicate bind rejection; close owned listener before each direct std::TcpStream::connect_timeout."
+    }
+  },
+  "isolation": {
+    "new_directory": "<DIAGNOSTIC_FIXTURE> under %LOCALAPPDATA%/Temp/oe-win-dns-supplement-<RANDOM>",
+    "existing_inputs": "<FROZEN_FIXTURE>, read only",
+    "current_user_only_protected_acl": true,
+    "private_temp_tmp": "<DIAGNOSTIC_FIXTURE>/temp",
+    "session": 0,
+    "priority": "BelowNormal",
+    "cargo_build_jobs": 2,
+    "concurrent_rustc_invocations": 1,
+    "loopback_tcp_port_range": [
+      25100,
+      25119
+    ],
+    "refusal_ports": [
+      25117,
+      25119
+    ],
+    "healthy_port": 25116,
+    "inbound_port": 25118,
+    "discovery": false,
+    "tls": false,
+    "native_backend": false,
+    "network_hosts_dns_firewall_changes": false,
+    "default_ports_used": false
+  },
+  "build": {
+    "started_utc": "2026-10-23T04:49:49.4255246Z",
+    "ended_utc": "2026-10-23T04:50:00.0787676Z",
+    "exit": 0,
+    "elapsed_ms": 10653,
+    "session": 0,
+    "priority": "BelowNormal",
+    "cargo_build_jobs": "2",
+    "concurrent_rustc_invocations": 1,
+    "tool_sha256": "ba03e3ba03a73d9fef19ab3659140f94b43615ec1d587fe9befc9aed3bd5aa72",
+    "source_sha256": "009193b58d548fd5b2453599db81e7167ff35aee9f623aef1995c2fe70c92675",
+    "arguments": [
+      "--edition=2021",
+      "--crate-name",
+      "windows_dns_supplement",
+      "--target",
+      "x86_64-pc-windows-msvc",
+      "-D",
+      "warnings",
+      "-C",
+      "opt-level=3",
+      "-C",
+      "panic=abort",
+      "-C",
+      "codegen-units=1",
+      "-C",
+      "lto=thin",
+      "-C",
+      "strip=symbols",
+      "--extern",
+      "openergy_net=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\libopenergy_net.rlib",
+      "--extern",
+      "openergy_session=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\libopenergy_session.rlib",
+      "-L",
+      "dependency=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\deps",
+      "-L",
+      "dependency=<FROZEN_FIXTURE>\\target\\release\\deps",
+      "-L",
+      "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\libc-08e3751533f86ee2\\out",
+      "-L",
+      "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\ring-808720db1c61002f\\out",
+      "-L",
+      "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\rustls-d819052e0a6d63e6\\out",
+      "-L",
+      "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde_core-365d1e5cc6382f48\\out",
+      "-L",
+      "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde_json-a6e20e9b06fa74a6\\out",
+      "-L",
+      "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde-032d36e65f1be6d3\\out",
+      "-L",
+      "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\zmij-f7a237327a1b169e\\out",
+      "<DIAGNOSTIC_FIXTURE>\\source\\windows_dns_supplement_v3.rs",
+      "-o",
+      "<DIAGNOSTIC_FIXTURE>\\bin\\windows_dns_supplement.exe"
+    ],
+    "library_inputs": [
+      {
+        "path": "target/x86_64-pc-windows-msvc/release/libopenergy_config.rlib",
+        "bytes": 4956660,
+        "sha256": "e0c384f63d6a8b17aca0f59cb3e48bbba86fd426940a1947fc86d20f34f6d5d5"
+      },
+      {
+        "path": "target/x86_64-pc-windows-msvc/release/libopenergy_ipc.rlib",
+        "bytes": 1470662,
+        "sha256": "02a611da55198603c1da45f13be2c2aeac7cd3d0267b59513d08f42df04f303f"
+      },
+      {
+        "path": "target/x86_64-pc-windows-msvc/release/libopenergy_net.rlib",
+        "bytes": 2009294,
+        "sha256": "1ba0d30e9f9649ce598b6d1035772d3712690e4a58e4011e41faa7ce3f241695"
+      },
+      {
+        "path": "target/x86_64-pc-windows-msvc/release/libopenergy_platform_windows.rlib",
+        "bytes": 2502216,
+        "sha256": "e1f089eeea82e04076cc08ae4f8cf161ae1f52a75bcffc2cb3bfe4db1db33552"
+      },
+      {
+        "path": "target/x86_64-pc-windows-msvc/release/libopenergy_platform.rlib",
+        "bytes": 2145816,
+        "sha256": "3600f940733517b1cf9a44dbcb4b7e616ce406981a08df7ddc61a9b516bf6c50"
+      },
+      {
+        "path": "target/x86_64-pc-windows-msvc/release/libopenergy_protocol.rlib",
+        "bytes": 274448,
+        "sha256": "e0e7fed6080833a4d5843d11ee6f7a4dbe2204119c9c41cc5c3caffa8871f4c6"
+      },
+      {
+        "path": "target/x86_64-pc-windows-msvc/release/libopenergy_session.rlib",
+        "bytes": 1036556,
+        "sha256": "afedd1f9fe61cd52ab14373cf276a6b1e4884e1000ea3ddcfb4733aefdaa003e"
+      }
+    ],
+    "binary": {
+      "bytes": 2376704,
+      "sha256": "6f8cfe24486017782bbfbb2838fea0da71a2c9dcf2bc5596133f77f4dfc1dcb3"
+    }
+  },
+  "compile_failures": [
+    {
+      "started_utc": "2026-10-23T04:47:00.3772010Z",
+      "ended_utc": "2026-10-23T04:47:00.6992953Z",
+      "exit": 1,
+      "elapsed_ms": 322,
+      "session": 0,
+      "priority": "BelowNormal",
+      "cargo_build_jobs": "2",
+      "concurrent_rustc_invocations": 1,
+      "tool_sha256": "ba03e3ba03a73d9fef19ab3659140f94b43615ec1d587fe9befc9aed3bd5aa72",
+      "source_sha256": "f192b63668ecb23769bc5edb2912a3d3b731f9223cfae3229fbc3c577977f398",
+      "arguments": [
+        "--edition=2021",
+        "--crate-name",
+        "windows_dns_supplement",
+        "--target",
+        "x86_64-pc-windows-msvc",
+        "-D",
+        "warnings",
+        "-C",
+        "opt-level=3",
+        "-C",
+        "panic=abort",
+        "-C",
+        "codegen-units=1",
+        "-C",
+        "lto=thin",
+        "-C",
+        "strip=symbols",
+        "--extern",
+        "openergy_net=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\libopenergy_net.rlib",
+        "--extern",
+        "openergy_session=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\libopenergy_session.rlib",
+        "-L",
+        "dependency=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\deps",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\libc-08e3751533f86ee2\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\ring-808720db1c61002f\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\rustls-d819052e0a6d63e6\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde_core-365d1e5cc6382f48\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde_json-a6e20e9b06fa74a6\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde-032d36e65f1be6d3\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\zmij-f7a237327a1b169e\\out",
+        "<DIAGNOSTIC_FIXTURE>\\source\\windows_dns_supplement.rs",
+        "-o",
+        "<DIAGNOSTIC_FIXTURE>\\bin\\windows_dns_supplement.exe"
+      ],
+      "library_inputs": [
+        {
+          "path": "target/x86_64-pc-windows-msvc/release/libopenergy_config.rlib",
+          "bytes": 4956660,
+          "sha256": "e0c384f63d6a8b17aca0f59cb3e48bbba86fd426940a1947fc86d20f34f6d5d5"
+        },
+        {
+          "path": "target/x86_64-pc-windows-msvc/release/libopenergy_ipc.rlib",
+          "bytes": 1470662,
+          "sha256": "02a611da55198603c1da45f13be2c2aeac7cd3d0267b59513d08f42df04f303f"
+        },
+        {
+          "path": "target/x86_64-pc-windows-msvc/release/libopenergy_net.rlib",
+          "bytes": 2009294,
+          "sha256": "1ba0d30e9f9649ce598b6d1035772d3712690e4a58e4011e41faa7ce3f241695"
+        },
+        {
+          "path": "target/x86_64-pc-windows-msvc/release/libopenergy_platform_windows.rlib",
+          "bytes": 2502216,
+          "sha256": "e1f089eeea82e04076cc08ae4f8cf161ae1f52a75bcffc2cb3bfe4db1db33552"
+        },
+        {
+          "path": "target/x86_64-pc-windows-msvc/release/libopenergy_platform.rlib",
+          "bytes": 2145816,
+          "sha256": "3600f940733517b1cf9a44dbcb4b7e616ce406981a08df7ddc61a9b516bf6c50"
+        },
+        {
+          "path": "target/x86_64-pc-windows-msvc/release/libopenergy_protocol.rlib",
+          "bytes": 274448,
+          "sha256": "e0e7fed6080833a4d5843d11ee6f7a4dbe2204119c9c41cc5c3caffa8871f4c6"
+        },
+        {
+          "path": "target/x86_64-pc-windows-msvc/release/libopenergy_session.rlib",
+          "bytes": 1036556,
+          "sha256": "afedd1f9fe61cd52ab14373cf276a6b1e4884e1000ea3ddcfb4733aefdaa003e"
+        }
+      ]
+    },
+    {
+      "started_utc": "2026-10-23T04:47:42.8333640Z",
+      "ended_utc": "2026-10-23T04:47:43.3192215Z",
+      "exit": 1,
+      "elapsed_ms": 485,
+      "session": 0,
+      "priority": "BelowNormal",
+      "cargo_build_jobs": "2",
+      "concurrent_rustc_invocations": 1,
+      "tool_sha256": "ba03e3ba03a73d9fef19ab3659140f94b43615ec1d587fe9befc9aed3bd5aa72",
+      "source_sha256": "f192b63668ecb23769bc5edb2912a3d3b731f9223cfae3229fbc3c577977f398",
+      "arguments": [
+        "--edition=2021",
+        "--crate-name",
+        "windows_dns_supplement",
+        "--target",
+        "x86_64-pc-windows-msvc",
+        "-D",
+        "warnings",
+        "-C",
+        "opt-level=3",
+        "-C",
+        "panic=abort",
+        "-C",
+        "codegen-units=1",
+        "-C",
+        "lto=thin",
+        "-C",
+        "strip=symbols",
+        "--extern",
+        "openergy_net=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\libopenergy_net.rlib",
+        "--extern",
+        "openergy_session=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\libopenergy_session.rlib",
+        "-L",
+        "dependency=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\deps",
+        "-L",
+        "dependency=<FROZEN_FIXTURE>\\target\\release\\deps",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\libc-08e3751533f86ee2\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\ring-808720db1c61002f\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\rustls-d819052e0a6d63e6\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde_core-365d1e5cc6382f48\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde_json-a6e20e9b06fa74a6\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde-032d36e65f1be6d3\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\zmij-f7a237327a1b169e\\out",
+        "<DIAGNOSTIC_FIXTURE>\\source\\windows_dns_supplement.rs",
+        "-o",
+        "<DIAGNOSTIC_FIXTURE>\\bin\\windows_dns_supplement.exe"
+      ],
+      "library_inputs": [
+        {
+          "path": "target/x86_64-pc-windows-msvc/release/libopenergy_config.rlib",
+          "bytes": 4956660,
+          "sha256": "e0c384f63d6a8b17aca0f59cb3e48bbba86fd426940a1947fc86d20f34f6d5d5"
+        },
+        {
+          "path": "target/x86_64-pc-windows-msvc/release/libopenergy_ipc.rlib",
+          "bytes": 1470662,
+          "sha256": "02a611da55198603c1da45f13be2c2aeac7cd3d0267b59513d08f42df04f303f"
+        },
+        {
+          "path": "target/x86_64-pc-windows-msvc/release/libopenergy_net.rlib",
+          "bytes": 2009294,
+          "sha256": "1ba0d30e9f9649ce598b6d1035772d3712690e4a58e4011e41faa7ce3f241695"
+        },
+        {
+          "path": "target/x86_64-pc-windows-msvc/release/libopenergy_platform_windows.rlib",
+          "bytes": 2502216,
+          "sha256": "e1f089eeea82e04076cc08ae4f8cf161ae1f52a75bcffc2cb3bfe4db1db33552"
+        },
+        {
+          "path": "target/x86_64-pc-windows-msvc/release/libopenergy_platform.rlib",
+          "bytes": 2145816,
+          "sha256": "3600f940733517b1cf9a44dbcb4b7e616ce406981a08df7ddc61a9b516bf6c50"
+        },
+        {
+          "path": "target/x86_64-pc-windows-msvc/release/libopenergy_protocol.rlib",
+          "bytes": 274448,
+          "sha256": "e0e7fed6080833a4d5843d11ee6f7a4dbe2204119c9c41cc5c3caffa8871f4c6"
+        },
+        {
+          "path": "target/x86_64-pc-windows-msvc/release/libopenergy_session.rlib",
+          "bytes": 1036556,
+          "sha256": "afedd1f9fe61cd52ab14373cf276a6b1e4884e1000ea3ddcfb4733aefdaa003e"
+        }
+      ]
+    },
+    {
+      "started_utc": "2026-10-23T04:48:43.7976167Z",
+      "ended_utc": "2026-10-23T04:48:44.0031353Z",
+      "exit": 1,
+      "elapsed_ms": 205,
+      "session": 0,
+      "priority": "BelowNormal",
+      "cargo_build_jobs": "2",
+      "concurrent_rustc_invocations": 1,
+      "tool_sha256": "ba03e3ba03a73d9fef19ab3659140f94b43615ec1d587fe9befc9aed3bd5aa72",
+      "source_sha256": "d3f3c6b03847fd6e7d1f0c8223850c8d98d6cb1ebd3177dd5b1560ee848e6162",
+      "arguments": [
+        "--edition=2021",
+        "--crate-name",
+        "windows_dns_supplement",
+        "--target",
+        "x86_64-pc-windows-msvc",
+        "-D",
+        "warnings",
+        "-C",
+        "opt-level=3",
+        "-C",
+        "panic=abort",
+        "-C",
+        "codegen-units=1",
+        "-C",
+        "lto=thin",
+        "-C",
+        "strip=symbols",
+        "--extern",
+        "openergy_net=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\libopenergy_net.rlib",
+        "--extern",
+        "openergy_session=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\libopenergy_session.rlib",
+        "-L",
+        "dependency=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\deps",
+        "-L",
+        "dependency=<FROZEN_FIXTURE>\\target\\release\\deps",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\libc-08e3751533f86ee2\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\ring-808720db1c61002f\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\rustls-d819052e0a6d63e6\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde_core-365d1e5cc6382f48\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde_json-a6e20e9b06fa74a6\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde-032d36e65f1be6d3\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\zmij-f7a237327a1b169e\\out",
+        "<DIAGNOSTIC_FIXTURE>\\source\\windows_dns_supplement_v2.rs",
+        "-o",
+        "<DIAGNOSTIC_FIXTURE>\\bin\\windows_dns_supplement.exe"
+      ],
+      "library_inputs": [
+        {
+          "path": "target/x86_64-pc-windows-msvc/release/libopenergy_config.rlib",
+          "bytes": 4956660,
+          "sha256": "e0c384f63d6a8b17aca0f59cb3e48bbba86fd426940a1947fc86d20f34f6d5d5"
+        },
+        {
+          "path": "target/x86_64-pc-windows-msvc/release/libopenergy_ipc.rlib",
+          "bytes": 1470662,
+          "sha256": "02a611da55198603c1da45f13be2c2aeac7cd3d0267b59513d08f42df04f303f"
+        },
+        {
+          "path": "target/x86_64-pc-windows-msvc/release/libopenergy_net.rlib",
+          "bytes": 2009294,
+          "sha256": "1ba0d30e9f9649ce598b6d1035772d3712690e4a58e4011e41faa7ce3f241695"
+        },
+        {
+          "path": "target/x86_64-pc-windows-msvc/release/libopenergy_platform_windows.rlib",
+          "bytes": 2502216,
+          "sha256": "e1f089eeea82e04076cc08ae4f8cf161ae1f52a75bcffc2cb3bfe4db1db33552"
+        },
+        {
+          "path": "target/x86_64-pc-windows-msvc/release/libopenergy_platform.rlib",
+          "bytes": 2145816,
+          "sha256": "3600f940733517b1cf9a44dbcb4b7e616ce406981a08df7ddc61a9b516bf6c50"
+        },
+        {
+          "path": "target/x86_64-pc-windows-msvc/release/libopenergy_protocol.rlib",
+          "bytes": 274448,
+          "sha256": "e0e7fed6080833a4d5843d11ee6f7a4dbe2204119c9c41cc5c3caffa8871f4c6"
+        },
+        {
+          "path": "target/x86_64-pc-windows-msvc/release/libopenergy_session.rlib",
+          "bytes": 1036556,
+          "sha256": "afedd1f9fe61cd52ab14373cf276a6b1e4884e1000ea3ddcfb4733aefdaa003e"
+        }
+      ]
+    }
+  ],
+  "metadata_lookup": {
+    "exit": 1,
+    "tool_sha256": "ba03e3ba03a73d9fef19ab3659140f94b43615ec1d587fe9befc9aed3bd5aa72",
+    "arguments": [
+      "--edition=2021",
+      "--crate-name",
+      "windows_dns_supplement",
+      "--target",
+      "x86_64-pc-windows-msvc",
+      "-D",
+      "warnings",
+      "-C",
+      "opt-level=3",
+      "-C",
+      "panic=abort",
+      "-C",
+      "codegen-units=1",
+      "-C",
+      "lto=thin",
+      "-C",
+      "strip=symbols",
+      "--extern",
+      "openergy_net=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\libopenergy_net.rlib",
+      "--extern",
+      "openergy_session=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\libopenergy_session.rlib",
+      "-L",
+      "dependency=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\deps",
+      "-L",
+      "dependency=<FROZEN_FIXTURE>\\target\\release\\deps",
+      "-L",
+      "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\libc-08e3751533f86ee2\\out",
+      "-L",
+      "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\ring-808720db1c61002f\\out",
+      "-L",
+      "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\rustls-d819052e0a6d63e6\\out",
+      "-L",
+      "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde_core-365d1e5cc6382f48\\out",
+      "-L",
+      "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde_json-a6e20e9b06fa74a6\\out",
+      "-L",
+      "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde-032d36e65f1be6d3\\out",
+      "-L",
+      "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\zmij-f7a237327a1b169e\\out",
+      "<DIAGNOSTIC_FIXTURE>\\source\\windows_dns_supplement.rs",
+      "-o",
+      "<DIAGNOSTIC_FIXTURE>\\bin\\locator.rmeta",
+      "--emit=metadata"
+    ]
+  },
+  "runtime": [
+    {
+      "mode": "os",
+      "arguments": [
+        "os",
+        "<DIAGNOSTIC_FIXTURE>\\runtime\\os"
+      ],
+      "binary_sha256": "6f8cfe24486017782bbfbb2838fea0da71a2c9dcf2bc5596133f77f4dfc1dcb3",
+      "source_sha256": "009193b58d548fd5b2453599db81e7167ff35aee9f623aef1995c2fe70c92675",
+      "session": 0,
+      "priority": "BelowNormal",
+      "started_utc": "2026-10-23T04:50:31.2662842Z",
+      "timeout_seconds": 180,
+      "timed_out": false,
+      "forced_cleanup": false,
+      "exit": 1,
+      "elapsed_ms": 10418,
+      "ended_utc": "2026-10-23T04:50:41.6866723Z",
+      "stdout_sha256": "4af32038fa10173963bb0bf5f0378bd7ac7a51c38186fb84b026bdd79269b237",
+      "stderr_sha256": "39abfb46d764d7a33427c01cec7c6ea1f01da3bc9cd3f72ee8f34cc12ba92b90",
+      "started_local": "2026-10-22T21:50:31.266284-07:00",
+      "ended_local": "2026-10-22T21:50:41.686672-07:00"
+    },
+    {
+      "mode": "driver",
+      "arguments": [
+        "driver",
+        "<DIAGNOSTIC_FIXTURE>\\runtime\\driver"
+      ],
+      "binary_sha256": "6f8cfe24486017782bbfbb2838fea0da71a2c9dcf2bc5596133f77f4dfc1dcb3",
+      "source_sha256": "009193b58d548fd5b2453599db81e7167ff35aee9f623aef1995c2fe70c92675",
+      "session": 0,
+      "priority": "BelowNormal",
+      "started_utc": "2026-10-23T04:50:41.7560377Z",
+      "timeout_seconds": 180,
+      "timed_out": false,
+      "forced_cleanup": false,
+      "exit": 0,
+      "elapsed_ms": 60325,
+      "ended_utc": "2026-10-23T04:51:42.0816215Z",
+      "stdout_sha256": "6dd7dacf49683d890a6f27bd8e046588f4ae58c5ec7f45ccedc3311a6b974e57",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "started_local": "2026-10-22T21:50:41.756037-07:00",
+      "ended_local": "2026-10-22T21:51:42.081621-07:00"
+    },
+    {
+      "mode": "contracts",
+      "arguments": [
+        "contracts",
+        "<DIAGNOSTIC_FIXTURE>\\runtime\\contracts"
+      ],
+      "binary_sha256": "6f8cfe24486017782bbfbb2838fea0da71a2c9dcf2bc5596133f77f4dfc1dcb3",
+      "source_sha256": "009193b58d548fd5b2453599db81e7167ff35aee9f623aef1995c2fe70c92675",
+      "session": 0,
+      "priority": "BelowNormal",
+      "started_utc": "2026-10-23T04:51:42.1297245Z",
+      "timeout_seconds": 180,
+      "timed_out": false,
+      "forced_cleanup": false,
+      "exit": 0,
+      "elapsed_ms": 2206,
+      "ended_utc": "2026-10-23T04:51:44.3367063Z",
+      "stdout_sha256": "310a55f29e2a506e0a42a44d0723999c081734c10914cf65b427508ae9047ae2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "started_local": "2026-10-22T21:51:42.129724-07:00",
+      "ended_local": "2026-10-22T21:51:44.336706-07:00"
+    }
+  ],
+  "os_controls": {
+    "direct_interface": "std::net::TcpStream::connect_timeout on numeric IPv4/IPv6 loopback addresses",
+    "exclusive_socket_option": "SO_EXCLUSIVEADDRUSE=1 set before bind; getsockopt confirms 1; duplicate std bind fails AddrInUse errno 10048; owned listener closes before each connect",
+    "exclusive_checks_passed": 8,
+    "observations": [
+      {
+        "address": "127.0.0.1:25117",
+        "window_ms": 500,
+        "elapsed_us": 508958,
+        "kind": "TimedOut",
+        "errno": "None",
+        "raw_line": "OS_CONNECT addr=127.0.0.1:25117 window_ms=500 elapsed_us=508958 kind=TimedOut errno=None error=Error { kind: TimedOut, message: \"connection timed out\" } refused_check=FAIL"
+      },
+      {
+        "address": "127.0.0.1:25117",
+        "window_ms": 6000,
+        "elapsed_us": 2019656,
+        "kind": "ConnectionRefused",
+        "errno": "Some(10061)",
+        "raw_line": "OS_CONNECT addr=127.0.0.1:25117 window_ms=6000 elapsed_us=2019656 kind=ConnectionRefused errno=Some(10061) error=Os { code: 10061, kind: ConnectionRefused, message: \"No connection could be made because the target machine actively refused it.\" } refused_check=PASS"
+      },
+      {
+        "address": "[::1]:25117",
+        "window_ms": 500,
+        "elapsed_us": 512013,
+        "kind": "TimedOut",
+        "errno": "None",
+        "raw_line": "OS_CONNECT addr=[::1]:25117 window_ms=500 elapsed_us=512013 kind=TimedOut errno=None error=Error { kind: TimedOut, message: \"connection timed out\" } refused_check=FAIL"
+      },
+      {
+        "address": "[::1]:25117",
+        "window_ms": 6000,
+        "elapsed_us": 2051868,
+        "kind": "ConnectionRefused",
+        "errno": "Some(10061)",
+        "raw_line": "OS_CONNECT addr=[::1]:25117 window_ms=6000 elapsed_us=2051868 kind=ConnectionRefused errno=Some(10061) error=Os { code: 10061, kind: ConnectionRefused, message: \"No connection could be made because the target machine actively refused it.\" } refused_check=PASS"
+      },
+      {
+        "address": "127.0.0.1:25119",
+        "window_ms": 500,
+        "elapsed_us": 515060,
+        "kind": "TimedOut",
+        "errno": "None",
+        "raw_line": "OS_CONNECT addr=127.0.0.1:25119 window_ms=500 elapsed_us=515060 kind=TimedOut errno=None error=Error { kind: TimedOut, message: \"connection timed out\" } refused_check=FAIL"
+      },
+      {
+        "address": "127.0.0.1:25119",
+        "window_ms": 6000,
+        "elapsed_us": 2023529,
+        "kind": "ConnectionRefused",
+        "errno": "Some(10061)",
+        "raw_line": "OS_CONNECT addr=127.0.0.1:25119 window_ms=6000 elapsed_us=2023529 kind=ConnectionRefused errno=Some(10061) error=Os { code: 10061, kind: ConnectionRefused, message: \"No connection could be made because the target machine actively refused it.\" } refused_check=PASS"
+      },
+      {
+        "address": "[::1]:25119",
+        "window_ms": 500,
+        "elapsed_us": 502310,
+        "kind": "TimedOut",
+        "errno": "None",
+        "raw_line": "OS_CONNECT addr=[::1]:25119 window_ms=500 elapsed_us=502310 kind=TimedOut errno=None error=Error { kind: TimedOut, message: \"connection timed out\" } refused_check=FAIL"
+      },
+      {
+        "address": "[::1]:25119",
+        "window_ms": 6000,
+        "elapsed_us": 2027432,
+        "kind": "ConnectionRefused",
+        "errno": "Some(10061)",
+        "raw_line": "OS_CONNECT addr=[::1]:25119 window_ms=6000 elapsed_us=2027432 kind=ConnectionRefused errno=Some(10061) error=Os { code: 10061, kind: ConnectionRefused, message: \"No connection could be made because the target machine actively refused it.\" } refused_check=PASS"
+      }
+    ],
+    "short_500ms": {
+      "cases": 4,
+      "result": "FAIL",
+      "kinds": [
+        "TimedOut"
+      ],
+      "errno": "None (Rust timeout error has no raw OS errno)",
+      "elapsed_us_min": 502310,
+      "elapsed_us_max": 515060
+    },
+    "long_6000ms": {
+      "cases": 4,
+      "result": "PASS",
+      "required_kind": "ConnectionRefused",
+      "errno": 10061,
+      "elapsed_us_min": 2019656,
+      "elapsed_us_max": 2051868
+    },
+    "mode_exit": 1,
+    "interpretation": "Separate longer bounded attempts returned ConnectionRefused after about 2 seconds, while 500 ms attempts timed out. This supports a short-observation mismatch; no cause for the delay is established. No timeout or silent outcome was treated as Refused."
+  },
+  "netdriver_refusal_matrix": {
+    "mode_exit": 0,
+    "cases": 10,
+    "connect_deadline_ms": 5000,
+    "event_observation_ms": 6000,
+    "original_os_prerequisite": "Bypassed only for this clearly labeled supplementary mode",
+    "requirements": [
+      "Exactly one NetEvent::ConnectFailed",
+      "Matching host and port",
+      "Error starts with connect_refused: and classifies as ConnectErrorKind::Refused",
+      "No NetEvent::Connected",
+      "No duplicate or late additional event throughout the full six-second observation"
+    ],
+    "passed": 10,
+    "false_connected": 0,
+    "duplicate_events": 0,
+    "cases_detail": [
+      {
+        "host": "127.0.0.1",
+        "port": 25117,
+        "first_event_us": 2012906,
+        "observed_us": 6009674,
+        "result": "PASS",
+        "raw_line": "DRIVER_REFUSAL host=127.0.0.1 port=25117 connect_deadline_ms=5000 observation_ms=6000 first_event_us=Some(2012906) elapsed_us=6009674 events=[ConnectFailed { host: \"127.0.0.1\", port: 25117, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }] exact_typed_connect_refused=PASS no_false_connected=PASS exactly_one_event=PASS result=PASS"
+      },
+      {
+        "host": "::1",
+        "port": 25117,
+        "first_event_us": 2033677,
+        "observed_us": 6004923,
+        "result": "PASS",
+        "raw_line": "DRIVER_REFUSAL host=::1 port=25117 connect_deadline_ms=5000 observation_ms=6000 first_event_us=Some(2033677) elapsed_us=6004923 events=[ConnectFailed { host: \"::1\", port: 25117, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }] exact_typed_connect_refused=PASS no_false_connected=PASS exactly_one_event=PASS result=PASS"
+      },
+      {
+        "host": "localhost",
+        "port": 25117,
+        "first_event_us": 4060092,
+        "observed_us": 6009132,
+        "result": "PASS",
+        "raw_line": "DRIVER_REFUSAL host=localhost port=25117 connect_deadline_ms=5000 observation_ms=6000 first_event_us=Some(4060092) elapsed_us=6009132 events=[ConnectFailed { host: \"localhost\", port: 25117, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }] exact_typed_connect_refused=PASS no_false_connected=PASS exactly_one_event=PASS result=PASS"
+      },
+      {
+        "host": "localhost",
+        "port": 25117,
+        "first_event_us": 4081839,
+        "observed_us": 6014319,
+        "result": "PASS",
+        "raw_line": "DRIVER_REFUSAL host=localhost port=25117 connect_deadline_ms=5000 observation_ms=6000 first_event_us=Some(4081839) elapsed_us=6014319 events=[ConnectFailed { host: \"localhost\", port: 25117, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }] exact_typed_connect_refused=PASS no_false_connected=PASS exactly_one_event=PASS result=PASS"
+      },
+      {
+        "host": "localhost",
+        "port": 25117,
+        "first_event_us": 4092032,
+        "observed_us": 6005177,
+        "result": "PASS",
+        "raw_line": "DRIVER_REFUSAL host=localhost port=25117 connect_deadline_ms=5000 observation_ms=6000 first_event_us=Some(4092032) elapsed_us=6005177 events=[ConnectFailed { host: \"localhost\", port: 25117, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }] exact_typed_connect_refused=PASS no_false_connected=PASS exactly_one_event=PASS result=PASS"
+      },
+      {
+        "host": "127.0.0.1",
+        "port": 25119,
+        "first_event_us": 2049742,
+        "observed_us": 6001037,
+        "result": "PASS",
+        "raw_line": "DRIVER_REFUSAL host=127.0.0.1 port=25119 connect_deadline_ms=5000 observation_ms=6000 first_event_us=Some(2049742) elapsed_us=6001037 events=[ConnectFailed { host: \"127.0.0.1\", port: 25119, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }] exact_typed_connect_refused=PASS no_false_connected=PASS exactly_one_event=PASS result=PASS"
+      },
+      {
+        "host": "::1",
+        "port": 25119,
+        "first_event_us": 2030201,
+        "observed_us": 6001040,
+        "result": "PASS",
+        "raw_line": "DRIVER_REFUSAL host=::1 port=25119 connect_deadline_ms=5000 observation_ms=6000 first_event_us=Some(2030201) elapsed_us=6001040 events=[ConnectFailed { host: \"::1\", port: 25119, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }] exact_typed_connect_refused=PASS no_false_connected=PASS exactly_one_event=PASS result=PASS"
+      },
+      {
+        "host": "localhost",
+        "port": 25119,
+        "first_event_us": 4054102,
+        "observed_us": 6007156,
+        "result": "PASS",
+        "raw_line": "DRIVER_REFUSAL host=localhost port=25119 connect_deadline_ms=5000 observation_ms=6000 first_event_us=Some(4054102) elapsed_us=6007156 events=[ConnectFailed { host: \"localhost\", port: 25119, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }] exact_typed_connect_refused=PASS no_false_connected=PASS exactly_one_event=PASS result=PASS"
+      },
+      {
+        "host": "localhost",
+        "port": 25119,
+        "first_event_us": 4074505,
+        "observed_us": 6000274,
+        "result": "PASS",
+        "raw_line": "DRIVER_REFUSAL host=localhost port=25119 connect_deadline_ms=5000 observation_ms=6000 first_event_us=Some(4074505) elapsed_us=6000274 events=[ConnectFailed { host: \"localhost\", port: 25119, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }] exact_typed_connect_refused=PASS no_false_connected=PASS exactly_one_event=PASS result=PASS"
+      },
+      {
+        "host": "localhost",
+        "port": 25119,
+        "first_event_us": 4082052,
+        "observed_us": 6003619,
+        "result": "PASS",
+        "raw_line": "DRIVER_REFUSAL host=localhost port=25119 connect_deadline_ms=5000 observation_ms=6000 first_event_us=Some(4082052) elapsed_us=6003619 events=[ConnectFailed { host: \"localhost\", port: 25119, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }] exact_typed_connect_refused=PASS no_false_connected=PASS exactly_one_event=PASS result=PASS"
+      }
+    ],
+    "observed_product_error": false
+  },
+  "later_contracts": {
+    "mode_exit": 0,
+    "function_relationship": "Original contracts body preserved apart from documented separation of refusal matrix and return type; original 3-second timeout restored explicitly.",
+    "passed_flags": [
+      "same_driver",
+      "same_handle",
+      "same_waker",
+      "disconnect_all_keeps_listener",
+      "shutdown_closes_listener",
+      "reconfigure",
+      "invalid_reconfigure_recovery",
+      "localhost",
+      "numeric_loopback",
+      "driver_drop"
+    ],
+    "positive_ipv6_frames": [
+      "HEALTHY host=::1 peer=[::1]:25116 frame_roundtrip=PASS",
+      "HEALTHY host=localhost peer=[::1]:25116 frame_roundtrip=PASS"
+    ],
+    "frame_roundtrips": 4,
+    "frame_validation": "Exact length-prefixed PASS outbound bytes and inbound BACK NetEvent::Frame, identical exchange helper to original probe.",
+    "typed_nul_hostname_dns_failure": true,
+    "ipv6_prerequisite_missing": false
+  },
+  "resolver_order": {
+    "observed": [
+      "::1",
+      "127.0.0.1"
+    ],
+    "ports": [
+      25117,
+      25119
+    ],
+    "captured_by": "Real std ToSocketAddrs in each supplementary mode; full raw outputs retained",
+    "order_forced": false,
+    "fallback": "The hostname refusals exercise both resolved closed loopback endpoints. Healthy reconfigure localhost traffic reaches IPv4-only listener, followed by explicit IPv6 and localhost IPv6 frames. Exact socket-attempt traces were not added."
+  },
+  "cleanup": {
+    "recorded_utc": "2026-10-23T04:52:13.0914495Z",
+    "passed": true,
+    "frozen_source_files": 658,
+    "frozen_source_readonly_all_match": true,
+    "frozen_binaries_all_match": true,
+    "frozen_libraries_all_match": true,
+    "original_evidence_files_unchanged": 30,
+    "diagnostic_helper": {
+      "bytes": 17231,
+      "sha256": "009193b58d548fd5b2453599db81e7167ff35aee9f623aef1995c2fe70c92675",
+      "readonly": true
+    },
+    "diagnostic_binary": {
+      "bytes": 2376704,
+      "sha256": "6f8cfe24486017782bbfbb2838fea0da71a2c9dcf2bc5596133f77f4dfc1dcb3",
+      "readonly": true
+    },
+    "tools": [
+      {
+        "name": "cargo.exe",
+        "bytes": 27543552,
+        "sha256": "aa5b8980be3681899fde765ba47e2ed361463ae9dd8ee7cd1963c18d23743a0f"
+      },
+      {
+        "name": "rustc.exe",
+        "bytes": 110592,
+        "sha256": "ba03e3ba03a73d9fef19ab3659140f94b43615ec1d587fe9befc9aed3bd5aa72"
+      },
+      {
+        "name": "cargo-clippy.exe",
+        "bytes": 1175040,
+        "sha256": "bea1e468b531a389f6fe164d76ba98f73a2dac3495998dd085365df92105134f"
+      },
+      {
+        "name": "clippy-driver.exe",
+        "bytes": 11308544,
+        "sha256": "648db1897ec48a9f64bae9e0624761abab7b2904a6ab25d53cc2869a0245f99e"
+      },
+      {
+        "name": "rustdoc.exe",
+        "bytes": 10895872,
+        "sha256": "e0d1377b110ca9ded22d58054b75e9a3ade64437b0a036d472c2ed7fbbe7ea65"
+      },
+      {
+        "name": "rustc_driver-58995fd3f1c8ecc6.dll",
+        "bytes": 206004736,
+        "sha256": "49372ce03e58bc7556d228c3a9e0d92d6643ba881a5563c76aa610646196d495"
+      }
+    ],
+    "acl_protected": true,
+    "current_user_only_acl_items": 47,
+    "remaining_fixture_executables": [],
+    "remaining_assigned_tcp_listeners": [],
+    "remaining_assigned_udp_endpoints": [],
+    "tcp_inventory_lines": 376,
+    "udp_inventory_lines": 67,
+    "tcp_inventory_exit": 0,
+    "udp_inventory_exit": 0,
+    "temp_entries": [],
+    "toolchains": [
+      "stable-x86_64-pc-windows-msvc (active, default)",
+      "nightly-x86_64-pc-windows-msvc",
+      "nightly-2026-08-10-x86_64-pc-windows-msvc",
+      "1.98.0-x86_64-pc-windows-msvc",
+      "1.99.1-x86_64-pc-windows-msvc"
+    ],
+    "diagnostic_file_hashes": [
+      {
+        "path": "build-supplement-v2.ps1",
+        "bytes": 3053,
+        "sha256": "c6366ee6c3617eb48bfe2ec7b33a981190736194a9e9e92cc34ff3f339692fe0"
+      },
+      {
+        "path": "build-supplement-v3.ps1",
+        "bytes": 3056,
+        "sha256": "f2a84b17a21ad5c087b29e6de10703e0662b9c6f514892c32a93f219bedbf7f9"
+      },
+      {
+        "path": "build-supplement-v4.ps1",
+        "bytes": 3056,
+        "sha256": "adb0e4a99c155d0ef5221f4b1ca224ce88ea669866a257c25573523ad3463cd1"
+      },
+      {
+        "path": "build-supplement.ps1",
+        "bytes": 2971,
+        "sha256": "e7a44a7f1dbe33184d71adf65bc4768ee15bc210f6940fe7b549b1d6f2055c4f"
+      },
+      {
+        "path": "compile-first-result.json",
+        "bytes": 4203,
+        "sha256": "de51ec185589b3e4904ebfedc94b2ff4b745590b42c557c84fa790f90949bb74"
+      },
+      {
+        "path": "compile-result.json",
+        "bytes": 4459,
+        "sha256": "a6c62eac13ab7bbbd03e7f51e6ba0378bd892ab6ba80587302256c235d6efff5"
+      },
+      {
+        "path": "compile-second-result.json",
+        "bytes": 4328,
+        "sha256": "4862632e4cfff57ca2d563a18d6784ebd3dbd0c5c22a34bb4a1cabc7c6590b2f"
+      },
+      {
+        "path": "compile-third-result.json",
+        "bytes": 4331,
+        "sha256": "bc350784f5bc7bed18b1b829597fc3d1fc9e765f681c60ab70af5fdc4faeca8a"
+      },
+      {
+        "path": "contracts-process.json",
+        "bytes": 541,
+        "sha256": "b7a5adaac90298998bf372ae716f3fdd56069bc2c55e7020c75162a308f38e56"
+      },
+      {
+        "path": "contracts-result.json",
+        "bytes": 802,
+        "sha256": "25a6c66bd6df2dc66cf0c5d07fa055e6898a622a7bc999fa4e07d70459449fdd"
+      },
+      {
+        "path": "driver-process.json",
+        "bytes": 532,
+        "sha256": "deadfdd1a5c4c1e9fbc7ed2e6937f991e906f57e7a2088c94b878364a1034bfe"
+      },
+      {
+        "path": "driver-result.json",
+        "bytes": 794,
+        "sha256": "e5981bbea14b1fda239467ba761fc43011c7484d6863f98633ef5d4cd0f560aa"
+      },
+      {
+        "path": "frozen-recorded-hashes.json",
+        "bytes": 2815,
+        "sha256": "4a55b953cb91f7f58e2b2171aa1bbe82d5a76d393d3379c4d3e2fbe95661a375"
+      },
+      {
+        "path": "locator-result.json",
+        "bytes": 2554,
+        "sha256": "79eb21420221df1c640c76510a20e61ec21ae5150f348a55df1d901cfdda3f36"
+      },
+      {
+        "path": "os-process.json",
+        "bytes": 520,
+        "sha256": "80cc493dc36b0960d622c4efeff2b0f6705a02c10979b10013c5b5324f0d8283"
+      },
+      {
+        "path": "os-result.json",
+        "bytes": 782,
+        "sha256": "65afea26f3c96e3ae3958ebec852a2332566701b3596ee7249f51beb864a47bc"
+      },
+      {
+        "path": "postflight-supplement.ps1",
+        "bytes": 5851,
+        "sha256": "9d9b72113817691389f30419b83080c95b5d858550349aec231cf64651b30bf8"
+      },
+      {
+        "path": "preflight.json",
+        "bytes": 3766,
+        "sha256": "a23af75929ab70436663fc14b6e3c35c6bce3db1dac82992194cb5b8eefea8fc"
+      },
+      {
+        "path": "run-supplement.ps1",
+        "bytes": 2928,
+        "sha256": "79944464c1c168e39335a3fbc585899ea26f0340ad59b6bd50171fa59f0b6435"
+      },
+      {
+        "path": "runtime-result.json",
+        "bytes": 2512,
+        "sha256": "5573853edfd2f31060fec00481fd1645e0c7c2981ee34b8c363f611fb53f823b"
+      },
+      {
+        "path": "bin/windows_dns_supplement.exe",
+        "bytes": 2376704,
+        "sha256": "6f8cfe24486017782bbfbb2838fea0da71a2c9dcf2bc5596133f77f4dfc1dcb3"
+      },
+      {
+        "path": "bin/windows_dns_supplement.pdb",
+        "bytes": 2256896,
+        "sha256": "576c580209b57369257a0e7063aba096abbb1b0d70e335d9c6ea374173511661"
+      },
+      {
+        "path": "logs/compile-first.log",
+        "bytes": 696,
+        "sha256": "29a964555e8ba0a30a842d1702d5a82102e2aa3d2a41934762a96b3e669f9597"
+      },
+      {
+        "path": "logs/compile-second.log",
+        "bytes": 2933,
+        "sha256": "4268120b860130d8d0d2f61e6d2c8dd7bc3f296a0f7c863c33af30561a7df34c"
+      },
+      {
+        "path": "logs/compile-third.log",
+        "bytes": 448,
+        "sha256": "90d2797a258dfdc65abb866dea12136893c6c60d0efe7d4c55e5dc6e4021ed18"
+      },
+      {
+        "path": "logs/compile.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "logs/contracts.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "logs/contracts.stdout",
+        "bytes": 730,
+        "sha256": "310a55f29e2a506e0a42a44d0723999c081734c10914cf65b427508ae9047ae2"
+      },
+      {
+        "path": "logs/driver.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "logs/driver.stdout",
+        "bytes": 4954,
+        "sha256": "6dd7dacf49683d890a6f27bd8e046588f4ae58c5ec7f45ccedc3311a6b974e57"
+      },
+      {
+        "path": "logs/locator.log",
+        "bytes": 311128,
+        "sha256": "5287ddb1e2bdfe3017a2c218accbc9985dae7f92fcad2911673b2d6df4cffbe4"
+      },
+      {
+        "path": "logs/os.stderr",
+        "bytes": 117,
+        "sha256": "39abfb46d764d7a33427c01cec7c6ea1f01da3bc9cd3f72ee8f34cc12ba92b90"
+      },
+      {
+        "path": "logs/os.stdout",
+        "bytes": 3140,
+        "sha256": "4af32038fa10173963bb0bf5f0378bd7ac7a51c38186fb84b026bdd79269b237"
+      },
+      {
+        "path": "source/windows_dns_supplement_v2.rs",
+        "bytes": 17542,
+        "sha256": "d3f3c6b03847fd6e7d1f0c8223850c8d98d6cb1ebd3177dd5b1560ee848e6162"
+      },
+      {
+        "path": "source/windows_dns_supplement_v3.rs",
+        "bytes": 17231,
+        "sha256": "009193b58d548fd5b2453599db81e7167ff35aee9f623aef1995c2fe70c92675"
+      },
+      {
+        "path": "source/windows_dns_supplement.rs",
+        "bytes": 17507,
+        "sha256": "f192b63668ecb23769bc5edb2912a3d3b731f9223cfae3229fbc3c577977f398"
+      }
+    ]
+  },
+  "retained_helper_failures": [
+    {
+      "stage": "first diagnostic fixture setup",
+      "exit": 1,
+      "error": "Cannot find an overload for CreateDirectory and the argument count: 2.",
+      "scope": "Frozen inputs were only read. Directory creation failed before a diagnostic directory was created.",
+      "resolution": "Use Windows PowerShell 5.1 for the .NET Framework ACL-aware creation overload, as in the original safe workflow. Use PowerShell 7 for build/runtime."
+    },
+    {
+      "stage": "second diagnostic setup transport",
+      "local_helper_exit": 1,
+      "remote_exit": "unknown",
+      "error": "SSH Windows PowerShell audit/create command timed out after 55 seconds.",
+      "resolution": "Recover any new diagnostic fixture before retrying. Keep Windows PowerShell limited to ACL-aware directory creation and use PowerShell 7 for hash audits.",
+      "recovery_observed": "One protected new fixture existed with empty source/bin and no preflight result. Reused it; no duplicate fixture. PowerShell 7 frozen-input audit passed."
+    },
+    {
+      "stage": "first standalone helper compile",
+      "exit": 1,
+      "error": "E0463: cannot find crate for openergy_net and openergy_session",
+      "source_sha256": "f192b63668ecb23769bc5edb2912a3d3b731f9223cfae3229fbc3c577977f398",
+      "resolution": "Added the existing Cargo host dependency search directory. No library or package rebuilt.",
+      "raw": "logs/compile-first.log"
+    },
+    {
+      "stage": "second standalone helper compile",
+      "exit": 1,
+      "error": "E0308/E0277: Windows RawSocket expects u64, helper used usize",
+      "source_sha256": "f192b63668ecb23769bc5edb2912a3d3b731f9223cfae3229fbc3c577977f398",
+      "resolution": "Use std::os::windows::io::RawSocket in the separate helper FFI. Frozen product source unchanged.",
+      "raw": "logs/compile-second.log"
+    },
+    {
+      "stage": "metadata-only compiler lookup diagnosis",
+      "exit": 1,
+      "error": "Same E0308/E0277 helper type mismatch after successful dependency lookup",
+      "resolution": "Focused rustc metadata log retained; no application runtime ran.",
+      "raw": "logs/locator.log"
+    },
+    {
+      "stage": "third standalone helper compile",
+      "exit": 1,
+      "error": "-D warnings rejects copied but unused no_accept helper",
+      "source_sha256": "d3f3c6b03847fd6e7d1f0c8223850c8d98d6cb1ebd3177dd5b1560ee848e6162",
+      "resolution": "Remove only that unused queue helper in the supplementary source. Do not allow/suppress the warning.",
+      "raw": "logs/compile-third.log"
+    },
+    {
+      "stage": "final Git whitespace check",
+      "command": "git show --format= --check HEAD",
+      "exit": 2,
+      "warning": "windows-dns-supplement/source/windows_dns_supplement_v3.rs:359: new blank line at EOF.",
+      "resolution": "Keep the helper byte-identical to the compiled native source and its recorded SHA-256. Retain this formatting warning; no source or runtime assertion changes."
+    }
+  ],
+  "raw_evidence": {
+    "private_windows": "<DIAGNOSTIC_FIXTURE>",
+    "private_local": "<PRIVATE_DIAGNOSTIC_EVIDENCE>/raw",
+    "bundle_sha256": "e2e9be541e578978b019625aa19208c324b966d0b665bccba83c57cf0ee44d0a",
+    "bundle_contains": [
+      "All helper source versions and scripts",
+      "All failed and successful compiler records and logs",
+      "Exact helper executable and generated PDB",
+      "OS, NetDriver and lifecycle runtime stdout/stderr and exit records",
+      "Frozen-input hash expectations and cleanup audit"
+    ],
+    "raw_file_sha256": {
+      "bin/windows_dns_supplement.exe": "6f8cfe24486017782bbfbb2838fea0da71a2c9dcf2bc5596133f77f4dfc1dcb3",
+      "bin/windows_dns_supplement.pdb": "576c580209b57369257a0e7063aba096abbb1b0d70e335d9c6ea374173511661",
+      "build-supplement-v2.ps1": "c6366ee6c3617eb48bfe2ec7b33a981190736194a9e9e92cc34ff3f339692fe0",
+      "build-supplement-v3.ps1": "f2a84b17a21ad5c087b29e6de10703e0662b9c6f514892c32a93f219bedbf7f9",
+      "build-supplement-v4.ps1": "adb0e4a99c155d0ef5221f4b1ca224ce88ea669866a257c25573523ad3463cd1",
+      "build-supplement.ps1": "e7a44a7f1dbe33184d71adf65bc4768ee15bc210f6940fe7b549b1d6f2055c4f",
+      "compile-first-result.json": "de51ec185589b3e4904ebfedc94b2ff4b745590b42c557c84fa790f90949bb74",
+      "compile-result.json": "a6c62eac13ab7bbbd03e7f51e6ba0378bd892ab6ba80587302256c235d6efff5",
+      "compile-second-result.json": "4862632e4cfff57ca2d563a18d6784ebd3dbd0c5c22a34bb4a1cabc7c6590b2f",
+      "compile-third-result.json": "bc350784f5bc7bed18b1b829597fc3d1fc9e765f681c60ab70af5fdc4faeca8a",
+      "contracts-process.json": "b7a5adaac90298998bf372ae716f3fdd56069bc2c55e7020c75162a308f38e56",
+      "contracts-result.json": "25a6c66bd6df2dc66cf0c5d07fa055e6898a622a7bc999fa4e07d70459449fdd",
+      "driver-process.json": "deadfdd1a5c4c1e9fbc7ed2e6937f991e906f57e7a2088c94b878364a1034bfe",
+      "driver-result.json": "e5981bbea14b1fda239467ba761fc43011c7484d6863f98633ef5d4cd0f560aa",
+      "frozen-recorded-hashes.json": "4a55b953cb91f7f58e2b2171aa1bbe82d5a76d393d3379c4d3e2fbe95661a375",
+      "helper-failures.json": "7ef2b7d2ee9a08f2606ed9078d08cd5dd0622d3c0c361ef952675024d9d49f69",
+      "locator-result.json": "79eb21420221df1c640c76510a20e61ec21ae5150f348a55df1d901cfdda3f36",
+      "logs/compile-first.log": "29a964555e8ba0a30a842d1702d5a82102e2aa3d2a41934762a96b3e669f9597",
+      "logs/compile-second.log": "4268120b860130d8d0d2f61e6d2c8dd7bc3f296a0f7c863c33af30561a7df34c",
+      "logs/compile-third.log": "90d2797a258dfdc65abb866dea12136893c6c60d0efe7d4c55e5dc6e4021ed18",
+      "logs/compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logs/contracts.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logs/contracts.stdout": "310a55f29e2a506e0a42a44d0723999c081734c10914cf65b427508ae9047ae2",
+      "logs/driver.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logs/driver.stdout": "6dd7dacf49683d890a6f27bd8e046588f4ae58c5ec7f45ccedc3311a6b974e57",
+      "logs/locator.log": "5287ddb1e2bdfe3017a2c218accbc9985dae7f92fcad2911673b2d6df4cffbe4",
+      "logs/os.stderr": "39abfb46d764d7a33427c01cec7c6ea1f01da3bc9cd3f72ee8f34cc12ba92b90",
+      "logs/os.stdout": "4af32038fa10173963bb0bf5f0378bd7ac7a51c38186fb84b026bdd79269b237",
+      "logs/postflight-netstat-tcp.txt": "3f3120d2f6b734614a720f0af424a63f5e58677b68940e10ffc1b79d16109a39",
+      "logs/postflight-netstat-udp.txt": "bd8569a6632ac56fe24bc6e700c36e290df04cda2f2297b24c57f83b267f24b2",
+      "os-process.json": "80cc493dc36b0960d622c4efeff2b0f6705a02c10979b10013c5b5324f0d8283",
+      "os-result.json": "65afea26f3c96e3ae3958ebec852a2332566701b3596ee7249f51beb864a47bc",
+      "postflight-supplement.ps1": "9d9b72113817691389f30419b83080c95b5d858550349aec231cf64651b30bf8",
+      "postflight.json": "179e8ecc927d6631084cb56e8e81c30087de2d0aeda095ea65334923926ae791",
+      "preflight.json": "a23af75929ab70436663fc14b6e3c35c6bce3db1dac82992194cb5b8eefea8fc",
+      "run-supplement.ps1": "79944464c1c168e39335a3fbc585899ea26f0340ad59b6bd50171fa59f0b6435",
+      "runtime-result.json": "5573853edfd2f31060fec00481fd1645e0c7c2981ee34b8c363f611fb53f823b",
+      "source/windows_dns_supplement.rs": "f192b63668ecb23769bc5edb2912a3d3b731f9223cfae3229fbc3c577977f398",
+      "source/windows_dns_supplement_v2.rs": "d3f3c6b03847fd6e7d1f0c8223850c8d98d6cb1ebd3177dd5b1560ee848e6162",
+      "source/windows_dns_supplement_v3.rs": "009193b58d548fd5b2453599db81e7167ff35aee9f623aef1995c2fe70c92675",
+      "source-relationship.json": "27475ae43956d20a78ae705631888fe8d3346f1c4a6ed0d967b72a68884990f1"
+    },
+    "stdout": {
+      "os": "SUPPLEMENT source=07adb0a3cdc4cff1aa77ce31dbe078a48db56bd5 mode=os discovery=OFF tls=OFF native=NONE original_probe=UNCHANGED_FAIL\nRESOLVER host=localhost addresses=[[::1]:25117, 127.0.0.1:25117]\nRESOLVER host=localhost addresses=[[::1]:25117, 127.0.0.1:25117]\nEXCLUSIVE_BIND addr=127.0.0.1:25117 SO_EXCLUSIVEADDRUSE=1 duplicate_kind=AddrInUse duplicate_errno=Some(10048) result=PASS\nOS_CONNECT addr=127.0.0.1:25117 window_ms=500 elapsed_us=508958 kind=TimedOut errno=None error=Error { kind: TimedOut, message: \"connection timed out\" } refused_check=FAIL\nEXCLUSIVE_BIND addr=127.0.0.1:25117 SO_EXCLUSIVEADDRUSE=1 duplicate_kind=AddrInUse duplicate_errno=Some(10048) result=PASS\nOS_CONNECT addr=127.0.0.1:25117 window_ms=6000 elapsed_us=2019656 kind=ConnectionRefused errno=Some(10061) error=Os { code: 10061, kind: ConnectionRefused, message: \"No connection could be made because the target machine actively refused it.\" } refused_check=PASS\nEXCLUSIVE_BIND addr=[::1]:25117 SO_EXCLUSIVEADDRUSE=1 duplicate_kind=AddrInUse duplicate_errno=Some(10048) result=PASS\nOS_CONNECT addr=[::1]:25117 window_ms=500 elapsed_us=512013 kind=TimedOut errno=None error=Error { kind: TimedOut, message: \"connection timed out\" } refused_check=FAIL\nEXCLUSIVE_BIND addr=[::1]:25117 SO_EXCLUSIVEADDRUSE=1 duplicate_kind=AddrInUse duplicate_errno=Some(10048) result=PASS\nOS_CONNECT addr=[::1]:25117 window_ms=6000 elapsed_us=2051868 kind=ConnectionRefused errno=Some(10061) error=Os { code: 10061, kind: ConnectionRefused, message: \"No connection could be made because the target machine actively refused it.\" } refused_check=PASS\nRESOLVER host=localhost addresses=[[::1]:25119, 127.0.0.1:25119]\nEXCLUSIVE_BIND addr=127.0.0.1:25119 SO_EXCLUSIVEADDRUSE=1 duplicate_kind=AddrInUse duplicate_errno=Some(10048) result=PASS\nOS_CONNECT addr=127.0.0.1:25119 window_ms=500 elapsed_us=515060 kind=TimedOut errno=None error=Error { kind: TimedOut, message: \"connection timed out\" } refused_check=FAIL\nEXCLUSIVE_BIND addr=127.0.0.1:25119 SO_EXCLUSIVEADDRUSE=1 duplicate_kind=AddrInUse duplicate_errno=Some(10048) result=PASS\nOS_CONNECT addr=127.0.0.1:25119 window_ms=6000 elapsed_us=2023529 kind=ConnectionRefused errno=Some(10061) error=Os { code: 10061, kind: ConnectionRefused, message: \"No connection could be made because the target machine actively refused it.\" } refused_check=PASS\nEXCLUSIVE_BIND addr=[::1]:25119 SO_EXCLUSIVEADDRUSE=1 duplicate_kind=AddrInUse duplicate_errno=Some(10048) result=PASS\nOS_CONNECT addr=[::1]:25119 window_ms=500 elapsed_us=502310 kind=TimedOut errno=None error=Error { kind: TimedOut, message: \"connection timed out\" } refused_check=FAIL\nEXCLUSIVE_BIND addr=[::1]:25119 SO_EXCLUSIVEADDRUSE=1 duplicate_kind=AddrInUse duplicate_errno=Some(10048) result=PASS\nOS_CONNECT addr=[::1]:25119 window_ms=6000 elapsed_us=2027432 kind=ConnectionRefused errno=Some(10061) error=Os { code: 10061, kind: ConnectionRefused, message: \"No connection could be made because the target machine actively refused it.\" } refused_check=PASS\nOS_RESULT short_window_failures=4 long_window_failures=0 original_probe=UNCHANGED_FAIL windows_acceptance=NOT_GRANTED\n",
+      "driver": "SUPPLEMENT source=07adb0a3cdc4cff1aa77ce31dbe078a48db56bd5 mode=driver discovery=OFF tls=OFF native=NONE original_probe=UNCHANGED_FAIL\nRESOLVER host=localhost addresses=[[::1]:25117, 127.0.0.1:25117]\nRESOLVER host=localhost addresses=[[::1]:25117, 127.0.0.1:25117]\nEXCLUSIVE_BIND addr=127.0.0.1:25117 SO_EXCLUSIVEADDRUSE=1 duplicate_kind=AddrInUse duplicate_errno=Some(10048) result=PASS\nEXCLUSIVE_BIND addr=[::1]:25117 SO_EXCLUSIVEADDRUSE=1 duplicate_kind=AddrInUse duplicate_errno=Some(10048) result=PASS\nDRIVER_REFUSAL host=127.0.0.1 port=25117 connect_deadline_ms=5000 observation_ms=6000 first_event_us=Some(2012906) elapsed_us=6009674 events=[ConnectFailed { host: \"127.0.0.1\", port: 25117, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }] exact_typed_connect_refused=PASS no_false_connected=PASS exactly_one_event=PASS result=PASS\nDRIVER_REFUSAL host=::1 port=25117 connect_deadline_ms=5000 observation_ms=6000 first_event_us=Some(2033677) elapsed_us=6004923 events=[ConnectFailed { host: \"::1\", port: 25117, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }] exact_typed_connect_refused=PASS no_false_connected=PASS exactly_one_event=PASS result=PASS\nDRIVER_REFUSAL host=localhost port=25117 connect_deadline_ms=5000 observation_ms=6000 first_event_us=Some(4060092) elapsed_us=6009132 events=[ConnectFailed { host: \"localhost\", port: 25117, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }] exact_typed_connect_refused=PASS no_false_connected=PASS exactly_one_event=PASS result=PASS\nDRIVER_REFUSAL host=localhost port=25117 connect_deadline_ms=5000 observation_ms=6000 first_event_us=Some(4081839) elapsed_us=6014319 events=[ConnectFailed { host: \"localhost\", port: 25117, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }] exact_typed_connect_refused=PASS no_false_connected=PASS exactly_one_event=PASS result=PASS\nDRIVER_REFUSAL host=localhost port=25117 connect_deadline_ms=5000 observation_ms=6000 first_event_us=Some(4092032) elapsed_us=6005177 events=[ConnectFailed { host: \"localhost\", port: 25117, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }] exact_typed_connect_refused=PASS no_false_connected=PASS exactly_one_event=PASS result=PASS\nRESOLVER host=localhost addresses=[[::1]:25119, 127.0.0.1:25119]\nEXCLUSIVE_BIND addr=127.0.0.1:25119 SO_EXCLUSIVEADDRUSE=1 duplicate_kind=AddrInUse duplicate_errno=Some(10048) result=PASS\nEXCLUSIVE_BIND addr=[::1]:25119 SO_EXCLUSIVEADDRUSE=1 duplicate_kind=AddrInUse duplicate_errno=Some(10048) result=PASS\nDRIVER_REFUSAL host=127.0.0.1 port=25119 connect_deadline_ms=5000 observation_ms=6000 first_event_us=Some(2049742) elapsed_us=6001037 events=[ConnectFailed { host: \"127.0.0.1\", port: 25119, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }] exact_typed_connect_refused=PASS no_false_connected=PASS exactly_one_event=PASS result=PASS\nDRIVER_REFUSAL host=::1 port=25119 connect_deadline_ms=5000 observation_ms=6000 first_event_us=Some(2030201) elapsed_us=6001040 events=[ConnectFailed { host: \"::1\", port: 25119, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }] exact_typed_connect_refused=PASS no_false_connected=PASS exactly_one_event=PASS result=PASS\nDRIVER_REFUSAL host=localhost port=25119 connect_deadline_ms=5000 observation_ms=6000 first_event_us=Some(4054102) elapsed_us=6007156 events=[ConnectFailed { host: \"localhost\", port: 25119, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }] exact_typed_connect_refused=PASS no_false_connected=PASS exactly_one_event=PASS result=PASS\nDRIVER_REFUSAL host=localhost port=25119 connect_deadline_ms=5000 observation_ms=6000 first_event_us=Some(4074505) elapsed_us=6000274 events=[ConnectFailed { host: \"localhost\", port: 25119, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }] exact_typed_connect_refused=PASS no_false_connected=PASS exactly_one_event=PASS result=PASS\nDRIVER_REFUSAL host=localhost port=25119 connect_deadline_ms=5000 observation_ms=6000 first_event_us=Some(4082052) elapsed_us=6003619 events=[ConnectFailed { host: \"localhost\", port: 25119, error: \"connect_refused: No connection could be made because the target machine actively refused it. (os error 10061)\" }] exact_typed_connect_refused=PASS no_false_connected=PASS exactly_one_event=PASS result=PASS\nDRIVER_RESULT cases=10 failures=0 original_os_prerequisite=BYPASSED_ONLY_FOR_THIS_SUPPLEMENT windows_acceptance=NOT_GRANTED\n",
+      "contracts": "SUPPLEMENT source=07adb0a3cdc4cff1aa77ce31dbe078a48db56bd5 mode=contracts discovery=OFF tls=OFF native=NONE original_probe=UNCHANGED_FAIL\nRESOLVER host=localhost addresses=[[::1]:25117, 127.0.0.1:25117]\nFAILURE case=invalid_hostname events=[ConnectFailed { host: \"invalid\\0hostname\", port: 25117, error: \"dns_failed: file name contained an unexpected NUL byte\" }] classified_dns=PASS\nHEALTHY host=::1 peer=[::1]:25116 frame_roundtrip=PASS\nHEALTHY host=localhost peer=[::1]:25116 frame_roundtrip=PASS\nCONTRACTS same_driver=PASS same_handle=PASS same_waker=PASS disconnect_all_keeps_listener=PASS shutdown_closes_listener=PASS reconfigure=PASS invalid_reconfigure_recovery=PASS localhost=PASS numeric_loopback=PASS driver_drop=PASS\n"
+    },
+    "stderr": {
+      "os": "windows_dns_supplement: direct OS matrix has strict ConnectionRefused failures; see separate short/long observations\n",
+      "driver": "",
+      "contracts": ""
+    },
+    "failed_compiler_logs": {
+      "compile-first.log": "error[E0463]: can't find crate for `openergy_net`\n --> <DIAGNOSTIC_FIXTURE>\\source\\windows_dns_supplement.rs:4:5\n  |\n4 | use openergy_net::{ConnectErrorKind, NetCommand, NetConfig, NetDriver, NetError, NetEvent, Priority, TransportMode};\n  |     ^^^^^^^^^^^^ can't find crate\n\nerror[E0463]: can't find crate for `openergy_session`\n --> <DIAGNOSTIC_FIXTURE>\\source\\windows_dns_supplement.rs:5:5\n  |\n5 | use openergy_session::ConnId;\n  |     ^^^^^^^^^^^^^^^^ can't find crate\n\nerror: aborting due to 2 previous errors\n\nFor more information about this error, try `rustc --explain E0463`.\n",
+      "compile-second.log": "error[E0308]: mismatched types\n  --> <DIAGNOSTIC_FIXTURE>\\source\\windows_dns_supplement.rs:47:58\n   |\n47 |     let listener = unsafe { TcpListener::from_raw_socket(raw) };\n   |                             ---------------------------- ^^^ expected `u64`, found `usize`\n   |                             |\n   |                             arguments to this function are incorrect\n   |\nnote: associated function defined here\n  --> /rustc/58cf8f9c35b355199727627d07ae34a4e2846d67/library\\std\\src\\os\\windows\\io\\raw.rs:216:14\nhelp: you can convert a `usize` to a `u64` and panic if the converted value doesn't fit\n   |\n47 |     let listener = unsafe { TcpListener::from_raw_socket(raw.try_into().unwrap()) };\n   |                                                             ++++++++++++++++++++\n\nerror[E0308]: mismatched types\n  --> <DIAGNOSTIC_FIXTURE>\\source\\windows_dns_supplement.rs:53:65\n   |\n53 |     if observed != 1 || len != 4 || listener.as_raw_socket() != raw { return Err(\"exclusive socket option mismatch\".into()); }\n   |                                                                 ^^^ expected `u64`, found `usize`\n\nerror[E0277]: can't compare `u64` with `usize`\n   --> <DIAGNOSTIC_FIXTURE>\\source\\windows_dns_supplement.rs:53:62\n    |\n 53 |     if observed != 1 || len != 4 || listener.as_raw_socket() != raw { return Err(\"exclusive socket option mismatch\".into()); }\n    |                                                              ^^ no implementation for `u64 == usize`\n    |\n    = help: the trait `PartialEq<usize>` is not implemented for `u64`\nhelp: `u64` implements trait `PartialEq<Rhs>`\n   --> /rustc/58cf8f9c35b355199727627d07ae34a4e2846d67/library\\core\\src\\cmp.rs:2103:12\n    |\n    = note: `PartialEq`\n   ::: /rustc/58cf8f9c35b355199727627d07ae34a4e2846d67/library\\core\\src\\cmp.rs:2115:5\n    |\n    = note: in this macro invocation\n    |\n   ::: <WINDOWS_USERPROFILE>\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\serde_json-1.0.154\\src\\value\\partial_eq.rs:76:13\n    |\n 76 |               impl PartialEq<Value> for $ty {\n    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `PartialEq<serde_json::value::Value>`\n...\n 97 | / partialeq_numeric! {\n 98 | |     eq_i64[i8 i16 i32 i64 isize]\n 99 | |     eq_u64[u8 u16 u32 u64 usize]\n100 | |     eq_f32[f32]\n101 | |     eq_f64[f64]\n102 | |     eq_bool[bool]\n103 | | }\n    | |_- in this macro invocation\n    = note: this error originates in the macro `impl_partial_eq_for_primitive` which comes from the expansion of the macro `partialeq_numeric` (in Nightly builds, run with -Z macro-backtrace for more info)\n\nerror: aborting due to 3 previous errors\n\nSome errors have detailed explanations: E0277, E0308.\nFor more information about an error, try `rustc --explain E0277`.\n",
+      "compile-third.log": "error: function `no_accept` is never used\n   --> <DIAGNOSTIC_FIXTURE>\\source\\windows_dns_supplement_v2.rs:217:4\n    |\n217 | fn no_accept(listeners: &[TcpListener]) -> Result<()> {\n    |    ^^^^^^^^^\n    |\n    = note: `-D dead-code` implied by `-D warnings`\n    = help: to override `-D warnings` add `#[expect(dead_code)]` or `#[allow(dead_code)]`\n\nerror: aborting due to 1 previous error\n\n"
+    },
+    "runtime_transport_exit": 1,
+    "postflight_transport_exit": 0
+  },
+  "remaining_gates": [
+    "Original unchanged short-window Windows full/refusal-only acceptance FAIL",
+    "Cause of approximately two-second numeric OS refusal delay unresolved",
+    "Active OS DNS timing/cancellation and deterministic slow-DNS head-of-line gates",
+    "Provider-stopped cache-expiry crafted test and original release-provenance review not rerouted or run",
+    "Native input/clipboard",
+    "Positive Windows migration",
+    "Privilege/provenance and trusted signed distribution",
+    "No broad Windows acceptance from a bypassed prerequisite"
+  ],
+  "preserved_boundaries": [
+    "No installed daemon/backend, native input/clipboard/desktop or live sharing changes",
+    "No services/tasks/elevation/accounts/TCC/login changes",
+    "No stack/interface/firewall/hosts/DNS/network/credential changes",
+    "No production config/TLS/default IPC, port 24800 or mDNS 5353 changes",
+    "No toolchain installation/default changes",
+    "No product source changes or writes to old frozen fixture",
+    "No unit tests/mocks, Docker, signing/publication, push/merge, GitHub posts or other-thread messages"
+  ],
+  "stop_instruction": {
+    "bounded_work_complete": true,
+    "followup_started": false,
+    "further_work": "Stop after this scoped evidence/source commit; wait until the user resumes."
+  }
+}

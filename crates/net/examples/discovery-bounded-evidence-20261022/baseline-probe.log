@@ -1,0 +1,39 @@
+RETAINED_CACHE_METRICS={"cached-addr": 1, "cached-ptr": 801, "cached-nsec": 0, "dns-registry-timer": 0, "dns-registry-name-change": 0, "cache-refresh-addr": 0, "dns-registry-probe": 0, "cached-srv": 499, "cache-refresh-srv-txt": 0, "dns-registry-active": 0, "cache-refresh-ptr": 0, "browse": 2, "timer": 7704, "cached-subtype": 0, "known-answer-suppression": 0, "cached-txt": 499}
+RETAINED_REPLAY attempt=1 drained=1000 disconnected=true elapsed_ms=95
+RETAINED_REPLAY attempt=2 drained=1000 disconnected=true elapsed_ms=99
+RETAINED_CACHE_AFTER_STOP={"cached-addr": 1, "cached-ptr": 801, "cached-nsec": 0, "dns-registry-timer": 0, "dns-registry-name-change": 0, "cache-refresh-addr": 0, "dns-registry-probe": 0, "cached-srv": 499, "cache-refresh-srv-txt": 0, "dns-registry-active": 0, "cache-refresh-ptr": 0, "browse": 2, "timer": 8006, "cached-subtype": 0, "known-answer-suppression": 0, "cached-txt": 499}
+RETAINED_NAMESPACE burst=800 selected=burst-0017 full_polls=12 empty_polls=156 snapshots=6 update_seen=true update_stays_fresh=false removal_seen=true removal_regressed=false
+RECOVERY_OBSERVATION_MS=0
+CHECK initial-resolution=true
+CHECK real-upstream-channel-overflow=true
+CHECK snapshot-cap=true
+CHECK snapshot-emission-spacing=true
+CHECK retained-namespace-stays-useful=false
+CHECK retained-selected-peer-live-update=false
+CHECK retained-selected-peer-goodbye=false
+CHECK fresh-advertisement-after-overflow=true
+CHECK updated-port-and-untrusted-hint=true
+CHECK goodbye-removes-all-peers=true
+CHECK publisher-exits-zero=true
+CHECK discovery-shutdown-submitted=true
+CHECK sentinel-worker-shutdown-ack=true
+BURST_SERVICES=800 SNAPSHOT_PEAK=64
+discovery_recovery: discovery recovery checks failed
+       33.35 real         1.77 user         0.29 sys
+            11403264  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                1690  page reclaims
+                   9  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                8213  messages sent
+               18685  messages received
+                   0  signals received
+                   7  voluntary context switches
+               12234  involuntary context switches
+         15900154938  instructions retired
+          5048950497  cycles elapsed
+             9060856  peak memory footprint

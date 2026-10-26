@@ -1,0 +1,16 @@
+OS_REFUSAL addr=127.0.0.1:25117 exclusive_bind=PASS kind=ConnectionRefused errno=Some(61)
+OS_REFUSAL addr=[::1]:25117 exclusive_bind=PASS kind=ConnectionRefused errno=Some(61)
+[DEBUG-c46e00d5] token=2 peer=127.0.0.1:25117 readable=false writable=true closed=true take_error=Ok(Some(Os { code: 61, kind: ConnectionRefused, message: "Connection refused" })) peer_addr=Err(Os { code: 22, kind: InvalidInput, message: "Invalid argument" })
+FAILURE host=127.0.0.1 port=25117 events=[ConnectFailed { host: "127.0.0.1", port: 25117, error: "connect_refused: Connection refused (os error 61)" }] classified_refused=PASS elapsed_us=23118
+[DEBUG-c46e00d5] token=3 peer=[::1]:25117 readable=false writable=true closed=true take_error=Ok(Some(Os { code: 61, kind: ConnectionRefused, message: "Connection refused" })) peer_addr=Err(Os { code: 22, kind: InvalidInput, message: "Invalid argument" })
+FAILURE host=::1 port=25117 events=[ConnectFailed { host: "::1", port: 25117, error: "connect_refused: Connection refused (os error 61)" }] classified_refused=PASS elapsed_us=22917
+[DEBUG-c46e00d5] token=4 peer=[::1]:25117 readable=false writable=true closed=true take_error=Ok(Some(Os { code: 61, kind: ConnectionRefused, message: "Connection refused" })) peer_addr=Err(Os { code: 22, kind: InvalidInput, message: "Invalid argument" })
+[DEBUG-c46e00d5] token=4 peer=127.0.0.1:25117 readable=true writable=false closed=true take_error=Ok(None) peer_addr=Err(Os { code: 57, kind: NotConnected, message: "Socket is not connected" })
+FAILURE host=localhost port=25117 events=[Connected { conn: ConnId(4), peer: 127.0.0.1:25117, fingerprint: None, tls: false, tls_version: None }, Disconnected { conn: ConnId(4), reason: ClosedByPeer }] classified_refused=FAIL elapsed_us=23608
+[DEBUG-c46e00d5] token=5 peer=[::1]:25117 readable=false writable=true closed=true take_error=Ok(Some(Os { code: 61, kind: ConnectionRefused, message: "Connection refused" })) peer_addr=Err(Os { code: 22, kind: InvalidInput, message: "Invalid argument" })
+[DEBUG-c46e00d5] token=5 peer=127.0.0.1:25117 readable=true writable=false closed=true take_error=Ok(None) peer_addr=Err(Os { code: 57, kind: NotConnected, message: "Socket is not connected" })
+FAILURE host=localhost port=25117 events=[Connected { conn: ConnId(5), peer: 127.0.0.1:25117, fingerprint: None, tls: false, tls_version: None }, Disconnected { conn: ConnId(5), reason: ClosedByPeer }] classified_refused=FAIL elapsed_us=23375
+[DEBUG-c46e00d5] token=6 peer=[::1]:25117 readable=false writable=true closed=true take_error=Ok(Some(Os { code: 61, kind: ConnectionRefused, message: "Connection refused" })) peer_addr=Err(Os { code: 22, kind: InvalidInput, message: "Invalid argument" })
+[DEBUG-c46e00d5] token=6 peer=127.0.0.1:25117 readable=true writable=false closed=true take_error=Ok(None) peer_addr=Err(Os { code: 57, kind: NotConnected, message: "Socket is not connected" })
+FAILURE host=localhost port=25117 events=[Connected { conn: ConnId(6), peer: 127.0.0.1:25117, fingerprint: None, tls: false, tls_version: None }, Disconnected { conn: ConnId(6), reason: ClosedByPeer }] classified_refused=FAIL elapsed_us=23173
+dns_queue_cancel_c4806a3d: refusal matrix failed

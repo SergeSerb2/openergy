@@ -41,6 +41,8 @@ pub enum ServerEvent {
     LocalInput(InputEvent),
     LocalClipboardChanged { id: ClipboardId },
     ClipboardPayload { id: ClipboardId, data: ClipboardData },
+    // A requested local read failed, was blocked, or could not be queued.
+    ClipboardReadFailed { id: ClipboardId },
     TimerTick { now_ms: u64 },
     ConfigChanged(Arc<Config>),
     DisplayChanged,
@@ -59,6 +61,8 @@ pub enum ClientEvent {
     ServerDisconnected { conn: ConnId, reason: DisconnectReason },
     LocalClipboardChanged { id: ClipboardId },
     ClipboardPayload { id: ClipboardId, data: ClipboardData },
+    // A requested local read failed, was blocked, or could not be queued.
+    ClipboardReadFailed { id: ClipboardId },
     TimerTick { now_ms: u64 },
     ConfigChanged(Arc<Config>),
     DisplayChanged,
@@ -129,6 +133,7 @@ impl std::error::Error for SessionError {}
 mod client;
 pub mod clipboard;
 mod common;
+mod hotkey;
 pub mod layout;
 mod server;
 pub use client::Client;

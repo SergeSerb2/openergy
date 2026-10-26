@@ -1,0 +1,76 @@
+# Requirement: Pre-1.8 repeats accept absent and present language fields, with fragmented hello and coalesced input.
+name = "P04-legacy-repeat-dialects"
+requirement = "Pre-1.8 repeats accept absent and present language fields, with fragmented hello and coalesced input."
+timeout_ms = 3000
+
+[[node]]
+id = "server"
+kind = "raw"
+role = "server"
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+platform = "virtual"
+tls = false
+
+[[step]]
+do = "raw_send"
+node = "server"
+hex = "0000"
+
+[[step]]
+do = "raw_send"
+node = "server"
+hex = "000b73596e457247"
+
+[[step]]
+do = "raw_send"
+node = "server"
+hex = "7900010007"
+
+[[step]]
+do = "raw_expect"
+node = "server"
+builder = "hello_back"
+product = "sYnErGy"
+minor = 7
+name = "client"
+
+[[step]]
+do = "raw_send"
+node = "server"
+hex = "0000000451494e46000000044349414b0000000844534f50000000000000000e43494e4e0014001e000000010000"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "ledger_mark"
+node = "client"
+save = "before"
+
+[[step]]
+do = "raw_send"
+node = "server"
+hex = "0000000a444b444e0061000000010000000c444b5250006100000002000100000012444b5250006100000002000100000002656e0000000a444b55500061000000010000000443414c56"
+
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+since = "${before.sequence}"
+input_only = true
+exact = true
+expect = [{event = {type = "key_down", key = 97}}, {event = {type = "key_repeat", key = 97, count = 2}}, {event = {type = "key_repeat", key = 97, count = 2}}, {event = {type = "key_up", key = 97}}]
+
+[[step]]
+do = "raw_expect"
+node = "server"
+builder = "code"
+code = "CALV"
+framed = true
+payload_only = true
+scan = true

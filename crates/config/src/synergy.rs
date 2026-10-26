@@ -29,9 +29,14 @@ pub(crate) fn disconnected() -> LinksCfg {
     }
 }
 pub fn import_synergy_conf(text: &str) -> Result<(Config, ImportReport), ConfigError> {
-    overlay_conf(text, None)
+    let (cfg, mut report) = overlay_conf(text, None)?;
+    cfg.validate()?;
+    report.warnings.extend(cfg.warnings());
+    Ok((cfg, report))
 }
 
+// A directory import must apply its final core INI identity before validation:
+// authoritative classic screens can replace the names generated from db.json.
 pub(crate) fn overlay_conf(text: &str, base: Option<Config>) -> Result<(Config, ImportReport), ConfigError> {
     let had_base = base.is_some();
     let mut cfg = base.unwrap_or_default();
@@ -203,8 +208,6 @@ pub(crate) fn overlay_conf(text: &str, base: Option<Config>) -> Result<(Config, 
             "synergy.conf has no local identity: selected its first screen as server; confirm role and name".into(),
         );
     }
-    cfg.validate()?;
-    report.warnings.extend(cfg.warnings());
     Ok((cfg, report))
 }
 fn cfg_name_collision(canonical: &BTreeMap<String, String>, alias: &str, source: &str) -> bool {

@@ -2,7 +2,7 @@ use openergy_platform::{CaptureDecision, ClipboardBackend, ClipboardData, InputE
 use openergy_protocol::ClipboardId;
 use std::{
     sync::{
-        atomic::{AtomicBool, Ordering},
+        atomic::{AtomicBool, AtomicU8, Ordering},
         mpsc::{self, Receiver, SyncSender},
         Arc, Mutex,
     },
@@ -24,6 +24,7 @@ pub struct Capture {
     pub events: Receiver<Captured>,
     pub movement: Arc<Mutex<Option<InputEvent>>>,
     pub overflow: Arc<AtomicBool>,
+    pub retry: Arc<AtomicBool>,
     pub remote: Arc<AtomicBool>,
     pub thread: std::thread::JoinHandle<()>,
 }
@@ -36,6 +37,8 @@ pub fn capture(mut source: Box<dyn InputSource>, waker: Arc<mio::Waker>) -> Capt
     let rem = remote.clone();
     let overflow = Arc::new(AtomicBool::new(false));
     let over = overflow.clone();
+    let retry = Arc::new(AtomicBool::new(false));
+    let failed = retry.clone();
     let thread = std::thread::spawn(move || {
         let mut enabled = false;
         while let Ok(cmd) = rx.recv() {
@@ -47,6 +50,7 @@ pub fn capture(mut source: Box<dyn InputSource>, waker: Arc<mio::Waker>) -> Capt
                         let waker = waker.clone();
                         let rem = rem.clone();
                         let over = over.clone();
+                        let retry_waker = waker.clone();
                         match source.start(Box::new(move |event| {
                             let Ok(mut slot) = moves.try_lock() else {
                                 over.store(true, Ordering::Relaxed);
@@ -96,8 +100,15 @@ pub fn capture(mut source: Box<dyn InputSource>, waker: Arc<mio::Waker>) -> Capt
                                 CaptureDecision::PassToOs
                             }
                         })) {
-                            Ok(()) => enabled = true,
-                            Err(e) => log::warn!("capture unavailable: {e}"),
+                            Ok(()) => {
+                                enabled = true;
+                                failed.store(false, Ordering::Release);
+                            }
+                            Err(e) => {
+                                log::warn!("capture unavailable: {e}");
+                                failed.store(true, Ordering::Release);
+                                let _ = retry_waker.wake();
+                            }
                         }
                     } else if !on && enabled {
                         source.stop();
@@ -122,6 +133,7 @@ pub fn capture(mut source: Box<dyn InputSource>, waker: Arc<mio::Waker>) -> Capt
         events,
         movement,
         overflow,
+        retry,
         remote,
         thread,
     }
@@ -133,19 +145,35 @@ pub enum ClipboardCommand {
     Stop,
 }
 pub enum ClipboardEvent {
-    Blocked { bytes: usize, limit: usize },
+    Blocked {
+        id: ClipboardId,
+        bytes: usize,
+        limit: usize,
+    },
     Changed,
-    Payload { id: ClipboardId, data: ClipboardData },
-    Failure(String),
+    Payload {
+        id: ClipboardId,
+        data: ClipboardData,
+    },
+    ReadUnavailable {
+        id: ClipboardId,
+    },
+    Failure {
+        read_id: Option<ClipboardId>,
+        error: String,
+    },
 }
 pub struct ClipboardWorker {
     pub commands: SyncSender<ClipboardCommand>,
     pub events: Receiver<ClipboardEvent>,
+    pub failed_reads: Arc<AtomicU8>,
     pub thread: std::thread::JoinHandle<()>,
 }
 pub fn clipboard(mut backend: Box<dyn ClipboardBackend>, waker: Arc<mio::Waker>) -> ClipboardWorker {
     let (commands, rx) = mpsc::sync_channel(8);
     let (tx, events) = mpsc::sync_channel(16);
+    let failed_reads = Arc::new(AtomicU8::new(0));
+    let failed = failed_reads.clone();
     let thread = std::thread::spawn(move || {
         let mut stamp = backend.change_stamp();
         let mut enabled = false;
@@ -158,22 +186,36 @@ pub fn clipboard(mut backend: Box<dyn ClipboardBackend>, waker: Arc<mio::Waker>)
                 Ok(ClipboardCommand::Read { id, max }) => {
                     let ev = match backend.read(max) {
                         Ok(data) => ClipboardEvent::Payload { id, data },
+                        Err(openergy_platform::PlatformError::ClipboardUnavailable) => {
+                            ClipboardEvent::ReadUnavailable { id }
+                        }
                         Err(openergy_platform::PlatformError::ClipboardTooLarge { bytes, limit }) => {
                             ClipboardEvent::Blocked {
+                                id,
                                 bytes: bytes.saturating_add(max.saturating_sub(limit)),
                                 limit: max,
                             }
                         }
-                        Err(e) => ClipboardEvent::Failure(e.to_string()),
+                        Err(e) => ClipboardEvent::Failure {
+                            read_id: Some(id),
+                            error: e.to_string(),
+                        },
                     };
                     if tx.try_send(ev).is_err() {
+                        if id.0 < 2 {
+                            // A dropped completion must still release the session's pending read.
+                            failed.fetch_or(1 << id.0, Ordering::Release);
+                        }
                         log::warn!("clipboard result queue full");
                     }
                     let _ = waker.wake();
                 }
                 Ok(ClipboardCommand::Write { data }) => {
                     if let Err(e) = backend.write_shared(data) {
-                        let _ = tx.try_send(ClipboardEvent::Failure(e.to_string()));
+                        let _ = tx.try_send(ClipboardEvent::Failure {
+                            read_id: None,
+                            error: e.to_string(),
+                        });
                     }
                     // Own writes never become a new local grab.
                     stamp = backend.change_stamp();
@@ -198,6 +240,7 @@ pub fn clipboard(mut backend: Box<dyn ClipboardBackend>, waker: Arc<mio::Waker>)
     ClipboardWorker {
         commands,
         events,
+        failed_reads,
         thread,
     }
 }

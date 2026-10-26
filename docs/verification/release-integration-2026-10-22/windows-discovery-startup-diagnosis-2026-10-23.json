@@ -1,0 +1,2204 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-23",
+  "timezone": "America/Vancouver",
+  "task_kind": "Bounded follow-up diagnosis, not an independent review or revised acceptance run.",
+  "finding": "Matched Windows failure demonstrates post-start replacement, so the probe pre-start cancellation assumption is false for that trace. No product defect is established by this diagnosis.",
+  "original_acceptance": {
+    "evidence_commit": "64e000529f3e720ae269a31f6cd58cad7be4b06d",
+    "source_commit": "e4f48ba47ea69aa76a08de5cf0cf61c68d903c03",
+    "startup": "FAIL 11/14, exit 1; unchanged",
+    "original_phase": "before=1 after_barrier=0 after_settle=0 live_closed=true",
+    "retained": "PASS 19/19; unchanged, not rerun",
+    "control": "PASS 23/23; unchanged, not rerun",
+    "original_exact_interleaving": "No startup trace was enabled in the original run. This diagnosis proves causality for a matched reproduction, not a retrospective timestamp for the original sends.",
+    "original_32_orphans_observed": false,
+    "parent_current_root": "988e7837f212fcbde355e8e2f7452e82faf5a412",
+    "product_vendor_probe_rust_cargo_diff_to_frozen_source": "empty, verified locally"
+  },
+  "workflow": {
+    "skill": "diagnosing-bugs",
+    "feedback_loop": "Original frozen discovery_recovery.exe startup <NEW_DIR> 25090 25094 already went red with the exact three checks in the previous task. The two follow-up diagnostic startup runs retain all original assertions/waits/workload.",
+    "scope_exceptions": "No stress loop or iterative minimization: user limited diagnosis to at most two ordinary API runs. No Phase 5 product fix or acceptance rewrite was authorized; original failure remains failed.",
+    "ranked_hypotheses_before_runs": [
+      "Post-start cancellation: initial startup send succeeds and commits before caller drop; caller can observe old closure before drop or a SearchStarted event on the new standard receiver.",
+      "Replacement wrongly commits after receiver dropped before startup: both relevant initial sends would report Disconnected yet the old identity/state would still be lost.",
+      "Old same-type retransmission removes new generation: loss would follow an old repeating command despite the same_channel guard."
+    ],
+    "instrumentation": "Standalone diagnostic-only copies of the original example plus log::Log and ordinary caller observations. No product/vendor source was instrumented or changed.",
+    "run1_observer": "Immediate stderr output; includes guard and 32 cancelled-type existing trace sites.",
+    "run2_observer": "Buffer records in memory and write them after run completion; guard-only existing trace output. No sleep, pacing, workload or assertion change. Observer differences are explicit and are not acceptance evidence.",
+    "new_public_api_observation": "Standard receiver try_recv before its drop; LimitedBrowse old/new is_closed observations before and after drop. Dirty snapshots or is_closed=false alone were not treated as startup acknowledgement.",
+    "new_runtime_runs": 2,
+    "limit": 2,
+    "worker_pause_rendezvous_test_hook_or_injected_commands": false
+  },
+  "source_contract": [
+    {
+      "path": "vendor/mdns-sd/src/service_daemon.rs",
+      "line_start": 443,
+      "line_end": 469,
+      "file_sha256": "3f1bf0a78767e928db84c19a005718869208c68747eee5f7ff05fce6e73ac4a5",
+      "git_blob": "e7a162f7b5d3edf63a0b9e18bfb42fb3ec19803c",
+      "body": "    fn send_cmd(&self, cmd: Command) -> Result<()> {\n        let cmd_name = cmd.to_string();\n\n        // First, send to the flume channel.\n        self.sender.try_send(cmd).map_err(|e| match e {\n            TrySendError::Full(_) => Error::Again,\n            TrySendError::Disconnected(_) => Error::DaemonShutdown,\n        })?;\n\n        // Second, send a signal to notify the daemon.\n        let addr = SocketAddrV4::new(LOOPBACK_V4, 0);\n        let socket = UdpSocket::bind(addr)\n            .map_err(|e| e_fmt!(\"Failed to create socket to send signal: {}\", e))?;\n        socket\n            .send_to(cmd_name.as_bytes(), self.signal_addr)\n            .map_err(|e| {\n                e_fmt!(\n                    \"signal socket send_to {} ({}) failed: {}\",\n                    self.signal_addr,\n                    cmd_name,\n                    e\n                )\n            })?;\n\n        Ok(())\n    }\n\n"
+    },
+    {
+      "path": "vendor/mdns-sd/src/service_daemon.rs",
+      "line_start": 68,
+      "line_end": 100,
+      "file_sha256": "3f1bf0a78767e928db84c19a005718869208c68747eee5f7ff05fce6e73ac4a5",
+      "git_blob": "e7a162f7b5d3edf63a0b9e18bfb42fb3ec19803c",
+      "body": "pub struct LimitedBrowse {\n    // The standard subscription channel supplies identity and lifetime only.\n    // Its single SearchStarted event is never used for state delivery.\n    lifetime: Receiver<ServiceEvent>,\n    state: Arc<Mutex<LimitedServiceState>>,\n}\n\n#[derive(Debug)]\nstruct LimitedServiceState {\n    limit: usize,\n    dirty: bool,\n    services: BTreeMap<String, ResolvedService>,\n}\n\nimpl LimitedBrowse {\n    /// Returns the latest complete selected view after a change. Intermediate\n    /// updates coalesce; removals are represented by absence in the next view.\n    /// A caller must replace its prior view, rather than merge snapshots.\n    pub fn take_snapshot(&self) -> Option<Vec<ResolvedService>> {\n        let mut state = self.state.lock().unwrap_or_else(|e| e.into_inner());\n        if !state.dirty {\n            return None;\n        }\n        let snapshot = state.services.values().cloned().collect();\n        state.dirty = false;\n        Some(snapshot)\n    }\n\n    /// A closed view must be discarded; it can no longer report removals.\n    pub fn is_closed(&self) -> bool {\n        self.lifetime.is_disconnected()\n    }\n}\n"
+    },
+    {
+      "path": "vendor/mdns-sd/src/service_daemon.rs",
+      "line_start": 524,
+      "line_end": 546,
+      "file_sha256": "3f1bf0a78767e928db84c19a005718869208c68747eee5f7ff05fce6e73ac4a5",
+      "git_blob": "e7a162f7b5d3edf63a0b9e18bfb42fb3ec19803c",
+      "body": "    /// `limit` must be in 1..=64. Updates coalesce even if the caller pauses.\n    /// Removal frees a slot for a later resolved service; there is no waiting list\n    /// or automatic refill from the unselected cache. Replaces any browse of the\n    /// same service type. Uses the same errors as [`browse`](Self::browse).\n    /// This does not bound DNS records, timers, or pending resolution work.\n    pub fn browse_limited(&self, service_type: &str, limit: usize) -> Result<LimitedBrowse> {\n        check_domain_suffix(service_type)?;\n        if !(1..=64).contains(&limit) {\n            return Err(e_fmt!(\"limited browse requires 1..=64 services\"));\n        }\n        let state = Arc::new(Mutex::new(LimitedServiceState {\n            limit,\n            dirty: true,\n            services: BTreeMap::new(),\n        }));\n        let (sender, lifetime) = bounded(1);\n        self.send_cmd(Command::BrowseLimited(\n            service_type.to_string(),\n            sender,\n            state.clone(),\n        ))?;\n        Ok(LimitedBrowse { lifetime, state })\n    }\n"
+    },
+    {
+      "path": "vendor/mdns-sd/src/service_daemon.rs",
+      "line_start": 1574,
+      "line_end": 1595,
+      "file_sha256": "3f1bf0a78767e928db84c19a005718869208c68747eee5f7ff05fce6e73ac4a5",
+      "git_blob": "e7a162f7b5d3edf63a0b9e18bfb42fb3ec19803c",
+      "body": "    fn remove_service_subscription(&mut self, ty_domain: &str) -> Option<Sender<ServiceEvent>> {\n        let sender = self.service_queriers.remove(ty_domain);\n        self.limited_browses.remove(ty_domain);\n        self.clear_service_retransmissions(ty_domain);\n        sender\n    }\n\n    fn remove_hostname_subscription(\n        &mut self,\n        hostname: &str,\n    ) -> Option<(Sender<HostnameResolutionEvent>, Option<Instant>)> {\n        let key = hostname.to_lowercase();\n        let entry = self.hostname_resolvers.remove(&key);\n        self.clear_hostname_retransmissions(&key);\n        entry\n    }\n\n    fn service_live(&self, ty_domain: &str, sender: &Sender<ServiceEvent>) -> bool {\n        self.service_queriers\n            .get(ty_domain)\n            .is_some_and(|s| s.same_channel(sender))\n    }\n"
+    },
+    {
+      "path": "vendor/mdns-sd/src/service_daemon.rs",
+      "line_start": 1603,
+      "line_end": 1611,
+      "file_sha256": "3f1bf0a78767e928db84c19a005718869208c68747eee5f7ff05fce6e73ac4a5",
+      "git_blob": "e7a162f7b5d3edf63a0b9e18bfb42fb3ec19803c",
+      "body": "    fn push_service(&mut self, ty_domain: &str, event: ServiceEvent) {\n        let Some(sender) = self.service_queriers.get(ty_domain).cloned() else {\n            return;\n        };\n        if let Some(state) = self.limited_browses.get(ty_domain) {\n            if sender.is_disconnected() {\n                self.remove_service_subscription(ty_domain);\n                return;\n            }\n"
+    },
+    {
+      "path": "vendor/mdns-sd/src/service_daemon.rs",
+      "line_start": 4225,
+      "line_end": 4262,
+      "file_sha256": "3f1bf0a78767e928db84c19a005718869208c68747eee5f7ff05fce6e73ac4a5",
+      "git_blob": "e7a162f7b5d3edf63a0b9e18bfb42fb3ec19803c",
+      "body": "        let started = ServiceEvent::SearchStarted(format!(\n            \"{ty} on {} interfaces [{}]\",\n            pretty_addrs.len(),\n            pretty_addrs.join(\", \")\n        ));\n        if !repeating {\n            if let Err(e) = listener.try_send(started) {\n                debug!(\n                    \"Failed to send SearchStarted({})(repeating:{}): {}\",\n                    &ty, repeating, e\n                );\n                return;\n            }\n            // Commit replacement only after the initial send succeeds. A caller\n            // can drop its receiver while this command is queued. In that case\n            // leave the prior sender, state, and retransmissions intact, and\n            // drop the new state with the cancelled command.\n            self.remove_service_subscription(&ty);\n            if let Some(state) = limited_state {\n                self.limited_browses.insert(ty.clone(), state);\n            }\n            // Binds a `listener` to querying mDNS domain type `ty`.\n            //\n            // If there is already a `listener`, it will be updated, i.e. overwritten.\n            self.service_queriers.insert(ty.clone(), listener.clone());\n            let now = Instant::now();\n            self.query_cache_for_service(&ty, &listener, now);\n            if !self.service_live(&ty, &listener) {\n                return;\n            }\n        } else {\n            if !self.service_live(&ty, &listener) {\n                return;\n            }\n            self.push_service(&ty, started);\n            if !self.service_live(&ty, &listener) {\n                return;\n            }\n"
+    },
+    {
+      "path": "crates/net/examples/discovery_recovery.rs",
+      "line_start": 593,
+      "line_end": 617,
+      "file_sha256": "602593c2e97c1ca1646ef5bf5a3a3abcd05b4cd2f50a23489f635aa3260dbb80",
+      "git_blob": "968fbf1db9725353f789cd0a7d7a67c3b0893419",
+      "body": "    for _ in 0..16 {\n        replays.push(retry(|| daemon.browse_cache(SERVICE_TYPE))?);\n    }\n    for index in 0..32 {\n        let ty = format!(\"_oe-c{index:03}._tcp.local.\");\n        drop(retry(|| daemon.browse_limited(&ty, 64))?);\n    }\n    // Failed replacement must preserve both the prior sender and its state.\n    drop(retry(|| daemon.browse_limited(GUARD_TYPE, 64))?);\n    drop(retry(|| daemon.browse(GUARD_TYPE))?);\n    let after_barrier = limited_states(&daemon)?;\n    thread::sleep(Duration::from_millis(300));\n    let after_settle = limited_states(&daemon)?;\n    let replayed = replays\n        .iter()\n        .filter(|rx| rx.is_disconnected() && rx.len() == 1000)\n        .count();\n    println!(\"CANCELLED_STARTUPS distinct=32 replay_commands=16 replayed_overflows={replayed} before={before} after_barrier={after_barrier} after_settle={after_settle} live_closed={}\", live.is_closed());\n    results.push((\"ordinary-replay-commands-drained\", replayed == 16));\n    results.push((\"cancelled-distinct-types-retain-no-state\", after_settle == before));\n    results.push((\"cancelled-replacements-preserve-identity\", !live.is_closed()));\n    publisher.phase(\"guard-update\")?;\n    results.push((\n        \"surviving-handle-receives-live-update\",\n        limited_has(&live, \"guard-update\"),\n"
+    }
+  ],
+  "frozen_inputs": {
+    "source_archive_sha256": "21a551059f2dbbd7fc694e668512efb99805b33029490f424156c92c762ccf08",
+    "source_manifest_sha256": "53cf3242666110a06275cd01eb5b01495bf7be65a48ff3066da08bdd8682e556",
+    "project_source_files": 801,
+    "old_artifact_files": 1679,
+    "all_old_fixture_files_audited": 2579,
+    "file_manifest": "windows-discovery-startup-diagnosis-2026-10-23/frozen-input-file-manifest.json",
+    "file_manifest_original_sha256": "47ec21e02dd0baee342d9a30eb1ac2dedd673ef0957326260905eab801a5ec23",
+    "file_manifest_copied_sha256": "5f9b088f46ec0dfc1407d5ee3ad308a77b80346e79f6a9abc20b04d4db166e19",
+    "file_manifest_copy_transform": "CRLF to LF only; JSON entries unchanged.",
+    "all_three_before_snapshots_equal": true,
+    "original_source_binary_library_evidence_bytes_hashes_readonly_flags_unchanged": true,
+    "old_fixture_access": "Read-only; no files or attributes in old fixture were written."
+  },
+  "compile_start": {
+    "recorded_utc": "2026-10-23T17:04:53.6838315Z",
+    "old_file_count": 2579,
+    "old_source_files": 801,
+    "old_artifact_files": 1679,
+    "old_source_all_hashes_readonly_match": true,
+    "old_artifacts_all_hashes_readonly_match": true,
+    "old_fixture_access": "read only; attributes and evidence hashes recorded, not changed",
+    "tools": [
+      {
+        "name": "rustc.exe",
+        "sha256": "ba03e3ba03a73d9fef19ab3659140f94b43615ec1d587fe9befc9aed3bd5aa72"
+      },
+      {
+        "name": "cargo.exe",
+        "sha256": "aa5b8980be3681899fde765ba47e2ed361463ae9dd8ee7cd1963c18d23743a0f"
+      },
+      {
+        "name": "cargo-clippy.exe",
+        "sha256": "bea1e468b531a389f6fe164d76ba98f73a2dac3495998dd085365df92105134f"
+      },
+      {
+        "name": "clippy-driver.exe",
+        "sha256": "648db1897ec48a9f64bae9e0624761abab7b2904a6ab25d53cc2869a0245f99e"
+      }
+    ],
+    "rustup_settings_sha256": "af11a5540001371324994abaa9ea1e69d50fed1acb1a87e4abef179e8816058f",
+    "toolchains": [
+      "stable-x86_64-pc-windows-msvc (default)",
+      "nightly-x86_64-pc-windows-msvc",
+      "nightly-2026-08-10-x86_64-pc-windows-msvc",
+      "1.98.0-x86_64-pc-windows-msvc",
+      "1.99.1-x86_64-pc-windows-msvc (active)"
+    ],
+    "selected_dependencies": {
+      "mdns_sd": {
+        "crate": "mdns_sd",
+        "fingerprint": "<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\.fingerprint\\mdns-sd-d2bc7df45f7006c8\\lib-mdns_sd",
+        "fingerprint_hex": "0faaa5bc7a6596bc",
+        "dependency_value": 13589160503462439439,
+        "path": "<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\deps\\libmdns_sd-d2bc7df45f7006c8.rlib",
+        "sha256": "732f64bc9cb3eae88671f2902dbcb845e3dd473205feea8f52418ef2bab21cc4"
+      },
+      "log": {
+        "crate": "log",
+        "fingerprint": "<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\.fingerprint\\log-79610fd8c621607d\\lib-log",
+        "fingerprint_hex": "29c67ebe5175febd",
+        "dependency_value": 13690508911201666601,
+        "path": "<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\deps\\liblog-79610fd8c621607d.rlib",
+        "sha256": "8d521a94243ae876206b907c3f8628fb268cc95f7c882c3ec030462eed1b8614"
+      }
+    },
+    "example_fingerprint_sha256": "d9a4048c3ca9378b11e5d83d77d8af1063b735f7d1d817ffea850ea6d5f7f9a8",
+    "source_sha256": "577b8bf0f0045bd624e0393b714f5e1ae66a659d2749ace535b8a6fdb3624a6b",
+    "source_bytes": 31010,
+    "session": 0,
+    "priority": "BelowNormal",
+    "jobs": 2,
+    "native_compiler_invocations": 1,
+    "arguments": [
+      "--edition=2021",
+      "--crate-name",
+      "startup_diagnostic",
+      "--target",
+      "x86_64-pc-windows-msvc",
+      "-D",
+      "warnings",
+      "-C",
+      "opt-level=3",
+      "-C",
+      "panic=abort",
+      "-C",
+      "codegen-units=1",
+      "-C",
+      "lto=thin",
+      "-C",
+      "strip=symbols",
+      "--extern",
+      "openergy_net=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\libopenergy_net.rlib",
+      "--extern",
+      "mdns_sd=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\deps\\libmdns_sd-d2bc7df45f7006c8.rlib",
+      "--extern",
+      "log=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\deps\\liblog-79610fd8c621607d.rlib",
+      "-L",
+      "dependency=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\deps",
+      "-L",
+      "dependency=<FROZEN_FIXTURE>\\target\\release\\deps",
+      "-L",
+      "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\libc-08e3751533f86ee2\\out",
+      "-L",
+      "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\ring-808720db1c61002f\\out",
+      "-L",
+      "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\rustls-d819052e0a6d63e6\\out",
+      "-L",
+      "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde_core-365d1e5cc6382f48\\out",
+      "-L",
+      "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde_json-a6e20e9b06fa74a6\\out",
+      "-L",
+      "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde-032d36e65f1be6d3\\out",
+      "-L",
+      "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\zmij-f7a237327a1b169e\\out",
+      "<DIAGNOSTIC_FIXTURE>\\startup_diagnostic.rs",
+      "-o",
+      "<DIAGNOSTIC_FIXTURE>\\bin\\startup_diagnostic.exe"
+    ]
+  },
+  "compiles": [
+    {
+      "started_utc": "2026-10-23T17:04:53.7374412Z",
+      "ended_utc": "2026-10-23T17:05:03.9111540Z",
+      "exit": 0,
+      "elapsed_ms": 10173,
+      "source_sha256": "577b8bf0f0045bd624e0393b714f5e1ae66a659d2749ace535b8a6fdb3624a6b",
+      "compiler_sha256": "ba03e3ba03a73d9fef19ab3659140f94b43615ec1d587fe9befc9aed3bd5aa72",
+      "arguments": [
+        "--edition=2021",
+        "--crate-name",
+        "startup_diagnostic",
+        "--target",
+        "x86_64-pc-windows-msvc",
+        "-D",
+        "warnings",
+        "-C",
+        "opt-level=3",
+        "-C",
+        "panic=abort",
+        "-C",
+        "codegen-units=1",
+        "-C",
+        "lto=thin",
+        "-C",
+        "strip=symbols",
+        "--extern",
+        "openergy_net=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\libopenergy_net.rlib",
+        "--extern",
+        "mdns_sd=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\deps\\libmdns_sd-d2bc7df45f7006c8.rlib",
+        "--extern",
+        "log=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\deps\\liblog-79610fd8c621607d.rlib",
+        "-L",
+        "dependency=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\deps",
+        "-L",
+        "dependency=<FROZEN_FIXTURE>\\target\\release\\deps",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\libc-08e3751533f86ee2\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\ring-808720db1c61002f\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\rustls-d819052e0a6d63e6\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde_core-365d1e5cc6382f48\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde_json-a6e20e9b06fa74a6\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde-032d36e65f1be6d3\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\zmij-f7a237327a1b169e\\out",
+        "<DIAGNOSTIC_FIXTURE>\\startup_diagnostic.rs",
+        "-o",
+        "<DIAGNOSTIC_FIXTURE>\\bin\\startup_diagnostic.exe"
+      ],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "binary": {
+        "path": "<DIAGNOSTIC_FIXTURE>\\bin\\startup_diagnostic.exe",
+        "bytes": 1513984,
+        "sha256": "d60ab87455295bd68a26b37eba8c444c03c01026bdf5d50a76045b97f40a75b1",
+        "readonly": true
+      },
+      "started_local": "2026-10-23T10:04:53.737441-07:00",
+      "ended_local": "2026-10-23T10:05:03.911154-07:00"
+    },
+    {
+      "started_utc": "2026-10-23T17:08:00.5934063Z",
+      "ended_utc": "2026-10-23T17:08:10.6855363Z",
+      "exit": 0,
+      "elapsed_ms": 10091,
+      "arguments": [
+        "--edition=2021",
+        "--crate-name",
+        "startup_diagnostic",
+        "--target",
+        "x86_64-pc-windows-msvc",
+        "-D",
+        "warnings",
+        "-C",
+        "opt-level=3",
+        "-C",
+        "panic=abort",
+        "-C",
+        "codegen-units=1",
+        "-C",
+        "lto=thin",
+        "-C",
+        "strip=symbols",
+        "--extern",
+        "openergy_net=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\libopenergy_net.rlib",
+        "--extern",
+        "mdns_sd=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\deps\\libmdns_sd-d2bc7df45f7006c8.rlib",
+        "--extern",
+        "log=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\deps\\liblog-79610fd8c621607d.rlib",
+        "-L",
+        "dependency=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\deps",
+        "-L",
+        "dependency=<FROZEN_FIXTURE>\\target\\release\\deps",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\libc-08e3751533f86ee2\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\ring-808720db1c61002f\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\rustls-d819052e0a6d63e6\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde_core-365d1e5cc6382f48\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde_json-a6e20e9b06fa74a6\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\serde-032d36e65f1be6d3\\out",
+        "-L",
+        "native=<FROZEN_FIXTURE>\\target\\x86_64-pc-windows-msvc\\release\\build\\zmij-f7a237327a1b169e\\out",
+        "<DIAGNOSTIC_FIXTURE>\\startup_diagnostic_v2.rs",
+        "-o",
+        "<DIAGNOSTIC_FIXTURE>\\bin\\startup_diagnostic_v2.exe"
+      ],
+      "source_sha256": "d9c7a18a0339545657f303318c8583cb44ae7a0b5efd63dcc9b073f731d1956d",
+      "source_bytes": 31287,
+      "compiler_sha256": "ba03e3ba03a73d9fef19ab3659140f94b43615ec1d587fe9befc9aed3bd5aa72",
+      "session": 0,
+      "priority": "BelowNormal",
+      "jobs": 2,
+      "concurrent_compiler_invocations": 1,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "binary": {
+        "path": "<DIAGNOSTIC_FIXTURE>\\bin\\startup_diagnostic_v2.exe",
+        "bytes": 1513472,
+        "sha256": "0649c8736946bc001be0cfb165b1c2788d80cf42c20e4ac3587e38599f51d52d",
+        "readonly": true
+      },
+      "started_local": "2026-10-23T10:08:00.593406-07:00",
+      "ended_local": "2026-10-23T10:08:10.685536-07:00"
+    }
+  ],
+  "diagnostic_sources_and_workflow": [
+    {
+      "path": "source/helper-v2.diff",
+      "bytes": 3742,
+      "sha256": "1a953d39a6383a9ebdd45e31dda32c0bdcdbbce4edef05d11b42d621524e1831"
+    },
+    {
+      "path": "source/helper.diff",
+      "bytes": 3415,
+      "sha256": "7b4f165481bfab7804876ebef1555ffe79af87586e04ab0f7ecde838b0611bdf"
+    },
+    {
+      "path": "source/startup_diagnostic.rs",
+      "bytes": 31010,
+      "sha256": "577b8bf0f0045bd624e0393b714f5e1ae66a659d2749ace535b8a6fdb3624a6b"
+    },
+    {
+      "path": "source/startup_diagnostic_v2.rs",
+      "bytes": 31287,
+      "sha256": "d9c7a18a0339545657f303318c8583cb44ae7a0b5efd63dcc9b073f731d1956d"
+    },
+    {
+      "path": "workflow/build-buffered.ps1",
+      "bytes": 1756,
+      "sha256": "06166f19a9d297129841da1be11dbd19c8539ac52d841a7bfb0fb84c393d8371"
+    },
+    {
+      "path": "workflow/common.ps1",
+      "bytes": 4838,
+      "sha256": "96c40a4e7921633a7853984eb973b76b4a387207b9aa9e4b8a3eb39785ebf7b9"
+    },
+    {
+      "path": "workflow/postflight-diagnostic.ps1",
+      "bytes": 3372,
+      "sha256": "45c06bda7493e8a153b527c6ff2a015661f93ca79873a78777ca43def9e6ecfc"
+    },
+    {
+      "path": "workflow/preflight-build-v2.ps1",
+      "bytes": 6420,
+      "sha256": "bb6b83e9656488e82fc5db3ccdaf24208680a169c914ae8c2d35237c17f6c3fc"
+    },
+    {
+      "path": "workflow/preflight-build-v3.ps1",
+      "bytes": 6480,
+      "sha256": "a2efe1108b98b27fa7be9ebf410d6d2c0cf1957aa99f3a01ab6a95890db6141e"
+    },
+    {
+      "path": "workflow/preflight-build.ps1",
+      "bytes": 6297,
+      "sha256": "d696b4491bf0e0d944ec3908b5d65560d4f7e4d77ea0356deb2fc1c0925e3652"
+    },
+    {
+      "path": "workflow/run-diagnostic.ps1",
+      "bytes": 4122,
+      "sha256": "52d433f4aafbd66859d96520efcb795dba98f088f0afeb98ee7548eaaffbcc74"
+    },
+    {
+      "path": "workflow/run-diagnostic2.ps1",
+      "bytes": 4132,
+      "sha256": "1868452349e7d4101143c699eaadf5935c1f20c44f8089251150268be5cf0040"
+    },
+    {
+      "path": "workflow/setup.input.ps1",
+      "bytes": 1471,
+      "sha256": "735b0cb2f4a912e197ee945e8553a3e75794e155773ab54739f293c8dd6b5fcd"
+    }
+  ],
+  "copied_outputs": [
+    {
+      "path": "outputs/compile.log",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "copied_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_bytes": 0,
+      "copied_bytes": 0
+    },
+    {
+      "path": "outputs/compile-v2.log",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "copied_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_bytes": 0,
+      "copied_bytes": 0
+    },
+    {
+      "path": "outputs/diagnostic1.stdout",
+      "original_sha256": "e173c4810d07c05e8757db7e9ab726cf0d0913ad0c1313c3a94502b2f52195c3",
+      "copied_sha256": "e173c4810d07c05e8757db7e9ab726cf0d0913ad0c1313c3a94502b2f52195c3",
+      "original_bytes": 3985,
+      "copied_bytes": 3985
+    },
+    {
+      "path": "outputs/diagnostic1.stderr",
+      "original_sha256": "f159dbcab2654f4ff3dcde18f0f4f0a2a77cdb6bc4c91fa8fa54bb8baf29e103",
+      "copied_sha256": "f159dbcab2654f4ff3dcde18f0f4f0a2a77cdb6bc4c91fa8fa54bb8baf29e103",
+      "original_bytes": 18042,
+      "copied_bytes": 18042
+    },
+    {
+      "path": "outputs/diagnostic2.stdout",
+      "original_sha256": "92c95f06f07af0b13e448f6aae4cabdea562f52c4e67b9ab5e18b329955cd8d9",
+      "copied_sha256": "92c95f06f07af0b13e448f6aae4cabdea562f52c4e67b9ab5e18b329955cd8d9",
+      "original_bytes": 3987,
+      "copied_bytes": 3987
+    },
+    {
+      "path": "outputs/diagnostic2.stderr",
+      "original_sha256": "464ae887c4a72ba75edfe86f74024b304195cca0c1cc2010e8cd2435d0521b3b",
+      "copied_sha256": "464ae887c4a72ba75edfe86f74024b304195cca0c1cc2010e8cd2435d0521b3b",
+      "original_bytes": 3729,
+      "copied_bytes": 3729
+    },
+    {
+      "path": "outputs/run1-publisher.log",
+      "original_sha256": "0e028b0636255a2d9c1612cc6c8c82b6f4490c8d489d8bc12974dc5dd0078974",
+      "copied_sha256": "0e028b0636255a2d9c1612cc6c8c82b6f4490c8d489d8bc12974dc5dd0078974",
+      "original_bytes": 2346,
+      "copied_bytes": 2346
+    },
+    {
+      "path": "outputs/run2-publisher.log",
+      "original_sha256": "713c577897fc17c5f8631c4afe0fa4961fa1003e36e735d500b4b4a2baaa1e1e",
+      "copied_sha256": "713c577897fc17c5f8631c4afe0fa4961fa1003e36e735d500b4b4a2baaa1e1e",
+      "original_bytes": 2346,
+      "copied_bytes": 2346
+    }
+  ],
+  "runs": [
+    {
+      "mode": "diagnostic1",
+      "started_utc": "2026-10-23T17:05:30.3906156Z",
+      "executable": "<DIAGNOSTIC_FIXTURE>\\bin\\startup_diagnostic.exe",
+      "binary_sha256": "d60ab87455295bd68a26b37eba8c444c03c01026bdf5d50a76045b97f40a75b1",
+      "source_sha256": "577b8bf0f0045bd624e0393b714f5e1ae66a659d2749ace535b8a6fdb3624a6b",
+      "arguments": [
+        "startup",
+        "<DIAGNOSTIC_FIXTURE>\\runtime\\run1",
+        "25090",
+        "25094"
+      ],
+      "session": 0,
+      "priority": "BelowNormal",
+      "timeout_seconds": 120,
+      "timed_out": false,
+      "forced_cleanup": [],
+      "observed_processes": [
+        {
+          "name": "startup_diagnostic.exe",
+          "created": "2026-10-23T10:05:30.3921360-07:00",
+          "session": 0,
+          "priority": "BelowNormal",
+          "path": "<DIAGNOSTIC_FIXTURE>\\bin\\startup_diagnostic.exe"
+        },
+        {
+          "name": "startup_diagnostic.exe",
+          "created": "2026-10-23T10:05:30.4824990-07:00",
+          "session": 0,
+          "priority": "BelowNormal",
+          "path": "<DIAGNOSTIC_FIXTURE>\\bin\\startup_diagnostic.exe"
+        }
+      ],
+      "exit": 0,
+      "elapsed_ms": 13970,
+      "ended_utc": "2026-10-23T17:05:44.3631839Z",
+      "stdout_sha256": "e173c4810d07c05e8757db7e9ab726cf0d0913ad0c1313c3a94502b2f52195c3",
+      "stderr_sha256": "f159dbcab2654f4ff3dcde18f0f4f0a2a77cdb6bc4c91fa8fa54bb8baf29e103",
+      "checks": [
+        "CHECK ordinary-replay-cache-overflow=true",
+        "CHECK live-handle-resolves=true",
+        "CHECK ordinary-replay-commands-drained=true",
+        "CHECK cancelled-distinct-types-retain-no-state=true",
+        "CHECK cancelled-replacements-preserve-identity=true",
+        "CHECK surviving-handle-receives-live-update=true",
+        "CHECK successful-limited-replacement-has-new-identity=true",
+        "CHECK successful-standard-replacement-releases-state=true",
+        "CHECK cancelled-replacements-preserve-standard-identity=true",
+        "CHECK surviving-standard-handle-receives-live-update=true",
+        "CHECK standard-to-limited-replacement=true",
+        "CHECK final-stop-clears-worker-state=true",
+        "CHECK publisher-exits-zero=true",
+        "CHECK worker-shutdown-ack=true"
+      ],
+      "started_local": "2026-10-23T10:05:30.390615-07:00",
+      "ended_local": "2026-10-23T10:05:44.363183-07:00",
+      "stdout": "STARTUP_METRICS={\"dns-registry-timer\": 0, \"cached-txt\": 500, \"cached-nsec\": 0, \"browse\": 3, \"cached-addr\": 2, \"known-answer-suppression\": 0, \"dns-registry-probe\": 0, \"cache-refresh-ptr\": 0, \"cached-srv\": 500, \"timer\": 7714, \"dns-registry-name-change\": 0, \"cached-ptr\": 802, \"limited-view-states\": 1, \"cache-refresh-srv-txt\": 0, \"cache-refresh-addr\": 0, \"cached-subtype\": 0, \"dns-registry-active\": 0}\nSTARTUP_METRICS={\"dns-registry-timer\": 0, \"cached-txt\": 500, \"cached-nsec\": 0, \"browse\": 3, \"cached-addr\": 2, \"known-answer-suppression\": 0, \"dns-registry-probe\": 0, \"cache-refresh-ptr\": 0, \"cached-srv\": 500, \"timer\": 8016, \"dns-registry-name-change\": 0, \"cached-ptr\": 802, \"limited-view-states\": 1, \"cache-refresh-srv-txt\": 0, \"cache-refresh-addr\": 0, \"cached-subtype\": 0, \"dns-registry-active\": 0}\nSTARTUP_METRICS={\"dns-registry-timer\": 0, \"cached-txt\": 793, \"cached-nsec\": 0, \"browse\": 4, \"cached-addr\": 3, \"known-answer-suppression\": 0, \"dns-registry-probe\": 0, \"cache-refresh-ptr\": 0, \"cached-srv\": 793, \"timer\": 9774, \"dns-registry-name-change\": 0, \"cached-ptr\": 802, \"limited-view-states\": 1, \"cache-refresh-srv-txt\": 0, \"cache-refresh-addr\": 0, \"cached-subtype\": 0, \"dns-registry-active\": 0}\nCANCELLED_STARTUPS distinct=32 replay_commands=16 replayed_overflows=16 before=1 after_barrier=1 after_settle=1 live_closed=false\nSTARTUP_METRICS={\"dns-registry-timer\": 0, \"cached-txt\": 803, \"cached-nsec\": 0, \"browse\": 4, \"cached-addr\": 3, \"known-answer-suppression\": 0, \"dns-registry-probe\": 0, \"cache-refresh-ptr\": 0, \"cached-srv\": 802, \"timer\": 9546, \"dns-registry-name-change\": 0, \"cached-ptr\": 802, \"limited-view-states\": 1, \"cache-refresh-srv-txt\": 0, \"cache-refresh-addr\": 0, \"cached-subtype\": 0, \"dns-registry-active\": 0}\nSTARTUP_METRICS={\"dns-registry-timer\": 0, \"cached-txt\": 803, \"cached-nsec\": 0, \"browse\": 6, \"cached-addr\": 3, \"known-answer-suppression\": 0, \"dns-registry-probe\": 0, \"cache-refresh-ptr\": 0, \"cached-srv\": 802, \"timer\": 9548, \"dns-registry-name-change\": 0, \"cached-ptr\": 802, \"limited-view-states\": 0, \"cache-refresh-srv-txt\": 0, \"cache-refresh-addr\": 0, \"cached-subtype\": 0, \"dns-registry-active\": 0}\nSTARTUP_METRICS={\"dns-registry-timer\": 0, \"cached-txt\": 803, \"cached-nsec\": 0, \"browse\": 6, \"cached-addr\": 3, \"known-answer-suppression\": 0, \"dns-registry-probe\": 0, \"cache-refresh-ptr\": 0, \"cached-srv\": 802, \"timer\": 9548, \"dns-registry-name-change\": 0, \"cached-ptr\": 802, \"limited-view-states\": 0, \"cache-refresh-srv-txt\": 0, \"cache-refresh-addr\": 0, \"cached-subtype\": 0, \"dns-registry-active\": 0}\nSTARTUP_METRICS={\"dns-registry-timer\": 0, \"cached-txt\": 803, \"cached-nsec\": 0, \"browse\": 7, \"cached-addr\": 3, \"known-answer-suppression\": 0, \"dns-registry-probe\": 0, \"cache-refresh-ptr\": 0, \"cached-srv\": 802, \"timer\": 9546, \"dns-registry-name-change\": 0, \"cached-ptr\": 802, \"limited-view-states\": 1, \"cache-refresh-srv-txt\": 0, \"cache-refresh-addr\": 0, \"cached-subtype\": 0, \"dns-registry-active\": 0}\nSTARTUP_METRICS={\"dns-registry-timer\": 0, \"cached-txt\": 801, \"cached-nsec\": 0, \"browse\": 7, \"cached-addr\": 2, \"known-answer-suppression\": 0, \"dns-registry-probe\": 0, \"cache-refresh-ptr\": 0, \"cached-srv\": 801, \"timer\": 9546, \"dns-registry-name-change\": 0, \"cached-ptr\": 801, \"limited-view-states\": 0, \"cache-refresh-srv-txt\": 0, \"cache-refresh-addr\": 0, \"cached-subtype\": 0, \"dns-registry-active\": 0}\nCHECK ordinary-replay-cache-overflow=true\nCHECK live-handle-resolves=true\nCHECK ordinary-replay-commands-drained=true\nCHECK cancelled-distinct-types-retain-no-state=true\nCHECK cancelled-replacements-preserve-identity=true\nCHECK surviving-handle-receives-live-update=true\nCHECK successful-limited-replacement-has-new-identity=true\nCHECK successful-standard-replacement-releases-state=true\nCHECK cancelled-replacements-preserve-standard-identity=true\nCHECK surviving-standard-handle-receives-live-update=true\nCHECK standard-to-limited-replacement=true\nCHECK final-stop-clears-worker-state=true\nCHECK publisher-exits-zero=true\nCHECK worker-shutdown-ack=true\n",
+      "stderr": "[DEBUG-oe-startup] at_ns=8208735100 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-guard._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=8250121200 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: true\n[DEBUG-oe-startup] at_ns=9117404900 thread=ThreadId(1) CALL guard-limited before live_closed=false\n[DEBUG-oe-startup] at_ns=9117615000 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c000._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9117721600 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c000._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9117807700 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c001._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9117876300 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c001._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9117948500 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c002._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9118020800 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c002._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9117905500 thread=ThreadId(1) CALL guard-limited returned live_closed=false new_closed=false\n[DEBUG-oe-startup] at_ns=9118173400 thread=ThreadId(1) CALL guard-limited dropped live_closed=false\n[DEBUG-oe-startup] at_ns=9118197400 thread=ThreadId(1) CALL guard-standard before live_closed=false\n[DEBUG-oe-startup] at_ns=9118133600 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c003._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9118280100 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c003._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9118332400 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c004._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9118427300 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c004._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9118507100 thread=ThreadId(1) CALL guard-standard returned live_closed=false new_disconnected=false first_event=Err(Empty)\n[DEBUG-oe-startup] at_ns=9118556000 thread=ThreadId(1) CALL guard-standard dropped live_closed=false\n[DEBUG-oe-startup] at_ns=9118517700 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c005._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9118669800 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c005._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9118730600 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c006._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9118815400 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c006._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9118885700 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c007._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9118927600 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c007._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9118965000 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c008._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9119001600 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c008._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9119037300 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c009._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9119074300 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c009._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9119110100 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c010._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9119145300 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c010._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9119181500 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c011._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9119218100 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c011._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9119254400 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c012._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9119290800 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c012._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9119342300 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c013._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9119380200 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c013._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9119415900 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c014._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9119451900 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c014._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9119487800 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c015._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9119522700 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c015._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9119559600 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c016._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9119596700 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c016._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9119633200 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c017._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9119669800 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c017._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9119706400 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c018._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9119758400 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c018._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9119793900 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c019._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9119849600 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c019._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9119884800 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c020._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9119919900 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c020._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9119955800 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c021._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9119992000 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c021._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9120028300 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c022._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9120068100 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c022._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9120103700 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c023._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9120143000 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c023._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9120178800 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c024._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9120216000 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c024._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9120253100 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c025._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9120287900 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c025._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9120322800 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c026._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9120361000 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c026._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9120396700 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c027._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9120431900 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c027._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9120467200 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c028._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9120503200 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c028._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9120539500 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c029._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9120575800 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c029._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9120613900 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c030._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9120649200 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c030._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9120683900 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c031._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9120719200 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c031._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9120767200 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-guard._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9120802000 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-guard._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9120840300 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: false\n[DEBUG-oe-startup] at_ns=9120876900 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-guard._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=9259558200 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 2, false, Sender) repeating: true\n[DEBUG-oe-startup] at_ns=10439125900 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-guard._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=10460352100 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: true\n[DEBUG-oe-startup] at_ns=10460872700 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: false\n[DEBUG-oe-startup] at_ns=10476252300 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: true\n[DEBUG-oe-startup] at_ns=10501595900 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-guard._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=10501661200 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-guard._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=10501723000 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: false\n[DEBUG-oe-startup] at_ns=10501755900 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-guard._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=11477578800 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 2, false, Sender) repeating: true\n[DEBUG-oe-startup] at_ns=11559637000 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-guard._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=11581320500 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: StopBrowse(\"_oe-guard._tcp.local.\") repeating: false\n",
+      "checks_passed": 14,
+      "checks_total": 14,
+      "failed_checks": [],
+      "before": {
+        "recorded_utc": "2026-10-23T17:05:30.1228035Z",
+        "tcp_inventory_lines": 539,
+        "udp_inventory_lines": 61,
+        "process_inventory_count": 417,
+        "tcp_exit": 0,
+        "udp_exit": 0,
+        "assigned_tcp_listeners": [],
+        "assigned_udp_endpoints": [],
+        "fixture_processes": [],
+        "build_processes": []
+      },
+      "after": {
+        "recorded_utc": "2026-10-23T17:05:44.7084395Z",
+        "tcp_inventory_lines": 595,
+        "udp_inventory_lines": 62,
+        "process_inventory_count": 421,
+        "tcp_exit": 0,
+        "udp_exit": 0,
+        "assigned_tcp_listeners": [],
+        "assigned_udp_endpoints": [],
+        "fixture_processes": [],
+        "build_processes": []
+      },
+      "event_timeline": [
+        {
+          "at_ns": 8208735100,
+          "record": "[DEBUG-oe-startup] at_ns=8208735100 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-guard._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 8250121200,
+          "record": "[DEBUG-oe-startup] at_ns=8250121200 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: true"
+        },
+        {
+          "at_ns": 9117404900,
+          "record": "[DEBUG-oe-startup] at_ns=9117404900 thread=ThreadId(1) CALL guard-limited before live_closed=false"
+        },
+        {
+          "at_ns": 9117615000,
+          "record": "[DEBUG-oe-startup] at_ns=9117615000 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c000._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9117721600,
+          "record": "[DEBUG-oe-startup] at_ns=9117721600 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c000._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9117807700,
+          "record": "[DEBUG-oe-startup] at_ns=9117807700 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c001._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9117876300,
+          "record": "[DEBUG-oe-startup] at_ns=9117876300 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c001._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9117905500,
+          "record": "[DEBUG-oe-startup] at_ns=9117905500 thread=ThreadId(1) CALL guard-limited returned live_closed=false new_closed=false"
+        },
+        {
+          "at_ns": 9117948500,
+          "record": "[DEBUG-oe-startup] at_ns=9117948500 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c002._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9118020800,
+          "record": "[DEBUG-oe-startup] at_ns=9118020800 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c002._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9118133600,
+          "record": "[DEBUG-oe-startup] at_ns=9118133600 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c003._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9118173400,
+          "record": "[DEBUG-oe-startup] at_ns=9118173400 thread=ThreadId(1) CALL guard-limited dropped live_closed=false"
+        },
+        {
+          "at_ns": 9118197400,
+          "record": "[DEBUG-oe-startup] at_ns=9118197400 thread=ThreadId(1) CALL guard-standard before live_closed=false"
+        },
+        {
+          "at_ns": 9118280100,
+          "record": "[DEBUG-oe-startup] at_ns=9118280100 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c003._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9118332400,
+          "record": "[DEBUG-oe-startup] at_ns=9118332400 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c004._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9118427300,
+          "record": "[DEBUG-oe-startup] at_ns=9118427300 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c004._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9118507100,
+          "record": "[DEBUG-oe-startup] at_ns=9118507100 thread=ThreadId(1) CALL guard-standard returned live_closed=false new_disconnected=false first_event=Err(Empty)"
+        },
+        {
+          "at_ns": 9118517700,
+          "record": "[DEBUG-oe-startup] at_ns=9118517700 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c005._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9118556000,
+          "record": "[DEBUG-oe-startup] at_ns=9118556000 thread=ThreadId(1) CALL guard-standard dropped live_closed=false"
+        },
+        {
+          "at_ns": 9118669800,
+          "record": "[DEBUG-oe-startup] at_ns=9118669800 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c005._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9118730600,
+          "record": "[DEBUG-oe-startup] at_ns=9118730600 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c006._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9118815400,
+          "record": "[DEBUG-oe-startup] at_ns=9118815400 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c006._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9118885700,
+          "record": "[DEBUG-oe-startup] at_ns=9118885700 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c007._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9118927600,
+          "record": "[DEBUG-oe-startup] at_ns=9118927600 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c007._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9118965000,
+          "record": "[DEBUG-oe-startup] at_ns=9118965000 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c008._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9119001600,
+          "record": "[DEBUG-oe-startup] at_ns=9119001600 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c008._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9119037300,
+          "record": "[DEBUG-oe-startup] at_ns=9119037300 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c009._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9119074300,
+          "record": "[DEBUG-oe-startup] at_ns=9119074300 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c009._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9119110100,
+          "record": "[DEBUG-oe-startup] at_ns=9119110100 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c010._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9119145300,
+          "record": "[DEBUG-oe-startup] at_ns=9119145300 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c010._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9119181500,
+          "record": "[DEBUG-oe-startup] at_ns=9119181500 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c011._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9119218100,
+          "record": "[DEBUG-oe-startup] at_ns=9119218100 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c011._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9119254400,
+          "record": "[DEBUG-oe-startup] at_ns=9119254400 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c012._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9119290800,
+          "record": "[DEBUG-oe-startup] at_ns=9119290800 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c012._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9119342300,
+          "record": "[DEBUG-oe-startup] at_ns=9119342300 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c013._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9119380200,
+          "record": "[DEBUG-oe-startup] at_ns=9119380200 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c013._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9119415900,
+          "record": "[DEBUG-oe-startup] at_ns=9119415900 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c014._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9119451900,
+          "record": "[DEBUG-oe-startup] at_ns=9119451900 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c014._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9119487800,
+          "record": "[DEBUG-oe-startup] at_ns=9119487800 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c015._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9119522700,
+          "record": "[DEBUG-oe-startup] at_ns=9119522700 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c015._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9119559600,
+          "record": "[DEBUG-oe-startup] at_ns=9119559600 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c016._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9119596700,
+          "record": "[DEBUG-oe-startup] at_ns=9119596700 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c016._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9119633200,
+          "record": "[DEBUG-oe-startup] at_ns=9119633200 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c017._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9119669800,
+          "record": "[DEBUG-oe-startup] at_ns=9119669800 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c017._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9119706400,
+          "record": "[DEBUG-oe-startup] at_ns=9119706400 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c018._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9119758400,
+          "record": "[DEBUG-oe-startup] at_ns=9119758400 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c018._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9119793900,
+          "record": "[DEBUG-oe-startup] at_ns=9119793900 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c019._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9119849600,
+          "record": "[DEBUG-oe-startup] at_ns=9119849600 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c019._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9119884800,
+          "record": "[DEBUG-oe-startup] at_ns=9119884800 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c020._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9119919900,
+          "record": "[DEBUG-oe-startup] at_ns=9119919900 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c020._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9119955800,
+          "record": "[DEBUG-oe-startup] at_ns=9119955800 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c021._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9119992000,
+          "record": "[DEBUG-oe-startup] at_ns=9119992000 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c021._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9120028300,
+          "record": "[DEBUG-oe-startup] at_ns=9120028300 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c022._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9120068100,
+          "record": "[DEBUG-oe-startup] at_ns=9120068100 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c022._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9120103700,
+          "record": "[DEBUG-oe-startup] at_ns=9120103700 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c023._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9120143000,
+          "record": "[DEBUG-oe-startup] at_ns=9120143000 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c023._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9120178800,
+          "record": "[DEBUG-oe-startup] at_ns=9120178800 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c024._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9120216000,
+          "record": "[DEBUG-oe-startup] at_ns=9120216000 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c024._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9120253100,
+          "record": "[DEBUG-oe-startup] at_ns=9120253100 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c025._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9120287900,
+          "record": "[DEBUG-oe-startup] at_ns=9120287900 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c025._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9120322800,
+          "record": "[DEBUG-oe-startup] at_ns=9120322800 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c026._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9120361000,
+          "record": "[DEBUG-oe-startup] at_ns=9120361000 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c026._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9120396700,
+          "record": "[DEBUG-oe-startup] at_ns=9120396700 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c027._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9120431900,
+          "record": "[DEBUG-oe-startup] at_ns=9120431900 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c027._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9120467200,
+          "record": "[DEBUG-oe-startup] at_ns=9120467200 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c028._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9120503200,
+          "record": "[DEBUG-oe-startup] at_ns=9120503200 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c028._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9120539500,
+          "record": "[DEBUG-oe-startup] at_ns=9120539500 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c029._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9120575800,
+          "record": "[DEBUG-oe-startup] at_ns=9120575800 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c029._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9120613900,
+          "record": "[DEBUG-oe-startup] at_ns=9120613900 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c030._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9120649200,
+          "record": "[DEBUG-oe-startup] at_ns=9120649200 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c030._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9120683900,
+          "record": "[DEBUG-oe-startup] at_ns=9120683900 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-c031._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9120719200,
+          "record": "[DEBUG-oe-startup] at_ns=9120719200 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-c031._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9120767200,
+          "record": "[DEBUG-oe-startup] at_ns=9120767200 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-guard._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9120802000,
+          "record": "[DEBUG-oe-startup] at_ns=9120802000 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-guard._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9120840300,
+          "record": "[DEBUG-oe-startup] at_ns=9120840300 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: false"
+        },
+        {
+          "at_ns": 9120876900,
+          "record": "[DEBUG-oe-startup] at_ns=9120876900 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-guard._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 9259558200,
+          "record": "[DEBUG-oe-startup] at_ns=9259558200 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 2, false, Sender) repeating: true"
+        },
+        {
+          "at_ns": 10439125900,
+          "record": "[DEBUG-oe-startup] at_ns=10439125900 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-guard._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 10460352100,
+          "record": "[DEBUG-oe-startup] at_ns=10460352100 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: true"
+        },
+        {
+          "at_ns": 10460872700,
+          "record": "[DEBUG-oe-startup] at_ns=10460872700 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: false"
+        },
+        {
+          "at_ns": 10476252300,
+          "record": "[DEBUG-oe-startup] at_ns=10476252300 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: true"
+        },
+        {
+          "at_ns": 10501595900,
+          "record": "[DEBUG-oe-startup] at_ns=10501595900 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-guard._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 10501661200,
+          "record": "[DEBUG-oe-startup] at_ns=10501661200 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-guard._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 10501723000,
+          "record": "[DEBUG-oe-startup] at_ns=10501723000 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: false"
+        },
+        {
+          "at_ns": 10501755900,
+          "record": "[DEBUG-oe-startup] at_ns=10501755900 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-guard._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 11477578800,
+          "record": "[DEBUG-oe-startup] at_ns=11477578800 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 2, false, Sender) repeating: true"
+        },
+        {
+          "at_ns": 11559637000,
+          "record": "[DEBUG-oe-startup] at_ns=11559637000 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-guard._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 11581320500,
+          "record": "[DEBUG-oe-startup] at_ns=11581320500 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: StopBrowse(\"_oe-guard._tcp.local.\") repeating: false"
+        }
+      ],
+      "observed_processes_session_zero_below_normal": true
+    },
+    {
+      "mode": "diagnostic2",
+      "started_utc": "2026-10-23T17:08:12.3221849Z",
+      "executable": "<DIAGNOSTIC_FIXTURE>\\bin\\startup_diagnostic_v2.exe",
+      "binary_sha256": "0649c8736946bc001be0cfb165b1c2788d80cf42c20e4ac3587e38599f51d52d",
+      "source_sha256": "d9c7a18a0339545657f303318c8583cb44ae7a0b5efd63dcc9b073f731d1956d",
+      "arguments": [
+        "startup",
+        "<DIAGNOSTIC_FIXTURE>\\runtime\\run2",
+        "25092",
+        "25096"
+      ],
+      "session": 0,
+      "priority": "BelowNormal",
+      "timeout_seconds": 120,
+      "timed_out": false,
+      "forced_cleanup": [],
+      "observed_processes": [
+        {
+          "name": "startup_diagnostic_v2.exe",
+          "created": "2026-10-23T10:08:12.4090170-07:00",
+          "session": 0,
+          "priority": "BelowNormal",
+          "path": "<DIAGNOSTIC_FIXTURE>\\bin\\startup_diagnostic_v2.exe"
+        },
+        {
+          "name": "startup_diagnostic_v2.exe",
+          "created": "2026-10-23T10:08:12.3236660-07:00",
+          "session": 0,
+          "priority": "BelowNormal",
+          "path": "<DIAGNOSTIC_FIXTURE>\\bin\\startup_diagnostic_v2.exe"
+        }
+      ],
+      "exit": 1,
+      "elapsed_ms": 16870,
+      "ended_utc": "2026-10-23T17:08:29.1947954Z",
+      "stdout_sha256": "92c95f06f07af0b13e448f6aae4cabdea562f52c4e67b9ab5e18b329955cd8d9",
+      "stderr_sha256": "464ae887c4a72ba75edfe86f74024b304195cca0c1cc2010e8cd2435d0521b3b",
+      "checks": [
+        "CHECK ordinary-replay-cache-overflow=true",
+        "CHECK live-handle-resolves=true",
+        "CHECK ordinary-replay-commands-drained=true",
+        "CHECK cancelled-distinct-types-retain-no-state=false",
+        "CHECK cancelled-replacements-preserve-identity=false",
+        "CHECK surviving-handle-receives-live-update=false",
+        "CHECK successful-limited-replacement-has-new-identity=true",
+        "CHECK successful-standard-replacement-releases-state=true",
+        "CHECK cancelled-replacements-preserve-standard-identity=true",
+        "CHECK surviving-standard-handle-receives-live-update=true",
+        "CHECK standard-to-limited-replacement=true",
+        "CHECK final-stop-clears-worker-state=true",
+        "CHECK publisher-exits-zero=true",
+        "CHECK worker-shutdown-ack=true"
+      ],
+      "started_local": "2026-10-23T10:08:12.322184-07:00",
+      "ended_local": "2026-10-23T10:08:29.194795-07:00",
+      "stdout": "STARTUP_METRICS={\"dns-registry-name-change\": 0, \"dns-registry-active\": 0, \"cached-ptr\": 802, \"cached-srv\": 500, \"cached-nsec\": 0, \"timer\": 7714, \"cache-refresh-ptr\": 0, \"known-answer-suppression\": 0, \"cached-addr\": 2, \"dns-registry-probe\": 0, \"cache-refresh-srv-txt\": 0, \"dns-registry-timer\": 0, \"cache-refresh-addr\": 0, \"browse\": 3, \"cached-subtype\": 0, \"cached-txt\": 500, \"limited-view-states\": 1}\nSTARTUP_METRICS={\"dns-registry-name-change\": 0, \"dns-registry-active\": 0, \"cached-ptr\": 802, \"cached-srv\": 500, \"cached-nsec\": 0, \"timer\": 8024, \"cache-refresh-ptr\": 0, \"known-answer-suppression\": 0, \"cached-addr\": 2, \"dns-registry-probe\": 0, \"cache-refresh-srv-txt\": 0, \"dns-registry-timer\": 0, \"cache-refresh-addr\": 0, \"browse\": 3, \"cached-subtype\": 0, \"cached-txt\": 500, \"limited-view-states\": 6}\nSTARTUP_METRICS={\"dns-registry-name-change\": 0, \"dns-registry-active\": 0, \"cached-ptr\": 802, \"cached-srv\": 793, \"cached-nsec\": 0, \"timer\": 9773, \"cache-refresh-ptr\": 0, \"known-answer-suppression\": 0, \"cached-addr\": 3, \"dns-registry-probe\": 0, \"cache-refresh-srv-txt\": 0, \"dns-registry-timer\": 0, \"cache-refresh-addr\": 0, \"browse\": 3, \"cached-subtype\": 0, \"cached-txt\": 793, \"limited-view-states\": 0}\nCANCELLED_STARTUPS distinct=32 replay_commands=16 replayed_overflows=16 before=1 after_barrier=6 after_settle=0 live_closed=true\nSTARTUP_METRICS={\"dns-registry-name-change\": 0, \"dns-registry-active\": 0, \"cached-ptr\": 802, \"cached-srv\": 802, \"cached-nsec\": 0, \"timer\": 9541, \"cache-refresh-ptr\": 0, \"known-answer-suppression\": 0, \"cached-addr\": 3, \"dns-registry-probe\": 0, \"cache-refresh-srv-txt\": 0, \"dns-registry-timer\": 0, \"cache-refresh-addr\": 0, \"browse\": 3, \"cached-subtype\": 0, \"cached-txt\": 802, \"limited-view-states\": 1}\nSTARTUP_METRICS={\"dns-registry-name-change\": 0, \"dns-registry-active\": 0, \"cached-ptr\": 802, \"cached-srv\": 802, \"cached-nsec\": 0, \"timer\": 9543, \"cache-refresh-ptr\": 0, \"known-answer-suppression\": 0, \"cached-addr\": 3, \"dns-registry-probe\": 0, \"cache-refresh-srv-txt\": 0, \"dns-registry-timer\": 0, \"cache-refresh-addr\": 0, \"browse\": 4, \"cached-subtype\": 0, \"cached-txt\": 802, \"limited-view-states\": 0}\nSTARTUP_METRICS={\"dns-registry-name-change\": 0, \"dns-registry-active\": 0, \"cached-ptr\": 802, \"cached-srv\": 802, \"cached-nsec\": 0, \"timer\": 9543, \"cache-refresh-ptr\": 0, \"known-answer-suppression\": 0, \"cached-addr\": 3, \"dns-registry-probe\": 0, \"cache-refresh-srv-txt\": 0, \"dns-registry-timer\": 0, \"cache-refresh-addr\": 0, \"browse\": 4, \"cached-subtype\": 0, \"cached-txt\": 802, \"limited-view-states\": 0}\nSTARTUP_METRICS={\"dns-registry-name-change\": 0, \"dns-registry-active\": 0, \"cached-ptr\": 802, \"cached-srv\": 802, \"cached-nsec\": 0, \"timer\": 9555, \"cache-refresh-ptr\": 0, \"known-answer-suppression\": 0, \"cached-addr\": 3, \"dns-registry-probe\": 0, \"cache-refresh-srv-txt\": 0, \"dns-registry-timer\": 0, \"cache-refresh-addr\": 0, \"browse\": 5, \"cached-subtype\": 0, \"cached-txt\": 803, \"limited-view-states\": 1}\nSTARTUP_METRICS={\"dns-registry-name-change\": 0, \"dns-registry-active\": 0, \"cached-ptr\": 801, \"cached-srv\": 801, \"cached-nsec\": 0, \"timer\": 9555, \"cache-refresh-ptr\": 0, \"known-answer-suppression\": 0, \"cached-addr\": 2, \"dns-registry-probe\": 0, \"cache-refresh-srv-txt\": 0, \"dns-registry-timer\": 0, \"cache-refresh-addr\": 0, \"browse\": 5, \"cached-subtype\": 0, \"cached-txt\": 801, \"limited-view-states\": 0}\nCHECK ordinary-replay-cache-overflow=true\nCHECK live-handle-resolves=true\nCHECK ordinary-replay-commands-drained=true\nCHECK cancelled-distinct-types-retain-no-state=false\nCHECK cancelled-replacements-preserve-identity=false\nCHECK surviving-handle-receives-live-update=false\nCHECK successful-limited-replacement-has-new-identity=true\nCHECK successful-standard-replacement-releases-state=true\nCHECK cancelled-replacements-preserve-standard-identity=true\nCHECK surviving-standard-handle-receives-live-update=true\nCHECK standard-to-limited-replacement=true\nCHECK final-stop-clears-worker-state=true\nCHECK publisher-exits-zero=true\nCHECK worker-shutdown-ack=true\n",
+      "stderr": "[DEBUG-oe-startup] at_ns=8213850200 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-guard._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=8229754600 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: true\n[DEBUG-oe-startup] at_ns=9187689200 thread=ThreadId(1) CALL guard-limited before live_closed=false\n[DEBUG-oe-startup] at_ns=9187738400 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-guard._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=9187936900 thread=ThreadId(1) CALL guard-limited returned live_closed=true new_closed=false\n[DEBUG-oe-startup] at_ns=9187939000 thread=ThreadId(1) CALL guard-limited dropped live_closed=true\n[DEBUG-oe-startup] at_ns=9187939400 thread=ThreadId(1) CALL guard-standard before live_closed=true\n[DEBUG-oe-startup] at_ns=9187952900 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: false\n[DEBUG-oe-startup] at_ns=9188165800 thread=ThreadId(1) CALL guard-standard returned live_closed=true new_disconnected=false first_event=Ok(SearchStarted(\"_oe-guard._tcp.local. on 1 interfaces [Loopback Pseudo-Interface 1 (1)]\"))\n[DEBUG-oe-startup] at_ns=9188170000 thread=ThreadId(1) CALL guard-standard dropped live_closed=true\n[DEBUG-oe-startup] at_ns=9241744300 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: true\n[DEBUG-oe-startup] at_ns=13515005000 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-guard._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=13535908600 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: true\n[DEBUG-oe-startup] at_ns=13536252400 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: false\n[DEBUG-oe-startup] at_ns=13575458400 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-guard._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=13575462900 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-guard._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=13575465100 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: false\n[DEBUG-oe-startup] at_ns=13575467200 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-guard._tcp.local.)(repeating:false): sending on a closed channel\n[DEBUG-oe-startup] at_ns=13575685100 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: true\n[DEBUG-oe-startup] at_ns=14530910800 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-guard._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false\n[DEBUG-oe-startup] at_ns=14531635900 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: StopBrowse(\"_oe-guard._tcp.local.\") repeating: false\ndiscovery_recovery: limited startup checks failed\n",
+      "checks_passed": 11,
+      "checks_total": 14,
+      "failed_checks": [
+        "CHECK cancelled-distinct-types-retain-no-state=false",
+        "CHECK cancelled-replacements-preserve-identity=false",
+        "CHECK surviving-handle-receives-live-update=false"
+      ],
+      "before": {
+        "recorded_utc": "2026-10-23T17:08:12.1332624Z",
+        "tcp_inventory_lines": 424,
+        "udp_inventory_lines": 62,
+        "process_inventory_count": 417,
+        "tcp_exit": 0,
+        "udp_exit": 0,
+        "assigned_tcp_listeners": [],
+        "assigned_udp_endpoints": [],
+        "fixture_processes": [],
+        "build_processes": []
+      },
+      "after": {
+        "recorded_utc": "2026-10-23T17:08:29.5861101Z",
+        "tcp_inventory_lines": 447,
+        "udp_inventory_lines": 62,
+        "process_inventory_count": 416,
+        "tcp_exit": 0,
+        "udp_exit": 0,
+        "assigned_tcp_listeners": [],
+        "assigned_udp_endpoints": [],
+        "fixture_processes": [],
+        "build_processes": []
+      },
+      "event_timeline": [
+        {
+          "at_ns": 8213850200,
+          "record": "[DEBUG-oe-startup] at_ns=8213850200 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-guard._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 8229754600,
+          "record": "[DEBUG-oe-startup] at_ns=8229754600 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: true"
+        },
+        {
+          "at_ns": 9187689200,
+          "record": "[DEBUG-oe-startup] at_ns=9187689200 thread=ThreadId(1) CALL guard-limited before live_closed=false"
+        },
+        {
+          "at_ns": 9187738400,
+          "record": "[DEBUG-oe-startup] at_ns=9187738400 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-guard._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 9187936900,
+          "record": "[DEBUG-oe-startup] at_ns=9187936900 thread=ThreadId(1) CALL guard-limited returned live_closed=true new_closed=false"
+        },
+        {
+          "at_ns": 9187939000,
+          "record": "[DEBUG-oe-startup] at_ns=9187939000 thread=ThreadId(1) CALL guard-limited dropped live_closed=true"
+        },
+        {
+          "at_ns": 9187939400,
+          "record": "[DEBUG-oe-startup] at_ns=9187939400 thread=ThreadId(1) CALL guard-standard before live_closed=true"
+        },
+        {
+          "at_ns": 9187952900,
+          "record": "[DEBUG-oe-startup] at_ns=9187952900 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: false"
+        },
+        {
+          "at_ns": 9188165800,
+          "record": "[DEBUG-oe-startup] at_ns=9188165800 thread=ThreadId(1) CALL guard-standard returned live_closed=true new_disconnected=false first_event=Ok(SearchStarted(\"_oe-guard._tcp.local. on 1 interfaces [Loopback Pseudo-Interface 1 (1)]\"))"
+        },
+        {
+          "at_ns": 9188170000,
+          "record": "[DEBUG-oe-startup] at_ns=9188170000 thread=ThreadId(1) CALL guard-standard dropped live_closed=true"
+        },
+        {
+          "at_ns": 9241744300,
+          "record": "[DEBUG-oe-startup] at_ns=9241744300 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: true"
+        },
+        {
+          "at_ns": 13515005000,
+          "record": "[DEBUG-oe-startup] at_ns=13515005000 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-guard._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 13535908600,
+          "record": "[DEBUG-oe-startup] at_ns=13535908600 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: true"
+        },
+        {
+          "at_ns": 13536252400,
+          "record": "[DEBUG-oe-startup] at_ns=13536252400 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: false"
+        },
+        {
+          "at_ns": 13575458400,
+          "record": "[DEBUG-oe-startup] at_ns=13575458400 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-guard._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 13575462900,
+          "record": "[DEBUG-oe-startup] at_ns=13575462900 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-guard._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 13575465100,
+          "record": "[DEBUG-oe-startup] at_ns=13575465100 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: false"
+        },
+        {
+          "at_ns": 13575467200,
+          "record": "[DEBUG-oe-startup] at_ns=13575467200 thread=ThreadId(2) LIB line=4232 level=DEBUG Failed to send SearchStarted(_oe-guard._tcp.local.)(repeating:false): sending on a closed channel"
+        },
+        {
+          "at_ns": 13575685100,
+          "record": "[DEBUG-oe-startup] at_ns=13575685100 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: Browse(\"_oe-guard._tcp.local.\", 1, false, Sender) repeating: true"
+        },
+        {
+          "at_ns": 14530910800,
+          "record": "[DEBUG-oe-startup] at_ns=14530910800 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: BrowseLimited(\"_oe-guard._tcp.local.\", Sender, Mutex { data: LimitedServiceState { limit: 64, dirty: true, services: {} }, poisoned: false, .. }) repeating: false"
+        },
+        {
+          "at_ns": 14531635900,
+          "record": "[DEBUG-oe-startup] at_ns=14531635900 thread=ThreadId(2) LIB line=4058 level=TRACE exec_command: StopBrowse(\"_oe-guard._tcp.local.\") repeating: false"
+        }
+      ],
+      "observed_processes_session_zero_below_normal": true
+    }
+  ],
+  "causality": {
+    "run1": "Both target caller drops completed before their worker command entries. Existing failure logs confirm both initial SearchStarted sends returned Disconnected. Gauge stayed 1 and the original live view received later updates. All 32 distinct types also logged initial-send failures.",
+    "run2_limited": "Worker entered the non-repeating limited replacement at 9187738400 ns. At 9187936900 ns the caller recorded old live_closed=true while holding the new receiver. It dropped the new receiver only afterward. The source removes the old subscription only after initial try_send succeeds. Thus commit/success precedes this observed drop; no dirty-snapshot or new is_closed=false inference is needed.",
+    "run2_standard": "At 9188165800 ns the caller recorded first_event=Ok(SearchStarted(...)) on the new standard receiver, then dropped it at 9188170000 ns. This directly proves the initial event was accepted and received before drop.",
+    "run2_cleanup": "The next guard repeating-command entry is 9241744300 ns, after old-view loss and both drops. Normal disconnect cleanup permits eventual gauge 0. This trace does not show old-generation cleanup causing the earlier loss.",
+    "run2_gauge": "before=1 after_barrier=6 after_settle=0 live_closed=true. The temporary 6 is retained as observed. It is not labelled 32 orphan states; no state persisted after settle.",
+    "matched_failure": "All three failed check names match the original Windows 11/14 failure. Intermediate metrics differ and are preserved.",
+    "hypothesis_result": "Post-start scheduling is demonstrated for the matched reproduction. Both-initial-sends-Disconnected-then-old-view-loss was not observed. No product bug established.",
+    "unobservable_boundary": "LimitedBrowse exposes no SearchStarted receiver or direct startup/commit outcome. Source plus observed old closure proves the limited replacement committed before drop in run2; its exact try_send timestamp is not directly logged. Original send outcomes cannot be recovered retrospectively."
+  },
+  "proposed_observation_only_next_step": {
+    "implemented": false,
+    "smallest_change": "If more exact send timestamps are required, add a diagnostic-only trace immediately at the existing initial try_send result, before any map mutation. Record service type, limited/standard kind, per-request/channel identity, actual Ok/Disconnected result and monotonic time. Correlate with caller drop boundaries. No worker rendezvous, pause, injected command or scheduling control.",
+    "strict_classification": "Only an actual Disconnected initial-send result establishes pre-start cancellation. An Ok result or received SearchStarted establishes post-start. Pending/unobserved or unmatched results mean unverified coverage, never PASS.",
+    "pre_start_contract": "For actual failed target sends, retain exact old identity, gauge=1, later old-view live update and no cancelled map state. Any lost old identity or persistent extra state remains red.",
+    "post_start_contract": "In a separately assigned positive-start case, keep the new receiver alive until startup/resolution is observed; require old closed, new live and fresh, and the exact one-state gauge. After dropping the new receiver, require cleanup to zero and no old-generation removal of a newer live subscription.",
+    "coverage_limit": "Current ordinary API cannot guarantee that an immediate drop occurs before the worker startup send. Classification can be deterministic; forcing pre-start scheduling is not possible here without a new contract or forbidden hook. Do not relax the original gauge or skip identity checks; do not relabel its 11/14 as PASS. Parent decides any next implementation or probe change."
+  },
+  "preserved_helper_failures": [
+    {
+      "stage": "first preflight before compilation",
+      "exit": 1,
+      "message": "expected one frozen discovery_recovery fingerprint",
+      "reason": "Both Clippy metadata and linked release example fingerprint entries exist.",
+      "stderr_sha256": "07fed0f0204ed8214e1c07432d590b53da74cda0ba59fd9026f4f24a81daab09",
+      "response": "Retain script/log; inspect actual entries; no compiler or runtime had started."
+    },
+    {
+      "stage": "second preflight before compilation",
+      "exit": 1,
+      "message": "cannot select exact frozen dependency: mdns_sd",
+      "reason": "Hash-suffixed .d chose a Clippy metadata-only entry whose referenced dependency had no linked rlib.",
+      "stderr_sha256": "58d29da39f48f3970d2f8b43a0d9e21c1aca2afdeee068bdcc3d5a6543b37f0c",
+      "response": "preflight-build-v3 selects the unique example fingerprint whose recorded direct mdns/log dependency fingerprints resolve to actual frozen rlibs. No original file changed."
+    },
+    {
+      "stage": "second real diagnostic",
+      "exit": 1,
+      "response": "Preserved as FAIL 11/14; not retried or relaxed. Both standalone rustc builds exited 0."
+    }
+  ],
+  "cleanup": {
+    "postflight": {
+      "recorded_utc": "2026-10-23T17:10:11.7052971Z",
+      "old_fixture_files_unchanged": 2579,
+      "old_all_file_bytes_hashes_readonly_flags_unchanged": true,
+      "old_root_acl_protected_current_user_only": true,
+      "old_fixture_processes": [],
+      "new_acl": {
+        "root_protected": true,
+        "current_user_only_items": 76,
+        "reparse_points": 0
+      },
+      "new_binaries": [
+        {
+          "path": "bin/startup_diagnostic.exe",
+          "bytes": 1513984,
+          "sha256": "d60ab87455295bd68a26b37eba8c444c03c01026bdf5d50a76045b97f40a75b1",
+          "readonly": true
+        },
+        {
+          "path": "bin/startup_diagnostic_v2.exe",
+          "bytes": 1513472,
+          "sha256": "0649c8736946bc001be0cfb165b1c2788d80cf42c20e4ac3587e38599f51d52d",
+          "readonly": true
+        }
+      ],
+      "tools": {
+        "tools": [
+          {
+            "name": "cargo.exe",
+            "bytes": 27543552,
+            "sha256": "aa5b8980be3681899fde765ba47e2ed361463ae9dd8ee7cd1963c18d23743a0f"
+          },
+          {
+            "name": "rustc.exe",
+            "bytes": 110592,
+            "sha256": "ba03e3ba03a73d9fef19ab3659140f94b43615ec1d587fe9befc9aed3bd5aa72"
+          },
+          {
+            "name": "cargo-clippy.exe",
+            "bytes": 1175040,
+            "sha256": "bea1e468b531a389f6fe164d76ba98f73a2dac3495998dd085365df92105134f"
+          },
+          {
+            "name": "clippy-driver.exe",
+            "bytes": 11308544,
+            "sha256": "648db1897ec48a9f64bae9e0624761abab7b2904a6ab25d53cc2869a0245f99e"
+          },
+          {
+            "name": "rustfmt.exe",
+            "bytes": 4735488,
+            "sha256": "231e4b294d5f6d9f025a9025514e3e6b0ee5defa524fd016498e1c77eb96980a"
+          }
+        ],
+        "rustup_settings_sha256": "af11a5540001371324994abaa9ea1e69d50fed1acb1a87e4abef179e8816058f",
+        "cargo_configs": [],
+        "toolchains": [
+          "stable-x86_64-pc-windows-msvc (active, default)",
+          "nightly-x86_64-pc-windows-msvc",
+          "nightly-2026-08-10-x86_64-pc-windows-msvc",
+          "1.98.0-x86_64-pc-windows-msvc",
+          "1.99.1-x86_64-pc-windows-msvc"
+        ],
+        "rustc": [
+          "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+          "binary: rustc",
+          "commit-hash: 58cf8f9c35b355199727627d07ae34a4e2846d67",
+          "commit-date: 2026-10-13",
+          "host: x86_64-pc-windows-msvc",
+          "release: 1.99.1",
+          "LLVM version: 23.1.1"
+        ],
+        "cargo": [
+          "cargo 1.99.1 (5f94df478 2026-08-27)"
+        ],
+        "powershell": "7.6.4",
+        "powershell_path": "c:\\program files\\powershell\\7\\pwsh.exe",
+        "powershell_sha256": "db6dd81183fe57d22e03b911ec9a30a2fd7c40542e97743615355a6fb44f458f",
+        "os": "Microsoft Windows NT 10.0.26340.0",
+        "architecture": "AMD64"
+      },
+      "global_tool_defaults_unchanged": true,
+      "temp_entries": [],
+      "diagnostic_runs": [
+        "diagnostic1-result.json",
+        "diagnostic2-result.json"
+      ],
+      "passed": true,
+      "inventory": {
+        "recorded_utc": "2026-10-23T17:10:11.0662324Z",
+        "tcp_inventory_lines": 463,
+        "udp_inventory_lines": 63,
+        "process_inventory_count": 416,
+        "tcp_exit": 0,
+        "udp_exit": 0,
+        "assigned_tcp_listeners": [],
+        "assigned_udp_endpoints": [],
+        "fixture_processes": [],
+        "build_processes": []
+      }
+    },
+    "retention_final": {
+      "recorded_utc": "2026-10-23T17:13:03.2261059Z",
+      "acl": {
+        "root_protected": true,
+        "current_user_only_items": 78,
+        "reparse_points": 0
+      },
+      "remaining_private_processes": 0,
+      "remaining_assigned_tcp_listeners": 0,
+      "remaining_assigned_udp_endpoints": 0,
+      "temp_entries": 0,
+      "bundle_sha256": "9bf021173b8a7a056638feee9dec3b5231aad47cb42523cff770182ac7ffc352",
+      "helper_source_readonly": [
+        {
+          "name": "startup_diagnostic_v2.rs",
+          "readonly": true,
+          "sha256": "d9c7a18a0339545657f303318c8583cb44ae7a0b5efd63dcc9b073f731d1956d"
+        },
+        {
+          "name": "startup_diagnostic.rs",
+          "readonly": true,
+          "sha256": "577b8bf0f0045bd624e0393b714f5e1ae66a659d2749ace535b8a6fdb3624a6b"
+        }
+      ]
+    },
+    "live_sharing_process_identity_unchanged": true,
+    "forced_process_cleanup": false,
+    "private_fixtures_retained_for_review": true
+  },
+  "transport_records": [
+    {
+      "started_utc": "2026-10-23T17:01:37.003991+00:00",
+      "elapsed_ms": 4393,
+      "transport_exit": 1,
+      "remote_exit_unknown": false,
+      "script_sha256": "0b348294fde1f65625fe3ca055fa8d159cad6dfde0caf893bd1d5b9cbabc0a80",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "07fed0f0204ed8214e1c07432d590b53da74cda0ba59fd9026f4f24a81daab09",
+      "name": "build-attached",
+      "decoded_input": "& '<DIAGNOSTIC_FIXTURE>\\preflight-build.ps1' -FrozenPath '<FROZEN_FIXTURE>'",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <SSH_ALIAS> pwsh.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T17:08:02.472787+00:00",
+      "elapsed_ms": 11237,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "99b26cc890e4249021c77d0980e3f49803721839276a22fdf9791b170bf04b55",
+      "stdout_sha256": "97b760c98ae10d7162ffffe339064210b9ccbf51f132713d80bc1e7fc8fed99a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "build-buffered-attached",
+      "decoded_input": "$root='<DIAGNOSTIC_FIXTURE>';$ErrorActionPreference='Stop';$entries=Get-Content -Raw (Join-Path $root 'input-hashes-v2.json')|ConvertFrom-Json;foreach($e in $entries){$p=Join-Path $root $e.path;if((Get-FileHash -LiteralPath $p -Algorithm SHA256).Hash -ne $e.sha256){throw 'second input mismatch'};(Get-Item $p).IsReadOnly=$true};$tokens=$null;$errors=$null;$null=[System.Management.Automation.Language.Parser]::ParseFile((Join-Path $root 'run-diagnostic2.ps1'),[ref]$tokens,[ref]$errors);if($errors.Count -gt 0){throw ($errors|Out-String)};& (Join-Path $root 'build-buffered.ps1')",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <SSH_ALIAS> pwsh.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T17:03:02.845444+00:00",
+      "elapsed_ms": 4149,
+      "transport_exit": 1,
+      "remote_exit_unknown": false,
+      "script_sha256": "1e9a080449bf051185f08b2074519f28a0abae3c378460bc1ac34ab2a4e086c3",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "58d29da39f48f3970d2f8b43a0d9e21c1aca2afdeee068bdcc3d5a6543b37f0c",
+      "name": "build-v2-attached",
+      "decoded_input": "& '<DIAGNOSTIC_FIXTURE>\\preflight-build-v2.ps1' -FrozenPath '<FROZEN_FIXTURE>'",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <SSH_ALIAS> pwsh.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T17:04:52.278904+00:00",
+      "elapsed_ms": 14543,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "06dad8c4be96ac39601c649b23cf4448090321d267ce5d85e194af5480ff665c",
+      "stdout_sha256": "77e286550b6acec52a73272efefafa09a72aec86142f45dc777e54704d4991d7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "build-v3-attached",
+      "decoded_input": "& '<DIAGNOSTIC_FIXTURE>\\preflight-build-v3.ps1' -FrozenPath '<FROZEN_FIXTURE>'",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <SSH_ALIAS> pwsh.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T17:05:31.801480+00:00",
+      "elapsed_ms": 15819,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "99e4213fc0f4e8fcb6621d1a4e226aba50d842abb0bb7e8f79dbc95ad956592a",
+      "stdout_sha256": "85f97b9fa86b4ce6f4bdb871c0eda99dac7e1b5dd1ac04a01aba7968a5f6dc66",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "diagnostic1-attached",
+      "decoded_input": "$root='<DIAGNOSTIC_FIXTURE>';$ErrorActionPreference='Stop';$inputs=Get-Content -Raw (Join-Path $root 'input-hashes.json')|ConvertFrom-Json;foreach($e in $inputs){$p=Join-Path $root $e.path;if((Get-FileHash -LiteralPath $p -Algorithm SHA256).Hash -ne $e.sha256){throw 'diagnostic input mismatch'};(Get-Item $p).IsReadOnly=$true};(Get-Item (Join-Path $root 'input-hashes.json')).IsReadOnly=$true;$tokens=$null;$errors=$null;$null=[System.Management.Automation.Language.Parser]::ParseFile((Join-Path $root 'run-diagnostic.ps1'),[ref]$tokens,[ref]$errors);if($errors.Count -gt 0){throw ($errors|Out-String)};& (Join-Path $root 'run-diagnostic.ps1')",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <SSH_ALIAS> pwsh.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T17:06:21.268475+00:00",
+      "elapsed_ms": 698,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "fe01d61e36281fb31c01f7452d423e92e76deec5202f7b45e2794c085358413e",
+      "stdout_sha256": "80325ca94e2f516da0ea70b5bbae5cc445fdaf230160c03b6aba7b3837eb92ea",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "diagnostic1-inspect",
+      "decoded_input": "$root='<DIAGNOSTIC_FIXTURE>';$ErrorActionPreference='Stop';if(-not (Test-Path (Join-Path $root 'diagnostic1-result.json'))){'DIAGNOSTIC_STILL_RUNNING'}else{[ordered]@{result=(Get-Content -Raw (Join-Path $root 'diagnostic1-result.json')|ConvertFrom-Json);stdout=(Get-Content -Raw (Join-Path $root 'logs/diagnostic1.stdout'));stderr=(Get-Content -Raw (Join-Path $root 'logs/diagnostic1.stderr'))}|ConvertTo-Json -Depth 12}",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <SSH_ALIAS> pwsh.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T17:08:13.710591+00:00",
+      "elapsed_ms": 18776,
+      "transport_exit": 1,
+      "remote_exit_unknown": false,
+      "script_sha256": "c0871d4e15ef4c55beeacfb18482b7b7a24154b9b81ea48b2d71f8e870b930d2",
+      "stdout_sha256": "a67716c9e345c3c545dfdce53ae2e077897b582bddcabce0df5dafdfcf3c282e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "diagnostic2-attached",
+      "decoded_input": "& '<DIAGNOSTIC_FIXTURE>\\run-diagnostic2.ps1'",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <SSH_ALIAS> pwsh.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T17:09:11.086535+00:00",
+      "elapsed_ms": 686,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "a1061b629c2e59be38cafc9519ed3449034847fbe2032d38a77c9d74f0acb7e2",
+      "stdout_sha256": "f7bc51727ff44fadca65e244c81c69c10da6e07e1cf4594884e2dbe636260b45",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "diagnostic2-inspect",
+      "decoded_input": "$root='<DIAGNOSTIC_FIXTURE>';$ErrorActionPreference='Stop';[ordered]@{result=(Get-Content -Raw (Join-Path $root 'diagnostic2-result.json')|ConvertFrom-Json);stdout=(Get-Content -Raw (Join-Path $root 'logs/diagnostic2.stdout'));stderr=(Get-Content -Raw (Join-Path $root 'logs/diagnostic2.stderr'))}|ConvertTo-Json -Depth 12",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <SSH_ALIAS> pwsh.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T17:02:38.897467+00:00",
+      "elapsed_ms": 847,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "e87c81e80e1a52f1ad6bbee07138802759b7bdf2c0b944226020ece759556da8",
+      "stdout_sha256": "149d069d1c98264c4ca8dd1eb932e5435102f90e5d6b36c0b74a78cf726ca517",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "fingerprint-inspect",
+      "decoded_input": "$frozen='<FROZEN_FIXTURE>';$r=Join-Path $frozen 'target/x86_64-pc-windows-msvc/release';@{fingerprints=@(Get-ChildItem (Join-Path $r '.fingerprint') -Directory -Filter 'openergy-net-*'|Where-Object {Test-Path (Join-Path $_.FullName 'example-discovery_recovery.json')}|ForEach-Object {[ordered]@{name=$_.Name;linked_exe=(Test-Path (Join-Path $r ('examples/discovery_recovery-'+($_.Name.Substring('openergy-net-'.Length))+'.exe')));json=(Get-Content -Raw (Join-Path $_.FullName 'example-discovery_recovery.json')|ConvertFrom-Json)}})}|ConvertTo-Json -Depth 12",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <SSH_ALIAS> pwsh.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T17:04:17.934653+00:00",
+      "elapsed_ms": 825,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "7dc4e74ca0fe3a2529e3f593902deede1a0acaaa777103c8826b55da4ca4d9b8",
+      "stdout_sha256": "a066e5744613228804a195e4f866d741ec2431fb293c75d8c19c10a9db1825a1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "fingerprint-values",
+      "decoded_input": "$frozen='<FROZEN_FIXTURE>';$r=Join-Path $frozen 'target/x86_64-pc-windows-msvc/release';@{mdns=@(Get-ChildItem (Join-Path $r '.fingerprint') -Directory -Filter 'mdns-sd-*'|ForEach-Object {$f=Join-Path $_.FullName 'lib-mdns_sd';if(Test-Path $f){@{name=$_.Name;hex=(Get-Content -Raw $f).Trim();rlib=(Test-Path (Join-Path $r ('deps/libmdns_sd-'+$_.Name.Substring('mdns-sd-'.Length)+'.rlib')))}}});log=@(Get-ChildItem (Join-Path $r '.fingerprint') -Directory -Filter 'log-*'|ForEach-Object {$f=Join-Path $_.FullName 'lib-log';if(Test-Path $f){@{name=$_.Name;hex=(Get-Content -Raw $f).Trim();rlib=(Test-Path (Join-Path $r ('deps/liblog-'+$_.Name.Substring('log-'.Length)+'.rlib')))}}})}|ConvertTo-Json -Depth 8",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <SSH_ALIAS> pwsh.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T17:10:10.742706+00:00",
+      "elapsed_ms": 4075,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "2ab99f1defa06f519405c56f816be67bda6773ee7291bf3459460637ffead3f9",
+      "stdout_sha256": "f1802f66ee0f2cc17008caf30a8579e1cc7a605e766694faec4011c4364e357d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "postflight-attached",
+      "decoded_input": "$root='<DIAGNOSTIC_FIXTURE>';$frozen='<FROZEN_FIXTURE>';$ErrorActionPreference='Stop';$tokens=$null;$errors=$null;$null=[System.Management.Automation.Language.Parser]::ParseFile((Join-Path $root 'postflight-diagnostic.ps1'),[ref]$tokens,[ref]$errors);if($errors.Count -gt 0){throw ($errors|Out-String)};& (Join-Path $root 'postflight-diagnostic.ps1') -FrozenPath $frozen; $items=@(Get-ChildItem $root -File|Where-Object {$_.Extension -in @('.ps1','.json','.rs','.diff')}|Select-Object -ExpandProperty Name)+@('logs','runtime'); & tar.exe -cf (Join-Path $root 'raw-evidence.tar') -C $root @items;if($LASTEXITCODE -ne 0){throw 'bundle archive failed'};[ordered]@{sha256=(Get-FileHash (Join-Path $root 'raw-evidence.tar') -Algorithm SHA256).Hash.ToLower();bytes=(Get-Item (Join-Path $root 'raw-evidence.tar')).Length}|ConvertTo-Json",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <SSH_ALIAS> pwsh.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T17:13:04.765306+00:00",
+      "elapsed_ms": 1443,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "72735535a05095797d2398b0ef4227a80148e20756727fdedd66085862ee1a9d",
+      "stdout_sha256": "6686c4bf81d8aadf3f4d0741b0ed05c0ffdc3aced7f0264042563396e317ffed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "retention-final",
+      "decoded_input": "$root='<DIAGNOSTIC_FIXTURE>';. (Join-Path $root 'common.ps1');foreach($f in @(Get-ChildItem $root -File|Where-Object {$_.Extension -in @('.rs','.ps1','.diff')})){$f.IsReadOnly=$true};$acl=Assert-ACL;$inv=Inventory 'retention-final';$r=[ordered]@{recorded_utc=[DateTime]::UtcNow.ToString('o');acl=$acl;remaining_private_processes=$inv.fixture_processes.Count;remaining_assigned_tcp_listeners=$inv.assigned_tcp_listeners.Count;remaining_assigned_udp_endpoints=$inv.assigned_udp_endpoints.Count;temp_entries=@(Get-ChildItem (Join-Path $root 'temp') -Force).Count;bundle_sha256=(Hash (Join-Path $root 'raw-evidence.tar'));helper_source_readonly=@(Get-ChildItem $root -File -Filter '*.rs'|ForEach-Object {[ordered]@{name=$_.Name;readonly=$_.IsReadOnly;sha256=(Hash $_.FullName)}})};if($r.remaining_private_processes -ne 0 -or $r.remaining_assigned_tcp_listeners -ne 0 -or $r.remaining_assigned_udp_endpoints -ne 0 -or $r.temp_entries -ne 0){throw 'retention cleanup failed'};Save-Json $r (Join-Path $root 'retention-final.json');$r|ConvertTo-Json -Depth 5",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <SSH_ALIAS> pwsh.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    },
+    {
+      "started_utc": "2026-10-23T17:00:58.198198+00:00",
+      "elapsed_ms": 877,
+      "transport_exit": 0,
+      "remote_exit_unknown": false,
+      "script_sha256": "735b0cb2f4a912e197ee945e8553a3e75794e155773ab54739f293c8dd6b5fcd",
+      "stdout_sha256": "4bd6d5f12a3c99582d964ed0ce98f3c8b0aa7992b48e3e5d43913e279d80a75a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "setup",
+      "decoded_input": "$ErrorActionPreference='Stop';$ProgressPreference='SilentlyContinue'\n$tool=Join-Path $env:USERPROFILE '.rustup/toolchains/1.99.1-x86_64-pc-windows-msvc/bin/rustc.exe'\nif(-not (Test-Path -LiteralPath $tool)){throw 'pinned existing Rust unavailable'}\n$pwsh=(Get-Command pwsh.exe -ErrorAction Stop).Source\nif((Get-Process -Id $PID).SessionId -ne 0){throw 'session 0 required'}\n$sid=[Security.Principal.WindowsIdentity]::GetCurrent().User\n$root=Join-Path ([IO.Path]::GetTempPath()) ('oe-win-startupdiag-64e0005-'+[guid]::NewGuid().ToString('N'))\nif(Test-Path -LiteralPath $root){throw 'fixture exists'}\n$acl=New-Object Security.AccessControl.DirectorySecurity\n$acl.SetAccessRuleProtection($true,$false)\n$rule=New-Object Security.AccessControl.FileSystemAccessRule($sid,'FullControl','ContainerInherit,ObjectInherit','None','Allow')\n$acl.AddAccessRule($rule)\n[IO.Directory]::CreateDirectory($root,$acl)|Out-Null\nforeach($name in @('source','target','bin','runtime','temp','logs')){[IO.Directory]::CreateDirectory((Join-Path $root $name))|Out-Null}\n$a=Get-Acl -LiteralPath $root\nif(-not $a.AreAccessRulesProtected -or @($a.Access).Count -ne 1 -or $a.Access[0].IdentityReference.Translate([Security.Principal.SecurityIdentifier]).Value -ne $sid.Value){throw 'fixture ACL mismatch'}\n[ordered]@{root=$root;pwsh=$pwsh;created_utc=[DateTime]::UtcNow.ToString('o');session=(Get-Process -Id $PID).SessionId;protected=$a.AreAccessRulesProtected;current_user_only=$true}|ConvertTo-Json\n",
+      "transport": "ssh -o BatchMode=yes -o ConnectTimeout=8 <SSH_ALIAS> pwsh.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand <UTF16LE_BASE64_OF_DECODED_INPUT>"
+    }
+  ],
+  "sanitization": {
+    "transforms": [
+      "Replace new/old private fixture roots, user profile/local-appdata roots, hostname, username and SID with named placeholders, including slash and case variants.",
+      "Omit numeric process IDs and process command-line fields from copied records. Keep exact command argument arrays with private paths replaced.",
+      "Omit unrelated whole-machine process/socket inventories and live sharing command lines; retain original raw hashes and aggregate counts.",
+      "Normalize copied text and the frozen-input manifest to UTF-8/LF; retain original byte hashes. Source and workflow script copies retain exact bytes.",
+      "Replace the task-provided SSH alias with <SSH_ALIAS> in copied command records; the existing key-auth alias itself was unchanged."
+    ],
+    "originals_retained": true
+  },
+  "private_retention": {
+    "local_directory": "/tmp/oe-win-startup-diagnosis-20261023-kgI8j2",
+    "windows_directory": "<DIAGNOSTIC_FIXTURE>, exact locator in private local state.json",
+    "bundle": {
+      "sha256": "9bf021173b8a7a056638feee9dec3b5231aad47cb42523cff770182ac7ffc352",
+      "bytes": 3220480
+    },
+    "original_file_hashes": [
+      {
+        "path": "build-attached.input.ps1",
+        "bytes": 221,
+        "sha256": "0b348294fde1f65625fe3ca055fa8d159cad6dfde0caf893bd1d5b9cbabc0a80"
+      },
+      {
+        "path": "build-attached.stderr",
+        "bytes": 1049,
+        "sha256": "07fed0f0204ed8214e1c07432d590b53da74cda0ba59fd9026f4f24a81daab09"
+      },
+      {
+        "path": "build-attached.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "build-attached.transport.json",
+        "bytes": 394,
+        "sha256": "0d3cffebb6068c4493a8ca345f3f150d941660ee39025651392d185b91269e55"
+      },
+      {
+        "path": "build-buffered-attached.input.ps1",
+        "bytes": 653,
+        "sha256": "99b26cc890e4249021c77d0980e3f49803721839276a22fdf9791b170bf04b55"
+      },
+      {
+        "path": "build-buffered-attached.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "build-buffered-attached.stdout",
+        "bytes": 25,
+        "sha256": "97b760c98ae10d7162ffffe339064210b9ccbf51f132713d80bc1e7fc8fed99a"
+      },
+      {
+        "path": "build-buffered-attached.transport.json",
+        "bytes": 395,
+        "sha256": "3ca3e6d6751696d802e2cf5969efa334f4df8a6f690bb3d6e21ffcbde0e41ba7"
+      },
+      {
+        "path": "build-buffered.ps1",
+        "bytes": 1756,
+        "sha256": "06166f19a9d297129841da1be11dbd19c8539ac52d841a7bfb0fb84c393d8371"
+      },
+      {
+        "path": "build-v2-attached.input.ps1",
+        "bytes": 224,
+        "sha256": "1e9a080449bf051185f08b2074519f28a0abae3c378460bc1ac34ab2a4e086c3"
+      },
+      {
+        "path": "build-v2-attached.stderr",
+        "bytes": 1047,
+        "sha256": "58d29da39f48f3970d2f8b43a0d9e21c1aca2afdeee068bdcc3d5a6543b37f0c"
+      },
+      {
+        "path": "build-v2-attached.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "build-v2-attached.transport.json",
+        "bytes": 394,
+        "sha256": "abe0afd363632a763715f59f3c375adf9f571a519fbc56d3b2c3a6d5bd398930"
+      },
+      {
+        "path": "build-v3-attached.input.ps1",
+        "bytes": 224,
+        "sha256": "06dad8c4be96ac39601c649b23cf4448090321d267ce5d85e194af5480ff665c"
+      },
+      {
+        "path": "build-v3-attached.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "build-v3-attached.stdout",
+        "bytes": 16,
+        "sha256": "77e286550b6acec52a73272efefafa09a72aec86142f45dc777e54704d4991d7"
+      },
+      {
+        "path": "build-v3-attached.transport.json",
+        "bytes": 395,
+        "sha256": "d6b48b9c1c9570edeae6871909f0310c7a173e80b1e6cec44ee145e9e13b8197"
+      },
+      {
+        "path": "bundle.json",
+        "bytes": 103,
+        "sha256": "4a33d9dfe1246e1a36881ee3efe1997db14b4d8a4c3657bb19aabf90c3c64e83"
+      },
+      {
+        "path": "common.ps1",
+        "bytes": 4838,
+        "sha256": "96c40a4e7921633a7853984eb973b76b4a387207b9aa9e4b8a3eb39785ebf7b9"
+      },
+      {
+        "path": "diagnostic1-attached.input.ps1",
+        "bytes": 717,
+        "sha256": "99e4213fc0f4e8fcb6621d1a4e226aba50d842abb0bb7e8f79dbc95ad956592a"
+      },
+      {
+        "path": "diagnostic1-attached.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "diagnostic1-attached.stdout",
+        "bytes": 20,
+        "sha256": "85f97b9fa86b4ce6f4bdb871c0eda99dac7e1b5dd1ac04a01aba7968a5f6dc66"
+      },
+      {
+        "path": "diagnostic1-attached.transport.json",
+        "bytes": 395,
+        "sha256": "1b786fe5898ae4627d2f7ae07e47e08b8e5b01c79e7abe3f9d9d3b028055f78d"
+      },
+      {
+        "path": "diagnostic1-inspect.input.ps1",
+        "bytes": 493,
+        "sha256": "fe01d61e36281fb31c01f7452d423e92e76deec5202f7b45e2794c085358413e"
+      },
+      {
+        "path": "diagnostic1-inspect.json",
+        "bytes": 25144,
+        "sha256": "be0dc536bc856173cf1b3332df1ea467774aa6563a2e08f84f911c58202dd837"
+      },
+      {
+        "path": "diagnostic1-inspect.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "diagnostic1-inspect.stdout",
+        "bytes": 25208,
+        "sha256": "80325ca94e2f516da0ea70b5bbae5cc445fdaf230160c03b6aba7b3837eb92ea"
+      },
+      {
+        "path": "diagnostic1-inspect.transport.json",
+        "bytes": 393,
+        "sha256": "b6d732a3c3341f4a737a75647e9791008dd62299e3b35b9d678d91367d7873a8"
+      },
+      {
+        "path": "diagnostic2-attached.input.ps1",
+        "bytes": 117,
+        "sha256": "c0871d4e15ef4c55beeacfb18482b7b7a24154b9b81ea48b2d71f8e870b930d2"
+      },
+      {
+        "path": "diagnostic2-attached.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "diagnostic2-attached.stdout",
+        "bytes": 20,
+        "sha256": "a67716c9e345c3c545dfdce53ae2e077897b582bddcabce0df5dafdfcf3c282e"
+      },
+      {
+        "path": "diagnostic2-attached.transport.json",
+        "bytes": 395,
+        "sha256": "b50e81b9d8f098753e105cf3f5b7e6eaa5ddb767ef919b3cd6e0d7323ac1cbd2"
+      },
+      {
+        "path": "diagnostic2-inspect.input.ps1",
+        "bytes": 395,
+        "sha256": "a1061b629c2e59be38cafc9519ed3449034847fbe2032d38a77c9d74f0acb7e2"
+      },
+      {
+        "path": "diagnostic2-inspect.json",
+        "bytes": 10721,
+        "sha256": "07686a7e2f220cd4b62efde78fe48ac059b438ba5e6d06ac02905ec337691ec0"
+      },
+      {
+        "path": "diagnostic2-inspect.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "diagnostic2-inspect.stdout",
+        "bytes": 10785,
+        "sha256": "f7bc51727ff44fadca65e244c81c69c10da6e07e1cf4594884e2dbe636260b45"
+      },
+      {
+        "path": "diagnostic2-inspect.transport.json",
+        "bytes": 393,
+        "sha256": "76df5be664bb8e19fd1aa2e33aa8609eb84b9d3be676d25f31dc88a21d034ae6"
+      },
+      {
+        "path": "download.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "fingerprint-inspect.input.ps1",
+        "bytes": 630,
+        "sha256": "e87c81e80e1a52f1ad6bbee07138802759b7bdf2c0b944226020ece759556da8"
+      },
+      {
+        "path": "fingerprint-inspect.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "fingerprint-inspect.stdout",
+        "bytes": 4631,
+        "sha256": "149d069d1c98264c4ca8dd1eb932e5435102f90e5d6b36c0b74a78cf726ca517"
+      },
+      {
+        "path": "fingerprint-inspect.transport.json",
+        "bytes": 393,
+        "sha256": "56b654383bab360f6587227d3dbadc5509faf3a77abd6c02abe33fac12dee758"
+      },
+      {
+        "path": "fingerprint-values.input.ps1",
+        "bytes": 778,
+        "sha256": "7dc4e74ca0fe3a2529e3f593902deede1a0acaaa777103c8826b55da4ca4d9b8"
+      },
+      {
+        "path": "fingerprint-values.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "fingerprint-values.stdout",
+        "bytes": 924,
+        "sha256": "a066e5744613228804a195e4f866d741ec2431fb293c75d8c19c10a9db1825a1"
+      },
+      {
+        "path": "fingerprint-values.transport.json",
+        "bytes": 393,
+        "sha256": "c04d3be7ccc7a3131b3297c4cd682a741a503016420de4eb4d86d56609eae58f"
+      },
+      {
+        "path": "finish.py",
+        "bytes": 2172,
+        "sha256": "07a0578c0f5b2d7f5530e39ba2f79e94a797d83f05a873a5e71017940f6881b0"
+      },
+      {
+        "path": "helper-v2.diff",
+        "bytes": 3742,
+        "sha256": "1a953d39a6383a9ebdd45e31dda32c0bdcdbbce4edef05d11b42d621524e1831"
+      },
+      {
+        "path": "helper.diff",
+        "bytes": 3415,
+        "sha256": "7b4f165481bfab7804876ebef1555ffe79af87586e04ab0f7ecde838b0611bdf"
+      },
+      {
+        "path": "input-hashes-v2.json",
+        "bytes": 502,
+        "sha256": "8f291fb2725bee825804325a05126cb071adb5ca9b7a651afaba5bd4675a613c"
+      },
+      {
+        "path": "input-hashes.json",
+        "bytes": 868,
+        "sha256": "ef17424516c724864b8ca8318542920b789aa061f9bca587e60d771de22f4ee4"
+      },
+      {
+        "path": "launch-build-v2.py",
+        "bytes": 664,
+        "sha256": "d6b903e741557e0232e392d8552e396731a5f393fd76af169f1bd9d83568be6d"
+      },
+      {
+        "path": "launch-build.py",
+        "bytes": 719,
+        "sha256": "2872182bf26c7ddf06b243f8c706b12172e7c94542a9c205a282d2c1ce545ad9"
+      },
+      {
+        "path": "launch-run.py",
+        "bytes": 1402,
+        "sha256": "35a48e54dcc2d9cd10453caf1c18e74f82aa01979ffb7e6488386aeb31e48845"
+      },
+      {
+        "path": "launch-second.py",
+        "bytes": 1502,
+        "sha256": "e4d7a29643a345beb7e68fe83ecf42a91af4a242a2903e6a9893a8db99b2da0a"
+      },
+      {
+        "path": "make-evidence.py",
+        "bytes": 19380,
+        "sha256": "796c2477f808ae965edfa92e26b014124f8ceba1887c3226d79b1f736825d267"
+      },
+      {
+        "path": "postflight-attached.input.ps1",
+        "bytes": 975,
+        "sha256": "2ab99f1defa06f519405c56f816be67bda6773ee7291bf3459460637ffead3f9"
+      },
+      {
+        "path": "postflight-attached.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "postflight-attached.stdout",
+        "bytes": 135,
+        "sha256": "f1802f66ee0f2cc17008caf30a8579e1cc7a605e766694faec4011c4364e357d"
+      },
+      {
+        "path": "postflight-attached.transport.json",
+        "bytes": 394,
+        "sha256": "39ddfc4976900551909215a97cedd97b2d7a12f32d1ab9dba5fff16e37f97113"
+      },
+      {
+        "path": "postflight-diagnostic.ps1",
+        "bytes": 3372,
+        "sha256": "45c06bda7493e8a153b527c6ff2a015661f93ca79873a78777ca43def9e6ecfc"
+      },
+      {
+        "path": "preflight-build-v2.ps1",
+        "bytes": 6420,
+        "sha256": "bb6b83e9656488e82fc5db3ccdaf24208680a169c914ae8c2d35237c17f6c3fc"
+      },
+      {
+        "path": "preflight-build-v3.ps1",
+        "bytes": 6480,
+        "sha256": "a2efe1108b98b27fa7be9ebf410d6d2c0cf1957aa99f3a01ab6a95890db6141e"
+      },
+      {
+        "path": "preflight-build.ps1",
+        "bytes": 6297,
+        "sha256": "d696b4491bf0e0d944ec3908b5d65560d4f7e4d77ea0356deb2fc1c0925e3652"
+      },
+      {
+        "path": "raw/build-buffered.ps1",
+        "bytes": 1756,
+        "sha256": "06166f19a9d297129841da1be11dbd19c8539ac52d841a7bfb0fb84c393d8371"
+      },
+      {
+        "path": "raw/common.ps1",
+        "bytes": 4838,
+        "sha256": "96c40a4e7921633a7853984eb973b76b4a387207b9aa9e4b8a3eb39785ebf7b9"
+      },
+      {
+        "path": "raw/compile-result.json",
+        "bytes": 3637,
+        "sha256": "a8f125c197a6fd4c2db3359522d86b06709d2f9465aceb831c85834c18063a03"
+      },
+      {
+        "path": "raw/compile-start.json",
+        "bytes": 5771,
+        "sha256": "8a4719c0ab786e209f6bdaf9390fec842e3626bb4f01d0b0f41ab667125bd8ed"
+      },
+      {
+        "path": "raw/compile-v2-result.json",
+        "bytes": 3774,
+        "sha256": "3e11ca5bd93630280ecdae9c6ea1d434e2a49774eb707ff22e0d015587bcdd48"
+      },
+      {
+        "path": "raw/diagnostic1-after.json",
+        "bytes": 694,
+        "sha256": "03c40ffe775108b2fd337958706e431f7f50effe57945be583b9b4ec9262c2f1"
+      },
+      {
+        "path": "raw/diagnostic1-before.json",
+        "bytes": 2747,
+        "sha256": "a391de418cad1026a3f5cf5bdd4fafb14608792b100bc08511552c90cabf4c8a"
+      },
+      {
+        "path": "raw/diagnostic1-process.json",
+        "bytes": 764,
+        "sha256": "b0d7e61c8a0661704f009d8d1949052471dd1370c2df86af50568861832782cd"
+      },
+      {
+        "path": "raw/diagnostic1-result.json",
+        "bytes": 2538,
+        "sha256": "95d83cdb860f001b8be0b55a296f044b7ec46755fd5f6251ee05ef9ba16a9ae9"
+      },
+      {
+        "path": "raw/diagnostic2-after.json",
+        "bytes": 694,
+        "sha256": "f401a03e03fa5a6e124ea088983b80d6671a8377f1943d14fa1c3b517c18b4c4"
+      },
+      {
+        "path": "raw/diagnostic2-before.json",
+        "bytes": 2747,
+        "sha256": "c86c95c160763b0fe4181104be2b9e5c917c3df5dedf9ae5f3746ea4604dc777"
+      },
+      {
+        "path": "raw/diagnostic2-process.json",
+        "bytes": 767,
+        "sha256": "3e50f90f48781e2052f5ab90e72b39cfcfcfc202d94ffe9d347baadca526c1e1"
+      },
+      {
+        "path": "raw/diagnostic2-result.json",
+        "bytes": 2556,
+        "sha256": "59ad067acede00d0f41fca12b688cfe1f176d0e581ade40b53f9d9597232d695"
+      },
+      {
+        "path": "raw/frozen-all-files-before-v2.json",
+        "bytes": 588331,
+        "sha256": "47ec21e02dd0baee342d9a30eb1ac2dedd673ef0957326260905eab801a5ec23"
+      },
+      {
+        "path": "raw/frozen-all-files-before-v3.json",
+        "bytes": 588331,
+        "sha256": "47ec21e02dd0baee342d9a30eb1ac2dedd673ef0957326260905eab801a5ec23"
+      },
+      {
+        "path": "raw/frozen-all-files-before.json",
+        "bytes": 588331,
+        "sha256": "47ec21e02dd0baee342d9a30eb1ac2dedd673ef0957326260905eab801a5ec23"
+      },
+      {
+        "path": "raw/helper-v2.diff",
+        "bytes": 3742,
+        "sha256": "1a953d39a6383a9ebdd45e31dda32c0bdcdbbce4edef05d11b42d621524e1831"
+      },
+      {
+        "path": "raw/helper.diff",
+        "bytes": 3415,
+        "sha256": "7b4f165481bfab7804876ebef1555ffe79af87586e04ab0f7ecde838b0611bdf"
+      },
+      {
+        "path": "raw/input-hashes-v2.json",
+        "bytes": 502,
+        "sha256": "8f291fb2725bee825804325a05126cb071adb5ca9b7a651afaba5bd4675a613c"
+      },
+      {
+        "path": "raw/input-hashes.json",
+        "bytes": 868,
+        "sha256": "ef17424516c724864b8ca8318542920b789aa061f9bca587e60d771de22f4ee4"
+      },
+      {
+        "path": "raw/logs/compile-v2.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "raw/logs/compile.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "raw/logs/diagnostic1-after-processes.json",
+        "bytes": 201080,
+        "sha256": "3f9589021bacba25779b7aa9a4b4b11b675e36b81a5b1285467bf0d81f9bbad0"
+      },
+      {
+        "path": "raw/logs/diagnostic1-after-tcp.txt",
+        "bytes": 44604,
+        "sha256": "a06785a82700c4654feec5c99b637a329b7ed183b89a8311eea33c426eecbd62"
+      },
+      {
+        "path": "raw/logs/diagnostic1-after-udp.txt",
+        "bytes": 4571,
+        "sha256": "bf9d126e9adbe5df48af69d4703ee2c974acdb2c88d271922442c9fb9278743e"
+      },
+      {
+        "path": "raw/logs/diagnostic1-before-processes.json",
+        "bytes": 199168,
+        "sha256": "4b4a718d0e4d5a0f5487234dd5a54bdf6f5e91409798f0be77677e9c146c3862"
+      },
+      {
+        "path": "raw/logs/diagnostic1-before-tcp.txt",
+        "bytes": 40493,
+        "sha256": "16dc68eb411eac00d54c45e061f1f7f7f8ee07c1998f5144970836e45d253c7f"
+      },
+      {
+        "path": "raw/logs/diagnostic1-before-udp.txt",
+        "bytes": 4494,
+        "sha256": "f09a26c4c4c5fceb26c61b54f70802a5805290088010f732c7db8e9f46f36248"
+      },
+      {
+        "path": "raw/logs/diagnostic1.stderr",
+        "bytes": 18042,
+        "sha256": "f159dbcab2654f4ff3dcde18f0f4f0a2a77cdb6bc4c91fa8fa54bb8baf29e103"
+      },
+      {
+        "path": "raw/logs/diagnostic1.stdout",
+        "bytes": 3985,
+        "sha256": "e173c4810d07c05e8757db7e9ab726cf0d0913ad0c1313c3a94502b2f52195c3"
+      },
+      {
+        "path": "raw/logs/diagnostic2-after-processes.json",
+        "bytes": 195714,
+        "sha256": "0b4206995cd63e9efbb538fc47d4619a6ba5eef53ded51f6095407fec5232ac9"
+      },
+      {
+        "path": "raw/logs/diagnostic2-after-tcp.txt",
+        "bytes": 33696,
+        "sha256": "3d41c8a8e072a262b2d42aa7a61e15e115c583a1fb898e9c6cc90368b2c08f10"
+      },
+      {
+        "path": "raw/logs/diagnostic2-after-udp.txt",
+        "bytes": 4572,
+        "sha256": "2815587dfd8e98bf72df6cf0cc3ee666e37cdaf480bc2b99b9d3dae1d179c407"
+      },
+      {
+        "path": "raw/logs/diagnostic2-before-processes.json",
+        "bytes": 196600,
+        "sha256": "6f7888687f27cb7f81705492470eda24b2307f9721dd3beddfe7fa90b5402794"
+      },
+      {
+        "path": "raw/logs/diagnostic2-before-tcp.txt",
+        "bytes": 32068,
+        "sha256": "7fd12d8a47d8218a6f85a300eef643cfe1d9b6c5432924934a90ab4fb1859716"
+      },
+      {
+        "path": "raw/logs/diagnostic2-before-udp.txt",
+        "bytes": 4572,
+        "sha256": "2815587dfd8e98bf72df6cf0cc3ee666e37cdaf480bc2b99b9d3dae1d179c407"
+      },
+      {
+        "path": "raw/logs/diagnostic2.stderr",
+        "bytes": 3729,
+        "sha256": "464ae887c4a72ba75edfe86f74024b304195cca0c1cc2010e8cd2435d0521b3b"
+      },
+      {
+        "path": "raw/logs/diagnostic2.stdout",
+        "bytes": 3987,
+        "sha256": "92c95f06f07af0b13e448f6aae4cabdea562f52c4e67b9ab5e18b329955cd8d9"
+      },
+      {
+        "path": "raw/logs/postflight-processes.json",
+        "bytes": 200948,
+        "sha256": "066c844944853ab4b42dcf53b0c2ab7663eb685698e18292876d828bf07a0e28"
+      },
+      {
+        "path": "raw/logs/postflight-tcp.txt",
+        "bytes": 34848,
+        "sha256": "3745f476262bd4b54c56a4f453b759b6469e8ec17f2e96a44753480f4dc1effa"
+      },
+      {
+        "path": "raw/logs/postflight-udp.txt",
+        "bytes": 4649,
+        "sha256": "0bd861716049babe6e09995a6a373528217b12eadc99fe7c920b76ae2408fd52"
+      },
+      {
+        "path": "raw/postflight-diagnostic.ps1",
+        "bytes": 3372,
+        "sha256": "45c06bda7493e8a153b527c6ff2a015661f93ca79873a78777ca43def9e6ecfc"
+      },
+      {
+        "path": "raw/postflight.json",
+        "bytes": 16391,
+        "sha256": "ac06f9a9a621ed67d26c9f5ac3d6d7a0e1b3861065e158e3dfcec1908cb81980"
+      },
+      {
+        "path": "raw/preflight-build-v2.ps1",
+        "bytes": 6420,
+        "sha256": "bb6b83e9656488e82fc5db3ccdaf24208680a169c914ae8c2d35237c17f6c3fc"
+      },
+      {
+        "path": "raw/preflight-build-v3.ps1",
+        "bytes": 6480,
+        "sha256": "a2efe1108b98b27fa7be9ebf410d6d2c0cf1957aa99f3a01ab6a95890db6141e"
+      },
+      {
+        "path": "raw/preflight-build.ps1",
+        "bytes": 6297,
+        "sha256": "d696b4491bf0e0d944ec3908b5d65560d4f7e4d77ea0356deb2fc1c0925e3652"
+      },
+      {
+        "path": "raw/run-diagnostic.ps1",
+        "bytes": 4122,
+        "sha256": "52d433f4aafbd66859d96520efcb795dba98f088f0afeb98ee7548eaaffbcc74"
+      },
+      {
+        "path": "raw/run-diagnostic2.ps1",
+        "bytes": 4132,
+        "sha256": "1868452349e7d4101143c699eaadf5935c1f20c44f8089251150268be5cf0040"
+      },
+      {
+        "path": "raw/runtime/run1/publisher.log",
+        "bytes": 2346,
+        "sha256": "0e028b0636255a2d9c1612cc6c8c82b6f4490c8d489d8bc12974dc5dd0078974"
+      },
+      {
+        "path": "raw/runtime/run1/ready-burst",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/run1/ready-finish",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/run1/ready-guard-final",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/run1/ready-guard-start",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/run1/ready-guard-update",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/run1/ready-initial",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/run2/publisher.log",
+        "bytes": 2346,
+        "sha256": "713c577897fc17c5f8631c4afe0fa4961fa1003e36e735d500b4b4a2baaa1e1e"
+      },
+      {
+        "path": "raw/runtime/run2/ready-burst",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/run2/ready-finish",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/run2/ready-guard-final",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/run2/ready-guard-start",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/run2/ready-guard-update",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/runtime/run2/ready-initial",
+        "bytes": 5,
+        "sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      {
+        "path": "raw/startup_diagnostic.rs",
+        "bytes": 31010,
+        "sha256": "577b8bf0f0045bd624e0393b714f5e1ae66a659d2749ace535b8a6fdb3624a6b"
+      },
+      {
+        "path": "raw/startup_diagnostic_v2.rs",
+        "bytes": 31287,
+        "sha256": "d9c7a18a0339545657f303318c8583cb44ae7a0b5efd63dcc9b073f731d1956d"
+      },
+      {
+        "path": "raw-evidence.tar",
+        "bytes": 3220480,
+        "sha256": "9bf021173b8a7a056638feee9dec3b5231aad47cb42523cff770182ac7ffc352"
+      },
+      {
+        "path": "retention-final.input.ps1",
+        "bytes": 1123,
+        "sha256": "72735535a05095797d2398b0ef4227a80148e20756727fdedd66085862ee1a9d"
+      },
+      {
+        "path": "retention-final.json",
+        "bytes": 762,
+        "sha256": "6686c4bf81d8aadf3f4d0741b0ed05c0ffdc3aced7f0264042563396e317ffed"
+      },
+      {
+        "path": "retention-final.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "retention-final.stdout",
+        "bytes": 762,
+        "sha256": "6686c4bf81d8aadf3f4d0741b0ed05c0ffdc3aced7f0264042563396e317ffed"
+      },
+      {
+        "path": "retention-final.transport.json",
+        "bytes": 394,
+        "sha256": "b1a82792f166a40c75fdaa446fa440dc49424f6be46bf5e7fd2b1256e7b10e81"
+      },
+      {
+        "path": "run-diagnostic.ps1",
+        "bytes": 4122,
+        "sha256": "52d433f4aafbd66859d96520efcb795dba98f088f0afeb98ee7548eaaffbcc74"
+      },
+      {
+        "path": "run-diagnostic2.ps1",
+        "bytes": 4132,
+        "sha256": "1868452349e7d4101143c699eaadf5935c1f20c44f8089251150268be5cf0040"
+      },
+      {
+        "path": "setup.input.ps1",
+        "bytes": 1471,
+        "sha256": "735b0cb2f4a912e197ee945e8553a3e75794e155773ab54739f293c8dd6b5fcd"
+      },
+      {
+        "path": "setup.py",
+        "bytes": 556,
+        "sha256": "ea015d328f464062eece3e506698a43e565731829f1396863889ca482de6c9da"
+      },
+      {
+        "path": "setup.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "setup.stdout",
+        "bytes": 313,
+        "sha256": "4bd6d5f12a3c99582d964ed0ce98f3c8b0aa7992b48e3e5d43913e279d80a75a"
+      },
+      {
+        "path": "setup.transport.json",
+        "bytes": 393,
+        "sha256": "2ff02d356029301831edc57633d16f421bfcae0554dbef076857ef26a8584b8b"
+      },
+      {
+        "path": "startup_diagnostic.rs",
+        "bytes": 31010,
+        "sha256": "577b8bf0f0045bd624e0393b714f5e1ae66a659d2749ace535b8a6fdb3624a6b"
+      },
+      {
+        "path": "startup_diagnostic_v2.rs",
+        "bytes": 31287,
+        "sha256": "d9c7a18a0339545657f303318c8583cb44ae7a0b5efd63dcc9b073f731d1956d"
+      },
+      {
+        "path": "state.json",
+        "bytes": 403,
+        "sha256": "43a7042750693a1d723c3ac10a6b2d5e98cc1718a702ed33b4e9177c2c54cc80"
+      },
+      {
+        "path": "transfer-build-v2.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "transfer-build-v3.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "transfer-build.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "transfer-inputs.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "transfer-postflight.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "transfer-second.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "transport.py",
+        "bytes": 1374,
+        "sha256": "f4f2bb2419ff00c0561b6f5389dc5c90831f921f45ba56dab1ff0c414e901464"
+      }
+    ]
+  },
+  "open_gates": [
+    "Original Windows startup acceptance remains FAIL 11/14. Retained 19/19 and control 23/23 are preserved, not rerun.",
+    "No later combined IPC, owned-worker/socket observer or new native library acceptance is claimed.",
+    "Native input/clipboard, positive interactive Windows migration, whole cache/expiry/timers/query/record bytes, slow DNS, security/provenance/privilege and trusted distribution remain open.",
+    "Provider-stopped IPC Synergy3 sibling work, original expiry/NSEC/orphan-record experiment and original provenance security review were not accessed, continued or rerouted.",
+    "No installed sharing/backend/state/TLS/default IPC/24800/5353, desktop/windowstation/TCC/login, service/task/elevation/account/credential, firewall/network/global limits/default toolchain, Docker/publication/GitHub/push/merge change. No unit tests, mocks, computer use, other-thread message or child agent."
+  ],
+  "typescript_validation": "Not applicable to this Rust diagnostic-only evidence scope."
+}

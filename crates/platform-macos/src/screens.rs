@@ -92,6 +92,8 @@ impl ScreenSystem for MacScreens {
         &mut self.clipboard
     }
     fn permissions(&self) -> Permissions {
+        // The daemon polls this even when native notification traffic stops.
+        self.notices.report_overflow();
         permissions::platform()
     }
     /// Explicit TCC request only. Construction and safe probes never call it.

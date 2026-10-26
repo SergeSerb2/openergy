@@ -10,6 +10,7 @@ pub struct Process {
     pub stderr: PathBuf,
     pub stdout: PathBuf,
     pub status: Option<ExitStatus>,
+    terminated: bool,
 }
 impl Process {
     pub fn spawn(command: &mut Command, dir: &Path, label: &str) -> Result<Self> {
@@ -37,6 +38,7 @@ impl Process {
             stderr,
             stdout,
             status: None,
+            terminated: false,
         };
         crate::guardian::process(group, true)?;
         Ok(process)
@@ -62,7 +64,13 @@ impl Process {
     pub fn signal(&self, signal: &str) -> Result<()> {
         signal_group(self.group, signal)
     }
-    pub fn terminate(&mut self) {
+    pub fn terminate(&mut self) -> Result<()> {
+        if self.terminated {
+            return Ok(());
+        }
+        // Cleanup is called explicitly and again by Drop. Never signal a stale
+        // numeric process group a second time after its ownership has ended.
+        self.terminated = true;
         let _ = self.signal("CONT");
         let _ = self.signal("TERM");
         let deadline = Instant::now() + Duration::from_millis(600);
@@ -73,18 +81,24 @@ impl Process {
             std::thread::sleep(Duration::from_millis(20));
         }
         // Sweep the group even if its leader exited: grandchildren can still be alive.
-        let _ = self.signal("KILL");
-        let _ = self.child.wait();
-        let _ = crate::guardian::process(self.group, false);
+        let killed = self.signal("KILL");
+        self.wait(Duration::from_secs(2))
+            .map_err(|_| Failure::environment("owned child did not exit during cleanup"))?;
+        // An absent group is normal once the child has already exited.
+        if killed.is_err() && signal_group(self.group, "0").is_ok() {
+            return Err(Failure::environment("cannot kill the remaining owned process group"));
+        }
+        crate::guardian::process(self.group, false)?;
+        Ok(())
     }
 }
 impl Drop for Process {
     fn drop(&mut self) {
-        self.terminate();
+        let _ = self.terminate();
     }
 }
 pub fn signal_group(group: u32, signal: &str) -> Result<()> {
-    if group < 2 || !["TERM", "KILL", "STOP", "CONT", "INT", "HUP"].contains(&signal) {
+    if group < 2 || !["0", "TERM", "KILL", "STOP", "CONT", "INT", "HUP"].contains(&signal) {
         return Err(Failure::runner("invalid owned process group or signal"));
     }
     #[cfg(unix)]
@@ -113,10 +127,14 @@ pub fn signal_group(group: u32, signal: &str) -> Result<()> {
 pub fn command_output(command: &mut Command, dir: &Path, label: &str, timeout: Duration) -> Result<(i32, String)> {
     let mut process = Process::spawn(command, dir, label)?;
     let status = process.wait(timeout)?;
+    process.terminate()?;
     let file = std::fs::File::open(&process.stdout)?;
     use std::io::Read;
     let mut stdout = String::new();
-    file.take(64 * 1024 * 1024).read_to_string(&mut stdout)?;
+    file.take(64 * 1024 * 1024 + 1).read_to_string(&mut stdout)?;
+    if stdout.len() > 64 * 1024 * 1024 {
+        return Err(Failure::runner("child output exceeds 64 MiB capture limit"));
+    }
     write_private(
         &process.stdout,
         format!(

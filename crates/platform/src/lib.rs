@@ -173,7 +173,12 @@ pub struct RecordedEvent {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum PlatformError {
     PermissionDenied(PermissionKind),
-    ClipboardTooLarge { bytes: usize, limit: usize },
+    ClipboardTooLarge {
+        bytes: usize,
+        limit: usize,
+    },
+    /// No readable clipboard payload, distinct from a successful empty/clear.
+    ClipboardUnavailable,
     NotImplemented,
     Failed(String),
 }
@@ -182,6 +187,7 @@ impl fmt::Display for PlatformError {
         match self {
             Self::Failed(message) => f.write_str(message),
             Self::NotImplemented => f.write_str("This platform feature is unavailable."),
+            Self::ClipboardUnavailable => f.write_str("Clipboard data is unavailable."),
             Self::ClipboardTooLarge { bytes, limit } => {
                 write!(f, "Clipboard size {bytes} exceeds the {limit} byte limit.")
             }
@@ -210,6 +216,8 @@ pub trait InputSink: Send {
 }
 pub trait ClipboardBackend: Send {
     fn change_stamp(&self) -> u64;
+    /// An empty successful payload is a real clear. Use ClipboardUnavailable
+    /// when no payload can be read, including suppression of an own write.
     fn read(&mut self, max_bytes: usize) -> Result<ClipboardData, PlatformError>;
     fn write(&mut self, data: &ClipboardData) -> Result<(), PlatformError>;
     /// Share the current payload where the backend can retain owned data.
