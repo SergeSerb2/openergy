@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="720" height="334" viewBox="0 0 720 334" role="img" aria-labelledby="chart-title chart-desc">
 <title id="chart-title">Openergy vs Synergy on macOS</title>
-<desc id="chart-desc">App bundle on disk (du -sk): Openergy 0.1 alpha 9.1 MiB. App bundle on disk (du -sk): Synergy 3.7 beta 524.4 MiB. Idle memory (RSS): Openergy 0.1 alpha 8.5 MiB. Idle memory (RSS): Synergy 3.7 beta 144.3 MiB.</desc>
+<desc id="chart-desc">App bundle on disk (du -sk): Openergy 0.1 alpha 9.1 MiB. App bundle on disk (du -sk): Synergy 3.7 beta 524.4 MiB. Idle memory (RSS), connected client: Openergy 0.1 alpha 64.5 MiB. Idle memory (RSS), connected client: Synergy 3.7 beta 144.3 MiB.</desc>
 <style>
   .t1 { fill: #1f2328; }
   .t2 { fill: #59636e; }
@@ -30,14 +30,14 @@
 <path class="s-synergy" d="M108.00,148.00h512.00a4.00,4.00 0 0 1 4.00,4.00v12.00a4.00,4.00 0 0 1 -4.00,4.00h-512.00z"><title>Synergy 3.7 beta: 524.4 MiB</title></path>
 <text class="val t1" x="632.00" y="162.5">524.4 MiB</text>
 <line class="rule" x1="107.5" y1="114" x2="107.5" y2="172" stroke-width="1"/>
-<text class="head t1" x="16" y="202">Idle memory (RSS)</text>
+<text class="head t1" x="16" y="202">Idle memory (RSS), connected client</text>
 <text class="cat t1" x="16" y="226.5">Openergy</text>
-<path class="s-openergy" d="M108.00,212.00h26.28a4.00,4.00 0 0 1 4.00,4.00v12.00a4.00,4.00 0 0 1 -4.00,4.00h-26.28z"><title>Openergy 0.1 alpha: 8.5 MiB</title></path>
-<text class="val t1" x="146.28" y="226.5">8.5 MiB</text>
+<path class="s-openergy" d="M108.00,212.00h226.43a4.00,4.00 0 0 1 4.00,4.00v12.00a4.00,4.00 0 0 1 -4.00,4.00h-226.43z"><title>Openergy 0.1 alpha: 64.5 MiB</title></path>
+<text class="val t1" x="346.43" y="226.5">64.5 MiB</text>
 <text class="cat t1" x="16" y="256.5">Synergy</text>
 <path class="s-synergy" d="M108.00,242.00h512.00a4.00,4.00 0 0 1 4.00,4.00v12.00a4.00,4.00 0 0 1 -4.00,4.00h-512.00z"><title>Synergy 3.7 beta: 144.3 MiB</title></path>
 <text class="val t1" x="632.00" y="256.5">144.3 MiB</text>
 <line class="rule" x1="107.5" y1="208" x2="107.5" y2="266" stroke-width="1"/>
-<text class="note t2" x="16" y="304">Different setups, not a matched benchmark. Synergy memory: service + tray + core, GUI closed (2026-10-21).</text>
-<text class="note t2" x="16" y="320">Openergy memory: daemon only, virtual backend (2026-10-25). Sources: README, “Openergy vs Synergy”.</text>
+<text class="note t2" x="16" y="304">Same Mac (M5 Pro, macOS 27.2) and role: client of the same Windows server, windows closed.</text>
+<text class="note t2" x="16" y="320">Memory: Synergy service + tray + core (2026-10-21); Openergy app + daemon (2026-10-25). Not a lab benchmark.</text>
 </svg>

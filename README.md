@@ -35,23 +35,29 @@ sensitive reports, read [SECURITY.md](SECURITY.md) first.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/openergy-vs-synergy-dark.svg">
-  <img src="assets/openergy-vs-synergy-light.svg" width="720" alt="Bar chart. App bundle on disk: Openergy 9.1 MiB, Synergy 524.4 MiB. Idle memory: Openergy daemon 8.5 MiB, Synergy service, tray and core 144.3 MiB.">
+  <img src="assets/openergy-vs-synergy-light.svg" width="720" alt="Bar chart. App bundle on disk: Openergy 9.1 MiB, Synergy 524.4 MiB. Idle memory as a connected client: Openergy app and daemon 64.5 MiB, Synergy service, tray and core 144.3 MiB.">
 </picture>
 
 | macOS, Apple silicon | Synergy 3.7.0-beta | Openergy 0.1.0 alpha |
 | --- | --- | --- |
-| App bundle on disk (`du -sk`) | 524.4 MiB (536,936 KiB) | 9.1 MiB (9,276 KiB) <!-- fresh: bundle-size --> |
-| Regular-file bytes in the bundle | 548,821,397 | 9,286,302 in 95 files <!-- fresh: bundle-bytes --> |
-| Idle memory (RSS) | 143.6–144.3 MiB for service, tray, and core, main window closed | 8.47 MiB for the daemon, server role, virtual backend <!-- fresh: idle-rss --> |
-| Idle CPU | 0.0% in each process (rounded `ps` readings) | 0.0% over 60 s <!-- fresh: idle-cpu --> |
+| App bundle on disk (`du -sk`) | 524.4 MiB (536,936 KiB) | 9.1 MiB (9,276 KiB) |
+| Regular-file bytes in the bundle | 548,821,397 | 9,286,302 in 95 files |
+| Idle memory (RSS), connected client, windows closed | 144.3 MiB: service, tray, and core | 64.5 MiB: menu-bar app 41.5 MiB + daemon 23.0 MiB |
+| Daemon alone, virtual backend, 60 s idle | — | 8.47 MiB, 0.0% CPU |
+| Idle CPU, connected client | 0.0% in each process (rounded `ps` readings) | 0.0% with the fix below; the build installed on 2026-10-21 used 21–24% |
 | Built with | Electron UI, Rust tray, Qt core | SwiftUI app, Rust daemon |
-| Measured | 2026-10-21, macOS 27.2, three `ps` samples, Synergy connected as a client. [Source](docs/re/04-tray-security-packaging.md#g-resource-baseline-and-launch-time-work) | 2026-10-25, Apple M5 Pro, macOS 27.2, arm64 build. [Source](docs/plan/readiness.md#latest-verification-run) <!-- fresh: measured --> |
+| Measured | 2026-10-21, three `ps` samples. [Source](docs/re/04-tray-security-packaging.md#g-resource-baseline-and-launch-time-work) | 2026-10-25, five `ps` samples. [Source](docs/plan/readiness.md#latest-verification-run) |
 
-These numbers come from different setups, so they are not a matched
-benchmark. The Synergy memory figure includes its menu-bar tray. The Openergy
-figure covers only the daemon; the menu-bar app adds its own memory, which was
-not measured here. No input-latency comparison has been made. The chart is
-generated from [tools/comparison-chart](tools/comparison-chart/chart.py).
+Both products were measured on the same Mac (Apple M5 Pro, macOS 27.2) in the
+same role: a client of the same Windows server, connected, with no window
+open. This is a field comparison, not a lab benchmark. Synergy also needed a
+separate focus-fix helper on this Mac (11.9 MiB), which is not counted.
+
+The Openergy build installed on 2026-10-21 kept redrawing an animation in its
+hidden menu-bar panel. This release stops animations in windows that are not
+visible; on a second Mac the same scenario dropped from 28–29% to 0.0% CPU.
+No input-latency comparison has been made. The chart is generated from
+[tools/comparison-chart](tools/comparison-chart/chart.py).
 
 ## Build and set up on macOS
 
@@ -123,7 +129,9 @@ These peers were tested on 2026-10-21:
 Other versions and Input Leap may work but are untested. The macOS app numbers
 its synthetic clicks to fix a window-focus problem seen with Synergy on
 macOS 27. A focus lab on macOS 27.0.1 passed, but the problem did not occur
-there, so the fix is not yet confirmed on 27.2. See
+there. On macOS 27.2, the maintainer has used Openergy every day since
+2026-10-21 as a client of a Windows host, and clicks focus windows correctly.
+A controlled side-by-side test on 27.2 has not been run. See
 [focus behavior](docs/focus-fix.md).
 
 ## Updates

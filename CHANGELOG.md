@@ -28,6 +28,12 @@ First public source release.
   Barrier, and release tooling that builds, smoke-tests, and records the
   provenance of archives.
 
+### Fixed
+
+- The macOS app no longer redraws animations in hidden windows. In the client
+  role, the menu-bar panel's connection line kept animating while closed and
+  used 21–29% CPU. Visible animations are capped at 30 frames per second.
+
 ### Security
 
 - Bounded reads for config, trust, identity, and IPC data; special files and
