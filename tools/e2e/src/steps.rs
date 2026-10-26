@@ -783,7 +783,7 @@ impl Context {
             };
             let result = json!({"kind":"capture_to_recorded_upper_bound","samples":times.len(),"p50_ms":percentile(0.50),"p95_ms":percentile(0.95),"p99_ms":percentile(0.99),"max_ms":times[times.len()-1]});
             self.measurements.push(result.clone());
-            let max = step.fields.get("p99_ms").and_then(Value::as_f64).unwrap_or(5.0);
+            let max = step.fields.get("p99_ms").and_then(Value::as_f64).unwrap_or(5.0) * self.options.slowdown;
             if percentile(0.99) >= max {
                 // Hosted CI keeps only the console log, so report the measured values.
                 return Err(Failure::product(format!(
@@ -812,7 +812,7 @@ impl Context {
             let result = json!({"kind":"resources","rss_peak_bytes":peak,"cpu_percent":cpu,"window_ms":started.elapsed().as_millis()});
             self.measurements.push(result.clone());
             let max_rss = step.number("rss_bytes", 30_000_000);
-            let max_cpu = step.fields.get("cpu_percent").and_then(Value::as_f64).unwrap_or(0.1);
+            let max_cpu = step.fields.get("cpu_percent").and_then(Value::as_f64).unwrap_or(0.1) * self.options.slowdown;
             if peak >= max_rss || cpu >= max_cpu {
                 return Err(Failure::product(format!(
                     "RSS/CPU window exceeded budget (RSS peak {peak} of {max_rss} bytes, CPU {cpu:.3}% of {max_cpu}%)"

@@ -63,13 +63,14 @@ fn run(args: &[String]) -> Result<bool> {
         lab_range: (24930, 24939),
         keep: false,
         no_docker: false,
+        slowdown: 1.0,
         scenario_dir: root.join("tools/e2e/scenarios"),
         pattern: "*".into(),
         report: None,
     };
     let command = args.first().map(String::as_str).unwrap_or("help");
     if ["help", "--help", "-h"].contains(&command) {
-        println!("openergy-e2e run [--scenario GLOB] [--no-docker] [--port-range A-B] [--lab-port-range A-B] [--keep] [--report PATH]\nopenergy-e2e list [--scenario GLOB] [--no-docker]\nOptional: --scenario-dir DIR, --openergy PATH. Only virtual daemons and isolated Docker peers run. --no-docker excludes and reports scenarios containing lab nodes. Execution requires Unix.");
+        println!("openergy-e2e run [--scenario GLOB] [--no-docker] [--port-range A-B] [--lab-port-range A-B] [--keep] [--report PATH] [--slowdown N]\nopenergy-e2e list [--scenario GLOB] [--no-docker]\nOptional: --scenario-dir DIR, --openergy PATH. Only virtual daemons and isolated Docker peers run. --no-docker excludes and reports scenarios containing lab nodes. --slowdown N (1-10, default 1) stretches deadlines and latency/CPU budgets for slower machines; memory budgets stay fixed. Execution requires Unix.");
         return Ok(true);
     }
     if !["run", "list"].contains(&command) {
@@ -98,6 +99,13 @@ fn run(args: &[String]) -> Result<bool> {
             "--scenario-dir" => options.scenario_dir = PathBuf::from(value),
             "--openergy" => options.binary = PathBuf::from(value),
             "--report" | "--json" => options.report = Some(PathBuf::from(value)),
+            "--slowdown" => {
+                options.slowdown = value
+                    .parse::<f64>()
+                    .ok()
+                    .filter(|v| (1.0..=10.0).contains(v))
+                    .ok_or_else(|| Failure::runner("--slowdown must be a number from 1 to 10"))?
+            }
             _ => {
                 return Err(Failure::runner(format!(
                     "unknown option {flag}; --allow-desktop is forbidden"
@@ -208,6 +216,12 @@ fn run(args: &[String]) -> Result<bool> {
     }
     // Fail on a pre-existing path instead of following a planted /tmp symlink.
     builder.create(&run_dir)?;
+    if options.slowdown > 1.0 {
+        println!(
+            "slowdown x{}: deadlines and latency/CPU budgets are stretched; memory budgets are unchanged",
+            options.slowdown
+        );
+    }
     let mut reports = Vec::new();
     for (index, scenario) in scenarios.into_iter().enumerate() {
         println!("RUN {}", scenario.name);
@@ -246,7 +260,7 @@ fn run(args: &[String]) -> Result<bool> {
         reports.push(report);
     }
     let passed = reports.iter().filter(|r| r.outcome == "PASS").count();
-    let data = serde_json::json!({"format_version":1,"binary":options.binary,"port_range":options.port_range,"lab_port_range":options.lab_range,"no_docker":options.no_docker,"excluded_count":excluded.len(),"excluded":excluded,"passed":passed,"failed":reports.len()-passed,"scenarios":reports});
+    let data = serde_json::json!({"format_version":1,"binary":options.binary,"port_range":options.port_range,"lab_port_range":options.lab_range,"no_docker":options.no_docker,"slowdown":options.slowdown,"excluded_count":excluded.len(),"excluded":excluded,"passed":passed,"failed":reports.len()-passed,"scenarios":reports});
     let report_path = options.report.unwrap_or_else(|| run_dir.join("report.json"));
     util::write_private(&report_path, &serde_json::to_vec_pretty(&data)?)?;
     println!(

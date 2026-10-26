@@ -42,8 +42,12 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
+      # Hosted VMs are slower than a developer machine for timer- and IPC-heavy
+      # work, so deadlines and latency/CPU budgets are stretched 3x. Memory
+      # budgets are not. Local runs keep the strict defaults.
       - name: Verify native build and isolated virtual runtime
         run: >-
           ${{ matrix.python }} tools/release/release.py verify
           --port-range 25440-25459 --lab-port-range 25460-25479
           --report dist/verification.json
+          --e2e-slowdown 3

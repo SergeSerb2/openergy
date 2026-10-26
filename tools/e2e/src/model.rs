@@ -254,6 +254,9 @@ pub struct Options {
     pub lab_range: (u16, u16),
     pub keep: bool,
     pub no_docker: bool,
+    /// Factor for slower machines such as hosted CI VMs. It stretches deadlines and
+    /// the latency and CPU budgets; memory budgets and measurement windows stay fixed.
+    pub slowdown: f64,
     pub scenario_dir: PathBuf,
     pub pattern: String,
     pub report: Option<PathBuf>,

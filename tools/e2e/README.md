@@ -40,6 +40,12 @@ external catalogue. `--json PATH` is an alias for `--report PATH`. List/help
 exit 0; a completed run with any failed scenario exits 1; CLI/schema errors
 exit 2. An empty selection is an error and never reports a green run.
 
+`--slowdown N` (1 to 10, default 1) is for slower machines such as hosted CI
+VMs. It multiplies scenario and step deadlines and the latency and CPU budgets
+by N. Memory budgets and measurement windows do not change. The console and
+the JSON report record the factor, so a stretched run is never mistaken for a
+strict one.
+
 `--no-docker` works with both `run` and `list`. It excludes any scenario
 that declares a `kind = "lab"` node, including nodes with autostart disabled.
 The console names every exclusion. JSON reports include `no_docker`,

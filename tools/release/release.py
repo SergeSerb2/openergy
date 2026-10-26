@@ -235,6 +235,8 @@ def verify(args):
                    "--report", report]
         if suite == "virtual":
             command.append("--no-docker")
+        if args.e2e_slowdown != 1.0:
+            command += ["--slowdown", str(args.e2e_slowdown)]
         run(command, timeout=3600)
     if (ROOT / "Cargo.lock").read_bytes() != lock:
         raise ValueError("verification changed Cargo.lock")
@@ -569,6 +571,8 @@ def main():
     command.add_argument("--port-range", type=ports, required=True)
     command.add_argument("--lab-port-range", type=ports, required=True)
     command.add_argument("--report", type=Path, default=ROOT / "dist/verification.json")
+    command.add_argument("--e2e-slowdown", type=float, default=1.0,
+                         help="stretch scenario deadlines and latency/CPU budgets on slower machines (1-10)")
     command = commands.add_parser("package")
     command.add_argument("--tag")
     command.add_argument("--port-range", type=ports, required=True)

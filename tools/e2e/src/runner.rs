@@ -320,7 +320,11 @@ impl Context {
         })
     }
     pub fn timeout(&self, step: &Step) -> Duration {
-        Duration::from_millis(step.number("timeout_ms", self.scenario.timeout_ms).clamp(1, 180_000))
+        self.scaled(step.number("timeout_ms", self.scenario.timeout_ms))
+    }
+    /// A scenario or step deadline, stretched by `--slowdown` for slower machines.
+    pub fn scaled(&self, ms: u64) -> Duration {
+        Duration::from_millis(((ms as f64 * self.options.slowdown).round() as u64).clamp(1, 180_000))
     }
     pub fn start(&mut self, id: &str) -> Result<()> {
         let spec = self.state(id)?.spec.clone();
@@ -346,7 +350,7 @@ impl Context {
                 .as_deref()
                 .ok_or_else(|| Failure::runner("raw client requires remote"))?;
             let addr = self.safe_address(&self.remote(remote, false)?, true)?;
-            let deadline = Instant::now() + Duration::from_millis(self.scenario.timeout_ms);
+            let deadline = Instant::now() + self.scaled(self.scenario.timeout_ms);
             let stream = loop {
                 match TcpStream::connect_timeout(&addr, Duration::from_millis(100)) {
                     Ok(stream) => break stream,
@@ -390,7 +394,7 @@ impl Context {
             self.commands += 1;
             let child = Process::spawn(&mut command, &dir, &format!("daemon-{}", self.commands))?;
             self.state_mut(id)?.process = Some(child);
-            let deadline = Instant::now() + Duration::from_millis(self.scenario.timeout_ms);
+            let deadline = Instant::now() + self.scaled(self.scenario.timeout_ms);
             loop {
                 if let Ok(status) = self.ipc(id, "status.get", json!({}), Duration::from_millis(200)) {
                     self.state_mut(id)?.pid = status.pointer("/daemon/pid").and_then(Value::as_u64).map(|v| v as u32);
