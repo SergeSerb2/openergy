@@ -1,8 +1,0 @@
-Traceback (most recent call last):
-  File "/Users/serge/.t3/worktrees/openergy/t3-8a778ed2/docs/verification/sparkle-stopped-runtime-2026-10-23/controller.py", line 270, in run
-    expected = preflight(directory)
-  File "/Users/serge/.t3/worktrees/openergy/t3-8a778ed2/docs/verification/sparkle-stopped-runtime-2026-10-23/controller.py", line 242, in preflight
-    'caches': before_caches, 'old': metadata(FIX / 'old/Openergy.app'),
-  File "/Users/serge/.t3/worktrees/openergy/t3-8a778ed2/docs/verification/sparkle-stopped-runtime-2026-10-23/controller.py", line 190, in metadata
-    'xattrs': {n: hashlib.sha256(os.getxattr(app, n)).hexdigest() for n in os.listxattr(app)}}
-AttributeError: module 'os' has no attribute 'listxattr'

@@ -1,9 +1,0 @@
-# Closed pre-prepare topology, derived from the frozen public declarations.
-# These seven DATA names are approved names, not new byte-authentication claims.
-ROOT_DATA_ADDITIONS = ('metadata-caller.py.txt', 'metadata-source-result.json',
-    'data-materialization-once.guard', 'data-materialization-receipt.json',
-    'metadata-source-once.json', 'artifact-binding-once.guard',
-    'artifact-binding-receipt.json')
-ROOT_INITIAL_NAMES = (frozenset(INITIAL_INPUTS) | frozenset(COMPLETED)
-    | frozenset(row['leaf'] for row in SOURCE_RAWS) | frozenset(SOURCE_BOUNDARY)
-    | frozenset(EIGHT) | frozenset(ROOT_DATA_ADDITIONS))

@@ -231,14 +231,17 @@ struct MachineCard: View {
     }
 }
 
-/// The line between two machines. It flows when connected and pulses while connecting.
+/// The line between two machines. It flows when connected and pulses while connecting,
+/// at up to 30 frames per second and only while its window is visible.
 struct ConnectionLine: View {
     var active: Bool
     var waiting: Bool
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.windowVisible) private var windowVisible
 
     var body: some View {
-        TimelineView(.animation(paused: !(active || waiting) || reduceMotion)) { timeline in
+        let paused = !(active || waiting) || reduceMotion || !windowVisible
+        TimelineView(.animation(minimumInterval: 1.0 / 30, paused: paused)) { timeline in
             Canvas { context, size in
                 let y = size.height / 2
                 var line = Path()

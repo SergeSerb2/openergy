@@ -1,7 +1,0 @@
-{
-  "command": "python3 docs/verification/sparkle-running-approval-2026-10-23/check-files.py",
-  "exit": 1,
-  "failure": "AttributeError: module 'hashlib' has no attribute 'file_digest'",
-  "stage": "first controller hash read, before any output file or receipt creation",
-  "correction": "Use a bounded streaming SHA-256 reader supported by the existing Python interpreter. No toolchain change, supplied operation, build or runtime attempt."
-}

@@ -64,7 +64,7 @@ Rust/Cargo inputs matching the reused verified binary. Outputs of 16,777,215 and
 16,777,216 bytes imported and started; 16,777,217 bytes were refused. Existing
 files stayed identical; missing files, parents and temporary outputs were not
 created. The review found no concrete P1/P2 defect or material regression.
-The [config policy record](../2026-10-22-config-size-policy.md) retains the
+The config policy record retains the
 implementation checks and binary/source hashes.
 
 Earlier independent follow-ups reproduced and closed the archive case-alias

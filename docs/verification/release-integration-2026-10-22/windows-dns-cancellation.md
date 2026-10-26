@@ -16,7 +16,7 @@ The prior [Windows discovery/control report](windows-discovery-recovery.md) cove
 Source identity:
 
 - Archive SHA-256: `23dfa9257d79c286cda94bf1381b60981ddb082a8edb24c0ba1ed54bc06c203f`.
-- [Transferred per-file manifest](windows-dns-cancellation-source-manifest.json) SHA-256: `e3f31a782b3165c049ff7cbc360da894f599c7cd51b1cf68b9dc007bd1681e3c`.
+- Transferred per-file manifest SHA-256: `e3f31a782b3165c049ff7cbc360da894f599c7cd51b1cf68b9dc007bd1681e3c`.
 - Unchanged example `crates/net/examples/dns_queue_cancel_c4806a3d.rs` SHA-256: `a7dbab22249c7c65443c6943d04ab3c078d9d3f02a97016f5596fd0f6e6d4a2f`.
 - All 658 archived regular files match the manifest. Of these, 657 match Git blobs byte for byte. `tools/windows/openergy-run.cmd` has only the expected CRLF conversion under `*.cmd text eol=crlf`: 502 Git bytes become 511 archive bytes. `git hash-object --stdin --path=tools/windows/openergy-run.cmd` cleans the archive bytes to the exact committed blob `9cd6f37ce26dde4edcad6f808492171f8daf3462`.
 - All 658 Windows source files matched before build, after build and after both probes. They remained read-only. There were no runtime source edits or changes to classification or timing checks.

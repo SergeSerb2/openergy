@@ -1,111 +1,84 @@
-# Alpha readiness and evidence
+# Readiness
 
-Status date: **2026-10-23**. Openergy is source-stage alpha software, version
-`0.1.0`. No release artifacts have been published as of this date. Preparing
-source for public review does not establish production readiness, authorize a
-visibility change, or imply a supported binary release.
+Status date: 2026-10-25. Openergy `0.1.0` is alpha software. No release
+artifacts are published yet. Keep another way to control each computer while
+you try it.
 
-## What the evidence covers
+## Latest verification run
 
-| Surface | Existing evidence | Limit |
+2026-10-25, Apple M5 Pro, macOS 27.2, commit `62d1988` plus one lint fix.
+<!-- fresh-verification: link the full record for this run here -->
+
+- macOS app bundle (arm64, ad-hoc signed): 9,276 KiB on disk (`du -sk`),
+  9,286,302 bytes in 95 files. App binary 1,565,968 bytes; bundled daemon
+  3,703,808 bytes.
+- Daemon idle for 60 s on the virtual backend: RSS 8.47 MiB in the server role
+  (listening) and 8.34 MiB with the role off. CPU 0.0%.
+- Headless app flow: 25/25 checks in 3.70 s.
+- Windows, Rust 1.99.1 MSVC: `openergy.exe` is 4,131,328 bytes. The
+  private-instance scripts passed: control (23 checks), IPC deadlines (19/19),
+  lifecycle (15), lifecycle ownership (11), and pipe identity.
+
+## Verified
+
+Each record covers the commit and machine it ran on. Resource numbers depend
+on the machine, build, and workload.
+
+| Area | What was checked | Record |
 | --- | --- | --- |
-| Daemon and CLI | [Real-process verification](../../crates/daemon/VERIFICATION.md), IPC, loopback TCP/TLS, and virtual input/clipboard scenarios. | Virtual ledgers do not prove native capture/injection or recovery after every OS failure. |
-| macOS app | [2026-10-23 packaged app flow](../verification/macos-app-current-flow-2026-10-23/README.md): 25/25 real model/IPC checks with an owned virtual peer, including reconnect and crash recovery. | Rendering was disabled. It is not a complete first-install, TCC, native UI, or signing acceptance run. |
-| macOS updates | [Sparkle integration](../verification/sparkle-integration-2026-10-23/README.md): six real updater command paths, local archive/feed signature verification and live empty Cloudflare feed. | No app release is published. Visual UI, archive download through Sparkle, installation, daemon handoff, relaunch and trusted distribution remain unverified. |
-| macOS native backend | [Backend verification](../../crates/platform-macos/VERIFICATION.md) and [27.0.1 focus lab](../verification/focus-lab-macos-27.0.1/README.md). | The focus run did not reproduce the legacy activation bug. Current-build 27.2 fix acceptance remains open. |
-| Linux X11 | [X11 verification](../../crates/platform-linux/VERIFICATION.md) in isolated Xvfb. | No broad distribution, window manager, physical hardware, or Wayland claim. |
-| Linux x86-64 artifact | [Python 3.11 package and real-command checks](../verification/release-integration-2026-10-22/linux-amd64-python311.md) under AMD64 emulation, including extracted executable checks. | Not physical x86-64 desktop or performance acceptance. |
-| Windows | [Daemon/control verification](../verification/windows-daemon-2026-10-21/README.md), private pipes, virtual peers, TLS, and session-0 native start/stop. | Interactive hooks, actual injection, clipboard, mixed DPI, layout behavior, and elevated apps need desktop acceptance. |
-| Third-party peers | [Docker interop lab](../../tools/interop-lab/README.md): Deskflow 1.27 and Barrier 2.4. [Windows report](../verification/windows-synergy-1.21.1/README.md): Synergy core 1.21.1-beta. | Results apply to the recorded builds, configurations, roles, and formats. Input Leap and other versions are not established by protocol similarity. |
+| Daemon and CLI | Real processes over local IPC and loopback TCP/TLS with the virtual backend: input, clipboard, trust, restart, recovery. 117/117 scenarios, including 30 Deskflow/Barrier Docker cases (2026-10-22). | [round5](../verification/release-integration-2026-10-22/round5.md), [daemon](../../crates/daemon/VERIFICATION.md) |
+| macOS app | Packaged app and bundled daemon: 25/25 headless checks against a virtual peer, including reconnect and crash recovery (2026-10-23). | [app flow](../verification/macos-app-current-flow-2026-10-23/README.md) |
+| macOS updates | Sparkle checks against local test feeds and the live, empty, signed feed (2026-10-23). | [Sparkle](../verification/sparkle-integration-2026-10-23/README.md) |
+| macOS focus | Openergy's numbered clicks pass all seven focus scenarios on macOS 27.0.1 (2026-10-21). | [focus lab](../verification/focus-lab-macos-27.0.1/README.md) |
+| Linux X11 | Capture, injection, and clipboard in an isolated Xvfb server on ARM64. The x86-64 package was checked under emulation (2026-10-22). | [X11](../../crates/platform-linux/VERIFICATION.md), [x86-64](../verification/release-integration-2026-10-22/linux-amd64-python311.md) |
+| Windows | Daemon and CLI over private named pipes, with virtual TLS peers in both roles (2026-10-21). | [Windows](../verification/windows-daemon-2026-10-21/README.md) |
+| Other peers | Deskflow 1.27 and Barrier 2.4 in a Docker lab, both roles, TLS and plaintext. Synergy core 1.21.1 on Windows, both roles, TLS and clipboard (2026-10-21). | [interop lab](../../tools/interop-lab/README.md), [Synergy](../verification/windows-synergy-1.21.1/README.md) |
+| Licenses and secrets | cargo-deny, notice generation, and secret scans of the tree and history (2026-10-21). | [audit](../verification/public-release-audit-2026-10-21/README.md) |
 
-Each report is a dated record of its own revision and environment. Passing
-counts in those reports are historical, not the current branch's status.
-The parent integration run must collect fresh evidence after changes merge.
-An unavailable environment is a missing check, not a passed check.
+## Not yet verified
 
-The [2026-10-22 integration record](../verification/release-integration-2026-10-22/README.md)
-records the release-preparation branch's fresh checks and later focused fixes.
+- Native input on real desktops: screen crossings, held keys across a
+  disconnect, sleep and wake, mixed display scaling, and keyboard layouts.
+- The macOS focus fix on macOS 27.2, where the bug is seen. The bug did not
+  occur on 27.0.1, so that run cannot confirm the fix.
+- Interactive Windows use: input hooks, injection, clipboard, elevated apps,
+  and UAC. The Windows checks ran in a non-desktop SSH session.
+- A first install of a signed, notarized build on a clean Mac: Gatekeeper,
+  granting and revoking permissions, and the login item. Developer ID signing
+  and notarization are set up, but no such build has been published.
+- Downloading, installing, and relaunching an update through Sparkle.
+- Input Leap, other Synergy versions, and live input from a Synergy server to
+  an Openergy client on a Windows desktop.
+- A matched performance comparison with Synergy on the same machine and
+  workload. The README comparison uses numbers from different setups.
 
-### Later candidate qualification — 2026-10-25
+## Known limits
 
-The retained M1 ordinary flow remains **FAILED_NOT_ACCEPTED**: its app passed
-25/25 checks and exited0, but its controller exited1. Whole-flow priority,
-final port and archive evidence remain incomplete. A later file-only
-preparation attempt also failed. The [independent saved-evidence audit](../verification/m1-file-only-prepare-attempt-review-2026-10-25-t3-cc7061fd/REVIEW.md)
-found three P2 defects in the verification tooling: an unsafe requirements
-output path, seven missing code-signing requirements bodies, and an admission
-gate that expected two local records on the remote Mac. No COPY or ordinary
-app flow followed that failed attempt. Narrow source and raw-comparison passes
-do not close these metadata, artifact or runtime gates.
+- macOS is the main platform. Windows and Linux have no graphical app or
+  automatic updates. Wayland is not supported.
+- No file transfer or drag-and-drop. Clipboard formats differ by backend and
+  peer. The 64 MiB clipboard limit is local; a peer can accept less. X11
+  PRIMARY selection is not shared.
+- Secure Input, screen lock, UAC, and OS input policies can pause sharing.
+- Config and IPC formats can change before a stable release. More limits are in
+  [V1-LIMITS.md](../../crates/config/V1-LIMITS.md).
 
-The [Windows metadata evidence](../verification/windows-metadata-runtime-evidence-2026-10-25-t3-31d816c9/REPORT.md)
-retains SSH exit255 and no metadata. Remote state remains unverified.
-The [current-versus-legacy performance audit](../verification/current-legacy-performance-evidence-2026-10-25-t3-9f4635bf/README.md)
-found no qualified matched runtime pairs. Historical build duration, app
-correctness counts and different bundle inventories do not establish a
-current CPU, RAM, startup or input-latency improvement over Synergy.
+## Release gates
 
-## Measurements are scoped
+A release needs all of these on the exact commit and artifacts:
 
-The [2026-10-21 daemon report](../../crates/daemon/VERIFICATION.md) records an
-Apple M5 Pro on macOS 27.2, including about 9.3 MB idle daemon RSS, about 19 MB
-after an 8 MiB virtual clipboard transfer, and 0.03% idle CPU over 60 seconds.
-It also records a 0.18 ms p99 sample over 1,000 virtual moves, from server
-capture to client sink timestamps across two local daemons. This used plaintext
-loopback transport and excluded external IPC observation overhead. It is not
-physical input-to-screen latency over a LAN.
+1. Build, format, lint, dependency and license checks, and the real-process
+   scenario suite pass.
+2. Native input and clipboard checks pass on a separate test machine or
+   account that has another input path. Virtual checks do not count.
+3. A fresh macOS install passes: signing, notarization, permissions, login
+   item, and recovery.
+4. The focus check passes on an affected macOS build.
+5. Interactive Windows checks pass before Windows is called desktop-ready.
+   Real X11 desktop checks pass before broad Linux support is claimed.
+6. Third-party peers are retested, with versions, roles, TLS, and trust
+   settings recorded, including a wrong-pin case.
+7. A private security reporting route is set up (see [SECURITY.md](../../SECURITY.md)).
 
-The external runner's S15 timing has a different boundary: external injection
-through IPC to the receiving daemon's virtual ledger. Its results cannot be
-compared directly with the capture-to-sink timestamp sample. Binary size, resident memory,
-CPU, and latency depend on toolchain, build options, OS, workload, and machine.
-Re-measure the artifact you intend to distribute. No performance guarantee or
-unqualified comparison with another product follows from these records.
-
-## Known functional and support limits
-
-- macOS is the main development platform. Windows and Linux have no graphical
-  app or supported automatic updater. Wayland is unsupported.
-- File transfer and drag-and-drop are not implemented. Clipboard format support
-  differs by backend and peer; the 64 MiB default is a local limit, not a promise
-  that another peer will accept it. X11 PRIMARY is not routed by v1.
-- Language synchronization, half-duplex lock behavior, and modifier key-ID
-  remapping have limits listed in [V1-LIMITS.md](../../crates/config/V1-LIMITS.md).
-- Secure Input, screen lock, UAC, permission changes, and OS input policies can
-  interrupt sharing. There is no claim that the daemon can bypass those rules.
-- Configuration and IPC can change before a stable release. No stable support,
-  update, security backport, or response-time commitment is defined.
-
-## Acceptance still needed for a release claim
-
-On 2026-10-22, the maintainer chose to **keep native input and clipboard checks
-as a release gate**. Run them only on a separate test account or machine with
-recovery input available. Preserve the current Mac and Windows sharing
-connection. Virtual checks do not close this gate.
-
-The maintainer later chose to skip GitHub private vulnerability reporting setup
-on the same date and resume hardening. Reporting setup is deferred, not a
-verified service or a prerequisite for this work. See [SECURITY.md](../../SECURITY.md)
-for the current reporting instructions.
-
-Maintainers must attach results for the exact commit and artifacts, using
-[docs/releasing.md](../releasing.md). At minimum, distinguish:
-
-1. Build, formatting, lint, dependency/license review, and real-process E2E
-   checks on the integrated source.
-2. Fresh macOS installation, signature/notarization state, permissions granted
-   and revoked, login behavior, and local recovery on supported OS builds.
-3. Native screen transitions, held-key/button disconnect recovery, sleep/wake,
-   mixed scaling, keyboard layouts, and clipboard formats on intended desktops.
-4. A controlled legacy/native focus comparison on an affected macOS build.
-   Historical user reports alone do not close this gate.
-5. Interactive Windows acceptance before describing Windows as desktop-ready,
-   and real X11 desktop acceptance before claiming broad Linux support.
-6. Third-party peer versions and roles actually retested, with TLS/trust settings
-   and negative pin/unknown-peer cases recorded.
-
-Keep any missing checks explicit in release notes. A draft artifact, an ad-hoc
-signature, a startup result, or a green CI job cannot substitute for the missing
-native or distribution evidence. Use [SECURITY.md](../../SECURITY.md) for the
-threat model and private report path, and [CONTRIBUTING.md](../../CONTRIBUTING.md)
-for safe verification.
+Release notes must list every check that did not run. The maintainer steps are
+in [releasing](../releasing.md).

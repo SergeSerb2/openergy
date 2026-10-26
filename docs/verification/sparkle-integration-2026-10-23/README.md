@@ -8,8 +8,8 @@ The only subsequent source change corrects the generated feed title before signi
 
 The live feed is <https://openergy-updates.sergeserbinenko.com/appcast.xml>.
 The page is <https://openergy-updates.sergeserbinenko.com/index.html>.
-The dedicated R2 bucket is `openergy-releases`; existing T3 Pretty hosting was
-not changed. The public feed is signed and contains **zero application releases**.
+The dedicated R2 bucket is `openergy-releases`. The public feed is signed and
+contains **zero application releases**.
 No application archive was uploaded.
 
 ## Real command results
@@ -62,29 +62,25 @@ against public Cloudflare DNS, retaining hostname, SNI and certificate validatio
 This does not change system DNS. It is separate from the successful normal-URL
 Sparkle command.
 
-T3 preview opened the channel but snapshot failed twice with
-`Preview automation snapshot timed out after 15000ms.` A fresh private Chrome
-headless profile checked the page and feed DOM instead. That browser used only
-a process-specific resolver mapping, with certificate validation enabled. This
-proves these browser paths, not the native settings UI.
+A fresh private headless Chrome profile checked the channel page and feed DOM.
+That browser used only a process-specific resolver mapping, with certificate
+validation enabled. This proves these browser paths, not the native settings UI.
 
-App review R1 found that an extra `sessionInProgress` condition blocked manual
-refocusing of active update UI. The fix follows Sparkle's `canCheckForUpdates`
-directly; the fixture information check keeps its session guard. App review R2
-found no concrete P1/P2 on `6ab225e`. Packaging/hosting review R2 found a generated
-feed title case mismatch. `d647a01` corrects it before signing; the final archive
-flow and real candidate check passed with that generated feed. These are source
-reviews, not independent runtime reproduction. See [review records](reviews.md).
-The final R3 source/evidence audit found no concrete P1/P2 and closed the title
-finding. It reconciled all source, raw-record and artifact bindings.
+Source review found two issues. An extra `sessionInProgress` condition blocked
+manual refocusing of an active update window; the fix follows Sparkle's
+`canCheckForUpdates` directly. The feed generator used `Openergy updates` while
+the hosting check expects `Openergy Updates`; `d647a01` corrects it before
+signing, and the final archive flow and candidate check passed with that feed.
+A final source and evidence review found no further issues. These were source
+reviews, not independent runtime reproduction.
 
 ## Evidence and limits
 
 [results.json](results.json) binds 456 source files, four retained binary/archive
-artifacts and 26 byte-exact copied records. The raw commands, logs, result JSON,
-archive manifest, signed generated feed and controller scripts are in `raw/`.
-Private originals and artifacts remain at the paths in the ledger. Historical
-child reports and failed transcripts were not rewritten.
+artifacts and 26 byte-exact copied records. Those raw commands, logs, result
+JSON, archive manifest, signed generated feed and controller scripts are kept
+at the Git tag `evidence-archive-2026-10-25`. The original private artifacts are
+not in the repository.
 
 This proves local bundle loading, real feed checks/candidate selection, local
 EdDSA archive/feed validation and live empty-feed hosting. It does not prove the

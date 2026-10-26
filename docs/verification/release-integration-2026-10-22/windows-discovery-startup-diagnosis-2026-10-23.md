@@ -4,7 +4,7 @@
 
 The original [64e0005 acceptance record](windows-bounded-discovery-2026-10-23.md) remains **startup FAIL 11/14, retained PASS 19/19, control PASS 23/23**. Its exact `before=1 after_barrier=0 after_settle=0 live_closed=true` output is unchanged. The original had no startup trace, so its precise interleaving cannot be reconstructed retrospectively. The new matched reproduction has a different intermediate gauge; that difference is retained below. Nothing here relabels the original failure as a pass.
 
-[Structured evidence](windows-discovery-startup-diagnosis-2026-10-23.json) contains the exact source bodies, commands, input/tool/library/helper hashes, full check lists, ordered records, first failures, and cleanup. The [original-fixture file manifest](windows-discovery-startup-diagnosis-2026-10-23/frozen-input-file-manifest.json) covers all 2,579 original files. [Diagnostic source and exact diffs](windows-discovery-startup-diagnosis-2026-10-23/source) and [archived workflow scripts](windows-discovery-startup-diagnosis-2026-10-23/workflow) are supplementary evidence, not product changes or revised acceptance probes.
+[Structured evidence](windows-discovery-startup-diagnosis-2026-10-23.json) contains the exact source bodies, commands, input/tool/library/helper hashes, full check lists, ordered records, first failures, and cleanup. The original-fixture file manifest covers all 2,579 original files. Diagnostic source and exact diffs and archived workflow scripts are supplementary evidence, not product changes or revised acceptance probes.
 
 ## Source contract and question
 
@@ -35,7 +35,7 @@ In run 1, the limited receiver drop completed at 9,118,173,400 ns and its worker
 CANCELLED_STARTUPS distinct=32 replay_commands=16 replayed_overflows=16 before=1 after_barrier=1 after_settle=1 live_closed=false
 ```
 
-The old view remained live and received its later update. This is direct observed pre-start failure and preservation, not an assumption based on queued work. [Run 1 trace](windows-discovery-startup-diagnosis-2026-10-23/outputs/diagnostic1.stderr).
+The old view remained live and received its later update. This is direct observed pre-start failure and preservation, not an assumption based on queued work. Run 1 trace.
 
 Run 2 supplied the matched failure. The following times are monotonic nanoseconds from the parent process's diagnostic clock. They are observation boundaries, not network latency or exact unlogged send timestamps.
 
@@ -50,7 +50,7 @@ Run 2 supplied the matched failure. The following times are monotonic nanosecond
 | 9,188,170,000 | Caller records completion of the standard receiver drop. |
 | 9,241,744,300 | Next GUARD repeating-command entry, after old-view loss and both drops. |
 
-The standard `SearchStarted` reception directly proves startup before drop. For the limited receiver, this is a source-backed commit inference: the observed old view closed while the replacement receiver still existed, and the initial-send-success branch performs that removal. The helper does not log the precise limited send result/time directly. No older repeating GUARD command occurs between the observed open old handle and its closure. Thus an old retransmission does not explain that earlier loss in this trace. [Run 2 trace](windows-discovery-startup-diagnosis-2026-10-23/outputs/diagnostic2.stderr).
+The standard `SearchStarted` reception directly proves startup before drop. For the limited receiver, this is a source-backed commit inference: the observed old view closed while the replacement receiver still existed, and the initial-send-success branch performs that removal. The helper does not log the precise limited send result/time directly. No older repeating GUARD command occurs between the observed open old handle and its closure. Thus an old retransmission does not explain that earlier loss in this trace. Run 2 trace.
 
 Run 2 retained the exact original failed check names:
 

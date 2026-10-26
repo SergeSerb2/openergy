@@ -1,31 +1,24 @@
 # Documentation map
 
-Start with the [project README](../../README.md). Openergy is alpha software;
-historical design targets and successful lab runs do not establish a supported
-release or a complete native desktop compatibility matrix.
+Start with the [project README](../../README.md).
 
 | Document | Purpose |
 | --- | --- |
-| [Setup](setup.md) | Fresh host/client setup, trust, platform prerequisites, recovery, and optional migration. |
-| [Readiness](readiness.md) | Scope of current evidence, historical measurements, and remaining acceptance. |
-| [Docs verification](docs-verification-2026-10-21.md) | Isolated CLI checks for the setup examples and integration dependencies. |
+| [Setup](setup.md) | Host and client setup, trust, platform prerequisites, recovery, and optional migration from Synergy. |
+| [Readiness](readiness.md) | What is verified, what is not yet verified, and the release gates. |
+| [Architecture](architecture-r2.md) | Design and protocol contracts, with later amendments. |
+| [UI contract](ui-contract.md) | macOS app and daemon process model and IPC shapes. |
+| [Focus behavior](../focus-fix.md) | The synthetic-click focus fix and the limits of its test evidence. |
 | [Contributing](../../CONTRIBUTING.md) | Development rules and safe real-process verification. |
-| [Security](../../SECURITY.md) | Permissions, trust boundaries, local data, and sensitive reporting. |
-| [Releasing](../releasing.md) | Maintainer build, artifact, and publication procedure. |
-| [Architecture r2](architecture-r2.md) | Implementation design and protocol contracts, with later amendments. |
-| [UI contract](ui-contract.md) | App/daemon process model and IPC shapes. |
-| [Integration contract](integration-contract.md) | Additions to transport/backend construction and live apply. |
-| [Architecture r1](architecture-r1.md) | Superseded design draft, retained for history. |
-| [Focus behavior](../focus-fix.md) | Synthetic-click algorithm and limits of the existing test-Mac evidence. |
+| [Security](../../SECURITY.md) | Permissions, trust boundaries, local data, and reporting. |
+| [Releasing](../releasing.md) | Maintainer build, artifact, and publication steps. |
 
-Design documents contain work-package instructions, proposed interfaces,
-performance targets, and the implementation state at the time of writing.
-Read them as engineering records. Check current source and dated verification
-records before treating a detail as implemented or accepted. For example,
-Windows and X11 backends have progressed beyond the original stub plan, while
-interactive Windows acceptance remains open.
+The architecture and UI contract are design records from 2026-10-21. They
+include the original work plan and performance targets. Where they differ from
+the source code, the source code is right. For example, the Windows and X11
+backends went beyond the first plan, and interactive Windows checks are still
+open.
 
-The [external runner](../../tools/e2e/README.md), platform crate READMEs, and
-[dated verification records](../verification) describe how evidence was
-collected. Research under [docs/re](../re) is scoped to inspected artifacts.
-The [changelog](../../CHANGELOG.md) distinguishes unreleased source from releases.
+[Verification records](../verification/README.md) and the platform crate
+READMEs describe how evidence was collected. Research under [docs/re](../re)
+covers only the binaries it inspected.

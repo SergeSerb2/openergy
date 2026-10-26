@@ -1,36 +1,33 @@
 import AppKit
 import SwiftUI
 
-/// A status light. Waiting states breathe slowly unless Reduce Motion is on.
+/// A status light. Waiting states breathe slowly while visible, unless Reduce Motion is on.
 struct StatusDot: View {
     var tone: AppModel.Tone
     var size: CGFloat = 8
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var breathe = false
+    @Environment(\.windowVisible) private var windowVisible
 
     var body: some View {
         Circle()
             .fill(tone.color)
             .frame(width: size, height: size)
-            .background(
-                Circle()
-                    .fill(tone.color.opacity(0.25))
-                    .frame(width: size * 2.1, height: size * 2.1)
-                    .opacity(tone == .neutral ? 0 : 1)
-                    .scaleEffect(breathe ? 1 : 0.7)
-            )
-            .onAppear(perform: animate)
-            .onChange(of: tone) { animate() }
+            .background(halo)
             .accessibilityHidden(true)
     }
 
-    private func animate() {
-        guard !reduceMotion, tone == .waiting else {
-            breathe = true
-            return
+    @ViewBuilder private var halo: some View {
+        let ring = Circle()
+            .fill(tone.color.opacity(0.25))
+            .frame(width: size * 2.1, height: size * 2.1)
+            .opacity(tone == .neutral ? 0 : 1)
+        if tone == .waiting, !reduceMotion, windowVisible {
+            ring.phaseAnimator([0.7, 1.0]) { view, scale in
+                view.scaleEffect(scale)
+            } animation: { _ in .easeInOut(duration: 1.1) }
+        } else {
+            ring
         }
-        breathe = false
-        withAnimation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true)) { breathe = true }
     }
 }
 

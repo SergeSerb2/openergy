@@ -1,44 +1,54 @@
 # Changelog
 
-Changes here describe source development. A Cargo version or an entry under
-Unreleased does not mean that a release was published.
+All notable changes to Openergy are listed here. A version heading marked
+"unreleased" has no published release artifacts.
 
-## Unreleased — 0.1.0 alpha
+## 0.1.0-alpha — unreleased
 
-Initial source implementation, recorded on 2026-10-21:
+First public source release.
 
-- Rust daemon and CLI for keyboard, pointer, and clipboard sharing.
-- Native SwiftUI macOS menu-bar app with host/join, layout, permissions, and trust
-  controls.
-- TLS certificate pinning, local control IPC, and Synergy configuration import
-  and export.
-- macOS, X11, Windows, and virtual backends. Windows native desktop acceptance
-  remains pending; Wayland is unsupported.
-- External real-process E2E runner and isolated interoperability labs.
-- Public setup, security, contribution, and readiness documentation.
+### Added
 
-Release preparation on 2026-10-21–22:
+- Rust daemon and `openergy` CLI that share keyboard, mouse, and clipboard
+  over the classic Synergy-family protocol (1.6–1.8), in host or join role.
+- Native SwiftUI menu-bar app for macOS 15+: host and join, screen layout,
+  permissions, trust approval, logs, open at login, and Sparkle update checks.
+- Backends for macOS, Linux X11, and Windows, plus a virtual backend for tests.
+  Windows and Linux run as headless daemons.
+- Clipboard sharing for text, HTML, and images, with a 64 MiB default limit
+  and per-direction switches.
+- TLS on by default with SHA-256 certificate pinning in both directions, and
+  local control over a private Unix socket or Windows named pipe.
+- mDNS discovery of nearby hosts (shown as information only, not as trust).
+- Import and export of Synergy configuration, and a Windows script that
+  replaces a Synergy server with Openergy at logon.
+- Numbered synthetic clicks on macOS, to address the macOS 27 window-focus
+  problem seen with other Synergy-family clients.
+- An external real-process test runner, Docker interop labs for Deskflow and
+  Barrier, and release tooling that builds, smoke-tests, and records the
+  provenance of archives.
 
-- Fix restart recovery, IPC shutdown, config rollback, pin revocation, and CLI
-  argument handling.
-- Preserve held-key and screen-transition order under queued network traffic.
-- Enforce clipboard sharing settings and distinguish unavailable reads from
-  intentional clears. Reject malformed format containers.
-- Harden TLS identity/trust storage, native resource cleanup, and platform
-  clipboard handling.
-- Bound config and trust-file reads and writes, reject special-file inputs,
-  and preflight complete trust imports before saving either list.
-- Charge packet metadata to transport queue limits and bound X11 image
-  expansion before allocating output or replacing clipboard contents.
-- Preserve clipboard transfers across unrelated settings changes, resolve live
-  screen aliases, and fix stationary double-tap timing and dead-corner overflow.
-- Add isolated real-process regression scenarios, version-pinned build checks,
-  dependency notices, and repeatable archive packaging with extracted-binary
-  smoke checks and matching embedded provenance records.
-- Document alpha support limits, fresh setup, contribution rules, privacy,
-  security reporting, and remaining native/distribution acceptance.
+### Fixed
 
-No release artifacts have been published as of this date. This entry does not
-claim that native desktop acceptance or distribution gates have passed. See
-[readiness](docs/plan/readiness.md) for evidence and open limits, and
-[releasing](docs/releasing.md) for the maintainer process.
+- The macOS app no longer redraws animations in hidden windows. In the client
+  role, the menu-bar panel's connection line kept animating while closed and
+  used 21–29% CPU. Visible animations are capped at 30 frames per second.
+
+### Security
+
+- Bounded reads for config, trust, identity, and IPC data; special files and
+  symlinks are refused.
+- Trust imports are checked as a whole before either list is saved; pin
+  revocation takes effect for live connections.
+- Packet metadata counts against transport queue limits, and X11 image
+  conversion is size-checked before allocation.
+
+### Known limits
+
+- Native desktop input and clipboard are not yet verified on Windows, and only
+  in an Xvfb server on Linux. Wayland is not supported.
+- No file transfer or drag-and-drop.
+- Config and IPC formats can change before a stable release.
+
+See [readiness](docs/plan/readiness.md) for what has been verified and the
+release gates, and [releasing](docs/releasing.md) for the maintainer steps.

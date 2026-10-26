@@ -199,6 +199,7 @@ fn run(args: &[String]) -> Result<bool> {
         std::env::temp_dir()
     };
     let run_dir = temp_base.join(format!("oe7-{}-{stamp}", std::process::id()));
+    #[cfg_attr(not(unix), allow(unused_mut))]
     let mut builder = std::fs::DirBuilder::new();
     #[cfg(unix)]
     {

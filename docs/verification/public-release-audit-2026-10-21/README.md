@@ -5,6 +5,11 @@ Date: 2026-10-21, America/Vancouver. Baseline:
 its reachable history, plus the owned sanitation and notice changes here.
 It is not a release approval or a claim that pending cross-scope fixes passed.
 
+The notice generator, `dependency-licenses.json`, and the supplementary
+`licenses/` texts this audit added now live in
+[tools/release/notices](../../../tools/release/notices). Release tooling reads
+them from there.
+
 ## Scope and safety
 
 Reviewed 376 tracked paths, including Rust/Swift source, manifests, scripts,
@@ -189,8 +194,8 @@ does not authorize a history rewrite.
 ## Recheck after integration
 
 ```sh
-python3 docs/verification/public-release-audit-2026-10-21/generate-notices.py
-python3 docs/verification/public-release-audit-2026-10-21/generate-notices.py --check
+python3 tools/release/notices/generate-notices.py
+python3 tools/release/notices/generate-notices.py --check
 cargo deny check
 gitleaks git . --log-opts=HEAD --redact=100 --ignore-gitleaks-allow --max-archive-depth 2
 ```
