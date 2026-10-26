@@ -6,14 +6,23 @@ you try it.
 
 ## Latest verification run
 
-<!-- fresh-verification: add the current-commit build and test record here -->
-Pending. The record of a fresh build and test run on the current commit goes
-here.
+2026-10-25, Apple M5 Pro, macOS 27.2, commit `62d1988` plus one lint fix.
+<!-- fresh-verification: link the full record for this run here -->
+
+- macOS app bundle (arm64, ad-hoc signed): 9,276 KiB on disk (`du -sk`),
+  9,286,302 bytes in 95 files. App binary 1,565,968 bytes; bundled daemon
+  3,703,808 bytes.
+- Daemon idle for 60 s on the virtual backend: RSS 8.47 MiB in the server role
+  (listening) and 8.34 MiB with the role off. CPU 0.0%.
+- Headless app flow: 25/25 checks in 3.70 s.
+- Windows, Rust 1.99.1 MSVC: `openergy.exe` is 4,131,328 bytes. The
+  private-instance scripts passed: control (23 checks), IPC deadlines (19/19),
+  lifecycle (15), lifecycle ownership (11), and pipe identity.
 
 ## Verified
 
-Each record below is dated and covers the commit and machine it ran on. A
-later commit can behave differently until it is checked again.
+Each record covers the commit and machine it ran on. Resource numbers depend
+on the machine, build, and workload.
 
 | Area | What was checked | Record |
 | --- | --- | --- |
@@ -26,10 +35,6 @@ later commit can behave differently until it is checked again.
 | Other peers | Deskflow 1.27 and Barrier 2.4 in a Docker lab, both roles, TLS and plaintext. Synergy core 1.21.1 on Windows, both roles, TLS and clipboard (2026-10-21). | [interop lab](../../tools/interop-lab/README.md), [Synergy](../verification/windows-synergy-1.21.1/README.md) |
 | Licenses and secrets | cargo-deny, notice generation, and secret scans of the tree and history (2026-10-21). | [audit](../verification/public-release-audit-2026-10-21/README.md) |
 
-Resource numbers (memory, CPU, size) come from these records. They depend on
-the machine, build, and workload. The README comparison with Synergy uses
-numbers from different setups, so it is not a matched benchmark.
-
 ## Not yet verified
 
 - Native input on real desktops: screen crossings, held keys across a
@@ -38,17 +43,19 @@ numbers from different setups, so it is not a matched benchmark.
   occur on 27.0.1, so that run cannot confirm the fix.
 - Interactive Windows use: input hooks, injection, clipboard, elevated apps,
   and UAC. The Windows checks ran in a non-desktop SSH session.
-- A first install on a clean Mac: Developer ID signing, notarization,
-  Gatekeeper, granting and revoking permissions, and the login item.
+- A first install of a signed, notarized build on a clean Mac: Gatekeeper,
+  granting and revoking permissions, and the login item. Developer ID signing
+  and notarization are set up, but no such build has been published.
 - Downloading, installing, and relaunching an update through Sparkle.
 - Input Leap, other Synergy versions, and live input from a Synergy server to
   an Openergy client on a Windows desktop.
-- Wayland. It is not supported.
+- A matched performance comparison with Synergy on the same machine and
+  workload. The README comparison uses numbers from different setups.
 
 ## Known limits
 
-- macOS is the main platform. Windows and Linux have no graphical app and no
-  automatic updates.
+- macOS is the main platform. Windows and Linux have no graphical app or
+  automatic updates. Wayland is not supported.
 - No file transfer or drag-and-drop. Clipboard formats differ by backend and
   peer. The 64 MiB clipboard limit is local; a peer can accept less. X11
   PRIMARY selection is not shared.
