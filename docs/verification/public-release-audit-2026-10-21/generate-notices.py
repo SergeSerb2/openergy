@@ -215,10 +215,11 @@ def main():
     for path, expected in [(ROOT / 'THIRD_PARTY_NOTICES.md', body),
                            (HERE / 'dependency-licenses.json', inventory)]:
         if args.check:
-            if not path.exists() or path.read_text() != expected:
+            # Explicit UTF-8: Windows' locale default (cp1252) misreads non-ASCII notices.
+            if not path.exists() or path.read_text(encoding='utf-8') != expected:
                 raise ValueError(path.name + ' is stale; regenerate notices')
         else:
-            path.write_text(expected)
+            path.write_text(expected, encoding='utf-8', newline='\n')
     print('notices ' + ('verified' if args.check else 'generated'))
 
 
