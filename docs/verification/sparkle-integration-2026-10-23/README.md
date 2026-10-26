@@ -77,10 +77,10 @@ reviews, not independent runtime reproduction.
 ## Evidence and limits
 
 [results.json](results.json) binds 456 source files, four retained binary/archive
-artifacts and 26 byte-exact copied records. The raw commands, logs, result JSON,
-archive manifest, signed generated feed and controller scripts are in `raw/`.
-The original private artifacts are not in the repository. Failed transcripts
-were not rewritten.
+artifacts and 26 byte-exact copied records. Those raw commands, logs, result
+JSON, archive manifest, signed generated feed and controller scripts are kept
+at the Git tag `evidence-archive-2026-10-25`. The original private artifacts are
+not in the repository.
 
 This proves local bundle loading, real feed checks/candidate selection, local
 EdDSA archive/feed validation and live empty-feed hosting. It does not prove the

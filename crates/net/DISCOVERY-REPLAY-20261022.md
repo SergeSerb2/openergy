@@ -178,7 +178,7 @@ MACOSX_DEPLOYMENT_TARGET=15.0 CARGO_BUILD_JOBS=2 nice -n 15 \
   cargo +1.99.1 clippy --locked -p openergy-net --lib \
   --example discovery_recovery --example discovery_owned_shutdown \
   --no-deps -j 2 -- -D warnings
-nice -n 15 /Users/serge/.cargo/bin/rustfmt +1.99.1 --edition 2021 --check \
+nice -n 15 ~/.cargo/bin/rustfmt +1.99.1 --edition 2021 --check \
   crates/net/src/discovery.rs crates/net/examples/discovery_recovery.rs \
   crates/net/examples/discovery_owned_shutdown.rs
 ```
