@@ -110,7 +110,7 @@ is local, ad-hoc signed, unnotarized, and unpublished.
 
 ## Remaining acceptance
 
-The [late Windows/release review limits](late-review.md) remain open. Native
+The late Windows/release review limits remain open. Native
 focus/input/clipboard, permissions, login and wake behavior, successful Windows
 service restoration, confidential reporting, trusted distribution, and
 physical Intel/x86_64 Linux artifact acceptance still need evidence. Older

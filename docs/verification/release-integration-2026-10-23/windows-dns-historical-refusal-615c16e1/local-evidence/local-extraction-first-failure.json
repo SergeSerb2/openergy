@@ -1,9 +1,0 @@
-{
-  "exit": 1,
-  "phase": "local evidence archive extraction after successful postflight and verified download",
-  "error": "TypeError: extractall() got an unexpected keyword argument 'filter'",
-  "original_script_sha256": "562af117f7c44ebaf8545522e27e1cf303dd20bc8936a33907225ed54228f325",
-  "runtime_retried": false,
-  "remote_audit_retried": false,
-  "recovery": "Explicitly validate every archive member as a relative regular file or directory, then extract with the installed Python API."
-}

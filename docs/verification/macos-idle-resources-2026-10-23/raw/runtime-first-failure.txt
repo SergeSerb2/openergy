@@ -1,6 +1,0 @@
-Traceback (most recent call last):
-  File "/Users/serge/.t3/worktrees/openergy/t3-9df59d98/docs/verification/macos-idle-resources-2026-10-23/measure.py", line 348, in measure
-    sample(phase)
-  File "/Users/serge/.t3/worktrees/openergy/t3-9df59d98/docs/verification/macos-idle-resources-2026-10-23/measure.py", line 292, in sample
-    assert info['path'] == expected, (name, info['path'], expected)
-AssertionError: ('app', '/usr/bin/nice', '/private/tmp/oe-idle-9df59d98-gw9bek1k/Openergy.app/Contents/MacOS/Openergy')

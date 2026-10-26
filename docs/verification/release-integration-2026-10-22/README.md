@@ -1,8 +1,12 @@
 # Release preparation integration — 2026-10-22
 
 This record covers the public-source preparation branch. It does not approve a
-production deployment, repository visibility change, or binary publication.
-The repository remains private and no release was published during this work.
+production deployment or binary publication. No release was published during
+this work.
+
+Some records this page names (the October 23 follow-up, work notes and review
+notes) are no longer in the tree. They are kept at the Git tag
+`evidence-archive-2026-10-25`.
 
 All daemon checks used private temporary config, TLS and control paths, the
 virtual backend, and assigned loopback ports. Docker peers used their own Xvfb
@@ -12,12 +16,8 @@ or mocks were added. Native backend probes ran only inside isolated Linux Xvfb.
 
 ## Final hardening follow-up
 
-Work [resumed on October 23](../release-integration-2026-10-23/README.md) from the
-saved checkpoint. Each earlier record below keeps its original source scope.
-
-The [pause handoff](pause-handoff.md) records the integrated source, separate IPC
-candidate, completed reviews, preserved failures and next work after the user's
-requested pause.
+Work continued on October 23. Each record below keeps its original source
+scope.
 
 The [bounded discovery integration](discovery-bounded-integration.md) passes
 14/14 startup, 19/19 retained-discovery and 4/4 owned-shutdown checks on the
@@ -138,10 +138,9 @@ service/UI recovery remain unverified because the restricted PowerShell process
 could not start in the SSH session. These source fixes do not close the native
 acceptance gates below.
 
-The [late review and archive record](late-review.md) records the Windows
-privilege split, five later correctness findings and their code responses, and
-the clean `e10e4a4` macOS archive. It also records the unavailable independent
-release-review verdict. Passing refusal checks does not close positive Windows
+A later review record (in the archive tag) covers the Windows privilege split,
+five later correctness findings and their code responses, and the clean
+`e10e4a4` macOS archive. Passing refusal checks does not close positive Windows
 migration or native acceptance.
 
 ## Integrated checks

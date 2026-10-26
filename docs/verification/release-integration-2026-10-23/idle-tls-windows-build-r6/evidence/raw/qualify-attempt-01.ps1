@@ -1,1 +1,0 @@
-$ErrorActionPreference='Stop'; (Get-Process -Id $PID).PriorityClass='BelowNormal'; & 'C:\Program Files\PowerShell\7\pwsh.exe' -NoLogo -NoProfile -NonInteractive -File '<PROFILE>\AppData\Local\Temp\oe-idle-tls-win-r6-a3f6033f-06b9a13-dc824a67\qualify.ps1'; exit $LASTEXITCODE

@@ -1,6 +1,0 @@
-{
-  "copied": "a75cea8530e2125325fa9f462c1c37c3c009cecba7a070b712058180765ade26",
-  "definition": "SHA256 bytes before signature; zero LC_CODE_SIGNATURE offset/size; subtract signature size from __LINKEDIT.filesize; all other bytes retained; no file change",
-  "first_comparison": "First audit ignored LC_CODE_SIGNATURE offset/size only and correctly failed on __LINKEDIT.filesize. Observed differing offsets2048 and2900; signature480->496 and linkedit3808->3824. Metadata-only correction; no product/signing rerun.",
-  "retained": "a75cea8530e2125325fa9f462c1c37c3c009cecba7a070b712058180765ade26"
-}
