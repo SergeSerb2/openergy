@@ -10,6 +10,9 @@ kind = "openergy"
 role = "server"
 platform = "virtual"
 tls = true
+# Start the server only after the client subscribes, so peer.untrusted cannot
+# fire before the subscription exists.
+autostart = false
 
 [[node]]
 id = "client"
@@ -22,6 +25,10 @@ tls = true
 [[step]]
 do = "subscribe"
 node = "client"
+
+[[step]]
+do = "start"
+node = "server"
 
 [[step]]
 do = "wait_status"
