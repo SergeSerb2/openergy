@@ -173,10 +173,8 @@ release check pass.
 
 ## Public launch acceptance
 
-The maintainer chose to skip GitHub private vulnerability reporting setup on
-2026-10-22 and resume hardening. Reporting setup is deferred and does not block
-this work. The [security policy](../SECURITY.md) states that no private route is
-verified and gives instructions for a non-sensitive contact request.
+GitHub private vulnerability reporting is enabled for the public repository
+(2026-10-25). The [security policy](../SECURITY.md) points reporters to it.
 
 The maintainer also chose to keep native input and clipboard acceptance as a
 release gate. Use a separate test account or machine with recovery input

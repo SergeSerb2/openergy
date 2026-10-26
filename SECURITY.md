@@ -10,16 +10,11 @@ of a different commit, OS build, peer version, or configuration.
 
 ## Report a vulnerability
 
-The maintainer chose to skip GitHub private vulnerability reporting setup on
-2026-10-22. It is not a prerequisite for the current hardening work. No private
-reporting route has been enabled or verified for this repository. This decision
-does not change repository visibility or establish another contact service.
-
-Until a private route is available, [open a repository issue](https://github.com/SergeSerb2/openergy/issues/new)
-asking the maintainer for a private reporting channel. Include only a general
-description; do not put exploit steps, keys, personal data, or a working exploit
-in that request. A repository issue is not confidential. No separate security
-email or paid bounty program is currently specified.
+Report vulnerabilities privately through GitHub:
+[Security → Report a vulnerability](https://github.com/SergeSerb2/openergy/security/advisories/new).
+Only the maintainer can read the report. Do not open a public issue, pull
+request, or discussion for a security problem. There is no separate security
+email or paid bounty program.
 
 A private report should include the commit/version, OS/backend, peer roles,
 TLS and trust settings, impact, and a minimal reproduction in an isolated lab.

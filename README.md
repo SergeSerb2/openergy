@@ -13,10 +13,10 @@ Synergy-family protocol, so it can also work with Deskflow, Barrier, and
 Synergy peers.
 
 > [!WARNING]
-> **Alpha software, version 0.1.0.** No release has been published yet.
-> Configuration and packaging can still change. Keep another way to control
-> each computer while you try it. [Readiness](docs/plan/readiness.md) lists
-> what has been verified and what has not.
+> **Alpha software, version 0.1.0.** Configuration and packaging can still
+> change. Keep another way to control each computer while you try it.
+> [Readiness](docs/plan/readiness.md) lists what has been verified and what
+> has not.
 
 ## Platform status
 
@@ -138,10 +138,9 @@ A controlled side-by-side test on 27.2 has not been run. See
 
 The macOS app checks for updates with Sparkle. The
 [update channel](https://openergy-updates.sergeserbinenko.com/index.html) is
-live but empty. The maintainer has Developer ID signing and notarization set
-up; no release has been published yet. The
-[macOS update workflow](docs/macos-updates.md) describes how update archives are
-prepared.
+live. macOS builds are signed with a Developer ID certificate and notarized
+by Apple. The [macOS update workflow](docs/macos-updates.md) describes how
+update archives are prepared.
 
 ## Development
 
