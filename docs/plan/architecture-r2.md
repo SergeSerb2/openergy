@@ -9,7 +9,10 @@ acceptance limits described in [readiness.md](readiness.md). Use
 [setup.md](setup.md) for current operational instructions and explicit paths.
 
 Openergy shares a keyboard, mouse, and clipboard across computers.
-This document is a complete, self-contained revision of `architecture-r1.md`. It resolves every
+This document revises the first design draft (r1). That draft is no longer in
+the tree; it is in Git history and at the tag `evidence-archive-2026-10-25`.
+Where a section says "unchanged from r1", the current source is the reference.
+This revision resolves every
 R2-VERIFY item with byte-level evidence and freezes the contracts that
 Step 0 implements. Wire facts cite `docs/re/03-core-protocol.md` (03),
 `docs/re/02-service.md` (02), `docs/re/01-electron-ui.md` (01),
@@ -139,7 +142,7 @@ tools/
   e2e/                      # `openergy-e2e` scenario runner (real binaries only)
   focus-lab/                # owned elsewhere; do not touch
   interop-lab/              # owned elsewhere; do not touch
-apps/macos/                 # SwiftUI app (orchestrator-owned; do not touch)
+apps/macos/                 # SwiftUI app
 docs/plan/                  # this document and ui-contract.md
 ```
 
@@ -951,7 +954,7 @@ clean checkout builds, bundles ad-hoc, and the app spawns the daemon.
 Ordering: Step 0 (done with this document) → WP1 + WP2 in parallel ★ →
 WP3 + WP4 in parallel (WP4 ★) → WP6 ★ (needs WP1–WP4 surfaces) → WP7
 alongside WP6 → WP5 in parallel from Step 0 (long pole for the manual
-matrix, off the critical path) → WP8, WP9 last. The app (orchestrator)
+matrix, off the critical path) → WP8, WP9 last. The app
 integrates against WP6's IPC from Step 0 types immediately.
 
 ## 8. Risks, deferrals, residual unknowns
@@ -981,7 +984,7 @@ Deskflow issue #9852, PRs #9978/#9991 (click numbering);
 (converter, trust files, discovery), `01-electron-ui.md` (db.json v17),
 `04-tray-security-packaging.md` (baseline, log pain points);
 `docs/focus-fix.md`; `docs/plan/ui-contract.md`;
-`docs/plan/architecture-r1.md` (superseded where noted).
+the r1 draft in Git history (superseded where noted).
 
 ## Windows daemon amendment — 2026-10-21
 

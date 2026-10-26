@@ -1,4 +1,4 @@
-# Openergy — UI ↔ daemon contract (orchestrator requirements)
+# Openergy — UI ↔ daemon contract
 
 Implementation requirements recorded on 2026-10-21. Example status objects and
 process assumptions below describe the contract, not a completed first-run or
