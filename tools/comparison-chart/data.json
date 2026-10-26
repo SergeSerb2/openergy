@@ -1,0 +1,30 @@
+{
+  "title": "Openergy vs Synergy on macOS",
+  "subtitle": "Recorded measurements on Apple silicon, macOS 27.2. Lower is better. 1 MiB = 1,024 KiB.",
+  "footnote": [
+    "Different setups, not a matched benchmark. Synergy memory: service + tray + core, GUI closed (2026-10-21).",
+    "Openergy memory: daemon only, virtual backend (2026-10-25). Sources: README, “Openergy vs Synergy”."
+  ],
+  "series": [
+    {"id": "openergy", "label": "Openergy 0.1 alpha"},
+    {"id": "synergy", "label": "Synergy 3.7 beta"}
+  ],
+  "panels": [
+    {
+      "id": "bundle-size",
+      "title": "App bundle on disk (du -sk)",
+      "values": {
+        "synergy": {"kib": 536936, "date": "2026-10-21", "source": "docs/re/04-tray-security-packaging.md"},
+        "openergy": {"kib": 9276, "date": "2026-10-25", "source": "maintainer measurement, arm64 ad-hoc build"}
+      }
+    },
+    {
+      "id": "idle-rss",
+      "title": "Idle memory (RSS)",
+      "values": {
+        "synergy": {"kib": 147792, "date": "2026-10-21", "source": "docs/re/04-tray-security-packaging.md, sum of 3 processes, highest of 3 samples"},
+        "openergy": {"kib": 8672, "date": "2026-10-25", "source": "maintainer measurement, daemon, server role, 10 samples over 60 s"}
+      }
+    }
+  ]
+}
