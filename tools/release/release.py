@@ -116,7 +116,7 @@ def notices():
     for name in LEGAL:
         if not (ROOT / name).is_file():
             raise ValueError(f"binary packaging/verification is missing {name}")
-    generator = ROOT / "docs/verification/public-release-audit-2026-10-21/generate-notices.py"
+    generator = ROOT / "tools/release/notices/generate-notices.py"
     if not generator.is_file():
         raise ValueError("integrate the release notice generator before verification or packaging")
     # The generator's offline metadata covers all targets, not just this host.

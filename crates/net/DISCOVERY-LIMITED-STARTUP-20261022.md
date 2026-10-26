@@ -125,7 +125,7 @@ MACOSX_DEPLOYMENT_TARGET=15.0 CARGO_BUILD_JOBS=2 nice -n 15 cargo +1.99.1 clippy
   --locked --offline -p openergy-net -p mdns-sd --lib --example discovery_recovery \
   --example discovery_owned_shutdown --no-deps -j 2 -- -D warnings
 nice -n 15 python3 vendor/mdns-sd/verify-source.py ORIGINAL_CRATE_ARCHIVE
-nice -n 15 python3 docs/verification/public-release-audit-2026-10-21/generate-notices.py --check
+nice -n 15 python3 tools/release/notices/generate-notices.py --check
 ```
 
 ## Limits and safety

@@ -36,7 +36,7 @@ verification run is active. Each range can contain at most 101 ports. The
 Docker lab range must be at least 24900, as required by the external runner.
 
 `verify` fetches the locked dependencies for all targets, then runs
-`docs/verification/public-release-audit-2026-10-21/generate-notices.py --check`.
+`tools/release/notices/generate-notices.py --check`.
 This fills the cache needed by the notice generator's offline Cargo metadata
 and fails if the notice inventory is stale. After a dependency/lockfile change,
 regenerate and review the notices before verification. It then runs locked

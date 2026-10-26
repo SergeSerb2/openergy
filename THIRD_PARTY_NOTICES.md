@@ -32,7 +32,7 @@ formerly Symless. See https://symless.com/synergy/legal/eula.
 Keep this file with binary distributions. Regenerate after dependency changes:
 
 ```sh
-python3 docs/verification/public-release-audit-2026-10-21/generate-notices.py
+python3 tools/release/notices/generate-notices.py
 ```
 
 ## Dependency inventory

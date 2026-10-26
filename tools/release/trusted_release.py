@@ -85,7 +85,7 @@ def resolve(args):
     for name in release.LEGAL:
         if not source_blob(source, name).strip():
             raise ValueError(f"source is missing legal notice content: {name}")
-    inventory = json.loads(source_blob(source, "docs/verification/public-release-audit-2026-10-21/dependency-licenses.json"))
+    inventory = json.loads(source_blob(source, "tools/release/notices/dependency-licenses.json"))
     if (inventory["cargo_lock_sha256"] != hashlib.sha256(source_blob(source, "Cargo.lock")).hexdigest()
             or not inventory["packages"]):
         raise ValueError("candidate notice inventory is stale for Cargo.lock")
