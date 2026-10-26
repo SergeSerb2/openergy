@@ -116,7 +116,7 @@ jobs:
       - name: Assert the archive target and frozen source
         run: |
           ${{ matrix.python }} -I -c 'import json,os,pathlib; files=list(pathlib.Path("dist/artifacts").glob("openergy-*.json")); assert len(files)==1, "expected one native sidecar"; value=json.loads(files[0].read_text()); assert value["target"]==os.environ["OE_TARGET"] and value["commit"]==os.environ["OE_SOURCE_COMMIT"], "archive target/source mismatch"'
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: native-${{ matrix.target }}
           path: candidate/dist/artifacts/*
