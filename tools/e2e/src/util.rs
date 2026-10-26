@@ -260,6 +260,16 @@ pub fn check_deadline(deadline: std::time::Instant, label: &str) -> Result<()> {
     }
     Ok(())
 }
+/// Timeout for one blocking socket call that must finish by `deadline`.
+pub fn io_budget(deadline: std::time::Instant, label: &str) -> Result<Option<std::time::Duration>> {
+    check_deadline(deadline, label)?;
+    // A zero timeout means "block forever" to the OS; keep at least 1 ms.
+    Ok(Some(
+        deadline
+            .saturating_duration_since(std::time::Instant::now())
+            .max(std::time::Duration::from_millis(1)),
+    ))
+}
 pub fn wait_io(deadline: std::time::Instant, label: &str) -> Result<()> {
     check_deadline(deadline, label)?;
     std::thread::sleep(
