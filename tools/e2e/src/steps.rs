@@ -785,7 +785,13 @@ impl Context {
             self.measurements.push(result.clone());
             let max = step.fields.get("p99_ms").and_then(Value::as_f64).unwrap_or(5.0);
             if percentile(0.99) >= max {
-                return Err(Failure::product("capture-to-recorded p99 exceeded budget"));
+                // Hosted CI keeps only the console log, so report the measured values.
+                return Err(Failure::product(format!(
+                    "capture-to-recorded p99 {:.3} ms exceeded {max} ms budget (p50 {:.3} ms, max {:.3} ms)",
+                    percentile(0.99),
+                    percentile(0.50),
+                    times[times.len() - 1]
+                )));
             }
             Ok(result)
         } else {
@@ -808,7 +814,9 @@ impl Context {
             let max_rss = step.number("rss_bytes", 30_000_000);
             let max_cpu = step.fields.get("cpu_percent").and_then(Value::as_f64).unwrap_or(0.1);
             if peak >= max_rss || cpu >= max_cpu {
-                return Err(Failure::product("RSS/CPU window exceeded budget"));
+                return Err(Failure::product(format!(
+                    "RSS/CPU window exceeded budget (RSS peak {peak} of {max_rss} bytes, CPU {cpu:.3}% of {max_cpu}%)"
+                )));
             }
             Ok(result)
         }
