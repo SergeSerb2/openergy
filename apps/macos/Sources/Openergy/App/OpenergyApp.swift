@@ -78,6 +78,7 @@ struct OpenergyApp: App {
     var body: some Scene {
         MenuBarExtra {
             MenuBarPanel(model: model, updater: updater)
+                .tracksWindowVisibility()
         } label: {
             MenuBarLabel(model: model)
         }
@@ -86,6 +87,7 @@ struct OpenergyApp: App {
         Window("Openergy", id: WindowID.main) {
             MainWindow(model: model, updater: updater)
                 .tint(Brand.accent)
+                .tracksWindowVisibility()
         }
         .defaultSize(width: 960, height: 640)
         .windowResizability(.contentMinSize)
