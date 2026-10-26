@@ -33,6 +33,11 @@ First public source release.
 - The macOS app no longer redraws animations in hidden windows. In the client
   role, the menu-bar panel's connection line kept animating while closed and
   used 21–29% CPU. Visible animations are capped at 30 frames per second.
+- A host that drops a stalled peer now delivers the final key-up, mouse-up,
+  and leave messages if that peer starts to read again within 2 seconds.
+  Before, the host waited only 250 ms and, on Linux, often did not try to
+  write again in that time, so a key could stay held down.
+- macOS release packaging works with older Xcode `lipo` tools.
 
 ### Security
 

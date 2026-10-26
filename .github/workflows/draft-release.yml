@@ -104,11 +104,14 @@ jobs:
           ${{ matrix.python }} -I -c 'import os,platform; machine={"AMD64":"x86_64","aarch64":"arm64"}.get(platform.machine(),platform.machine()); assert platform.system()==os.environ["OE_SYSTEM"] and machine==os.environ["OE_MACHINE"], "unexpected native worker architecture"'
       - name: Check exact tag, clean checkout, version, and notice policy
         run: ${{ matrix.python }} tools/release/release.py check --tag "$OE_TAG"
+      # Hosted VMs are slower than a developer machine, so deadlines and
+      # latency/CPU budgets are stretched 3x, as in verify.yml.
       - name: Verify native build and isolated virtual runtime
         run: >-
           ${{ matrix.python }} tools/release/release.py verify
           --port-range 25440-25459 --lab-port-range 25460-25479
           --report dist/verification.json
+          --e2e-slowdown 3
       - name: Build and smoke-check the native archive
         run: >-
           ${{ matrix.python }} tools/release/release.py package --tag "$OE_TAG"
