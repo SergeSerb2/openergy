@@ -1,7 +1,7 @@
 # Requirement: Each idle daemon stays below 30 MB and 0.1% CPU over 60 s; 1000 moves have localhost p99 below 5 ms.
 name = "S15-resources-latency"
 requirement = "Each idle daemon stays below 30 MB and 0.1% CPU over 60 s; 1000 moves have localhost p99 below 5 ms."
-blocked_by = ["WP6"]
+blocked_by = []
 timeout_ms = 1800
 
 [[node]]
