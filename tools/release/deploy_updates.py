@@ -155,6 +155,8 @@ def bootstrap(config):
             command = ["pnpm", "dlx", "wrangler@" + config["wrangler_version"], "r2", "object", "put",
                        config["bucket"] + "/" + name, "--remote", "--file", str(public / name),
                        "--content-type", content_type, "--cache-control", "public, max-age=60, must-revalidate"]
+            command = ["node", str(ROOT / "r2-storage-budget.mjs"), "exec",
+                       config["bucket"], name, str(public / name), "--", *command]
             result = subprocess.run(command, cwd=work, env=environment, stdin=subprocess.DEVNULL,
                                     capture_output=True, text=True, timeout=180)
             if result.returncode != 0:
