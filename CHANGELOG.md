@@ -22,6 +22,9 @@ First public source release.
 - mDNS discovery of nearby hosts (shown as information only, not as trust).
 - Import and export of Synergy configuration, and a Windows script that
   replaces a Synergy server with Openergy at logon.
+- The layout shows each display of a Mac host with more than one display, and
+  the link between two screens covers only the part of the edge that a
+  display touches.
 - Numbered synthetic clicks on macOS, to address the macOS 27 window-focus
   problem seen with other Synergy-family clients.
 - An external real-process test runner, Docker interop labs for Deskflow and

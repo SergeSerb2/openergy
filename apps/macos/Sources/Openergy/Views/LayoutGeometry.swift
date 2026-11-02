@@ -33,6 +33,41 @@ enum LayoutGeometry {
         return Array(result)
     }
 
+    /// Parts of a contact that the pointer can reach. A screen with several
+    /// displays can only be crossed where one of its displays touches the edge.
+    /// `screens` pairs each rect with its display outlines in unit coordinates
+    /// (empty when the screen has one display).
+    static func reachable(_ contact: Contact, screens: [(rect: CGRect, displays: [CGRect])]) -> [Contact] {
+        var segments = [(contact.start, contact.end)]
+        for screen in screens where !screen.displays.isEmpty {
+            let r = screen.rect
+            let spans: [(CGFloat, CGFloat)]
+            switch contact.axis {
+            case .vertical:
+                let right = abs(r.maxX - contact.position) <= edgeTolerance
+                let left = abs(r.minX - contact.position) <= edgeTolerance
+                guard left || right, r.maxY > contact.start, r.minY < contact.end else { continue }
+                spans = screen.displays
+                    .filter { right ? $0.maxX >= 0.999 : $0.minX <= 0.001 }
+                    .map { (r.minY + $0.minY * r.height, r.minY + $0.maxY * r.height) }
+            case .horizontal:
+                let bottom = abs(r.maxY - contact.position) <= edgeTolerance
+                let top = abs(r.minY - contact.position) <= edgeTolerance
+                guard top || bottom, r.maxX > contact.start, r.minX < contact.end else { continue }
+                spans = screen.displays
+                    .filter { bottom ? $0.maxY >= 0.999 : $0.minY <= 0.001 }
+                    .map { (r.minX + $0.minX * r.width, r.minX + $0.maxX * r.width) }
+            }
+            segments = segments.flatMap { segment in
+                spans.compactMap { span in
+                    let start = max(segment.0, span.0), end = min(segment.1, span.1)
+                    return end - start > edgeTolerance ? (start, end) : nil
+                }
+            }
+        }
+        return segments.map { Contact(axis: contact.axis, position: contact.position, start: $0.0, end: $0.1) }
+    }
+
     static func overlapsAny(_ rect: CGRect, _ others: [CGRect]) -> Bool {
         others.contains { other in
             let overlap = rect.intersection(other)
