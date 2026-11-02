@@ -29,7 +29,6 @@ impl Raw {
                 Ok((stream, _)) => {
                     stream.set_nonblocking(true)?;
                     stream.set_nodelay(true)?;
-                    crate::runner::bound_receive_buffer(&stream);
                     self.stream = Some(stream);
                     return Ok(());
                 }

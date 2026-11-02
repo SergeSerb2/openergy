@@ -338,6 +338,9 @@ impl Context {
                 None => TcpListener::bind((Ipv4Addr::LOCALHOST, port))
                     .map_err(|e| Failure::environment(format!("raw listener bind: {e}")))?,
             };
+            // Accepted sockets take their receive window from the listener.
+            #[cfg(unix)]
+            bound_receive_buffer(&listener);
             self.state_mut(id)?.raw = Some(Raw {
                 listener: Some(listener),
                 stream: None,
@@ -352,14 +355,13 @@ impl Context {
             let addr = self.safe_address(&self.remote(remote, false)?, true)?;
             let deadline = Instant::now() + self.scaled(self.scenario.timeout_ms);
             let stream = loop {
-                match TcpStream::connect_timeout(&addr, Duration::from_millis(100)) {
+                match connect_bounded(addr) {
                     Ok(stream) => break stream,
                     Err(_) if Instant::now() < deadline => std::thread::sleep(Duration::from_millis(20)),
                     Err(e) => return Err(Failure::product(format!("raw TCP connect failed: {e}"))),
                 }
             };
             stream.set_nodelay(true)?;
-            bound_receive_buffer(&stream);
             self.state_mut(id)?.raw = Some(Raw {
                 listener: None,
                 stream: Some(stream),
@@ -914,27 +916,75 @@ fn write_ipc(stream: &mut UnixStream, value: &Value, deadline: Instant) -> Resul
 }
 
 /// A raw probe that stops reading must apply backpressure like a peer on
-/// another computer. Over loopback, macOS otherwise autotunes the probe's
-/// receive buffer to MiBs; each tiny unread segment then holds a kernel mbuf,
-/// and hundreds of thousands of them exhaust the shared mbuf pool on a small
-/// VM, so the daemon's non-blocking send sleeps in the kernel. A fixed size
-/// also turns autotuning off.
-pub fn bound_receive_buffer(stream: &TcpStream) {
-    #[cfg(unix)]
-    {
-        use std::os::fd::AsRawFd;
-        let size: libc::c_int = 64 * 1024;
-        // Safety: a valid socket fd and a correctly sized c_int option value.
-        unsafe {
-            libc::setsockopt(
-                stream.as_raw_fd(),
-                libc::SOL_SOCKET,
-                libc::SO_RCVBUF,
-                (&size as *const libc::c_int).cast(),
-                std::mem::size_of::<libc::c_int>() as libc::socklen_t,
-            );
-        }
+/// another computer. Over loopback, macOS otherwise lets the probe's receive
+/// queue grow to MiBs (6.7 MB seen on the hosted Intel VM); each tiny unread
+/// segment holds a kernel mbuf, the shared pool runs out, and the daemon's
+/// non-blocking send sleeps in the kernel. TCP fixes the receive window at
+/// connect time, so the size must be set before connect (or on a listener
+/// before peers connect). A fixed size also turns autotuning off.
+#[cfg(unix)]
+const PROBE_RECEIVE_BUFFER: i32 = 64 * 1024;
+
+#[cfg(unix)]
+fn set_receive_buffer(fd: std::os::fd::RawFd) {
+    let size: libc::c_int = PROBE_RECEIVE_BUFFER;
+    // Safety: a valid socket fd and a correctly sized c_int option value.
+    unsafe {
+        libc::setsockopt(
+            fd,
+            libc::SOL_SOCKET,
+            libc::SO_RCVBUF,
+            (&size as *const libc::c_int).cast(),
+            std::mem::size_of::<libc::c_int>() as libc::socklen_t,
+        );
     }
-    #[cfg(not(unix))]
-    let _ = stream;
+}
+
+#[cfg(unix)]
+fn bound_receive_buffer(socket: &impl std::os::fd::AsRawFd) {
+    set_receive_buffer(socket.as_raw_fd());
+}
+
+/// Blocking loopback connect with the receive buffer sized first.
+#[cfg(unix)]
+fn connect_bounded(addr: SocketAddr) -> std::io::Result<TcpStream> {
+    use std::os::fd::FromRawFd;
+    let SocketAddr::V4(v4) = addr else {
+        return TcpStream::connect_timeout(&addr, Duration::from_millis(100));
+    };
+    // Safety: plain socket syscalls on a descriptor owned here; the sockaddr
+    // is fully initialised and its length matches; ownership moves into the
+    // TcpStream only after a successful connect.
+    unsafe {
+        let fd = libc::socket(libc::AF_INET, libc::SOCK_STREAM, 0);
+        if fd < 0 {
+            return Err(std::io::Error::last_os_error());
+        }
+        set_receive_buffer(fd);
+        let mut sin: libc::sockaddr_in = std::mem::zeroed();
+        #[cfg(any(target_os = "macos", target_os = "ios", target_os = "freebsd"))]
+        {
+            sin.sin_len = std::mem::size_of::<libc::sockaddr_in>() as u8;
+        }
+        sin.sin_family = libc::AF_INET as libc::sa_family_t;
+        sin.sin_port = v4.port().to_be();
+        sin.sin_addr = libc::in_addr {
+            s_addr: u32::from_ne_bytes(v4.ip().octets()),
+        };
+        if libc::connect(
+            fd,
+            (&sin as *const libc::sockaddr_in).cast(),
+            std::mem::size_of::<libc::sockaddr_in>() as libc::socklen_t,
+        ) != 0
+        {
+            let error = std::io::Error::last_os_error();
+            libc::close(fd);
+            return Err(error);
+        }
+        Ok(TcpStream::from_raw_fd(fd))
+    }
+}
+#[cfg(not(unix))]
+fn connect_bounded(addr: SocketAddr) -> std::io::Result<TcpStream> {
+    TcpStream::connect_timeout(&addr, Duration::from_millis(100))
 }
