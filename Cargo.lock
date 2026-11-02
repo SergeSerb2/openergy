@@ -442,6 +442,7 @@ dependencies = [
 name = "openergy-e2e"
 version = "0.1.0"
 dependencies = [
+ "libc",
  "openergy-ipc",
  "serde",
  "serde_json",

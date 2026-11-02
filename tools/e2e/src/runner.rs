@@ -338,6 +338,9 @@ impl Context {
                 None => TcpListener::bind((Ipv4Addr::LOCALHOST, port))
                     .map_err(|e| Failure::environment(format!("raw listener bind: {e}")))?,
             };
+            // Accepted sockets take their receive window from the listener.
+            #[cfg(unix)]
+            bound_receive_buffer(&listener);
             self.state_mut(id)?.raw = Some(Raw {
                 listener: Some(listener),
                 stream: None,
@@ -352,7 +355,7 @@ impl Context {
             let addr = self.safe_address(&self.remote(remote, false)?, true)?;
             let deadline = Instant::now() + self.scaled(self.scenario.timeout_ms);
             let stream = loop {
-                match TcpStream::connect_timeout(&addr, Duration::from_millis(100)) {
+                match connect_bounded(addr) {
                     Ok(stream) => break stream,
                     Err(_) if Instant::now() < deadline => std::thread::sleep(Duration::from_millis(20)),
                     Err(e) => return Err(Failure::product(format!("raw TCP connect failed: {e}"))),
@@ -910,4 +913,123 @@ fn write_ipc(stream: &mut UnixStream, value: &Value, deadline: Instant) -> Resul
         }
         Ok(())
     })
+}
+
+/// A raw probe that stops reading must apply backpressure like a peer on
+/// another computer. Over loopback, macOS otherwise lets the probe's receive
+/// queue grow to MiBs (6.7 MB seen on the hosted Intel VM); each tiny unread
+/// segment holds a kernel mbuf, the shared pool runs out, and the daemon's
+/// non-blocking send sleeps in the kernel. TCP fixes the receive window at
+/// connect time, so the size must be set before connect (or on a listener
+/// before peers connect). A fixed size also turns autotuning off.
+#[cfg(unix)]
+const PROBE_RECEIVE_BUFFER: i32 = 64 * 1024;
+
+#[cfg(unix)]
+fn set_receive_buffer(fd: std::os::fd::RawFd) {
+    let size: libc::c_int = PROBE_RECEIVE_BUFFER;
+    // Safety: a valid socket fd and a correctly sized c_int option value.
+    unsafe {
+        libc::setsockopt(
+            fd,
+            libc::SOL_SOCKET,
+            libc::SO_RCVBUF,
+            (&size as *const libc::c_int).cast(),
+            std::mem::size_of::<libc::c_int>() as libc::socklen_t,
+        );
+    }
+}
+
+#[cfg(unix)]
+fn bound_receive_buffer(socket: &impl std::os::fd::AsRawFd) {
+    set_receive_buffer(socket.as_raw_fd());
+}
+
+/// How long one raw probe connect attempt may wait; the caller retries
+/// until the scenario deadline.
+const PROBE_CONNECT_TIMEOUT: Duration = Duration::from_millis(100);
+
+/// Loopback connect with the receive buffer sized first. The socket is
+/// close-on-exec (the runner spawns daemons) and the connect is bounded by
+/// `PROBE_CONNECT_TIMEOUT`, like `TcpStream::connect_timeout`.
+#[cfg(unix)]
+fn connect_bounded(addr: SocketAddr) -> std::io::Result<TcpStream> {
+    use std::os::fd::{AsRawFd, FromRawFd, OwnedFd};
+    let SocketAddr::V4(v4) = addr else {
+        return TcpStream::connect_timeout(&addr, PROBE_CONNECT_TIMEOUT);
+    };
+    let check = |result: libc::c_int| {
+        if result < 0 {
+            Err(std::io::Error::last_os_error())
+        } else {
+            Ok(result)
+        }
+    };
+    #[cfg(any(target_os = "linux", target_os = "android"))]
+    let kind = libc::SOCK_STREAM | libc::SOCK_CLOEXEC;
+    #[cfg(not(any(target_os = "linux", target_os = "android")))]
+    let kind = libc::SOCK_STREAM;
+    // Safety: plain socket syscalls on a descriptor owned by `socket`, which
+    // closes it on every early return; the sockaddr is fully initialised and
+    // its length matches; the pollfd outlives the poll call.
+    unsafe {
+        let socket = OwnedFd::from_raw_fd(check(libc::socket(libc::AF_INET, kind, 0))?);
+        let fd = socket.as_raw_fd();
+        #[cfg(not(any(target_os = "linux", target_os = "android")))]
+        check(libc::fcntl(fd, libc::F_SETFD, libc::FD_CLOEXEC))?;
+        set_receive_buffer(fd);
+        let flags = check(libc::fcntl(fd, libc::F_GETFL))?;
+        check(libc::fcntl(fd, libc::F_SETFL, flags | libc::O_NONBLOCK))?;
+        let mut sin: libc::sockaddr_in = std::mem::zeroed();
+        #[cfg(any(target_os = "macos", target_os = "ios", target_os = "freebsd"))]
+        {
+            sin.sin_len = std::mem::size_of::<libc::sockaddr_in>() as u8;
+        }
+        sin.sin_family = libc::AF_INET as libc::sa_family_t;
+        sin.sin_port = v4.port().to_be();
+        sin.sin_addr = libc::in_addr {
+            s_addr: u32::from_ne_bytes(v4.ip().octets()),
+        };
+        let started = libc::connect(
+            fd,
+            (&sin as *const libc::sockaddr_in).cast(),
+            std::mem::size_of::<libc::sockaddr_in>() as libc::socklen_t,
+        );
+        if started != 0 {
+            let error = std::io::Error::last_os_error();
+            if error.raw_os_error() != Some(libc::EINPROGRESS) {
+                return Err(error);
+            }
+            let mut ready = libc::pollfd {
+                fd,
+                events: libc::POLLOUT,
+                revents: 0,
+            };
+            let millis = PROBE_CONNECT_TIMEOUT.as_millis() as libc::c_int;
+            if check(libc::poll(&mut ready, 1, millis))? == 0 {
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::TimedOut,
+                    "raw probe connect timed out",
+                ));
+            }
+            let mut pending: libc::c_int = 0;
+            let mut length = std::mem::size_of::<libc::c_int>() as libc::socklen_t;
+            check(libc::getsockopt(
+                fd,
+                libc::SOL_SOCKET,
+                libc::SO_ERROR,
+                (&mut pending as *mut libc::c_int).cast(),
+                &mut length,
+            ))?;
+            if pending != 0 {
+                return Err(std::io::Error::from_raw_os_error(pending));
+            }
+        }
+        check(libc::fcntl(fd, libc::F_SETFL, flags))?;
+        Ok(TcpStream::from(socket))
+    }
+}
+#[cfg(not(unix))]
+fn connect_bounded(addr: SocketAddr) -> std::io::Result<TcpStream> {
+    TcpStream::connect_timeout(&addr, PROBE_CONNECT_TIMEOUT)
 }
