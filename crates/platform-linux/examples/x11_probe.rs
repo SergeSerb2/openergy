@@ -697,6 +697,10 @@ mod probe {
             if matches!(ev, InputEvent::KeyDown { .. } | InputEvent::KeyUp { .. }) {
                 events.fetch_add(1, Ordering::Relaxed);
             }
+            // "d" went down before the grab: its release passes once.
+            if flag.load(Ordering::Acquire) && matches!(ev, InputEvent::KeyUp { key: 0x64, .. }) {
+                return CaptureDecision::PassOnce;
+            }
             if flag.load(Ordering::Acquire) {
                 CaptureDecision::Swallow
             } else {
@@ -709,15 +713,29 @@ mod probe {
         if before == 0 || count.load(Ordering::Relaxed) == 0 {
             return Err("Pass-through did not reach both xev and capture".into());
         }
+        command("xdotool", &["keydown", "d"])?;
+        pause();
+        let before = fs::read_to_string(&path)?.matches("KeyPress event").count();
         let captured_before = count.load(Ordering::Relaxed);
         swallow.store(true, Ordering::Release);
         b.source.set_cursor_captured(true)?;
         command("xdotool", &["key", "b"])?;
         command("xdotool", &["mousemove_relative", "--", "20", "10"])?;
+        // The release of a key pressed before the grab reaches the focused
+        // window (PassOnce), and the grab stays active.
+        command("xdotool", &["keyup", "d"])?;
+        command("xdotool", &["key", "e"])?;
         pause();
-        let during = fs::read_to_string(&path)?.matches("KeyPress event").count();
+        let log = fs::read_to_string(&path)?;
+        let during = log.matches("KeyPress event").count();
         if during != before || count.load(Ordering::Relaxed) <= captured_before {
             return Err("Active grab did not swallow locally while capturing".into());
+        }
+        let released = log
+            .split("\n\n")
+            .any(|block| block.starts_with("KeyRelease event") && block.contains("keysym 0x64, d"));
+        if !released {
+            return Err("PassOnce release did not reach the focused window".into());
         }
         swallow.store(false, Ordering::Release);
         // Let the callback return PassToOs while the grab is still active.
@@ -737,7 +755,7 @@ mod probe {
         if relative.load(Ordering::Relaxed) == 0 {
             return Err("Raw relative motion was not captured".into());
         }
-        println!("capture: XI2 observation, active keyboard/pointer grabs, CaptureDecision transitions passed");
+        println!("capture: XI2 observation, active keyboard/pointer grabs, CaptureDecision transitions and PassOnce release passed");
         Ok(())
     }
     fn recovery() -> Result<()> {
