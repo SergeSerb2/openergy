@@ -28,7 +28,12 @@ pub const PROBE_ARG: &str = "permissions-probe";
 /// Entry point of the probe child: prints three 0/1 digits.
 pub fn probe_main() -> i32 {
     let p = preflight_local();
-    println!("{}{}{}", u8::from(p.accessibility), u8::from(p.listen), u8::from(p.post));
+    println!(
+        "{}{}{}",
+        u8::from(p.accessibility),
+        u8::from(p.listen),
+        u8::from(p.post)
+    );
     0
 }
 
