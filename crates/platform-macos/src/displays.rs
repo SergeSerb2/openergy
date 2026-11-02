@@ -27,19 +27,32 @@ pub struct Displays {
 }
 
 pub fn active() -> Result<Displays> {
+    let displays = list(ffi::CGGetActiveDisplayList)?;
+    if displays.active.is_empty() {
+        // Sleeping displays leave the active list but stay online, with their
+        // bounds. A daemon that starts during display sleep still gets the
+        // real layout.
+        return list(ffi::CGGetOnlineDisplayList);
+    }
+    Ok(displays)
+}
+
+type DisplayList = unsafe extern "C" fn(u32, *mut u32, *mut u32) -> i32;
+
+fn list(query: DisplayList) -> Result<Displays> {
     // Safety: display IDs and owned modes remain live; list output buffers match declared capacities.
     unsafe {
         // Retry a bounded number of times if a hot-plug grows the list.
         for _ in 0..3 {
             let mut count = 0;
-            check(ffi::CGGetActiveDisplayList(0, std::ptr::null_mut(), &mut count))?;
+            check(query(0, std::ptr::null_mut(), &mut count))?;
             // The API reports only the number actually written, never a count
             // above the supplied capacity. One spare slot detects hot-plug
             // growth, including a display appearing after an empty first query.
             let capacity = count.checked_add(1).ok_or_else(|| error("display count overflow"))?;
             let mut ids = vec![0; capacity as usize];
             let mut actual = 0;
-            check(ffi::CGGetActiveDisplayList(capacity, ids.as_mut_ptr(), &mut actual))?;
+            check(query(capacity, ids.as_mut_ptr(), &mut actual))?;
             if actual > count {
                 continue;
             }
