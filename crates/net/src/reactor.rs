@@ -25,7 +25,14 @@ use std::{
 
 pub const BULK_SLICE: usize = 32 * 1024;
 const MAX_CONNECTIONS: usize = 16;
-const HIGH_WATER: usize = 4 * 1024 * 1024;
+// Input and control frames are about 20 bytes. 512 KiB is tens of thousands
+// of events, seconds of backlog: more would replay stale motion after a
+// stalled peer resumes, and would hide the stall from the sender.
+const HIGH_WATER: usize = 512 * 1024;
+// Kernel send buffer for peers. Enough for full LAN speed on clipboard
+// transfers; small enough that backpressure reaches the queue above quickly.
+// Without a cap, macOS and Linux can grow it to several MiB.
+const SOCKET_SEND_BUFFER: i32 = 256 * 1024;
 const MAILBOX_BYTES: usize = 8 * 1024 * 1024;
 const BULK_WINDOW: usize = 256 * 1024;
 const WAKE: Token = Token(0);
@@ -1113,7 +1120,7 @@ impl NetDriver {
                 c.queues.push(packet);
                 if c.queues.high_bytes > HIGH_WATER && c.slow.is_none() {
                     log::warn!(
-                        "connection {} exceeded 4 MiB input/control queue budget; closing SlowPeer after heartbeat",
+                        "connection {} exceeded 512 KiB input/control queue budget; closing SlowPeer after heartbeat",
                         id.0
                     );
                     c.slow = Some(Instant::now() + self.heartbeat);
@@ -1353,6 +1360,7 @@ impl NetDriver {
         // EINVAL before SO_ERROR is read. Wait for completion for outbound TCP.
         if !outbound {
             stream.set_nodelay(true).map_err(failed)?;
+            limit_send_buffer(&stream);
         }
         let id = ConnId(self.next_id);
         self.next_id = self
@@ -1827,6 +1835,7 @@ impl NetDriver {
                                 "phase=tcp_ready conn={} addr={} tls={} deadline={:?}",
                                 c.id.0, c.peer, c.tls.is_some(), c.deadline);
                             let _ = c.stream.set_nodelay(true);
+                            limit_send_buffer(&c.stream);
                             if c.tls.is_some() {
                                 c.client_hello_at = Some(Instant::now() + c.client_hello_delay);
                             }
@@ -1898,4 +1907,28 @@ impl Drop for NetDriver {
             pending.cancelled.store(true, Ordering::Release);
         }
     }
+}
+
+/// Best effort: a peer that cannot take the option keeps the OS default.
+#[cfg(unix)]
+fn limit_send_buffer(stream: &mio::net::TcpStream) {
+    use std::os::fd::AsRawFd;
+    let size: libc::c_int = SOCKET_SEND_BUFFER;
+    // Safety: a valid socket fd and a correctly sized c_int option value.
+    let status = unsafe {
+        libc::setsockopt(
+            stream.as_raw_fd(),
+            libc::SOL_SOCKET,
+            libc::SO_SNDBUF,
+            (&size as *const libc::c_int).cast(),
+            std::mem::size_of::<libc::c_int>() as libc::socklen_t,
+        )
+    };
+    if status != 0 {
+        log::debug!("SO_SNDBUF: {}", std::io::Error::last_os_error());
+    }
+}
+#[cfg(not(unix))]
+fn limit_send_buffer(_stream: &mio::net::TcpStream) {
+    let _ = SOCKET_SEND_BUFFER;
 }
