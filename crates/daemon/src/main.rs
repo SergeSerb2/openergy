@@ -64,6 +64,8 @@ fn run(args: &[String]) -> Result<i32, String> {
             Ok(0)
         }
         "daemon" | "server" | "client" => cmd_daemon(cmd, &args[1..]),
+        #[cfg(target_os = "macos")]
+        openergy_platform_macos::permissions::PROBE_ARG => Ok(openergy_platform_macos::permissions::probe_main()),
         "ctl" => cmd_ctl(&args[1..]),
         "status" => ctl_call(&args[1..], methods::STATUS_GET, serde_json::json!({}), false),
         "connect" => cmd_connect(&args[1..]),

@@ -53,6 +53,9 @@ First public source release.
 - A key held on the host while the cursor crosses to another screen no longer
   repeats there, and its release now reaches the host OS. Before, the host OS
   could keep the key held (for example, a stuck Shift after coming back).
+- On macOS, the daemon notices a permission grant without a restart. macOS
+  can keep a denial cached inside a running process, so while a permission is
+  denied the daemon asks a short-lived copy of itself, at most once a second.
 - A client reconnects within about 5 seconds after its host comes back, for
   example after a reboot. Before, retries backed off to 30 seconds, and each
   attempt could wait 10 seconds for an answer. The connect deadline is now 5
