@@ -136,6 +136,52 @@ impl Options {
             }
         }
     }
+    /// Target modifier (1 Shift .. 6 AltGr) for a source modifier, from the
+    /// screen's modifier map. Identity when unmapped; None when mapped to
+    /// "none", which disables that modifier.
+    fn modifier_target(&self, source: u8) -> Option<u8> {
+        let id = match source {
+            1 => o::MOD_SHIFT,
+            2 => o::MOD_CTRL,
+            3 => o::MOD_ALT,
+            4 => o::MOD_META,
+            5 => o::MOD_SUPER,
+            _ => o::MOD_ALTGR,
+        };
+        match self.raw.get(&id) {
+            None => Some(source),
+            Some(t) if (1..=6).contains(t) => Some(*t as u8),
+            Some(_) => None,
+        }
+    }
+    /// Modifier keys follow the same map as the modifier mask, as in the
+    /// reference client: with "ctrl = super", Control_L arrives as Super_L.
+    /// The left or right side is kept; AltGr has one side. None drops a
+    /// modifier key that maps to "none".
+    pub fn mapped_key(&self, key: u16) -> Option<u16> {
+        let (source, side) = match key {
+            0xefe1 => (1, 0),
+            0xefe2 => (1, 1),
+            0xefe3 => (2, 0),
+            0xefe4 => (2, 1),
+            0xefe9 => (3, 0),
+            0xefea => (3, 1),
+            0xefe7 => (4, 0),
+            0xefe8 => (4, 1),
+            0xefeb => (5, 0),
+            0xefec => (5, 1),
+            0xef7e => (6, 0),
+            _ => return Some(key),
+        };
+        Some(match (self.modifier_target(source)?, side) {
+            (1, s) => 0xefe1 + s,
+            (2, s) => 0xefe3 + s,
+            (3, s) => 0xefe9 + s,
+            (4, s) => 0xefe7 + s,
+            (5, s) => 0xefeb + s,
+            _ => 0xef7e,
+        })
+    }
     pub fn mapped_mask(&self, mask: u16) -> u16 {
         let mut result = mask & !0x3f;
         for (bit, id) in [
@@ -420,7 +466,7 @@ pub(crate) fn input_message(msg: Message, opts: &Options) -> Option<InputEvent> 
         Message::KeyDown {
             key, modifiers, button, ..
         } => InputEvent::KeyDown {
-            key,
+            key: opts.mapped_key(key)?,
             modifiers: Modifiers(opts.mapped_mask(modifiers)),
             button,
         },
@@ -431,13 +477,13 @@ pub(crate) fn input_message(msg: Message, opts: &Options) -> Option<InputEvent> 
             button,
             ..
         } => InputEvent::KeyRepeat {
-            key,
+            key: opts.mapped_key(key)?,
             modifiers: Modifiers(opts.mapped_mask(modifiers)),
             count: count.min(i16::MAX as u16) as i16,
             button,
         },
         Message::KeyUp { key, modifiers, button } => InputEvent::KeyUp {
-            key,
+            key: opts.mapped_key(key)?,
             modifiers: Modifiers(opts.mapped_mask(modifiers)),
             button,
         },

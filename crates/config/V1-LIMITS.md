@@ -5,8 +5,8 @@ implemented. Clients ignore peer language strings. The server sends ordinary
 DKDN key downs and retains the required Synergy 1.8 LSYN setup message.
 
 Half-duplex lock options are parsed but do not change v1 key behavior. Modifier
-remaps apply to modifier masks; remapping the key IDs themselves is not applied
-in v1.
+remaps apply to modifier masks and to the modifier keys themselves, as in the
+reference client; a modifier mapped to `none` is dropped.
 
 `openergy connect HOST` rewrites and saves `client.remote` and the client role by
 design. `connection.connect` with a host follows the same rule.
