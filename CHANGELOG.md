@@ -3,7 +3,7 @@
 All notable changes to Openergy are listed here. A version heading marked
 "unreleased" has no published release artifacts.
 
-## 0.1.0-alpha — unreleased
+## 0.1.0-alpha — 2026-11-02
 
 First public source release.
 
