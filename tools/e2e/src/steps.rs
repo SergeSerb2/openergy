@@ -56,15 +56,28 @@ impl Context {
                 let repeats = step.number("repeat", 1000).min(1000);
                 let events = vec![step.value("event"); batch_size];
                 let deadline = Instant::now() + timeout;
+                // Each call is a runner bound, not a product timer, so it
+                // stretches with --slowdown like every other deadline.
+                let call = self.scaled(1000);
+                let mut slowest = Duration::ZERO;
                 for batch in 0..repeats {
-                    self.ipc(&id, "virtual.inject", json!({"events":events}), Duration::from_secs(1))?;
+                    let started = Instant::now();
+                    self.ipc(&id, "virtual.inject", json!({"events":events}), call)?;
                     std::thread::sleep(Duration::from_millis(1));
-                    let status = self.ipc(&id, "status.get", json!({}), Duration::from_secs(1))?;
+                    let status = self.ipc(&id, "status.get", json!({}), call)?;
+                    slowest = slowest.max(started.elapsed());
                     if status["last_error"]["code"] == "network_queue_full" {
-                        return Ok(json!({"queue_full_after_batches": batch + 1}));
+                        return Ok(json!({
+                            "queue_full_after_batches": batch + 1,
+                            "slowest_batch_ms": slowest.as_millis() as u64,
+                        }));
                     }
                     if Instant::now() >= deadline {
-                        break;
+                        return Err(Failure::product(format!(
+                            "input burst did not reach queue limit after {} batches (slowest {} ms)",
+                            batch + 1,
+                            slowest.as_millis()
+                        )));
                     }
                 }
                 Err(Failure::product("input burst did not reach queue limit"))

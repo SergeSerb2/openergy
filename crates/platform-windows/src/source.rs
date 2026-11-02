@@ -12,6 +12,7 @@ use std::{
 };
 use windows_sys::Win32::{
     Foundation::*,
+    Graphics::Gdi,
     System::{LibraryLoader::GetModuleHandleW, Threading::GetCurrentThreadId},
     UI::{
         Input::{self, KeyboardAndMouse::*},
@@ -38,6 +39,9 @@ struct Capture {
     key_state: [u8; 256],
     hidden: i32,
     saved_clip: Option<RECT>,
+    clipped: bool,
+    clip_failures: u64,
+    grab_failures: u64,
     saved_pos: POINT,
 }
 impl Capture {
@@ -48,22 +52,46 @@ impl Capture {
         // Safety: stack POINT/RECT values are valid; all cursor changes occur on the hook thread.
         unsafe {
             if captured {
-                let mut old = RECT::default();
-                if GetClipCursor(&mut old) == 0 || GetCursorPos(&mut self.saved_pos) == 0 {
+                if GetCursorPos(&mut self.saved_pos) == 0 {
                     return Err(error("Read cursor state"));
                 }
-                let x = GetSystemMetrics(SM_XVIRTUALSCREEN) + GetSystemMetrics(SM_CXVIRTUALSCREEN) / 2;
-                let y = GetSystemMetrics(SM_YVIRTUALSCREEN) + GetSystemMetrics(SM_CYVIRTUALSCREEN) / 2;
+                // Park on the center of the display under the cursor. The
+                // virtual-screen center can fall in a gap between displays.
+                let monitor = Gdi::MonitorFromPoint(self.saved_pos, Gdi::MONITOR_DEFAULTTONEAREST);
+                let mut info = Gdi::MONITORINFO {
+                    cbSize: std::mem::size_of::<Gdi::MONITORINFO>() as u32,
+                    ..Default::default()
+                };
+                let (x, y) = if !monitor.is_null() && Gdi::GetMonitorInfoW(monitor, &mut info) != 0 {
+                    let m = info.rcMonitor;
+                    (m.left + (m.right - m.left) / 2, m.top + (m.bottom - m.top) / 2)
+                } else {
+                    (self.saved_pos.x, self.saved_pos.y)
+                };
+                let mut old = RECT::default();
+                let had_clip = GetClipCursor(&mut old) != 0;
                 let clip = RECT {
                     left: x,
                     top: y,
                     right: x + 1,
                     bottom: y + 1,
                 };
-                if ClipCursor(&clip) == 0 {
-                    return Err(error("ClipCursor"));
+                // The hook swallows local moves while captured, so the clip
+                // is only a second guard. Windows refuses it on a secure
+                // desktop or for some foreground apps; capture continues.
+                if ClipCursor(&clip) != 0 {
+                    self.saved_clip = had_clip.then_some(old);
+                    self.clipped = true;
+                } else {
+                    self.clip_failures += 1;
+                    if self.clip_failures.is_power_of_two() {
+                        log::warn!(
+                            "ClipCursor refused ({} times): {}; capture continues without it",
+                            self.clip_failures,
+                            std::io::Error::last_os_error()
+                        );
+                    }
                 }
-                self.saved_clip = Some(old);
                 loop {
                     let n = ShowCursor(0);
                     self.hidden += 1;
@@ -73,8 +101,9 @@ impl Capture {
                 }
             } else {
                 // Release always completes: a failed restore must not leave local input captured.
-                if let Some(clip) = self.saved_clip.take() {
-                    if ClipCursor(&clip) == 0 && ClipCursor(null()) == 0 {
+                if std::mem::take(&mut self.clipped) {
+                    let restored = self.saved_clip.take().is_some_and(|clip| ClipCursor(&clip) != 0);
+                    if !restored && ClipCursor(null()) == 0 {
                         log::warn!("Release cursor clip: {}", std::io::Error::last_os_error());
                     }
                 }
@@ -92,7 +121,11 @@ impl Capture {
         let swallow = (self.callback)(ev) == CaptureDecision::Swallow;
         if self.captured != swallow {
             if let Err(e) = self.grab(swallow) {
-                log::error!("Windows capture transition failed: {e}");
+                // A secure desktop can refuse every attempt; log sparsely.
+                self.grab_failures += 1;
+                if self.grab_failures.is_power_of_two() {
+                    log::error!("Windows capture transition failed ({} times): {e}", self.grab_failures);
+                }
             }
         }
         swallow
@@ -339,6 +372,9 @@ impl InputSource for Source {
                         key_state: keymap::initial_state(),
                         hidden: 0,
                         saved_clip: None,
+                        clipped: false,
+                        clip_failures: 0,
+                        grab_failures: 0,
                         saved_pos: POINT::default(),
                     })
                 });

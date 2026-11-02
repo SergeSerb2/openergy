@@ -35,38 +35,87 @@ pub enum CloseReason {
 
 #[derive(Debug)]
 pub enum ServerEvent {
-    ClientConnected { conn: ConnId },
-    ClientMessage { conn: ConnId, msg: Message },
-    ClientDisconnected { conn: ConnId, reason: DisconnectReason },
+    ClientConnected {
+        conn: ConnId,
+    },
+    ClientMessage {
+        conn: ConnId,
+        msg: Message,
+    },
+    ClientDisconnected {
+        conn: ConnId,
+        reason: DisconnectReason,
+    },
     LocalInput(InputEvent),
-    LocalClipboardChanged { id: ClipboardId },
-    ClipboardPayload { id: ClipboardId, data: ClipboardData },
+    LocalClipboardChanged {
+        id: ClipboardId,
+    },
+    ClipboardPayload {
+        id: ClipboardId,
+        data: ClipboardData,
+    },
     // A requested local read failed, was blocked, or could not be queued.
-    ClipboardReadFailed { id: ClipboardId },
-    TimerTick { now_ms: u64 },
+    ClipboardReadFailed {
+        id: ClipboardId,
+    },
+    TimerTick {
+        now_ms: u64,
+    },
     ConfigChanged(Arc<Config>),
     DisplayChanged,
-    LocalScreen { rect: layout::Rect, cursor: (i32, i32) },
-    ConnectionMetadata { conn: ConnId, fingerprint: Option<String> },
+    LocalScreen {
+        rect: layout::Rect,
+        cursor: (i32, i32),
+        displays: Vec<layout::Rect>,
+    },
+    ConnectionMetadata {
+        conn: ConnId,
+        fingerprint: Option<String>,
+    },
     PermissionLost,
     CaptureOverflow,
-    LocalSecureInput { app: Option<String> },
-    LocalScreenSaver { on: bool },
+    LocalSecureInput {
+        app: Option<String>,
+    },
+    LocalScreenSaver {
+        on: bool,
+    },
     Shutdown,
 }
 #[derive(Debug)]
 pub enum ClientEvent {
-    ServerConnected { conn: ConnId },
-    ServerMessage { conn: ConnId, msg: Message },
-    ServerDisconnected { conn: ConnId, reason: DisconnectReason },
-    LocalClipboardChanged { id: ClipboardId },
-    ClipboardPayload { id: ClipboardId, data: ClipboardData },
+    ServerConnected {
+        conn: ConnId,
+    },
+    ServerMessage {
+        conn: ConnId,
+        msg: Message,
+    },
+    ServerDisconnected {
+        conn: ConnId,
+        reason: DisconnectReason,
+    },
+    LocalClipboardChanged {
+        id: ClipboardId,
+    },
+    ClipboardPayload {
+        id: ClipboardId,
+        data: ClipboardData,
+    },
     // A requested local read failed, was blocked, or could not be queued.
-    ClipboardReadFailed { id: ClipboardId },
-    TimerTick { now_ms: u64 },
+    ClipboardReadFailed {
+        id: ClipboardId,
+    },
+    TimerTick {
+        now_ms: u64,
+    },
     ConfigChanged(Arc<Config>),
     DisplayChanged,
-    LocalScreen { rect: layout::Rect, cursor: (i32, i32) },
+    LocalScreen {
+        rect: layout::Rect,
+        cursor: (i32, i32),
+        displays: Vec<layout::Rect>,
+    },
     PermissionLost,
     ReconnectTimer,
     Shutdown,

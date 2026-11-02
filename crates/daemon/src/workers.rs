@@ -52,10 +52,11 @@ pub fn capture(mut source: Box<dyn InputSource>, waker: Arc<mio::Waker>) -> Capt
                         let over = over.clone();
                         let retry_waker = waker.clone();
                         match source.start(Box::new(move |event| {
-                            let Ok(mut slot) = moves.try_lock() else {
-                                over.store(true, Ordering::Relaxed);
-                                return CaptureDecision::PassToOs;
-                            };
+                            // The runtime holds this lock only to take one
+                            // pending move. Waiting is brief. Failing here would
+                            // pass a captured event to the local OS and end the
+                            // remote session for a lock collision.
+                            let mut slot = moves.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
                             let is_move =
                                 matches!(event, InputEvent::MouseMoveAbs { .. } | InputEvent::MouseMoveRel { .. });
                             if is_move {

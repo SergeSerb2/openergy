@@ -38,6 +38,18 @@ First public source release.
   Before, the host waited only 250 ms and, on Linux, often did not try to
   write again in that time, so a key could stay held down.
 - macOS release packaging works with older Xcode `lipo` tools.
+- A host with several displays no longer sends the cursor to the wrong
+  display. Before, a lost client, a display change, or a brief lock collision
+  in the capture hook put the cursor at the center of the whole desktop, which
+  can be on another display. Now the cursor goes back to where it left, and a
+  display change does not end the remote session.
+- Screen edges map over the displays that touch them. On a host whose displays
+  have different heights or offsets, the top of the next screen now lines up
+  with the top of the edge display, and the cursor never enters empty space
+  between displays.
+- On Windows, capture continues when the system refuses to confine the cursor
+  (for example, on a secure desktop). Before, the remote screen could receive
+  host desktop coordinates, and the log filled with errors.
 
 ### Security
 
