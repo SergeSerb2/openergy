@@ -31,6 +31,11 @@ pub struct Server {
     primary: usize,
     active: usize,
     cursor: (i32, i32),
+    // Local position where the cursor last left this screen. A forced return
+    // (peer lost, capture overflow) puts the cursor back here, not at the
+    // center of the bounding box, which may be on another display.
+    exit: Option<(i32, i32)>,
+    local_displays: Vec<Rect>,
     last_motion: (i32, i32),
     now: u64,
     sequence: u32,
@@ -59,6 +64,8 @@ impl Server {
             primary,
             active: primary,
             cursor,
+            exit: None,
+            local_displays: Vec::new(),
             last_motion: (0, 0),
             now: 0,
             sequence: 0,
@@ -121,7 +128,8 @@ impl Server {
             .map(|(&c, _)| c)
     }
     fn leave(&mut self, out: &mut Vec<Action>) {
-        if self.active != self.primary {
+        let was_remote = self.active != self.primary;
+        if was_remote {
             if let Some(conn) = self.connection(self.active) {
                 if let Some(p) = self.peers.get_mut(&conn) {
                     p.ledger.release_remote(conn, out);
@@ -137,13 +145,21 @@ impl Server {
         self.local.clear();
         self.hotkey_held.clear();
         self.layout.reset();
-        self.cursor = self.layout.rect(self.primary).center();
         out.push(Action::ReleaseAllLocal);
         out.push(Action::HideLocalCursor(false));
-        out.push(Action::WarpLocalCursor {
-            x: self.cursor.0,
-            y: self.cursor.1,
-        });
+        if was_remote {
+            // Return to the point where the cursor left. The local OS owns the
+            // cursor while it is local, so a local leave does not move it.
+            let (x, y) = self
+                .exit
+                .take()
+                .unwrap_or_else(|| self.layout.rect(self.primary).center());
+            self.cursor = self.layout.snap_to_display(self.primary, x, y);
+            out.push(Action::WarpLocalCursor {
+                x: self.cursor.0,
+                y: self.cursor.1,
+            });
+        }
     }
     fn remove(&mut self, conn: ConnId, out: &mut Vec<Action>) {
         if self.connection(self.active) == Some(conn) {
@@ -198,16 +214,24 @@ impl Server {
             ServerEvent::ClientMessage { conn, msg } => self.message(conn, msg, out),
             ServerEvent::ClientDisconnected { conn, .. } => self.remove(conn, out),
             ServerEvent::LocalInput(ev) => self.input(ev, out),
-            ServerEvent::LocalScreen { rect, cursor } => {
+            ServerEvent::LocalScreen { rect, cursor, displays } => {
                 if self.layout.rect(self.primary) != rect {
                     self.layout.set_rect(self.primary, rect);
                 }
+                self.layout.set_displays(self.primary, &displays);
+                self.local_displays = displays;
                 if self.active == self.primary {
                     self.cursor = rect.clamp(cursor.0, cursor.1);
                 }
             }
+            // A local display change does not end a remote session: the
+            // local cursor is hidden and the new geometry applies on return.
             ServerEvent::DisplayChanged => {
-                self.leave(out);
+                if self.active == self.primary {
+                    self.layout.reset();
+                } else if let Some(exit) = self.exit {
+                    self.exit = Some(self.layout.snap_to_display(self.primary, exit.0, exit.1));
+                }
             }
             ServerEvent::LocalClipboardChanged { id } => {
                 if id.0 < 2 && self.config.clipboard.enabled && self.config.clipboard.send {
@@ -275,6 +299,7 @@ impl Server {
                     .unwrap_or(0);
                 self.active = self.primary;
                 self.layout = Layout::from_config(&self.config).unwrap_or_else(|_| Layout::empty());
+                self.layout.set_displays(self.primary, &self.local_displays);
                 self.opts = Options::default();
                 self.opts.apply(&config_options(&self.config, true));
                 self.hotkey = self.config.hotkeys.lock_to_screen.as_deref().and_then(Hotkey::parse);
@@ -599,6 +624,14 @@ impl Server {
             _ => {
                 if let Some(c) = self.connection(self.active) {
                     if let Some(p) = self.peers.get_mut(&c) {
+                        // A key held here before the switch auto-repeats, but
+                        // the remote never saw it go down. Its up still goes,
+                        // so the remote can drop modifiers from the enter mask.
+                        if let InputEvent::KeyRepeat { key, button, .. } = ev {
+                            if !p.ledger.has_key(key, button) {
+                                return;
+                            }
+                        }
                         p.ledger.observe(&ev);
                         send(c, wire_input(&ev, p.version.minor, &self.config), out);
                     }
@@ -621,6 +654,11 @@ impl Server {
                         send(c, Message::Leave, out);
                     } else {
                         out.push(Action::ReleaseAllLocal);
+                    }
+                    if self.active == self.primary {
+                        self.exit = Some(self.layout.rect(self.primary).clamp(x, y));
+                    } else if target == self.primary {
+                        self.exit = None;
                     }
                     self.active = target;
                     self.cursor = (tx, ty);

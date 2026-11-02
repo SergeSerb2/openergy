@@ -3,7 +3,7 @@
 All notable changes to Openergy are listed here. A version heading marked
 "unreleased" has no published release artifacts.
 
-## 0.1.0-alpha — unreleased
+## 0.1.0-alpha — 2026-11-02
 
 First public source release.
 
@@ -22,6 +22,9 @@ First public source release.
 - mDNS discovery of nearby hosts (shown as information only, not as trust).
 - Import and export of Synergy configuration, and a Windows script that
   replaces a Synergy server with Openergy at logon.
+- The layout shows each display of a Mac host with more than one display, and
+  the link between two screens covers only the part of the edge that a
+  display touches.
 - Numbered synthetic clicks on macOS, to address the macOS 27 window-focus
   problem seen with other Synergy-family clients.
 - An external real-process test runner, Docker interop labs for Deskflow and
@@ -38,6 +41,27 @@ First public source release.
   Before, the host waited only 250 ms and, on Linux, often did not try to
   write again in that time, so a key could stay held down.
 - macOS release packaging works with older Xcode `lipo` tools.
+- A host with several displays no longer sends the cursor to the wrong
+  display. Before, a lost client, a display change, or a brief lock collision
+  in the capture hook put the cursor at the center of the whole desktop, which
+  can be on another display. Now the cursor goes back to where it left, and a
+  display change does not end the remote session.
+- Screen edges map over the displays that touch them. On a host whose displays
+  have different heights or offsets, the top of the next screen now lines up
+  with the top of the edge display, and the cursor never enters empty space
+  between displays.
+- A key held on the host while the cursor crosses to another screen no longer
+  repeats there, and its release now reaches the host OS. Before, the host OS
+  could keep the key held (for example, a stuck Shift after coming back).
+- A client reconnects within about 5 seconds after its host comes back, for
+  example after a reboot. Before, retries backed off to 30 seconds, and each
+  attempt could wait 10 seconds for an answer. The connect deadline is now 5
+  seconds.
+- On macOS, a sleeping display no longer changes the reported screen size or
+  fills the log with "display enumeration failed" every 2 seconds.
+- On Windows, capture continues when the system refuses to confine the cursor
+  (for example, on a secure desktop). Before, the remote screen could receive
+  host desktop coordinates, and the log filled with errors.
 
 ### Security
 

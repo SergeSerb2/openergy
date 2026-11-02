@@ -841,7 +841,7 @@ impl NetDriver {
             commands,
             handle: handle.clone(),
             mode: TransportMode::Messages,
-            connect_timeout: Duration::from_secs(10),
+            connect_timeout: Duration::from_secs(5),
             // The inherited Synergy/Deskflow accept path can lose readiness when
             // ClientHello arrives in the accept callback. The lab independently
             // requires 100ms here (tools/interop-lab/smoke.py). This is a timer,

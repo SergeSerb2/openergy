@@ -29,6 +29,18 @@ impl Rect {
         (self.x.saturating_add(self.w / 2), self.y.saturating_add(self.h / 2))
     }
 }
+/// Nearest point on any display, or on `fallback` when no display is known.
+pub fn nearest_on_display(displays: &[Rect], fallback: Rect, x: i32, y: i32) -> (i32, i32) {
+    displays
+        .iter()
+        .filter(|d| d.w > 0 && d.h > 0)
+        .map(|d| d.clamp(x, y))
+        .min_by_key(|(px, py)| {
+            let (dx, dy) = (i64::from(px - x), i64::from(py - y));
+            dx * dx + dy * dy
+        })
+        .unwrap_or_else(|| fallback.clamp(x, y))
+}
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Link {
     pub from: usize,
@@ -47,6 +59,9 @@ pub enum LayoutError {
 pub struct Layout {
     links: Vec<Link>,
     rects: Vec<Rect>,
+    // Per-screen display rectangles, when known. An edge then spans only the
+    // displays that touch it, not empty space in the bounding box.
+    displays: Vec<Vec<Rect>>,
     delay_ms: u64,
     double_tap_ms: u64,
     corners: Vec<Corner>,
@@ -97,6 +112,7 @@ impl Layout {
                     })
                 })
                 .collect(),
+            displays: vec![Vec::new(); cfg.screens.len()],
             delay_ms: cfg.switch.delay_ms,
             double_tap_ms: cfg.switch.double_tap_ms,
             corners: cfg.switch.dead_corners.clone(),
@@ -124,6 +140,7 @@ impl Layout {
         Self {
             links: Vec::new(),
             rects: Vec::new(),
+            displays: Vec::new(),
             delay_ms: 0,
             double_tap_ms: 0,
             corners: Vec::new(),
@@ -139,6 +156,120 @@ impl Layout {
             *r = rect;
         }
         self.reset();
+    }
+    /// Record the displays of a screen, in the same coordinates as its rect.
+    pub fn set_displays(&mut self, screen: usize, displays: &[Rect]) {
+        if let Some(d) = self.displays.get_mut(screen) {
+            if d.as_slice() != displays {
+                *d = displays.to_vec();
+                self.reset();
+            }
+        }
+    }
+    /// Intervals along `edge` that a cursor can reach, sorted and merged.
+    /// Without display data, the whole bounding-box edge is one interval.
+    fn spans(&self, screen: usize, edge: Edge) -> Vec<(i32, i32)> {
+        let r = self.rect(screen);
+        let mut spans = self
+            .displays
+            .get(screen)
+            .into_iter()
+            .flatten()
+            .filter(|d| d.w > 0 && d.h > 0)
+            .filter_map(|d| {
+                let touches = match edge {
+                    Edge::Left => d.x == r.x,
+                    Edge::Right => d.x.saturating_add(d.w) == r.x.saturating_add(r.w),
+                    Edge::Top => d.y == r.y,
+                    Edge::Bottom => d.y.saturating_add(d.h) == r.y.saturating_add(r.h),
+                };
+                let (start, len, lo, hi) = match edge {
+                    Edge::Left | Edge::Right => (d.y, d.h, r.y, r.y.saturating_add(r.h)),
+                    _ => (d.x, d.w, r.x, r.x.saturating_add(r.w)),
+                };
+                let span = (start.max(lo), start.saturating_add(len).min(hi));
+                (touches && span.0 < span.1).then_some(span)
+            })
+            .collect::<Vec<_>>();
+        spans.sort_unstable();
+        let mut merged: Vec<(i32, i32)> = Vec::new();
+        for (a, b) in spans {
+            match merged.last_mut() {
+                Some(last) if a <= last.1 => last.1 = last.1.max(b),
+                _ => merged.push((a, b)),
+            }
+        }
+        if merged.is_empty() {
+            merged.push(match edge {
+                Edge::Left | Edge::Right => (r.y, r.y.saturating_add(r.h.max(1))),
+                _ => (r.x, r.x.saturating_add(r.w.max(1))),
+            });
+        }
+        merged
+    }
+    /// Pixel interval of an edge for a link range in percent of the full edge.
+    fn link_interval(&self, screen: usize, edge: Edge, range: (u8, u8)) -> (i32, i32) {
+        let r = self.rect(screen);
+        let (start, extent) = match edge {
+            Edge::Left | Edge::Right => (r.y, r.h.max(1)),
+            _ => (r.x, r.w.max(1)),
+        };
+        let at = |p: u8| start.saturating_add((i64::from(extent) * i64::from(p) / 100) as i32);
+        let (lo, hi) = (at(range.0), at(range.1));
+        (lo, hi.max(lo.saturating_add(1)))
+    }
+    /// Reachable parts of a link interval. Link ranges come from the config
+    /// layout and stay in full-edge terms; only movement inside a link skips
+    /// the parts of the edge that no display covers.
+    fn reachable(&self, screen: usize, edge: Edge, (lo, hi): (i32, i32)) -> Vec<(i32, i32)> {
+        let clipped = self
+            .spans(screen, edge)
+            .into_iter()
+            .map(|(a, b)| (a.max(lo), b.min(hi)))
+            .filter(|(a, b)| a < b)
+            .collect::<Vec<_>>();
+        if clipped.is_empty() {
+            vec![(lo, hi)]
+        } else {
+            clipped
+        }
+    }
+    /// Fraction in [0, 1) of a coordinate along the reachable part of an interval.
+    fn edge_fraction(&self, screen: usize, edge: Edge, interval: (i32, i32), coordinate: i32) -> f64 {
+        let spans = self.reachable(screen, edge, interval);
+        let total: i64 = spans.iter().map(|(a, b)| i64::from(b - a)).sum();
+        let mut offset = 0i64;
+        for (a, b) in &spans {
+            if coordinate < *a {
+                break;
+            }
+            if coordinate < *b {
+                offset += i64::from(coordinate - a);
+                break;
+            }
+            offset += i64::from(b - a);
+        }
+        (offset.min(total - 1).max(0) as f64) / (total.max(1) as f64)
+    }
+    /// Coordinate on the reachable part of an interval for a fraction in [0, 1].
+    fn edge_coordinate(&self, screen: usize, edge: Edge, interval: (i32, i32), fraction: f64) -> i32 {
+        let spans = self.reachable(screen, edge, interval);
+        let total: i64 = spans.iter().map(|(a, b)| i64::from(b - a)).sum();
+        let mut remaining = ((fraction.clamp(0.0, 1.0) * total as f64) as i64).min(total - 1).max(0);
+        for (a, b) in &spans {
+            let len = i64::from(b - a);
+            if remaining < len {
+                return a + remaining as i32;
+            }
+            remaining -= len;
+        }
+        spans.last().map_or(0, |(_, b)| b - 1)
+    }
+    /// Nearest point on a known display, so a position in a gap between
+    /// displays lands where the OS would show the cursor.
+    pub fn snap_to_display(&self, screen: usize, x: i32, y: i32) -> (i32, i32) {
+        let displays = self.displays.get(screen).map(Vec::as_slice).unwrap_or_default();
+        nearest_on_display(displays, self.rect(screen), x, y)
     }
     pub fn rect(&self, screen: usize) -> Rect {
         self.rects.get(screen).copied().unwrap_or_default()
@@ -236,6 +367,11 @@ impl Layout {
             self.candidate = None;
             return None;
         }
+        let along_edge = match edge {
+            Edge::Left | Edge::Right => y,
+            _ => x,
+        };
+        // Link selection uses the full edge, like the derived link ranges.
         let (coordinate, extent) = match edge {
             Edge::Left | Edge::Right => (y - r.y, r.h),
             _ => (x - r.x, r.w),
@@ -284,24 +420,26 @@ impl Layout {
                 }
             }
         }
-        let f = ((fraction * 100.0 - f64::from(link.from_range.0)) / f64::from(link.from_range.1 - link.from_range.0))
-            .clamp(0.0, 1.0);
-        let target_f = (f64::from(link.to_range.0) + f * f64::from(link.to_range.1 - link.to_range.0)) / 100.0;
+        let source = self.link_interval(current, edge, link.from_range);
+        let f = self.edge_fraction(current, edge, source, along_edge);
         let target = self.rect(link.to);
+        // The target's entry edge faces the source edge.
+        let entry = match edge {
+            Edge::Left => Edge::Right,
+            Edge::Right => Edge::Left,
+            Edge::Top => Edge::Bottom,
+            Edge::Bottom => Edge::Top,
+        };
+        let destination = self.link_interval(link.to, entry, link.to_range);
+        let along = self.edge_coordinate(link.to, entry, destination, f);
         let (tx, ty) = match edge {
-            Edge::Left => (
-                target.x + target.w - 1,
-                target.y + (target_f * f64::from(target.h)) as i32,
-            ),
-            Edge::Right => (target.x, target.y + (target_f * f64::from(target.h)) as i32),
-            Edge::Top => (
-                target.x + (target_f * f64::from(target.w)) as i32,
-                target.y + target.h - 1,
-            ),
-            Edge::Bottom => (target.x + (target_f * f64::from(target.w)) as i32, target.y),
+            Edge::Left => (target.x + target.w - 1, along),
+            Edge::Right => (target.x, along),
+            Edge::Top => (along, target.y + target.h - 1),
+            Edge::Bottom => (along, target.y),
         };
         self.reset();
-        let (tx, ty) = target.clamp(tx, ty);
+        let (tx, ty) = self.snap_to_display(link.to, tx, ty);
         Some((link.to, tx, ty))
     }
     pub fn links(&self) -> &[Link] {

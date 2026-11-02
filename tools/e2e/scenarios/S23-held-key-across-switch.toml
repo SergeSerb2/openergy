@@ -1,0 +1,108 @@
+# Requirement: A key held on the host while the cursor crosses to a client does not auto-repeat on the client, and its release reaches both the host OS and the client.
+name = "S23-held-key-across-switch"
+requirement = "A key held on the host while the cursor crosses to a client does not auto-repeat on the client, and its release reaches both the host OS and the client."
+blocked_by = []
+timeout_ms = 2000
+
+[[node]]
+id = "server"
+kind = "openergy"
+role = "server"
+platform = "virtual"
+tls = false
+
+[[node]]
+id = "client"
+kind = "openergy"
+role = "client"
+platform = "virtual"
+remote = "server"
+tls = false
+
+[[step]]
+do = "wait_connected"
+node = "client"
+peer = "server"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+peer = "client"
+
+[[step]]
+do = "set_screens"
+node = "server"
+rects = [{"x" = 0, "y" = 0, "w" = 1920, "h" = 1080, "scale" = 1.0}]
+
+[[step]]
+do = "set_screens"
+node = "client"
+rects = [{"x" = 0, "y" = 0, "w" = 1920, "h" = 1080, "scale" = 1.0}]
+
+# "a" goes down on the host, which passes it to the host OS.
+[[step]]
+do = "ctl"
+node = "server"
+method = "virtual.inject"
+params = {"events" = [{"type" = "key_down", "key" = 97, "modifiers" = 0, "button" = 31}]}
+fields = {"passed" = 1}
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 1919, "y" = 540}, {"type" = "mouse_move_rel", "dx" = 20, "dy" = 0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "client"}
+
+[[step]]
+do = "ledger_mark"
+node = "client"
+save = "entered"
+
+# Host auto-repeat of the held key: swallowed, and not sent to the client.
+[[step]]
+do = "ctl"
+node = "server"
+method = "virtual.inject"
+params = {"events" = [{"type" = "key_repeat", "key" = 97, "modifiers" = 0, "button" = 31, "count" = 1}, {"type" = "key_repeat", "key" = 97, "modifiers" = 0, "button" = 31, "count" = 1}]}
+fields = {"swallowed" = 2, "passed" = 0}
+
+# Its release goes to the host OS once, without ending capture.
+[[step]]
+do = "ctl"
+node = "server"
+method = "virtual.inject"
+params = {"events" = [{"type" = "key_up", "key" = 97, "modifiers" = 0, "button" = 31}]}
+fields = {"passed" = 1, "swallowed" = 0}
+
+# A key pressed on the client screen is still captured and delivered.
+[[step]]
+do = "ctl"
+node = "server"
+method = "virtual.inject"
+params = {"events" = [{"type" = "key_down", "key" = 98, "modifiers" = 0, "button" = 48}, {"type" = "key_repeat", "key" = 98, "modifiers" = 0, "button" = 48, "count" = 1}, {"type" = "key_up", "key" = 98, "modifiers" = 0, "button" = 48}]}
+fields = {"swallowed" = 3}
+
+[[step]]
+do = "assert_status"
+node = "server"
+fields = {"active_screen" = "client"}
+
+[[step]]
+do = "sleep"
+ms = 100
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+since = "${entered.sequence}"
+exact = true
+expect = [{"event" = {"type" = "key_down", "key" = 98}}, {"event" = {"type" = "key_repeat", "key" = 98}}, {"event" = {"type" = "key_up", "key" = 98}}]
+
+[[step]]
+do = "assert_status"
+node = "client"
+fields = {"last_error" = {"$null" = true}}

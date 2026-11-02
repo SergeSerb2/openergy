@@ -9,18 +9,37 @@ struct LayoutItem: Identifiable, Equatable {
     var isLocal: Bool
     var peer: Peer?
     var rect: CGRect?
+    /// Display outlines in unit coordinates of the screen's bounding box.
+    /// Only set when a screen has more than one display.
+    var displays: [CGRect] = []
 
     var id: String { name }
     var isOnline: Bool { isLocal || peer?.connected == true }
 }
 
 extension AppModel {
+    /// Normalizes display rectangles to their bounding box. The cursor can
+    /// only cross an edge where a display touches it, so the layout shows
+    /// where each display sits.
+    static func unitDisplays(_ displays: [LocalScreen.Display]) -> [CGRect] {
+        guard displays.count > 1,
+              let minX = displays.map(\.x).min(), let minY = displays.map(\.y).min(),
+              let maxX = displays.map({ $0.x + $0.w }).max(), let maxY = displays.map({ $0.y + $0.h }).max(),
+              maxX > minX, maxY > minY
+        else { return [] }
+        let width = maxX - minX, height = maxY - minY
+        return displays.map {
+            CGRect(x: ($0.x - minX) / width, y: ($0.y - minY) / height, width: $0.w / width, height: $0.h / height)
+        }
+    }
+
     /// All screens the server knows: this Mac, configured screens and connected clients.
     var layoutItems: [LayoutItem] {
         var items: [String: LayoutItem] = [:]
         let local = localName
         let localSize = CGSize(width: status.localScreen?.w ?? 1512, height: status.localScreen?.h ?? 982)
-        items[local] = LayoutItem(name: local, os: "macos", size: localSize, isLocal: true, peer: nil, rect: nil)
+        items[local] = LayoutItem(name: local, os: "macos", size: localSize, isLocal: true, peer: nil, rect: nil,
+                                  displays: Self.unitDisplays(status.localScreen?.displays ?? []))
 
         for screen in config.screens ?? [] {
             var item = items[screen.name] ?? LayoutItem(name: screen.name, os: screen.os, size: CGSize(width: 1920, height: 1080),
@@ -221,8 +240,10 @@ struct LayoutEditor: View {
     }
 
     private func linkBars(_ placed: [LayoutItem], transform: CanvasTransform) -> some View {
-        let rects = placed.filter { $0.name != dragging }.compactMap(\.rect)
-        let contacts = LayoutGeometry.contacts(rects)
+        let visible = placed.filter { $0.name != dragging }
+        let screens = visible.compactMap { item in item.rect.map { (rect: $0, displays: item.displays) } }
+        let contacts = LayoutGeometry.contacts(screens.map(\.rect))
+            .flatMap { LayoutGeometry.reachable($0, screens: screens) }
         return ForEach(contacts, id: \.self) { contact in
             let thickness: CGFloat = 4
             let inset: CGFloat = 6
@@ -383,6 +404,10 @@ struct ScreenTile: View {
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                     .strokeBorder(border, lineWidth: isSelected || isActive ? 1.5 : 1)
 
+                if !item.displays.isEmpty {
+                    DisplayOutlines(displays: item.displays, inset: 7)
+                }
+
                 VStack(spacing: compact ? 2 : 6) {
                     OSSymbol(os: item.os)
                         .font(.system(size: compact ? 16 : 24, weight: .regular))
@@ -399,6 +424,7 @@ struct ScreenTile: View {
                     }
                 }
                 .padding(.horizontal, 8)
+                .modifier(CenterOnDisplay(unit: mainDisplay, inset: 7, size: proxy.size))
 
                 if item.isLocal, proxy.size.height > 150 {
                     Text("THIS MAC")
@@ -430,9 +456,16 @@ struct ScreenTile: View {
                 radius: isActive ? 14 : 8, y: isActive ? 0 : 4)
     }
 
+    /// The largest display carries the label, so it never straddles a gap.
+    private var mainDisplay: CGRect? {
+        item.displays.max { $0.width * $0.height < $1.width * $1.height }
+    }
+
     private var subtitle: String {
         if let peer = item.peer, peer.connected != true { return "Offline" }
-        let size = "\(Int(item.size.width)) × \(Int(item.size.height))"
+        let size = item.displays.count > 1
+            ? "\(item.displays.count) displays"
+            : "\(Int(item.size.width)) × \(Int(item.size.height))"
         return item.isLocal ? "This Mac · \(size)" : size
     }
 
@@ -451,6 +484,54 @@ struct ScreenTile: View {
         if isSelected { return Brand.accent }
         if isActive { return Brand.accent.opacity(0.6) }
         return Color.primary.opacity(colorScheme == .dark ? 0.16 : 0.12)
+    }
+}
+
+/// Places content at the center of one display outline, or leaves it
+/// centered in the tile when there is no outline.
+struct CenterOnDisplay: ViewModifier {
+    let unit: CGRect?
+    let inset: CGFloat
+    let size: CGSize
+
+    func body(content: Content) -> some View {
+        if let unit {
+            let width = max(size.width - inset * 2, 1), height = max(size.height - inset * 2, 1)
+            content
+                .frame(maxWidth: unit.width * width)
+                .position(x: inset + unit.midX * width, y: inset + unit.midY * height)
+        } else {
+            content
+        }
+    }
+}
+
+/// The displays of a multi-display screen, drawn inside its tile. Empty
+/// parts of the bounding box are where the cursor cannot go.
+struct DisplayOutlines: View {
+    let displays: [CGRect]
+    var inset: CGFloat
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        GeometryReader { proxy in
+            let area = proxy.size
+            let width = max(area.width - inset * 2, 1), height = max(area.height - inset * 2, 1)
+            ForEach(Array(displays.enumerated()), id: \.offset) { _, unit in
+                let rect = CGRect(x: inset + unit.minX * width, y: inset + unit.minY * height,
+                                  width: unit.width * width, height: unit.height * height).insetBy(dx: 1.5, dy: 1.5)
+                RoundedRectangle(cornerRadius: 5, style: .continuous)
+                    .fill(Color.primary.opacity(colorScheme == .dark ? 0.045 : 0.035))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 5, style: .continuous)
+                            .strokeBorder(Color.primary.opacity(colorScheme == .dark ? 0.14 : 0.12), lineWidth: 1)
+                    )
+                    .frame(width: max(rect.width, 1), height: max(rect.height, 1))
+                    .position(x: rect.midX, y: rect.midY)
+            }
+        }
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
     }
 }
 

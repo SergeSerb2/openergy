@@ -482,6 +482,12 @@ impl Capture {
             let decision = (self.callback)(ev);
             if decision == CaptureDecision::Swallow {
                 self.grab(true)?;
+            } else if decision == CaptureDecision::PassOnce {
+                // Keep the grab. The grab routes this release to us only, so
+                // send it to the focused application, which saw the press.
+                if let Some(event) = replay {
+                    self.forward(event)?;
+                }
             } else if self.captured {
                 self.grab(false)?;
                 // The server already applied the physical state. Forward the current event

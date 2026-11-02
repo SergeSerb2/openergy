@@ -1,0 +1,110 @@
+# Requirement: With uneven host displays, edges map over the displays that touch them; a display change keeps the remote session; a lost client returns the cursor to where it left.
+name = "S22-multi-display-edges"
+requirement = "With uneven host displays, edges map over the displays that touch them; a display change keeps the remote session; a lost client returns the cursor to where it left."
+blocked_by = []
+timeout_ms = 2500
+
+# The host layout matches a real three-monitor desk: two 2560x1440 displays
+# and a taller display whose top is 719 px above them. The client is left.
+[[node]]
+id = "server"
+kind = "openergy"
+role = "server"
+platform = "virtual"
+tls = false
+config = {"screen" = [{"name" = "server", "rect" = {"x" = 1920, "y" = 0, "w" = 1920, "h" = 1080}}, {"name" = "client", "rect" = {"x" = 0, "y" = 0, "w" = 1920, "h" = 1080}}]}
+
+[[node]]
+id = "client"
+kind = "openergy"
+role = "client"
+platform = "virtual"
+remote = "server"
+tls = false
+
+[[step]]
+do = "wait_connected"
+node = "client"
+peer = "server"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+peer = "client"
+
+[[step]]
+do = "set_screens"
+node = "client"
+rects = [{"x" = 0, "y" = 0, "w" = 2560, "h" = 1440, "scale" = 1.0}]
+
+[[step]]
+do = "set_screens"
+node = "server"
+rects = [{"x" = 0, "y" = 0, "w" = 2560, "h" = 1440, "scale" = 1.0}, {"x" = 2560, "y" = 0, "w" = 2560, "h" = 1440, "scale" = 1.0}, {"x" = 5120, "y" = -719, "w" = 3840, "h" = 2160, "scale" = 2.0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"peers" = {"$contains" = {"name" = "client", "connected" = true, "screen" = {"w" = 2560, "h" = 1440}}}}
+
+# The top of the left display is the top of the client. A bounding-box map
+# would put it a third of the way down (y 479).
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 0, "y" = 0}, {"type" = "mouse_move_rel", "dx" = -20, "dy" = 0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "client", "cursor.x" = 2559, "cursor.y" = {"$lte" = 1}}
+
+# Back at the client's top-right corner: the host cursor must land on the top
+# of the left display, not in the empty space above it (y -719).
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_rel", "dx" = 0, "dy" = -2000}, {"type" = "mouse_move_rel", "dx" = 3000, "dy" = 0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "server", "cursor.x" = 0, "cursor.y" = 0}
+
+# Leave again from the middle of the left edge.
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 0, "y" = 700}, {"type" = "mouse_move_rel", "dx" = -20, "dy" = 0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "client", "cursor.y" = {"$gte" = 699, "$lte" = 701}}
+
+# A host display change (here, the tall display turns off) keeps the session.
+[[step]]
+do = "set_screens"
+node = "server"
+rects = [{"x" = 0, "y" = 0, "w" = 2560, "h" = 1440, "scale" = 1.0}, {"x" = 2560, "y" = 0, "w" = 2560, "h" = 1440, "scale" = 1.0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"local_screen" = {"w" = 5120, "h" = 1440}}
+
+[[step]]
+do = "assert_status"
+node = "server"
+fields = {"active_screen" = "client"}
+
+# The client goes away. The host cursor returns to the exit point on the left
+# display, not the center of the desktop (another display).
+[[step]]
+do = "stop"
+node = "client"
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "server", "cursor.x" = 0, "cursor.y" = 700}

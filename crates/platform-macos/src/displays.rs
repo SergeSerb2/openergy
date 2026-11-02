@@ -27,19 +27,32 @@ pub struct Displays {
 }
 
 pub fn active() -> Result<Displays> {
+    let displays = list(ffi::CGGetActiveDisplayList)?;
+    if displays.active.is_empty() {
+        // Sleeping displays leave the active list but stay online, with their
+        // bounds. A daemon that starts during display sleep still gets the
+        // real layout.
+        return list(ffi::CGGetOnlineDisplayList);
+    }
+    Ok(displays)
+}
+
+type DisplayList = unsafe extern "C" fn(u32, *mut u32, *mut u32) -> i32;
+
+fn list(query: DisplayList) -> Result<Displays> {
     // Safety: display IDs and owned modes remain live; list output buffers match declared capacities.
     unsafe {
         // Retry a bounded number of times if a hot-plug grows the list.
         for _ in 0..3 {
             let mut count = 0;
-            check(ffi::CGGetActiveDisplayList(0, std::ptr::null_mut(), &mut count))?;
+            check(query(0, std::ptr::null_mut(), &mut count))?;
             // The API reports only the number actually written, never a count
             // above the supplied capacity. One spare slot detects hot-plug
             // growth, including a display appearing after an empty first query.
             let capacity = count.checked_add(1).ok_or_else(|| error("display count overflow"))?;
             let mut ids = vec![0; capacity as usize];
             let mut actual = 0;
-            check(ffi::CGGetActiveDisplayList(capacity, ids.as_mut_ptr(), &mut actual))?;
+            check(query(capacity, ids.as_mut_ptr(), &mut actual))?;
             if actual > count {
                 continue;
             }
@@ -55,11 +68,19 @@ pub fn active() -> Result<Displays> {
                     width: rect.size.width,
                     height: rect.size.height,
                 };
-                let mode = OwnedCf::new(ffi::CGDisplayCopyDisplayMode(id), "CG display mode")?;
-                let width = ffi::CGDisplayModeGetWidth(mode.0);
-                let height = ffi::CGDisplayModeGetHeight(mode.0);
-                let scale_x = ffi::CGDisplayModeGetPixelWidth(mode.0) as f64 / width.max(1) as f64;
-                let scale_y = ffi::CGDisplayModeGetPixelHeight(mode.0) as f64 / height.max(1) as f64;
+                // A sleeping or reconfiguring display can have no current
+                // mode. Its bounds still place it; the scale is informational.
+                let (scale_x, scale_y) = match OwnedCf::new(ffi::CGDisplayCopyDisplayMode(id), "CG display mode") {
+                    Ok(mode) => {
+                        let width = ffi::CGDisplayModeGetWidth(mode.0);
+                        let height = ffi::CGDisplayModeGetHeight(mode.0);
+                        (
+                            ffi::CGDisplayModeGetPixelWidth(mode.0) as f64 / width.max(1) as f64,
+                            ffi::CGDisplayModeGetPixelHeight(mode.0) as f64 / height.max(1) as f64,
+                        )
+                    }
+                    Err(_) => (1.0, 1.0),
+                };
                 union = Some(match union {
                     None => bounds,
                     Some(old) => {

@@ -88,16 +88,26 @@ impl Machine {
             _ => {}
         }
     }
-    fn geometry(&mut self, rect: Rect, cursor: (i32, i32), changed: bool, out: &mut Vec<Action>) {
+    fn geometry(&mut self, screens: &[ScreenRect], cursor: (i32, i32), changed: bool, out: &mut Vec<Action>) {
+        let rect = display_rect(screens);
+        let displays = screens
+            .iter()
+            .map(|d| Rect {
+                x: d.x,
+                y: d.y,
+                w: d.w,
+                h: d.h,
+            })
+            .collect::<Vec<_>>();
         match self {
             Self::Server(s) => {
-                s.handle(ServerEvent::LocalScreen { rect, cursor }, out);
+                s.handle(ServerEvent::LocalScreen { rect, cursor, displays }, out);
                 if changed {
                     s.handle(ServerEvent::DisplayChanged, out);
                 }
             }
             Self::Client(c) => {
-                c.handle(ClientEvent::LocalScreen { rect, cursor }, out);
+                c.handle(ClientEvent::LocalScreen { rect, cursor, displays }, out);
                 if changed {
                     c.handle(ClientEvent::DisplayChanged, out);
                 }
@@ -566,12 +576,8 @@ impl Runtime {
                     self.attempt = 0;
                     self.retry = None;
                     self.machine = Machine::new(Arc::new(self.cfg.clone()));
-                    self.machine.geometry(
-                        display_rect(&self.displays),
-                        self.screens.cursor_pos(),
-                        false,
-                        &mut self.actions,
-                    );
+                    self.machine
+                        .geometry(&self.displays, self.screens.cursor_pos(), false, &mut self.actions);
                     self.start_connection();
                     let _ = self
                         .capture
@@ -617,9 +623,12 @@ impl Runtime {
             return;
         }
         self.attempt = self.attempt.saturating_add(1);
+        // A host that reboots or wakes should be back within seconds. A LAN
+        // connect attempt is cheap, so the cap stays short (Synergy retries
+        // every second).
         let base = 250u64
             .saturating_mul(1u64 << self.attempt.saturating_sub(1).min(7))
-            .min(30_000);
+            .min(5_000);
         self.rng ^= self.rng << 13;
         self.rng ^= self.rng >> 7;
         self.rng ^= self.rng << 17;
@@ -863,12 +872,8 @@ impl Runtime {
         let changed = displays != self.displays;
         self.status_dirty |= changed;
         self.displays = displays;
-        self.machine.geometry(
-            display_rect(&self.displays),
-            self.screens.cursor_pos(),
-            changed,
-            &mut self.actions,
-        );
+        self.machine
+            .geometry(&self.displays, self.screens.cursor_pos(), changed, &mut self.actions);
         let permissions = self.screens.permissions();
         self.sink.permissions_changed(&permissions);
         let denied = matches!(permissions.accessibility, Grant::Denied)
@@ -953,12 +958,8 @@ impl Runtime {
             self.retry = None;
             self.healthy_since = None;
             self.state = "idle".into();
-            self.machine.geometry(
-                display_rect(&self.displays),
-                self.screens.cursor_pos(),
-                false,
-                &mut self.actions,
-            );
+            self.machine
+                .geometry(&self.displays, self.screens.cursor_pos(), false, &mut self.actions);
             self.start_connection();
         } else {
             let previous = self.machine.clone();
@@ -981,12 +982,8 @@ impl Runtime {
             }
             self.cfg = Arc::unwrap_or_clone(cfg);
         }
-        self.machine.geometry(
-            display_rect(&self.displays),
-            self.screens.cursor_pos(),
-            false,
-            &mut self.actions,
-        );
+        self.machine
+            .geometry(&self.displays, self.screens.cursor_pos(), false, &mut self.actions);
         let _ = self
             .capture
             .commands
@@ -1117,12 +1114,8 @@ impl Runtime {
                 self.execute(NetCommand::Shutdown);
                 self.process_net();
                 self.machine = Machine::new(Arc::new(self.cfg.clone()));
-                self.machine.geometry(
-                    display_rect(&self.displays),
-                    self.screens.cursor_pos(),
-                    false,
-                    &mut self.actions,
-                );
+                self.machine
+                    .geometry(&self.displays, self.screens.cursor_pos(), false, &mut self.actions);
                 self.enabled = true;
                 self.retry = None;
                 self.state = "idle".into();
@@ -1488,12 +1481,8 @@ pub fn run_daemon(
     };
     lifetime::install_signals();
     let parent = lifetime::ParentWatch::new(parent_pid);
-    rt.machine.geometry(
-        display_rect(&rt.displays),
-        rt.screens.cursor_pos(),
-        false,
-        &mut rt.actions,
-    );
+    rt.machine
+        .geometry(&rt.displays, rt.screens.cursor_pos(), false, &mut rt.actions);
     let _ = rt
         .capture
         .commands

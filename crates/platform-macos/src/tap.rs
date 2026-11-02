@@ -427,11 +427,19 @@ unsafe extern "C" fn callback(_: ffi::MutRef, kind: u32, event: ffi::MutRef, use
     let events = state.translate(kind, event.cast_const());
     let mut swallow = state.control.swallow.load(Ordering::Acquire);
     let mut any = false;
+    let mut pass_once = false;
     for input in events.into_iter().flatten() {
         any = true;
-        swallow = (state.consumer)(input) == CaptureDecision::Swallow;
-        state.control.swallow.store(swallow, Ordering::Release);
+        match (state.consumer)(input) {
+            CaptureDecision::PassOnce => pass_once = true,
+            decision => {
+                swallow = decision == CaptureDecision::Swallow;
+                state.control.swallow.store(swallow, Ordering::Release);
+            }
+        }
     }
+    // The capture state stays as is; only this event reaches local apps.
+    let swallow = swallow && !pass_once;
     // A fractional wheel sample can produce no wire event yet. Suppress that
     // original sample too while remote-active, otherwise local apps scroll.
     let input_kind = matches!(kind, 1..=7 | 10..=12 | 22 | 25..=27);

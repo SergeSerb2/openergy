@@ -1,4 +1,9 @@
-use crate::{clipboard, common::*, layout::Rect, notify, Action, ClientEvent, CloseReason, ConnId};
+use crate::{
+    clipboard,
+    common::*,
+    layout::{nearest_on_display, Rect},
+    notify, Action, ClientEvent, CloseReason, ConnId,
+};
 use openergy_config::Config;
 use openergy_platform::{ClipboardData, InputEvent, Modifiers};
 use openergy_protocol::{ClipboardId, Message};
@@ -11,6 +16,7 @@ pub struct Client {
     peer: Option<(ConnId, Peer)>,
     now: u64,
     screen: Rect,
+    displays: Vec<Rect>,
     cursor: (i32, i32),
     active: bool,
     ignore_mouse: bool,
@@ -28,6 +34,7 @@ impl Client {
             peer: None,
             now: 0,
             screen: Rect::default(),
+            displays: Vec::new(),
             cursor: (0, 0),
             active: false,
             ignore_mouse: true,
@@ -116,8 +123,9 @@ impl Client {
                     notify("peer.disconnected", serde_json::json!({}), out);
                 }
             }
-            ClientEvent::LocalScreen { rect, cursor } => {
+            ClientEvent::LocalScreen { rect, cursor, displays } => {
                 self.screen = rect;
+                self.displays = displays;
                 self.cursor = rect.clamp(cursor.0, cursor.1);
             }
             ClientEvent::DisplayChanged => {
@@ -297,7 +305,9 @@ impl Client {
                 out.push(Action::ReleaseAllLocal);
                 self.active = true;
                 self.sequence = sequence;
-                self.cursor = self.screen.clamp(i32::from(x), i32::from(y));
+                // The server maps edges over our bounding box. Enter on a
+                // real display, never in a gap between displays.
+                self.cursor = nearest_on_display(&self.displays, self.screen, i32::from(x), i32::from(y));
                 let modifiers = p.options.mapped_mask(modifiers);
                 self.ledger.modifiers = modifiers;
                 self.synthetic_modifiers = modifiers & 0x3f;
@@ -411,6 +421,10 @@ impl Client {
                                         as i32,
                                 };
                             }
+                            // A server can forward repeats of a key that went
+                            // down before this screen was entered. Ignore them
+                            // like the reference client does.
+                            InputEvent::KeyRepeat { key, button, .. } if !self.ledger.has_key(key, button) => return,
                             _ => {}
                         }
                         if let InputEvent::KeyUp { key, modifiers, button } = &ev {
@@ -453,6 +467,11 @@ impl Client {
                                 if !physical {
                                     return;
                                 }
+                            }
+                            // An up for a key this screen never pressed (held
+                            // on the server before entry) has nothing to release.
+                            if !self.ledger.has_key(*key, *button) {
+                                return;
                             }
                         }
                         self.ledger.observe(&ev);

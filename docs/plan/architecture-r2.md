@@ -604,7 +604,7 @@ processing, while the server also treats any valid client traffic as
 activity (03 §4) — implement exactly that asymmetry. Hello-phase
 deadline: Synergy's client uses a 2 s connect/initial-hello timer
 (03 §3); we allow 10 s for hello through DINF on loaded LANs but log at
-`warn` past 2 s. Reconnect backoff 250 ms → 30 s, jitter ±20%, reset
+`warn` past 2 s. Reconnect backoff 250 ms → 5 s, jitter ±20%, reset
 after 60 s stable, reset once on network-change, plus EBSY backoff
 (§2.4). The io loop also owns the parent-pid watch wakeup and the IPC
 listeners; no timer thread exists.

@@ -67,6 +67,10 @@ pub enum InputEvent {
 pub enum CaptureDecision {
     PassToOs,
     Swallow,
+    /// Deliver this one event to the local OS without changing the capture
+    /// state. Used for the release of a key that went down locally before
+    /// the cursor left, so the local OS does not keep it held.
+    PassOnce,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]

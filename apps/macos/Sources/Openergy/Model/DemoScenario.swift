@@ -111,6 +111,11 @@ struct DemoScenario {
         scenario.status.role = .server
         scenario.status.state = .listening
         scenario.status.server = .init(listen: "0.0.0.0:24800")
+        // A desk host: the built-in display beside a taller external display.
+        scenario.status.localScreen = .init(w: 4072, h: 1440, displays: [
+            .init(x: 0, y: 458, w: 1512, h: 982, scale: 2),
+            .init(x: 1512, y: 0, w: 2560, h: 1440, scale: 1),
+        ])
         scenario.status.client = nil
         scenario.status.activeScreen = "studio-pc"
         scenario.status.cursor = .init(screen: "studio-pc", x: 1200, y: 700)
@@ -128,8 +133,8 @@ struct DemoScenario {
         ]
         scenario.config = baseConfig(role: .server)
         scenario.config.screens = [
-            .init(name: "MacBook Pro", rect: .init(x: 0, y: 300, w: 1512, h: 982), os: "macos"),
-            .init(name: "studio-pc", rect: .init(x: 1512, y: 0, w: 2560, h: 1440), os: "windows"),
+            .init(name: "MacBook Pro", rect: .init(x: 2560, y: 0, w: 4072, h: 1440), os: "macos"),
+            .init(name: "studio-pc", rect: .init(x: 0, y: 0, w: 2560, h: 1440), os: "windows"),
             .init(name: "studio-linux", rect: nil, os: "linux"),
         ]
         scenario.trusted = TrustList(servers: [], clients: [pcFingerprint, linuxFingerprint])
