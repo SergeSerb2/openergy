@@ -118,7 +118,11 @@ impl Capture {
         Ok(())
     }
     fn emit(&mut self, ev: InputEvent) -> bool {
-        let swallow = (self.callback)(ev) == CaptureDecision::Swallow;
+        let swallow = match (self.callback)(ev) {
+            CaptureDecision::Swallow => true,
+            CaptureDecision::PassToOs => false,
+            CaptureDecision::PassOnce => return false,
+        };
         if self.captured != swallow {
             if let Err(e) = self.grab(swallow) {
                 // A secure desktop can refuse every attempt; log sparsely.

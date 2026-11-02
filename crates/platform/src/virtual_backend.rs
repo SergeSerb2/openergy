@@ -94,6 +94,7 @@ impl Default for VirtualConfig {
 pub enum RecordedDecision {
     PassToOs,
     Swallow,
+    PassOnce,
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
@@ -886,6 +887,10 @@ fn capture_loop(
                 CaptureDecision::Swallow => {
                     report.swallowed += 1;
                     RecordedDecision::Swallow
+                }
+                CaptureDecision::PassOnce => {
+                    report.passed += 1;
+                    RecordedDecision::PassOnce
                 }
             };
             state.record(Some(event), RecordKind::Capture { decision }, None);

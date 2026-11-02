@@ -624,6 +624,14 @@ impl Server {
             _ => {
                 if let Some(c) = self.connection(self.active) {
                     if let Some(p) = self.peers.get_mut(&c) {
+                        // A key held here before the switch auto-repeats, but
+                        // the remote never saw it go down. Its up still goes,
+                        // so the remote can drop modifiers from the enter mask.
+                        if let InputEvent::KeyRepeat { key, button, .. } = ev {
+                            if !p.ledger.has_key(key, button) {
+                                return;
+                            }
+                        }
                         p.ledger.observe(&ev);
                         send(c, wire_input(&ev, p.version.minor, &self.config), out);
                     }

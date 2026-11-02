@@ -28,6 +28,10 @@ pub struct Capture {
     pub remote: Arc<AtomicBool>,
     pub thread: std::thread::JoinHandle<()>,
 }
+/// Same identity as the session ledger: button, or KeyID for button zero.
+fn key_id(key: u16, button: u16) -> (u16, u16) {
+    (button, if button == 0 { key } else { 0 })
+}
 pub fn capture(mut source: Box<dyn InputSource>, waker: Arc<mio::Waker>) -> Capture {
     let (commands, rx) = mpsc::sync_channel(32);
     let (tx, events) = mpsc::sync_channel(1024);
@@ -51,7 +55,27 @@ pub fn capture(mut source: Box<dyn InputSource>, waker: Arc<mio::Waker>) -> Capt
                         let rem = rem.clone();
                         let over = over.clone();
                         let retry_waker = waker.clone();
+                        // Keys that went down while local. Their release must
+                        // reach the local OS even after the cursor left, or the
+                        // OS keeps them held; their auto-repeat must not.
+                        let mut local_keys = std::collections::BTreeSet::<(u16, u16)>::new();
                         match source.start(Box::new(move |event| {
+                            let remote = rem.load(Ordering::Relaxed);
+                            let override_decision = match event {
+                                InputEvent::KeyDown { key, button, .. } => {
+                                    if !remote {
+                                        local_keys.insert(key_id(key, button));
+                                    }
+                                    None
+                                }
+                                InputEvent::KeyUp { key, button, .. } => (local_keys.remove(&key_id(key, button))
+                                    && remote)
+                                    .then_some(CaptureDecision::PassOnce),
+                                InputEvent::KeyRepeat { key, button, .. } => (remote
+                                    && local_keys.contains(&key_id(key, button)))
+                                .then_some(CaptureDecision::Swallow),
+                                _ => None,
+                            };
                             // The runtime holds this lock only to take one
                             // pending move. Waiting is brief. Failing here would
                             // pass a captured event to the local OS and end the
@@ -95,7 +119,9 @@ pub fn capture(mut source: Box<dyn InputSource>, waker: Arc<mio::Waker>) -> Capt
                             }
                             drop(slot);
                             let _ = waker.wake();
-                            if rem.load(Ordering::Relaxed) {
+                            if let Some(decision) = override_decision {
+                                decision
+                            } else if remote {
                                 CaptureDecision::Swallow
                             } else {
                                 CaptureDecision::PassToOs

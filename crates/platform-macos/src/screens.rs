@@ -3,7 +3,7 @@ use crate::{displays, error, ffi, permissions, MacClipboard, MacNotice, Notices,
 use openergy_platform::{ClipboardBackend, Grant, PermissionKind, Permissions, ScreenRect, ScreenSystem};
 use std::sync::{
     atomic::{AtomicBool, AtomicU64, Ordering},
-    mpsc, Arc,
+    mpsc, Arc, Mutex,
 };
 use std::thread::{self, JoinHandle};
 use std::time::Instant;
@@ -16,6 +16,10 @@ pub struct MacScreens {
     monitor: Option<Monitor>,
     assertion: Option<u32>,
     layout_dirty: Arc<AtomicBool>,
+    // Last good display layout. While displays sleep, CoreGraphics can fail
+    // or report none; peers keep the real size instead of a fallback.
+    last_good: Mutex<Vec<ScreenRect>>,
+    enumeration_failing: AtomicBool,
 }
 impl MacScreens {
     pub(crate) fn new(notices: Notices, clipboard: MacClipboard, layout_dirty: Arc<AtomicBool>) -> Self {
@@ -25,6 +29,8 @@ impl MacScreens {
             monitor: None,
             assertion: None,
             layout_dirty,
+            last_good: Mutex::new(Vec::new()),
+            enumeration_failing: AtomicBool::new(false),
         }
     }
     fn set_prevent_sleep(&mut self, on: bool) -> Result<()> {
@@ -56,9 +62,8 @@ impl MacScreens {
 }
 impl ScreenSystem for MacScreens {
     fn screens(&self) -> Vec<ScreenRect> {
-        match displays::active() {
-            Ok(list) => list
-                .active
+        let current = displays::active().map(|list| {
+            list.active
                 .into_iter()
                 .map(|d| ScreenRect {
                     x: d.bounds.x.round() as i32,
@@ -67,10 +72,26 @@ impl ScreenSystem for MacScreens {
                     h: d.bounds.height.round() as i32,
                     scale: d.scale_x,
                 })
-                .collect(),
-            Err(_) => {
-                log::error!("macOS display enumeration failed");
-                Vec::new()
+                .collect::<Vec<_>>()
+        });
+        let mut last = self.last_good.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+        match current {
+            Ok(list) if !list.is_empty() => {
+                if self.enumeration_failing.swap(false, Ordering::Relaxed) {
+                    log::info!("macOS display enumeration recovered");
+                }
+                last.clone_from(&list);
+                list
+            }
+            other => {
+                // Log the change of state once, not every health check.
+                if !self.enumeration_failing.swap(true, Ordering::Relaxed) {
+                    match other {
+                        Err(e) => log::warn!("macOS display enumeration failed: {e}; keeping the last layout"),
+                        Ok(_) => log::warn!("macOS reports no active display; keeping the last layout"),
+                    }
+                }
+                last.clone()
             }
         }
     }

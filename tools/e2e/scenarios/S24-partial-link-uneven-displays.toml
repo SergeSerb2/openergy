@@ -1,0 +1,81 @@
+# Requirement: A link that covers part of an uneven host edge switches over that whole part and maps it onto the linked part of the client.
+name = "S24-partial-link-uneven-displays"
+requirement = "A link that covers part of an uneven host edge switches over that whole part and maps it onto the linked part of the client."
+blocked_by = []
+timeout_ms = 2000
+
+# The client box sits beside the lower half of the host box, so the host's
+# left link is 50-100% and the client's right link is 0-50%. Only the lower
+# host display touches the left edge.
+[[node]]
+id = "server"
+kind = "openergy"
+role = "server"
+platform = "virtual"
+tls = false
+config = {"screen" = [{"name" = "server", "rect" = {"x" = 1920, "y" = 0, "w" = 1920, "h" = 1080}}, {"name" = "client", "rect" = {"x" = 0, "y" = 540, "w" = 1920, "h" = 1080}}]}
+
+[[node]]
+id = "client"
+kind = "openergy"
+role = "client"
+platform = "virtual"
+remote = "server"
+tls = false
+
+[[step]]
+do = "wait_connected"
+node = "client"
+peer = "server"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+peer = "client"
+
+[[step]]
+do = "set_screens"
+node = "client"
+rects = [{"x" = 0, "y" = 0, "w" = 1920, "h" = 1440, "scale" = 1.0}]
+
+[[step]]
+do = "set_screens"
+node = "server"
+rects = [{"x" = 0, "y" = 1000, "w" = 1000, "h" = 1000, "scale" = 1.0}, {"x" = 1000, "y" = 0, "w" = 1000, "h" = 2000, "scale" = 1.0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"local_screen" = {"w" = 2000, "h" = 2000}, "peers" = {"$contains" = {"name" = "client", "screen" = {"h" = 1440}}}}
+
+# The top of the reachable edge switches and enters at the top of the client.
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 0, "y" = 1000}, {"type" = "mouse_move_rel", "dx" = -20, "dy" = 0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "client", "cursor.y" = {"$lte" = 1}}
+
+# Return at the client's 0-50% part, then leave at the bottom of the edge.
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_rel", "dx" = 3000, "dy" = 0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "server", "cursor.x" = 0, "cursor.y" = {"$gte" = 1000, "$lte" = 1002}}
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 0, "y" = 1999}, {"type" = "mouse_move_rel", "dx" = -20, "dy" = 0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "client", "cursor.y" = {"$gte" = 715, "$lte" = 720}}

@@ -55,11 +55,19 @@ pub fn active() -> Result<Displays> {
                     width: rect.size.width,
                     height: rect.size.height,
                 };
-                let mode = OwnedCf::new(ffi::CGDisplayCopyDisplayMode(id), "CG display mode")?;
-                let width = ffi::CGDisplayModeGetWidth(mode.0);
-                let height = ffi::CGDisplayModeGetHeight(mode.0);
-                let scale_x = ffi::CGDisplayModeGetPixelWidth(mode.0) as f64 / width.max(1) as f64;
-                let scale_y = ffi::CGDisplayModeGetPixelHeight(mode.0) as f64 / height.max(1) as f64;
+                // A sleeping or reconfiguring display can have no current
+                // mode. Its bounds still place it; the scale is informational.
+                let (scale_x, scale_y) = match OwnedCf::new(ffi::CGDisplayCopyDisplayMode(id), "CG display mode") {
+                    Ok(mode) => {
+                        let width = ffi::CGDisplayModeGetWidth(mode.0);
+                        let height = ffi::CGDisplayModeGetHeight(mode.0);
+                        (
+                            ffi::CGDisplayModeGetPixelWidth(mode.0) as f64 / width.max(1) as f64,
+                            ffi::CGDisplayModeGetPixelHeight(mode.0) as f64 / height.max(1) as f64,
+                        )
+                    }
+                    Err(_) => (1.0, 1.0),
+                };
                 union = Some(match union {
                     None => bounds,
                     Some(old) => {

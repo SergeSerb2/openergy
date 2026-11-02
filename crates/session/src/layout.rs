@@ -207,9 +207,36 @@ impl Layout {
         }
         merged
     }
-    /// Fraction in [0, 1) of a coordinate along the reachable part of an edge.
-    fn edge_fraction(&self, screen: usize, edge: Edge, coordinate: i32) -> f64 {
-        let spans = self.spans(screen, edge);
+    /// Pixel interval of an edge for a link range in percent of the full edge.
+    fn link_interval(&self, screen: usize, edge: Edge, range: (u8, u8)) -> (i32, i32) {
+        let r = self.rect(screen);
+        let (start, extent) = match edge {
+            Edge::Left | Edge::Right => (r.y, r.h.max(1)),
+            _ => (r.x, r.w.max(1)),
+        };
+        let at = |p: u8| start.saturating_add((i64::from(extent) * i64::from(p) / 100) as i32);
+        let (lo, hi) = (at(range.0), at(range.1));
+        (lo, hi.max(lo.saturating_add(1)))
+    }
+    /// Reachable parts of a link interval. Link ranges come from the config
+    /// layout and stay in full-edge terms; only movement inside a link skips
+    /// the parts of the edge that no display covers.
+    fn reachable(&self, screen: usize, edge: Edge, (lo, hi): (i32, i32)) -> Vec<(i32, i32)> {
+        let clipped = self
+            .spans(screen, edge)
+            .into_iter()
+            .map(|(a, b)| (a.max(lo), b.min(hi)))
+            .filter(|(a, b)| a < b)
+            .collect::<Vec<_>>();
+        if clipped.is_empty() {
+            vec![(lo, hi)]
+        } else {
+            clipped
+        }
+    }
+    /// Fraction in [0, 1) of a coordinate along the reachable part of an interval.
+    fn edge_fraction(&self, screen: usize, edge: Edge, interval: (i32, i32), coordinate: i32) -> f64 {
+        let spans = self.reachable(screen, edge, interval);
         let total: i64 = spans.iter().map(|(a, b)| i64::from(b - a)).sum();
         let mut offset = 0i64;
         for (a, b) in &spans {
@@ -224,9 +251,9 @@ impl Layout {
         }
         (offset.min(total - 1).max(0) as f64) / (total.max(1) as f64)
     }
-    /// Coordinate on the reachable part of an edge for a fraction in [0, 1].
-    fn edge_coordinate(&self, screen: usize, edge: Edge, fraction: f64) -> i32 {
-        let spans = self.spans(screen, edge);
+    /// Coordinate on the reachable part of an interval for a fraction in [0, 1].
+    fn edge_coordinate(&self, screen: usize, edge: Edge, interval: (i32, i32), fraction: f64) -> i32 {
+        let spans = self.reachable(screen, edge, interval);
         let total: i64 = spans.iter().map(|(a, b)| i64::from(b - a)).sum();
         let mut remaining = ((fraction.clamp(0.0, 1.0) * total as f64) as i64).min(total - 1).max(0);
         for (a, b) in &spans {
@@ -340,14 +367,16 @@ impl Layout {
             self.candidate = None;
             return None;
         }
-        let fraction = self.edge_fraction(
-            current,
-            edge,
-            match edge {
-                Edge::Left | Edge::Right => y,
-                _ => x,
-            },
-        );
+        let along_edge = match edge {
+            Edge::Left | Edge::Right => y,
+            _ => x,
+        };
+        // Link selection uses the full edge, like the derived link ranges.
+        let (coordinate, extent) = match edge {
+            Edge::Left | Edge::Right => (y - r.y, r.h),
+            _ => (x - r.x, r.w),
+        };
+        let fraction = f64::from(coordinate.clamp(0, extent - 1)) / f64::from(extent);
         let Some(link) = self
             .links
             .iter()
@@ -391,9 +420,8 @@ impl Layout {
                 }
             }
         }
-        let f = ((fraction * 100.0 - f64::from(link.from_range.0)) / f64::from(link.from_range.1 - link.from_range.0))
-            .clamp(0.0, 1.0);
-        let target_f = (f64::from(link.to_range.0) + f * f64::from(link.to_range.1 - link.to_range.0)) / 100.0;
+        let source = self.link_interval(current, edge, link.from_range);
+        let f = self.edge_fraction(current, edge, source, along_edge);
         let target = self.rect(link.to);
         // The target's entry edge faces the source edge.
         let entry = match edge {
@@ -402,7 +430,8 @@ impl Layout {
             Edge::Top => Edge::Bottom,
             Edge::Bottom => Edge::Top,
         };
-        let along = self.edge_coordinate(link.to, entry, target_f);
+        let destination = self.link_interval(link.to, entry, link.to_range);
+        let along = self.edge_coordinate(link.to, entry, destination, f);
         let (tx, ty) = match edge {
             Edge::Left => (target.x + target.w - 1, along),
             Edge::Right => (target.x, along),

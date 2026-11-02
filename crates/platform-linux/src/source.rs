@@ -480,9 +480,11 @@ impl Capture {
         };
         if let Some(ev) = ev {
             let decision = (self.callback)(ev);
+            // Under an active X grab, a single event cannot be handed back;
+            // PassOnce keeps the grab and the X server's own key state.
             if decision == CaptureDecision::Swallow {
                 self.grab(true)?;
-            } else if self.captured {
+            } else if decision == CaptureDecision::PassToOs && self.captured {
                 self.grab(false)?;
                 // The server already applied the physical state. Forward the current event
                 // to the focused application rather than posting another physical transition.

@@ -421,6 +421,10 @@ impl Client {
                                         as i32,
                                 };
                             }
+                            // A server can forward repeats of a key that went
+                            // down before this screen was entered. Ignore them
+                            // like the reference client does.
+                            InputEvent::KeyRepeat { key, button, .. } if !self.ledger.has_key(key, button) => return,
                             _ => {}
                         }
                         if let InputEvent::KeyUp { key, modifiers, button } = &ev {
@@ -463,6 +467,11 @@ impl Client {
                                 if !physical {
                                     return;
                                 }
+                            }
+                            // An up for a key this screen never pressed (held
+                            // on the server before entry) has nothing to release.
+                            if !self.ledger.has_key(*key, *button) {
+                                return;
                             }
                         }
                         self.ledger.observe(&ev);

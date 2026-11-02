@@ -47,6 +47,11 @@ First public source release.
   have different heights or offsets, the top of the next screen now lines up
   with the top of the edge display, and the cursor never enters empty space
   between displays.
+- A key held on the host while the cursor crosses to another screen no longer
+  repeats there, and its release now reaches the host OS. Before, the host OS
+  could keep the key held (for example, a stuck Shift after coming back).
+- On macOS, a sleeping display no longer changes the reported screen size or
+  fills the log with "display enumeration failed" every 2 seconds.
 - On Windows, capture continues when the system refuses to confine the cursor
   (for example, on a secure desktop). Before, the remote screen could receive
   host desktop coordinates, and the log filled with errors.
