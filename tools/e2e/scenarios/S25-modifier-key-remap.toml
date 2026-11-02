@@ -1,0 +1,78 @@
+# Requirement: A screen's modifier map applies to modifier keys as well as to modifier masks, keeps the key side, and drops keys mapped to none.
+name = "S25-modifier-key-remap"
+requirement = "A screen's modifier map applies to modifier keys as well as to modifier masks, keeps the key side, and drops keys mapped to none."
+blocked_by = []
+timeout_ms = 2000
+
+# The common Windows-to-Mac setup: host Ctrl acts as the client's Super
+# (Command) and the other way round. Host Alt is disabled on the client.
+[[node]]
+id = "server"
+kind = "openergy"
+role = "server"
+platform = "virtual"
+tls = false
+config = {"screen" = [{"name" = "server", "rect" = {"x" = 0, "y" = 0, "w" = 1920, "h" = 1080}}, {"name" = "client", "rect" = {"x" = 1920, "y" = 0, "w" = 1920, "h" = 1080}, "modifiers" = {"ctrl" = "super", "super_" = "ctrl", "alt" = "none"}}]}
+
+[[node]]
+id = "client"
+kind = "openergy"
+role = "client"
+platform = "virtual"
+remote = "server"
+tls = false
+
+[[step]]
+do = "wait_connected"
+node = "client"
+peer = "server"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+peer = "client"
+
+[[step]]
+do = "set_screens"
+node = "server"
+rects = [{"x" = 0, "y" = 0, "w" = 1920, "h" = 1080, "scale" = 1.0}]
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 1919, "y" = 540}, {"type" = "mouse_move_rel", "dx" = 20, "dy" = 0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "client"}
+
+[[step]]
+do = "ledger_mark"
+node = "client"
+save = "entered"
+
+# Right Ctrl + c, then left Super + v, then left Alt + x.
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "key_down", "key" = 61412, "modifiers" = 0, "button" = 286}, {"type" = "key_down", "key" = 99, "modifiers" = 2, "button" = 47}, {"type" = "key_up", "key" = 99, "modifiers" = 2, "button" = 47}, {"type" = "key_up", "key" = 61412, "modifiers" = 2, "button" = 286}, {"type" = "key_down", "key" = 61419, "modifiers" = 0, "button" = 348}, {"type" = "key_down", "key" = 118, "modifiers" = 16, "button" = 48}, {"type" = "key_up", "key" = 118, "modifiers" = 16, "button" = 48}, {"type" = "key_up", "key" = 61419, "modifiers" = 16, "button" = 348}, {"type" = "key_down", "key" = 61417, "modifiers" = 0, "button" = 57}, {"type" = "key_down", "key" = 120, "modifiers" = 4, "button" = 46}, {"type" = "key_up", "key" = 120, "modifiers" = 4, "button" = 46}, {"type" = "key_up", "key" = 61417, "modifiers" = 4, "button" = 57}]
+
+[[step]]
+do = "sleep"
+ms = 150
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+since = "${entered.sequence}"
+exact = true
+input_only = true
+expect = [{"event" = {"type" = "key_down", "key" = 61420, "button" = 286}}, {"event" = {"type" = "key_down", "key" = 99, "modifiers" = 16}}, {"event" = {"type" = "key_up", "key" = 99, "modifiers" = 16}}, {"event" = {"type" = "key_up", "key" = 61420, "button" = 286}}, {"event" = {"type" = "key_down", "key" = 61411, "button" = 348}}, {"event" = {"type" = "key_down", "key" = 118, "modifiers" = 2}}, {"event" = {"type" = "key_up", "key" = 118, "modifiers" = 2}}, {"event" = {"type" = "key_up", "key" = 61411, "button" = 348}}, {"event" = {"type" = "key_down", "key" = 120, "modifiers" = 0}}, {"event" = {"type" = "key_up", "key" = 120, "modifiers" = 0}}]
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "virtual.recorded"
+params = {}
+fields = {"stats.pressed_keys" = 0}

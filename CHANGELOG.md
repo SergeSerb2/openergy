@@ -56,6 +56,9 @@ First public source release.
 - On macOS, the daemon notices a permission grant without a restart. macOS
   can keep a denial cached inside a running process, so while a permission is
   denied the daemon asks a short-lived copy of itself, at most once a second.
+- Modifier remaps (for example, host Ctrl acts as Command on a Mac) now apply
+  to the modifier keys too, not only to the modifier state of other keys. A
+  modifier mapped to "none" is dropped.
 - A client reconnects within about 5 seconds after its host comes back, for
   example after a reboot. Before, retries backed off to 30 seconds, and each
   attempt could wait 10 seconds for an answer. The connect deadline is now 5
