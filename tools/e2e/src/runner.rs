@@ -945,22 +945,41 @@ fn bound_receive_buffer(socket: &impl std::os::fd::AsRawFd) {
     set_receive_buffer(socket.as_raw_fd());
 }
 
-/// Blocking loopback connect with the receive buffer sized first.
+/// How long one raw probe connect attempt may wait; the caller retries
+/// until the scenario deadline.
+const PROBE_CONNECT_TIMEOUT: Duration = Duration::from_millis(100);
+
+/// Loopback connect with the receive buffer sized first. The socket is
+/// close-on-exec (the runner spawns daemons) and the connect is bounded by
+/// `PROBE_CONNECT_TIMEOUT`, like `TcpStream::connect_timeout`.
 #[cfg(unix)]
 fn connect_bounded(addr: SocketAddr) -> std::io::Result<TcpStream> {
-    use std::os::fd::FromRawFd;
+    use std::os::fd::{AsRawFd, FromRawFd, OwnedFd};
     let SocketAddr::V4(v4) = addr else {
-        return TcpStream::connect_timeout(&addr, Duration::from_millis(100));
+        return TcpStream::connect_timeout(&addr, PROBE_CONNECT_TIMEOUT);
     };
-    // Safety: plain socket syscalls on a descriptor owned here; the sockaddr
-    // is fully initialised and its length matches; ownership moves into the
-    // TcpStream only after a successful connect.
-    unsafe {
-        let fd = libc::socket(libc::AF_INET, libc::SOCK_STREAM, 0);
-        if fd < 0 {
-            return Err(std::io::Error::last_os_error());
+    let check = |result: libc::c_int| {
+        if result < 0 {
+            Err(std::io::Error::last_os_error())
+        } else {
+            Ok(result)
         }
+    };
+    #[cfg(any(target_os = "linux", target_os = "android"))]
+    let kind = libc::SOCK_STREAM | libc::SOCK_CLOEXEC;
+    #[cfg(not(any(target_os = "linux", target_os = "android")))]
+    let kind = libc::SOCK_STREAM;
+    // Safety: plain socket syscalls on a descriptor owned by `socket`, which
+    // closes it on every early return; the sockaddr is fully initialised and
+    // its length matches; the pollfd outlives the poll call.
+    unsafe {
+        let socket = OwnedFd::from_raw_fd(check(libc::socket(libc::AF_INET, kind, 0))?);
+        let fd = socket.as_raw_fd();
+        #[cfg(not(any(target_os = "linux", target_os = "android")))]
+        check(libc::fcntl(fd, libc::F_SETFD, libc::FD_CLOEXEC))?;
         set_receive_buffer(fd);
+        let flags = check(libc::fcntl(fd, libc::F_GETFL))?;
+        check(libc::fcntl(fd, libc::F_SETFL, flags | libc::O_NONBLOCK))?;
         let mut sin: libc::sockaddr_in = std::mem::zeroed();
         #[cfg(any(target_os = "macos", target_os = "ios", target_os = "freebsd"))]
         {
@@ -971,20 +990,46 @@ fn connect_bounded(addr: SocketAddr) -> std::io::Result<TcpStream> {
         sin.sin_addr = libc::in_addr {
             s_addr: u32::from_ne_bytes(v4.ip().octets()),
         };
-        if libc::connect(
+        let started = libc::connect(
             fd,
             (&sin as *const libc::sockaddr_in).cast(),
             std::mem::size_of::<libc::sockaddr_in>() as libc::socklen_t,
-        ) != 0
-        {
+        );
+        if started != 0 {
             let error = std::io::Error::last_os_error();
-            libc::close(fd);
-            return Err(error);
+            if error.raw_os_error() != Some(libc::EINPROGRESS) {
+                return Err(error);
+            }
+            let mut ready = libc::pollfd {
+                fd,
+                events: libc::POLLOUT,
+                revents: 0,
+            };
+            let millis = PROBE_CONNECT_TIMEOUT.as_millis() as libc::c_int;
+            if check(libc::poll(&mut ready, 1, millis))? == 0 {
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::TimedOut,
+                    "raw probe connect timed out",
+                ));
+            }
+            let mut pending: libc::c_int = 0;
+            let mut length = std::mem::size_of::<libc::c_int>() as libc::socklen_t;
+            check(libc::getsockopt(
+                fd,
+                libc::SOL_SOCKET,
+                libc::SO_ERROR,
+                (&mut pending as *mut libc::c_int).cast(),
+                &mut length,
+            ))?;
+            if pending != 0 {
+                return Err(std::io::Error::from_raw_os_error(pending));
+            }
         }
-        Ok(TcpStream::from_raw_fd(fd))
+        check(libc::fcntl(fd, libc::F_SETFL, flags))?;
+        Ok(TcpStream::from(socket))
     }
 }
 #[cfg(not(unix))]
 fn connect_bounded(addr: SocketAddr) -> std::io::Result<TcpStream> {
-    TcpStream::connect_timeout(&addr, Duration::from_millis(100))
+    TcpStream::connect_timeout(&addr, PROBE_CONNECT_TIMEOUT)
 }
