@@ -359,6 +359,7 @@ impl Context {
                 }
             };
             stream.set_nodelay(true)?;
+            bound_receive_buffer(&stream);
             self.state_mut(id)?.raw = Some(Raw {
                 listener: None,
                 stream: Some(stream),
@@ -910,4 +911,30 @@ fn write_ipc(stream: &mut UnixStream, value: &Value, deadline: Instant) -> Resul
         }
         Ok(())
     })
+}
+
+/// A raw probe that stops reading must apply backpressure like a peer on
+/// another computer. Over loopback, macOS otherwise autotunes the probe's
+/// receive buffer to MiBs; each tiny unread segment then holds a kernel mbuf,
+/// and hundreds of thousands of them exhaust the shared mbuf pool on a small
+/// VM, so the daemon's non-blocking send sleeps in the kernel. A fixed size
+/// also turns autotuning off.
+pub fn bound_receive_buffer(stream: &TcpStream) {
+    #[cfg(unix)]
+    {
+        use std::os::fd::AsRawFd;
+        let size: libc::c_int = 64 * 1024;
+        // Safety: a valid socket fd and a correctly sized c_int option value.
+        unsafe {
+            libc::setsockopt(
+                stream.as_raw_fd(),
+                libc::SOL_SOCKET,
+                libc::SO_RCVBUF,
+                (&size as *const libc::c_int).cast(),
+                std::mem::size_of::<libc::c_int>() as libc::socklen_t,
+            );
+        }
+    }
+    #[cfg(not(unix))]
+    let _ = stream;
 }
