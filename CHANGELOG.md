@@ -50,6 +50,10 @@ First public source release.
 - A key held on the host while the cursor crosses to another screen no longer
   repeats there, and its release now reaches the host OS. Before, the host OS
   could keep the key held (for example, a stuck Shift after coming back).
+- A client reconnects within about 5 seconds after its host comes back, for
+  example after a reboot. Before, retries backed off to 30 seconds, and each
+  attempt could wait 10 seconds for an answer. The connect deadline is now 5
+  seconds.
 - On macOS, a sleeping display no longer changes the reported screen size or
   fills the log with "display enumeration failed" every 2 seconds.
 - On Windows, capture continues when the system refuses to confine the cursor

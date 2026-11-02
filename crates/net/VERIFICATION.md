@@ -48,7 +48,7 @@ The public waker also lets unrelated daemon work interrupt that poll.
   The global mailbox/queued-byte budget is 8 MiB, with 256 command slots.
   More than 4 MiB of queued Input/Control marks SlowPeer, clears queued
   Input/Bulk, flushes Control for one heartbeat (default 3 s), then closes.
-- Connect/DNS/TLS has a default 10 s deadline; the TLS hold defaults to 30 s.
+- Connect/DNS/TLS has a default 5 s deadline; the TLS hold defaults to 30 s.
   OS name resolution uses one lazy bounded worker so getaddrinfo cannot block
   the io thread. Numeric connections create no resolver thread. IPv4/IPv6
   resolved candidates are tried within the original deadline.

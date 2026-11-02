@@ -623,9 +623,12 @@ impl Runtime {
             return;
         }
         self.attempt = self.attempt.saturating_add(1);
+        // A host that reboots or wakes should be back within seconds. A LAN
+        // connect attempt is cheap, so the cap stays short (Synergy retries
+        // every second).
         let base = 250u64
             .saturating_mul(1u64 << self.attempt.saturating_sub(1).min(7))
-            .min(30_000);
+            .min(5_000);
         self.rng ^= self.rng << 13;
         self.rng ^= self.rng >> 7;
         self.rng ^= self.rng << 17;
