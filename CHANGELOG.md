@@ -3,14 +3,6 @@
 All notable changes to Openergy are listed here. A version heading marked
 "unreleased" has no published release artifacts.
 
-## Unreleased
-
-### Changed
-
-- A stalled peer now builds up at most about 0.75 MiB of input (512 KiB
-  queued plus a 256 KiB socket buffer), not several MiB. When it resumes, it
-  replays less stale motion, and the host notices the stall sooner.
-
 ## 0.1.0-alpha — 2026-11-02
 
 First public source release.
@@ -38,6 +30,12 @@ First public source release.
 - An external real-process test runner, Docker interop labs for Deskflow and
   Barrier, and release tooling that builds, smoke-tests, and records the
   provenance of archives.
+
+### Changed
+
+- A stalled peer now builds up at most about 0.75 MiB of input (512 KiB
+  queued plus a 256 KiB socket buffer), not several MiB. When it resumes, it
+  replays less stale motion, and the host notices the stall sooner.
 
 ### Fixed
 
