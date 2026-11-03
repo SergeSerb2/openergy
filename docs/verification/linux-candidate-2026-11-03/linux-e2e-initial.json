@@ -1,0 +1,1298 @@
+{
+  "binary": "$LINUX_PRIVATE/target/release/openergy",
+  "excluded": [
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "I1-barrier-plain"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "I1-barrier-tls"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "I1-deskflow-plain"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "I1-deskflow-tls"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "I2-barrier-plain"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "I2-barrier-tls"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "I2-barrier-wrong-pin"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "I2-deskflow-plain"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "I2-deskflow-tls"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "I2-deskflow-wrong-pin"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "I3-barrier-plain"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "I3-barrier-tls"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "I3-deskflow-plain"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "I3-deskflow-tls"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "I4-barrier-plain"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "I4-barrier-tls"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "I4-deskflow-plain"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "I4-deskflow-tls"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "I5-barrier-export"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "I5-deskflow-export"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "L1-barrier-hello"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "L1-deskflow-hello"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "L2-barrier-clipboard"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "L2-deskflow-clipboard"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "L3-barrier-pair"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "L3-deskflow-pair"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "L4-barrier-raw-client"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "L4-deskflow-raw-client"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "P03-barrier-held-key-repeat"
+    },
+    {
+      "reason": "Docker lab excluded by --no-docker",
+      "scenario": "P08-deskflow-held-key-repeat"
+    }
+  ],
+  "excluded_count": 30,
+  "failed": 2,
+  "format_version": 1,
+  "lab_port_range": [
+    25800,
+    25900
+  ],
+  "no_docker": true,
+  "passed": 91,
+  "port_range": [
+    25600,
+    25700
+  ],
+  "scenarios": [
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 707,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Held Shift crosses once, releases once without recovery; receiver alone transforms wheel.",
+      "scenario": "A1-modifier-and-receiver-wheel"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 402,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Client closes an unsupported major without sending EICV and exposes a plain protocol error.",
+      "scenario": "A10-unsupported-hello-close"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 868,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Lost input repeats report an error without dropping peers; a lost up leaves only that peer and flushes ups/COUT before FIN.",
+      "scenario": "A11-input-backpressure-release"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 918,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Restart while already connected opens a real replacement connection for either role, with one adopted peer.",
+      "scenario": "A12-restart-connected-roles"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1146,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "No input sent after trust.revoke replies reaches the sink; held input is released and the peer needs approval again.",
+      "scenario": "A13-pinned-revoke-cutoff"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 3671,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Client caps its hello at 1.8, accepts mixed-case future server, sends no options or spontaneous heartbeat, and accepts sequence-zero push.",
+      "scenario": "A2-client-direction-version-heartbeat-sequence"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1807,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "A raw peer sees ordinary DKDN, matching release ups and COUT before FIN on heartbeat death.",
+      "scenario": "A3-heartbeat-close-flush"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 582,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "An occupied replacement port preserves exact TOML, live config, and an existing connection.",
+      "scenario": "A4-config-live-rollback"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1592,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "A remote payload stays available to a late peer even when the server cannot read its pasteboard back.",
+      "scenario": "A5-unavailable-clipboard-readback"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 553,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "A real stopped reader fills the bounded Bulk queue; transfer abort is visible while IPC stays responsive.",
+      "scenario": "A6-clipboard-backpressure"
+    },
+    {
+      "artifact_dir": "<private retained failure directory>",
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 295,
+      "failed_step": 1,
+      "failure": {
+        "kind": "product",
+        "message": "could not observe approval lock ownership"
+      },
+      "measurements": [],
+      "outcome": "FAIL",
+      "requirement": "SIGKILL of an approval holding the real trust-file lock releases it; a second CLI approval saves the pin.",
+      "scenario": "A7-trust-lock-crash"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 566,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "A real atomic-save failure rolls back session-only and transport config without closing the old peer.",
+      "scenario": "A8-config-save-rollback"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1078,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Server connected state clears old errors; TLS status distinguishes an unverified client from a verified server pin.",
+      "scenario": "A9-tls-trusted-status"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 929,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Synergy's core port is preserved in the imported client endpoint; the imported daemon connects and survives restart.",
+      "scenario": "C1-import-client-port"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 626,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "A valid server import may replace the db wire names with authoritative classic screens and a final core INI identity.",
+      "scenario": "C2-import-final-identity"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 595,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "A real config patch accepts 64 MiB and rejects 64 MiB plus one byte without changing saved or live settings.",
+      "scenario": "C3-clipboard-supported-cap"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1018,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Restart after disconnect enables the real virtual capture and clipboard workers as well as reconnecting the transport.",
+      "scenario": "D2-restart-disconnected-workers"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 595,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Real virtual input retains order and repeated tail assertions select the final matching record.",
+      "scenario": "E1-repeated-ledger-tail"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 298,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "A queued key down precedes its safety release, which precedes leave, same-peer reentry and a new down.",
+      "scenario": "N2-queued-release-reentry"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 306,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Reject zero, short and impossible hello payload sizes as soon as their length prefixes arrive.",
+      "scenario": "P01-impossible-hello-prefixes"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 270,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Reject a message too short for a code without waiting for another frame or the heartbeat timeout.",
+      "scenario": "P02-short-established-frame"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 297,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Pre-1.8 repeats accept absent and present language fields, with fragmented hello and coalesced input.",
+      "scenario": "P04-legacy-repeat-dialects"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 301,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Protocol 1.8 must reject repeats with no language length and release held input.",
+      "scenario": "P05-modern-repeat-truncated"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 296,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Legacy repeat fallback must reject a partial language length and release held input.",
+      "scenario": "P06-legacy-repeat-truncated"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 318,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Bound DSOP counts, UTF-8 text and DCLP fields and reject trailing bytes without daemon failure.",
+      "scenario": "P07-hostile-field-bounds"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 314,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "DCLP containers preserve NUL and Unicode text, HTML and binary bytes, skip unknown formats, reject bad counts and lengths, and accept an empty clipboard.",
+      "scenario": "P09-clipboard-wire-containers"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 287,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "The host name and its aliases remain local; a remote claimant receives EUNK.",
+      "scenario": "Q1-primary-screen-name"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 520,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Disable/re-enable receive cannot resurrect pre-policy clipboard chunks; a fresh Start recovers.",
+      "scenario": "Q10-clipboard-policy-cancels-chunks"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1488,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "A new hit on a mapped edge waits the full delay after the pointer visited an unmapped segment.",
+      "scenario": "Q11-layout-delay-unmapped-edge"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 2281,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Client-originated CROP/DSOP cannot stop server CALV or its dead-peer timeout.",
+      "scenario": "Q12-client-cannot-disable-heartbeat"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1780,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "A late peer receives the retained local clipboard after an unavailable backend recovers and the host enters another peer.",
+      "scenario": "Q13-clipboard-readback-recovery"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 510,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Duplicate wire format IDs cause no clipboard update, transfer notice, or backend error; the next valid transfer succeeds.",
+      "scenario": "Q14-client-duplicate-clipboard-formats"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 490,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Duplicate wire format IDs cause no clipboard update, transfer notice, or backend error; the next valid transfer succeeds.",
+      "scenario": "Q15-server-duplicate-clipboard-formats"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 897,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Meta/AltGr with F2 and Ctrl with mouse button 3 toggle lock once, suppress repeats/ups, and leave no held inputs.",
+      "scenario": "Q16-lock-hotkey-grammar"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 711,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Two pre-entry Shift keys and a later physical Shift release separately without dropping the remaining held modifier.",
+      "scenario": "Q17-preentry-modifier-mask"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1378,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Host and client text followed by an empty format list clears stale remote clipboard data.",
+      "scenario": "Q18-empty-clipboard-clear"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1700,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Unavailable readback on screen entry preserves the remote clipboard and emits no backend error.",
+      "scenario": "Q19-unavailable-is-not-clear"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 397,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Pre-DSOP clipboard chunks cannot change the client clipboard; a ready session can transfer normally.",
+      "scenario": "Q2-client-setup-clipboard"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 447,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Preserve receiver text for unsupported-only data, accept supported plus unknown formats, and retain a genuine count-zero clear.",
+      "scenario": "Q20-client-unsupported-only-clipboard"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 462,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Preserve receiver text for unsupported-only data, accept supported plus unknown formats, and retain a genuine count-zero clear.",
+      "scenario": "Q20-server-unsupported-only-clipboard"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1588,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "PNG-only virtual clipboard data preserves peer text; text plus PNG transfers text, and a genuine empty clipboard clears.",
+      "scenario": "Q21-client-unsupported-only-local-clipboard"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1564,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "PNG-only virtual clipboard data preserves peer text; text plus PNG transfers text, and a genuine empty clipboard clears.",
+      "scenario": "Q21-server-unsupported-only-local-clipboard"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 401,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Pre-DINF clipboard grabs and chunks cannot mutate the server clipboard; adopted peers can transfer normally.",
+      "scenario": "Q3-server-setup-clipboard"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 579,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "A modifier synthesized on entry and a second physical modifier each release without leaving a held key.",
+      "scenario": "Q4-two-held-shift-keys"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 612,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "An unrelated live config change preserves a resized peer's edge mapping.",
+      "scenario": "Q5-live-layout-peer-geometry"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1179,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "A disabled sender cannot overwrite the remote clipboard on screen entry; enabling sharing resumes delivery.",
+      "scenario": "Q6-disabled-clipboard-enter"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1780,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Receive-disabled hosts retain their clipboard for a later peer after another peer attempts an update.",
+      "scenario": "Q7-receive-disabled-ownership"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 314,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Every held zero-button key receives its own DKUP before COUT on a live configuration leave.",
+      "scenario": "Q8-zero-button-key-release"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 884,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "After reconnect, a client uses sequence zero until the new server sends CINN.",
+      "scenario": "Q9-reconnect-clipboard-sequence"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 947,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [
+        {
+          "cpu_percent": 0.0,
+          "kind": "resources",
+          "rss_peak_bytes": 4325376,
+          "window_ms": 283
+        }
+      ],
+      "outcome": "PASS",
+      "requirement": "Real daemon control, typed errors, TOML/file hashes/modes, restart and CLI paths exercise the runner.",
+      "scenario": "R1-control-files"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 922,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Owned process STOP/CONT/KILL, forced stop, start, restart and exit status operate on real virtual daemons.",
+      "scenario": "R2-lifecycle"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 343,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "A scroll setting change between clipboard Data and End keeps the transfer; clipboard policy changes still cancel it and a fresh transfer recovers.",
+      "scenario": "R5-client-config-retains-clipboard"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 685,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "An accepted large dead corner blocks crossing; disabling it restores crossing.",
+      "scenario": "R5-dead-corner-negative-origin"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 650,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "An accepted large dead corner blocks crossing; disabling it restores crossing.",
+      "scenario": "R5-dead-corner-positive-origin"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1299,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "After holding the first edge hit beyond the double-tap window, a second physical hit starts a new pair and only a third timely hit switches.",
+      "scenario": "R5-double-tap-stationary-timeout"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1364,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [
+        {
+          "cpu_percent": 0.0,
+          "kind": "resources",
+          "rss_peak_bytes": 4530176,
+          "window_ms": 1045
+        }
+      ],
+      "outcome": "PASS",
+      "requirement": "A declared 64 MiB transfer does not eagerly allocate; a newer grab cancels a complete pending payload, and a fresh transfer recovers.",
+      "scenario": "R5-incoming-clipboard-cancellation"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 288,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Merging two connected screens through aliases keeps one canonical owner, closes the duplicate, and routes input to the retained owner.",
+      "scenario": "R5-server-live-alias-merge"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 878,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "A connected client remains reachable after its layout name changes with the previous name as an alias, including input and a later reconnect.",
+      "scenario": "R5-server-live-alias-rename"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 293,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Isolated virtual IPC status has all frozen fields; daemon.stop exits zero.",
+      "scenario": "S0-smoke"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 578,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Two real plain virtual daemons exchange hello/QINF/DINF, report names/screens, and stop cleanly.",
+      "scenario": "S1-connect"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1444,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Local and receiver clipboard caps emit clipboard.blocked, deliver no partial, and recover for a small clip.",
+      "scenario": "S10-clipboard-cap"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 2385,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "SIGSTOP creates heartbeat silence; after 3 intervals the server leaves and resumes on fresh reconnect.",
+      "scenario": "S11-heartbeat"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 588,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Changing virtual displays updates peer screen dimensions and remaps an edge without disconnect.",
+      "scenario": "S12-display-change"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 11461,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Malformed flood closes only the offending connection; the daemon still serves a new client.",
+      "scenario": "S13-flood"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 600,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Malformed garbage closes only the offending connection; the daemon still serves a new client.",
+      "scenario": "S13-garbage"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 542,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Malformed oversized closes only the offending connection; the daemon still serves a new client.",
+      "scenario": "S13-oversized"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 254,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Truncated hello-back is closed without allocation growth or daemon death.",
+      "scenario": "S13-truncated-hello"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 620,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Malformed truncated closes only the offending connection; the daemon still serves a new client.",
+      "scenario": "S13-truncated"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1102,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Unknown whole frames must NOT disconnect; subsequent keepalive is accepted.",
+      "scenario": "S13-unknown"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 652,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Synthetic Synergy config/db v17/INI import and export retain ranged links, port, caps and warnings, then boot a real pair.",
+      "scenario": "S14-import-roundtrip"
+    },
+    {
+      "artifact_dir": "<private retained failure directory>",
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 121523,
+      "failed_step": 9,
+      "failure": {
+        "kind": "product",
+        "message": "capture-to-recorded p99 8.091 ms exceeded 5 ms budget (p50 0.421 ms, max 42.714 ms)"
+      },
+      "measurements": [
+        {
+          "cpu_percent": 0.0,
+          "kind": "resources",
+          "rss_peak_bytes": 4546560,
+          "window_ms": 60051
+        },
+        {
+          "cpu_percent": 0.0,
+          "kind": "resources",
+          "rss_peak_bytes": 4530176,
+          "window_ms": 60030
+        },
+        {
+          "kind": "capture_to_recorded_upper_bound",
+          "max_ms": 42.71428,
+          "p50_ms": 0.42087800000000003,
+          "p95_ms": 2.391349,
+          "p99_ms": 8.09122,
+          "samples": 1000
+        }
+      ],
+      "outcome": "FAIL",
+      "requirement": "Each idle daemon stays below 30 MB and 0.1% CPU over 60 s; 1000 moves have localhost p99 below 5 ms.",
+      "scenario": "S15-resources-latency"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 588,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Virtual permission revoke leaves and releases; granting again resumes capture without a daemon restart.",
+      "scenario": "S16-permissions"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 861,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Duplicate-name matrix: healthy incumbent rejects newcomer with EBSY.",
+      "scenario": "S17-healthy"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1088,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Duplicate-name matrix: same TLS identity permits immediate replacement.",
+      "scenario": "S17-same-fingerprint"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1504,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Duplicate-name matrix: one missed heartbeat permits replacement of a stale incumbent.",
+      "scenario": "S17-stale"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 572,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Down numbers exceed seed and strictly rise; drag/up reuse numbers and states; 1-2-3 clicks reset by distance and time.",
+      "scenario": "S18-click-numbering"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 571,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Merge patch writes TOML and changes the live role/port; invalid patch reports an error and preserves exact file bytes.",
+      "scenario": "S19-config-patch"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 587,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Right-to-left switching maps full and partial ranges, with leave before enter markers.",
+      "scenario": "S2-edge-mapping"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 309,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Raw protocol observation proves leave COUT precedes the next enter CINN.",
+      "scenario": "S2-wire-order"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 649,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Watched parent exit triggers release-all, CBYE observed on a real socket, and daemon exit code zero.",
+      "scenario": "S20-parent-exit"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 371,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "A real daemon watches a gated parent, then exits zero; observer records its actual exit code.",
+      "scenario": "S20-parent-off"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1033,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "fingerprint --synergy emits exact v2 lowercase SHA-256; imported Synergy trusted-servers pin survives and connects.",
+      "scenario": "S21-fingerprint-import"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 592,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "With uneven host displays, edges map over the displays that touch them; a display change keeps the remote session; a lost client returns the cursor to where it left.",
+      "scenario": "S22-multi-display-edges"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 708,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "A key held on the host while the cursor crosses to a client does not auto-repeat on the client, and its release reaches both the host OS and the client.",
+      "scenario": "S23-held-key-across-switch"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 596,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "A link that covers part of an uneven host edge switches over that whole part and maps it onto the linked part of the client.",
+      "scenario": "S24-partial-link-uneven-displays"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 727,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "A screen's modifier map applies to modifier keys as well as to modifier masks, keeps the key side, and drops keys mapped to none.",
+      "scenario": "S25-modifier-key-remap"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 577,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Modifier keys, repeats, buttons and horizontal-first Deskflow wheel units arrive in order.",
+      "scenario": "S3-input-order"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 857,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Abrupt server death releases held key and reconnect permits fresh input.",
+      "scenario": "S4-disconnect-release"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 869,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Abrupt server death releases held drag button and reconnect permits fresh input.",
+      "scenario": "S5-disconnect-release"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1450,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Unknown TLS identity holds input; approval persists trust and permits reconnect.",
+      "scenario": "S6-trust-approval"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 717,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Wrong TLS pin refuses connection, reports a trust error, and sends no plaintext fallback.",
+      "scenario": "S7-wrong-pin"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1163,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "UTF-8 clipboard travels in both directions with CRLF normalization and no bounce-back.",
+      "scenario": "S8-text-clipboard"
+    },
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 1312,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "8 MiB DIB pixels plus 40-byte header retain SHA-256; typing arrives before transfer completion.",
+      "scenario": "S9-large-dib"
+    }
+  ],
+  "slowdown": 1.0
+}

@@ -1,0 +1,105 @@
+{
+  "binary_sha256": "69ad2c7ffd946bc205b48b7942ad2e64993861089a54ecc6bc536124aec619d9",
+  "script_sha256": "886bb4dd85a30471f691319dfd41d279f63f90a1b83e61032ba221876954a240",
+  "platform": "virtual",
+  "transport": "private Windows named pipe",
+  "session_id": 0,
+  "checks": [
+    {
+      "name": "initial public CLI status",
+      "passed": true
+    },
+    {
+      "name": "persistent client initial reply",
+      "passed": true
+    },
+    {
+      "name": "all 63 pending clients initially admitted",
+      "passed": true
+    },
+    {
+      "name": "empty clients expire",
+      "passed": true,
+      "total": 16,
+      "max_observed_ms": 10072.0,
+      "min_observed_ms": 10034.0,
+      "closed": 16
+    },
+    {
+      "name": "partial_header clients expire",
+      "passed": true,
+      "total": 16,
+      "max_observed_ms": 10064.0,
+      "min_observed_ms": 10025.0,
+      "closed": 16
+    },
+    {
+      "name": "partial_body clients expire",
+      "passed": true,
+      "total": 16,
+      "max_observed_ms": 10066.0,
+      "min_observed_ms": 10016.0,
+      "closed": 16
+    },
+    {
+      "name": "drip clients expire",
+      "passed": true,
+      "total": 15,
+      "max_observed_ms": 10056.0,
+      "min_observed_ms": 10021.0,
+      "closed": 15
+    },
+    {
+      "name": "public CLI recovers while incomplete clients stay open",
+      "passed": true
+    },
+    {
+      "name": "completed-request idle client remains usable",
+      "passed": true
+    },
+    {
+      "name": "releasing one held client slot restores CLI access",
+      "passed": true
+    },
+    {
+      "name": "fragmented complete request succeeds",
+      "passed": true
+    },
+    {
+      "name": "pipelined complete requests preserve reply order",
+      "passed": true
+    },
+    {
+      "name": "unknown method returns an error",
+      "passed": true
+    },
+    {
+      "name": "valid request after method error succeeds",
+      "passed": true
+    },
+    {
+      "name": "partial frame after a completed request expires",
+      "passed": true
+    },
+    {
+      "name": "oversized header is refused",
+      "passed": true
+    },
+    {
+      "name": "public CLI works after refusal",
+      "passed": true
+    },
+    {
+      "name": "shutdown with a partial client exits cleanly",
+      "passed": true
+    },
+    {
+      "name": "owned IPC endpoint removed",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "daemon_exit": 0,
+  "cleanup": true,
+  "evidence_dir": "<PRIVATE_RUN>\\oe-pipe-deadline-4753c91319a04cb893bf61c4cd8005e2"
+}

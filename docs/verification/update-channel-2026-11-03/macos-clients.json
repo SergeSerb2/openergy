@@ -1,0 +1,78 @@
+[
+  {
+    "client": "host",
+    "command": [
+      "mac",
+      "python3",
+      "-"
+    ],
+    "exit": 0,
+    "report": {
+      "os_build": "ProductName:\t\tmacOS\nProductVersion:\t\t27.2\nBuildVersion:\t\t26B5112a\n",
+      "architecture": "arm64",
+      "requests": [
+        {
+          "started_utc": "2026-11-03T22:05:01.081108+00:00",
+          "user_agent": "curl default",
+          "exit": 0,
+          "http_status": "200",
+          "response_bytes": 756,
+          "sha256": "c693230197b548eba00fd2ea25a7a696cef218d1e854410f0c68934bcc6dd2d7",
+          "release_count": 0,
+          "stderr": ""
+        },
+        {
+          "started_utc": "2026-11-03T22:05:01.298036+00:00",
+          "user_agent": "Openergy/0.1.0 Sparkle/2.10.0",
+          "exit": 0,
+          "http_status": "200",
+          "response_bytes": 756,
+          "sha256": "c693230197b548eba00fd2ea25a7a696cef218d1e854410f0c68934bcc6dd2d7",
+          "release_count": 0,
+          "stderr": ""
+        }
+      ]
+    },
+    "stderr": ""
+  },
+  {
+    "client": "m1-dev",
+    "command": [
+      "mac",
+      "ssh",
+      "-o",
+      "BatchMode=yes",
+      "m1-dev",
+      "python3",
+      "-"
+    ],
+    "exit": 0,
+    "report": {
+      "os_build": "ProductName:\t\tmacOS\nProductVersion:\t\t27.0.1\nBuildVersion:\t\t26A434\n",
+      "architecture": "arm64",
+      "requests": [
+        {
+          "started_utc": "2026-11-03T22:05:02.092132+00:00",
+          "user_agent": "curl default",
+          "exit": 0,
+          "http_status": "200",
+          "response_bytes": 756,
+          "sha256": "c693230197b548eba00fd2ea25a7a696cef218d1e854410f0c68934bcc6dd2d7",
+          "release_count": 0,
+          "stderr": ""
+        },
+        {
+          "started_utc": "2026-11-03T22:05:02.589155+00:00",
+          "user_agent": "Openergy/0.1.0 Sparkle/2.10.0",
+          "exit": 0,
+          "http_status": "200",
+          "response_bytes": 756,
+          "sha256": "c693230197b548eba00fd2ea25a7a696cef218d1e854410f0c68934bcc6dd2d7",
+          "release_count": 0,
+          "stderr": ""
+        }
+      ]
+    },
+    "stderr": ""
+  }
+]

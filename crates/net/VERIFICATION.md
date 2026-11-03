@@ -1,5 +1,21 @@
 # WP4 transport verification
 
+## Current-state context (2026-11-03)
+
+The results below are the original WP4 snapshot. Its remaining codec and
+daemon integration gates describe that stage, before the published alpha.
+At release source `e5d86e2389badf0c45fc2fcef8c4f478b3a2a284`,
+[`protocol::encode` and `Decoder::feed`](../protocol/src/codec.rs) have real
+implementations, and [the network reactor](src/reactor.rs) uses the codec for
+message send and receive. The earlier `NotImplemented` statement is superseded;
+the historical frame-mode checks below are preserved as recorded.
+
+See [current readiness](../../docs/plan/readiness.md) and the
+[acceptance matrix](../../docs/verification/native-acceptance.md) for current
+evidence and open native gates. This source review is not a new transport run.
+
+## Original WP4 record
+
 Verified on macOS, 2026-10-21, Rust `1.99.1 (58cf8f9c3 2026-10-13)`.
 Only `crates/net/` is part of this change. No unit tests, mocks, platform input,
 event taps, cursor changes, pasteboard writes, TCC requests, native Synergy

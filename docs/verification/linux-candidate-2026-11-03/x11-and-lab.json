@@ -1,0 +1,59 @@
+{
+  "source_commit": "e5d86e2389badf0c45fc2fcef8c4f478b3a2a284",
+  "host": {
+    "os": "macOS 27.2",
+    "build": "26B5112a",
+    "architecture": "arm64",
+    "docker": "29.8.2 aarch64"
+  },
+  "host_virtual_binaries_sha256": {
+    "openergy": "4134b00b398818f22d47988e3ebc1a6ea0d43e5da65fc82b1ae23e87615d3b47",
+    "openergy-e2e": "aee08861da3da9d7c1036bb52cce087fea49e1e0675c76126127952b0aec73c1"
+  },
+  "interop_image": "sha256:4690a8add6f56e83da569d28abf713089c6b47ca93f12adfa391ed4a230ca818",
+  "peers": {
+    "deskflow": {
+      "version": "1.27.0",
+      "package": "1.27.0.0",
+      "protocol": "Synergy 1.8",
+      "binary_sha256": "d9fa83c84f00ae485f0c9524d4bba3f15195141475ffb749b7ac405e19449aa4"
+    },
+    "barriers": {
+      "version": "2.4.0-release",
+      "protocol": "Barrier 1.6",
+      "binary_sha256": "d404ca6b5ab5f9105dd8fb5bab493a21b675c3b2c2b14a089ab49aa54ffa1887"
+    },
+    "barrierc": {
+      "version": "2.4.0-release",
+      "protocol": "Barrier 1.6",
+      "binary_sha256": "92a50013f1da9c81a4374e892db45e7d1ab5a1ce3bc3bd79551d9f53586eb5a9"
+    }
+  },
+  "teardown": {
+    "command": "python3 tools/e2e/verify_teardown.py --runner $HOST_PRIVATE/target/release/openergy-e2e --port-range 25790-25799 --lab-port-range 25990-25999",
+    "exit": 0,
+    "observed": [
+      "owned real daemon and Docker lab before SIGKILL",
+      "daemon gone and owned lab removed after SIGKILL"
+    ],
+    "range_note": "Completed before corrected coordination ranges arrived."
+  },
+  "x11": {
+    "image": "sha256:aa40e749da1db39335f227757e52ea058a0a1e9d10883d59e23f9aab34a81886",
+    "example_sha256": "93f94b16845ee2d722402fe482a03b6a4ce66a7aaa344e3d6a1a32487106e904",
+    "command": "bash /work/tools/linux-dev/verify.sh all",
+    "exit": 0,
+    "isolation": "New Docker container, private source and build/cache mounts, Xvfb :99, no host display/clipboard/input device mounts",
+    "checks": [
+      "input injection and keymap handling",
+      "X11 capture with grab refusal and release",
+      "clipboard text/HTML/images, PRIMARY isolation, unsupported/unavailable versus clear",
+      "10,498,508-byte PNG and INCR pixel preservation",
+      "competing grab/held local modifiers/buttons/keymap recovery",
+      "1000 own-write stamps",
+      "32 destroyed INCR requestors and later successful read",
+      "32 backend drops restore state and thread/file descriptor baseline"
+    ],
+    "limit": "Virtual Xvfb server only; physical X11 and Wayland acceptance not established."
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "bundle_regular_files_unchanged": true,
+  "regular_file_count": 96,
+  "commands": [
+    {
+      "arguments": [
+        "codesign",
+        "--verify",
+        "--deep",
+        "--strict",
+        "--verbose=2",
+        "<private-run>/extracted/Openergy.app"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "--prepared:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/.\n--prepared:<private-run>/extracted/Openergy.app/Contents/Helpers/openergy\n--validated:<private-run>/extracted/Openergy.app/Contents/Helpers/openergy\n--prepared:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/Autoupdate\n--validated:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/Autoupdate\n--prepared:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/Updater.app\n--validated:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/Updater.app\n--prepared:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/XPCServices/Downloader.xpc\n--validated:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/XPCServices/Downloader.xpc\n--prepared:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/XPCServices/Installer.xpc\n--validated:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/XPCServices/Installer.xpc\n--validated:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/.\n<private-run>/extracted/Openergy.app: valid on disk\n<private-run>/extracted/Openergy.app: satisfies its Designated Requirement\n"
+    }
+  ],
+  "remaining_private_processes": [],
+  "ports": [
+    {
+      "port": 25760,
+      "exit": 1,
+      "stdout": ""
+    },
+    {
+      "port": 25761,
+      "exit": 1,
+      "stdout": ""
+    },
+    {
+      "port": 25762,
+      "exit": 1,
+      "stdout": ""
+    }
+  ]
+}

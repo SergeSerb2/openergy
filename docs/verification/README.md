@@ -5,6 +5,34 @@ machine, and setup it ran on. A record does not prove that later commits
 behave the same way. For the current status, read
 [readiness](../plan/readiness.md).
 
+## Current acceptance tracking
+
+The [native acceptance matrix](native-acceptance.md) links the platform,
+install/update, peer and final-candidate tasks. It defines pass, failed, blocked
+and skipped, and the evidence fields required for each run. Native desktop
+acceptance remains blocked where only virtual, headless or Xvfb checks exist.
+
+The published alpha is `v0.1.0`, source
+`e5d86e2389badf0c45fc2fcef8c4f478b3a2a284` (2026-11-02).
+[Readiness](../plan/readiness.md#published-alpha-and-source) records its public
+archive hashes, tag resolution and the November 2 CI results inspected on
+November 3. Those results are separate from the historical records below.
+
+## Current candidate records
+
+These November 3 records cover isolated checks of the release/source. Follow
+each report's actual result and remaining criteria; a report being collected
+does not supply a pass. None establishes native desktop acceptance.
+
+| Record | Scope and limits |
+| --- | --- |
+| [update-channel-2026-11-03](update-channel-2026-11-03/README.md) | Real HTTPS clients on Linux and two Macs, source/bundle feed configuration and public signature checks. Curl/Sparkle-style GETs read an empty signed feed; the Python verifier receives 403. Signed-app Sparkle acceptance remains open. |
+| [macos-candidate-2026-11-03](macos-candidate-2026-11-03/README.md) | Published signed universal app on M1 macOS 27.0.1: artifact/signature/staple/Gatekeeper checks and 25/25 headless virtual app checks. No quarantine/first-user install proof. The unchanged app refuses the private updater harness before a feed request. |
+| [windows-candidate-2026-11-03](windows-candidate-2026-11-03/README.md) | Published unsigned x86-64 package on Windows build 26340, session 0: 23 control checks, 19 IPC deadlines, pipe identity and mutual-TLS virtual smoke passed. Lifecycle/limited-token migration and Synergy checks remain blocked; no interactive acceptance. |
+| [linux-candidate-2026-11-03](linux-candidate-2026-11-03/README.md) | Pinned build/audit passed; strict Linux repeat 93/93 and separate Docker interop 30/30 cover all 123 cases. Initial 91/93 and passing retries remain recorded. Xvfb and emulated Linux package TLS smoke passed; no physical X11 acceptance. |
+
+## Historical records
+
 | Record | What it shows |
 | --- | --- |
 | [release-integration-2026-10-22](release-integration-2026-10-22/README.md) | Integrated release-preparation checks: the full real-process scenario run, review fixes, and follow-up reports. [round5.md](release-integration-2026-10-22/round5.md) has the resource fixes and the bundle size; [sustained-memory.md](release-integration-2026-10-22/sustained-memory.md) has the long transfer run; [linux-amd64-python311.md](release-integration-2026-10-22/linux-amd64-python311.md) has the x86-64 Linux package check. |

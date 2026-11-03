@@ -1,0 +1,140 @@
+{
+  "source_commit": "e5d86e2389badf0c45fc2fcef8c4f478b3a2a284",
+  "source_inputs": {
+    "source_commit": "e5d86e2389badf0c45fc2fcef8c4f478b3a2a284",
+    "verified_build_and_runner_input_files": 314,
+    "changed_build_inputs": [],
+    "head": "e5d86e2389badf0c45fc2fcef8c4f478b3a2a284"
+  },
+  "environment": {
+    "os": "Ubuntu 24.04.5 LTS",
+    "kernel": "7.2.12-orbstack-00394-gbecdd6130068",
+    "architecture": "aarch64",
+    "toolchain": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+    "rustc_commit": "58cf8f9c35b355199727627d07ae34a4e2846d67",
+    "llvm": "23.1.1",
+    "host": "aarch64-unknown-linux-gnu",
+    "build_jobs": 2,
+    "nice": 15
+  },
+  "commands": [
+    {
+      "name": "toolchain",
+      "command": [
+        "rustc",
+        "-Vv"
+      ],
+      "exit": 0,
+      "seconds": 0.018
+    },
+    {
+      "name": "release-check",
+      "command": [
+        "python3",
+        "tools/release/release.py",
+        "check"
+      ],
+      "exit": 0,
+      "seconds": 0.031
+    },
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "seconds": 0.25
+    },
+    {
+      "name": "fetch",
+      "command": [
+        "cargo",
+        "fetch",
+        "--locked"
+      ],
+      "exit": 0,
+      "seconds": 1.423
+    },
+    {
+      "name": "notices",
+      "command": [
+        "python3",
+        "tools/release/notices/generate-notices.py",
+        "--check"
+      ],
+      "exit": 0,
+      "seconds": 0.073
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--release",
+        "--locked",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "seconds": 17.278
+    },
+    {
+      "name": "build",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--workspace"
+      ],
+      "exit": 0,
+      "seconds": 31.427
+    }
+  ],
+  "binary_sha256": {
+    "openergy": "1b5ef0657d2c2ca6c5c9163dbe6cb59e661d9e445f2ea37c3e9bbb509144e697",
+    "openergy-e2e": "64a01f3c4252461e00f4b54eaeb7970506345730a6d8b29aa5a2bdaaec0a9905"
+  },
+  "audit": {
+    "tool": "cargo-deny 0.20.2 aarch64-unknown-linux-musl",
+    "tool_archive_sha256": "995c82be0defc7a025cae49a2aa2644ce8245c9a3318fc4103907c6a285e8c7d",
+    "command": "cargo-deny --color never check",
+    "exit": 0,
+    "advisory_database_commit": "965bf9ad083b58e6340d65829d85217b18be9290",
+    "advisories": "ok",
+    "bans": "ok",
+    "licenses": "ok",
+    "sources": "ok",
+    "warnings": [
+      "three unused license allowances",
+      "duplicate windows-sys versions",
+      "duplicate winnow versions"
+    ]
+  },
+  "release_verify": {
+    "command": "python3 tools/release/release.py verify --suite smoke --port-range 25710-25719 --lab-port-range 25990-25999",
+    "exit": 1,
+    "error": "unsupported native release host: aarch64-unknown-linux-gnu",
+    "assessment": "Release packaging helper permits only x86-64 GNU Linux; manual pinned build/lint/notice commands and existing smoke helper passed without changing host policy."
+  },
+  "release_smoke": {
+    "existing_helper": "tools/release/release.py:smoke",
+    "exit": 0,
+    "port_range": "25710-25719",
+    "platform": "virtual",
+    "checks": [
+      "version",
+      "absent-daemon error",
+      "IPC status",
+      "invalid method",
+      "clean stop"
+    ]
+  }
+}

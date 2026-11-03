@@ -1,0 +1,60 @@
+--- artifact/verify-control.ps1
++++ drivers/verify-control.ps1
+@@ -1,5 +1,5 @@
+ # Real session-0 CLI/pipe verification. No desktop input or production config.
+-param([Parameter(Mandatory=$true)][string]$BinaryPath, [ValidateRange(25240,25259)][int]$Port=25241)
++param([Parameter(Mandatory=$true)][string]$BinaryPath, [ValidateRange(26240,26259)][int]$Port=26241)
+ $ErrorActionPreference = 'Stop'
+ if ([Diagnostics.Process]::GetCurrentProcess().SessionId -ne 0) { throw 'run only through session-0 SSH' }
+ $lab = Join-Path ([IO.Path]::GetTempPath()) ('oe-windows-control-'+[guid]::NewGuid().ToString('N'))
+--- artifact/verify-ipc-deadlines.ps1
++++ drivers/verify-ipc-deadlines.ps1
+@@ -28,7 +28,7 @@
+ $pipeName='oe-deadline-'+[guid]::NewGuid().ToString('N')
+ $endpoint='\\.\pipe\'+$pipeName
+ $config=Join-Path $lab 'config.toml'
+-[IO.File]::WriteAllText($config,"version=1`nname=`"pipe-deadline-lab`"`nrole=`"off`"`n[tls]`nenabled=false`n[server]`nlisten=`"127.0.0.1:25249`"`nport=25249`n")
++[IO.File]::WriteAllText($config,"version=1`nname=`"pipe-deadline-lab`"`nrole=`"off`"`n[tls]`nenabled=false`n[server]`nlisten=`"127.0.0.1:26249`"`nport=26249`n")
+ $childEnv=@{OPENERGY_ALLOW_PORT_24800='0';OPENERGY_DISABLE_DISCOVERY='1';OPENERGY_CONFIG=$config;OPENERGY_CONFIG_DIR=$lab;OPENERGY_TLS_DIR=(Join-Path $lab 'tls');OPENERGY_SOCKET=$endpoint;APPDATA=(Join-Path $lab 'appdata');HOSTNAME='openergy-deadline-lab'}
+ $report=[ordered]@{binary_sha256=$binaryHash;script_sha256=(Get-FileHash -LiteralPath $PSCommandPath -Algorithm SHA256).Hash.ToLowerInvariant();platform='virtual';transport='private Windows named pipe';session_id=0;checks=@();passed=$false}
+ $pipes=[Collections.Generic.List[IO.Pipes.NamedPipeClientStream]]::new()
+--- artifact/verify-lifecycle-ownership.ps1
++++ drivers/verify-lifecycle-ownership.ps1
+@@ -10,7 +10,7 @@
+ $independent=$null
+ $passed=$false
+ New-Item -ItemType Directory -Path $other | Out-Null
+-[IO.File]::WriteAllText("$other\config.toml", "version = 1`nname = `"owned-independent`"`nrole = `"off`"`n[server]`nlisten = `"127.0.0.1:25244`"`nport = 25244`n")
++[IO.File]::WriteAllText("$other\config.toml", "version = 1`nname = `"owned-independent`"`nrole = `"off`"`n[server]`nlisten = `"127.0.0.1:26244`"`nport = 26244`n")
+ function Check($Value,$Name) { if(!$Value){throw $Name}; "PASS $Name" }
+ function Manage($Action) { & $manager -Action $Action -InstallDir $install -DataDir $data }
+ function Spawn([string[]]$Arguments,[string]$Executable=$BinaryPath) {
+@@ -37,7 +37,7 @@
+     } finally {$p.Dispose()}
+ }
+ try {
+-    $null=& $manager Install -InstallDir $install -DataDir $data -BinaryPath $BinaryPath -NoStartup -Platform virtual -Port 25243
++    $null=& $manager Install -InstallDir $install -DataDir $data -BinaryPath $BinaryPath -NoStartup -Platform virtual -Port 26243
+     $independent=Spawn @('daemon','--platform','virtual','--config',"$other\config.toml",'--socket',$socket)
+     $ready=$false
+     for($i=0;$i -lt 30;$i++){try{$s=Other-Ctl 'status.get';if($s.daemon.pid -eq $independent.Id){$ready=$true;break}}catch{};Start-Sleep -Milliseconds 100}
+--- artifact/verify-lifecycle.ps1
++++ drivers/verify-lifecycle.ps1
+@@ -1,5 +1,5 @@
+ # Real public-command E2E. Only an owned temp install, virtual daemons and private pipes.
+-param([Parameter(Mandatory=$true)][string]$BinaryPath, [ValidateRange(25240,25259)][int]$Port=25240)
++param([Parameter(Mandatory=$true)][string]$BinaryPath, [ValidateRange(26240,26259)][int]$Port=26240)
+ $ErrorActionPreference='Stop'
+ $root=Join-Path ([IO.Path]::GetTempPath()) ('oe-windows-lifecycle-'+[guid]::NewGuid().ToString('N'))
+ $install=Join-Path $root 'install with spaces'
+--- artifact/verify-migration-boundary.ps1
++++ drivers/verify-migration-boundary.ps1
+@@ -4,7 +4,7 @@
+  [string]$ScriptsDir=$PSScriptRoot,
+  [string]$Lab=[IO.Path]::Combine([IO.Path]::GetTempPath(),'oe-migration-boundary-'+[guid]::NewGuid().ToString('N')),
+  [Parameter(Mandatory=$true)][string]$BinaryPath,
+- [ValidateRange(26520,26539)][int]$Port=26530
++ [ValidateRange(26320,26339)][int]$Port=26330
+ )
+ $ErrorActionPreference='Stop'
+ (Get-Process -Id $PID).PriorityClass='BelowNormal'

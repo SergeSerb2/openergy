@@ -1,0 +1,42 @@
+RUN_FIXTURE=<PRIVATE_RUN>\migration\run-7c2b1be3baeb431ea3f3df48257c9896
+PASS ps51 full script parsing
+PASS ps51 elevated Install rejects before replacement manager execution
+PASS ps51 elevated Start rejects before replacement manager execution
+PASS ps51 elevated Commit rejects before replacement manager execution
+PASS ps51 elevated Rollback rejects before replacement manager execution
+PASS ps51 elevated CheckBroker rejects before replacement manager execution
+PASS ps51 manager refuses elevated token
+PASS ps51 supervisor refuses elevated token
+PASS ps51 protected admin-owned helper and ancestor ACL check
+LIMIT ps51 restricted medium process exits 0xc0000142 before user code in SSH session 0; no desktop ACL changed
+PASS ps7 full script parsing
+PASS ps7 elevated Install rejects before replacement manager execution
+PASS ps7 elevated Start rejects before replacement manager execution
+PASS ps7 elevated Commit rejects before replacement manager execution
+PASS ps7 elevated Rollback rejects before replacement manager execution
+PASS ps7 elevated CheckBroker rejects before replacement manager execution
+PASS ps7 manager refuses elevated token
+PASS ps7 supervisor refuses elevated token
+PASS ps7 protected admin-owned helper and ancestor ACL check
+LIMIT ps7 restricted medium process exits 0xc0000142 before user code in SSH session 0; no desktop ACL changed
+PASS actual kernel migration pipe denies the SSH Network SID
+PASS actual kernel migration pipe denies the SSH Network SID
+PASS actual kernel migration pipe denies the SSH Network SID
+PASS actual broker refuses an occupied nonce pipe before sending any reply
+PASS actual kernel ACL rejects same-user ownership despite protected DACL
+PASS actual kernel ACL rejects same-user ownership despite protected DACL
+PASS actual kernel ACL rejects writable protected-owner candidate
+PASS actual kernel ACL rejects writable protected-owner candidate
+PASS actual kernel ACL rejects parent DELETE_CHILD replacement rights
+PASS actual kernel ACL rejects parent DELETE_CHILD replacement rights
+PASS actual kernel path rejects junction ancestor
+PASS actual kernel path rejects junction ancestor
+PASS protected read-only command does not autoload user modules
+PASS protected read-only command does not autoload user modules
+PASS read-only checks and rejected peers create no recovery state
+PASS protected fixture code remains hash-identical
+PASS validated binary remains unchanged
+PROTECTED_FIXTURE=<PROTECTED_FIXTURE>
+WINDOWS_MIGRATION_BOUNDARY_NEGATIVE_PASS
+MEDIUM_INTERACTIVE_ACCEPTANCE_REMAINS_REQUIRED
+OWNED_PROTECTED_FIXTURE_HASH_CHECKED_CLEANUP_PASS

@@ -1,0 +1,20 @@
+PASS initial public CLI status
+PASS persistent client initial reply
+PASS all 63 pending clients initially admitted
+PASS empty clients expire
+PASS partial_header clients expire
+PASS partial_body clients expire
+PASS drip clients expire
+PASS public CLI recovers while incomplete clients stay open
+PASS completed-request idle client remains usable
+PASS releasing one held client slot restores CLI access
+PASS fragmented complete request succeeds
+PASS pipelined complete requests preserve reply order
+PASS unknown method returns an error
+PASS valid request after method error succeeds
+PASS partial frame after a completed request expires
+PASS oversized header is refused
+PASS public CLI works after refusal
+PASS shutdown with a partial client exits cleanly
+PASS owned IPC endpoint removed
+WINDOWS_IPC_DEADLINES_PASS checks=19

@@ -1,0 +1,275 @@
+{
+  "peer_port": 25760,
+  "host_port": 25761,
+  "tls_enabled": false,
+  "platform": "virtual",
+  "app_sha256": "b8649a96645c5d9dd95c886856159a3b35d414dc753eb0a606890ef742d15277",
+  "daemon_sha256": "4735c0666cd26b6b6a137129c0f4636256c456fbd1a8c3309ff20d1290284797",
+  "environment": {
+    "OPENERGY_CONFIG": "<private-run>/app-flow/app/config/config.toml",
+    "OPENERGY_CONFIG_DIR": "<private-run>/app-flow/app/config",
+    "OPENERGY_TLS_DIR": "<private-run>/app-flow/app/config/tls",
+    "OPENERGY_SOCKET": "<private-run>/app-flow/app/config/control.sock",
+    "OPENERGY_DISABLE_DISCOVERY": "1",
+    "OPENERGY_ALLOW_PORT_24800": "0",
+    "CFFIXED_USER_HOME": "<private-run>/app-flow/home",
+    "OPENERGY_DAEMON_ARGS": "--platform virtual",
+    "OPENERGY_E2E_NO_RENDER": "1"
+  },
+  "safety_refusal": {
+    "arguments": [
+      "<private-run>/extracted/Openergy.app/Contents/MacOS/Openergy",
+      "--e2e",
+      "<private-run>/app-flow/refusal",
+      "--join",
+      "127.0.0.1:25760",
+      "--host-port",
+      "25761"
+    ],
+    "exit": 64,
+    "stdout": "",
+    "stderr": "Unsafe E2E settings: config directory must not already exist.\nE2E requires a private temporary output directory, explicit isolated config/socket/TLS paths, --platform virtual, and explicit loopback --join and --host-port (never 24800).\n"
+  },
+  "peer_arguments": [
+    "nice",
+    "-n",
+    "15",
+    "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy",
+    "daemon",
+    "--platform",
+    "virtual",
+    "--config",
+    "<private-run>/app-flow/peer/config.toml",
+    "--socket",
+    "<private-run>/app-flow/peer/control.sock",
+    "--foreground"
+  ],
+  "peer_initial_status": {
+    "active_screen": "e2e-peer",
+    "client": {
+      "attempt": 0,
+      "next_retry_ms": null,
+      "remote": null
+    },
+    "clipboard": {
+      "enabled": true,
+      "last_blocked": null,
+      "last_transfer": null
+    },
+    "cursor": {
+      "screen": "e2e-peer",
+      "x": 0,
+      "y": 0
+    },
+    "daemon": {
+      "pid": 81724,
+      "platform": "virtual",
+      "uptime_s": 0,
+      "version": "0.1.0"
+    },
+    "last_error": null,
+    "local_screen": {
+      "displays": [
+        {
+          "h": 1080,
+          "scale": 1.0,
+          "w": 1920,
+          "x": 0,
+          "y": 0
+        }
+      ],
+      "h": 1080,
+      "w": 1920
+    },
+    "name": "e2e-peer",
+    "peers": [],
+    "pending_trust": [],
+    "permissions": {
+      "accessibility": "not_required",
+      "input_monitoring": "not_required",
+      "post_events": "not_required"
+    },
+    "role": "server",
+    "secure_input": {
+      "local_app": null
+    },
+    "server": {
+      "listen": "127.0.0.1:25760"
+    },
+    "state": "listening",
+    "stats": {
+      "events_in": 0,
+      "events_out": 0,
+      "rss_bytes": 8929280
+    },
+    "tls": {
+      "enabled": false,
+      "fingerprint": null
+    }
+  },
+  "app_arguments": [
+    "nice",
+    "-n",
+    "15",
+    "<private-run>/extracted/Openergy.app/Contents/MacOS/Openergy",
+    "--e2e",
+    "<private-run>/app-flow/app",
+    "--join",
+    "127.0.0.1:25760",
+    "--host-port",
+    "25761",
+    "--require-peer"
+  ],
+  "app_exit": 0,
+  "app_elapsed_seconds": 3.671,
+  "steps": [
+    {
+      "detail": "link=connected daemon=0.1.0 pid=81728",
+      "name": "connect",
+      "passed": true
+    },
+    {
+      "detail": "role=off remote=",
+      "name": "starts from safe off config",
+      "passed": true
+    },
+    {
+      "detail": "status.role=off config.role=off error=none",
+      "name": "role off",
+      "passed": true
+    },
+    {
+      "detail": "role=client state=connected remote=127.0.0.1:25760 error=none",
+      "name": "join 127.0.0.1:25760",
+      "passed": true
+    },
+    {
+      "detail": "state=connected peers=1",
+      "name": "real peer connected",
+      "passed": true
+    },
+    {
+      "detail": "state=idle peers=0",
+      "name": "disconnect peer",
+      "passed": true
+    },
+    {
+      "detail": "state=connected peers=1",
+      "name": "rejoin same address",
+      "passed": true
+    },
+    {
+      "detail": "config.clipboard.enabled=Optional(false)",
+      "name": "clipboard off",
+      "passed": true
+    },
+    {
+      "detail": "config.clipboard.enabled=Optional(true)",
+      "name": "clipboard on",
+      "passed": true
+    },
+    {
+      "detail": "server=127.0.0.1:25761",
+      "name": "test port",
+      "passed": true
+    },
+    {
+      "detail": "role=server state=listening listen=127.0.0.1:25761",
+      "name": "role server",
+      "passed": true
+    },
+    {
+      "detail": "screens=[\"app\", \"e2e-pc\"] error=none",
+      "name": "layout seeded",
+      "passed": true
+    },
+    {
+      "detail": "rects=[\"app@1920,49\", \"e2e-pc@0,0\"] error=none",
+      "name": "layout left of this Mac",
+      "passed": true
+    },
+    {
+      "detail": "raw e2e-pc=object([\"links\": Openergy.JSONValue.object([\"left\": Openergy.JSONValue.string(\"app\"), \"ranges\": Openergy.JSONValue.array([Openergy.JSONValue.object([\"from_range\": Openergy.JSONValue.array([Openergy.JSONValue.number(0.0), Openergy.JSONValue.number(50.0)]), \"to_range\": Openergy.JSONValue.array([Openergy.JSONValue.number(50.0), Openergy.JSONValue.number(100.0)]), \"edge\": Openergy.JSONValue.string(\"top\"), \"to\": Openergy.JSONValue.string(\"app\")])])]), \"name\": Openergy.JSONValue.string(\"e2e-pc\"), \"rect\": Openergy.JSONValue.object([\"w\": Openergy.JSONValue.number(1920.0), \"y\": Openergy.JSONValue.number(0.0), \"x\": Openergy.JSONValue.number(1512.0), \"h\": Openergy.JSONValue.number(1080.0)]), \"aliases\": Openergy.JSONValue.array([Openergy.JSONValue.string(\"e2e-pc-alias\")])])",
+      "name": "layout keeps imported fields",
+      "passed": true
+    },
+    {
+      "detail": "links=[\"app.left\u2192e2e-pc\", \"e2e-pc.left\u2192app\", \"e2e-pc.right\u2192app\", \"e2e-pc.top\u2192app\"]",
+      "name": "derived links arrive",
+      "passed": true
+    },
+    {
+      "detail": "name=e2e-mac screens=[\"e2e-mac\", \"e2e-pc\"]",
+      "name": "rename keeps layout entry",
+      "passed": true
+    },
+    {
+      "detail": "direct=e2e-mac ranged=e2e-mac",
+      "name": "rename keeps explicit links",
+      "passed": true
+    },
+    {
+      "detail": "tail=9 now=10 last=3:07:46\u202fPM INFO openergy::runtime: listening on 127.0.0.1:25761",
+      "name": "live log lines",
+      "passed": true
+    },
+    {
+      "detail": "error=invalid config: screen \"e2e-pc\".rect: need nonnegative finite origins and positive sizes within i32 bounds",
+      "name": "rejected layout rolls back",
+      "passed": true
+    },
+    {
+      "detail": "role=off",
+      "name": "join then off preserves intent",
+      "passed": true
+    },
+    {
+      "detail": "responsive=true bounded=true requestFailed=true",
+      "name": "stalled IPC remains responsive",
+      "passed": true
+    },
+    {
+      "detail": "cleared=true recovered=true",
+      "name": "owned daemon crash recovers",
+      "passed": true
+    },
+    {
+      "detail": "role=off",
+      "name": "role off again",
+      "passed": true
+    },
+    {
+      "detail": "notice=Imported with notes: synergy.conf has no local identity: selected its first screen as server; confirm role and name synergy.conf line 6: unsupported option \"e2eUnsupportedSetting\"",
+      "name": "import warning notice",
+      "passed": true
+    },
+    {
+      "detail": "error=I/O error: no db.json or synergy.conf found in import directory",
+      "name": "empty import reports error",
+      "passed": true
+    }
+  ],
+  "passed": 25,
+  "checks": 25,
+  "peer_stop": {
+    "exit": 0,
+    "stdout": "{\n  \"stopping\": true\n}\n",
+    "stderr": ""
+  },
+  "peer_exit": 0,
+  "remaining_private_processes": [],
+  "port_postflight": [
+    {
+      "port": 25760,
+      "exit": 1,
+      "stdout": ""
+    },
+    {
+      "port": 25761,
+      "exit": 1,
+      "stdout": ""
+    }
+  ],
+  "peer.log": "1793743665183 INFO openergy::runtime: openergy 0.1.0 daemon listening on <private-run>/app-flow/peer/control.sock\n1793743665184 INFO openergy::runtime: listening on 127.0.0.1:25760\n1793743665567 WARN openergy_net::reactor: PLAINTEXT connection 2: TLS explicitly disabled\n1793743665568 WARN openergy_net::reactor: connection 2 established: TLS=None, cipher=None\n1793743665568 WARN openergy::runtime: plaintext connection: 127.0.0.1:60650\n1793743665767 WARN openergy_net::reactor: PLAINTEXT connection 3: TLS explicitly disabled\n1793743665767 WARN openergy_net::reactor: connection 3 established: TLS=None, cipher=None\n1793743665768 WARN openergy::runtime: plaintext connection: 127.0.0.1:60652\n1793743666856 WARN openergy_net::reactor: PLAINTEXT connection 4: TLS explicitly disabled\n1793743666856 WARN openergy_net::reactor: connection 4 established: TLS=None, cipher=None\n1793743666857 WARN openergy::runtime: plaintext connection: 127.0.0.1:60656\n1793743666863 WARN openergy_net::reactor: PLAINTEXT connection 5: TLS explicitly disabled\n1793743666863 WARN openergy_net::reactor: connection 5 established: TLS=None, cipher=None\n1793743666863 WARN openergy::runtime: plaintext connection: 127.0.0.1:60657\n1793743668989 INFO openergy::runtime: shutdown: leave and goodbye\n1793743669240 INFO openergy::runtime: daemon stopped\n",
+  "app.log": "PASS  connect \u2014 link=connected daemon=0.1.0 pid=81728\nPASS  starts from safe off config \u2014 role=off remote=\nPASS  role off \u2014 status.role=off config.role=off error=none\nPASS  join 127.0.0.1:25760 \u2014 role=client state=connected remote=127.0.0.1:25760 error=none\nPASS  real peer connected \u2014 state=connected peers=1\nPASS  disconnect peer \u2014 state=idle peers=0\nPASS  rejoin same address \u2014 state=connected peers=1\nPASS  clipboard off \u2014 config.clipboard.enabled=Optional(false)\nPASS  clipboard on \u2014 config.clipboard.enabled=Optional(true)\nPASS  test port \u2014 server=127.0.0.1:25761\nPASS  role server \u2014 role=server state=listening listen=127.0.0.1:25761\nPASS  layout seeded \u2014 screens=[\"app\", \"e2e-pc\"] error=none\nPASS  layout left of this Mac \u2014 rects=[\"app@1920,49\", \"e2e-pc@0,0\"] error=none\nPASS  layout keeps imported fields \u2014 raw e2e-pc=object([\"links\": Openergy.JSONValue.object([\"left\": Openergy.JSONValue.string(\"app\"), \"ranges\": Openergy.JSONValue.array([Openergy.JSONValue.object([\"from_range\": Openergy.JSONValue.array([Openergy.JSONValue.number(0.0), Openergy.JSONValue.number(50.0)]), \"to_range\": Openergy.JSONValue.array([Openergy.JSONValue.number(50.0), Openergy.JSONValue.number(100.0)]), \"edge\": Openergy.JSONValue.string(\"top\"), \"to\": Openergy.JSONValue.string(\"app\")])])]), \"name\": Openergy.JSONValue.string(\"e2e-pc\"), \"rect\": Openergy.JSONValue.object([\"w\": Openergy.JSONValue.number(1920.0), \"y\": Openergy.JSONValue.number(0.0), \"x\": Openergy.JSONValue.number(1512.0), \"h\": Openergy.JSONValue.number(1080.0)]), \"aliases\": Openergy.JSONValue.array([Openergy.JSONValue.string(\"e2e-pc-alias\")])])\nPASS  derived links arrive \u2014 links=[\"app.left\u2192e2e-pc\", \"e2e-pc.left\u2192app\", \"e2e-pc.right\u2192app\", \"e2e-pc.top\u2192app\"]\nPASS  rename keeps layout entry \u2014 name=e2e-mac screens=[\"e2e-mac\", \"e2e-pc\"]\nPASS  rename keeps explicit links \u2014 direct=e2e-mac ranged=e2e-mac\nPASS  live log lines \u2014 tail=9 now=10 last=3:07:46\u202fPM INFO openergy::runtime: listening on 127.0.0.1:25761\nPASS  rejected layout rolls back \u2014 error=invalid config: screen \"e2e-pc\".rect: need nonnegative finite origins and positive sizes within i32 bounds\nPASS  join then off preserves intent \u2014 role=off\nPASS  stalled IPC remains responsive \u2014 responsive=true bounded=true requestFailed=true\nPASS  owned daemon crash recovers \u2014 cleared=true recovered=true\nPASS  role off again \u2014 role=off\nPASS  import warning notice \u2014 notice=Imported with notes: synergy.conf has no local identity: selected its first screen as server; confirm role and name synergy.conf line 6: unsupported option \"e2eUnsupportedSetting\"\nPASS  empty import reports error \u2014 error=I/O error: no db.json or synergy.conf found in import directory\nE2E PASSED (25 steps)\n"
+}
