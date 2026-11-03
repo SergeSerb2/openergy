@@ -1,3 +1,33 @@
+# Current context — 2026-11-03
+
+The reports below are historical evidence from 2026-10-21. Their counts,
+resource measurements, source revisions and implementation limits are retained
+as recorded; they are not acceptance of the published alpha or a later candidate.
+Current release/source: `v0.1.0`,
+`e5d86e2389badf0c45fc2fcef8c4f478b3a2a284` (published 2026-11-02).
+See [current readiness](../../docs/plan/readiness.md) for artifact hashes and CI,
+and the [acceptance matrix](../../docs/verification/native-acceptance.md) for
+the open desktop gates.
+
+Two historical statements below need current context:
+
+- The old modifier key-ID remapping limit is superseded. Current
+  [`Options::mapped_key`, `mapped_mask`, and `input_message`](../session/src/common.rs)
+  map modifier keys and masks for key down, repeat and up. Mapping to `none`
+  drops that modifier. The current [option limits](../config/V1-LIMITS.md)
+  retain language-sync and half-duplex limits. November 2
+  [CI](https://github.com/SergeSerb2/openergy/actions/runs/41497579334)
+  passed `S25-modifier-key-remap` with virtual backends on Linux and macOS;
+  native shortcut/crossing acceptance remains open under
+  [SER-177](https://linear.app/sergedev/issue/SER-177/macos-verify-modifier-remaps-across-screen-crossings).
+- “No requested engine fix is left incomplete” describes the original audit's
+  scope. It does not close native macOS, interactive Windows, physical X11,
+  installation or stable-release gates. Those need exact-candidate evidence.
+
+No historical result below was rerun as part of this documentation refresh.
+
+---
+
 # Daemon and IPC release audit — 2026-10-21
 
 This audit covers `crates/daemon` except `windows_pipe.rs`, and `crates/ipc`.

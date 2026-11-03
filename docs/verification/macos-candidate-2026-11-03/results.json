@@ -1,0 +1,191 @@
+{
+  "recorded_at": "2026-11-03T15:14:46.376315-07:00",
+  "source_commit": "e5d86e2389badf0c45fc2fcef8c4f478b3a2a284",
+  "release": {
+    "url": "https://github.com/SergeSerb2/openergy/releases/tag/v0.1.0",
+    "tag": "v0.1.0",
+    "tag_object": "eef40ced98e8ae8357997b1a110c63a1cca62419",
+    "tag_signed": false,
+    "tag_commit": "e5d86e2389badf0c45fc2fcef8c4f478b3a2a284",
+    "target_commitish": "e5d86e2389badf0c45fc2fcef8c4f478b3a2a284",
+    "published_at": "2026-11-02T18:27:22Z",
+    "assets": [
+      {
+        "name": "Openergy-0.1.0-macos-universal.zip",
+        "size": 7780962,
+        "digest": "sha256:acd5c81113670edd34658d14ca489ce083758acc4df1ae5676b4308bcda6e9b0",
+        "url": "https://github.com/SergeSerb2/openergy/releases/download/v0.1.0/Openergy-0.1.0-macos-universal.zip",
+        "createdAt": "2026-11-02T18:27:06Z",
+        "updatedAt": "2026-11-02T18:27:07Z"
+      },
+      {
+        "name": "Openergy-0.1.0-macos-universal.zip.sha256",
+        "size": 101,
+        "digest": "sha256:fd543cacab4b1dd1dff1749a6fe97a7be198495eccb48349016148d97dad61b1",
+        "url": "https://github.com/SergeSerb2/openergy/releases/download/v0.1.0/Openergy-0.1.0-macos-universal.zip.sha256",
+        "createdAt": "2026-11-02T18:27:06Z",
+        "updatedAt": "2026-11-02T18:27:06Z"
+      }
+    ]
+  },
+  "environment": {
+    "machine": "separate Apple M1 via SSH",
+    "os": "macOS",
+    "version": "27.0.1",
+    "build": "26A434",
+    "architecture": "arm64"
+  },
+  "artifact": {
+    "archive_sha256": "acd5c81113670edd34658d14ca489ce083758acc4df1ae5676b4308bcda6e9b0",
+    "archive_bytes": 7780962,
+    "version": "0.1.0",
+    "build": "108",
+    "app_sha256": "b8649a96645c5d9dd95c886856159a3b35d414dc753eb0a606890ef742d15277",
+    "daemon_sha256": "4735c0666cd26b6b6a137129c0f4636256c456fbd1a8c3309ff20d1290284797",
+    "embedded_source_manifest": false,
+    "notices": [
+      {
+        "file": "LICENSE-MIT",
+        "source_sha256": "d53e4a871f869c21c1b61665499e57135a1ccc8ccb6f7d58d3198e2979fb0279",
+        "bundle_sha256": "d53e4a871f869c21c1b61665499e57135a1ccc8ccb6f7d58d3198e2979fb0279",
+        "matches": true
+      },
+      {
+        "file": "LICENSE-APACHE",
+        "source_sha256": "f87ddbb1c277a25c3a53aae5252170e2656a0b98ff4523710be569507418e654",
+        "bundle_sha256": "f87ddbb1c277a25c3a53aae5252170e2656a0b98ff4523710be569507418e654",
+        "matches": true
+      },
+      {
+        "file": "THIRD_PARTY_NOTICES.md",
+        "source_sha256": "855ecee0099e0749ce3bcd2c582c89f6062900187fe2c02f47f9a2ab369006f7",
+        "bundle_sha256": "855ecee0099e0749ce3bcd2c582c89f6062900187fe2c02f47f9a2ab369006f7",
+        "matches": true
+      }
+    ]
+  },
+  "checks": {
+    "app_flow": {
+      "passed": 25,
+      "checks": 25,
+      "exit": 0,
+      "seconds": 3.671,
+      "platform": "virtual",
+      "tls": false
+    },
+    "tls_smoke": {
+      "passed": true,
+      "checkpoints": 11,
+      "platform": "virtual",
+      "tls": true,
+      "require_client_trust": true
+    },
+    "signature_notarization_stapling_gatekeeper": "pass on M1; unchanged after runtime checks",
+    "quarantine": "absent after curl/ditto; first-launch gate untested",
+    "feed_curl": {
+      "url": "https://openergy-updates.sergeserbinenko.com/appcast.xml",
+      "curl_exit": 0,
+      "http_status": "200",
+      "bytes": 756,
+      "sha256": "c693230197b548eba00fd2ea25a7a696cef218d1e854410f0c68934bcc6dd2d7",
+      "release_count": 0,
+      "releases": []
+    },
+    "signed_app_sparkle_request": {
+      "proven": false,
+      "exit": 64,
+      "blocker": "Unchanged signed release fails UpdaterEndToEnd bundle identifier and SUDefaultsDomain guards before Sparkle startup"
+    },
+    "postflight": {
+      "bundle_unchanged": true,
+      "remaining_owned_processes": [],
+      "ports_clear": [
+        25760,
+        25761,
+        25762
+      ]
+    }
+  },
+  "issues": {
+    "SER-194": "Partial: M1 artifact trust checks/headless flow pass; fresh-user quarantined GUI install, Intel and minimum OS remain open.",
+    "SER-196": "Partial: owned daemon crash recovery passes; app crash, complete persistence/single-instance, login/logout/reboot remain open.",
+    "SER-197": "Blocked: no signed old/new pair; unchanged release cannot enter private updater harness. No download/install/relaunch claim.",
+    "SER-198": "Partial: signed bundle URL/key verified, curl200 empty feed. Actual signed-app Sparkle request blocked by private harness guard.",
+    "SER-203": "Partial: daemon/CLI mutual trust, wrong pin and revocation pass. App/native trust UI, rotation, injected-input cutoff remain open.",
+    "SER-212": "Packaged alpha app flow passes. Full exact-candidate build/audit/interop/Windows/native matrix requires separate evidence.",
+    "SER-213": "Partial: published alpha Mac checksum/notices/trust/private TLS smoke pass. Embedded Mac source manifest absent; stable provenance remains open."
+  },
+  "limits": [
+    "Downloaded published alpha; no new stable artifact or rebuilt substitute.",
+    "No independent reproducible binary-to-source provenance from this Mac ZIP.",
+    "No normal GUI launch, desktop control, native input/clipboard, TCC or login changes.",
+    "No Intel execution or macOS15 run.",
+    "No signed-app Sparkle request, download, installation or relaunch.",
+    "App harness TLS disabled; separate daemon smoke has TLS/mutual trust enabled.",
+    "No certificate rotation or injected-input revoke-cutoff test.",
+    "Two initial TLS controller errors retained; final attempt uses fresh state and passes."
+  ],
+  "sanitization": {
+    "private_run": "<private-run>",
+    "account_home": "<test-home>",
+    "apple_per_user_ticket_path": "<system-temp>",
+    "private_keys_retained": false
+  },
+  "evidence": [
+    {
+      "file": "README.md",
+      "bytes": 11590,
+      "sha256": "59f862ea702acf2f726dfa50e49b85df6d2c58ad8c023d64b4219a8648f1ff75"
+    },
+    {
+      "file": "app-flow.json",
+      "bytes": 12153,
+      "sha256": "6d08ce9d4305c1f50dc59ffc272f8f2e1d77a5c2b95a82d253dbc32347b6e0f1"
+    },
+    {
+      "file": "artifact-inspection.json",
+      "bytes": 40661,
+      "sha256": "34bf640bef57969c086da3f36a87f3f6f8f0e18458b5a4baca04c3e27e426e00"
+    },
+    {
+      "file": "inspect-artifact.py",
+      "bytes": 3596,
+      "sha256": "4d9008390639609eae8c9d6cd65961180e5b479ae48c1c3fa6d619f9eb26e029"
+    },
+    {
+      "file": "postflight.json",
+      "bytes": 2085,
+      "sha256": "c540f6c33ff8f19dfe7c689dd0d6035370e9dae2e0117d488f393be3fc37a402"
+    },
+    {
+      "file": "run-app-flow.py",
+      "bytes": 7749,
+      "sha256": "c68082dc4be7d03af44cbce55071607e6a5d000110973ef75d75f1aaed0e4010"
+    },
+    {
+      "file": "run-tls-smoke.py",
+      "bytes": 7159,
+      "sha256": "d899792ce5ed4207267c5f7f65b47b176fd2f47f0903b28a57f9b4dbeab139ee"
+    },
+    {
+      "file": "tls-smoke-initial-controller-error.json",
+      "bytes": 8166,
+      "sha256": "caee016562a1316cd6d3710c1efb0f6b75e215c703098d74eeb069947348e3ac"
+    },
+    {
+      "file": "tls-smoke-initial-ledger-error.json",
+      "bytes": 10276,
+      "sha256": "ae41ea5c3d155a70a94df2bec8ddd3399c6be2f04a0ad9e8c0086a4564989bc4"
+    },
+    {
+      "file": "tls-smoke.json",
+      "bytes": 26180,
+      "sha256": "c8a1ceb3c935359fa6ccff0e7cc615681e95df9016d2abac2451837469547676"
+    },
+    {
+      "file": "updater-release-refusal.json",
+      "bytes": 1374,
+      "sha256": "d963157d84606444eeff35fa307c3322e1cd74ce76f881f5550c5a55eb824569"
+    }
+  ]
+}

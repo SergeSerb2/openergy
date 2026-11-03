@@ -1,0 +1,764 @@
+{
+  "archive_sha256": "acd5c81113670edd34658d14ca489ce083758acc4df1ae5676b4308bcda6e9b0",
+  "archive_bytes": 7780962,
+  "info_plist": {
+    "CFBundleDevelopmentRegion": "en",
+    "CFBundleDisplayName": "Openergy",
+    "CFBundleExecutable": "Openergy",
+    "CFBundleIconFile": "AppIcon",
+    "CFBundleIdentifier": "dev.openergy.app",
+    "CFBundleInfoDictionaryVersion": "6.0",
+    "CFBundleName": "Openergy",
+    "CFBundlePackageType": "APPL",
+    "CFBundleShortVersionString": "0.1.0",
+    "CFBundleVersion": "108",
+    "LSApplicationCategoryType": "public.app-category.utilities",
+    "LSMinimumSystemVersion": "15.0",
+    "LSUIElement": true,
+    "LSMultipleInstancesProhibited": true,
+    "NSHumanReadableCopyright": "Openergy contributors. MIT or Apache-2.0.",
+    "NSLocalNetworkUsageDescription": "Openergy connects to your other computers on this network to share the keyboard, mouse and clipboard.",
+    "NSBonjourServices": [
+      "_openergy._tcp"
+    ],
+    "NSSupportsAutomaticTermination": false,
+    "NSSupportsSuddenTermination": false,
+    "SUEnableAutomaticChecks": true,
+    "SUAllowsAutomaticUpdates": true,
+    "SUAutomaticallyUpdate": false,
+    "SUFeedURL": "https://openergy-updates.sergeserbinenko.com/appcast.xml",
+    "SUPublicEDKey": "T6P8IZ5N6ivIZD3SdPRTOKWImB81Lfj2PFQqH4TMZ6o="
+  },
+  "commands": [
+    {
+      "arguments": [
+        "sw_vers"
+      ],
+      "exit": 0,
+      "stdout": "ProductName:\t\tmacOS\nProductVersion:\t\t27.0.1\nBuildVersion:\t\t26A434\n",
+      "stderr": "",
+      "elapsed_seconds": 0.009
+    },
+    {
+      "arguments": [
+        "uname",
+        "-m"
+      ],
+      "exit": 0,
+      "stdout": "arm64\n",
+      "stderr": "",
+      "elapsed_seconds": 0.003
+    },
+    {
+      "arguments": [
+        "shasum",
+        "-a",
+        "256",
+        "-c",
+        "<private-run>/Openergy-0.1.0-macos-universal.zip.sha256"
+      ],
+      "exit": 0,
+      "stdout": "Openergy-0.1.0-macos-universal.zip: OK\n",
+      "stderr": "",
+      "elapsed_seconds": 0.04
+    },
+    {
+      "arguments": [
+        "xattr",
+        "-p",
+        "com.apple.quarantine",
+        "<private-run>/Openergy-0.1.0-macos-universal.zip"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "xattr: <private-run>/Openergy-0.1.0-macos-universal.zip: No such xattr: com.apple.quarantine\n",
+      "elapsed_seconds": 0.004
+    },
+    {
+      "arguments": [
+        "xattr",
+        "-p",
+        "com.apple.quarantine",
+        "<private-run>/extracted/Openergy.app"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "xattr: <private-run>/extracted/Openergy.app: No such xattr: com.apple.quarantine\n",
+      "elapsed_seconds": 0.002
+    },
+    {
+      "arguments": [
+        "codesign",
+        "--verify",
+        "--strict",
+        "--verbose=4",
+        "<private-run>/extracted/Openergy.app"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "--prepared:<private-run>/extracted/Openergy.app/Contents/Helpers/openergy\n--validated:<private-run>/extracted/Openergy.app/Contents/Helpers/openergy\n--prepared:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/.\n--validated:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/.\n<private-run>/extracted/Openergy.app: valid on disk\n<private-run>/extracted/Openergy.app: satisfies its Designated Requirement\n",
+      "elapsed_seconds": 0.038
+    },
+    {
+      "arguments": [
+        "codesign",
+        "-dvvv",
+        "--entitlements",
+        ":-",
+        "<private-run>/extracted/Openergy.app"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "Executable=<private-run>/extracted/Openergy.app/Contents/MacOS/Openergy\nIdentifier=dev.openergy.app\nFormat=app bundle with Mach-O universal (x86_64 arm64)\nCodeDirectory v=20500 size=3356 flags=0x10000(runtime) hashes=98+3 location=embedded\nHash type=sha256 size=32\nCandidateCDHash sha256=0b0ed470e49c5733a39c18bcf90f1741d266c505\nCandidateCDHashFull sha256=0b0ed470e49c5733a39c18bcf90f1741d266c5055e4b4e4675e6a02929988164\nHash choices=sha256\nCMSDigest=0b0ed470e49c5733a39c18bcf90f1741d266c5055e4b4e4675e6a02929988164\nCMSDigestType=2\nCDHash=0b0ed470e49c5733a39c18bcf90f1741d266c505\nSignature size=9053\nAuthority=Developer ID Application: Serge Serbinenko (78A5P57U23)\nAuthority=Developer ID Certification Authority\nAuthority=Apple Root CA\nTimestamp=Nov 2, 2026 at 11:09:30\u202fAM\nNotarization Ticket=stapled\nInfo.plist entries=24\nTeamIdentifier=78A5P57U23\nRuntime Version=15.0.0\nSealed Resources version=2 rules=13 files=7\nInternal requirements count=1 size=176\nwarning: Specifying ':' in the path is deprecated and will not work in a future release\nTotal signatures=1\nChosen signature=1\n",
+      "elapsed_seconds": 0.027
+    },
+    {
+      "arguments": [
+        "codesign",
+        "--verify",
+        "--strict",
+        "--verbose=4",
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy: valid on disk\n<private-run>/extracted/Openergy.app/Contents/Helpers/openergy: satisfies its Designated Requirement\n",
+      "elapsed_seconds": 0.025
+    },
+    {
+      "arguments": [
+        "codesign",
+        "-dvvv",
+        "--entitlements",
+        ":-",
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "Executable=<private-run>/extracted/Openergy.app/Contents/Helpers/openergy\nIdentifier=dev.openergy.daemon\nFormat=Mach-O universal (x86_64 arm64)\nCodeDirectory v=20500 size=7519 flags=0x10000(runtime) hashes=229+2 location=embedded\nHash type=sha256 size=32\nCandidateCDHash sha256=52f135154c55de3c055720c852cdfcb159340913\nCandidateCDHashFull sha256=52f135154c55de3c055720c852cdfcb159340913c35279c46d060fcad263ee9d\nHash choices=sha256\nCMSDigest=52f135154c55de3c055720c852cdfcb159340913c35279c46d060fcad263ee9d\nCMSDigestType=2\nCDHash=52f135154c55de3c055720c852cdfcb159340913\nSignature size=9052\nAuthority=Developer ID Application: Serge Serbinenko (78A5P57U23)\nAuthority=Developer ID Certification Authority\nAuthority=Apple Root CA\nTimestamp=Nov 2, 2026 at 11:09:30\u202fAM\nInfo.plist=not bound\nTeamIdentifier=78A5P57U23\nRuntime Version=27.0.0\nSealed Resources=none\nInternal requirements count=1 size=180\nwarning: Specifying ':' in the path is deprecated and will not work in a future release\nTotal signatures=1\nChosen signature=1\n",
+      "elapsed_seconds": 0.018
+    },
+    {
+      "arguments": [
+        "codesign",
+        "--verify",
+        "--strict",
+        "--verbose=4",
+        "<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "--prepared:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/Autoupdate\n--validated:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/Autoupdate\n--prepared:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/Updater.app\n--validated:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/Updater.app\n--prepared:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/XPCServices/Installer.xpc\n--validated:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/XPCServices/Installer.xpc\n--prepared:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/XPCServices/Downloader.xpc\n--validated:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/XPCServices/Downloader.xpc\n<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework: valid on disk\n<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework: satisfies its Designated Requirement\n",
+      "elapsed_seconds": 0.037
+    },
+    {
+      "arguments": [
+        "codesign",
+        "-dvvv",
+        "--entitlements",
+        ":-",
+        "<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "Executable=<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/Sparkle\nIdentifier=org.sparkle-project.Sparkle\nFormat=bundle with Mach-O universal (x86_64 arm64)\nCodeDirectory v=20500 size=1127 flags=0x10000(runtime) hashes=28+3 location=embedded\nHash type=sha256 size=32\nCandidateCDHash sha256=45981e1ae398f8488b7494e66f2ffd7acb766f78\nCandidateCDHashFull sha256=45981e1ae398f8488b7494e66f2ffd7acb766f783aea8aafb8088cf027b42e6b\nHash choices=sha256\nCMSDigest=45981e1ae398f8488b7494e66f2ffd7acb766f783aea8aafb8088cf027b42e6b\nCMSDigestType=2\nCDHash=45981e1ae398f8488b7494e66f2ffd7acb766f78\nSignature size=9053\nAuthority=Developer ID Application: Serge Serbinenko (78A5P57U23)\nAuthority=Developer ID Certification Authority\nAuthority=Apple Root CA\nTimestamp=Nov 2, 2026 at 11:09:30\u202fAM\nInfo.plist entries=20\nTeamIdentifier=78A5P57U23\nRuntime Version=26.5.0\nSealed Resources version=2 rules=13 files=76\nInternal requirements count=1 size=188\nwarning: Specifying ':' in the path is deprecated and will not work in a future release\nTotal signatures=1\nChosen signature=1\n",
+      "elapsed_seconds": 0.023
+    },
+    {
+      "arguments": [
+        "codesign",
+        "--verify",
+        "--deep",
+        "--strict",
+        "--verbose=4",
+        "<private-run>/extracted/Openergy.app"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "--prepared:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/.\n--prepared:<private-run>/extracted/Openergy.app/Contents/Helpers/openergy\n--validated:<private-run>/extracted/Openergy.app/Contents/Helpers/openergy\n--prepared:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/Autoupdate\n--validated:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/Autoupdate\n--prepared:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/Updater.app\n--validated:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/Updater.app\n--prepared:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/XPCServices/Downloader.xpc\n--validated:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/XPCServices/Downloader.xpc\n--prepared:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/XPCServices/Installer.xpc\n--validated:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/XPCServices/Installer.xpc\n--validated:<private-run>/extracted/Openergy.app/Contents/Frameworks/Sparkle.framework/Versions/Current/.\n<private-run>/extracted/Openergy.app: valid on disk\n<private-run>/extracted/Openergy.app: satisfies its Designated Requirement\n",
+      "elapsed_seconds": 0.054
+    },
+    {
+      "arguments": [
+        "xcrun",
+        "stapler",
+        "validate",
+        "-v",
+        "<private-run>/extracted/Openergy.app"
+      ],
+      "exit": 0,
+      "stdout": "Processing: <private-run>/extracted/Openergy.app\nProperties are {\n    NSURLIsDirectoryKey = 1;\n    NSURLIsPackageKey = 1;\n    NSURLIsSymbolicLinkKey = 0;\n    NSURLLocalizedTypeDescriptionKey = Application;\n    NSURLTypeIdentifierKey = \"com.apple.application-bundle\";\n    \"_NSURLIsApplicationKey\" = 1;\n}\nProps are {\n    cdhash = {length = 20, bytes = 0x0b0ed470e49c5733a39c18bcf90f1741d266c505};\n    digestAlgorithm = 2;\n    flags = 65536;\n    secureTimestamp = \"2026-11-02 18:09:30 +0000\";\n    signingId = \"dev.openergy.app\";\n    teamId = 78A5P57U23;\n}\nJSON Data is {\n    records =     (\n                {\n            recordName = \"2/2/0b0ed470e49c5733a39c18bcf90f1741d266c505\";\n        }\n    );\n}\n Headers: {\n    \"Content-Type\" = \"application/json\";\n}\nDomain is api.apple-cloudkit.com\nResponse is <NSHTTPURLResponse: 0x7578c3eb40> { URL: https://api.apple-cloudkit.com/database/1/com.apple.gk.ticket-delivery/production/public/records/lookup } { Status Code: 200, Headers {\n    \"Alt-Svc\" =     (\n        \"h3=\\\":443\\\"; ma=2592000\"\n    );\n    \"Content-Encoding\" =     (\n        gzip\n    );\n    \"Content-Type\" =     (\n        \"application/json; charset=UTF-8\"\n    );\n    Date =     (\n        \"Tue, 03 Nov 2026 22:06:48 GMT\"\n    );\n    Server =     (\n        \"AppleHttpServer/89717d3e289b\"\n    );\n    \"Strict-Transport-Security\" =     (\n        \"max-age=31536000; includeSubDomains;\"\n    );\n    Via =     (\n        \"xrail:icloud-xrail-group68-ext-64585685df-7dnnj:8301:26R375:grp68,631194250daa17e24277dea86cf30319:2ef582c838593a4ccca636b0ef2ae02b:ussea3\"\n    );\n    \"access-control-expose-headers\" =     (\n        \"X-Apple-Request-UUID,X-Responding-Instance,Via\"\n    );\n    \"x-apple-cloudkit-version\" =     (\n        \"1.0\"\n    );\n    \"x-apple-edge-response-time\" =     (\n        72\n    );\n    \"x-apple-request-uuid\" =     (\n        \"171d9b02-14da-4945-b1fb-f31ef5ce62c3\"\n    );\n    \"x-apple-user-partition\" =     (\n        63\n    );\n    \"x-responding-instance\" =     (\n        \"ckdatabasews:653958753:prod_p63_ckdatabasews_50percent_56c6d44d79_9shqs:8080:2640B311:a0b7f9c6f5a30656ae97aa217197caa86df3eb88\"\n    );\n} }\nSize of data is 3181\nJSON Response is: {\n    records =     (\n                {\n            created =             {\n                deviceID = 2;\n                timestamp = 1793642993465;\n                userRecordName = \"_b133e60953755a92966d7ca08d9c731a\";\n            };\n            deleted = 0;\n            fields =             {\n                signedTicket =                 {\n                    type = BYTES;\n                    value = \"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\";\n                };\n            };\n            modified =             {\n                deviceID = 2;\n                timestamp = 1793642993465;\n                userRecordName = \"_b133e60953755a92966d7ca08d9c731a\";\n            };\n            pluginFields =             {\n            };\n            recordChangeTag = mvzkq792;\n            recordName = \"2/2/0b0ed470e49c5733a39c18bcf90f1741d266c505\";\n            recordType = DeveloperIDTicket;\n        }\n    );\n}\nDownloaded ticket has been stored at file://<system-temp>\nThe validate action worked!\n",
+      "stderr": "",
+      "elapsed_seconds": 0.197
+    },
+    {
+      "arguments": [
+        "spctl",
+        "--assess",
+        "--type",
+        "execute",
+        "--verbose=4",
+        "<private-run>/extracted/Openergy.app"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "<private-run>/extracted/Openergy.app: accepted\nsource=Notarized Developer ID\n",
+      "elapsed_seconds": 0.097
+    },
+    {
+      "arguments": [
+        "file",
+        "<private-run>/extracted/Openergy.app/Contents/MacOS/Openergy",
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy"
+      ],
+      "exit": 0,
+      "stdout": "<private-run>/extracted/Openergy.app/Contents/MacOS/Openergy:   Mach-O universal binary with 2 architectures: [x86_64:Mach-O 64-bit executable x86_64] [arm64]\n<private-run>/extracted/Openergy.app/Contents/MacOS/Openergy (for architecture x86_64):\tMach-O 64-bit executable x86_64\n<private-run>/extracted/Openergy.app/Contents/MacOS/Openergy (for architecture arm64):\tMach-O 64-bit executable arm64\n<private-run>/extracted/Openergy.app/Contents/Helpers/openergy: Mach-O universal binary with 2 architectures: [x86_64:Mach-O 64-bit executable x86_64] [arm64]\n<private-run>/extracted/Openergy.app/Contents/Helpers/openergy (for architecture x86_64):\tMach-O 64-bit executable x86_64\n<private-run>/extracted/Openergy.app/Contents/Helpers/openergy (for architecture arm64):\tMach-O 64-bit executable arm64\n",
+      "stderr": "",
+      "elapsed_seconds": 0.005
+    },
+    {
+      "arguments": [
+        "lipo",
+        "-archs",
+        "<private-run>/extracted/Openergy.app/Contents/MacOS/Openergy"
+      ],
+      "exit": 0,
+      "stdout": "x86_64 arm64\n",
+      "stderr": "",
+      "elapsed_seconds": 0.013
+    },
+    {
+      "arguments": [
+        "lipo",
+        "-archs",
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy"
+      ],
+      "exit": 0,
+      "stdout": "x86_64 arm64\n",
+      "stderr": "",
+      "elapsed_seconds": 0.012
+    },
+    {
+      "arguments": [
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy",
+        "--version"
+      ],
+      "exit": 0,
+      "stdout": "openergy 0.1.0\n",
+      "stderr": "",
+      "elapsed_seconds": 0.006
+    },
+    {
+      "arguments": [
+        "curl",
+        "--silent",
+        "--show-error",
+        "--location",
+        "--connect-timeout",
+        "10",
+        "--max-time",
+        "30",
+        "--output",
+        "<private-run>/appcast.xml",
+        "--write-out",
+        "%{http_code}",
+        "https://openergy-updates.sergeserbinenko.com/appcast.xml"
+      ],
+      "exit": 0,
+      "stdout": "200",
+      "stderr": "",
+      "elapsed_seconds": 0.154
+    }
+  ],
+  "feed": {
+    "url": "https://openergy-updates.sergeserbinenko.com/appcast.xml",
+    "curl_exit": 0,
+    "http_status": "200",
+    "bytes": 756,
+    "sha256": "c693230197b548eba00fd2ea25a7a696cef218d1e854410f0c68934bcc6dd2d7",
+    "release_count": 0,
+    "releases": []
+  },
+  "files": [
+    {
+      "path": "Contents/CodeResources",
+      "bytes": 1926,
+      "sha256": "9b2d42102f0db21fe5fcb8f10a2b3822f13dd812d40aa9deb04f4fd3494bf396"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Autoupdate",
+      "bytes": 708496,
+      "sha256": "301e25e6060e969f616979b7539f31f78e6a38aecccdc01eeab99c3b0d2a9f3c"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Headers/SPUAppcastSigningValidationStatus.h",
+      "bytes": 1007,
+      "sha256": "513d4607ac9ba03c2203b03df307f404216c3ce7f3436784fbbef1842c742749"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Headers/SPUDownloadData.h",
+      "bytes": 1222,
+      "sha256": "58184c2c068a8d43b1ee85651f9edd30a6a9e5899ac936baf4a5f15a6081d7b7"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Headers/SPUStandardUpdaterController.h",
+      "bytes": 5604,
+      "sha256": "f45dfdf2315664c5891b97ad0d7ffce9ab09d067effbd2921b10b58b4831ef0f"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Headers/SPUStandardUserDriver.h",
+      "bytes": 1311,
+      "sha256": "0a0e476b61932196027dd7b94e78d187f810f80c7900168eb4a5956b63d54a77"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Headers/SPUStandardUserDriverDelegate.h",
+      "bytes": 11256,
+      "sha256": "d906e549f7b108979727fa56f13c029906fe48c5602538513a4b480bb45a8c2d"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Headers/SPUUpdateCheck.h",
+      "bytes": 874,
+      "sha256": "1f7d05da2e466263aefe3e09130e56b2e65b8862579e07b9829c9bf5ed921c03"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Headers/SPUUpdatePermissionRequest.h",
+      "bytes": 1093,
+      "sha256": "8c227246c2ea7461741db8bd7274936c3cbcbc7375fe814654d479b2650cd6bd"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Headers/SPUUpdater.h",
+      "bytes": 20262,
+      "sha256": "a30b876dc722a2861fb8f271a0bf0c95bd664db4cf2af57d216d190f2e010ee7"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Headers/SPUUpdaterDelegate.h",
+      "bytes": 23537,
+      "sha256": "20ea4bf5273eaa6560160941d680acec6565965162737f50ea4240845a7dde24"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Headers/SPUUpdaterSettings.h",
+      "bytes": 3428,
+      "sha256": "ad7bdfc719775fe4cdf1490f45ef902ded4dcb3756402e64884397bee425edff"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Headers/SPUUserDriver.h",
+      "bytes": 16622,
+      "sha256": "db9fe6cf78aca0f2f79a99898d38daff566f96c823de2bb2b985511ad77017dc"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Headers/SPUUserUpdateState.h",
+      "bytes": 2052,
+      "sha256": "59f95e933f8b5b2b39c1e7c465aa39af021a2c88820b4b09dbcfc55b1dd19c30"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Headers/SUAppcast.h",
+      "bytes": 1327,
+      "sha256": "251d6ffa7cbc890999ddda3406834f45396cf887a71e5be9ff581883559df0a0"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Headers/SUAppcastItem.h",
+      "bytes": 18835,
+      "sha256": "21df22d4f0ebd4eaba530f77f520a29451a057b70093efec3104ce0253026cf9"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Headers/SUErrors.h",
+      "bytes": 3289,
+      "sha256": "e7e84fa6ef85b549810682ec883593f560d79b776ebec5fb11d9558a6f1f78e5"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Headers/SUExport.h",
+      "bytes": 302,
+      "sha256": "5cef024266c54e12db620f78f4d106860de0fa2a2e230dffdfe04208bb447451"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Headers/SUStandardVersionComparator.h",
+      "bytes": 1845,
+      "sha256": "7d407b9ce721d5c650e741ecb692e77f12ef3b5e18ea8136f72448e8d7208c6c"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Headers/SUUpdatePermissionResponse.h",
+      "bytes": 2509,
+      "sha256": "f9355c8044c7dc168bdaefa37ac2e986002ec328895f17119293e084dad96f21"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Headers/SUUpdater.h",
+      "bytes": 6874,
+      "sha256": "96f6f598d582ca87c9d17f3ccd7bccb0ae4f057ac6e8fafb854ad8d04de336f6"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Headers/SUUpdaterDelegate.h",
+      "bytes": 13764,
+      "sha256": "a1a08c33fd41ebdd105916d8181d222417f9feda01cdc42afa6a3151106cde36"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Headers/SUVersionComparisonProtocol.h",
+      "bytes": 1011,
+      "sha256": "28bbb424ac7ab81e2b93f61e359fefa3ed09d6a38d0b265004d2103c0f46bdb4"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Headers/SUVersionDisplayProtocol.h",
+      "bytes": 3773,
+      "sha256": "3f23c4fb9bbdbc19714580ee4dd7f73ffc31436ea733c9bb308c3f74e7ab512c"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Headers/Sparkle.h",
+      "bytes": 1170,
+      "sha256": "3a442a32eb22a77bb5a08e61ac678daffdf6c697d33020b82a683baf40228e0c"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Modules/module.modulemap",
+      "bytes": 95,
+      "sha256": "2bcae1eb66d55dc49f58acfe856375a5bbc91c6e83bdb298d19442ae6264cfa6"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Modules/module.private.modulemap",
+      "bytes": 833,
+      "sha256": "db1d60f57b43a9eb17f3550f5720ac53466d4385368670fb5148da5b71f43f3a"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/PrivateHeaders/SPUAppcastItemStateResolver.h",
+      "bytes": 1105,
+      "sha256": "1c3be298008c19757ae3b27083622a005bce809a01f06d2c74f6dea16f3214ee"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/PrivateHeaders/SPUGentleUserDriverReminders.h",
+      "bytes": 475,
+      "sha256": "f56d9d277f16417d79d66a484b4afcfc47c2a9957a8c487adb5c709dad895402"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/PrivateHeaders/SPUInstallationType.h",
+      "bytes": 828,
+      "sha256": "52a1a445f58e7c6de94ac558c23913f8081647a499262affe9ac38ff790971d4"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/PrivateHeaders/SPUStandardUserDriver+Private.h",
+      "bytes": 1097,
+      "sha256": "acc764e731fe9e6d307fe32dea4d06b451964225c2b2a9745a23f035a9cdeaad"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/PrivateHeaders/SPUUserAgent+Private.h",
+      "bytes": 751,
+      "sha256": "0c3ea7c6aabab32840e41c56bb22cfab4dee4dde3302603b6f4aba9ac1b5850c"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/PrivateHeaders/SUAppcastItem+Private.h",
+      "bytes": 1641,
+      "sha256": "642ecbeecb323f7201a732b5953d60fefefa13cf894af28936dd0d7d001a101a"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/PrivateHeaders/SUInstallerLauncher+Private.h",
+      "bytes": 1240,
+      "sha256": "cb2e9c465f08ab0309c2bf3a4d2f7c35d9c76ff5a4480694700a22298520dd94"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/Base.lproj/Sparkle.strings",
+      "bytes": 6249,
+      "sha256": "bf93bdde8ad020f2ba210ecfa0e84b5365d0342355a3ca39d88fec0acb1e4a40"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/Info.plist",
+      "bytes": 1341,
+      "sha256": "5fa024aa416c13614fb5588d378aa6c16371737d9980c57fcb3e32f8208f1b86"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/ReleaseNotesColorStyle.css",
+      "bytes": 231,
+      "sha256": "76bd6999758fd8e51d17e6b482db434f9b4768c02b037af6bd2e3a000ce8cbc1"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/SUUpdateAlert.nib",
+      "bytes": 18490,
+      "sha256": "3987a333da7c2728ef2cb9656e5eeaf0832884873cabf78353fcb9099c5d8fbe"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/SUUpdatePermissionPrompt.nib",
+      "bytes": 25390,
+      "sha256": "2e62b9d5a736d53b1eaf217432c4d0ad05217e897787cf1bdf1071ff22308d46"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/ar.lproj/Sparkle.strings",
+      "bytes": 3554,
+      "sha256": "441182787471a3998908044515fe13e92230edaa7e2730638e72a49610f56cba"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/ca.lproj/Sparkle.strings",
+      "bytes": 3501,
+      "sha256": "7ed0d5ca300649a7f13304015008f2dede98ad743a625c17d5a5fedacc1a3b1a"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/cs.lproj/Sparkle.strings",
+      "bytes": 10774,
+      "sha256": "99e66decf9bc46cf5622eead4e65b3b502e3775a4e8e0f03ef1b41683ea8d518"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/da.lproj/Sparkle.strings",
+      "bytes": 4882,
+      "sha256": "8d0ff69b79460185f941372655433bad3934f49e63bef0b4171bd66da71e55f0"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/de.lproj/Sparkle.strings",
+      "bytes": 11559,
+      "sha256": "311035a15227fb12e85eba2a46f3f6198d98ac5590d1d38c43c4ff7430d06599"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/el.lproj/Sparkle.strings",
+      "bytes": 5934,
+      "sha256": "638981a4f095d8b1dabb6230d452e470359711b81803bc5df8c21e1211fd3757"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/es.lproj/Sparkle.strings",
+      "bytes": 7026,
+      "sha256": "047b9affd0e995039072c24b8d7aa830624d03c89c524e4f58d7d6f13eca8352"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/fa.lproj/Sparkle.strings",
+      "bytes": 5716,
+      "sha256": "ed9dda9e271f7a97b8a7f327e71a1b6d06e5e061b367e7da3d153e47dc319263"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/fi.lproj/Sparkle.strings",
+      "bytes": 3252,
+      "sha256": "c14af9bac3fce436222a4ea277a7a6c0f9b42b2d84aceea75e758ce7538acae2"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/fr.lproj/Sparkle.strings",
+      "bytes": 7855,
+      "sha256": "3d554dcd167b085e25a75248533f21f389593aeace912ab9952c825ffe141ce1"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/he.lproj/Sparkle.strings",
+      "bytes": 9657,
+      "sha256": "1d795bd7329d04b7ce84b6bdc845f917369e858b2b292f117b89a6666a185723"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/hr.lproj/Sparkle.strings",
+      "bytes": 6367,
+      "sha256": "920041380a08b3ba50d44e8a83f59de551139845a72748d58f2387c65920b33a"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/hu.lproj/Sparkle.strings",
+      "bytes": 4449,
+      "sha256": "cc2a16e4d487c6fab357b4f7d0fbbf7ec882371b2130413ffcb1b69cd540d2cf"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/is.lproj/Sparkle.strings",
+      "bytes": 3954,
+      "sha256": "403feba503410e9455cd0eaafe592a2576eedb24130ccf2cdb13dda4b101f87e"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/it.lproj/Sparkle.strings",
+      "bytes": 10956,
+      "sha256": "56a7445c1b68d76849ac59b98aa5c20c9002d5e07e9f0a2720486160f85b7366"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/ja.lproj/Sparkle.strings",
+      "bytes": 8697,
+      "sha256": "e404910028af70579cfa208bb4fadd9e3592505fc89af208f4071f2309553fb2"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/ko.lproj/Sparkle.strings",
+      "bytes": 7797,
+      "sha256": "a6269eb3f5a07d0c4f5d7467d5065372085aef7484c518a9d784ffd6c8f5aae4"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/nb.lproj/Sparkle.strings",
+      "bytes": 5539,
+      "sha256": "ef6f0dcae90c440b47ece09909e9cdf35f3383f34e72a614c8c5c0752ecbffe0"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/nl.lproj/Sparkle.strings",
+      "bytes": 9574,
+      "sha256": "ca9adf34fb93fe3f394ccc92114bf6a6b1f8a128bb5f362cb9f3247d7c26c77d"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/nn.lproj/Sparkle.strings",
+      "bytes": 5671,
+      "sha256": "1db8c6853a550aa25382da2d55431a1c1d308d6a37676c4f8593cc1633f8a5ae"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/pl.lproj/Sparkle.strings",
+      "bytes": 5453,
+      "sha256": "5c54b3f8e1eb3026e142e710e2167f2f839b73ab5ad7f18719230f33ae682aa9"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/pt-BR.lproj/Sparkle.strings",
+      "bytes": 9976,
+      "sha256": "0292cadc2acfc34875c1e0b54e2d50de3833cd5e20c8660c8effe2b859aac84c"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/pt-PT.lproj/Sparkle.strings",
+      "bytes": 5827,
+      "sha256": "31b28f3e5b5f9fe3d7abf71a779751d51ff632f3190155ef3cd97d2791a40fb1"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/ro.lproj/Sparkle.strings",
+      "bytes": 6115,
+      "sha256": "b2bf064222c38a3672b01fe09406f799718cb0fc4e715121662639d6fdfea6ed"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/ru.lproj/Sparkle.strings",
+      "bytes": 5784,
+      "sha256": "7193af28eb2a09b9fe7119cf6065a2150c6590971b22f98c56f356cd90851923"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/sk.lproj/Sparkle.strings",
+      "bytes": 5675,
+      "sha256": "e158daaa4f3f91b57cee05ab896f2c1bc467317932cc53bb7c01e7daee9e5238"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/sl.lproj/Sparkle.strings",
+      "bytes": 5646,
+      "sha256": "c62770c604a6c8c89e283357c8b322d8ce6a85f4d85c09002048331f65f8d980"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/sv.lproj/Sparkle.strings",
+      "bytes": 5160,
+      "sha256": "4a21ad5bcf8d836d265710c2e4a0a64f07c9551f1c49694d6734a931d23efd39"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/th.lproj/Sparkle.strings",
+      "bytes": 5339,
+      "sha256": "4b6c8dc2ab69a0425de3aa9dc386c6539348e3983e47aa10f94c17e345a157a5"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/tr.lproj/Sparkle.strings",
+      "bytes": 6183,
+      "sha256": "b040d3f02d341eba047c15dfcafb60406d0847096a94466ecab512dcfb16abb5"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/uk.lproj/Sparkle.strings",
+      "bytes": 5842,
+      "sha256": "ff44d58635b3e8409d54b42b72c876a43e17fa98f6ea96b32583b9e88c747ab6"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/vi.lproj/Sparkle.strings",
+      "bytes": 12418,
+      "sha256": "2b3b4acbadf534cd0e812b97e589f80a4e1655b07c8907e98cc31df458ffd8b7"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/zh_CN.lproj/Sparkle.strings",
+      "bytes": 7475,
+      "sha256": "e7f543b92977e9abc907241c411d8db0f59c4fee480859b3e88e4b495e0976c8"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/zh_HK.lproj/Sparkle.strings",
+      "bytes": 6469,
+      "sha256": "3fc210132f33d89af3d25d27c7ea19426cf6d304be50254538456e0ec4fb7858"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Resources/zh_TW.lproj/Sparkle.strings",
+      "bytes": 7625,
+      "sha256": "76321e1dd844c9b6568cb4af7c63bb57d9d1b700109aeedd7e5721d78727b12d"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Sparkle",
+      "bytes": 976432,
+      "sha256": "e235d2b21f161ccd82d52e05ff26aa61bd8a92fc48a0b43d4eac50001a867021"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Updater.app/Contents/Info.plist",
+      "bytes": 2400,
+      "sha256": "59ccb021c4e784681a2042e96feaf7c47eaa7c2a6468ce5c73d6f38274385c40"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Updater.app/Contents/MacOS/Updater",
+      "bytes": 339936,
+      "sha256": "0df2e8a9d3e6a079e31bbe18413702ccdbab6694b703ac049df8fd153732bf5a"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Updater.app/Contents/PkgInfo",
+      "bytes": 8,
+      "sha256": "82502191c9484b04d685374f9879a0066069c49b8acae7a04b01d38d07e8eca0"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/Updater.app/Contents/_CodeSignature/CodeResources",
+      "bytes": 2200,
+      "sha256": "6686de10a28a2fe11b36cbb86dcbacc827cfc4ea116b4dabf1845e5aee629e9b"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Downloader.xpc/Contents/Info.plist",
+      "bytes": 1717,
+      "sha256": "098634fc77fd96310eff2a63d6080b76139e3b2138dade393cf1cd0ef9a4dd93"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Downloader.xpc/Contents/MacOS/Downloader",
+      "bytes": 188896,
+      "sha256": "5dfb654e0543e7e96b295edb5f217a9becaa54b5efd91d61f2c05fd5d965b9d0"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Downloader.xpc/Contents/_CodeSignature/CodeResources",
+      "bytes": 2200,
+      "sha256": "6686de10a28a2fe11b36cbb86dcbacc827cfc4ea116b4dabf1845e5aee629e9b"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Installer.xpc/Contents/Info.plist",
+      "bytes": 1605,
+      "sha256": "c382d031b287e64e0d4e6e7eec4208600e8b2abbe100f348c3b12f8baf4a348d"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Installer.xpc/Contents/MacOS/Installer",
+      "bytes": 207264,
+      "sha256": "fb9e1811163c4ca339af65c1e9d43fed46a4c8ac1cd7df213d7877a01d1e9986"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices/Installer.xpc/Contents/_CodeSignature/CodeResources",
+      "bytes": 2200,
+      "sha256": "6686de10a28a2fe11b36cbb86dcbacc827cfc4ea116b4dabf1845e5aee629e9b"
+    },
+    {
+      "path": "Contents/Frameworks/Sparkle.framework/Versions/B/_CodeSignature/CodeResources",
+      "bytes": 22805,
+      "sha256": "73e927a7308cf925eb5f2e998f9b06956977071e9db4c275e440ae7e51ede50d"
+    },
+    {
+      "path": "Contents/Helpers/openergy",
+      "bytes": 8361248,
+      "sha256": "4735c0666cd26b6b6a137129c0f4636256c456fbd1a8c3309ff20d1290284797"
+    },
+    {
+      "path": "Contents/Info.plist",
+      "bytes": 1764,
+      "sha256": "84e92bc0cfb215bf561b2cd6f0208e730e6f48935b7860fa08e3edb664b3e4d1"
+    },
+    {
+      "path": "Contents/MacOS/Openergy",
+      "bytes": 3363520,
+      "sha256": "b8649a96645c5d9dd95c886856159a3b35d414dc753eb0a606890ef742d15277"
+    },
+    {
+      "path": "Contents/PkgInfo",
+      "bytes": 8,
+      "sha256": "82502191c9484b04d685374f9879a0066069c49b8acae7a04b01d38d07e8eca0"
+    },
+    {
+      "path": "Contents/Resources/AppIcon.icns",
+      "bytes": 1162898,
+      "sha256": "966ae2468e6c90ea0bacd0f88eca6bc962cf72e49f1fe95a11543809b52b35c2"
+    },
+    {
+      "path": "Contents/Resources/LICENSE-APACHE",
+      "bytes": 10836,
+      "sha256": "f87ddbb1c277a25c3a53aae5252170e2656a0b98ff4523710be569507418e654"
+    },
+    {
+      "path": "Contents/Resources/LICENSE-MIT",
+      "bytes": 1060,
+      "sha256": "d53e4a871f869c21c1b61665499e57135a1ccc8ccb6f7d58d3198e2979fb0279"
+    },
+    {
+      "path": "Contents/Resources/Sparkle-LICENSE.txt",
+      "bytes": 6154,
+      "sha256": "389a4e4e9a32f059775b13a06e25a591445ba229d2838d26dd3e7c0c45127cfe"
+    },
+    {
+      "path": "Contents/Resources/THIRD_PARTY_NOTICES.md",
+      "bytes": 123135,
+      "sha256": "855ecee0099e0749ce3bcd2c582c89f6062900187fe2c02f47f9a2ab369006f7"
+    },
+    {
+      "path": "Contents/_CodeSignature/CodeResources",
+      "bytes": 4232,
+      "sha256": "ee26362df8afae4d475adaa60872fb716089bf817f433d25c01771be5cd297d8"
+    }
+  ]
+}

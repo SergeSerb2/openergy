@@ -1,0 +1,25 @@
+{
+  "arguments": [
+    "<private-run>/extracted/Openergy.app/Contents/MacOS/Openergy",
+    "--updater-e2e",
+    "<private-run>",
+    "--updater-config",
+    "<private-run>/updater-private-home",
+    "--updater-feed",
+    "https://openergy-updates.sergeserbinenko.com/appcast.xml",
+    "--updater-expect",
+    "current",
+    "--updater-timeout",
+    "15"
+  ],
+  "exit": 64,
+  "stdout": "",
+  "stderr": "usage: CFFIXED_USER_HOME=<private-config-dir> Openergy --updater-e2e <private-output-dir> --updater-config <private-config-dir> --updater-feed <loopback-or-production-feed-url> --updater-expect current|candidate|failure|unconfigured [--updater-timeout 15]\nRequires owned mode-0700 temporary directories, a fresh result path, a temporary dev.openergy.updater-e2e.* bundle inside output-dir, matching CFFIXED_USER_HOME, and SUDefaultsDomain=<resolved-config-dir>/sparkle-preferences.\n",
+  "elapsed_seconds": 0.014,
+  "bundle_identifier": "dev.openergy.app",
+  "SUDefaultsDomain": null,
+  "feed_url": "https://openergy-updates.sergeserbinenko.com/appcast.xml",
+  "updater_result_exists": false,
+  "home_entries": [],
+  "interpretation": "Unchanged signed release refused before Sparkle startup. No Sparkle feed request is proven. Private updater harness requires a different bundle identifier and SUDefaultsDomain. Changing Info.plist invalidates the release signature."
+}

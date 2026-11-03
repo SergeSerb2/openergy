@@ -1,0 +1,278 @@
+{
+  "source_commit": "e5d86e2389badf0c45fc2fcef8c4f478b3a2a284",
+  "environment": {
+    "os": "Linux",
+    "kernel": "7.2.12-orbstack-00394-gbecdd6130068",
+    "architecture": "aarch64",
+    "python": "3.12.3",
+    "curl": "curl 8.5.0 (aarch64-unknown-linux-gnu) libcurl/8.5.0 OpenSSL/3.0.13 zlib/1.3 brotli/1.1.0 zstd/1.5.5 libidn2/2.3.7 libpsl/0.21.2 (+libidn2/2.3.7) libssh/0.10.6/openssl/zlib nghttp2/1.59.0 librtmp/2.3 OpenLDAP/2.6.10"
+  },
+  "source_sha256": {
+    "apps/macos/Support/Info.plist": "4300cad741fb7e2d7b14d41897f78a2631a1ebf93bff2e45484878d25a3573a2",
+    "apps/macos/Sources/Openergy/App/AppUpdater.swift": "42c1c3739cd7221191144da33e8535a7aacd444a115f07e58399415ae9dfe9a7",
+    "apps/macos/Sources/Openergy/App/UpdaterEndToEnd.swift": "4d4200811843859f526af831354b85923006f36d256463fe26e1e4c7a5eb9ee2",
+    "apps/macos/Package.swift": "ce093f04ed71f2f7fb806ac19633c9c41a6d7d1aaf245341c9ed6b367788e505",
+    "deployment/cloudflare/updates.json": "e7afcdc37ea2c547387366598825cf4ea6545827e7a419b73fca7a25a8506486",
+    "deployment/cloudflare/public/appcast.xml": "c693230197b548eba00fd2ea25a7a696cef218d1e854410f0c68934bcc6dd2d7",
+    "tools/release/sparkle.py": "67d0f9902e0eeb15939570904accffd26ebc401c5db7d326bcb434c88a9e52c5",
+    "tools/release/deploy_updates.py": "5117108376bc5fd83151b73b39301ac0ba7515b400b304d2005e4d4b3a2eb34e",
+    "tools/release/release.py": "2dbd219cd243e993a32fb82b91a281688a8e457648583c8e7ab88210132d49d1",
+    "tools/release/trusted_release.py": "7de36c8d1db0f90793b8cdf7bfc77528b88e58f0aa166b01297979e2b8f0141e",
+    ".github/workflows/draft-release.yml": "73bc9d735e3597e43d3fdf97f2df14f7f752d38362a067ef847bd545181360bb"
+  },
+  "source_configuration": {
+    "SUFeedURL": "https://openergy-updates.sergeserbinenko.com/appcast.xml",
+    "SUPublicEDKey": "T6P8IZ5N6ivIZD3SdPRTOKWImB81Lfj2PFQqH4TMZ6o=",
+    "CFBundleShortVersionString": "__VERSION__",
+    "CFBundleVersion": "__BUILD__"
+  },
+  "config_command": {
+    "argv": [
+      "OPENERGY_REQUIRE_UPDATES=1",
+      "python3",
+      "tools/release/sparkle.py",
+      "config"
+    ],
+    "exit": 0,
+    "stdout": "Sparkle: configured\n",
+    "stderr": ""
+  },
+  "source_feed": {
+    "length": 756,
+    "sha256": "c693230197b548eba00fd2ea25a7a696cef218d1e854410f0c68934bcc6dd2d7",
+    "release_count": 0,
+    "signature": "NA5gsOXfgnsQRpHmr8jtPANKF6a5Qa/eji1VyEyIlVOV9vqbCjy0SAWPkNrSzh8w32YfL73lrNsP4muqjZCIDw==",
+    "signed_length": 613
+  },
+  "signature_verification": {
+    "tool": "OpenSSL 3.0.13 30 Jan 2024 (Library: OpenSSL 3.0.13 30 Jan 2024)",
+    "method": "Ed25519 pkeyutl -verify -pubin -keyform DER -rawin over first signed_length bytes; bundle public key",
+    "exit": 0,
+    "stdout": "Signature Verified Successfully\n",
+    "stderr": ""
+  },
+  "hosting_verifier": [
+    {
+      "environment": "inherited-environment",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "updates deployment: HTTP Error 403: Forbidden\n",
+      "report": null
+    },
+    {
+      "environment": "clean-environment",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "updates deployment: HTTP Error 403: Forbidden\n",
+      "report": null
+    }
+  ],
+  "urllib_comparison": [
+    {
+      "started_utc": "2026-11-03T22:05:35.253126+00:00",
+      "user_agent": "Python-urllib/3.12",
+      "http_status": 403,
+      "response_bytes": 17,
+      "sha256": "2938e9f1284180959e33ab1718d0793a72ff6e4cdb8108c34dcd14e69446de5c",
+      "headers": {
+        "content-type": "text/plain; charset=UTF-8",
+        "server": "cloudflare"
+      }
+    },
+    {
+      "started_utc": "2026-11-03T22:05:35.301942+00:00",
+      "user_agent": "curl/8.5.0",
+      "http_status": 200,
+      "response_bytes": 756,
+      "sha256": "c693230197b548eba00fd2ea25a7a696cef218d1e854410f0c68934bcc6dd2d7",
+      "headers": {
+        "content-type": "application/rss+xml",
+        "server": "cloudflare",
+        "cf-cache-status": "DYNAMIC"
+      }
+    },
+    {
+      "started_utc": "2026-11-03T22:05:35.520882+00:00",
+      "user_agent": "Openergy/0.1.0 Sparkle/2.10.0",
+      "http_status": 200,
+      "response_bytes": 756,
+      "sha256": "c693230197b548eba00fd2ea25a7a696cef218d1e854410f0c68934bcc6dd2d7",
+      "headers": {
+        "content-type": "application/rss+xml",
+        "server": "cloudflare",
+        "cf-cache-status": "DYNAMIC"
+      }
+    }
+  ],
+  "inherited_proxy_variable_names": [],
+  "requests": [
+    {
+      "name": "feed-ordinary",
+      "url": "https://openergy-updates.sergeserbinenko.com/appcast.xml",
+      "started_utc": "2026-11-03T22:05:34.678695+00:00",
+      "user_agent": "curl default",
+      "curl_exit": 0,
+      "http_status": 200,
+      "headers": {
+        "content-type": "application/rss+xml",
+        "cache-control": "public, max-age=60, must-revalidate",
+        "server": "cloudflare",
+        "cf-cache-status": "DYNAMIC"
+      },
+      "response_bytes": 756,
+      "response_sha256": "c693230197b548eba00fd2ea25a7a696cef218d1e854410f0c68934bcc6dd2d7",
+      "release_count": 0,
+      "tls": "curl system trust, no bypass; no redirects followed",
+      "stderr": ""
+    },
+    {
+      "name": "feed-sparkle-style",
+      "url": "https://openergy-updates.sergeserbinenko.com/appcast.xml",
+      "started_utc": "2026-11-03T22:05:34.678972+00:00",
+      "user_agent": "Openergy/0.1.0 Sparkle/2.10.0",
+      "curl_exit": 0,
+      "http_status": 200,
+      "headers": {
+        "content-type": "application/rss+xml",
+        "cache-control": "public, max-age=60, must-revalidate",
+        "server": "cloudflare",
+        "cf-cache-status": "DYNAMIC"
+      },
+      "response_bytes": 756,
+      "response_sha256": "c693230197b548eba00fd2ea25a7a696cef218d1e854410f0c68934bcc6dd2d7",
+      "release_count": 0,
+      "tls": "curl system trust, no bypass; no redirects followed",
+      "stderr": ""
+    },
+    {
+      "name": "channel-page",
+      "url": "https://openergy-updates.sergeserbinenko.com/index.html",
+      "started_utc": "2026-11-03T22:05:34.679678+00:00",
+      "user_agent": "curl default",
+      "curl_exit": 0,
+      "http_status": 200,
+      "headers": {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "public, max-age=60, must-revalidate",
+        "server": "cloudflare",
+        "cf-cache-status": "DYNAMIC"
+      },
+      "response_bytes": 560,
+      "response_sha256": "844706d8fa47a0e45c49059a7995d25765174b70008e713da180eb6cbf18d0a3",
+      "release_count": null,
+      "tls": "curl system trust, no bypass; no redirects followed",
+      "stderr": ""
+    },
+    {
+      "name": "missing-object",
+      "url": "https://openergy-updates.sergeserbinenko.com/openergy-verification-missing-object",
+      "started_utc": "2026-11-03T22:05:34.680196+00:00",
+      "user_agent": "curl default",
+      "curl_exit": 0,
+      "http_status": 404,
+      "headers": {
+        "content-type": "text/html",
+        "server": "cloudflare",
+        "cf-cache-status": "DYNAMIC"
+      },
+      "response_bytes": 27150,
+      "response_sha256": "62c1c0b235e26952857139537b65f8272026cd1c385c1bf6dba20481ee8a6619",
+      "release_count": null,
+      "tls": "curl system trust, no bypass; no redirects followed",
+      "stderr": ""
+    },
+    {
+      "name": "github-alpha",
+      "url": "https://api.github.com/repos/SergeSerb2/openergy/releases/tags/v0.1.0",
+      "started_utc": "2026-11-03T22:05:34.680479+00:00",
+      "user_agent": "Openergy-update-channel-audit",
+      "curl_exit": 0,
+      "http_status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=60, s-maxage=60",
+        "server": "github.com"
+      },
+      "response_bytes": 18812,
+      "response_sha256": "9d165f275139328d7f949d14a9f483339c338506c32d1489da0cf0766c39292e",
+      "release_count": null,
+      "tls": "curl system trust, no bypass; no redirects followed",
+      "stderr": "",
+      "github_release": {
+        "id": 431823174,
+        "html_url": "https://github.com/SergeSerb2/openergy/releases/tag/v0.1.0",
+        "tag_name": "v0.1.0",
+        "name": "Openergy 0.1.0 (alpha)",
+        "draft": false,
+        "prerelease": true,
+        "published_at": "2026-11-02T18:27:22Z",
+        "target_commitish": "e5d86e2389badf0c45fc2fcef8c4f478b3a2a284",
+        "assets": [
+          {
+            "name": "Openergy-0.1.0-macos-universal.zip",
+            "size": 7780962,
+            "digest": "sha256:acd5c81113670edd34658d14ca489ce083758acc4df1ae5676b4308bcda6e9b0",
+            "browser_download_url": "https://github.com/SergeSerb2/openergy/releases/download/v0.1.0/Openergy-0.1.0-macos-universal.zip",
+            "updated_at": "2026-11-02T18:27:07Z"
+          },
+          {
+            "name": "Openergy-0.1.0-macos-universal.zip.sha256",
+            "size": 101,
+            "digest": "sha256:fd543cacab4b1dd1dff1749a6fe97a7be198495eccb48349016148d97dad61b1",
+            "browser_download_url": "https://github.com/SergeSerb2/openergy/releases/download/v0.1.0/Openergy-0.1.0-macos-universal.zip.sha256",
+            "updated_at": "2026-11-02T18:27:06Z"
+          },
+          {
+            "name": "openergy-0.1.0-x86_64-pc-windows-msvc-unsigned.json",
+            "size": 426,
+            "digest": "sha256:205451e3bd21c9735ab9a11d38eb7966dbfa02cb1b06141bac6bdf58ceec1a52",
+            "browser_download_url": "https://github.com/SergeSerb2/openergy/releases/download/v0.1.0/openergy-0.1.0-x86_64-pc-windows-msvc-unsigned.json",
+            "updated_at": "2026-11-02T18:24:22Z"
+          },
+          {
+            "name": "openergy-0.1.0-x86_64-pc-windows-msvc-unsigned.zip",
+            "size": 2051082,
+            "digest": "sha256:abd5d4f80f1141e5893881d82bdfa0dd5f93f49a8d3a43a863801f8bb9cd53b9",
+            "browser_download_url": "https://github.com/SergeSerb2/openergy/releases/download/v0.1.0/openergy-0.1.0-x86_64-pc-windows-msvc-unsigned.zip",
+            "updated_at": "2026-11-02T18:24:22Z"
+          },
+          {
+            "name": "openergy-0.1.0-x86_64-pc-windows-msvc-unsigned.zip.sha256",
+            "size": 117,
+            "digest": "sha256:dea83f8c95699dd9ecc1415e38b8070a781af08b2346b3750f232745d9d1386e",
+            "browser_download_url": "https://github.com/SergeSerb2/openergy/releases/download/v0.1.0/openergy-0.1.0-x86_64-pc-windows-msvc-unsigned.zip.sha256",
+            "updated_at": "2026-11-02T18:24:22Z"
+          },
+          {
+            "name": "openergy-0.1.0-x86_64-unknown-linux-gnu-unsigned.json",
+            "size": 428,
+            "digest": "sha256:c4cc374f4b2c0f80958c788007b386725a98e9bdf80e8a73d1b807fd92db92c1",
+            "browser_download_url": "https://github.com/SergeSerb2/openergy/releases/download/v0.1.0/openergy-0.1.0-x86_64-unknown-linux-gnu-unsigned.json",
+            "updated_at": "2026-11-02T18:24:22Z"
+          },
+          {
+            "name": "openergy-0.1.0-x86_64-unknown-linux-gnu-unsigned.tar.gz",
+            "size": 2299135,
+            "digest": "sha256:e866b3a5475fe9d41464fc69e5a2d805b24454122476f6ece888a34ae08321e9",
+            "browser_download_url": "https://github.com/SergeSerb2/openergy/releases/download/v0.1.0/openergy-0.1.0-x86_64-unknown-linux-gnu-unsigned.tar.gz",
+            "updated_at": "2026-11-02T18:24:22Z"
+          },
+          {
+            "name": "openergy-0.1.0-x86_64-unknown-linux-gnu-unsigned.tar.gz.sha256",
+            "size": 122,
+            "digest": "sha256:96aa75d5149e76fe779e1b89c6dddfc607d2b7008613d658729a2e9bf76cbc5b",
+            "browser_download_url": "https://github.com/SergeSerb2/openergy/releases/download/v0.1.0/openergy-0.1.0-x86_64-unknown-linux-gnu-unsigned.tar.gz.sha256",
+            "updated_at": "2026-11-02T18:24:22Z"
+          }
+        ],
+        "body": "First public alpha of Openergy: an open-source, lightweight replacement for Synergy. Share one keyboard, mouse, and clipboard across computers on your local network.\n\n> [!WARNING]\n> **Alpha software.** Keep another way to control each computer while you try it. Read [readiness](https://github.com/SergeSerb2/openergy/blob/v0.1.0/docs/plan/readiness.md) for what has and has not been verified.\n\n## Downloads\n\n| File | Platform | Notes |\n| --- | --- | --- |\n| `Openergy-0.1.0-macos-universal.zip` | macOS 15+, Apple silicon and Intel | Menu-bar app with its daemon. Signed with a Developer ID certificate and notarized by Apple. |\n| `openergy-0.1.0-x86_64-pc-windows-msvc-unsigned.zip` | Windows x86-64 | Headless daemon and CLI. Unsigned. |\n| `openergy-0.1.0-x86_64-unknown-linux-gnu-unsigned.tar.gz` | Linux x86-64, X11 | Headless daemon and CLI. Unsigned. |\n\nEach file has a `.sha256` checksum next to it. The Windows and Linux files also have a `.json` build manifest.\n\n## Install on macOS\n\n1. Unzip and move **Openergy.app** to Applications, then open it.\n2. In **Permissions**, grant Accessibility (and Input Monitoring on the computer that hosts the keyboard and mouse).\n3. Choose **Host** on the computer with the keyboard and mouse, or **Join** on the others. Compare certificate fingerprints before you approve a peer.\n\nFor Windows, Linux, the CLI, and moving from Synergy, see the [setup guide](https://github.com/SergeSerb2/openergy/blob/v0.1.0/docs/plan/setup.md).\n\n## Openergy vs Synergy\n\nMeasured on the same Mac (Apple M5 Pro, macOS 27.2), as a connected client of the same Windows server, with no window open:\n\n| | Synergy 3.7 beta | Openergy 0.1.0 |\n| --- | --- | --- |\n| App bundle on disk | 524.4 MiB | 9.1 MiB (arm64 build) |\n| Idle memory | 144.3 MiB | 64.5 MiB (app + daemon) |\n| Idle CPU | 0.0% | 0.0% |\n\nThis is a field measurement, not a lab benchmark. Details: [README](https://github.com/SergeSerb2/openergy/blob/v0.1.0/README.md#openergy-vs-synergy).\n\n## Highlights\n\n- Works with the classic Synergy-family protocol (1.6\u20131.8). Tested with Synergy core 1.21.1, Deskflow 1.27, and Barrier 2.4.\n- TLS on by default, with certificate pinning in both directions.\n- Clipboard sharing for text, HTML, and images.\n- Numbered synthetic clicks on macOS, for the macOS 27 window-focus problem seen with other Synergy-family clients.\n- No accounts, telemetry, or cloud relay.\n- Hosts with several displays: screen edges follow the displays that touch them, and the cursor returns to where it left after a lost connection. On a Mac host, the layout shows each display.\n- Modifier remaps (for example, Ctrl on the host acts as Command on a Mac) apply to the modifier keys too.\n- A key held while the cursor crosses to another screen does not repeat there, and its release is not lost.\n- A client reconnects within about 5 seconds after its host comes back.\n- On macOS, a permission you grant in System Settings takes effect without a restart.\n\n## Known limits\n\n- Windows and Linux have no graphical app or automatic updates. Wayland is not supported.\n- No file transfer or drag-and-drop.\n- Not yet verified: native input edge cases on test desktops (sleep and wake, mixed scaling, keyboard layouts), Windows as a client, and update installation through Sparkle.\n\nReport bugs in [issues](https://github.com/SergeSerb2/openergy/issues). Report security problems privately through [Security \u2192 Report a vulnerability](https://github.com/SergeSerb2/openergy/security/advisories/new).\n"
+      }
+    }
+  ],
+  "limits": [
+    "No signed-app execution in this capture; user-agent emulation only.",
+    "No authenticated Cloudflare rules inspected; no credentials or deployment changes.",
+    "HTTP results describe this host/network path only; inaccessible feeds have unknown release counts.",
+    "GitHub API metadata is separate from Sparkle publication; no release binary downloaded or executed."
+  ]
+}

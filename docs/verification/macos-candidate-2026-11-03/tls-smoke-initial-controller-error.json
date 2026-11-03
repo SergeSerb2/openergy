@@ -1,0 +1,327 @@
+{
+  "platform": "virtual",
+  "tls_enabled": true,
+  "require_client_trust": true,
+  "port": 25762,
+  "passed": false,
+  "error": "AssertionError: ",
+  "commands": [
+    {
+      "arguments": [
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy",
+        "fingerprint",
+        "--dir",
+        "<private-run>/tls-smoke/server",
+        "--synergy"
+      ],
+      "exit": 0,
+      "stdout": "v2:sha256:886b9dbe74d0c319f09054950311307d9d3acb81a9a077e6a5222ba09e3828f5\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy",
+        "daemon",
+        "--platform",
+        "virtual",
+        "--foreground",
+        "--config",
+        "<private-run>/tls-smoke/server/config.toml",
+        "--socket",
+        "<private-run>/tls-smoke/server/control.sock"
+      ],
+      "kind": "spawn"
+    },
+    {
+      "arguments": [
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy",
+        "fingerprint",
+        "--dir",
+        "<private-run>/tls-smoke/client",
+        "--synergy"
+      ],
+      "exit": 0,
+      "stdout": "v2:sha256:113e933ac4bee2100ec23e6cdf4e4eb891c94f19052a2be704573c82219c6cc3\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy",
+        "daemon",
+        "--platform",
+        "virtual",
+        "--foreground",
+        "--config",
+        "<private-run>/tls-smoke/client/config.toml",
+        "--socket",
+        "<private-run>/tls-smoke/client/control.sock"
+      ],
+      "kind": "spawn"
+    },
+    {
+      "arguments": [
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy",
+        "ctl",
+        "connection.connect",
+        "--socket",
+        "<private-run>/tls-smoke/client/control.sock",
+        "--json",
+        "{\"host\": \"127.0.0.1\", \"port\": 25762}"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"connecting\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy",
+        "ctl",
+        "daemon.stop",
+        "--socket",
+        "<private-run>/tls-smoke/server/control.sock",
+        "--json",
+        "{}"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"stopping\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy",
+        "ctl",
+        "daemon.stop",
+        "--socket",
+        "<private-run>/tls-smoke/client/control.sock",
+        "--json",
+        "{}"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"stopping\": true\n}\n",
+      "stderr": ""
+    }
+  ],
+  "checkpoints": [
+    {
+      "name": "private virtual daemon ready",
+      "node": "server",
+      "status": {
+        "active_screen": "server",
+        "client": {
+          "attempt": 0,
+          "next_retry_ms": null,
+          "remote": "127.0.0.1:25762"
+        },
+        "clipboard": {
+          "enabled": true,
+          "last_blocked": null,
+          "last_transfer": null
+        },
+        "cursor": {
+          "screen": "server",
+          "x": 0,
+          "y": 0
+        },
+        "daemon": {
+          "pid": 82196,
+          "platform": "virtual",
+          "uptime_s": 0,
+          "version": "0.1.0"
+        },
+        "last_error": null,
+        "local_screen": {
+          "displays": [
+            {
+              "h": 1080,
+              "scale": 1.0,
+              "w": 1920,
+              "x": 0,
+              "y": 0
+            }
+          ],
+          "h": 1080,
+          "w": 1920
+        },
+        "name": "server",
+        "peers": [],
+        "pending_trust": [],
+        "permissions": {
+          "accessibility": "not_required",
+          "input_monitoring": "not_required",
+          "post_events": "not_required"
+        },
+        "role": "server",
+        "secure_input": {
+          "local_app": null
+        },
+        "server": {
+          "listen": "127.0.0.1:25762"
+        },
+        "state": "listening",
+        "stats": {
+          "events_in": 0,
+          "events_out": 0,
+          "rss_bytes": 9682944
+        },
+        "tls": {
+          "enabled": true,
+          "fingerprint": "88:6B:9D:BE:74:D0:C3:19:F0:90:54:95:03:11:30:7D:9D:3A:CB:81:A9:A0:77:E6:A5:22:2B:A0:9E:38:28:F5"
+        }
+      }
+    },
+    {
+      "name": "private virtual daemon ready",
+      "node": "client",
+      "status": {
+        "active_screen": null,
+        "client": {
+          "attempt": 0,
+          "next_retry_ms": null,
+          "remote": "127.0.0.1:25762"
+        },
+        "clipboard": {
+          "enabled": true,
+          "last_blocked": null,
+          "last_transfer": null
+        },
+        "cursor": {
+          "screen": null,
+          "x": 0,
+          "y": 0
+        },
+        "daemon": {
+          "pid": 82201,
+          "platform": "virtual",
+          "uptime_s": 0,
+          "version": "0.1.0"
+        },
+        "last_error": null,
+        "local_screen": {
+          "displays": [
+            {
+              "h": 1080,
+              "scale": 1.0,
+              "w": 1920,
+              "x": 0,
+              "y": 0
+            }
+          ],
+          "h": 1080,
+          "w": 1920
+        },
+        "name": "client",
+        "peers": [],
+        "pending_trust": [],
+        "permissions": {
+          "accessibility": "not_required",
+          "input_monitoring": "not_required",
+          "post_events": "not_required"
+        },
+        "role": "client",
+        "secure_input": {
+          "local_app": null
+        },
+        "server": {
+          "listen": null
+        },
+        "state": "idle",
+        "stats": {
+          "events_in": 0,
+          "events_out": 0,
+          "rss_bytes": 9519104
+        },
+        "tls": {
+          "enabled": true,
+          "fingerprint": "11:3E:93:3A:C4:BE:E2:10:0E:C2:3E:6C:DF:4E:4E:B8:91:C9:4F:19:05:2A:2B:E7:04:57:3C:82:21:9C:6C:C3"
+        }
+      }
+    },
+    {
+      "name": "unknown server held before approval",
+      "node": "client",
+      "status": {
+        "active_screen": null,
+        "client": {
+          "attempt": 0,
+          "next_retry_ms": null,
+          "remote": "127.0.0.1:25762"
+        },
+        "clipboard": {
+          "enabled": true,
+          "last_blocked": null,
+          "last_transfer": null
+        },
+        "cursor": {
+          "screen": null,
+          "x": 0,
+          "y": 0
+        },
+        "daemon": {
+          "pid": 82201,
+          "platform": "virtual",
+          "uptime_s": 0,
+          "version": "0.1.0"
+        },
+        "last_error": {
+          "code": "untrusted_peer",
+          "message": "Peer fingerprint needs approval",
+          "unix_ms": 1793743816033
+        },
+        "local_screen": {
+          "displays": [
+            {
+              "h": 1080,
+              "scale": 1.0,
+              "w": 1920,
+              "x": 0,
+              "y": 0
+            }
+          ],
+          "h": 1080,
+          "w": 1920
+        },
+        "name": "client",
+        "peers": [],
+        "pending_trust": [
+          {
+            "address": "127.0.0.1:25762",
+            "expires_unix_ms": 1793743846033,
+            "fingerprint": "88:6B:9D:BE:74:D0:C3:19:F0:90:54:95:03:11:30:7D:9D:3A:CB:81:A9:A0:77:E6:A5:22:2B:A0:9E:38:28:F5",
+            "name": null
+          }
+        ],
+        "permissions": {
+          "accessibility": "not_required",
+          "input_monitoring": "not_required",
+          "post_events": "not_required"
+        },
+        "role": "client",
+        "secure_input": {
+          "local_app": null
+        },
+        "server": {
+          "listen": null
+        },
+        "state": "connecting",
+        "stats": {
+          "events_in": 0,
+          "events_out": 0,
+          "rss_bytes": 10223616
+        },
+        "tls": {
+          "enabled": true,
+          "fingerprint": "11:3E:93:3A:C4:BE:E2:10:0E:C2:3E:6C:DF:4E:4E:B8:91:C9:4F:19:05:2A:2B:E7:04:57:3C:82:21:9C:6C:C3"
+        }
+      }
+    }
+  ],
+  "process_exits": {
+    "server": 0,
+    "client": 0
+  },
+  "port_postflight": {
+    "port": 25762,
+    "exit": 1,
+    "stdout": ""
+  }
+}

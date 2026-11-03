@@ -1,0 +1,187 @@
+{
+  "release_url": "https://github.com/SergeSerb2/openergy/releases/tag/v0.1.0",
+  "release_id": 431823174,
+  "tag": "v0.1.0",
+  "release_target": "e5d86e2389badf0c45fc2fcef8c4f478b3a2a284",
+  "published_at": "2026-11-02T18:27:22Z",
+  "prerelease": true,
+  "tag_object": {
+    "sha": "eef40ced98e8ae8357997b1a110c63a1cca62419",
+    "type": "tag",
+    "url": "https://api.github.com/repos/SergeSerb2/openergy/git/tags/eef40ced98e8ae8357997b1a110c63a1cca62419"
+  },
+  "archives": [
+    {
+      "name": "Openergy-0.1.0-macos-universal.zip",
+      "size": 7780962,
+      "sha256": "acd5c81113670edd34658d14ca489ce083758acc4df1ae5676b4308bcda6e9b0",
+      "github_digest_matches": true,
+      "checksum_sidecar_matches": true,
+      "entry_count": 337,
+      "manifest_paths": [],
+      "legal_files": {
+        "Openergy.app/Contents/Resources/LICENSE-MIT": {
+          "sha256": "d53e4a871f869c21c1b61665499e57135a1ccc8ccb6f7d58d3198e2979fb0279",
+          "matches_exact_source": true
+        },
+        "Openergy.app/Contents/Resources/LICENSE-APACHE": {
+          "sha256": "f87ddbb1c277a25c3a53aae5252170e2656a0b98ff4523710be569507418e654",
+          "matches_exact_source": true
+        },
+        "Openergy.app/Contents/Resources/THIRD_PARTY_NOTICES.md": {
+          "sha256": "855ecee0099e0749ce3bcd2c582c89f6062900187fe2c02f47f9a2ab369006f7",
+          "matches_exact_source": true
+        }
+      },
+      "info_plist": {
+        "CFBundleShortVersionString": "0.1.0",
+        "CFBundleVersion": "108",
+        "LSMinimumSystemVersion": "15.0"
+      },
+      "source_provenance": "No BUILD.json or JSON provenance sidecar in published macOS asset; release target and matching legal files are indirect evidence only.",
+      "signature_assessment": "Not executed here; requires macOS signing/notarization/Gatekeeper verification.",
+      "binaries": {
+        "Openergy.app/Contents/MacOS/Openergy": {
+          "sha256": "b8649a96645c5d9dd95c886856159a3b35d414dc753eb0a606890ef742d15277"
+        },
+        "Openergy.app/Contents/Helpers/openergy": {
+          "sha256": "4735c0666cd26b6b6a137129c0f4636256c456fbd1a8c3309ff20d1290284797"
+        }
+      }
+    },
+    {
+      "name": "openergy-0.1.0-x86_64-pc-windows-msvc-unsigned.zip",
+      "size": 2051082,
+      "sha256": "abd5d4f80f1141e5893881d82bdfa0dd5f93f49a8d3a43a863801f8bb9cd53b9",
+      "github_digest_matches": true,
+      "checksum_sidecar_matches": true,
+      "entry_count": 20,
+      "manifest_paths": [
+        "BUILD.json"
+      ],
+      "legal_files": {
+        "LICENSE-MIT": {
+          "sha256": "d53e4a871f869c21c1b61665499e57135a1ccc8ccb6f7d58d3198e2979fb0279",
+          "matches_exact_source": true
+        },
+        "LICENSE-APACHE": {
+          "sha256": "f87ddbb1c277a25c3a53aae5252170e2656a0b98ff4523710be569507418e654",
+          "matches_exact_source": true
+        },
+        "THIRD_PARTY_NOTICES.md": {
+          "sha256": "855ecee0099e0749ce3bcd2c582c89f6062900187fe2c02f47f9a2ab369006f7",
+          "matches_exact_source": true
+        }
+      },
+      "manifest": {
+        "commit": "e5d86e2389badf0c45fc2fcef8c4f478b3a2a284",
+        "compiler": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+        "dirty": false,
+        "notarized": false,
+        "rust": "1.99.1",
+        "signing": "unsigned",
+        "source_date_epoch": 1793642853,
+        "tag": "v0.1.0",
+        "target": "x86_64-pc-windows-msvc",
+        "third_party_notices": true,
+        "verification": "packaged daemon CLI/virtual IPC smoke; native input not tested",
+        "version": "0.1.0"
+      },
+      "manifest_sidecar_equal": true,
+      "binary_sha256": "69ad2c7ffd946bc205b48b7942ad2e64993861089a54ecc6bc536124aec619d9",
+      "source_provenance": "Embedded BUILD.json equals sidecar and names exact source; this records the build claim, not independent compiled-byte authentication."
+    },
+    {
+      "name": "openergy-0.1.0-x86_64-unknown-linux-gnu-unsigned.tar.gz",
+      "size": 2299135,
+      "sha256": "e866b3a5475fe9d41464fc69e5a2d805b24454122476f6ece888a34ae08321e9",
+      "github_digest_matches": true,
+      "checksum_sidecar_matches": true,
+      "entry_count": 9,
+      "manifest_paths": [
+        "BUILD.json"
+      ],
+      "legal_files": {
+        "LICENSE-MIT": {
+          "sha256": "d53e4a871f869c21c1b61665499e57135a1ccc8ccb6f7d58d3198e2979fb0279",
+          "matches_exact_source": true
+        },
+        "LICENSE-APACHE": {
+          "sha256": "f87ddbb1c277a25c3a53aae5252170e2656a0b98ff4523710be569507418e654",
+          "matches_exact_source": true
+        },
+        "THIRD_PARTY_NOTICES.md": {
+          "sha256": "855ecee0099e0749ce3bcd2c582c89f6062900187fe2c02f47f9a2ab369006f7",
+          "matches_exact_source": true
+        }
+      },
+      "manifest": {
+        "commit": "e5d86e2389badf0c45fc2fcef8c4f478b3a2a284",
+        "compiler": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+        "dirty": false,
+        "notarized": false,
+        "rust": "1.99.1",
+        "signing": "unsigned",
+        "source_date_epoch": 1793642853,
+        "tag": "v0.1.0",
+        "target": "x86_64-unknown-linux-gnu",
+        "third_party_notices": true,
+        "verification": "packaged daemon CLI/virtual IPC smoke; native input not tested",
+        "version": "0.1.0"
+      },
+      "manifest_sidecar_equal": true,
+      "binary_sha256": "aa5bb4d8a121c4339edfa4c0c1af8c741048103d792c038301967c75b6645beb",
+      "source_provenance": "Embedded BUILD.json equals sidecar and names exact source; this records the build claim, not independent compiled-byte authentication."
+    }
+  ],
+  "tag_peeled_object": {
+    "sha": "e5d86e2389badf0c45fc2fcef8c4f478b3a2a284",
+    "type": "commit",
+    "url": "https://api.github.com/repos/SergeSerb2/openergy/git/commits/e5d86e2389badf0c45fc2fcef8c4f478b3a2a284"
+  },
+  "downloaded_source": {
+    "url": "https://api.github.com/repos/SergeSerb2/openergy/tarball/e5d86e2389badf0c45fc2fcef8c4f478b3a2a284",
+    "sha256": "1d34eb633b3f509ca5d6a3dfaca0a49430913acd4c785287c656a7731200bcaf",
+    "bytes": 1938300,
+    "source_commit": "e5d86e2389badf0c45fc2fcef8c4f478b3a2a284",
+    "git_tree": "5ea7819b30570a4a4de92591559988f482730695",
+    "archive_files_compared": 831,
+    "tracked_files": 831,
+    "mismatches": [
+      "tools/windows/openergy-run.cmd"
+    ],
+    "missing": [],
+    "all_git_blobs_match": false,
+    "line_ending_variants": [
+      {
+        "file": "tools/windows/openergy-run.cmd",
+        "git_blob_bytes": 502,
+        "archive_bytes": 511,
+        "git_blob_sha256": "74772411a85032212c7f4ba1be1948233804dcb21166c5caef0a6611ea2c3210",
+        "archive_sha256": "f784708ca8aa30160c34a96c406ee3b666d3d82d3cad6756f7aa8d6b6b21d11e",
+        "lf_normalized_equal": true,
+        "gitattributes": "tools/windows/openergy-run.cmd: text=set, eol=crlf"
+      }
+    ],
+    "assessment": "830/831 downloaded source entries match Git blob bytes exactly; openergy-run.cmd differs only in CRLF/LF line endings. No missing source file or content difference after line-ending normalization.",
+    "all_contents_match_after_recorded_line_ending_normalization": true
+  },
+  "linux_smoke": {
+    "direct_arm64_rootfs_exit": 255,
+    "direct_arm64_rootfs_error": "OrbStack ERROR: Dynamic loader not found: /lib64/ld-linux-x86-64.so.2",
+    "emulated_docker_exit": 0,
+    "platform": "linux/amd64 emulation on arm64 Docker host",
+    "image": "debian:13.1-slim@sha256:a347fd7510ee31a84387619a492ad6c8eb0af2f2682b916ff3e643eb076f925a",
+    "network": "none (container loopback only)",
+    "backend": "virtual",
+    "port": 25600,
+    "checks": [
+      "version 0.1.0",
+      "missing-daemon status error",
+      "real server/client connected with mutually approved TLS pins",
+      "invalid IPC method error",
+      "both owned daemons stop with exit 0"
+    ],
+    "limits": "Not native x86-64 or X11 desktop acceptance."
+  }
+}

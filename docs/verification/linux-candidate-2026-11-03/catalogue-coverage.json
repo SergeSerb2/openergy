@@ -1,0 +1,23 @@
+{
+  "source_commit": "e5d86e2389badf0c45fc2fcef8c4f478b3a2a284",
+  "catalogue_count": 123,
+  "local_linux_scenarios": 93,
+  "docker_scenarios": 30,
+  "all_scenarios_accounted_for": true,
+  "linux_initial": {
+    "passed": 91,
+    "failed": 2,
+    "excluded": 30
+  },
+  "linux_repeat": {
+    "passed": 93,
+    "failed": 0,
+    "excluded": 30
+  },
+  "docker_batches": {
+    "passed": 30,
+    "failed": 0,
+    "batches": 2
+  },
+  "interpretation": "Separate Linux virtual and macOS virtual-to-Linux Docker runs cover the 123-scenario catalogue. Initial failures remain retained; this is not one native-platform 123-scenario run or stable/native desktop acceptance."
+}

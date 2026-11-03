@@ -1,0 +1,1020 @@
+{
+  "source_commit": "e5d86e2389badf0c45fc2fcef8c4f478b3a2a284",
+  "invocations": [
+    {
+      "name": "daemon_audit",
+      "command": [
+        "python3",
+        "crates/daemon/scripts/verify_daemon_audit.py",
+        "--openergy",
+        "$LINUX_PRIVATE/target/release/openergy",
+        "--report",
+        "$LINUX_PRIVATE/daemon_audit.json",
+        "--port-range",
+        "25720-25799"
+      ],
+      "exit": 0,
+      "seconds": 5.687
+    },
+    {
+      "name": "ipc_deadlines",
+      "command": [
+        "python3",
+        "crates/daemon/scripts/verify_ipc_deadlines.py",
+        "--openergy",
+        "$LINUX_PRIVATE/target/release/openergy",
+        "--report",
+        "$LINUX_PRIVATE/ipc_deadlines.json"
+      ],
+      "exit": 0,
+      "seconds": 23.863
+    },
+    {
+      "name": "identity_files",
+      "command": [
+        "python3",
+        "crates/daemon/scripts/verify_identity_files.py",
+        "--openergy",
+        "$LINUX_PRIVATE/target/release/openergy",
+        "--report",
+        "$LINUX_PRIVATE/identity_files.json",
+        "--port-range",
+        "25720-25799"
+      ],
+      "exit": 0,
+      "seconds": 3.016
+    },
+    {
+      "name": "identity_contention",
+      "command": [
+        "python3",
+        "crates/daemon/scripts/verify_identity_contention.py",
+        "--openergy",
+        "$LINUX_PRIVATE/target/release/openergy",
+        "--report",
+        "$LINUX_PRIVATE/identity_contention.json",
+        "--port-range",
+        "25720-25799"
+      ],
+      "exit": 0,
+      "seconds": 7.463
+    },
+    {
+      "name": "trust_contention",
+      "command": [
+        "python3",
+        "crates/daemon/scripts/verify_trust_contention.py",
+        "--openergy",
+        "$LINUX_PRIVATE/target/release/openergy",
+        "--report",
+        "$LINUX_PRIVATE/trust_contention.json",
+        "--port-range",
+        "25720-25799"
+      ],
+      "exit": 0,
+      "seconds": 9.348
+    },
+    {
+      "name": "trust_scaling",
+      "command": [
+        "python3",
+        "crates/daemon/scripts/verify_trust_scaling.py",
+        "--openergy",
+        "$LINUX_PRIVATE/target/release/openergy",
+        "--report",
+        "$LINUX_PRIVATE/trust_scaling.json",
+        "--port-range",
+        "25720-25799"
+      ],
+      "exit": 0,
+      "seconds": 3.028
+    },
+    {
+      "name": "trust_refresh",
+      "command": [
+        "python3",
+        "crates/daemon/scripts/verify_trust_refresh.py",
+        "--openergy",
+        "$LINUX_PRIVATE/target/release/openergy",
+        "--report",
+        "$LINUX_PRIVATE/trust_refresh.json",
+        "--port-range",
+        "25720-25799"
+      ],
+      "exit": 0,
+      "seconds": 29.687
+    },
+    {
+      "name": "connection_churn",
+      "command": [
+        "python3",
+        "crates/daemon/scripts/verify_connection_churn.py",
+        "--openergy",
+        "$LINUX_PRIVATE/target/release/openergy",
+        "--report",
+        "$LINUX_PRIVATE/connection_churn.json",
+        "--port-range",
+        "25720-25799"
+      ],
+      "exit": 0,
+      "seconds": 8.453
+    }
+  ],
+  "results": {
+    "daemon_audit": [
+      {
+        "check": "preserve_socket_file",
+        "passed": true
+      },
+      {
+        "check": "preserve_socket_symlink",
+        "passed": true
+      },
+      {
+        "check": "relative_paths",
+        "passed": true
+      },
+      {
+        "check": "replaced_socket_shutdown",
+        "passed": true
+      },
+      {
+        "check": "log_symlink",
+        "passed": true
+      },
+      {
+        "check": "log_permissions",
+        "passed": true
+      },
+      {
+        "check": "ipc_framing",
+        "passed": true
+      },
+      {
+        "check": "oversized_response",
+        "passed": true
+      },
+      {
+        "check": "cli_validation",
+        "passed": true
+      },
+      {
+        "check": "pinned_connect_rollback",
+        "passed": true
+      },
+      {
+        "check": "stale_socket_and_single_instance",
+        "passed": true
+      },
+      {
+        "check": "connecting_idempotence",
+        "passed": true
+      },
+      {
+        "check": "cli_connect_host",
+        "passed": true
+      },
+      {
+        "check": "pinned_trust_revoke",
+        "passed": true
+      },
+      {
+        "check": "daemon_argument_validation",
+        "passed": true
+      }
+    ],
+    "ipc_deadlines": {
+      "binary_sha256": "1b5ef0657d2c2ca6c5c9163dbe6cb59e661d9e445f2ea37c3e9bbb509144e697",
+      "script_sha256": "a0d88600ff678f825f5b06c7540724ac97f8b7575e26b8048a9ff5bfa0c0b897",
+      "platform": "virtual",
+      "transport": "private Unix socket",
+      "checks": [
+        {
+          "name": "initial public CLI status",
+          "passed": true
+        },
+        {
+          "name": "persistent client initial reply",
+          "passed": true
+        },
+        {
+          "name": "all 63 pending clients initially admitted",
+          "passed": true
+        },
+        {
+          "name": "empty clients expire",
+          "passed": true,
+          "closed": 16,
+          "total": 16
+        },
+        {
+          "name": "partial_header clients expire",
+          "passed": true,
+          "closed": 16,
+          "total": 16
+        },
+        {
+          "name": "partial_body clients expire",
+          "passed": true,
+          "closed": 16,
+          "total": 16
+        },
+        {
+          "name": "drip clients expire",
+          "passed": true,
+          "closed": 15,
+          "total": 15
+        },
+        {
+          "name": "public CLI recovers while incomplete clients stay open",
+          "passed": true,
+          "returncode": 0
+        },
+        {
+          "name": "completed-request idle client remains usable",
+          "passed": true
+        },
+        {
+          "name": "releasing one held client slot restores CLI access",
+          "passed": true
+        },
+        {
+          "name": "fragmented complete request succeeds",
+          "passed": true
+        },
+        {
+          "name": "pipelined complete requests preserve reply order",
+          "passed": true
+        },
+        {
+          "name": "unknown method returns an error",
+          "passed": true
+        },
+        {
+          "name": "valid request after method error succeeds",
+          "passed": true
+        },
+        {
+          "name": "partial frame after a completed request expires",
+          "passed": true
+        },
+        {
+          "name": "oversized header is refused",
+          "passed": true
+        },
+        {
+          "name": "public CLI works after refusal",
+          "passed": true
+        },
+        {
+          "name": "shutdown with a partial client exits cleanly",
+          "passed": true
+        },
+        {
+          "name": "owned IPC socket removed",
+          "passed": true
+        }
+      ],
+      "daemon_exit": 0,
+      "cleanup": true,
+      "passed": true
+    },
+    "identity_files": {
+      "binary_sha256": "1b5ef0657d2c2ca6c5c9163dbe6cb59e661d9e445f2ea37c3e9bbb509144e697",
+      "script_sha256": "98236ad5f5c5932553371f1ffe414cb9360c3ad74f70294dc5945f53c1af4216",
+      "identity_file_limit_bytes": 1048576,
+      "cases": [
+        {
+          "case": "offline_cert.pem_1048575_suffix",
+          "file_bytes": 1048575,
+          "expected_acceptance": true,
+          "passed": true,
+          "exit": 0,
+          "elapsed_ms": 6.720211007632315,
+          "max_rss_bytes": null,
+          "accepted_same_identity": true,
+          "size_refusal": false,
+          "files_preserved": true,
+          "retry_succeeded": true
+        },
+        {
+          "case": "offline_cert.pem_1048576_suffix",
+          "file_bytes": 1048576,
+          "expected_acceptance": true,
+          "passed": true,
+          "exit": 0,
+          "elapsed_ms": 3.3866059966385365,
+          "max_rss_bytes": null,
+          "accepted_same_identity": true,
+          "size_refusal": false,
+          "files_preserved": true,
+          "retry_succeeded": true
+        },
+        {
+          "case": "offline_cert.pem_1048577_suffix",
+          "file_bytes": 1048577,
+          "expected_acceptance": false,
+          "passed": true,
+          "exit": 1,
+          "elapsed_ms": 5.778830032795668,
+          "max_rss_bytes": null,
+          "accepted_same_identity": false,
+          "size_refusal": true,
+          "files_preserved": true,
+          "retry_succeeded": true
+        },
+        {
+          "case": "offline_cert.pem_16777216_suffix",
+          "file_bytes": 16777216,
+          "expected_acceptance": false,
+          "passed": true,
+          "exit": 1,
+          "elapsed_ms": 2.3817650508135557,
+          "max_rss_bytes": null,
+          "accepted_same_identity": false,
+          "size_refusal": true,
+          "files_preserved": true,
+          "retry_succeeded": true
+        },
+        {
+          "case": "offline_key.pem_1048575_prefix",
+          "file_bytes": 1048575,
+          "expected_acceptance": true,
+          "passed": true,
+          "exit": 0,
+          "elapsed_ms": 2.8379770228639245,
+          "max_rss_bytes": null,
+          "accepted_same_identity": true,
+          "size_refusal": false,
+          "files_preserved": true,
+          "retry_succeeded": true
+        },
+        {
+          "case": "offline_key.pem_1048576_prefix",
+          "file_bytes": 1048576,
+          "expected_acceptance": true,
+          "passed": true,
+          "exit": 0,
+          "elapsed_ms": 2.565974951721728,
+          "max_rss_bytes": null,
+          "accepted_same_identity": true,
+          "size_refusal": false,
+          "files_preserved": true,
+          "retry_succeeded": true
+        },
+        {
+          "case": "offline_key.pem_1048577_prefix",
+          "file_bytes": 1048577,
+          "expected_acceptance": false,
+          "passed": true,
+          "exit": 1,
+          "elapsed_ms": 5.438453052192926,
+          "max_rss_bytes": null,
+          "accepted_same_identity": false,
+          "size_refusal": true,
+          "files_preserved": true,
+          "retry_succeeded": true
+        },
+        {
+          "case": "offline_key.pem_16777216_prefix",
+          "file_bytes": 16777216,
+          "expected_acceptance": false,
+          "passed": true,
+          "exit": 1,
+          "elapsed_ms": 0.8344220696017146,
+          "max_rss_bytes": null,
+          "accepted_same_identity": false,
+          "size_refusal": true,
+          "files_preserved": true,
+          "retry_succeeded": true
+        },
+        {
+          "case": "offline_key.pem_1048577_suffix",
+          "file_bytes": 1048577,
+          "expected_acceptance": false,
+          "passed": true,
+          "exit": 1,
+          "elapsed_ms": 0.9556730510666966,
+          "max_rss_bytes": null,
+          "accepted_same_identity": false,
+          "size_refusal": true,
+          "files_preserved": true,
+          "retry_succeeded": true
+        },
+        {
+          "case": "refuse_cert.pem_fifo",
+          "passed": true,
+          "elapsed_ms": 5.739788059145212,
+          "fixture_preserved": true
+        },
+        {
+          "case": "refuse_cert.pem_symlink",
+          "passed": true,
+          "elapsed_ms": 5.143909016624093,
+          "fixture_preserved": true
+        },
+        {
+          "case": "refuse_cert.pem_directory",
+          "passed": true,
+          "elapsed_ms": 5.701079033315182,
+          "fixture_preserved": true
+        },
+        {
+          "case": "refuse_key.pem_fifo",
+          "passed": true,
+          "elapsed_ms": 5.588786909356713,
+          "fixture_preserved": true
+        },
+        {
+          "case": "refuse_key.pem_symlink",
+          "passed": true,
+          "elapsed_ms": 2.6046839775517583,
+          "fixture_preserved": true
+        },
+        {
+          "case": "refuse_key.pem_directory",
+          "passed": true,
+          "elapsed_ms": 5.824705003760755,
+          "fixture_preserved": true
+        },
+        {
+          "case": "startup_cert.pem",
+          "passed": true,
+          "exit": 1,
+          "elapsed_ms": 5.352243082597852,
+          "socket_removed": true,
+          "size_refusal": true,
+          "file_preserved": true,
+          "retry_succeeded": true,
+          "cleanup": true
+        },
+        {
+          "case": "startup_key.pem",
+          "passed": true,
+          "exit": 1,
+          "elapsed_ms": 1.8290959997102618,
+          "socket_removed": true,
+          "size_refusal": true,
+          "file_preserved": true,
+          "retry_succeeded": true,
+          "cleanup": true
+        },
+        {
+          "case": "startup_generated_oversize",
+          "passed": true,
+          "exit": 1,
+          "no_identity_written": true,
+          "size_refusal": true,
+          "retry_succeeded": true,
+          "cleanup": true
+        },
+        {
+          "case": "live_cert.pem",
+          "passed": true,
+          "error": "config_apply_failed",
+          "mutation_ms": 0.370711088180542,
+          "status_ms": 0.1748770009726286,
+          "input_seen": true,
+          "config_preserved": true,
+          "file_preserved": true,
+          "peers_preserved": true,
+          "held_key_preserved": true,
+          "retry_succeeded": true,
+          "cleanup": true
+        },
+        {
+          "case": "live_key.pem",
+          "passed": true,
+          "error": "connect_failed",
+          "mutation_ms": 0.1808350207284093,
+          "status_ms": 0.1710009528324008,
+          "input_seen": true,
+          "config_preserved": true,
+          "file_preserved": true,
+          "peers_preserved": true,
+          "held_key_preserved": true,
+          "retry_succeeded": true,
+          "cleanup": true
+        }
+      ],
+      "passed": true
+    },
+    "identity_contention": {
+      "binary_sha256": "1b5ef0657d2c2ca6c5c9163dbe6cb59e661d9e445f2ea37c3e9bbb509144e697",
+      "script_sha256": "5c21d6574592c4d3e4ff9a347177211917d49b7bca289f9ca5e61a96da8b1ec6",
+      "held_lock_ms": 1200,
+      "response_budget_ms": 300,
+      "cases": [
+        {
+          "case": "server_patch",
+          "passed": true,
+          "lock_only_status_ms": 0.09354192297905684,
+          "mutation_ms": 0.19204290583729744,
+          "status_ms": 0.338418991304934,
+          "input_seen": true,
+          "input_ms": 0.5310450214892626,
+          "error": "config_apply_failed",
+          "config_unchanged": true,
+          "identity_unchanged": true,
+          "peers_unchanged": true,
+          "held_key_preserved": true,
+          "retry_succeeded": true,
+          "cleanup": true
+        },
+        {
+          "case": "client_pinned_connect",
+          "passed": true,
+          "lock_only_status_ms": 0.08920894470065832,
+          "mutation_ms": 0.1069169957190752,
+          "status_ms": 0.2764600794762373,
+          "input_seen": true,
+          "input_ms": 0.5040030227974057,
+          "error": "connect_failed",
+          "config_unchanged": true,
+          "identity_unchanged": true,
+          "peers_unchanged": true,
+          "held_key_preserved": true,
+          "retry_succeeded": true,
+          "cleanup": true
+        },
+        {
+          "case": "startup_existing",
+          "passed": true,
+          "first_exit": 1,
+          "first_wait_ms": 1.8328460864722729,
+          "socket_removed": true,
+          "busy_reported": true,
+          "no_partial_identity": true,
+          "retry_succeeded": true,
+          "partial_pair_refused": true,
+          "cleanup": true
+        },
+        {
+          "case": "startup_missing",
+          "passed": true,
+          "first_exit": 1,
+          "first_wait_ms": 5.0099079962819815,
+          "socket_removed": true,
+          "busy_reported": true,
+          "no_partial_identity": true,
+          "retry_succeeded": true,
+          "cleanup": true
+        }
+      ],
+      "passed": true
+    },
+    "trust_contention": {
+      "binary_sha256": "1b5ef0657d2c2ca6c5c9163dbe6cb59e661d9e445f2ea37c3e9bbb509144e697",
+      "script_sha256": "30be6a71afde80da879aea5acd33af7c685678bd396e1c073fbe4570661d68f8",
+      "held_lock_ms": 1200,
+      "response_budget_ms": 300,
+      "cases": [
+        {
+          "case": "server_approve",
+          "passed": true,
+          "lock_only_status_ms": 0.10712607763707638,
+          "lock_only_input_ms": 0.3188350237905979,
+          "lock_only_control_passed": true,
+          "mutation_ms": 0.14345895033329725,
+          "status_ms": 1.1364660458639264,
+          "input_ms": 0.9132559644058347,
+          "error": "trust_failed",
+          "trust_files_unchanged": true,
+          "retry_succeeded": true,
+          "cleanup": true
+        },
+        {
+          "case": "client_approve",
+          "passed": true,
+          "lock_only_status_ms": 0.13904308434575796,
+          "lock_only_input_ms": 0.253625912591815,
+          "lock_only_control_passed": true,
+          "mutation_ms": 0.1970019657164812,
+          "status_ms": 0.4342950414866209,
+          "input_ms": 0.7536299526691437,
+          "error": "trust_failed",
+          "trust_files_unchanged": true,
+          "retry_succeeded": true,
+          "cleanup": true
+        },
+        {
+          "case": "client_revoke",
+          "passed": true,
+          "lock_only_status_ms": 0.34091901034116745,
+          "lock_only_input_ms": 0.4298359854146838,
+          "lock_only_control_passed": true,
+          "mutation_ms": 0.29525195714086294,
+          "status_ms": 0.419085961766541,
+          "input_ms": 0.8750470587983727,
+          "error": "trust_failed",
+          "trust_files_unchanged": true,
+          "retry_succeeded": true,
+          "cleanup": true
+        },
+        {
+          "case": "held_client_approve",
+          "passed": true,
+          "lock_only_status_ms": 0.24404306896030903,
+          "lock_only_input_ms": null,
+          "lock_only_control_passed": true,
+          "mutation_ms": 0.31071004923433065,
+          "status_ms": 0.7911720313131809,
+          "input_ms": null,
+          "error": "trust_failed",
+          "trust_files_unchanged": true,
+          "retry_succeeded": true,
+          "cleanup": true
+        },
+        {
+          "case": "held_server_approve",
+          "passed": true,
+          "lock_only_status_ms": 0.26625196915119886,
+          "lock_only_input_ms": null,
+          "lock_only_control_passed": true,
+          "mutation_ms": 0.260918983258307,
+          "status_ms": 0.36821095272898674,
+          "input_ms": null,
+          "error": "trust_failed",
+          "trust_files_unchanged": true,
+          "retry_succeeded": true,
+          "cleanup": true
+        },
+        {
+          "case": "offline_concurrency",
+          "passed": true,
+          "initial_approvals": 24,
+          "mixed_updates": 24,
+          "identity_creators": 24,
+          "identical_identity": true,
+          "pins_per_role": 24
+        }
+      ],
+      "passed": true
+    },
+    "trust_scaling": {
+      "binary_sha256": "1b5ef0657d2c2ca6c5c9163dbe6cb59e661d9e445f2ea37c3e9bbb509144e697",
+      "script_sha256": "87514f36b3aff7c6ab0387530aae982f73aaa3b4749d4df0490bff454c50975e",
+      "response_budget_ms": 100,
+      "max_trust_file_bytes": 1048576,
+      "cases": [
+        {
+          "case": "small_order_and_legacy",
+          "passed": true,
+          "unique_pins_per_role": 3,
+          "bytes_per_file": 479,
+          "elapsed_ms": [
+            6.506375968456268,
+            0.8927140152081847,
+            5.208283895626664
+          ],
+          "median_ms": 5.208283895626664,
+          "max_rss_bytes": null,
+          "files_preserved": true,
+          "exact_order_and_roles": true
+        },
+        {
+          "case": "large_compact_list",
+          "passed": true,
+          "unique_pins_per_role": 16000,
+          "bytes_per_file": 1044314,
+          "elapsed_ms": [
+            21.890811040066183,
+            18.758498947136104,
+            25.13212396297604
+          ],
+          "median_ms": 21.890811040066183,
+          "max_rss_bytes": null,
+          "files_preserved": true,
+          "exact_order_and_roles": true
+        },
+        {
+          "case": "bulk_same_lists",
+          "passed": true,
+          "elapsed_ms": [
+            21.248181932605803,
+            15.742479008622468,
+            20.536177093163133
+          ],
+          "median_ms": 20.536177093163133,
+          "max_rss_bytes": null,
+          "exit": 0,
+          "exact_order_and_roles": true,
+          "pins_per_role": 13000
+        },
+        {
+          "case": "bulk_overlap",
+          "passed": true,
+          "elapsed_ms": [
+            16.185314976610243,
+            12.328205979429185,
+            17.273154924623668
+          ],
+          "median_ms": 16.185314976610243,
+          "max_rss_bytes": null,
+          "exit": 0,
+          "exact_order_and_roles": true,
+          "pins_per_role": 12000
+        },
+        {
+          "case": "bulk_canonical_expansion_refused",
+          "passed": true,
+          "elapsed_ms": [
+            12.738834018819034,
+            9.757730993442237,
+            14.750596950761974
+          ],
+          "median_ms": 12.738834018819034,
+          "max_rss_bytes": null,
+          "exit": 1,
+          "files_preserved": true
+        },
+        {
+          "case": "compact_revoke",
+          "passed": true,
+          "elapsed_ms": [
+            18.68783205281943,
+            21.232431987300515,
+            21.941435988992453
+          ],
+          "median_ms": 21.232431987300515,
+          "max_rss_bytes": null,
+          "exit": 0,
+          "exact_order_and_roles": true,
+          "pins_per_role": 15999
+        },
+        {
+          "case": "live_server_approve",
+          "passed": true,
+          "mutation_ms": 12.788293068297207,
+          "status_ms": 2.693602000363171,
+          "input_ms": 2.6316429721191525,
+          "mutation_ok": true,
+          "status_ok": true,
+          "exact_role_files": true,
+          "config_preserved": true,
+          "held_key_preserved": true,
+          "cleanup": true
+        },
+        {
+          "case": "live_client_approve",
+          "passed": true,
+          "mutation_ms": 6.824920070357621,
+          "status_ms": 0.23158499971032143,
+          "input_ms": 0.5170869408175349,
+          "mutation_ok": true,
+          "status_ok": true,
+          "exact_role_files": true,
+          "config_preserved": true,
+          "held_key_preserved": true,
+          "cleanup": true
+        },
+        {
+          "case": "live_server_revoke",
+          "passed": true,
+          "mutation_ms": 8.990059024654329,
+          "status_ms": 0.3529610112309456,
+          "input_ms": 0.49737899098545313,
+          "mutation_ok": true,
+          "status_ok": true,
+          "exact_role_files": true,
+          "config_preserved": true,
+          "held_key_preserved": true,
+          "cleanup": true
+        }
+      ],
+      "passed": true
+    },
+    "trust_refresh": {
+      "binary_sha256": "1b5ef0657d2c2ca6c5c9163dbe6cb59e661d9e445f2ea37c3e9bbb509144e697",
+      "script_sha256": "b46137a44ecf3b6715694c0e328bc408bb66d5e1d563382e4934624018a1f022",
+      "connection_cap": 16,
+      "cpu_budget_percent": 5.0,
+      "p99_budget_ms": 100,
+      "cases": [
+        {
+          "case": "large_store_alone",
+          "held_peers": 0,
+          "extra_pins_per_role": 16000,
+          "passed": true,
+          "input": {
+            "samples": 120,
+            "p50_ms": 0.7400049362331629,
+            "p95_ms": 1.3337180716916919,
+            "p99_ms": 10.481903096660972,
+            "max_ms": 11.661409982480109
+          },
+          "status": {
+            "samples": 120,
+            "p50_ms": 0.46258606016635895,
+            "p95_ms": 0.9957569418475032,
+            "p99_ms": 2.5565589312464,
+            "max_ms": 3.5351060796529055
+          },
+          "window_ms": 5275.643142056651,
+          "server_cpu_percent": 1.7059531430875838,
+          "pending_preserved": true,
+          "held_key_preserved": true,
+          "config_preserved": true,
+          "files_preserved": true,
+          "within_budgets": true,
+          "cleanup": true
+        },
+        {
+          "case": "small_store_15_held",
+          "held_peers": 15,
+          "extra_pins_per_role": 0,
+          "passed": true,
+          "input": {
+            "samples": 120,
+            "p50_ms": 0.6286290008574724,
+            "p95_ms": 1.1239240411669016,
+            "p99_ms": 1.6233850037679076,
+            "max_ms": 2.6240169536322355
+          },
+          "status": {
+            "samples": 120,
+            "p50_ms": 0.47521095257252455,
+            "p95_ms": 0.761130009777844,
+            "p99_ms": 1.201592036522925,
+            "max_ms": 1.9483050564303994
+          },
+          "window_ms": 5279.191331006587,
+          "server_cpu_percent": 1.7048065576141875,
+          "pending_preserved": true,
+          "held_key_preserved": true,
+          "config_preserved": true,
+          "files_preserved": true,
+          "within_budgets": true,
+          "cleanup": true
+        },
+        {
+          "case": "large_store_15_held",
+          "held_peers": 15,
+          "extra_pins_per_role": 16000,
+          "passed": true,
+          "input": {
+            "samples": 120,
+            "p50_ms": 0.7460050983354449,
+            "p95_ms": 1.3380920281633735,
+            "p99_ms": 5.89141296222806,
+            "max_ms": 6.587543990463018
+          },
+          "status": {
+            "samples": 120,
+            "p50_ms": 0.5067120073363185,
+            "p95_ms": 0.9331320179626346,
+            "p99_ms": 1.3955510221421719,
+            "max_ms": 3.2936889911070466
+          },
+          "window_ms": 5168.982314062305,
+          "server_cpu_percent": 3.48231023175117,
+          "pending_preserved": true,
+          "held_key_preserved": true,
+          "config_preserved": true,
+          "files_preserved": true,
+          "fresh_file_approval": true,
+          "wrong_role_stays_held": true,
+          "read_failure_closed_required_peers": true,
+          "read_failure_recovered": true,
+          "within_budgets": true,
+          "cleanup": true
+        },
+        {
+          "case": "bypass_read_failure",
+          "passed": true,
+          "explicit_pin_preserved": true,
+          "optional_client_trust_preserved": true,
+          "real_refresh_error_seen": true,
+          "input_ms": 0.22583501413464546,
+          "valid_store_retry_succeeded": true,
+          "cleanup": true
+        }
+      ],
+      "passed": true
+    },
+    "connection_churn": {
+      "binary_sha256": "1b5ef0657d2c2ca6c5c9163dbe6cb59e661d9e445f2ea37c3e9bbb509144e697",
+      "workers": [
+        0,
+        4,
+        16,
+        32
+      ],
+      "samples_per_probe_per_case": 60,
+      "p99_budget_ms": 100,
+      "tls": false,
+      "platform": "virtual",
+      "cases": [
+        {
+          "workers": 0,
+          "passed": true,
+          "window_ms": 1471.8468660721555,
+          "input": {
+            "samples": 60,
+            "p50_ms": 0.6612959550693631,
+            "p99_ms": 7.200047024525702,
+            "max_ms": 7.200047024525702
+          },
+          "status": {
+            "samples": 60,
+            "p50_ms": 0.5050859181210399,
+            "p99_ms": 1.564676989801228,
+            "max_ms": 1.564676989801228
+          },
+          "rejected_at_cap": 0,
+          "unexpected_admissions": 0,
+          "socket_errors": 0,
+          "peers_preserved": true,
+          "held_key_preserved": true,
+          "config_preserved": true,
+          "active_screen_preserved": true,
+          "overflow_refused": true,
+          "release_delivered": true,
+          "cleanup": true
+        },
+        {
+          "workers": 4,
+          "passed": true,
+          "window_ms": 1377.1303260000423,
+          "input": {
+            "samples": 60,
+            "p50_ms": 0.6095879944041371,
+            "p99_ms": 8.228386985138059,
+            "max_ms": 8.228386985138059
+          },
+          "status": {
+            "samples": 60,
+            "p50_ms": 0.4452110733836889,
+            "p99_ms": 0.9510900126770139,
+            "max_ms": 0.9510900126770139
+          },
+          "rejected_at_cap": 109315,
+          "unexpected_admissions": 0,
+          "socket_errors": 0,
+          "peers_preserved": true,
+          "held_key_preserved": true,
+          "config_preserved": true,
+          "active_screen_preserved": true,
+          "overflow_refused": true,
+          "release_delivered": true,
+          "cleanup": true
+        },
+        {
+          "workers": 16,
+          "passed": true,
+          "window_ms": 1513.7480170233175,
+          "input": {
+            "samples": 60,
+            "p50_ms": 1.6905529191717505,
+            "p99_ms": 9.090393083170056,
+            "max_ms": 9.090393083170056
+          },
+          "status": {
+            "samples": 60,
+            "p50_ms": 0.7747140480205417,
+            "p99_ms": 2.993728034198284,
+            "max_ms": 2.993728034198284
+          },
+          "rejected_at_cap": 124952,
+          "unexpected_admissions": 0,
+          "socket_errors": 0,
+          "peers_preserved": true,
+          "held_key_preserved": true,
+          "config_preserved": true,
+          "active_screen_preserved": true,
+          "overflow_refused": true,
+          "release_delivered": true,
+          "cleanup": true
+        },
+        {
+          "workers": 32,
+          "passed": true,
+          "window_ms": 1556.2906729755923,
+          "input": {
+            "samples": 60,
+            "p50_ms": 2.9912699246779084,
+            "p99_ms": 16.26169099472463,
+            "max_ms": 16.26169099472463
+          },
+          "status": {
+            "samples": 60,
+            "p50_ms": 1.7227190546691418,
+            "p99_ms": 6.930378964170814,
+            "max_ms": 6.930378964170814
+          },
+          "rejected_at_cap": 98538,
+          "unexpected_admissions": 0,
+          "socket_errors": 0,
+          "peers_preserved": true,
+          "held_key_preserved": true,
+          "config_preserved": true,
+          "active_screen_preserved": true,
+          "overflow_refused": true,
+          "release_delivered": true,
+          "cleanup": true
+        }
+      ],
+      "passed": true
+    }
+  }
+}

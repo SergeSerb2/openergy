@@ -1,0 +1,53 @@
+{
+  "binary": "$LINUX_PRIVATE/target/release/openergy",
+  "excluded": [],
+  "excluded_count": 0,
+  "failed": 0,
+  "format_version": 1,
+  "lab_port_range": [
+    25800,
+    25900
+  ],
+  "no_docker": true,
+  "passed": 1,
+  "port_range": [
+    25600,
+    25700
+  ],
+  "scenarios": [
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 120903,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [
+        {
+          "cpu_percent": 0.0,
+          "kind": "resources",
+          "rss_peak_bytes": 4550656,
+          "window_ms": 60036
+        },
+        {
+          "cpu_percent": 0.0,
+          "kind": "resources",
+          "rss_peak_bytes": 4509696,
+          "window_ms": 60041
+        },
+        {
+          "kind": "capture_to_recorded_upper_bound",
+          "max_ms": 0.477503,
+          "p50_ms": 0.15962600000000002,
+          "p95_ms": 0.21921000000000002,
+          "p99_ms": 0.280377,
+          "samples": 1000
+        }
+      ],
+      "outcome": "PASS",
+      "requirement": "Each idle daemon stays below 30 MB and 0.1% CPU over 60 s; 1000 moves have localhost p99 below 5 ms.",
+      "scenario": "S15-resources-latency"
+    }
+  ],
+  "slowdown": 1.0
+}

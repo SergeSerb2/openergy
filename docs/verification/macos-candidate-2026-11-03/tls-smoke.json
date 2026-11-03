@@ -1,0 +1,971 @@
+{
+  "platform": "virtual",
+  "tls_enabled": true,
+  "require_client_trust": true,
+  "port": 25762,
+  "passed": true,
+  "commands": [
+    {
+      "arguments": [
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy",
+        "fingerprint",
+        "--dir",
+        "<private-run>/tls-smoke-ps4ld9q9/server",
+        "--synergy"
+      ],
+      "exit": 0,
+      "stdout": "v2:sha256:013b4cf2c1c1c0cae4041caea5435bc0caf2757437b70e9289da2fdc094479c0\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy",
+        "daemon",
+        "--platform",
+        "virtual",
+        "--foreground",
+        "--config",
+        "<private-run>/tls-smoke-ps4ld9q9/server/config.toml",
+        "--socket",
+        "<private-run>/tls-smoke-ps4ld9q9/server/control.sock"
+      ],
+      "kind": "spawn"
+    },
+    {
+      "arguments": [
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy",
+        "fingerprint",
+        "--dir",
+        "<private-run>/tls-smoke-ps4ld9q9/client",
+        "--synergy"
+      ],
+      "exit": 0,
+      "stdout": "v2:sha256:113a2e2002d7f8b6bcd5d7c33c9351f6b48237b44c51350f80a8e3c5ae2d0c63\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy",
+        "daemon",
+        "--platform",
+        "virtual",
+        "--foreground",
+        "--config",
+        "<private-run>/tls-smoke-ps4ld9q9/client/config.toml",
+        "--socket",
+        "<private-run>/tls-smoke-ps4ld9q9/client/control.sock"
+      ],
+      "kind": "spawn"
+    },
+    {
+      "arguments": [
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy",
+        "ctl",
+        "connection.connect",
+        "--socket",
+        "<private-run>/tls-smoke-ps4ld9q9/client/control.sock",
+        "--json",
+        "{\"host\": \"127.0.0.1\", \"port\": 25762}"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"connecting\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy",
+        "ctl",
+        "virtual.recorded",
+        "--socket",
+        "<private-run>/tls-smoke-ps4ld9q9/client/control.sock",
+        "--json",
+        "{}"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"events\": [\n    {\n      \"click_number\": null,\n      \"click_state\": null,\n      \"detail\": {\n        \"kind\": \"release_all\"\n      },\n      \"event\": null,\n      \"release_all\": true,\n      \"sequence\": 1,\n      \"timestamp_unix_us\": 1793743878679486,\n      \"timestamp_us\": 15562\n    }\n  ],\n  \"stats\": {\n    \"cursor\": [\n      0,\n      0\n    ],\n    \"cursor_captured\": false,\n    \"cursor_visible\": true,\n    \"dropped\": 0,\n    \"last_sequence\": 3,\n    \"ledger_capacity\": 4096,\n    \"ledger_len\": 3,\n    \"ledger_reserved_bytes\": 393216,\n    \"oldest_sequence\": 1,\n    \"pressed_buttons\": 0,\n    \"pressed_keys\": 0,\n    \"prevent_sleep\": false,\n    \"sequence_exhausted\": false\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy",
+        "ctl",
+        "trust.approve",
+        "--socket",
+        "<private-run>/tls-smoke-ps4ld9q9/client/control.sock",
+        "--json",
+        "{\"fingerprint\": \"v2:sha256:013b4cf2c1c1c0cae4041caea5435bc0caf2757437b70e9289da2fdc094479c0\"}"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"ok\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy",
+        "ctl",
+        "trust.approve",
+        "--socket",
+        "<private-run>/tls-smoke-ps4ld9q9/server/control.sock",
+        "--json",
+        "{\"fingerprint\": \"v2:sha256:113a2e2002d7f8b6bcd5d7c33c9351f6b48237b44c51350f80a8e3c5ae2d0c63\"}"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"ok\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy",
+        "ctl",
+        "connection.connect",
+        "--socket",
+        "<private-run>/tls-smoke-ps4ld9q9/client/control.sock",
+        "--json",
+        "{\"host\": \"127.0.0.1\", \"port\": 25762, \"fingerprint\": \"v2:sha256:0000000000000000000000000000000000000000000000000000000000000000\"}"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"connecting\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy",
+        "ctl",
+        "connection.connect",
+        "--socket",
+        "<private-run>/tls-smoke-ps4ld9q9/client/control.sock",
+        "--json",
+        "{\"host\": \"127.0.0.1\", \"port\": 25762, \"fingerprint\": \"v2:sha256:013b4cf2c1c1c0cae4041caea5435bc0caf2757437b70e9289da2fdc094479c0\"}"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"connecting\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy",
+        "ctl",
+        "trust.revoke",
+        "--socket",
+        "<private-run>/tls-smoke-ps4ld9q9/client/control.sock",
+        "--json",
+        "{\"fingerprint\": \"v2:sha256:013b4cf2c1c1c0cae4041caea5435bc0caf2757437b70e9289da2fdc094479c0\"}"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"ok\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy",
+        "ctl",
+        "trust.list",
+        "--socket",
+        "<private-run>/tls-smoke-ps4ld9q9/client/control.sock",
+        "--json",
+        "{}"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"clients\": [],\n  \"servers\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy",
+        "ctl",
+        "daemon.stop",
+        "--socket",
+        "<private-run>/tls-smoke-ps4ld9q9/server/control.sock",
+        "--json",
+        "{}"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"stopping\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "<private-run>/extracted/Openergy.app/Contents/Helpers/openergy",
+        "ctl",
+        "daemon.stop",
+        "--socket",
+        "<private-run>/tls-smoke-ps4ld9q9/client/control.sock",
+        "--json",
+        "{}"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"stopping\": true\n}\n",
+      "stderr": ""
+    }
+  ],
+  "checkpoints": [
+    {
+      "name": "private virtual daemon ready",
+      "node": "server",
+      "status": {
+        "active_screen": "server",
+        "client": {
+          "attempt": 0,
+          "next_retry_ms": null,
+          "remote": "127.0.0.1:25762"
+        },
+        "clipboard": {
+          "enabled": true,
+          "last_blocked": null,
+          "last_transfer": null
+        },
+        "cursor": {
+          "screen": "server",
+          "x": 0,
+          "y": 0
+        },
+        "daemon": {
+          "pid": 82517,
+          "platform": "virtual",
+          "uptime_s": 0,
+          "version": "0.1.0"
+        },
+        "last_error": null,
+        "local_screen": {
+          "displays": [
+            {
+              "h": 1080,
+              "scale": 1.0,
+              "w": 1920,
+              "x": 0,
+              "y": 0
+            }
+          ],
+          "h": 1080,
+          "w": 1920
+        },
+        "name": "server",
+        "peers": [],
+        "pending_trust": [],
+        "permissions": {
+          "accessibility": "not_required",
+          "input_monitoring": "not_required",
+          "post_events": "not_required"
+        },
+        "role": "server",
+        "secure_input": {
+          "local_app": null
+        },
+        "server": {
+          "listen": "127.0.0.1:25762"
+        },
+        "state": "starting",
+        "stats": {
+          "events_in": 0,
+          "events_out": 0,
+          "rss_bytes": 9551872
+        },
+        "tls": {
+          "enabled": true,
+          "fingerprint": "01:3B:4C:F2:C1:C1:C0:CA:E4:04:1C:AE:A5:43:5B:C0:CA:F2:75:74:37:B7:0E:92:89:DA:2F:DC:09:44:79:C0"
+        }
+      }
+    },
+    {
+      "name": "private virtual daemon ready",
+      "node": "client",
+      "status": {
+        "active_screen": null,
+        "client": {
+          "attempt": 0,
+          "next_retry_ms": null,
+          "remote": "127.0.0.1:25762"
+        },
+        "clipboard": {
+          "enabled": true,
+          "last_blocked": null,
+          "last_transfer": null
+        },
+        "cursor": {
+          "screen": null,
+          "x": 0,
+          "y": 0
+        },
+        "daemon": {
+          "pid": 82520,
+          "platform": "virtual",
+          "uptime_s": 0,
+          "version": "0.1.0"
+        },
+        "last_error": null,
+        "local_screen": {
+          "displays": [
+            {
+              "h": 1080,
+              "scale": 1.0,
+              "w": 1920,
+              "x": 0,
+              "y": 0
+            }
+          ],
+          "h": 1080,
+          "w": 1920
+        },
+        "name": "client",
+        "peers": [],
+        "pending_trust": [],
+        "permissions": {
+          "accessibility": "not_required",
+          "input_monitoring": "not_required",
+          "post_events": "not_required"
+        },
+        "role": "client",
+        "secure_input": {
+          "local_app": null
+        },
+        "server": {
+          "listen": null
+        },
+        "state": "idle",
+        "stats": {
+          "events_in": 0,
+          "events_out": 0,
+          "rss_bytes": 9469952
+        },
+        "tls": {
+          "enabled": true,
+          "fingerprint": "11:3A:2E:20:02:D7:F8:B6:BC:D5:D7:C3:3C:93:51:F6:B4:82:37:B4:4C:51:35:0F:80:A8:E3:C5:AE:2D:0C:63"
+        }
+      }
+    },
+    {
+      "name": "unknown server held before approval",
+      "node": "client",
+      "status": {
+        "active_screen": null,
+        "client": {
+          "attempt": 0,
+          "next_retry_ms": null,
+          "remote": "127.0.0.1:25762"
+        },
+        "clipboard": {
+          "enabled": true,
+          "last_blocked": null,
+          "last_transfer": null
+        },
+        "cursor": {
+          "screen": null,
+          "x": 0,
+          "y": 0
+        },
+        "daemon": {
+          "pid": 82520,
+          "platform": "virtual",
+          "uptime_s": 0,
+          "version": "0.1.0"
+        },
+        "last_error": {
+          "code": "untrusted_peer",
+          "message": "Peer fingerprint needs approval",
+          "unix_ms": 1793743878782
+        },
+        "local_screen": {
+          "displays": [
+            {
+              "h": 1080,
+              "scale": 1.0,
+              "w": 1920,
+              "x": 0,
+              "y": 0
+            }
+          ],
+          "h": 1080,
+          "w": 1920
+        },
+        "name": "client",
+        "peers": [],
+        "pending_trust": [
+          {
+            "address": "127.0.0.1:25762",
+            "expires_unix_ms": 1793743908782,
+            "fingerprint": "01:3B:4C:F2:C1:C1:C0:CA:E4:04:1C:AE:A5:43:5B:C0:CA:F2:75:74:37:B7:0E:92:89:DA:2F:DC:09:44:79:C0",
+            "name": null
+          }
+        ],
+        "permissions": {
+          "accessibility": "not_required",
+          "input_monitoring": "not_required",
+          "post_events": "not_required"
+        },
+        "role": "client",
+        "secure_input": {
+          "local_app": null
+        },
+        "server": {
+          "listen": null
+        },
+        "state": "connecting",
+        "stats": {
+          "events_in": 0,
+          "events_out": 0,
+          "rss_bytes": 10190848
+        },
+        "tls": {
+          "enabled": true,
+          "fingerprint": "11:3A:2E:20:02:D7:F8:B6:BC:D5:D7:C3:3C:93:51:F6:B4:82:37:B4:4C:51:35:0F:80:A8:E3:C5:AE:2D:0C:63"
+        }
+      }
+    },
+    {
+      "name": "no virtual input before approval",
+      "recorded": {
+        "events": [
+          {
+            "click_number": null,
+            "click_state": null,
+            "detail": {
+              "kind": "release_all"
+            },
+            "event": null,
+            "release_all": true,
+            "sequence": 1,
+            "timestamp_unix_us": 1793743878679486,
+            "timestamp_us": 15562
+          }
+        ],
+        "stats": {
+          "cursor": [
+            0,
+            0
+          ],
+          "cursor_captured": false,
+          "cursor_visible": true,
+          "dropped": 0,
+          "last_sequence": 3,
+          "ledger_capacity": 4096,
+          "ledger_len": 3,
+          "ledger_reserved_bytes": 393216,
+          "oldest_sequence": 1,
+          "pressed_buttons": 0,
+          "pressed_keys": 0,
+          "prevent_sleep": false,
+          "sequence_exhausted": false
+        }
+      }
+    },
+    {
+      "name": "unknown client held before mutual approval",
+      "node": "server",
+      "status": {
+        "active_screen": "server",
+        "client": {
+          "attempt": 0,
+          "next_retry_ms": null,
+          "remote": "127.0.0.1:25762"
+        },
+        "clipboard": {
+          "enabled": true,
+          "last_blocked": null,
+          "last_transfer": null
+        },
+        "cursor": {
+          "screen": "server",
+          "x": 0,
+          "y": 0
+        },
+        "daemon": {
+          "pid": 82517,
+          "platform": "virtual",
+          "uptime_s": 0,
+          "version": "0.1.0"
+        },
+        "last_error": {
+          "code": "untrusted_peer",
+          "message": "Peer fingerprint needs approval",
+          "unix_ms": 1793743878782
+        },
+        "local_screen": {
+          "displays": [
+            {
+              "h": 1080,
+              "scale": 1.0,
+              "w": 1920,
+              "x": 0,
+              "y": 0
+            }
+          ],
+          "h": 1080,
+          "w": 1920
+        },
+        "name": "server",
+        "peers": [],
+        "pending_trust": [
+          {
+            "address": "127.0.0.1:61640",
+            "expires_unix_ms": 1793743908782,
+            "fingerprint": "11:3A:2E:20:02:D7:F8:B6:BC:D5:D7:C3:3C:93:51:F6:B4:82:37:B4:4C:51:35:0F:80:A8:E3:C5:AE:2D:0C:63",
+            "name": null
+          }
+        ],
+        "permissions": {
+          "accessibility": "not_required",
+          "input_monitoring": "not_required",
+          "post_events": "not_required"
+        },
+        "role": "server",
+        "secure_input": {
+          "local_app": null
+        },
+        "server": {
+          "listen": "127.0.0.1:25762"
+        },
+        "state": "listening",
+        "stats": {
+          "events_in": 0,
+          "events_out": 0,
+          "rss_bytes": 10108928
+        },
+        "tls": {
+          "enabled": true,
+          "fingerprint": "01:3B:4C:F2:C1:C1:C0:CA:E4:04:1C:AE:A5:43:5B:C0:CA:F2:75:74:37:B7:0E:92:89:DA:2F:DC:09:44:79:C0"
+        }
+      }
+    },
+    {
+      "name": "mutually trusted TLS peer connected",
+      "node": "server",
+      "status": {
+        "active_screen": "server",
+        "client": {
+          "attempt": 0,
+          "next_retry_ms": null,
+          "remote": "127.0.0.1:25762"
+        },
+        "clipboard": {
+          "enabled": true,
+          "last_blocked": null,
+          "last_transfer": null
+        },
+        "cursor": {
+          "screen": "server",
+          "x": 0,
+          "y": 0
+        },
+        "daemon": {
+          "pid": 82517,
+          "platform": "virtual",
+          "uptime_s": 0,
+          "version": "0.1.0"
+        },
+        "last_error": null,
+        "local_screen": {
+          "displays": [
+            {
+              "h": 1080,
+              "scale": 1.0,
+              "w": 1920,
+              "x": 0,
+              "y": 0
+            }
+          ],
+          "h": 1080,
+          "w": 1920
+        },
+        "name": "server",
+        "peers": [
+          {
+            "address": "127.0.0.1:61640",
+            "connected": true,
+            "name": "client",
+            "protocol": {
+              "major": 1,
+              "minor": 8,
+              "product": "Synergy"
+            },
+            "role": "client",
+            "rtt_ms": null,
+            "screen": {
+              "h": 1080,
+              "w": 1920
+            },
+            "secure_input_app": null,
+            "since_unix_ms": 1793743878848,
+            "tls": {
+              "enabled": true,
+              "fingerprint": "11:3A:2E:20:02:D7:F8:B6:BC:D5:D7:C3:3C:93:51:F6:B4:82:37:B4:4C:51:35:0F:80:A8:E3:C5:AE:2D:0C:63",
+              "trusted": true,
+              "version": "TLSv1_3"
+            }
+          }
+        ],
+        "pending_trust": [],
+        "permissions": {
+          "accessibility": "not_required",
+          "input_monitoring": "not_required",
+          "post_events": "not_required"
+        },
+        "role": "server",
+        "secure_input": {
+          "local_app": null
+        },
+        "server": {
+          "listen": "127.0.0.1:25762"
+        },
+        "state": "connected",
+        "stats": {
+          "events_in": 2,
+          "events_out": 6,
+          "rss_bytes": 10240000
+        },
+        "tls": {
+          "enabled": true,
+          "fingerprint": "01:3B:4C:F2:C1:C1:C0:CA:E4:04:1C:AE:A5:43:5B:C0:CA:F2:75:74:37:B7:0E:92:89:DA:2F:DC:09:44:79:C0"
+        }
+      }
+    },
+    {
+      "name": "mutually trusted TLS peer connected",
+      "node": "client",
+      "status": {
+        "active_screen": null,
+        "client": {
+          "attempt": 0,
+          "next_retry_ms": null,
+          "remote": "127.0.0.1:25762"
+        },
+        "clipboard": {
+          "enabled": true,
+          "last_blocked": null,
+          "last_transfer": null
+        },
+        "cursor": {
+          "screen": null,
+          "x": 0,
+          "y": 0
+        },
+        "daemon": {
+          "pid": 82520,
+          "platform": "virtual",
+          "uptime_s": 0,
+          "version": "0.1.0"
+        },
+        "last_error": null,
+        "local_screen": {
+          "displays": [
+            {
+              "h": 1080,
+              "scale": 1.0,
+              "w": 1920,
+              "x": 0,
+              "y": 0
+            }
+          ],
+          "h": 1080,
+          "w": 1920
+        },
+        "name": "client",
+        "peers": [
+          {
+            "address": "127.0.0.1:25762",
+            "connected": true,
+            "name": "server",
+            "protocol": {
+              "major": 1,
+              "minor": 8,
+              "product": "Synergy"
+            },
+            "role": "server",
+            "rtt_ms": null,
+            "screen": {
+              "h": null,
+              "w": null
+            },
+            "secure_input_app": null,
+            "since_unix_ms": 1793743878825,
+            "tls": {
+              "enabled": true,
+              "fingerprint": "01:3B:4C:F2:C1:C1:C0:CA:E4:04:1C:AE:A5:43:5B:C0:CA:F2:75:74:37:B7:0E:92:89:DA:2F:DC:09:44:79:C0",
+              "trusted": true,
+              "version": "TLSv1_3"
+            }
+          }
+        ],
+        "pending_trust": [],
+        "permissions": {
+          "accessibility": "not_required",
+          "input_monitoring": "not_required",
+          "post_events": "not_required"
+        },
+        "role": "client",
+        "secure_input": {
+          "local_app": null
+        },
+        "server": {
+          "listen": null
+        },
+        "state": "connected",
+        "stats": {
+          "events_in": 6,
+          "events_out": 2,
+          "rss_bytes": 10354688
+        },
+        "tls": {
+          "enabled": true,
+          "fingerprint": "11:3A:2E:20:02:D7:F8:B6:BC:D5:D7:C3:3C:93:51:F6:B4:82:37:B4:4C:51:35:0F:80:A8:E3:C5:AE:2D:0C:63"
+        }
+      }
+    },
+    {
+      "name": "wrong explicit pin refused",
+      "node": "client",
+      "status": {
+        "active_screen": null,
+        "client": {
+          "attempt": 1,
+          "next_retry_ms": 259,
+          "remote": "127.0.0.1:25762"
+        },
+        "clipboard": {
+          "enabled": true,
+          "last_blocked": null,
+          "last_transfer": null
+        },
+        "cursor": {
+          "screen": null,
+          "x": 0,
+          "y": 0
+        },
+        "daemon": {
+          "pid": 82520,
+          "platform": "virtual",
+          "uptime_s": 0,
+          "version": "0.1.0"
+        },
+        "last_error": {
+          "code": "tls_pin_mismatch",
+          "message": "The server's identity changed \u2014 check its fingerprint.",
+          "unix_ms": 1793743878980
+        },
+        "local_screen": {
+          "displays": [
+            {
+              "h": 1080,
+              "scale": 1.0,
+              "w": 1920,
+              "x": 0,
+              "y": 0
+            }
+          ],
+          "h": 1080,
+          "w": 1920
+        },
+        "name": "client",
+        "peers": [],
+        "pending_trust": [],
+        "permissions": {
+          "accessibility": "not_required",
+          "input_monitoring": "not_required",
+          "post_events": "not_required"
+        },
+        "role": "client",
+        "secure_input": {
+          "local_app": null
+        },
+        "server": {
+          "listen": null
+        },
+        "state": "reconnecting",
+        "stats": {
+          "events_in": 6,
+          "events_out": 3,
+          "rss_bytes": 10534912
+        },
+        "tls": {
+          "enabled": true,
+          "fingerprint": "11:3A:2E:20:02:D7:F8:B6:BC:D5:D7:C3:3C:93:51:F6:B4:82:37:B4:4C:51:35:0F:80:A8:E3:C5:AE:2D:0C:63"
+        }
+      }
+    },
+    {
+      "name": "verified explicit pin connects",
+      "node": "client",
+      "status": {
+        "active_screen": null,
+        "client": {
+          "attempt": 0,
+          "next_retry_ms": null,
+          "remote": "127.0.0.1:25762"
+        },
+        "clipboard": {
+          "enabled": true,
+          "last_blocked": null,
+          "last_transfer": null
+        },
+        "cursor": {
+          "screen": null,
+          "x": 0,
+          "y": 0
+        },
+        "daemon": {
+          "pid": 82520,
+          "platform": "virtual",
+          "uptime_s": 0,
+          "version": "0.1.0"
+        },
+        "last_error": null,
+        "local_screen": {
+          "displays": [
+            {
+              "h": 1080,
+              "scale": 1.0,
+              "w": 1920,
+              "x": 0,
+              "y": 0
+            }
+          ],
+          "h": 1080,
+          "w": 1920
+        },
+        "name": "client",
+        "peers": [
+          {
+            "address": "127.0.0.1:25762",
+            "connected": true,
+            "name": "server",
+            "protocol": {
+              "major": 1,
+              "minor": 8,
+              "product": "Synergy"
+            },
+            "role": "server",
+            "rtt_ms": null,
+            "screen": {
+              "h": null,
+              "w": null
+            },
+            "secure_input_app": null,
+            "since_unix_ms": 1793743879123,
+            "tls": {
+              "enabled": true,
+              "fingerprint": "01:3B:4C:F2:C1:C1:C0:CA:E4:04:1C:AE:A5:43:5B:C0:CA:F2:75:74:37:B7:0E:92:89:DA:2F:DC:09:44:79:C0",
+              "trusted": true,
+              "version": "TLSv1_3"
+            }
+          }
+        ],
+        "pending_trust": [],
+        "permissions": {
+          "accessibility": "not_required",
+          "input_monitoring": "not_required",
+          "post_events": "not_required"
+        },
+        "role": "client",
+        "secure_input": {
+          "local_app": null
+        },
+        "server": {
+          "listen": null
+        },
+        "state": "connected",
+        "stats": {
+          "events_in": 12,
+          "events_out": 5,
+          "rss_bytes": 10764288
+        },
+        "tls": {
+          "enabled": true,
+          "fingerprint": "11:3A:2E:20:02:D7:F8:B6:BC:D5:D7:C3:3C:93:51:F6:B4:82:37:B4:4C:51:35:0F:80:A8:E3:C5:AE:2D:0C:63"
+        }
+      }
+    },
+    {
+      "name": "revocation disconnects and requires approval again",
+      "node": "client",
+      "status": {
+        "active_screen": null,
+        "client": {
+          "attempt": 1,
+          "next_retry_ms": null,
+          "remote": "127.0.0.1:25762"
+        },
+        "clipboard": {
+          "enabled": true,
+          "last_blocked": null,
+          "last_transfer": null
+        },
+        "cursor": {
+          "screen": null,
+          "x": 0,
+          "y": 0
+        },
+        "daemon": {
+          "pid": 82520,
+          "platform": "virtual",
+          "uptime_s": 0,
+          "version": "0.1.0"
+        },
+        "last_error": {
+          "code": "untrusted_peer",
+          "message": "Peer fingerprint needs approval",
+          "unix_ms": 1793743879486
+        },
+        "local_screen": {
+          "displays": [
+            {
+              "h": 1080,
+              "scale": 1.0,
+              "w": 1920,
+              "x": 0,
+              "y": 0
+            }
+          ],
+          "h": 1080,
+          "w": 1920
+        },
+        "name": "client",
+        "peers": [],
+        "pending_trust": [
+          {
+            "address": "127.0.0.1:25762",
+            "expires_unix_ms": 1793743909486,
+            "fingerprint": "01:3B:4C:F2:C1:C1:C0:CA:E4:04:1C:AE:A5:43:5B:C0:CA:F2:75:74:37:B7:0E:92:89:DA:2F:DC:09:44:79:C0",
+            "name": null
+          }
+        ],
+        "permissions": {
+          "accessibility": "not_required",
+          "input_monitoring": "not_required",
+          "post_events": "not_required"
+        },
+        "role": "client",
+        "secure_input": {
+          "local_app": null
+        },
+        "server": {
+          "listen": null
+        },
+        "state": "reconnecting",
+        "stats": {
+          "events_in": 12,
+          "events_out": 5,
+          "rss_bytes": 10878976
+        },
+        "tls": {
+          "enabled": true,
+          "fingerprint": "11:3A:2E:20:02:D7:F8:B6:BC:D5:D7:C3:3C:93:51:F6:B4:82:37:B4:4C:51:35:0F:80:A8:E3:C5:AE:2D:0C:63"
+        }
+      }
+    },
+    {
+      "name": "revoked server absent from trust store",
+      "trust": {
+        "clients": [],
+        "servers": []
+      }
+    }
+  ],
+  "process_exits": {
+    "server": 0,
+    "client": 0
+  },
+  "port_postflight": {
+    "port": 25762,
+    "exit": 1,
+    "stdout": ""
+  }
+}

@@ -9,11 +9,33 @@ permissions, resources, and the upstream license in `Resources/Sparkle-LICENSE.t
 The public feed is
 `https://openergy-updates.sergeserbinenko.com/appcast.xml`.
 The dedicated Cloudflare R2 bucket is `openergy-releases`. Its custom domain
-serves the signed empty feed over HTTPS. The channel page is
+serves the update channel over HTTPS. The channel page is
 `https://openergy-updates.sergeserbinenko.com/index.html`.
-The feed has zero releases until release gates clear. Hosting the feed does not
-establish Developer ID trust, notarization or a trusted update installation.
-The existing trusted draft publisher and its release gates remain separate.
+On 2026-11-03, ordinary curl and Sparkle-style user-agent GETs from Linux,
+macOS 27.2 and macOS 27.0.1 returned HTTP 200 and **zero releases**. The live
+feed matched the signed bootstrap source artifact byte for byte. GitHub
+[v0.1.0](https://github.com/SergeSerb2/openergy/releases/tag/v0.1.0) is a published
+alpha with a macOS universal ZIP; that publication has not populated Sparkle's
+feed. The separate [M1 artifact inspection](verification/macos-candidate-2026-11-03/artifact-inspection.json)
+checked the published ZIP, app 0.1.0 build 108, embedded feed/key, strict/deep
+code signatures, stapled ticket and Gatekeeper acceptance. It also fetched the
+bundle-configured URL with curl and found zero releases. Neither that GET nor
+the user-agent checks run the signed app's Sparkle client. A separate
+[unchanged-release harness attempt](verification/macos-candidate-2026-11-03/updater-release-refusal.json)
+exited 64 before Sparkle startup: its production bundle ID and missing private
+`SUDefaultsDomain` fail the harness's fixture requirements. Editing those fields
+would invalidate the release signature; actual signed-app feed acceptance
+remains blocked.
+Hosting the feed does not establish trusted update installation. The existing
+trusted draft publisher and its release gates remain separate.
+
+The repository's Python hosting verifier returned HTTP 403 from this Linux
+client. A controlled urllib comparison returned 403 with `Python-urllib/3.12`
+and 200 with curl or Sparkle-style user agents. This is a client-specific
+observation, not evidence of a universal outage or the exact deployed access rule.
+See the [dated report](verification/update-channel-2026-11-03/README.md) for
+reproduction, source hashes, signature verification and remaining signed-app
+acceptance criteria.
 
 ## Bundle configuration
 
@@ -219,6 +241,11 @@ Read-only verification needs no Cloudflare credential:
 python3.11 tools/release/deploy_updates.py verify --report /tmp/openergy-feed-check.json
 ```
 
+A 403 from this Python command does not establish the feed's release count.
+Record the failed command and compare an ordinary client and a Sparkle-style
+user agent. The dated report above preserves the 2026-11-03 comparison; no
+access-rule or credential change was made.
+
 Select a fresh report path. If local name lookup is unavailable, `verify` accepts
 `--resolve-ip ADDRESS` after checking that address against public Cloudflare DNS.
 This changes only that HTTPS request. It retains hostname, SNI and certificate
@@ -227,8 +254,8 @@ configuration.
 
 After release acceptance, upload the signed universal ZIP under its exact
 `releases/` object name, then publish the matching signed `appcast.xml` last.
-Preserve its bytes and signature. Keep archive URLs immutable. The current
-bootstrap feed deliberately offers no application update.
+Preserve its bytes and signature. Keep archive URLs immutable. The bootstrap
+feed verified on 2026-11-03 offers no application update, including v0.1.0.
 
 
 Official references (checked 2026-10-23): [Sparkle setup](https://sparkle-project.org/documentation/),
