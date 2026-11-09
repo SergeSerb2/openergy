@@ -378,10 +378,10 @@ No standard handshake exists, so detection is layered:
    these pairs before the server sends them by default. Until then, send
    them only when file transfer is enabled, which is also the kill switch.
 2. **Openergy capability, client to server:** a client that sees `OFIL`
-   answers after `Phase::Ready` with one new control frame, `OFCAP`,
+   answers after `Phase::Ready` with one new control frame, `OFCP`,
    carrying the same mask and cap. A client connected to a third-party
-   server never sees `OFIL` and never sends `OFCAP` or any Openergy file
-   code. An Openergy server records client caps only from `OFCAP`.
+   server never sees `OFIL` and never sends `OFCP` or any Openergy file
+   code. An Openergy server records client caps only from `OFCP`.
    This bootstrap order means no new-code frame ever reaches a peer that
    did not first opt in through `DSOP`.
 3. **Classic capability:** there is none to detect. It is a config claim
@@ -418,11 +418,15 @@ keep working during the transfer.
 Four new codes. All require `Phase::Ready`. Control codes travel at
 `Priority::Control`. Data travels at `Priority::Bulk`. The codec gains
 `u64` read/write helpers (8-byte big-endian); all other fields reuse
-present codec patterns (`u8`, `u32`, bounded `%s`).
+present codec patterns (`u8`, `u32`, bounded `%s`). Every frame code is
+exactly four bytes: `decode_frame` reads four code bytes and
+`Writer::code` takes `&[u8; 4]` (`crates/protocol/src/codec.rs`), so a
+five-byte tag would dispatch as a different, unknown code. No existing
+code uses the `OF` prefix.
 
 | Code | `Message` variant | Fields after code | Priority |
 |---|---|---|---|
-| `OFCAP` | `FileCapability { mask: u32, max_kib: u32 }` | `%4i%4i` | Control |
+| `OFCP` | `FileCapability { mask: u32, max_kib: u32 }` | `%4i%4i` | Control |
 | `OFOF` | `FileOffer { transfer: u32, kind: u8, name: String, total_len: u64, sha256: [u8; 32] }` | `%4i%1i` + name `%s` + `%8i` + 32 raw hash bytes | Control |
 | `OFAN` | `FileAnswer { transfer: u32, accept: u8, reason: u8, resume_offset: u64 }` | `%4i%1i%1i%8i` | Control |
 | `OFTR` | `FileData { transfer: u32, chunk: FileDataChunk }` | `%4i%1i%s`, marks 1 start / 2 data / 3 end / 4 cancel | Bulk for marks 1–3; Control for mark 4 |
@@ -433,6 +437,18 @@ Field rules:
   The daemon picks a random start value at connection setup and then
   increments, skipping zero. Random starts make resume matching (§4.5)
   safe against a restarted peer reusing small IDs.
+- Identity outside the wire codec: a wire `transfer` ID alone identifies
+  nothing. Two clients can offer the same ID at once, as can opposite
+  directions on one connection, and inbound IDs are peer-chosen. Every
+  consumer past decode therefore uses a qualified key,
+  `(ConnId, direction, transfer)`. On top of that, the daemon assigns
+  each transfer a daemon-unique handle, `xfer` (monotonic `u64` from a
+  random start, never reused within a daemon run), when the offer or
+  send is created. Session maps `xfer` ↔ qualified key. Worker commands
+  and events, staging names (§6.1, §7.2), IPC methods, events, and
+  status (§7.4) carry `xfer` only — never a bare wire ID and never a
+  `ConnId`. Resume matching (§4.5) stays scoped to one connection and
+  direction, where the wire ID plus hash is unambiguous.
 - `kind`: `0` explicit send, `1` drag drop (§5). One data path serves both
   features; policy and consent differ by kind.
 - `name`: base name only. Codec bound 255 bytes, UTF-8, no NUL (reuse the
@@ -501,16 +517,20 @@ Sender                                             Receiver
 
 Session stays deterministic. New event and action types:
 
-- Events in: `FileSendRequested { transfer, kind, name, total_len, sha256,
+- Events in: `FileSendRequested { xfer, kind, name, total_len, sha256,
   peer }` (daemon → session after the worker hashed the file),
-  `FileChunkReady { transfer, bytes }` (pull model, §6.1),
-  `FileStageResult { transfer, ok, reason }` (worker write outcome),
+  `FileChunkReady { xfer, bytes }` (pull model, §6.1),
+  `FileStageResult { xfer, ok, reason }` (worker write outcome),
   `FileAnswerRequested` is not a session event: consent lives in the
   daemon (§7.1), and its decision enters as
-  `FileOfferDecided { transfer, accept, reason, resume_offset }`.
+  `FileOfferDecided { xfer, accept, reason, resume_offset }`.
+  Daemon↔session and session↔worker traffic carries the `xfer` handle
+  (§4.1); session alone translates it to `(conn, direction, transfer)`
+  for wire frames.
 - Actions out: `SendFileChunk { conn, transfer, chunk }` (the `Bulk`
-  route), `StageFileChunk { transfer, bytes }` and
-  `FinishFile { transfer }` / `DropFile { transfer, keep_part }` toward
+  route; `conn` plus outbound direction qualifies the wire ID),
+  `StageFileChunk { xfer, bytes }` and
+  `FinishFile { xfer }` / `DropFile { xfer, keep_part }` toward
   the file worker, plus `Notify` for IPC events. Wire control messages
   reuse `Action::Send`, which the daemon already maps to `Control`;
   the `OFTR` cancel mark (4) also goes through `Action::Send` for that
@@ -527,7 +547,7 @@ Session stays deterministic. New event and action types:
 Four independent bounds, tightest wins:
 
 1. Sender config `file.max_bytes` and receiver config `file.max_bytes`
-   (the receiver's value reaches the sender as `OFSZ`/`OFCAP` KiB).
+   (the receiver's value reaches the sender as `OFSZ`/`OFCP` KiB).
 2. Code hard cap `FILE_HARD_CAP`, proposed 16 GiB, enforced in session like
    clipboard `HARD_CAP`. Config validation rejects values above it, like
    `MAX_CLIPBOARD_BYTES` today.
@@ -729,10 +749,12 @@ Send side (pull, depth 1 plus the net queue):
    memory. Scenario F2 asserts this with a `measure` step (§8.2).
 
 Receive side mirrors it: session hands each data chunk to the worker as
-`StageFileChunk`. The worker appends to `<receive_dir>/.part-<transfer>`
-in arrival order (single active inbound per peer keeps this trivial) and
-streams a running SHA-256. `FinishFile` makes the worker compare size and
-hash, `fsync` the file, then atomically rename into place (§7.2). A
+`StageFileChunk`. Worker commands carry the daemon-unique `xfer` handle
+(§4.1), never a wire ID. The worker appends to
+`<receive_dir>/.parts/<xfer>` in arrival order (single active inbound
+per peer keeps this trivial) and streams a running SHA-256. `FinishFile`
+makes the worker compare size and hash, `fsync` the file, then
+atomically rename it from `.parts/` into place (§7.2). A
 failed finish deletes or keeps the partial per §4.5 and reports the
 reason. The worker also owns the receive-directory lock: two inbound
 transfers from different peers on a server stage into distinct partial
@@ -839,25 +861,34 @@ Receive directory handling, all in the file worker:
   missing custom path is created or fails config apply is §10, D3.
 - Name rules (offer and classic): reject empty; reject `/`, `\`, NUL, and
   control characters; reject `.` and `..`; reject names over 255 bytes;
-  trim trailing dots and spaces (Windows); reject Windows drive and ADS
-  forms (`:` anywhere) and reserved device stems (`CON`, `PRN`, `AUX`,
-  `NUL`, `COM1`–`COM9`, `LPT1`–`LPT9`, case-insensitive, with or without
-  extension). Classic `DDRG` paths are first reduced to a base name like
-  the reference code does, then the same rules apply. No Unicode
-  normalization in version 1: bytes are UTF-8 by codec rule.
-- Staging name is daemon-chosen (`.part-<transfer>`), never peer-chosen.
-  Final name comes from the validated offer name. Rename is atomic on
-  the same volume and uses no-replace semantics: on conflict, append
-  ` (1)`, ` (2)`, … before the extension, trying at most 100 suffixes,
-  then fail with `name_conflict`. **Overwrite is never a mode.** A peer
-  must not be able to replace a file the user already has.
+  reject the reserved staging namespace (`.parts` itself and any name
+  starting `.part-`, so a received file can never look like daemon
+  staging state); trim trailing dots and spaces (Windows); reject
+  Windows drive and ADS forms (`:` anywhere) and reserved device stems
+  (`CON`, `PRN`, `AUX`, `NUL`, `COM1`–`COM9`, `LPT1`–`LPT9`,
+  case-insensitive, with or without extension). Classic `DDRG` paths
+  are first reduced to a base name like the reference code does, then
+  the same rules apply. No Unicode normalization in version 1: bytes
+  are UTF-8 by codec rule.
+- Staging lives apart from received files: partials sit in a private
+  `<receive_dir>/.parts/` directory (mode `0700`, created with the
+  root), named `<xfer>` — daemon-chosen from the daemon-unique handle
+  (§4.1), never peer-chosen and never derived from the offered name.
+  Final name comes from the validated offer name. Rename from `.parts/`
+  to the root is atomic on the same volume and uses no-replace
+  semantics: on conflict, append ` (1)`, ` (2)`, … before the
+  extension, trying at most 100 suffixes, then fail with
+  `name_conflict`. **Overwrite is never a mode.** A peer must not be
+  able to replace a file the user already has.
 - Stored files get mode `0644` masked by umask, with no execute bits,
   regardless of sender-side permissions. No xattrs, ACLs, timestamps, or
   ownership cross the wire in version 1. macOS quarantine attributes are
   a later hardening item (§10, D10); the daemon never auto-opens a file.
-- A kill or crash mid-stage leaves `.part-*` files. At startup the worker
-  deletes partials older than 24 h (or all of them in milestone 1, where
-  resume is off). Partial cleanup is logged by count and bytes only.
+- A kill or crash mid-stage leaves partials in `.parts/`. At startup
+  the worker sweeps only that directory: it deletes partials older
+  than 24 h (or all of them in milestone 1, where resume is off).
+  Completed files in the root are never cleanup candidates, whatever
+  their names. Partial cleanup is logged by count and bytes only.
 
 ### 7.3 Config
 
@@ -894,21 +925,23 @@ Rules:
   enabled drags. Export writes nothing for files: no classic config key
   carries this state, and inventing one would corrupt re-import.
 - The server's `DSOP` gains the §3.3 pairs only when `file.enabled`. The
-  client's `OFCAP` mask clears bits its config disables. Mask bits are
+  client's `OFCP` mask clears bits its config disables. Mask bits are
   read from the receiver's side ("I can receive explicit sends" is the
   explicit bit); name them that way at the option constants.
 
 ### 7.4 IPC and GUI surface
 
 Daemon-first. New entries in `crates/ipc` (append-only, like past virtual
-methods):
+methods). Every `xfer` below is the daemon-unique handle from §4.1 — the
+only transfer identity IPC ever sees; wire IDs and connection IDs stay
+inside the daemon:
 
 | Method | Params | Result / errors |
 |---|---|---|
-| `file.send` | `{ peer, path }` | `{ transfer }`; errors: `peer_unknown`, `peer_no_file_support`, `file_disabled`, `tls_required`, `not_a_file`, `is_directory`, `is_symlink`, `too_large`, `io_error` |
-| `file.answer` | `{ transfer, accept }` | `{ ok: true }`; error `unknown_transfer` |
-| `file.cancel` | `{ transfer }` | `{ ok: true }`; error `unknown_transfer` |
-| `drag.armed` (app → daemon, phase 4) | `{ paths }`, then `{ released }` or `{ cancelled }` | `{ transfer }` |
+| `file.send` | `{ peer, path }` | `{ xfer }`; errors: `peer_unknown`, `peer_no_file_support`, `file_disabled`, `tls_required`, `not_a_file`, `is_directory`, `is_symlink`, `too_large`, `io_error` |
+| `file.answer` | `{ xfer, accept }` | `{ ok: true }`; error `unknown_xfer` |
+| `file.cancel` | `{ xfer }` | `{ ok: true }`; error `unknown_xfer` |
+| `drag.armed` (app → daemon, phase 4) | `{ paths }`, then `{ released }` or `{ cancelled }` | `{ xfer }` |
 
 - `file.send` path policy: the caller is local (owner-only socket), so
   any path the daemon user can read is allowed, like
@@ -923,13 +956,13 @@ Events (through `events.subscribe`, same pipe as `clipboard.blocked`):
 
 | Event | Data | Rate rule |
 |---|---|---|
-| `file.offered` | `{ transfer, peer, name, bytes, kind, expires_unix_ms }` | once per offer |
-| `file.progress` | `{ transfer, peer, direction, bytes_done, bytes_total }` | at most 4 per second per transfer, coalesced in the daemon (§1.5 queue bound) |
-| `file.completed` | `{ transfer, peer, direction, bytes, kind, verified, unix_ms }` | once |
+| `file.offered` | `{ xfer, peer, name, bytes, kind, expires_unix_ms }` | once per offer |
+| `file.progress` | `{ xfer, peer, direction, bytes_done, bytes_total }` | at most 4 per second per transfer, coalesced in the daemon (§1.5 queue bound) |
+| `file.completed` | `{ xfer, peer, direction, bytes, kind, verified, unix_ms }` | once |
 | `file.blocked` | `{ peer, bytes, limit, reason, unix_ms }` | once per refused offer or pick |
-| `file.failed` | `{ transfer, peer, direction, reason, unix_ms }` | once |
+| `file.failed` | `{ xfer, peer, direction, reason, unix_ms }` | once |
 
-Status gains `file: { enabled, receive_dir, active: [{ transfer, peer,
+Status gains `file: { enabled, receive_dir, active: [{ xfer, peer,
 direction, kind, bytes_done, bytes_total, state }], last_completed,
 last_blocked }` and `peers[].file = { capability, max_bytes }`. Two
 deliberate omissions: status carries **no file names** and no hashes.
@@ -1018,7 +1051,7 @@ F5), and both directions are exercised where the roles allow it.
 |---|---|---|
 | F1 | Small round-trip: 1 KiB and 0-byte files, server→client and client→server | `assert_file` SHA-256 equals `fixture_file` digest; `file.completed` with `verified: true`; sender success only after done frame |
 | F2 | Large round-trip: 8 MiB file; input injected mid-transfer; `measure resources` on both daemons | Hash equal; injected keys recorded in order during transfer; RSS growth bounded (no whole-file buffering) |
-| F3 | Oversize: receiver `max_bytes` 1 MiB, send 2 MiB; then send 1 MiB | First fails `file.blocked/too_large`, no file, no `.part-*` left; second succeeds; connection and clipboard still work |
+| F3 | Oversize: receiver `max_bytes` 1 MiB, send 2 MiB; then send 1 MiB | First fails `file.blocked/too_large`, no file, nothing left in `.parts/`; second succeeds; connection and clipboard still work |
 | F4 | Cancel: sender cancels mid-transfer (8 MiB, cancel after first progress); receiver-cancel variant | No final file; `file.failed/cancelled` both sides; next send succeeds (no poisoned bulk queue) |
 | F5 | Consent: `receive_mode = prompt`; answer reject, then answer accept on a second send | Reject leaves no file and sender sees `user_rejected`; accept stores the file. Offer-timeout arm: see the note below this table |
 | F6 | Direction toggles + live patch: `send=false`, `receive=false`, `enabled=false`; patch mid-transfer (Q10 pattern) | Each send fails with `file_disabled`/`disabled`; mid-transfer patch aborts and a fresh send under restored config succeeds |
@@ -1058,7 +1091,7 @@ file and in `tools/interop-lab/verification.json` style output.
    desktop paths, and log lines (scrubbed).
 3. Does a Barrier client accept 32 KiB-sliced `DFTR` chunks, a basename-
    only `DDRG` payload, and a start total with no trailing NUL? (§3.2.)
-4. What does each peer do with an unknown code (`OFCAP`-shaped frame sent
+4. What does each peer do with an unknown code (`OFCP`-shaped frame sent
    by mistake)? This bounds the blast radius of a capability bug even
    though the design never sends one uninvited.
 
@@ -1095,7 +1128,7 @@ In scope, by file:
 - `crates/session`: new `src/file.rs` with `FileTransfers`, reason enum,
   name validation, `FILE_HARD_CAP`; `Peer` fields; `Peer::tick` and
   `next_deadline` wiring; server and client dispatch (offer/answer/data/
-  cancel, capability from `DSOP`/`OFCAP`); `ServerEvent`/`ClientEvent`/
+  cancel, capability from `DSOP`/`OFCP`); `ServerEvent`/`ClientEvent`/
   `Action` additions per §4.3; config-change reset beside the clipboard
   reset; `decline()` stays for classic codes with the feature off.
 - `crates/net`: export `BULK_WINDOW`; code-based bulk purge; no queue or
