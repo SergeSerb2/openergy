@@ -589,14 +589,28 @@ in the IPC call itself. Neither case sends a single data chunk.
   day one.** The accept answer includes `resume_offset`. In milestone 1
   the receiver always answers `0` and deletes partials on disconnect.
   The resume phase keeps the `.parts/<xfer>` partial plus a sidecar
-  record `{peer, sha256, total_len}` for 24 h (startup cleanup keeps
-  sidecar-backed partials inside that window); a new offer from the
-  same peer with the same hash and size adopts the partial under its
-  new `xfer` and resumes at the staged length. Hash of
-  the staged prefix is checked by re-hashing the partial on resume
-  accept, then streaming continues into the final whole-file hash.
-  Any mismatch restarts at offset `0`. Classic peers get no resume: no
-  offset exists in `DFTR`; a classic retry starts over.
+  record `{peer, sha256, total_len, staged_len, prefix_sha256}` for
+  24 h (startup cleanup keeps sidecar-backed partials inside that
+  window). `prefix_sha256` is the receiver's running SHA-256 finalized
+  over exactly the staged bytes at abort time; the worker writes it
+  with the sidecar in the same step that fsyncs the partial. A new
+  offer from the same peer with the same whole-file hash and size may
+  adopt the partial under its new `xfer`, but only after validation:
+  the worker re-reads the staged bytes, hashes them (rebuilding the
+  streaming hasher state in the same pass), and compares against
+  `prefix_sha256` **before** answering a nonzero `resume_offset`.
+  Match → answer `resume_offset = staged_len` and continue streaming
+  into the final whole-file comparison. Mismatch, missing sidecar, or
+  length disagreement → delete partial and sidecar, answer `0`. No
+  sender-assisted prefix check is needed: the offer's whole-file
+  SHA-256 equality already proves the sender's bytes are the same
+  file, so its prefix is the staged prefix by definition; the sidecar
+  digest covers the remaining failure — the staged bytes changed on
+  disk after the abort. Without it, re-hashing a corrupted partial
+  would compare against nothing, resume from the corrupt length, and
+  discover the whole-file mismatch only after re-sending the rest.
+  Classic peers get no resume: no offset exists in `DFTR`; a classic
+  retry starts over.
 - **Disconnect:** session drops the peer record wholesale today
   (`peers.remove` on the server, `peer = None` on the client). The daemon
   also clears deferred bulk on disconnect. The file worker gets a drop
