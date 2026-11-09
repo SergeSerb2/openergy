@@ -483,7 +483,9 @@ Field rules:
 - `reason` codes in `OFAN` and cancel share one small enum in session:
   `user_rejected`, `too_large`, `disabled`, `bad_name`, `busy`,
   `no_space`, `hash_mismatch`, `cancelled`, `stalled`, `io_error`,
-  `unsupported`. IPC error codes in §7.4 mirror these strings.
+  `unsupported`. IPC error codes in §7.4 mirror these strings. One
+  daemon-local failure never reaches the wire: `peer_changed`
+  (§7.4 binding mismatch) appears only in `file.failed`.
 
 Rejected alternative: extend `DFTR` with new marks (4 = name, 5 = cancel)
 and skip new codes. Classic `FileChunk::assemble` returns an error for
@@ -824,9 +826,11 @@ I/O loop. It is the only component that touches file bytes on disk.
 
 Send side (pull, gated on downstream credit):
 
-1. IPC `file.send` hands the worker `{ path, peer }`. The worker checks
-   the file (§4.6), hashes it in 1 MiB reads, then raises
-   `FileSendRequested` to session (§4.3).
+1. IPC `file.send` captures the peer binding (§7.4) in the `xfer`
+   record, then hands the worker `{ path, xfer }` — the worker never
+   resolves names. The worker checks the file (§4.6), hashes it in
+   1 MiB reads, then raises `FileSendRequested` to session (§4.3),
+   which validates the binding before offering.
 2. After `OFAN` accept, session emits `SendFileChunk` only for chunk data
    it already holds, and it requests a refill (`FileChunkReady`) only
    against downstream **credit** — never merely because the previous
@@ -1077,9 +1081,24 @@ inside the daemon:
   `config.import_synergy {path}` today. The worker re-validates per
   §4.6. The GUI passes paths from its own file picker; `ctl file.send`
   serves scripts and E2E.
-- Peer addressing: by screen name, as in status `peers[].name`. The
-  server resolves it to the one `Ready` connection, the client to its
-  server. No connection IDs across IPC (they are runtime-only values).
+- Peer addressing: by screen name at the IPC boundary only, as in
+  status `peers[].name`. Names are not identities: trust pins are not
+  name-bound (§7.1, `SECURITY.md`), so any approved client can later
+  claim the same screen name. `file.send` therefore resolves the name
+  **once, at call time**, to the currently `Ready` connection and
+  captures the binding `(ConnId, certificate fingerprint)` in the
+  `xfer` record (the client role binds to its one server connection
+  the same way). The binding travels with the transfer through
+  hashing and queueing, however long those take. At offer time,
+  session re-checks that the captured connection is still the Ready
+  owner of that name with the same fingerprint; any mismatch —
+  disconnect, reconnect, or a different approved client now holding
+  the name — fails the transfer with `file.failed` reason
+  `peer_changed` instead of delivering to whoever now answers to the
+  name. A name with no Ready connection at call time is
+  `peer_unknown`; sends never queue against a future connection. No
+  connection IDs or fingerprints cross IPC (runtime-only values);
+  IPC still sees only the `xfer` handle.
 
 Events (through `events.subscribe`, same pipe as `clipboard.blocked`):
 
@@ -1160,7 +1179,7 @@ Runner additions needed once (milestone 1):
 | Phase | Contents | Gate scenarios |
 |---|---|---|
 | **0. Classic evidence** (lab only, no product change) | `DSOP` unknown-pair tolerance; `DFTR`/`DDRG` behavior of lab peers; Barrier `--enable-drag-drop` trial | §8.3 captures; write-up amends this file |
-| **1. Explicit send core** (= milestone §9) | Protocol, session, daemon worker, config, IPC, backlog purge; Openergy↔Openergy, virtual pair | F1–F10 |
+| **1. Explicit send core** (= milestone §9) | Protocol, session, daemon worker, config, IPC, backlog purge; Openergy↔Openergy, virtual pair | F1–F10, F17, F19 |
 | **2. macOS app + `ctl`** | Send action, offer sheet, progress, Files settings | F1–F10 still pass; manual app checklist §8.4 |
 | **3. Resume + queue polish** | §4.5 resume, per-peer send queue, duplicate-name UX | F11, F12 |
 | **4. Drag, Openergy peers** | Platform trait + virtual injection, §5.2 exception, macOS app drag reporting; then Windows | F13–F15; manual drag checklist §8.4 |
@@ -1196,6 +1215,7 @@ F5), and both directions are exercised where the roles allow it.
 | F16 | Classic wire, raw peer (phase 5): hand-built `DDRG` + `DFTR` with 512 KiB chunks and with 32 KiB chunks | File stored, hash equal; declared-size lie ends in `file.failed`; `DFTR` without `DDRG` ends in `file.blocked` |
 | F17 | Overrun: raw peer offers a tiny file, wins accept, then streams mark-2 chunks past `total_len` without mark 3 | Transfer aborts with `file.failed/too_large` at the first overrunning chunk; staged bytes in `.parts/` never exceed `total_len`; partial deleted; connection and clipboard keep working; a following honest send succeeds |
 | F18 | Classic ordering (phase 5): two back-to-back drags to a slow raw reader that pauses mid-`DFTR` | Second `DDRG` never overtakes first transfer's `DFTR` frames on the wire (`raw_expect` order scan); both files store under their own names with matching hashes; no fence wait, no pass — this scenario fails if sends serialize only to end-frame-queued |
+| F19 | Peer identity binding: `file.send` to peer A (large file, hash in flight); A disconnects; different approved client B joins claiming the same screen name | Transfer fails `file.failed/peer_changed`; B receives no offer and no bytes; a fresh send addressed to B succeeds. Fails if the name is re-resolved at offer time |
 
 Timeouts deserve care: scenario deadlines stay the runner's existing
 kind (bounded `timeout_ms`, `--slowdown` for CI). Do not add product test
@@ -1276,7 +1296,7 @@ In scope, by file:
   `ConnectionMetadata` pattern); progress coalescing; partial cleanup at
   startup (delete-all in this milestone).
 - `tools/e2e`: `fixture_file`, `file_send`, `file_answer`, `file_cancel`
-  steps; scenarios F1–F10. If the Phase 0 `DSOP` tolerance answer is
+  steps; scenarios F1–F10, F17, F19. If the Phase 0 `DSOP` tolerance answer is
   still open when this PR lands, the server sends `OFIL`/`OFSZ` only
   when `file.enabled` (per §3.3), and release notes must call out that
   old third-party clients then see two extra unknown option pairs.
@@ -1287,7 +1307,7 @@ resume offsets above zero, drag of any kind, classic send or receive,
 multi-peer fan-out, and `receive_dir` migration if the user moves it
 (partials in the old root are orphans until startup cleanup).
 
-Acceptance for the PR: F1–F10 pass; the full non-Docker catalogue passes
+Acceptance for the PR: F1–F10, F17, F19 pass; the full non-Docker catalogue passes
 (`--no-docker` run); `cargo build --release` and the repo clippy gate
 pass; README and `docs/plan/readiness.md` move "no file transfer" to the
 new tested limits in the same PR.
