@@ -1,7 +1,7 @@
 //! ICCCM selections with a hidden owner window and bidirectional INCR transfers.
 use crate::{
     image,
-    native::{connect, drain, error, wait, wake},
+    native::{connect, drain, error, wait, wait_wake, wake, Backoff},
 };
 use openergy_platform::{ClipboardBackend, ClipboardData, ClipboardFormat, FormatKind, PlatformError};
 use std::{
@@ -66,9 +66,27 @@ enum Command {
     Write(Selection, ClipboardData, SyncSender<Result<(), PlatformError>>),
     Stop,
 }
+// Handle commands while the X connection is down. Returns true on Stop.
+// Reads/writes fail honestly instead of hanging their callers; data we
+// owned before the outage is re-owned by reconnect() itself.
+fn down_commands(rx: &mpsc::Receiver<Command>) -> bool {
+    while let Ok(cmd) = rx.try_recv() {
+        match cmd {
+            Command::Stop => return true,
+            Command::Read(_, _, reply) => {
+                let _ = reply.send(Err(PlatformError::ClipboardUnavailable));
+            }
+            Command::Write(_, _, reply) => {
+                let _ = reply.send(Err(error("X11 clipboard connection lost; reconnecting")));
+            }
+        }
+    }
+    false
+}
 impl X11Clipboard {
     pub fn connect(display: Option<&str>, selection: Selection) -> Result<Self, PlatformError> {
         let worker = Worker::new(display)?;
+        let display = display.map(str::to_owned);
         let (tx, rx) = mpsc::sync_channel(16);
         let (w, mut r) = UnixStream::pair().map_err(error)?;
         w.set_nonblocking(true).map_err(error)?;
@@ -78,11 +96,15 @@ impl X11Clipboard {
             .name("oe-x11-clipboard".into())
             .spawn(move || {
                 let mut worker = worker;
-                let result = (|| -> Result<(), PlatformError> {
-                    loop {
+                // Supervised loop: wait() reports a closed X connection
+                // (POLLHUP). Recreate it with bounded backoff and re-own
+                // selections instead of exiting the worker for good.
+                'run: loop {
+                    let stopped = loop {
+                        let mut stop = false;
                         while let Ok(cmd) = rx.try_recv() {
                             match cmd {
-                                Command::Stop => return Ok(()),
+                                Command::Stop => stop = true,
                                 Command::Read(selection, max, reply) => {
                                     let result = worker.read(selection, max.min(LIMIT));
                                     let _ = reply.send(result);
@@ -91,18 +113,64 @@ impl X11Clipboard {
                                     let _ = reply.send(worker.write(selection, data));
                                 }
                             }
+                            if stop {
+                                break;
+                            }
                         }
-                        while let Some(ev) = worker.c.poll_for_event().map_err(error)? {
-                            worker.event(ev)?;
+                        if stop {
+                            break true;
+                        }
+                        // Contain per-event X errors like the capture
+                        // worker: only wait() below ends this connection's
+                        // loop, on a closed X connection.
+                        loop {
+                            match worker.c.poll_for_event() {
+                                Ok(Some(ev)) => {
+                                    if let Err(e) = worker.event(ev) {
+                                        log::warn!("X11 clipboard event failed: {e}");
+                                    }
+                                }
+                                Ok(None) => break,
+                                Err(e) => {
+                                    // A parse error consumed one bad event,
+                                    // so keep draining the queued ones.
+                                    let consumed = matches!(&e, x11rb::errors::ConnectionError::ParseError(_));
+                                    log::warn!("X11 clipboard poll failed: {e}");
+                                    if !consumed {
+                                        break;
+                                    }
+                                }
+                            }
                         }
                         worker.expire_transfers();
-                        worker.c.flush().map_err(error)?;
-                        wait(&worker.c, &r, if worker.outgoing.is_empty() { -1 } else { 1000 })?;
+                        if let Err(e) = worker.c.flush() {
+                            log::warn!("X11 clipboard flush failed: {e}");
+                        }
+                        if wait(&worker.c, &r, if worker.outgoing.is_empty() { -1 } else { 1000 }).is_err() {
+                            break false;
+                        }
+                        drain(&mut r);
+                    };
+                    if stopped {
+                        break;
+                    }
+                    log::error!("X11 clipboard connection lost; reconnecting");
+                    worker.outgoing.clear();
+                    let mut backoff = Backoff::new();
+                    loop {
+                        if down_commands(&rx) {
+                            break 'run;
+                        }
+                        match worker.reconnect(display.as_deref()) {
+                            Ok(()) => {
+                                log::info!("X11 clipboard reconnected");
+                                continue 'run;
+                            }
+                            Err(e) => log::warn!("X11 clipboard reconnect failed: {e}"),
+                        }
+                        wait_wake(&r, backoff.next_delay());
                         drain(&mut r);
                     }
-                })();
-                if let Err(e) = result {
-                    log::error!("X11 clipboard worker stopped: {e}");
                 }
             })
             .map_err(error)?;
@@ -214,10 +282,12 @@ struct Worker {
     atoms: Atoms,
     stamps: Arc<[AtomicU64; 2]>,
     data: [BTreeMap<u32, Arc<Vec<u8>>>; 2],
+    // Selections owned via write() and not lost since; reconnect() re-owns these.
+    owned: [bool; 2],
     outgoing: BTreeMap<(u32, u32), Transfer>,
 }
 impl Worker {
-    fn new(display: Option<&str>) -> Result<Self, PlatformError> {
+    fn connect_parts(display: Option<&str>) -> Result<(RustConnection, u32, Atoms), PlatformError> {
         let (c, root) = connect(display)?;
         let atoms = Atoms::new(&c)?;
         let window = c.generate_id().map_err(error)?;
@@ -251,14 +321,80 @@ impl Worker {
             .map_err(error)?;
         }
         c.flush().map_err(error)?;
+        Ok((c, window, atoms))
+    }
+    fn new(display: Option<&str>) -> Result<Self, PlatformError> {
+        let (c, window, atoms) = Self::connect_parts(display)?;
         Ok(Self {
             c,
             window,
             atoms,
             stamps: Arc::new([AtomicU64::new(0), AtomicU64::new(0)]),
             data: [BTreeMap::new(), BTreeMap::new()],
+            owned: [false; 2],
             outgoing: BTreeMap::new(),
         })
+    }
+    // Install a fresh connection, preserving stamps and owned data.
+    fn reconnect(&mut self, display: Option<&str>) -> Result<(), PlatformError> {
+        let (c, window, atoms) = Self::connect_parts(display)?;
+        // Data is keyed by target atoms of the old server. Re-key the
+        // fixed targets write() installs; an old id with no counterpart
+        // is dropped, never served under a wrong atom.
+        let remap = [
+            (self.atoms.utf8, atoms.utf8),
+            (self.atoms.plain, atoms.plain),
+            (self.atoms.text, atoms.text),
+            (self.atoms.html, atoms.html),
+            (self.atoms.png, atoms.png),
+            (self.atoms.bmp, atoms.bmp),
+        ];
+        for data in &mut self.data {
+            let old = std::mem::take(data);
+            for (old_atom, bytes) in old {
+                if let Some((_, new_atom)) = remap.iter().find(|(o, _)| *o == old_atom) {
+                    data.insert(*new_atom, bytes);
+                }
+            }
+        }
+        self.c = c;
+        self.window = window;
+        self.atoms = atoms;
+        self.outgoing.clear();
+        for (index, owned) in self.owned.iter_mut().enumerate() {
+            if !*owned {
+                // The external owner died with the old server; signal
+                // the clear so pollers re-read.
+                self.stamps[index].fetch_add(1, Ordering::AcqRel);
+                continue;
+            }
+            let selection = self.atoms.selections[index];
+            let reowned = self
+                .c
+                .set_selection_owner(self.window, selection, CURRENT_TIME)
+                .map_err(error)
+                .and_then(|cookie| cookie.check().map_err(error))
+                .and_then(|()| {
+                    self.c
+                        .get_selection_owner(selection)
+                        .map_err(error)?
+                        .reply()
+                        .map_err(error)
+                        .map(|r| r.owner)
+                });
+            match reowned {
+                Ok(owner) if owner == self.window => {}
+                Ok(_) => {
+                    log::warn!("X11 clipboard re-own after reconnect was refused");
+                    *owned = false;
+                }
+                Err(e) => {
+                    log::warn!("X11 clipboard re-own after reconnect failed: {e}");
+                    *owned = false;
+                }
+            }
+        }
+        self.c.flush().map_err(error)
     }
     fn write(&mut self, selection: Selection, data: ClipboardData) -> Result<(), PlatformError> {
         let mut targets = BTreeMap::new();
@@ -311,6 +447,7 @@ impl Worker {
             return Err(error("X11 selection ownership was refused"));
         }
         self.data[selection.index()] = targets;
+        self.owned[selection.index()] = true;
         self.stamps[selection.index()].fetch_add(1, Ordering::AcqRel);
         Ok(())
     }
@@ -423,16 +560,21 @@ impl Worker {
             }
             Event::SelectionClear(e) => {
                 if let Some(index) = self.atoms.selections.iter().position(|s| *s == e.selection) {
-                    if self
+                    // A failed owner check must not kill the owner: if we
+                    // really lost the selection, the server stops sending
+                    // us requests, and a later write overwrites the data.
+                    match self
                         .c
                         .get_selection_owner(e.selection)
-                        .map_err(error)?
-                        .reply()
-                        .map_err(error)?
-                        .owner
-                        != self.window
+                        .map_err(error)
+                        .and_then(|cookie| cookie.reply().map_err(error))
                     {
-                        self.data[index].clear();
+                        Ok(reply) if reply.owner != self.window => {
+                            self.data[index].clear();
+                            self.owned[index] = false;
+                        }
+                        Ok(_) => {}
+                        Err(e) => log::debug!("X11 selection owner check ended: {e}"),
                     }
                 }
             }
@@ -457,7 +599,9 @@ impl Worker {
                     if done {
                         self.finish_transfer(key);
                     }
-                    self.c.flush().map_err(error)?;
+                    if let Err(e) = self.c.flush() {
+                        log::debug!("X11 INCR flush ended: {e}");
+                    }
                 }
             }
             Event::DestroyNotify(e) => {

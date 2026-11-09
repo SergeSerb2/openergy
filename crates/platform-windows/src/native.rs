@@ -1,4 +1,4 @@
-use crate::clipboard::Clipboard;
+use crate::{clipboard::Clipboard, WinNotice};
 use openergy_platform::{ClipboardBackend, Permissions, PlatformError, ScreenRect, ScreenSystem};
 use std::{
     ptr::{null, null_mut},
@@ -8,7 +8,10 @@ use std::{
 use windows_sys::Win32::{
     Foundation::*,
     Graphics::Gdi::*,
-    System::{LibraryLoader::GetModuleHandleW, Power::*},
+    System::{
+        LibraryLoader::{GetModuleHandleW, GetProcAddress, LoadLibraryW},
+        Power::*,
+    },
     UI::{HiDpi::*, WindowsAndMessaging::*},
 };
 pub fn error(e: impl std::fmt::Display) -> PlatformError {
@@ -88,13 +91,178 @@ impl Drop for MessageThread {
 pub struct Screens {
     clipboard: Clipboard,
     monitor: Option<MessageThread>,
+    notices: Option<MessageThread>,
 }
 impl Screens {
     pub fn new(clipboard: Clipboard) -> Self {
         Self {
             clipboard,
             monitor: None,
+            notices: None,
         }
+    }
+    pub fn new_with_notices(clipboard: Clipboard) -> (Self, mpsc::Receiver<WinNotice>) {
+        let mut screens = Self::new(clipboard);
+        let (tx, rx) = mpsc::sync_channel(64);
+        let failure = tx.clone();
+        let (ready, ready_rx) = mpsc::sync_channel(1);
+        let handle = std::thread::Builder::new()
+            .name("oe-win-notices".into())
+            .spawn(move || {
+                NOTICE_SENDER.with(|s| *s.borrow_mut() = Some(tx));
+                let hwnd = match window("OpenergyNotices", Some(notice_proc), true) {
+                    Ok(h) => h,
+                    Err(e) => {
+                        send_notice(WinNotice::NotificationSetupFailed);
+                        let _ = ready.send(Err(e));
+                        NOTICE_SENDER.with(|s| *s.borrow_mut() = None);
+                        return;
+                    }
+                };
+                // Message-only windows do not receive system broadcasts, so
+                // power delivery needs the directed suspend/resume
+                // registration; session changes are likewise directed to
+                // the registered HWND. This thread owns hwnd throughout.
+                // Safety: registrations are released below before DestroyWindow.
+                let power = unsafe { RegisterSuspendResumeNotification(hwnd, DEVICE_NOTIFY_WINDOW_HANDLE) };
+                if power == 0 {
+                    log::warn!("Windows suspend/resume notices unavailable");
+                }
+                let wts = load_wts().filter(|wts| {
+                    // Safety: wts module stays loaded until wts is dropped after unregistering.
+                    unsafe { (wts.register)(hwnd, NOTIFY_FOR_THIS_SESSION) != 0 }
+                });
+                if wts.is_none() {
+                    log::warn!("Windows session lock notices unavailable");
+                }
+                if power == 0 && wts.is_none() {
+                    send_notice(WinNotice::NotificationSetupFailed);
+                    // Safety: this thread created hwnd and nothing registered against it.
+                    unsafe {
+                        DestroyWindow(hwnd);
+                    }
+                    let _ = ready.send(Err(error("lifecycle notification registration")));
+                    NOTICE_SENDER.with(|s| *s.borrow_mut() = None);
+                    return;
+                }
+                // Safety: this thread owns hwnd; GetMessage initializes and drains its message queue.
+                unsafe {
+                    let mut msg = MSG::default();
+                    PeekMessageW(&mut msg, null_mut(), 0, 0, PM_NOREMOVE);
+                    let _ = ready.send(Ok(windows_sys::Win32::System::Threading::GetCurrentThreadId()));
+                    while GetMessageW(&mut msg, null_mut(), 0, 0) > 0 {
+                        TranslateMessage(&msg);
+                        DispatchMessageW(&msg);
+                    }
+                    if let Some(wts) = &wts {
+                        (wts.unregister)(hwnd);
+                    }
+                    if power != 0 {
+                        UnregisterSuspendResumeNotification(power);
+                    }
+                    DestroyWindow(hwnd);
+                }
+                NOTICE_SENDER.with(|s| *s.borrow_mut() = None);
+            });
+        match handle {
+            Ok(h) => match ready_rx.recv() {
+                Ok(Ok(id)) => screens.notices = Some(MessageThread { id, handle: Some(h) }),
+                Ok(Err(_)) => {
+                    let _ = h.join(); // The thread already queued the failure notice.
+                }
+                Err(_) => {
+                    let _ = failure.send(WinNotice::NotificationSetupFailed);
+                    let _ = h.join();
+                }
+            },
+            Err(e) => {
+                log::warn!("Windows lifecycle watcher failed: {e}");
+                let _ = failure.send(WinNotice::NotificationSetupFailed);
+            }
+        }
+        (screens, rx)
+    }
+}
+// WTS session notifications sit behind the Win32_System_RemoteDesktop
+// feature, which is not enabled; resolve them from wtsapi32.dll at runtime.
+const NOTIFY_FOR_THIS_SESSION: u32 = 0;
+type WtsRegister = unsafe extern "system" fn(HWND, u32) -> windows_sys::core::BOOL;
+type WtsUnregister = unsafe extern "system" fn(HWND) -> windows_sys::core::BOOL;
+struct Wts {
+    module: HMODULE,
+    register: WtsRegister,
+    unregister: WtsUnregister,
+}
+impl Drop for Wts {
+    fn drop(&mut self) {
+        // Safety: the owning thread unregisters before this value is dropped.
+        unsafe {
+            FreeLibrary(self.module);
+        }
+    }
+}
+fn load_wts() -> Option<Wts> {
+    // Safety: names are NUL-terminated literals and the resolved functions
+    // keep the documented WTS signatures for the life of the module handle.
+    unsafe {
+        let module = LoadLibraryW(wide("wtsapi32.dll").as_ptr());
+        if module.is_null() {
+            return None;
+        }
+        let register = GetProcAddress(module, c"WTSRegisterSessionNotification".as_ptr().cast::<u8>());
+        let unregister = GetProcAddress(module, c"WTSUnRegisterSessionNotification".as_ptr().cast::<u8>());
+        match (register, unregister) {
+            (Some(register), Some(unregister)) => Some(Wts {
+                module,
+                register: std::mem::transmute::<unsafe extern "system" fn() -> isize, WtsRegister>(register),
+                unregister: std::mem::transmute::<unsafe extern "system" fn() -> isize, WtsUnregister>(unregister),
+            }),
+            _ => {
+                FreeLibrary(module);
+                None
+            }
+        }
+    }
+}
+thread_local! { static NOTICE_SENDER: std::cell::RefCell<Option<mpsc::SyncSender<WinNotice>>> = const { std::cell::RefCell::new(None) }; }
+fn send_notice(notice: WinNotice) {
+    NOTICE_SENDER.with(|s| {
+        if let Some(tx) = s.borrow().as_ref() {
+            // The window procedure must never block a system power/session
+            // broadcast. Lifecycle events are rare, so a full queue means
+            // the consumer is stuck and dropping is the safe choice.
+            match tx.try_send(notice) {
+                Ok(()) | Err(mpsc::TrySendError::Disconnected(_)) => {}
+                Err(mpsc::TrySendError::Full(_)) => {
+                    log::error!("Windows lifecycle notice queue full; notice dropped")
+                }
+            }
+        }
+    });
+}
+unsafe extern "system" fn notice_proc(hwnd: HWND, msg: u32, w: WPARAM, l: LPARAM) -> LRESULT {
+    match msg {
+        WM_POWERBROADCAST => {
+            match w as u32 {
+                PBT_APMSUSPEND => send_notice(WinNotice::Sleeping),
+                // RESUMEAUTOMATIC fires on every resume; RESUMESUSPEND only
+                // ever follows it (user present), so mapping both would
+                // emit a duplicate Wake per resume.
+                PBT_APMRESUMEAUTOMATIC => send_notice(WinNotice::Woke),
+                _ => {}
+            }
+            1 // TRUE: allow the power transition.
+        }
+        WM_WTSSESSION_CHANGE => {
+            match w as u32 {
+                WTS_SESSION_LOCK => send_notice(WinNotice::SessionLocked),
+                WTS_SESSION_UNLOCK => send_notice(WinNotice::SessionUnlocked),
+                _ => {}
+            }
+            0
+        }
+        // Safety: all unhandled messages are forwarded unchanged to the system window procedure.
+        _ => unsafe { DefWindowProcW(hwnd, msg, w, l) },
     }
 }
 unsafe extern "system" fn enumerate(monitor: HMONITOR, _: HDC, _: *mut RECT, data: LPARAM) -> windows_sys::core::BOOL {

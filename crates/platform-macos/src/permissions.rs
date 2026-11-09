@@ -8,9 +8,10 @@ pub struct Permissions {
     pub post: bool,
 }
 
-/// Trust as this process sees it. macOS can keep a denial cached in a running
-/// process after the user grants access, so `preflight` also asks a fresh
-/// child process while anything is denied.
+/// Trust as this process sees it. macOS can keep a stale answer cached in
+/// a running process in either direction: a denial after the user grants
+/// access, or a grant after the user revokes it. `preflight` therefore
+/// asks a fresh child process and treats its answer as authoritative.
 pub fn preflight_local() -> Permissions {
     // Safety: public preflight APIs only read trust state and do not prompt.
     unsafe {
@@ -39,17 +40,16 @@ pub fn probe_main() -> i32 {
 
 pub fn preflight() -> Permissions {
     let local = preflight_local();
-    if local.accessibility && local.listen && local.post {
-        return local;
-    }
-    match fresh() {
-        Some(fresh) => Permissions {
-            accessibility: local.accessibility || fresh.accessibility,
-            listen: local.listen || fresh.listen,
-            post: local.post || fresh.post,
-        },
-        None => local,
-    }
+    // Replace, never OR: the fresh child inherits this process's TCC
+    // responsibility, so its per-grant answer is the current grant. An OR
+    // (or skipping the probe while local says all-granted) masks a
+    // revocation forever and runtime PermissionLost never fires. Probe on
+    // every call, including when local is all-granted, so a revoke
+    // surfaces on the caller's existing poll cadence; fresh()'s 1s cache
+    // bounds the process-spawn cost. Fall back to local only when no
+    // probe answer is available, so a transient spawn failure never
+    // fabricates a denial.
+    fresh().unwrap_or(local)
 }
 
 /// The child inherits this process's TCC responsibility (the app that

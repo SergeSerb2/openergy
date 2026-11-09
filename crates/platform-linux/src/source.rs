@@ -1,6 +1,6 @@
 use crate::{
     keymap::Keymap,
-    native::{connect, drain, error, wait, wake},
+    native::{connect, drain, error, wait, wait_wake, wake, Backoff},
 };
 use openergy_platform::{CaptureDecision, InputEvent, InputSource, PlatformError};
 use std::{
@@ -55,53 +55,79 @@ impl Source {
         rx.recv().map_err(error)?
     }
 }
+fn capture_connect(display: Option<&str>) -> Result<(RustConnection, u32, Keymap, u16), PlatformError> {
+    let (c, root) = connect(display)?;
+    c.xinput_xi_query_version(2, 3).map_err(error)?.reply().map_err(error)?;
+    c.xfixes_query_version(4, 0).map_err(error)?.reply().map_err(error)?;
+    c.xinput_xi_select_events(
+        root,
+        &[xinput::EventMask {
+            deviceid: 1,
+            mask: vec![
+                xinput::XIEventMask::RAW_MOTION
+                    | xinput::XIEventMask::RAW_KEY_PRESS
+                    | xinput::XIEventMask::RAW_KEY_RELEASE
+                    | xinput::XIEventMask::RAW_BUTTON_PRESS
+                    | xinput::XIEventMask::RAW_BUTTON_RELEASE,
+            ],
+        }],
+    )
+    .map_err(error)?
+    .check()
+    .map_err(error)?;
+    c.xkb_use_extension(1, 0).map_err(error)?.reply().map_err(error)?;
+    c.xkb_per_client_flags(
+        xkb::ID::USE_CORE_KBD.into(),
+        xkb::PerClientFlag::DETECTABLE_AUTO_REPEAT,
+        xkb::PerClientFlag::DETECTABLE_AUTO_REPEAT,
+        xkb::BoolCtrl::default(),
+        xkb::BoolCtrl::default(),
+        xkb::BoolCtrl::default(),
+    )
+    .map_err(error)?
+    .reply()
+    .map_err(error)?;
+    let state = c
+        .query_pointer(root)
+        .map_err(error)?
+        .reply()
+        .map_err(error)?
+        .mask
+        .into();
+    let map = Keymap::load(&c)?;
+    Ok((c, root, map, state))
+}
+// Handle commands while the X connection is down. Returns true on Stop.
+// Capture(false) succeeds (nothing is grabbed on a dead server); anything
+// needing the server fails honestly instead of hanging its caller.
+fn down_commands(rx: &mpsc::Receiver<Command>, want_captured: &mut bool) -> bool {
+    while let Ok(cmd) = rx.try_recv() {
+        match cmd {
+            Command::Stop => return true,
+            Command::Capture(false, reply) => {
+                *want_captured = false;
+                let _ = reply.send(Ok(()));
+            }
+            Command::Capture(true, reply) => {
+                let _ = reply.send(Err(error("X11 capture connection lost; reconnecting")));
+            }
+            Command::Warp(_, _, reply) => {
+                let _ = reply.send(Err(error("X11 capture connection lost; reconnecting")));
+            }
+        }
+    }
+    false
+}
 impl InputSource for Source {
     fn start(&mut self, callback: Callback) -> Result<(), PlatformError> {
         self.stop();
-        let (c, root) = connect(self.display.as_deref())?;
-        c.xinput_xi_query_version(2, 3).map_err(error)?.reply().map_err(error)?;
-        c.xfixes_query_version(4, 0).map_err(error)?.reply().map_err(error)?;
-        c.xinput_xi_select_events(
-            root,
-            &[xinput::EventMask {
-                deviceid: 1,
-                mask: vec![
-                    xinput::XIEventMask::RAW_MOTION
-                        | xinput::XIEventMask::RAW_KEY_PRESS
-                        | xinput::XIEventMask::RAW_KEY_RELEASE
-                        | xinput::XIEventMask::RAW_BUTTON_PRESS
-                        | xinput::XIEventMask::RAW_BUTTON_RELEASE,
-                ],
-            }],
-        )
-        .map_err(error)?
-        .check()
-        .map_err(error)?;
-        c.xkb_use_extension(1, 0).map_err(error)?.reply().map_err(error)?;
-        c.xkb_per_client_flags(
-            xkb::ID::USE_CORE_KBD.into(),
-            xkb::PerClientFlag::DETECTABLE_AUTO_REPEAT,
-            xkb::PerClientFlag::DETECTABLE_AUTO_REPEAT,
-            xkb::BoolCtrl::default(),
-            xkb::BoolCtrl::default(),
-            xkb::BoolCtrl::default(),
-        )
-        .map_err(error)?
-        .reply()
-        .map_err(error)?;
-        let state = c
-            .query_pointer(root)
-            .map_err(error)?
-            .reply()
-            .map_err(error)?
-            .mask
-            .into();
-        let map = Keymap::load(&c)?;
+        let (c, root, map, state) = capture_connect(self.display.as_deref())?;
         let (tx, rx) = mpsc::sync_channel(32);
         let (w, mut r) = UnixStream::pair().map_err(error)?;
         w.set_nonblocking(true).map_err(error)?;
         r.set_nonblocking(true).map_err(error)?;
         let initial = self.captured;
+        let display = self.display.clone();
         let (ready, ready_rx) = mpsc::sync_channel(1);
         let h = std::thread::Builder::new()
             .name("oe-x11-capture".into())
@@ -125,11 +151,16 @@ impl InputSource for Source {
                 if failed {
                     return;
                 }
-                let result = (|| -> Result<(), PlatformError> {
-                    loop {
+                // Supervised loop: wait() reports a closed X connection
+                // (POLLHUP). The worker then recreates the connection with
+                // bounded backoff instead of exiting, and re-grabs if it
+                // held the cursor when the server died.
+                'run: loop {
+                    let stopped = loop {
+                        let mut stop = false;
                         while let Ok(cmd) = rx.try_recv() {
                             match cmd {
-                                Command::Stop => return Ok(()),
+                                Command::Stop => stop = true,
                                 Command::Capture(value, reply) => {
                                     let _ = reply.send(capture.grab(value));
                                 }
@@ -138,7 +169,7 @@ impl InputSource for Source {
                                     let y = y.clamp(-32768, 32767) as i16;
                                     let result = capture
                                         .c
-                                        .warp_pointer(NONE, root, 0, 0, 0, 0, x, y)
+                                        .warp_pointer(NONE, capture.root, 0, 0, 0, 0, x, y)
                                         .map_err(error)
                                         .and_then(|r| r.check().map_err(error));
                                     if result.is_ok() {
@@ -147,18 +178,83 @@ impl InputSource for Source {
                                     let _ = reply.send(result);
                                 }
                             }
+                            if stop {
+                                break;
+                            }
                         }
-                        while let Some(event) = capture.c.poll_for_event().map_err(error)? {
-                            capture.event(event)?;
+                        if stop {
+                            break true;
                         }
-                        capture.c.flush().map_err(error)?;
-                        wait(&capture.c, &r, -1)?;
+                        // Contain per-event X errors (a vanished window,
+                        // a refused grab, an unparsable event): log and
+                        // move to the next event. Only wait() below ends
+                        // this connection's loop, on a closed X connection.
+                        loop {
+                            match capture.c.poll_for_event() {
+                                Ok(Some(event)) => {
+                                    if let Err(e) = capture.event(event) {
+                                        log::warn!("X11 capture event failed: {e}");
+                                    }
+                                }
+                                Ok(None) => break,
+                                Err(e) => {
+                                    // A parse error consumed one bad event,
+                                    // so keep draining the queued ones.
+                                    let consumed = matches!(&e, x11rb::errors::ConnectionError::ParseError(_));
+                                    log::warn!("X11 capture poll failed: {e}");
+                                    if !consumed {
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        if let Err(e) = capture.c.flush() {
+                            log::warn!("X11 capture flush failed: {e}");
+                        }
+                        if wait(&capture.c, &r, -1).is_err() {
+                            break false;
+                        }
+                        drain(&mut r);
+                    };
+                    if stopped {
+                        break;
+                    }
+                    log::error!("X11 capture connection lost; reconnecting");
+                    let mut want_captured = capture.captured;
+                    // Grabs, pressed keys and the hidden cursor died with
+                    // the server; reset local state to match.
+                    capture.captured = false;
+                    capture.hidden = false;
+                    capture.pressed.clear();
+                    capture.relative = [0.0; 2];
+                    capture.last_raw_time = None;
+                    let mut backoff = Backoff::new();
+                    loop {
+                        if down_commands(&rx, &mut want_captured) {
+                            break 'run;
+                        }
+                        match capture_connect(display.as_deref()) {
+                            Ok((c, new_root, map, state)) => {
+                                capture.c = c;
+                                capture.root = new_root;
+                                capture.map = map;
+                                capture.state = state;
+                                log::info!("X11 capture reconnected");
+                                if want_captured {
+                                    if let Err(e) = capture.grab(true) {
+                                        log::error!("X11 capture re-grab after reconnect failed: {e}");
+                                    }
+                                }
+                                continue 'run;
+                            }
+                            Err(e) => log::warn!("X11 capture reconnect failed: {e}"),
+                        }
+                        wait_wake(&r, backoff.next_delay());
                         drain(&mut r);
                     }
-                })();
-                let _ = capture.grab(false);
-                if let Err(e) = result {
-                    log::error!("X11 capture stopped: {e}");
+                }
+                if capture.captured {
+                    let _ = capture.grab(false);
                 }
             })
             .map_err(error)?;

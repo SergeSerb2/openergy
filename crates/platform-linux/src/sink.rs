@@ -1,10 +1,13 @@
 use crate::{
     keymap::{keysym, Keymap},
-    native::{connect, error},
+    native::{conn_dead, connect, error, Backoff},
 };
 use openergy_platform::{InputEvent, InputSink, Modifiers, PlatformError};
 use openergy_protocol::keys;
-use std::collections::{BTreeMap, BTreeSet};
+use std::{
+    collections::{BTreeMap, BTreeSet},
+    time::Instant,
+};
 use x11rb::{
     connection::Connection,
     protocol::{
@@ -36,15 +39,25 @@ pub struct Sink {
     owned_modifiers: BTreeSet<u8>,
     pending_toggles: BTreeSet<u8>,
     wheel: [i64; 2],
+    // Desired cursor state. While the connection is down this is only
+    // recorded; ensure_connected re-applies it after a reconnect.
     hidden: bool,
+    display: Option<String>,
+    alive: bool,
+    retry_at: Instant,
+    backoff: Backoff,
 }
 impl Sink {
-    pub fn new(display: Option<&str>) -> Result<Self, PlatformError> {
+    fn open(display: Option<&str>) -> Result<(RustConnection, u32, Keymap), PlatformError> {
         let (c, root) = connect(display)?;
         c.xtest_get_version(2, 2).map_err(error)?.reply().map_err(error)?;
         c.xfixes_query_version(4, 0).map_err(error)?.reply().map_err(error)?;
         c.xinput_xi_query_version(2, 0).map_err(error)?.reply().map_err(error)?;
         let map = Keymap::load(&c)?;
+        Ok((c, root, map))
+    }
+    pub fn new(display: Option<&str>) -> Result<Self, PlatformError> {
+        let (c, root, map) = Self::open(display)?;
         Ok(Self {
             c,
             root,
@@ -55,7 +68,70 @@ impl Sink {
             pending_toggles: BTreeSet::new(),
             wheel: [0; 2],
             hidden: false,
+            display: display.map(str::to_owned),
+            alive: true,
+            retry_at: Instant::now(),
+            backoff: Backoff::new(),
         })
+    }
+    fn clear_held(&mut self) {
+        self.keys.clear();
+        self.buttons.clear();
+        self.owned_modifiers.clear();
+        self.pending_toggles.clear();
+        self.wheel = [0; 2];
+    }
+    fn note_dead(&mut self) {
+        if self.alive {
+            log::error!("X11 sink connection lost; held input state dropped");
+            self.alive = false;
+            // First reconnect attempt is immediate; later ones back off.
+            self.retry_at = Instant::now();
+        }
+        // Held keys/buttons and any Unicode keymap restore belonged to
+        // the dead server. Nothing on a new server needs releasing.
+        self.clear_held();
+    }
+    // The sink has no worker thread, so reconnect lazily on use with
+    // bounded backoff between attempts. Callers get an honest error
+    // while the server is down instead of a hang or a silent drop.
+    fn ensure_connected(&mut self) -> Result<(), PlatformError> {
+        if self.alive {
+            if !conn_dead(&self.c) {
+                return Ok(());
+            }
+            self.note_dead();
+        }
+        if Instant::now() < self.retry_at {
+            return Err(error("X11 sink connection lost; reconnecting"));
+        }
+        match Self::open(self.display.as_deref()) {
+            Ok((c, root, map)) => {
+                self.c = c;
+                self.root = root;
+                self.map = map;
+                self.alive = true;
+                self.backoff.reset();
+                log::info!("X11 sink reconnected");
+                if self.hidden {
+                    let result = self
+                        .c
+                        .xfixes_hide_cursor(self.root)
+                        .map_err(error)
+                        .and_then(|cookie| cookie.check().map_err(error));
+                    if let Err(e) = result {
+                        log::warn!("X11 cursor re-hide after reconnect failed: {e}");
+                        self.hidden = false;
+                    }
+                }
+                Ok(())
+            }
+            Err(e) => {
+                log::warn!("X11 sink reconnect failed: {e}");
+                self.retry_at = Instant::now() + self.backoff.next_delay();
+                Err(e)
+            }
+        }
     }
     fn fake(&self, kind: u8, detail: u8, root: u32, x: i16, y: i16) -> Result<(), PlatformError> {
         self.c
@@ -249,9 +325,7 @@ impl Sink {
         }
         Ok(())
     }
-}
-impl InputSink for Sink {
-    fn inject(&mut self, ev: &InputEvent) -> Result<(), PlatformError> {
+    fn inject_live(&mut self, ev: &InputEvent) -> Result<(), PlatformError> {
         match *ev {
             InputEvent::KeyDown { key, modifiers, button } => self.down(key, modifiers, button)?,
             InputEvent::KeyUp { button, .. } => self.up(button)?,
@@ -331,7 +405,22 @@ impl InputSink for Sink {
         }
         self.c.flush().map_err(error)
     }
+}
+impl InputSink for Sink {
+    fn inject(&mut self, ev: &InputEvent) -> Result<(), PlatformError> {
+        self.ensure_connected()?;
+        let result = self.inject_live(ev);
+        if result.is_err() && conn_dead(&self.c) {
+            self.note_dead();
+        }
+        result
+    }
     fn release_all(&mut self) {
+        if !self.alive || conn_dead(&self.c) {
+            // The server holding our input is gone; nothing to release.
+            self.note_dead();
+            return;
+        }
         for button in self.keys.keys().copied().collect::<Vec<_>>() {
             if let Err(e) = self.up(button) {
                 log::error!("X11 key release failed: {e}");
@@ -352,6 +441,11 @@ impl InputSink for Sink {
     }
     fn set_cursor_visible(&mut self, visible: bool) {
         if self.hidden == !visible {
+            return;
+        }
+        if self.ensure_connected().is_err() {
+            // Record the desired state; reconnect re-applies it.
+            self.hidden = !visible;
             return;
         }
         let result = if visible {

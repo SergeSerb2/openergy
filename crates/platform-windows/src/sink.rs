@@ -192,7 +192,9 @@ impl Sink {
             if !self.keys.iter().any(|(id, h)| {
                 *id != button && (h.stroke == held.stroke || h.modifiers.iter().any(|(_, s)| *s == held.stroke))
             }) {
-                send(held.stroke.input(false))?;
+                if let Err(e) = send(held.stroke.input(false)) {
+                    log::error!("Windows key release failed: {e}");
+                }
             }
             for (_, s) in held.modifiers.iter().rev() {
                 if !self
@@ -200,7 +202,9 @@ impl Sink {
                     .iter()
                     .any(|(id, h)| *id != button && (h.stroke == *s || h.modifiers.iter().any(|(_, m)| m == s)))
                 {
-                    send(s.input(false))?;
+                    if let Err(e) = send(s.input(false)) {
+                        log::error!("Windows modifier release failed: {e}");
+                    }
                 }
             }
             self.keys.remove(&button);
@@ -264,12 +268,14 @@ impl InputSink for Sink {
                 };
                 if down {
                     self.buttons.insert(button);
-                }
-                mouse(flags, data, 0, 0)?;
-                if !down {
+                    mouse(flags, data, 0, 0)
+                } else {
                     self.buttons.remove(&button);
+                    if let Err(e) = mouse(flags, data, 0, 0) {
+                        log::error!("Windows button release failed: {e}");
+                    }
+                    Ok(())
                 }
-                Ok(())
             }
             InputEvent::MouseWheel { dx, dy } => {
                 for (axis, delta) in [dx, dy].into_iter().enumerate() {
@@ -306,9 +312,10 @@ impl InputSink for Sink {
             }
         }
         for (vk, stroke) in self.pending_toggles.clone() {
-            if send(stroke.input(false)).is_ok() {
-                self.pending_toggles.remove(&vk);
+            if let Err(e) = send(stroke.input(false)) {
+                log::error!("Windows toggle release failed: {e}");
             }
+            self.pending_toggles.remove(&vk);
         }
         self.wheel = [0; 2];
     }

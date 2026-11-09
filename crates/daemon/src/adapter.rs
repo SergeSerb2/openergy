@@ -97,7 +97,25 @@ pub fn platform(name: &str, _cfg: &Config) -> Result<Platform, PlatformError> {
         .map(|b| parts(b, None)),
         #[cfg(target_os = "windows")]
         "windows" => {
-            openergy_platform_windows::create(openergy_platform_windows::WindowsOptions {}).map(|b| parts(b, None))
+            use openergy_platform_windows::WinNotice;
+            let (backend, rx) =
+                openergy_platform_windows::create_with_notices(openergy_platform_windows::WindowsOptions {})?;
+            let notices: Notices = Box::new(move || {
+                rx.try_iter()
+                    .map(|n| match n {
+                        WinNotice::Sleeping => Notice::Sleep,
+                        WinNotice::Woke => Notice::Wake,
+                        WinNotice::SessionLocked => Notice::Lock,
+                        WinNotice::SessionUnlocked => Notice::Unlock,
+                        WinNotice::NotificationSetupFailed => Notice::NotificationError,
+                    })
+                    .collect()
+            });
+            Ok(Platform {
+                backend,
+                control: None,
+                notices,
+            })
         }
         _ => Err(PlatformError::Failed(format!(
             "platform {name} is unavailable on this OS"
