@@ -18,3 +18,11 @@ design. `connection.connect` with a host follows the same rule.
 Scroll sensitivity and vertical inversion belong to the receiving computer.
 The client transforms wheel units before its platform sink applies its normal
 notch-to-line conversion (3 lines per notch on macOS).
+
+`clipboard.share_primary_selection` (default `false`) opts in to X11 PRIMARY
+selection sharing on clipboard id 1. It is X11-to-X11 only: other platforms
+never originate id 1, receivers drop it rather than touching their single
+system clipboard, and a server relays it only to peers known to be Linux
+(configured screen `os = "linux"` or a peer that itself sent id 1). An empty
+PRIMARY is not a clear event. With the flag off, behavior is exactly the
+single-clipboard behavior above.

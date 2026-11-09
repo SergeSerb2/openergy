@@ -280,18 +280,25 @@ impl Transfers {
         Ok(None)
     }
 }
-pub(crate) fn blocked(bytes: usize, limit: usize, peer: &str, out: &mut Vec<Action>) {
+pub(crate) fn selection_name(id: ClipboardId) -> &'static str {
+    if id.0 == 1 {
+        "primary"
+    } else {
+        "clipboard"
+    }
+}
+pub(crate) fn blocked(id: ClipboardId, bytes: usize, limit: usize, peer: &str, out: &mut Vec<Action>) {
     log::warn!("clipboard blocked: bytes={bytes}, limit={limit}, peer={peer}");
     notify(
         "clipboard.blocked",
-        serde_json::json!({"bytes":bytes,"limit":limit,"peer":peer,"unix_ms":null}),
+        serde_json::json!({"bytes":bytes,"limit":limit,"peer":peer,"selection":selection_name(id),"unix_ms":null}),
         out,
     );
 }
-pub(crate) fn transferred(data: &ClipboardData, direction: &str, out: &mut Vec<Action>) {
+pub(crate) fn transferred(id: ClipboardId, data: &ClipboardData, direction: &str, out: &mut Vec<Action>) {
     notify(
         "clipboard.transfer",
-        serde_json::json!({"direction":direction,"bytes":data.total_bytes(),
+        serde_json::json!({"direction":direction,"bytes":data.total_bytes(),"selection":selection_name(id),
         "formats":data.formats.iter().map(|f|f.kind.as_str()).collect::<Vec<_>>(),"unix_ms":null}),
         out,
     );

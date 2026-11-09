@@ -179,8 +179,12 @@ pub struct SecureInputInfo {
 pub struct ClipboardTransfer {
     pub direction: Option<String>,
     pub bytes: Option<usize>,
+    #[serde(default)]
     pub formats: Vec<String>,
     pub unix_ms: Option<u64>,
+    /// "clipboard" or "primary"; absent in payloads from older daemons.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub selection: Option<String>,
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ClipboardBlocked {
@@ -188,10 +192,15 @@ pub struct ClipboardBlocked {
     pub limit: Option<usize>,
     pub peer: Option<String>,
     pub unix_ms: Option<u64>,
+    /// "clipboard" or "primary"; absent in payloads from older daemons.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub selection: Option<String>,
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ClipboardInfo {
     pub enabled: bool,
+    #[serde(default)]
+    pub primary_enabled: bool,
     pub last_transfer: Option<ClipboardTransfer>,
     pub last_blocked: Option<ClipboardBlocked>,
 }
@@ -277,6 +286,7 @@ impl Status {
             secure_input: SecureInputInfo { local_app: None },
             clipboard: ClipboardInfo {
                 enabled: true,
+                primary_enabled: false,
                 last_transfer: None,
                 last_blocked: None,
             },

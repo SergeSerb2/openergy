@@ -21,6 +21,10 @@ struct Slot {
     available: bool,
     readback: bool,
     remote_payload: Option<Arc<ClipboardData>>,
+    /// PRIMARY only: a local change read is in flight. Slot state and
+    /// transfers stay untouched until a non-empty replacement lands,
+    /// because an empty or unavailable PRIMARY read is not a clear.
+    local_pending: bool,
 }
 #[derive(Clone)]
 pub struct Server {
@@ -234,17 +238,33 @@ impl Server {
                 }
             }
             ServerEvent::LocalClipboardChanged { id } => {
-                if id.0 < 2 && self.config.clipboard.enabled && self.config.clipboard.send {
-                    if let Some(slot) = self.slots.get_mut(id.0 as usize) {
-                        slot.sequence = self.sequence;
-                        slot.owner = None;
-                        slot.data = None;
-                        slot.available = false;
-                        slot.readback = false;
-                        slot.remote_payload = None;
-                    }
-                    for p in self.peers.values_mut() {
-                        p.transfers.cancel(id);
+                if id.0 < 2
+                    && self.config.clipboard.enabled
+                    && self.config.clipboard.send
+                    && primary_allowed(&self.config, id)
+                {
+                    if id.0 == 1 {
+                        // Defer the invalidation below until payload()
+                        // sees a non-empty replacement: PRIMARY owners
+                        // die whenever an app exits, and the read that
+                        // follows is then empty or unavailable, which is
+                        // not a clear. Wiping now would drop the last
+                        // valid selection and cancel live transfers.
+                        if let Some(slot) = self.slots.get_mut(1) {
+                            slot.local_pending = true;
+                        }
+                    } else {
+                        if let Some(slot) = self.slots.get_mut(id.0 as usize) {
+                            slot.sequence = self.sequence;
+                            slot.owner = None;
+                            slot.data = None;
+                            slot.available = false;
+                            slot.readback = false;
+                            slot.remote_payload = None;
+                        }
+                        for p in self.peers.values_mut() {
+                            p.transfers.cancel(id);
+                        }
                     }
                     out.push(Action::ReadClipboard {
                         id,
@@ -256,6 +276,8 @@ impl Server {
             ServerEvent::ClipboardReadFailed { id } => {
                 if let Some(slot) = self.slots.get_mut(id.0 as usize) {
                     slot.readback = false;
+                    // Unavailable PRIMARY read: preserve prior state.
+                    slot.local_pending = false;
                 }
             }
             ServerEvent::TimerTick { now_ms } => {
@@ -511,8 +533,15 @@ impl Server {
             // here lets a peer disable the host's heartbeat and timeout.
             Message::SetOptions { .. } | Message::ResetOptions => {}
             Message::ClipboardGrab { id, sequence }
-                if id.0 == 0 && self.config.clipboard.enabled && self.config.clipboard.receive =>
+                if id.0 < 2 && self.config.clipboard.enabled && self.config.clipboard.receive =>
             {
+                if id.0 == 1 {
+                    p.sent_primary_grab = true;
+                    if !primary_allowed(&self.config, id) {
+                        p.drop_primary();
+                        return;
+                    }
+                }
                 if let Some(slot) = self.slots.get_mut(id.0 as usize) {
                     if sequence >= slot.sequence {
                         slot.sequence = sequence;
@@ -521,6 +550,12 @@ impl Server {
                         slot.available = false;
                         slot.readback = false;
                         slot.remote_payload = None;
+                        // A pending local PRIMARY read is superseded by
+                        // this grab: when it completes, payload() must
+                        // not run its deferred takeover over the peer's
+                        // newer selection. Clearing the flag routes the
+                        // stale payload into the owner-mismatch drop.
+                        slot.local_pending = false;
                         for peer in self.peers.values_mut() {
                             peer.transfers.cancel(id);
                         }
@@ -528,8 +563,12 @@ impl Server {
                 }
             }
             Message::ClipboardData { id, sequence, chunk }
-                if id.0 == 0 && self.config.clipboard.enabled && self.config.clipboard.receive =>
+                if id.0 < 2 && self.config.clipboard.enabled && self.config.clipboard.receive =>
             {
+                if id.0 == 1 && !primary_allowed(&self.config, id) {
+                    p.drop_primary();
+                    return;
+                }
                 let valid = self
                     .slots
                     .get(id.0 as usize)
@@ -547,6 +586,7 @@ impl Server {
                         Ok(Some(data)) => self.payload(Some(conn), id, data, out),
                         Ok(None) => {}
                         Err(clipboard::ClipboardError::TooLarge) => clipboard::blocked(
+                            id,
                             declared.unwrap_or(0),
                             self.config.clipboard.max_bytes.min(clipboard::HARD_CAP),
                             &p.name,
@@ -738,6 +778,14 @@ impl Server {
         }
     }
     fn push_slots(&mut self, conn: ConnId, out: &mut Vec<Action>) {
+        self.push_slots_only(conn, None, out);
+    }
+    /// Push slot contents to one peer. `only` restricts the push to a single
+    /// changed selection: re-grabbing an unchanged slot would make the
+    /// receiver cancel any in-flight transfer for it and re-queue a full
+    /// copy, so change broadcasts must name the changed id. Connection setup
+    /// and screen entry push every slot.
+    fn push_slots_only(&mut self, conn: ConnId, only: Option<ClipboardId>, out: &mut Vec<Action>) {
         let Some(p) = self.peers.get_mut(&conn) else { return };
         if p.phase != Phase::Ready
             || p.version.minor < 6
@@ -747,14 +795,39 @@ impl Server {
         {
             return;
         }
+        // PRIMARY relay restriction: id 1 goes only to a peer known to map
+        // it to a separate selection — its configured screen OS is linux,
+        // or it has itself sent a CCLP id 1 on this connection. Reference
+        // peers on single-clipboard platforms would apply it to their one
+        // system clipboard, so unknown peers receive id 0 only.
+        let primary_capable = p.sent_primary_grab
+            || self
+                .config
+                .screens
+                .iter()
+                .find(|s| s.name == p.name)
+                .and_then(|s| s.os.as_deref())
+                .is_some_and(|os| os.eq_ignore_ascii_case("linux"));
         for (i, s) in self.slots.iter_mut().enumerate() {
+            if only.is_some_and(|o| o.0 as usize != i) {
+                continue;
+            }
+            if i == 1 && !(self.config.clipboard.share_primary_selection && primary_capable) {
+                continue;
+            }
             if s.owner != Some(conn) {
                 if s.data.is_none() {
                     if let Some(data) = &s.remote_payload {
                         match clipboard::marshal(data, self.config.clipboard.max_bytes) {
                             Ok(bytes) => s.data = Some(Arc::new(bytes)),
                             Err(_) => {
-                                clipboard::blocked(data.total_bytes(), self.config.clipboard.max_bytes, &p.name, out);
+                                clipboard::blocked(
+                                    ClipboardId(i as u8),
+                                    data.total_bytes(),
+                                    self.config.clipboard.max_bytes,
+                                    &p.name,
+                                    out,
+                                );
                                 continue;
                             }
                         }
@@ -763,7 +836,7 @@ impl Server {
                 if let Some(bytes) = &s.data {
                     let limit = p.options.limit.min(self.config.clipboard.max_bytes);
                     if bytes.len() > limit {
-                        clipboard::blocked(bytes.len(), limit, &p.name, out);
+                        clipboard::blocked(ClipboardId(i as u8), bytes.len(), limit, &p.name, out);
                     } else {
                         send(
                             conn,
@@ -789,8 +862,33 @@ impl Server {
         if !self.config.clipboard.enabled
             || (owner.is_none() && !self.config.clipboard.send)
             || (owner.is_some() && !self.config.clipboard.receive)
+            || !primary_allowed(&self.config, id)
         {
             return;
+        }
+        if owner.is_none() && id.0 == 1 && self.slots.get(1).is_some_and(|s| s.local_pending) {
+            if let Some(slot) = self.slots.get_mut(1) {
+                slot.local_pending = false;
+            }
+            if data.formats.is_empty() {
+                // Owner-exit read: not a clear. Prior slot state and
+                // in-flight transfers stand.
+                return;
+            }
+            // A real replacement: run the ownership takeover that
+            // LocalClipboardChanged deferred, cancelling superseded
+            // transfers only now that new data exists.
+            if let Some(slot) = self.slots.get_mut(1) {
+                slot.sequence = self.sequence;
+                slot.owner = None;
+                slot.data = None;
+                slot.available = false;
+                slot.readback = false;
+                slot.remote_payload = None;
+            }
+            for p in self.peers.values_mut() {
+                p.transfers.cancel(id);
+            }
         }
         let Some(slot) = self.slots.get_mut(id.0 as usize) else {
             return;
@@ -801,25 +899,39 @@ impl Server {
         if slot.owner != owner {
             return;
         }
-        // A readable empty clipboard is a clear. Unavailable and own-write
-        // reads must arrive as ClipboardReadFailed, never an empty payload.
+        // Empty PRIMARY is not a clear: selection owners die whenever an
+        // app exits. Send nothing and keep prior slot state. For id 0 a
+        // readable empty clipboard is a real clear. Unavailable and
+        // own-write reads arrive as ClipboardReadFailed, never empty.
+        if id.0 == 1 && data.formats.is_empty() {
+            return;
+        }
         match clipboard::marshal(&data, self.config.clipboard.max_bytes) {
             Ok(bytes) => {
                 slot.data = Some(Arc::new(bytes));
                 slot.available = true;
             }
             Err(_) => {
-                clipboard::blocked(data.total_bytes(), self.config.clipboard.max_bytes, "local", out);
+                clipboard::blocked(id, data.total_bytes(), self.config.clipboard.max_bytes, "local", out);
                 return;
             }
         }
         if owner.is_some() && !readback {
-            clipboard::transferred(&data, "in", out);
+            clipboard::transferred(id, &data, "in", out);
             let data = Arc::new(data);
             slot.remote_payload = Some(data.clone());
             out.push(Action::SetClipboardShared { id, data });
         } else {
-            clipboard::transferred(&data, "out", out);
+            if id.0 == 1 {
+                // Retain locally sourced PRIMARY in the payload cache
+                // too. TimerTick evicts the marshalled `data` once
+                // transfers drain, and after the local owner exits the
+                // platform read comes back empty — without this cache
+                // the preserved slot would have nothing left to give a
+                // late-joining peer or a screen re-entry.
+                slot.remote_payload = Some(Arc::new(data.clone()));
+            }
+            clipboard::transferred(id, &data, "out", out);
         }
         let conns = self
             .peers
@@ -828,7 +940,7 @@ impl Server {
             .filter(|c| Some(*c) != owner)
             .collect::<Vec<_>>();
         for c in conns {
-            self.push_slots(c, out);
+            self.push_slots_only(c, Some(id), out);
         }
     }
 }

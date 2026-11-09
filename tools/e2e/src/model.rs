@@ -118,11 +118,13 @@ impl Step {
             "wait_connected" => "node peer",
             "inject" => "node events seed hid_seed now_ms click_interval_ms click_distance",
             "inject_burst" => "node event batch_size repeat tail until",
-            "assert_recorded" | "assert_recorded_tail" => "node expect expect_tail since exact input_only",
+            "assert_recorded" | "assert_recorded_tail" => "node expect expect_tail since exact input_only audit",
             "assert_numbering" => "node since seed min_downs states allow_held",
-            "ledger_mark" | "clipboard_get" | "pause" | "resume" | "start" | "subscribe" | "parent_exit" | "trust_crash_recovery" => "node",
-            "clipboard_set" => "node formats fixture text kind encoding",
-            "assert_clipboard" => "node empty kind text sha256 bytes",
+            "ledger_mark" => "node audit",
+            "pause" | "resume" | "start" | "subscribe" | "parent_exit" | "trust_crash_recovery" => "node",
+            "clipboard_get" => "node selection",
+            "clipboard_set" => "node formats fixture text kind encoding selection",
+            "assert_clipboard" => "node empty kind text sha256 bytes selection",
             "set_screens" => "node rects",
             "set_permissions" => "node permissions",
             "config_patch" => "node patch expect expect_error fields",
@@ -177,9 +179,9 @@ impl Step {
                 }
                 "events" | "args" | "codes" | "states" | "rects" | "formats" | "tail" => value.is_array(),
                 "node" | "peer" | "source" | "method" | "save" | "expect_error" | "text" | "sha256" | "kind"
-                | "encoding" | "fixture" | "path" | "mode" | "regex" | "output_regex" | "stdout_path" | "signal"
-                | "builder" | "product" | "name" | "payload_hex" | "hex" | "action" | "expect_text" | "receiver"
-                | "fingerprint" => value.is_string(),
+                | "selection" | "encoding" | "fixture" | "path" | "mode" | "regex" | "output_regex" | "stdout_path"
+                | "signal" | "builder" | "product" | "name" | "payload_hex" | "hex" | "action" | "expect_text"
+                | "receiver" | "fingerprint" => value.is_string(),
                 _ => true,
             };
             if !valid {

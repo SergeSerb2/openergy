@@ -119,6 +119,13 @@ pub enum RecordKind {
         own_write: bool,
         bytes: usize,
     },
+    /// PRIMARY (clipboard id 1) write. Kept distinct so id 0 audit records
+    /// serialize exactly as before.
+    PrimaryClipboardWrite {
+        stamp: u64,
+        own_write: bool,
+        bytes: usize,
+    },
     PermissionRequest {
         permission: PermissionKind,
         previous: Grant,
@@ -308,6 +315,9 @@ struct State {
     clipboard_read_available: bool,
     clipboard_read_error: bool,
     own_write_stamp: Option<u64>,
+    primary: Arc<ClipboardData>,
+    primary_stamp: u64,
+    primary_own_write_stamp: Option<u64>,
     max_clipboard_bytes: usize,
 }
 
@@ -527,27 +537,105 @@ impl State {
         self.clipboard_set_shared(Arc::new(data), own_write)
     }
     fn clipboard_set_shared(&mut self, data: Arc<ClipboardData>, own_write: bool) -> Result<u64, PlatformError> {
+        self.clipboard_set_shared_for(0, data, own_write)
+    }
+    fn clipboard_set_shared_for(
+        &mut self,
+        id: u8,
+        data: Arc<ClipboardData>,
+        own_write: bool,
+    ) -> Result<u64, PlatformError> {
+        if id > 1 {
+            return Err(PlatformError::NotImplemented);
+        }
         self.validate_clipboard(&data)?;
-        let stamp = self
-            .clipboard_stamp
+        let (slot, stamp_slot, own_slot) = if id == 0 {
+            (
+                &mut self.clipboard,
+                &mut self.clipboard_stamp,
+                &mut self.own_write_stamp,
+            )
+        } else {
+            (
+                &mut self.primary,
+                &mut self.primary_stamp,
+                &mut self.primary_own_write_stamp,
+            )
+        };
+        let stamp = stamp_slot
             .checked_add(1)
             .ok_or_else(|| failed("clipboard stamp exhausted"))?;
         let bytes = data.total_bytes();
-        self.clipboard = data;
-        self.clipboard_stamp = stamp;
+        *slot = data;
+        *stamp_slot = stamp;
         if own_write {
-            self.own_write_stamp = Some(stamp);
+            *own_slot = Some(stamp);
         }
         self.record(
             None,
-            RecordKind::ClipboardWrite {
-                stamp,
-                own_write,
-                bytes,
+            if id == 0 {
+                RecordKind::ClipboardWrite {
+                    stamp,
+                    own_write,
+                    bytes,
+                }
+            } else {
+                RecordKind::PrimaryClipboardWrite {
+                    stamp,
+                    own_write,
+                    bytes,
+                }
             },
             None,
         );
         Ok(stamp)
+    }
+    fn clipboard_snapshot_for(&self, id: u8) -> Option<ClipboardSnapshot> {
+        let (data, stamp, own) = match id {
+            0 => (&self.clipboard, self.clipboard_stamp, self.own_write_stamp),
+            1 => (&self.primary, self.primary_stamp, self.primary_own_write_stamp),
+            _ => return None,
+        };
+        Some(ClipboardSnapshot {
+            data: (**data).clone(),
+            stamp,
+            own_write: own == Some(stamp),
+            last_own_write_stamp: own,
+        })
+    }
+    /// Summary metadata read through the slot's `Arc`: no payload clone.
+    fn clipboard_summary_for(&self, id: u8) -> Option<ClipboardSummary> {
+        let (data, stamp, own) = match id {
+            0 => (&self.clipboard, self.clipboard_stamp, self.own_write_stamp),
+            1 => (&self.primary, self.primary_stamp, self.primary_own_write_stamp),
+            _ => return None,
+        };
+        Some(ClipboardSummary {
+            stamp,
+            own_write: own == Some(stamp),
+            last_own_write_stamp: own,
+            bytes: data.total_bytes(),
+            formats: data.formats.iter().map(|f| f.kind.as_str().to_string()).collect(),
+        })
+    }
+    fn clipboard_read_for(&self, id: u8, max_bytes: usize) -> Result<ClipboardData, PlatformError> {
+        if id > 1 {
+            return Err(PlatformError::NotImplemented);
+        }
+        if self.clipboard_read_error {
+            return Err(failed("virtual clipboard read failed (scripted)"));
+        }
+        if !self.clipboard_read_available {
+            return Err(PlatformError::ClipboardUnavailable);
+        }
+        let data = if id == 0 { &self.clipboard } else { &self.primary };
+        if data.total_bytes() > max_bytes {
+            return Err(PlatformError::ClipboardTooLarge {
+                bytes: data.total_bytes(),
+                limit: max_bytes,
+            });
+        }
+        Ok((**data).clone())
     }
 }
 
@@ -603,6 +691,9 @@ impl VirtualPlatform {
                 clipboard_read_available: true,
                 clipboard_read_error: false,
                 own_write_stamp: None,
+                primary: Arc::new(ClipboardData::default()),
+                primary_stamp: 0,
+                primary_own_write_stamp: None,
                 max_clipboard_bytes: config.max_clipboard_bytes,
             }),
             capture: Mutex::new(None),
@@ -713,32 +804,35 @@ impl VirtualControl {
     }
     /// Sizes and stamps without cloning clipboard payload buffers.
     pub fn clipboard_summary(&self) -> ClipboardSummary {
-        let state = lock(&self.shared.state);
-        ClipboardSummary {
-            stamp: state.clipboard_stamp,
-            own_write: state.own_write_stamp == Some(state.clipboard_stamp),
-            last_own_write_stamp: state.own_write_stamp,
-            bytes: state.clipboard.total_bytes(),
-            formats: state
-                .clipboard
-                .formats
-                .iter()
-                .map(|f| f.kind.as_str().to_string())
-                .collect(),
-        }
+        self.clipboard_summary_for(0).unwrap_or(ClipboardSummary {
+            stamp: 0,
+            own_write: false,
+            last_own_write_stamp: None,
+            bytes: 0,
+            formats: Vec::new(),
+        })
+    }
+    pub fn clipboard_summary_for(&self, id: u8) -> Option<ClipboardSummary> {
+        lock(&self.shared.state).clipboard_summary_for(id)
     }
     pub fn clipboard_get(&self) -> ClipboardSnapshot {
-        let state = lock(&self.shared.state);
-        ClipboardSnapshot {
-            data: (*state.clipboard).clone(),
-            stamp: state.clipboard_stamp,
-            own_write: state.own_write_stamp == Some(state.clipboard_stamp),
-            last_own_write_stamp: state.own_write_stamp,
-        }
+        self.clipboard_get_for(0).unwrap_or(ClipboardSnapshot {
+            data: ClipboardData::default(),
+            stamp: 0,
+            own_write: false,
+            last_own_write_stamp: None,
+        })
+    }
+    pub fn clipboard_get_for(&self, id: u8) -> Option<ClipboardSnapshot> {
+        lock(&self.shared.state).clipboard_snapshot_for(id)
     }
     /// Script a local/external clipboard change; this is NOT an own write.
     pub fn clipboard_set(&self, data: ClipboardData) -> Result<u64, PlatformError> {
         lock(&self.shared.state).clipboard_set(data, false)
+    }
+    /// Script a local/external change to clipboard id `id`; NOT an own write.
+    pub fn clipboard_set_for(&self, id: u8, data: ClipboardData) -> Result<u64, PlatformError> {
+        lock(&self.shared.state).clipboard_set_shared_for(id, Arc::new(data), false)
     }
     pub fn set_screens(&self, screens: Vec<ScreenRect>) -> Result<(), PlatformError> {
         if screens.len() > 64
@@ -1001,20 +1095,7 @@ impl ClipboardBackend for VirtualClipboard {
         lock(&self.shared.state).clipboard_stamp
     }
     fn read(&mut self, max_bytes: usize) -> Result<ClipboardData, PlatformError> {
-        let state = lock(&self.shared.state);
-        if state.clipboard_read_error {
-            return Err(failed("virtual clipboard read failed (scripted)"));
-        }
-        if !state.clipboard_read_available {
-            return Err(PlatformError::ClipboardUnavailable);
-        }
-        if state.clipboard.total_bytes() > max_bytes {
-            return Err(PlatformError::ClipboardTooLarge {
-                bytes: state.clipboard.total_bytes(),
-                limit: max_bytes,
-            });
-        }
-        Ok((*state.clipboard).clone())
+        lock(&self.shared.state).clipboard_read_for(0, max_bytes)
     }
     fn write_shared(&mut self, data: Arc<ClipboardData>) -> Result<(), PlatformError> {
         lock(&self.shared.state).clipboard_set_shared(data, true)?;
@@ -1024,6 +1105,25 @@ impl ClipboardBackend for VirtualClipboard {
         let mut state = lock(&self.shared.state);
         state.validate_clipboard(data)?;
         state.clipboard_set(data.clone(), true)?;
+        Ok(())
+    }
+    fn change_stamp_for(&self, id: u8) -> u64 {
+        let state = lock(&self.shared.state);
+        match id {
+            0 => state.clipboard_stamp,
+            1 => state.primary_stamp,
+            _ => 0,
+        }
+    }
+    fn read_for(&mut self, id: u8, max_bytes: usize) -> Result<ClipboardData, PlatformError> {
+        lock(&self.shared.state).clipboard_read_for(id, max_bytes)
+    }
+    fn write_for(&mut self, id: u8, data: &ClipboardData) -> Result<(), PlatformError> {
+        lock(&self.shared.state).clipboard_set_shared_for(id, Arc::new(data.clone()), true)?;
+        Ok(())
+    }
+    fn write_shared_for(&mut self, id: u8, data: Arc<ClipboardData>) -> Result<(), PlatformError> {
+        lock(&self.shared.state).clipboard_set_shared_for(id, data, true)?;
         Ok(())
     }
 }
@@ -1039,6 +1139,18 @@ impl ClipboardBackend for VirtualPlatform {
     }
     fn write_shared(&mut self, data: Arc<ClipboardData>) -> Result<(), PlatformError> {
         self.clipboard.write_shared(data)
+    }
+    fn change_stamp_for(&self, id: u8) -> u64 {
+        self.clipboard.change_stamp_for(id)
+    }
+    fn read_for(&mut self, id: u8, max_bytes: usize) -> Result<ClipboardData, PlatformError> {
+        self.clipboard.read_for(id, max_bytes)
+    }
+    fn write_for(&mut self, id: u8, data: &ClipboardData) -> Result<(), PlatformError> {
+        self.clipboard.write_for(id, data)
+    }
+    fn write_shared_for(&mut self, id: u8, data: Arc<ClipboardData>) -> Result<(), PlatformError> {
+        self.clipboard.write_shared_for(id, data)
     }
 }
 impl ScreenSystem for VirtualPlatform {

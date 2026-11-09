@@ -26,11 +26,13 @@ Lock-state synchronization returns an error while its toggle key is held,
 instead of releasing that key to force a new lock state.
 
 `X11Clipboard::connect(display, Selection::Clipboard)` owns a hidden window and a
-selection event worker. V1 routes only CLIPBOARD (wire id 0) through the shared
-`Backend.clipboard` and `ScreenSystem::clipboard` handles. PRIMARY (id 1) remains
-compiled in `for_selection`, `read_selection`, and `write_selection` as a local,
-post-v1 extension. It is not routed or shared by v1. Each selection has its own
-XFixes change stamp, so a PRIMARY update does not notify the v1 CLIPBOARD handle.
+selection event worker. The single-selection trait methods stay bound to CLIPBOARD
+(wire id 0). PRIMARY (id 1) is routed through the shared `ClipboardBackend`
+`*_for` methods (`change_stamp_for`, `read_for`, `write_for`, `write_shared_for`)
+and is shared only when the daemon enables `clipboard.share_primary_selection`
+(default off). Each selection has its own XFixes change stamp, so a PRIMARY update
+never notifies the CLIPBOARD handle, and an own write to one selection never
+re-fires as a change to the other.
 Both INCR directions have byte limits and timeouts.
 Each incoming conversion uses a disposable requestor window. Oversized INCR
 data is drained without retention within the ten-second/256 MiB bounds, so a
@@ -71,7 +73,10 @@ These never use the host's display, mouse, clipboard, Synergy service or LAN pee
 Both `create` functions now return the shared `openergy_platform::Backend` directly;
 there is no construction shim. X11 uses the shared default
 `ScreenSystem::request_permission`, which returns `NotRequired` for all three grants.
-No shared clipboard API change is needed for v1. PRIMARY routing is a post-v1 extension.
+PRIMARY routing uses the shared defaulted `ClipboardBackend::*_for` methods, so no
+second backend field exists. The `x11_probe` modes `primary-sync` and `primary-loop`
+(part of `all`) cover the id 1 round-trips, CLIPBOARD isolation, middle-click
+delivery, and per-id stamp discipline against a real X server.
 
 ## Read-only Wayland discovery (M1)
 

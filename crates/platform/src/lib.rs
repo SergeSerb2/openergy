@@ -228,6 +228,37 @@ pub trait ClipboardBackend: Send {
     fn write_shared(&mut self, data: std::sync::Arc<ClipboardData>) -> Result<(), PlatformError> {
         self.write(&data)
     }
+    /// Change stamp for clipboard id `id` (0 = clipboard, 1 = PRIMARY
+    /// selection). Single-clipboard backends keep the default: id 0 is the
+    /// clipboard above and every other id never changes.
+    fn change_stamp_for(&self, id: u8) -> u64 {
+        if id == 0 {
+            self.change_stamp()
+        } else {
+            0
+        }
+    }
+    fn read_for(&mut self, id: u8, max_bytes: usize) -> Result<ClipboardData, PlatformError> {
+        if id == 0 {
+            self.read(max_bytes)
+        } else {
+            Err(PlatformError::NotImplemented)
+        }
+    }
+    fn write_for(&mut self, id: u8, data: &ClipboardData) -> Result<(), PlatformError> {
+        if id == 0 {
+            self.write(data)
+        } else {
+            Err(PlatformError::NotImplemented)
+        }
+    }
+    fn write_shared_for(&mut self, id: u8, data: std::sync::Arc<ClipboardData>) -> Result<(), PlatformError> {
+        if id == 0 {
+            self.write_shared(data)
+        } else {
+            self.write_for(id, &data)
+        }
+    }
 }
 pub trait ScreenSystem: Send {
     fn screens(&self) -> Vec<ScreenRect>;

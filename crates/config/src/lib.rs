@@ -168,6 +168,9 @@ pub struct ClipboardCfg {
     pub enabled: bool,
     pub send: bool,
     pub receive: bool,
+    /// Opt-in X11 PRIMARY selection sharing on clipboard id 1. Off by
+    /// default; effective only where the backend has a second selection.
+    pub share_primary_selection: bool,
     pub max_bytes: usize,
 }
 impl Default for ClipboardCfg {
@@ -176,6 +179,7 @@ impl Default for ClipboardCfg {
             enabled: true,
             send: true,
             receive: true,
+            share_primary_selection: false,
             max_bytes: MAX_CLIPBOARD_BYTES,
         }
     }

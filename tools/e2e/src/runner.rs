@@ -570,10 +570,23 @@ impl Context {
             .ok_or_else(|| Failure::runner("raw node is not started"))
     }
     pub fn ledger(&self, id: &str, since: u64, timeout: Duration) -> Result<Vec<Value>> {
-        self.ledger_checked(id, since, timeout, false)
+        self.ledger_checked(id, since, timeout, false, false)
     }
-    pub fn ledger_checked(&self, id: &str, since: u64, timeout: Duration, complete: bool) -> Result<Vec<Value>> {
-        let value = self.ipc(id, "virtual.recorded", json!({"since":since}), timeout)?;
+    pub fn ledger_checked(
+        &self,
+        id: &str,
+        since: u64,
+        timeout: Duration,
+        complete: bool,
+        audit: bool,
+    ) -> Result<Vec<Value>> {
+        let mut params = json!({"since":since});
+        if audit {
+            // Audit mode includes capture/cursor/clipboard markers that the
+            // default sink-only view hides (see VIRTUAL-IPC.md).
+            params["audit"] = json!(true);
+        }
+        let value = self.ipc(id, "virtual.recorded", params, timeout)?;
         if complete
             && value
                 .pointer("/stats/dropped")

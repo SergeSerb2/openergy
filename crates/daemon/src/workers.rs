@@ -166,9 +166,19 @@ pub fn capture(mut source: Box<dyn InputSource>, waker: Arc<mio::Waker>) -> Capt
     }
 }
 pub enum ClipboardCommand {
-    Read { id: ClipboardId, max: usize },
-    Write { data: Arc<ClipboardData> },
-    Enabled(bool),
+    Read {
+        id: ClipboardId,
+        max: usize,
+    },
+    Write {
+        id: ClipboardId,
+        data: Arc<ClipboardData>,
+    },
+    /// `clipboard` enables polling id 0; `primary` additionally polls id 1.
+    Enabled {
+        clipboard: bool,
+        primary: bool,
+    },
     Stop,
 }
 pub enum ClipboardEvent {
@@ -177,7 +187,7 @@ pub enum ClipboardEvent {
         bytes: usize,
         limit: usize,
     },
-    Changed,
+    Changed(ClipboardId),
     Payload {
         id: ClipboardId,
         data: ClipboardData,
@@ -202,8 +212,12 @@ pub fn clipboard(mut backend: Box<dyn ClipboardBackend>, waker: Arc<mio::Waker>)
     let failed_reads = Arc::new(AtomicU8::new(0));
     let failed = failed_reads.clone();
     let thread = std::thread::spawn(move || {
-        let mut stamp = backend.change_stamp();
+        let mut stamps = [backend.change_stamp_for(0), backend.change_stamp_for(1)];
         let mut enabled = false;
+        let mut primary = false;
+        // PRIMARY changes on every selection motion. A candidate stamp must
+        // survive one more poll unchanged before it becomes a change event.
+        let mut primary_candidate: Option<u64> = None;
         loop {
             match rx.recv_timeout(if enabled {
                 Duration::from_millis(200)
@@ -211,7 +225,7 @@ pub fn clipboard(mut backend: Box<dyn ClipboardBackend>, waker: Arc<mio::Waker>)
                 Duration::from_secs(60)
             }) {
                 Ok(ClipboardCommand::Read { id, max }) => {
-                    let ev = match backend.read(max) {
+                    let ev = match backend.read_for(id.0, max) {
                         Ok(data) => ClipboardEvent::Payload { id, data },
                         Err(openergy_platform::PlatformError::ClipboardUnavailable) => {
                             ClipboardEvent::ReadUnavailable { id }
@@ -237,29 +251,57 @@ pub fn clipboard(mut backend: Box<dyn ClipboardBackend>, waker: Arc<mio::Waker>)
                     }
                     let _ = waker.wake();
                 }
-                Ok(ClipboardCommand::Write { data }) => {
-                    if let Err(e) = backend.write_shared(data) {
+                Ok(ClipboardCommand::Write { id, data }) => {
+                    if let Err(e) = backend.write_shared_for(id.0, data) {
                         let _ = tx.try_send(ClipboardEvent::Failure {
                             read_id: None,
                             error: e.to_string(),
                         });
                     }
-                    // Own writes never become a new local grab.
-                    stamp = backend.change_stamp();
+                    // Own writes never become a new local grab. Refresh
+                    // only the written id's stamp, so a remote PRIMARY
+                    // write cannot re-fire as a CLIPBOARD change or the
+                    // other way round.
+                    if id.0 < 2 {
+                        stamps[id.0 as usize] = backend.change_stamp_for(id.0);
+                    }
+                    if id.0 == 1 {
+                        primary_candidate = None;
+                    }
                     let _ = waker.wake();
                 }
-                Ok(ClipboardCommand::Enabled(on)) => {
+                Ok(ClipboardCommand::Enabled {
+                    clipboard: on,
+                    primary: primary_on,
+                }) => {
                     enabled = on;
+                    primary = on && primary_on;
+                    if !primary {
+                        primary_candidate = None;
+                    }
                 }
                 Ok(ClipboardCommand::Stop) | Err(mpsc::RecvTimeoutError::Disconnected) => break,
                 Err(mpsc::RecvTimeoutError::Timeout) => {}
             }
             if enabled {
-                let current = backend.change_stamp();
-                if current != stamp {
-                    stamp = current;
-                    let _ = tx.try_send(ClipboardEvent::Changed);
+                let current = backend.change_stamp_for(0);
+                if current != stamps[0] {
+                    stamps[0] = current;
+                    let _ = tx.try_send(ClipboardEvent::Changed(ClipboardId::CLIPBOARD));
                     let _ = waker.wake();
+                }
+                if primary {
+                    let current = backend.change_stamp_for(1);
+                    if current == stamps[1] {
+                        primary_candidate = None;
+                    } else if primary_candidate == Some(current) {
+                        stamps[1] = current;
+                        primary_candidate = None;
+                        let _ = tx.try_send(ClipboardEvent::Changed(ClipboardId::SELECTION));
+                        let _ = waker.wake();
+                    } else {
+                        primary_candidate = Some(current);
+                    }
                 }
             }
         }

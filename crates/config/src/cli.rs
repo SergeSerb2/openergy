@@ -202,6 +202,9 @@ pub fn export_synergy_conf(args: &[String]) -> Result<i32, String> {
     if !cfg.clipboard.send || !cfg.clipboard.receive {
         eprintln!("warning: synergy.conf cannot represent directional clipboard send/receive permissions");
     }
+    if cfg.clipboard.share_primary_selection {
+        eprintln!("warning: synergy.conf cannot represent PRIMARY selection sharing");
+    }
     for warning in cfg.warnings() {
         eprintln!("warning: {warning}");
     }

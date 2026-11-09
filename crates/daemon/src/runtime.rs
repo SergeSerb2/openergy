@@ -115,20 +115,10 @@ impl Machine {
             _ => {}
         }
     }
-    fn clipboard_changed(&mut self, out: &mut Vec<Action>) {
+    fn clipboard_changed(&mut self, id: ClipboardId, out: &mut Vec<Action>) {
         match self {
-            Self::Server(s) => s.handle(
-                ServerEvent::LocalClipboardChanged {
-                    id: ClipboardId::CLIPBOARD,
-                },
-                out,
-            ),
-            Self::Client(c) => c.handle(
-                ClientEvent::LocalClipboardChanged {
-                    id: ClipboardId::CLIPBOARD,
-                },
-                out,
-            ),
+            Self::Server(s) => s.handle(ServerEvent::LocalClipboardChanged { id }, out),
+            Self::Client(c) => c.handle(ClientEvent::LocalClipboardChanged { id }, out),
             _ => {}
         }
     }
@@ -235,6 +225,12 @@ impl Runtime {
             unix_ms: Some(unix_ms()),
         });
     }
+    fn clip_enabled(&self, on: bool) -> ClipboardCommand {
+        ClipboardCommand::Enabled {
+            clipboard: on,
+            primary: self.cfg.clipboard.share_primary_selection,
+        }
+    }
     fn publish(&self, event: &str, data: Value) {
         self.bus.publish(Event {
             event: event.into(),
@@ -293,6 +289,7 @@ impl Runtime {
             limit: None,
             peer: self.connections.get(&conn).map(|c| c.address.clone()),
             unix_ms: Some(unix_ms()),
+            selection: Some(selection_name(id).into()),
         };
         self.publish(
             "clipboard.blocked",
@@ -527,6 +524,11 @@ impl Runtime {
         s.permissions.post_events = p["post_events"].as_str().unwrap_or("unknown").into();
         s.secure_input.local_app = self.local_secure.clone();
         s.clipboard.enabled = self.cfg.clipboard.enabled;
+        // PRIMARY exists on the X11 backend and on the virtual backend's
+        // second slot; macOS/Windows have one system clipboard only.
+        s.clipboard.primary_enabled = self.cfg.clipboard.enabled
+            && self.cfg.clipboard.share_primary_selection
+            && matches!(self.platform.as_str(), "x11" | "virtual");
         s.clipboard.last_transfer = self.last_transfer.clone();
         s.clipboard.last_blocked = self.last_blocked.clone();
         s.pending_trust = self.pending.values().cloned().collect();
@@ -606,21 +608,24 @@ impl Runtime {
                             self.error("clipboard_busy", "Clipboard worker queue is full");
                         }
                     }
-                    Action::SetClipboardShared { id: _, data } => {
+                    Action::SetClipboardShared { id, data } => {
                         if self
                             .clipboard
                             .commands
-                            .try_send(ClipboardCommand::Write { data })
+                            .try_send(ClipboardCommand::Write { id, data })
                             .is_err()
                         {
                             self.error("clipboard_busy", "Clipboard worker queue is full");
                         }
                     }
-                    Action::SetClipboard { id: _, data } => {
+                    Action::SetClipboard { id, data } => {
                         if self
                             .clipboard
                             .commands
-                            .try_send(ClipboardCommand::Write { data: Arc::new(data) })
+                            .try_send(ClipboardCommand::Write {
+                                id,
+                                data: Arc::new(data),
+                            })
                             .is_err()
                         {
                             self.error("clipboard_busy", "Clipboard worker queue is full");
@@ -718,7 +723,7 @@ impl Runtime {
                 self.close_at = Some(self.now() + 250);
                 self.state = "idle".into();
                 let _ = self.capture.commands.try_send(CaptureCommand::Enable(false));
-                let _ = self.clipboard.commands.try_send(ClipboardCommand::Enabled(false));
+                let _ = self.clipboard.commands.try_send(self.clip_enabled(false));
             }
             Notice::Wake | Notice::Unlock => {
                 let was_suspended = self.suspended();
@@ -752,7 +757,7 @@ impl Runtime {
                     let _ = self
                         .clipboard
                         .commands
-                        .try_send(ClipboardCommand::Enabled(self.enabled && self.cfg.clipboard.enabled));
+                        .try_send(self.clip_enabled(self.enabled && self.cfg.clipboard.enabled));
                 } else if !was_suspended && self.cfg.role == Role::Client && self.retry.is_some() {
                     self.attempt = 0;
                     self.retry = Some(self.now());
@@ -1164,7 +1169,7 @@ impl Runtime {
         let _ = self
             .clipboard
             .commands
-            .try_send(ClipboardCommand::Enabled(self.enabled && self.cfg.clipboard.enabled));
+            .try_send(self.clip_enabled(self.enabled && self.cfg.clipboard.enabled));
         self.update_sleep_assertion();
         if let Some(warning) = durability_warning {
             // Rename has committed. Keep disk and live state aligned and report
@@ -1264,7 +1269,7 @@ impl Runtime {
                 let _ = self
                     .clipboard
                     .commands
-                    .try_send(ClipboardCommand::Enabled(self.cfg.clipboard.enabled));
+                    .try_send(self.clip_enabled(self.cfg.clipboard.enabled));
                 Ok(json!({"connecting":true}))
             }
             m::CONNECTION_DISCONNECT => {
@@ -1278,7 +1283,7 @@ impl Runtime {
                 self.connections.clear();
                 self.pending.clear();
                 let _ = self.capture.commands.try_send(CaptureCommand::Enable(false));
-                let _ = self.clipboard.commands.try_send(ClipboardCommand::Enabled(false));
+                let _ = self.clipboard.commands.try_send(self.clip_enabled(false));
                 Ok(json!({"disconnected":true}))
             }
             m::CONNECTION_RESTART => {
@@ -1302,7 +1307,7 @@ impl Runtime {
                 let _ = self
                     .clipboard
                     .commands
-                    .try_send(ClipboardCommand::Enabled(self.cfg.clipboard.enabled));
+                    .try_send(self.clip_enabled(self.cfg.clipboard.enabled));
                 Ok(json!({"restarting":true}))
             }
             m::TRUST_LIST => Ok(
@@ -1425,6 +1430,13 @@ impl Runtime {
             self.refresh_health();
         }
         result
+    }
+}
+fn selection_name(id: ClipboardId) -> &'static str {
+    if id.0 == 1 {
+        "primary"
+    } else {
+        "clipboard"
     }
 }
 fn display_rect(screens: &[ScreenRect]) -> Rect {
@@ -1669,10 +1681,10 @@ pub fn run_daemon(
         .capture
         .commands
         .try_send(CaptureCommand::Enable(enabled && rt.cfg.role == Role::Server));
-    let _ = rt
-        .clipboard
-        .commands
-        .try_send(ClipboardCommand::Enabled(enabled && rt.cfg.clipboard.enabled));
+    let _ = rt.clipboard.commands.try_send(ClipboardCommand::Enabled {
+        clipboard: enabled && rt.cfg.clipboard.enabled,
+        primary: rt.cfg.clipboard.share_primary_selection,
+    });
     rt.update_sleep_assertion();
     rt.start_connection();
     log::info!("openergy {VERSION} daemon listening on {}", socket_path.display());
@@ -1724,7 +1736,7 @@ pub fn run_daemon(
         }
         while let Ok(event) = rt.clipboard.events.try_recv() {
             match event {
-                ClipboardEvent::Changed => rt.machine.clipboard_changed(&mut rt.actions),
+                ClipboardEvent::Changed(id) => rt.machine.clipboard_changed(id, &mut rt.actions),
                 ClipboardEvent::Payload { id, data } => rt.machine.payload(id, data, &mut rt.actions),
                 ClipboardEvent::ReadUnavailable { id } => rt.machine.clipboard_read_failed(id, &mut rt.actions),
                 ClipboardEvent::Failure { read_id, error } => {
@@ -1740,6 +1752,7 @@ pub fn run_daemon(
                         limit: Some(limit),
                         peer: Some("local".into()),
                         unix_ms: Some(unix_ms()),
+                        selection: Some(selection_name(id).into()),
                     };
                     rt.publish(
                         "clipboard.blocked",
