@@ -624,11 +624,12 @@ impl Server {
                     if let Some(p) = self.peers.get_mut(&c) {
                         // Half-duplex locks: forward the down edge once, with
                         // the post-toggle mask, and suppress the up and any
-                        // repeats. The lock is never a held key in the peer
+                        // repeats. The lock is never newly held in the peer
                         // ledger, so leaving the screen cannot release it with
-                        // a stray KeyUp. The ScrollLock lock-to-screen toggle
-                        // above has already run, exactly as for a full-duplex
-                        // screen.
+                        // a stray KeyUp; a hold from before the flag took
+                        // effect still gets its release forwarded. The
+                        // ScrollLock lock-to-screen toggle above has already
+                        // run, exactly as for a full-duplex screen.
                         let lock_key = match ev {
                             InputEvent::KeyDown { key, .. }
                             | InputEvent::KeyUp { key, .. }
@@ -637,14 +638,29 @@ impl Server {
                         };
                         if lock_key != 0 && p.options.is_half_duplex_lock(lock_key) {
                             match ev {
-                                InputEvent::KeyDown { modifiers, button, .. } => {
-                                    debug_assert!(!p.ledger.has_key(lock_key, button));
+                                InputEvent::KeyDown { key, modifiers, button } => {
+                                    // Held since before the flag took effect:
+                                    // release it on the wire first so the peer
+                                    // is not left with a stuck lock key.
+                                    if p.ledger.has_key(key, button) {
+                                        let up = InputEvent::KeyUp { key, modifiers, button };
+                                        p.ledger.observe(&up);
+                                        send(c, wire_input(&up, p.version.minor, &self.config), out);
+                                    }
                                     p.ledger.modifiers = modifiers.0;
                                     send(c, wire_input(&ev, p.version.minor, &self.config), out);
+                                    return;
                                 }
-                                _ => p.ledger.observe(&ev),
+                                InputEvent::KeyUp { key, button, .. } | InputEvent::KeyRepeat { key, button, .. }
+                                    if !p.ledger.has_key(key, button) =>
+                                {
+                                    p.ledger.observe(&ev);
+                                    return;
+                                }
+                                // Held from before the flag took effect: fall
+                                // through so the release is forwarded.
+                                _ => {}
                             }
-                            return;
                         }
                         // A key held here before the switch auto-repeats, but
                         // the remote never saw it go down. Its up still goes,

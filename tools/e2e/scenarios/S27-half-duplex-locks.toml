@@ -422,3 +422,90 @@ node = "client2"
 method = "virtual.recorded"
 params = {}
 fields = {"stats.pressed_keys" = 0}
+
+# Phase 4: enabling the flag while the lock is already held must not strand
+# the sink key. Clear HDCL (CROP + HART-only DSOP), hold Caps full-duplex,
+# enable HDCL mid-hold, then send the up: the client must inject the release.
+[[step]]
+do = "raw_send"
+node = "rawserver"
+builder = "code"
+code = "CROP"
+payload_hex = ""
+
+# HART (0x48415254) = 0 only; HDCL stays off after the reset.
+[[step]]
+do = "raw_send"
+node = "rawserver"
+builder = "options"
+values = [1212240468, 0]
+
+[[step]]
+do = "sleep"
+ms = 100
+
+[[step]]
+do = "ledger_mark"
+node = "client2"
+save = "flag_flip"
+
+[[step]]
+do = "raw_send"
+node = "rawserver"
+builder = "code"
+code = "DKDN"
+payload_hex = "efe510000042"
+
+[[step]]
+do = "sleep"
+ms = 150
+
+[[step]]
+do = "ctl"
+node = "client2"
+method = "virtual.recorded"
+params = {}
+fields = {"stats.pressed_keys" = 1}
+
+[[step]]
+do = "raw_send"
+node = "rawserver"
+builder = "code"
+code = "CROP"
+payload_hex = ""
+
+[[step]]
+do = "raw_send"
+node = "rawserver"
+builder = "options"
+values = [1212433228, 1]
+
+[[step]]
+do = "sleep"
+ms = 100
+
+[[step]]
+do = "raw_send"
+node = "rawserver"
+builder = "code"
+code = "DKUP"
+payload_hex = "efe510000042"
+
+[[step]]
+do = "sleep"
+ms = 150
+
+[[step]]
+do = "assert_recorded"
+node = "client2"
+since = "${flag_flip.sequence}"
+exact = true
+input_only = true
+expect = [{"event" = {"type" = "key_down", "key" = 61413, "modifiers" = 4096, "button" = 66}}, {"event" = {"type" = "key_up", "key" = 61413, "modifiers" = 4096, "button" = 66}}]
+
+[[step]]
+do = "ctl"
+node = "client2"
+method = "virtual.recorded"
+params = {}
+fields = {"stats.pressed_keys" = 0}

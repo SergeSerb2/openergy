@@ -395,10 +395,12 @@ impl Client {
                     if let Some(mut ev) = input_message(other, &p.options) {
                         // Half-duplex locks toggle on one edge only. Inject an
                         // atomic down/up pair for a lock down and never hold it
-                        // in the ledger; a lock up or repeat has no held key to
-                        // act on, so drop it here, before the synthetic-modifier
-                        // release block below can see it. The sink stays
-                        // level-based: its pre-key sync still corrects drift.
+                        // in the ledger; a lock up or repeat for a lock that is
+                        // not held is dropped here, before the synthetic-
+                        // modifier release block below can see it. A lock held
+                        // since before the flag took effect is the exception:
+                        // its release must still run. The sink stays level-
+                        // based: its pre-key sync still corrects drift.
                         let lock_key = match ev {
                             InputEvent::KeyDown { key, .. }
                             | InputEvent::KeyUp { key, .. }
@@ -408,16 +410,33 @@ impl Client {
                         if lock_key != 0 && p.options.is_half_duplex_lock(lock_key) {
                             match ev {
                                 InputEvent::KeyDown { key, modifiers, button } => {
-                                    debug_assert!(!self.ledger.has_key(key, button));
+                                    // A hold from before the flag took effect
+                                    // (full-duplex down, then SetOptions enabled
+                                    // half-duplex) must be released first, or
+                                    // the sink key stays physically down.
+                                    if self.ledger.has_key(key, button) {
+                                        let up = InputEvent::KeyUp { key, modifiers, button };
+                                        self.ledger.observe(&up);
+                                        out.push(Action::Inject(up));
+                                    }
                                     self.ledger.modifiers = modifiers.0;
                                     out.push(Action::Inject(InputEvent::KeyDown { key, modifiers, button }));
                                     out.push(Action::Inject(InputEvent::KeyUp { key, modifiers, button }));
+                                    return;
                                 }
-                                // Track the modifier level and clear any record
-                                // from before the flag took effect; inject nothing.
-                                _ => self.ledger.observe(&ev),
+                                InputEvent::KeyUp { key, button, .. } | InputEvent::KeyRepeat { key, button, .. }
+                                    if !self.ledger.has_key(key, button) =>
+                                {
+                                    // Track the modifier level only; inject
+                                    // nothing.
+                                    self.ledger.observe(&ev);
+                                    return;
+                                }
+                                // Held from before the flag took effect: fall
+                                // through to the normal path so the sink
+                                // release is injected.
+                                _ => {}
                             }
-                            return;
                         }
                         match ev {
                             InputEvent::MouseMoveAbs { x, y } => {
