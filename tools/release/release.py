@@ -508,8 +508,16 @@ def archive_manifest(archive):
     return json.loads(data)
 
 
-def validate_artifacts(artifacts, version, commit, tag):
-    """Read artifact data only. This does not extract archives or run a binary."""
+def validate_artifacts(artifacts, version, commit, tag, targets=None):
+    """Read artifact data only. This does not extract archives or run a binary.
+
+    Draft creation keeps the default complete target set. Only download-check
+    may name the targets a published release actually carries; every named
+    target still gets the full checksum and embedded-manifest checks.
+    """
+    expected_targets = set(TARGETS) if targets is None else set(targets)
+    if not expected_targets or not expected_targets.issubset(TARGETS):
+        raise ValueError("expected artifact targets must be a nonempty subset of the release targets")
     artifacts = artifacts.resolve()
     assets = []
     seen = set()
@@ -534,8 +542,10 @@ def validate_artifacts(artifacts, version, commit, tag):
             raise ValueError("archive BUILD.json does not match its provenance sidecar")
         seen.add(target)
         assets.extend([archive, checksum, sidecar])
-    if seen != set(TARGETS):
-        raise ValueError("draft needs all four native platform archives; no partial release")
+    if seen != expected_targets:
+        if targets is None:
+            raise ValueError("draft needs all four native platform archives; no partial release")
+        raise ValueError(f"expected release targets {sorted(expected_targets)}, found {sorted(seen)}")
     return assets
 
 
@@ -560,6 +570,134 @@ def draft(args):
     create_draft(args.tag, version, commit, assets)
 
 
+def downloaded_release_commit(tag, repo, sidecars):
+    """Resolve the expected source commit without trusting a single sidecar."""
+    command = ["gh", "release", "view", tag, "--json", "targetCommitish"]
+    if repo:
+        command += ["--repo", repo]
+    result = run(command, capture=True, check=False, timeout=60)
+    if result.returncode == 0:
+        target = json.loads(result.stdout)["targetCommitish"]
+        if re.fullmatch(r"[0-9a-f]{40}", target):
+            return target
+    result = run(["git", "rev-parse", "--verify", f"refs/tags/{tag}^{{commit}}"],
+                 capture=True, check=False, timeout=60)
+    if result.returncode == 0 and re.fullmatch(r"[0-9a-f]{40}", result.stdout.strip()):
+        return result.stdout.strip()
+    commits = {json.loads(sidecar.read_text())["commit"] for sidecar in sidecars}
+    if len(commits) != 1:
+        raise ValueError("downloaded provenance sidecars disagree on the source commit")
+    print("NOTE: release target is not a pinned commit; using the commit all sidecars agree on")
+    return commits.pop()
+
+
+def check_uncovered_checksums(artifacts, assets):
+    """Check checksum sidecars validate_artifacts does not own (universal ZIP)."""
+    covered = {path.name for path in assets}
+    checked = []
+    for checksum in sorted(artifacts.glob("*.sha256")):
+        if checksum.name in covered:
+            continue
+        fields = checksum.read_text().split()
+        archive_name = checksum.name.removesuffix(".sha256")
+        archive = artifacts / archive_name
+        if (len(fields) != 2 or fields[1] != archive_name or not archive.is_file()
+                or hashlib.sha256(archive.read_bytes()).hexdigest() != fields[0]):
+            raise ValueError(f"checksum mismatch for {archive_name}")
+        covered.add(archive_name)
+        checked.append(archive_name)
+    for path in sorted(artifacts.iterdir()):
+        if (path.name.endswith((".zip", ".tar.gz")) and path.name not in covered):
+            raise ValueError(f"downloaded archive has no validated checksum: {path.name}")
+    return checked
+
+
+def extract_downloaded_linux(archive, extracted):
+    """Extract a downloaded tar by hand: confined regular files only, capped size."""
+    total = 0
+    seen = set()
+    try:
+        with tarfile.open(archive, "r:gz") as tarred:
+            for entry in tarred:
+                parts = PurePosixPath(entry.name.replace("\\", "/")).parts
+                normalized = "/".join(parts)
+                if (not parts or entry.name.startswith("/") or ".." in parts
+                        or normalized in seen):
+                    raise ValueError("downloaded archive has an unsafe or duplicate entry name")
+                seen.add(normalized)
+                if entry.isdir():
+                    continue
+                if entry.type not in (tarfile.REGTYPE, tarfile.AREGTYPE) or entry.sparse:
+                    raise ValueError("downloaded archive must contain regular files only")
+                total += entry.size
+                if entry.size < 0 or total > 512 * 1024 * 1024:
+                    raise ValueError("downloaded archive exceeds the 512 MiB extraction cap")
+                destination = extracted.joinpath(*parts)
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                payload = tarred.extractfile(entry)
+                if payload is None:
+                    raise ValueError("downloaded archive is missing file data")
+                with payload, destination.open("xb") as output_file:
+                    shutil.copyfileobj(payload, output_file)
+                destination.chmod(0o755 if entry.mode & 0o111 else 0o644)
+    except (tarfile.TarError, zlib.error, EOFError) as error:
+        raise ValueError(f"invalid downloaded archive: {error}") from error
+    binary = extracted / "openergy"
+    if not binary.is_file() or binary.is_symlink():
+        raise ValueError("downloaded Linux archive has no openergy binary at its root")
+    return binary
+
+
+def download_check(args):
+    """Download a published release, reuse the artifact gate, smoke its binary.
+
+    Unlike trusted_release.py this deliberately executes the downloaded Linux
+    binary, with --help/--version only, on the maintainer's own machine.
+    """
+    if not re.fullmatch(r"v[0-9]+\.[0-9]+\.[0-9]+", args.tag):
+        raise ValueError("tag must be a literal version tag such as v0.1.0")
+    version = args.tag[1:]
+    output = args.output.resolve()
+    if output.exists() and (not output.is_dir() or any(output.iterdir())):
+        raise ValueError("download destination must be a fresh or empty directory")
+    output.mkdir(parents=True, exist_ok=True)
+    command = ["gh", "release", "download", args.tag, "--dir", output]
+    if args.repo:
+        command += ["--repo", args.repo]
+    run(command, timeout=600)
+    for path in output.iterdir():
+        if path.is_symlink() or not path.is_file():
+            raise ValueError("downloaded release assets must be regular files only")
+    sidecars = sorted(output.glob("openergy-*.json"))
+    if not sidecars:
+        raise ValueError("downloaded release has no provenance sidecars")
+    present = {json.loads(sidecar.read_text())["target"] for sidecar in sidecars}
+    commit = downloaded_release_commit(args.tag, args.repo, sidecars)
+    assets = validate_artifacts(output, version, commit, args.tag, targets=present)
+    extra = check_uncovered_checksums(output, assets)
+    print(f"PASS: checksums and embedded BUILD.json for {sorted(present)}"
+          + (f"; extra checksum sidecars for {extra}" if extra else ""))
+    if args.skip_smoke:
+        print("SKIP: downloaded Linux binary smoke not run (--skip-smoke)")
+        return
+    linux = [path for path in assets if path.name.endswith(".tar.gz")
+             and "x86_64-unknown-linux-gnu" in path.name]
+    if len(linux) != 1:
+        raise ValueError("download-check smoke needs the x86_64 Linux archive; use --skip-smoke to only validate")
+    with temporary("oe-download-check-") as temporary_dir:
+        binary = extract_downloaded_linux(linux[0], Path(temporary_dir) / "extracted")
+        for flag, expected in (("--version", f"openergy {version}"), ("--help", "usage: openergy")):
+            result = run([binary, flag], capture=True, check=False, timeout=10)
+            if result.returncode != 0:
+                detail = (result.stderr or result.stdout).strip().splitlines()
+                raise ValueError(f"downloaded binary {flag} returned {result.returncode}"
+                                 + (f": {detail[0]}" if detail else "")
+                                 + "; run on x86_64 Linux or pass --skip-smoke to only validate")
+            if not result.stdout.strip().startswith(expected):
+                raise ValueError(f"downloaded binary {flag} output does not start with {expected!r}")
+    print(f"PASS: downloaded Linux binary --version is openergy {version} and --help runs")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
@@ -580,12 +718,21 @@ def main():
     command = commands.add_parser("draft")
     command.add_argument("--tag", required=True)
     command.add_argument("--artifacts", type=Path, required=True)
+    command = commands.add_parser("download-check",
+                                    help="download a published release, validate its assets, and smoke the Linux binary")
+    command.add_argument("--tag", required=True)
+    command.add_argument("--output", type=Path, required=True,
+                         help="fresh or empty directory the release assets are downloaded into")
+    command.add_argument("--repo", help="GitHub OWNER/REPO to pass to gh (default: this checkout's remote)")
+    command.add_argument("--skip-smoke", action="store_true",
+                         help="validate checksums/manifests only; do not run the downloaded Linux binary")
     args = parser.parse_args()
     if args.command in ("check", "version"):
         version, toolchain = check(args.tag)
         print(version if args.command == "version" else f"PASS: version {version}; Rust {toolchain}; workspace and macOS metadata consistent")
     else:
-        {"verify": verify, "package": package, "draft": draft}[args.command](args)
+        {"verify": verify, "package": package, "draft": draft,
+         "download-check": download_check}[args.command](args)
 
 
 def interrupted(signum, _frame):

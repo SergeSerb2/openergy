@@ -63,7 +63,7 @@ def configuration():
 
 def fetch(url, resolve_ip=None):
     if resolve_ip is None:
-        with urllib.request.urlopen(urllib.request.Request(url, headers={"Cache-Control": "no-cache"}), timeout=30) as response:
+        with urllib.request.urlopen(urllib.request.Request(url, headers={"Cache-Control": "no-cache", "User-Agent": "Openergy-Update-Check/1"}), timeout=30) as response:
             data = response.read(1024 * 1024 + 1)
             if len(data) > 1024 * 1024:
                 raise ValueError("verification response exceeds its limit")
@@ -75,7 +75,7 @@ def fetch(url, resolve_ip=None):
         header, body = Path(name) / "headers", Path(name) / "body"
         command = ["curl", "--disable", "--silent", "--show-error", "--proto", "=https",
                    "--resolve", f"{host}:443:{mapped}", "--max-time", "30", "--max-filesize", "1048576",
-                   "--header", "Cache-Control: no-cache", "--dump-header", str(header),
+                   "--header", "Cache-Control: no-cache", "--user-agent", "Openergy-Update-Check/1", "--dump-header", str(header),
                    "--output", str(body), "--write-out", "%{http_code}", url]
         environment = {key: value for key, value in os.environ.items() if key in ("PATH", "HOME", "TMPDIR")}
         result = subprocess.run(command, env=environment, capture_output=True, text=True, check=True, timeout=35)

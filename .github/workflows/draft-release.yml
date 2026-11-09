@@ -33,7 +33,7 @@ jobs:
       version: ${{ steps.source.outputs.version }}
       trusted_commit: ${{ steps.source.outputs.trusted_commit }}
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 0
@@ -93,7 +93,7 @@ jobs:
       OE_MACHINE: ${{ matrix.machine }}
       CARGO_BUILD_JOBS: '2'
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ needs.validate.outputs.source_commit }}
           fetch-depth: 0
@@ -119,7 +119,7 @@ jobs:
       - name: Assert the archive target and frozen source
         run: |
           ${{ matrix.python }} -I -c 'import json,os,pathlib; files=list(pathlib.Path("dist/artifacts").glob("openergy-*.json")); assert len(files)==1, "expected one native sidecar"; value=json.loads(files[0].read_text()); assert value["target"]==os.environ["OE_TARGET"] and value["commit"]==os.environ["OE_SOURCE_COMMIT"], "archive target/source mismatch"'
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: native-${{ matrix.target }}
           path: candidate/dist/artifacts/*
@@ -133,6 +133,10 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: write
+      # Attestation runs only in this trusted publisher job, never in the
+      # candidate build jobs: candidate code must never hold an OIDC token.
+      id-token: write
+      attestations: write
     env:
       OE_TAG: ${{ needs.validate.outputs.tag }}
       OE_SOURCE_COMMIT: ${{ needs.validate.outputs.source_commit }}
@@ -143,18 +147,36 @@ jobs:
     steps:
       # No candidate checkout, candidate imports, Cargo, extraction, or execution
       # occurs in this job. The publisher and validator are the same frozen code.
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ needs.validate.outputs.trusted_commit }}
           fetch-depth: 0
           persist-credentials: false
           path: trusted
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: native-*
           merge-multiple: true
           path: artifacts
-      - name: Revalidate frozen source and artifact data, then create a draft only
+      - name: Revalidate frozen source and artifact data before attesting
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: >-
+          python3 -I trusted/tools/release/trusted_release.py publish
+          --tag "$OE_TAG" --source-commit "$OE_SOURCE_COMMIT"
+          --tag-object "$OE_TAG_OBJECT" --version "$OE_VERSION"
+          --trusted-commit "$OE_TRUSTED_COMMIT" --default-branch "$OE_DEFAULT_BRANCH"
+          --artifacts artifacts --check-only
+      # Attest only artifacts the trusted validator just accepted, and attest
+      # before creating the draft so an attestation failure leaves no draft.
+      - name: Attest build provenance for the validated archives
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: |
+            artifacts/*.tar.gz
+            artifacts/*.zip
+      - name: Create a draft only
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
