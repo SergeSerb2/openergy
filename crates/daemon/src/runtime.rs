@@ -10,11 +10,11 @@ use openergy_config::{Config, Role};
 use openergy_ipc::{self as ipc, methods as m, Event, IpcError, Request, Response, Status};
 use openergy_net::{Fingerprint, NetCommand, NetDriver, NetEvent, Priority};
 use openergy_platform::{ClipboardData, Grant, InputEvent, InputSink, Permissions, ScreenRect, ScreenSystem};
-use openergy_protocol::{ClipboardId, Message};
+use openergy_protocol::{Chunk, ClipboardId, Message};
 use openergy_session::{layout::Rect, Action, Client, ClientEvent, ConnId, Server, ServerEvent, SessionSnapshot};
 use serde_json::{json, Value};
 use std::{
-    collections::BTreeMap,
+    collections::{BTreeMap, VecDeque},
     path::{Path, PathBuf},
     sync::{
         atomic::{AtomicBool, Ordering},
@@ -147,6 +147,24 @@ impl Machine {
         }
     }
 }
+// The driver admits 256 KiB of Bulk wire bytes per connection (BULK_WINDOW
+// in crates/net/src/reactor.rs, not exported). Clipboard chunks the queue
+// cannot admit yet wait here, gated on the driver's queued-bytes accessor,
+// instead of aborting the transfer. A connection that makes no Bulk
+// progress for BULK_STALL_MS, or piles up more than BULK_DEFERRED_CAP,
+// still aborts visibly as before.
+const BULK_GATE_BYTES: usize = 256 * 1024;
+const BULK_STALL_MS: u64 = 2_000;
+const BULK_DEFERRED_CAP: usize = 16 * 1024 * 1024;
+
+#[derive(Default)]
+struct BulkBacklog {
+    chunks: VecDeque<(ClipboardId, Message, usize)>,
+    bytes: usize,
+    /// Last chunk the driver accepted, or the first defer if none yet.
+    progress_ms: u64,
+}
+
 struct Runtime {
     cfg: Config,
     path: PathBuf,
@@ -159,7 +177,10 @@ struct Runtime {
     screens: Box<dyn ScreenSystem>,
     control: Option<openergy_platform::virtual_backend::VirtualControl>,
     notices: adapter::Notices,
-    suspended: bool,
+    /// Sleep and screen lock suspend independently; the session resumes
+    /// only once both have cleared (see `suspended`).
+    asleep: bool,
+    locked: bool,
     resume_enabled: bool,
     close_at: Option<u64>,
     capture: workers::Capture,
@@ -195,10 +216,14 @@ struct Runtime {
     stop: Arc<AtomicBool>,
     actions: Vec<Action>,
     net_events: Vec<NetEvent>,
+    deferred_bulk: BTreeMap<ConnId, BulkBacklog>,
 }
 impl Runtime {
     fn now(&self) -> u64 {
         self.started.elapsed().as_millis() as u64
+    }
+    fn suspended(&self) -> bool {
+        self.asleep || self.locked
     }
     fn error(&mut self, code: &str, message: impl Into<String>) {
         let message = message.into();
@@ -216,16 +241,154 @@ impl Runtime {
             data,
         });
     }
+    fn bulk_has_room(&self, conn: ConnId, wire: usize) -> bool {
+        // No driver connection keeps the old fire-and-forget outcome; the
+        // disconnect path discards the backlog and the session transfer.
+        self.driver
+            .conn_info(conn)
+            .is_none_or(|info| info.queued_bytes.saturating_add(wire) <= BULK_GATE_BYTES)
+    }
+    fn defer_bulk(&mut self, conn: ConnId, id: ClipboardId, msg: Message, wire: usize) {
+        let queued = self.deferred_bulk.get(&conn).map_or(0, |backlog| backlog.bytes);
+        if queued.saturating_add(wire) > BULK_DEFERRED_CAP {
+            log::warn!(
+                "clipboard backlog over cap for connection {}; aborting transfer",
+                conn.0
+            );
+            self.abort_bulk(conn, id);
+            return;
+        }
+        let now = self.now();
+        let backlog = self.deferred_bulk.entry(conn).or_insert_with(|| BulkBacklog {
+            progress_ms: now,
+            ..BulkBacklog::default()
+        });
+        backlog.bytes = backlog.bytes.saturating_add(wire);
+        backlog.chunks.push_back((id, msg, wire));
+    }
+    fn abort_bulk(&mut self, conn: ConnId, id: ClipboardId) {
+        let empty = if let Some(backlog) = self.deferred_bulk.get_mut(&conn) {
+            backlog.chunks.retain(|(queued, _, _)| *queued != id);
+            backlog.bytes = backlog.chunks.iter().map(|(_, _, wire)| *wire).sum();
+            backlog.chunks.is_empty()
+        } else {
+            false
+        };
+        if empty {
+            self.deferred_bulk.remove(&conn);
+        }
+        match &mut self.machine {
+            Machine::Server(s) => s.abort_clipboard(conn, id),
+            Machine::Client(c) => c.abort_clipboard(conn, id),
+            Machine::Off => {}
+        }
+        self.driver.cancel_clipboard(conn);
+        let blocked = ipc::ClipboardBlocked {
+            bytes: None,
+            limit: None,
+            peer: self.connections.get(&conn).map(|c| c.address.clone()),
+            unix_ms: Some(unix_ms()),
+        };
+        self.publish(
+            "clipboard.blocked",
+            serde_json::to_value(&blocked).unwrap_or(Value::Null),
+        );
+        self.last_blocked = Some(blocked);
+        self.error(
+            "clipboard_queue_full",
+            "Clipboard transfer stopped because the network queue is full.",
+        );
+    }
+    fn fail_bulk(&mut self, conn: ConnId, id: ClipboardId, error: openergy_net::NetError) {
+        self.error("network_failed", format!("Can't send data: {error}."));
+        self.abort_bulk(conn, id);
+    }
+    fn send_clipboard(&mut self, conn: ConnId, id: ClipboardId, sequence: u32, chunk: Chunk) {
+        let wire = openergy_session::clipboard::chunk_wire_bytes(&chunk);
+        let msg = Message::ClipboardData { id, sequence, chunk };
+        // Chunk order is load-bearing: behind a backlog nothing overtakes.
+        if self.deferred_bulk.contains_key(&conn) || !self.bulk_has_room(conn, wire) {
+            self.defer_bulk(conn, id, msg, wire);
+            return;
+        }
+        let retry = msg.clone();
+        match self.driver.execute_checked(
+            NetCommand::Send {
+                conn,
+                msg,
+                priority: Priority::Bulk,
+            },
+            &mut self.net_events,
+        ) {
+            Ok(()) => {}
+            // WouldBlock, not failure: the head chunk stays queued and the
+            // next loop tick retries it once the queue drains.
+            Err(openergy_net::NetError::QueueFull) => self.defer_bulk(conn, id, retry, wire),
+            Err(error) => self.fail_bulk(conn, id, error),
+        }
+    }
+    fn drain_bulk(&mut self) {
+        if self.deferred_bulk.is_empty() {
+            return;
+        }
+        let now = self.now();
+        let stalled = self
+            .deferred_bulk
+            .iter()
+            .filter(|(_, backlog)| {
+                !backlog.chunks.is_empty() && now.saturating_sub(backlog.progress_ms) >= BULK_STALL_MS
+            })
+            .filter_map(|(conn, backlog)| backlog.chunks.front().map(|(id, _, _)| (*conn, *id)))
+            .collect::<Vec<_>>();
+        for (conn, id) in stalled {
+            log::warn!("clipboard queue stalled for connection {}; aborting transfer", conn.0);
+            self.abort_bulk(conn, id);
+        }
+        let conns = self.deferred_bulk.keys().copied().collect::<Vec<_>>();
+        for conn in conns {
+            while let Some((id, msg, wire)) = self
+                .deferred_bulk
+                .get(&conn)
+                .and_then(|backlog| backlog.chunks.front().cloned())
+            {
+                if !self.bulk_has_room(conn, wire) {
+                    break;
+                }
+                match self.driver.execute_checked(
+                    NetCommand::Send {
+                        conn,
+                        msg,
+                        priority: Priority::Bulk,
+                    },
+                    &mut self.net_events,
+                ) {
+                    Ok(()) => {
+                        let empty = if let Some(backlog) = self.deferred_bulk.get_mut(&conn) {
+                            backlog.chunks.pop_front();
+                            backlog.bytes = backlog.bytes.saturating_sub(wire);
+                            backlog.progress_ms = now;
+                            backlog.chunks.is_empty()
+                        } else {
+                            false
+                        };
+                        if empty {
+                            self.deferred_bulk.remove(&conn);
+                        }
+                    }
+                    Err(openergy_net::NetError::QueueFull) => break,
+                    Err(error) => {
+                        self.fail_bulk(conn, id, error);
+                        break;
+                    }
+                }
+            }
+        }
+    }
     fn execute(&mut self, cmd: NetCommand) {
         let send = match &cmd {
             NetCommand::Send { conn, msg, priority } => Some((
                 *conn,
                 matches!(msg, Message::KeyUp { .. } | Message::MouseUp { .. }),
-                if let Message::ClipboardData { id, .. } = msg {
-                    Some(*id)
-                } else {
-                    None
-                },
                 (*priority == Priority::Input).then(|| msg.clone()),
             )),
             _ => None,
@@ -237,30 +400,8 @@ impl Runtime {
                 "network_failed"
             };
             self.error(code, format!("Can't send data: {error}."));
-            if let Some((conn, lost_up, clipboard, input)) = send {
-                if let Some(id) = clipboard {
-                    match &mut self.machine {
-                        Machine::Server(s) => s.abort_clipboard(conn, id),
-                        Machine::Client(c) => c.abort_clipboard(conn, id),
-                        Machine::Off => {}
-                    }
-                    self.driver.cancel_clipboard(conn);
-                    let blocked = ipc::ClipboardBlocked {
-                        bytes: None,
-                        limit: None,
-                        peer: self.connections.get(&conn).map(|c| c.address.clone()),
-                        unix_ms: Some(unix_ms()),
-                    };
-                    self.publish(
-                        "clipboard.blocked",
-                        serde_json::to_value(&blocked).unwrap_or(Value::Null),
-                    );
-                    self.last_blocked = Some(blocked);
-                    self.error(
-                        "clipboard_queue_full",
-                        "Clipboard transfer stopped because the network queue is full.",
-                    );
-                } else if lost_up {
+            if let Some((conn, lost_up, input)) = send {
+                if lost_up {
                     // Retry the lost release in the reserved control path, then leave
                     // only this peer. Other peers and their ledgers stay intact.
                     if let Some(msg) = input {
@@ -426,11 +567,7 @@ impl Runtime {
                         id,
                         sequence,
                         chunk,
-                    } => self.execute(NetCommand::Send {
-                        conn,
-                        msg: Message::ClipboardData { id, sequence, chunk },
-                        priority: Priority::Bulk,
-                    }),
+                    } => self.send_clipboard(conn, id, sequence, chunk),
                     Action::Close { conn, .. } => self.execute(NetCommand::Close { conn }),
                     Action::ReplaceConnection { .. } => {}
                     Action::Inject(ev) => {
@@ -535,7 +672,7 @@ impl Runtime {
         }
     }
     fn input(&mut self, event: InputEvent) {
-        if !self.enabled || self.suspended {
+        if !self.enabled || self.suspended() {
             return;
         }
         self.events_in += 1;
@@ -545,15 +682,25 @@ impl Runtime {
     }
     fn notice(&mut self, notice: adapter::Notice) {
         use adapter::Notice;
+        let is_sleep = matches!(notice, Notice::Sleep);
+        let is_wake = matches!(notice, Notice::Wake);
         match notice {
             Notice::Sleep | Notice::Lock => {
-                if self.suspended {
+                let was_suspended = self.suspended();
+                if is_sleep {
+                    self.asleep = true;
+                } else {
+                    self.locked = true;
+                }
+                // Side effects fire only on the combined unsuspended ->
+                // suspended transition, not when the second flag sets.
+                if was_suspended {
                     return;
                 }
-                self.suspended = true;
                 self.resume_enabled = self.enabled;
                 self.enabled = false;
                 self.retry = None;
+                self.deferred_bulk.clear();
                 self.machine.shutdown(&mut self.actions);
                 self.apply_actions();
                 self.execute(NetCommand::StopListening);
@@ -563,8 +710,16 @@ impl Runtime {
                 let _ = self.clipboard.commands.try_send(ClipboardCommand::Enabled(false));
             }
             Notice::Wake | Notice::Unlock => {
-                if self.suspended {
-                    self.suspended = false;
+                let was_suspended = self.suspended();
+                if is_wake {
+                    self.asleep = false;
+                } else {
+                    self.locked = false;
+                }
+                // Resume only when both flags have cleared; a Wake while
+                // still locked (or an Unlock while still asleep) resumes
+                // nothing.
+                if was_suspended && !self.suspended() {
                     self.displays = self.screens.screens();
                     self.permissions = self.screens.permissions();
                     self.sink.permissions_changed(&self.permissions);
@@ -587,14 +742,14 @@ impl Runtime {
                         .clipboard
                         .commands
                         .try_send(ClipboardCommand::Enabled(self.enabled && self.cfg.clipboard.enabled));
-                } else if self.cfg.role == Role::Client && self.retry.is_some() {
+                } else if !was_suspended && self.cfg.role == Role::Client && self.retry.is_some() {
                     self.attempt = 0;
                     self.retry = Some(self.now());
                 }
             }
             Notice::Displays => self.display_changed.store(true, Ordering::Release),
             Notice::Permission | Notice::CaptureStopped | Notice::CaptureError => {
-                if self.suspended || !self.enabled || self.cfg.role != Role::Server {
+                if self.suspended() || !self.enabled || self.cfg.role != Role::Server {
                     return;
                 }
                 if let Machine::Server(s) = &mut self.machine {
@@ -792,6 +947,7 @@ impl Runtime {
                     NetEvent::Disconnected { conn, reason } => {
                         self.pending.remove(&conn);
                         self.connections.remove(&conn);
+                        self.deferred_bulk.remove(&conn);
                         match &mut self.machine {
                             Machine::Server(s) => {
                                 s.handle(ServerEvent::ClientDisconnected { conn, reason }, &mut self.actions)
@@ -901,7 +1057,7 @@ impl Runtime {
             );
         }
         if !denied
-            && !self.suspended
+            && !self.suspended()
             && self.enabled
             && self.cfg.role == Role::Server
             && self.capture.retry.swap(false, Ordering::AcqRel)
@@ -951,6 +1107,7 @@ impl Runtime {
             self.process_net();
             self.connections.clear();
             self.pending.clear();
+            self.deferred_bulk.clear();
             self.cfg = cfg;
             self.machine = Machine::new(Arc::new(self.cfg.clone()));
             self.enabled = self.cfg.role != Role::Off && (self.cfg.role != Role::Client || self.cfg.client.autoconnect);
@@ -979,6 +1136,11 @@ impl Runtime {
                     self.actions.truncate(action_count);
                     return Err(error);
                 }
+            }
+            // The session dropped its transfers on a clipboard policy
+            // change; held chunks must not resurrect them.
+            if cfg.clipboard != self.cfg.clipboard {
+                self.deferred_bulk.clear();
             }
             self.cfg = Arc::unwrap_or_clone(cfg);
         }
@@ -1097,6 +1259,7 @@ impl Runtime {
             m::CONNECTION_DISCONNECT => {
                 self.enabled = false;
                 self.retry = None;
+                self.deferred_bulk.clear();
                 self.machine.shutdown(&mut self.actions);
                 self.apply_actions();
                 self.execute(NetCommand::Shutdown);
@@ -1109,6 +1272,7 @@ impl Runtime {
             }
             m::CONNECTION_RESTART => {
                 self.enabled = false;
+                self.deferred_bulk.clear();
                 self.machine.shutdown(&mut self.actions);
                 self.apply_actions();
                 self.execute(NetCommand::Shutdown);
@@ -1388,6 +1552,7 @@ pub fn run_daemon(
     config_path: Option<PathBuf>,
     platform: String,
     parent_pid: Option<i64>,
+    startup_error: Option<String>,
 ) -> Result<i32, String> {
     normalize(&mut config);
     config.validate().map_err(|e| format!("config: {e}"))?;
@@ -1442,7 +1607,8 @@ pub fn run_daemon(
         screens: backend.screens,
         control,
         notices,
-        suspended: false,
+        asleep: false,
+        locked: false,
         resume_enabled: false,
         close_at: None,
         capture,
@@ -1478,9 +1644,14 @@ pub fn run_daemon(
         stop: stop.clone(),
         actions: Vec::new(),
         net_events: Vec::new(),
+        deferred_bulk: BTreeMap::new(),
     };
     lifetime::install_signals();
     let parent = lifetime::ParentWatch::new(parent_pid);
+    // A fallback (role=off) start still tells ctl/app why it is off.
+    if let Some(error) = startup_error {
+        rt.error("invalid_config", error);
+    }
     rt.machine
         .geometry(&rt.displays, rt.screens.cursor_pos(), false, &mut rt.actions);
     let _ = rt
@@ -1571,6 +1742,7 @@ pub fn run_daemon(
         rt.machine.tick(now, &mut rt.actions);
         rt.apply_actions();
         rt.process_net();
+        rt.drain_bulk();
         let health_interval = if matches!(rt.permissions.accessibility, Grant::Denied | Grant::Unknown)
             || matches!(rt.permissions.input_monitoring, Grant::Denied | Grant::Unknown)
             || matches!(rt.permissions.post_events, Grant::Denied | Grant::Unknown)
@@ -1624,6 +1796,9 @@ pub fn run_daemon(
         }
         if let Some(retry) = rt.retry {
             deadline = deadline.min(retry);
+        }
+        if !rt.deferred_bulk.is_empty() {
+            deadline = deadline.min(now.saturating_add(5));
         }
         let timeout = Duration::from_millis(deadline.saturating_sub(now).clamp(1, 2000));
         if let Err(e) = rt.driver.poll(Some(timeout), &mut rt.net_events) {
