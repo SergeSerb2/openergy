@@ -542,7 +542,7 @@ Session stays deterministic. New event and action types:
   for wire frames.
 - Actions out: `SendFileChunk { conn, transfer, chunk }` (the `Bulk`
   route; `conn` plus outbound direction qualifies the wire ID),
-  `StageFileChunk { xfer, bytes }` and
+  `StageFileChunk { xfer, offset, bytes }` and
   `FinishFile { xfer }` / `DropFile { xfer, keep_part }` toward
   the file worker, plus `Notify` for IPC events. Wire control messages
   reuse `Action::Send`, which the daemon already maps to `Control`;
@@ -572,6 +572,25 @@ Four independent bounds, tightest wins:
 
 Oversize offers are rejected at the `OFAN` step. Oversize local picks fail
 in the IPC call itself. Neither case sends a single data chunk.
+
+Streaming enforcement (the offer checks above are not enough): a
+verified peer can offer a 1-byte file, win acceptance, and then stream
+mark-2 frames forever — continuous chunks also defeat the §6.2
+inactivity expiry, so without a streaming bound the receive volume
+fills until writes fail. Session therefore accounts every inbound
+chunk **before** staging: if `staged_len + chunk.len()` would exceed
+`min(total_len, receiver max_bytes, FILE_HARD_CAP)` for that transfer,
+session aborts it on the spot (final `OFAN` failure, reason
+`too_large`), drops the chunk unstaged, and `DropFile` deletes the
+partial; later frames for the dead transfer are discarded and counted
+once, as for unknown transfers (§4.1). `staged_len` exceeding
+`total_len` can never be legitimate — the sender declared the length —
+so this costs conforming peers nothing. The worker is the second
+line: `StageFileChunk` carries the expected append offset, and the
+worker refuses a write that does not match its staged length. The
+classic path applies the same rule against the `DDRG`-declared size
+and `classic_max_bytes`. Scenario F17 (§8.2) drives a continuous
+overrun from a raw peer.
 
 ### 4.5 Resume and cancel
 
@@ -1151,6 +1170,7 @@ F5), and both directions are exercised where the roles allow it.
 | F14 | Kill mid-drag (phase 4): connection cut while drag armed | Remote buttons released on the survivor's next input; no partial file; no stuck drag state after reconnect |
 | F15 | Drag refusals (phase 4): two-file drag; folder drag; `drag_receive=false` | `file.blocked/multi_file_drag` or `disabled`; pointer input still flows; nothing staged |
 | F16 | Classic wire, raw peer (phase 5): hand-built `DDRG` + `DFTR` with 512 KiB chunks and with 32 KiB chunks | File stored, hash equal; declared-size lie ends in `file.failed`; `DFTR` without `DDRG` ends in `file.blocked` |
+| F17 | Overrun: raw peer offers a tiny file, wins accept, then streams mark-2 chunks past `total_len` without mark 3 | Transfer aborts with `file.failed/too_large` at the first overrunning chunk; staged bytes in `.parts/` never exceed `total_len`; partial deleted; connection and clipboard keep working; a following honest send succeeds |
 
 Timeouts deserve care: scenario deadlines stay the runner's existing
 kind (bounded `timeout_ms`, `--slowdown` for CI). Do not add product test
