@@ -12,6 +12,7 @@ use std::sync::Arc;
 #[derive(Clone)]
 pub struct Client {
     config: Arc<Config>,
+    languages: openergy_platform::KeyboardLanguages,
     screen_name: String,
     peer: Option<(ConnId, Peer)>,
     now: u64,
@@ -30,6 +31,7 @@ impl Client {
     pub fn new(config: Arc<Config>, screen_name: String) -> Self {
         Self {
             config,
+            languages: openergy_platform::KeyboardLanguages::default(),
             screen_name,
             peer: None,
             now: 0,
@@ -98,6 +100,7 @@ impl Client {
     }
     pub fn handle(&mut self, ev: ClientEvent, out: &mut Vec<Action>) {
         match ev {
+            ClientEvent::LocalLanguages(languages) => self.languages = languages,
             ClientEvent::ServerConnected { conn } => {
                 self.leave(out);
                 // CINN serials and clipboard ownership belong to this
@@ -212,7 +215,6 @@ impl Client {
         let Some((conn, p)) = &mut self.peer else { return };
         let c = *conn;
         p.last_rx = self.now;
-        p.observe_language(&msg);
         if let Message::Unknown { code, .. } = msg {
             p.unknown(code);
             return;
@@ -279,14 +281,20 @@ impl Client {
                 self.ignore_mouse = true;
             }
             Message::InfoAck => self.ignore_mouse = false,
-            Message::LanguageSync { languages } if p.phase == Phase::Info => {
-                if languages.len() % 2 != 0 {
+            Message::LanguageSync { languages } if p.phase == Phase::Info && p.version.minor >= 8 => {
+                if languages.len() > 64 || languages.len() % 2 != 0 || !languages.is_ascii() {
                     if !p.language_warned {
                         p.language_warned = true;
                         log::warn!("odd language list ignored");
                     }
                 } else {
-                    p.languages = languages.as_bytes().as_chunks::<2>().0.to_vec();
+                    p.languages = languages
+                        .as_bytes()
+                        .as_chunks::<2>()
+                        .0
+                        .iter()
+                        .filter_map(|code| openergy_platform::keyboard_language(std::str::from_utf8(code).ok()?))
+                        .collect();
                 }
             }
             Message::KeepAlive => {
@@ -415,6 +423,7 @@ impl Client {
             Message::DragInfo { payload, .. } => p.decline(payload.len(), out),
             other => {
                 if self.active && p.phase == Phase::Ready {
+                    p.observe_language(&other, self.config.input.sync_language, &self.languages, out);
                     if let Some(mut ev) = input_message(other, &p.options) {
                         // Half-duplex locks toggle on one edge only. Inject an
                         // atomic down/up pair for a lock down and never hold it

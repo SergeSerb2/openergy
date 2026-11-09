@@ -14,6 +14,8 @@ pub struct PeerSnapshot {
     pub screen: Rect,
     pub rtt_ms: Option<f64>,
     pub secure_input_app: Option<String>,
+    pub languages: Vec<String>,
+    pub active_language: Option<String>,
 }
 #[derive(Clone, Debug, Default)]
 pub struct SessionSnapshot {
@@ -256,6 +258,7 @@ pub(crate) struct Peer {
     pub secure_input: Option<String>,
     pub warned: bool,
     pub languages: Vec<[u8; 2]>,
+    pub active_language: Option<[u8; 2]>,
     pub declined: bool,
     unknown_saturated: bool,
     pub language_warned: bool,
@@ -287,6 +290,7 @@ impl Peer {
             secure_input: None,
             warned: false,
             languages: Vec::new(),
+            active_language: None,
             declined: false,
             unknown_saturated: false,
             language_warned: false,
@@ -323,6 +327,12 @@ impl Peer {
             screen: self.screen,
             rtt_ms: self.rtt,
             secure_input_app: self.secure_input.clone(),
+            languages: self
+                .languages
+                .iter()
+                .map(|l| String::from_utf8_lossy(l).into_owned())
+                .collect(),
+            active_language: self.active_language.map(|l| String::from_utf8_lossy(&l).into_owned()),
         }
     }
     pub fn alive(&mut self, now: u64) {
@@ -346,12 +356,51 @@ impl Peer {
             notice("transfer_unsupported", "File and drag transfer are disabled", out);
         }
     }
-    pub fn observe_language(&mut self, message: &Message) {
-        if matches!(message, Message::LanguageSync { languages: lang } | Message::KeyDown { lang: Some(lang), .. } | Message::KeyRepeat { lang, .. } if !lang.is_empty())
-            && !self.language_logged
-        {
-            self.language_logged = true;
-            log::info!("peer keyboard language ignored; language sync is not implemented");
+    pub fn observe_language(
+        &mut self,
+        message: &Message,
+        enabled: bool,
+        local: &openergy_platform::KeyboardLanguages,
+        out: &mut Vec<Action>,
+    ) {
+        let lang = match message {
+            Message::KeyDown { lang: Some(lang), .. } if self.version.minor >= 8 => lang,
+            Message::KeyRepeat { lang, .. } => lang,
+            _ => return,
+        };
+        if lang.is_empty() {
+            return;
+        }
+        if !enabled {
+            if !self.language_logged {
+                self.language_logged = true;
+                log::info!("peer keyboard language ignored; input.sync_language is off");
+            }
+            return;
+        }
+        let Some(code) = openergy_platform::keyboard_language(lang) else {
+            if !self.language_warned {
+                self.language_warned = true;
+                log::info!("invalid peer keyboard language ignored");
+            }
+            return;
+        };
+        if self.active_language == Some(code) {
+            return;
+        }
+        self.active_language = Some(code);
+        if !local.available.is_empty() && !local.available.contains(&code) {
+            notify(
+                openergy_ipc::events::LANGUAGE_SYNC,
+                serde_json::json!({"language": String::from_utf8_lossy(&code), "result": "no_match"}),
+                out,
+            );
+            if !self.language_logged {
+                self.language_logged = true;
+                log::info!("peer keyboard language has no installed layout match");
+            }
+        } else {
+            out.push(Action::SetKeyboardLanguage(code));
         }
     }
     pub fn unknown(&mut self, code: [u8; 4]) {
@@ -468,13 +517,13 @@ pub(crate) fn config_options(cfg: &Config, server: bool) -> Vec<(u32, i32)> {
         ),
     ]
 }
-pub(crate) fn wire_input(ev: &InputEvent, _minor: u16, _cfg: &Config) -> Message {
+pub(crate) fn wire_input(ev: &InputEvent, minor: u16, lang: Option<&str>) -> Message {
     match *ev {
         InputEvent::KeyDown { key, modifiers, button } => Message::KeyDown {
             key,
             modifiers: modifiers.0,
             button,
-            lang: None,
+            lang: lang.filter(|_| minor >= 8).map(str::to_owned),
         },
         InputEvent::KeyRepeat {
             key,
@@ -486,7 +535,7 @@ pub(crate) fn wire_input(ev: &InputEvent, _minor: u16, _cfg: &Config) -> Message
             modifiers: modifiers.0,
             count: count.max(0) as u16,
             button,
-            lang: String::new(),
+            lang: lang.unwrap_or_default().into(),
         },
         InputEvent::KeyUp { key, modifiers, button } => Message::KeyUp {
             key,

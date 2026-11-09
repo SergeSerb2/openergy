@@ -19,6 +19,8 @@ pub struct MacScreens {
     // Last good display layout. While displays sleep, CoreGraphics can fail
     // or report none; peers keep the real size instead of a fallback.
     last_good: Mutex<Vec<ScreenRect>>,
+    language_cache: Mutex<Option<(String, openergy_platform::KeyboardLanguages)>>,
+    languages_dirty: Arc<AtomicBool>,
     enumeration_failing: AtomicBool,
 }
 impl MacScreens {
@@ -30,6 +32,8 @@ impl MacScreens {
             assertion: None,
             layout_dirty,
             last_good: Mutex::new(Vec::new()),
+            language_cache: Mutex::new(None),
+            languages_dirty: Arc::new(AtomicBool::new(true)),
             enumeration_failing: AtomicBool::new(false),
         }
     }
@@ -61,6 +65,31 @@ impl MacScreens {
     }
 }
 impl ScreenSystem for MacScreens {
+    fn keyboard_languages(&self) -> openergy_platform::KeyboardLanguages {
+        let Ok(id) = crate::keymap::current_layout_id() else {
+            return openergy_platform::KeyboardLanguages::default();
+        };
+        let mut cache = self
+            .language_cache
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        if self.languages_dirty.swap(false, Ordering::AcqRel) || cache.as_ref().is_none_or(|(cached, _)| *cached != id)
+        {
+            *cache = crate::keymap::keyboard_languages()
+                .ok()
+                .map(|languages| (id, languages));
+        }
+        cache
+            .as_ref()
+            .map(|(_, languages)| languages.clone())
+            .unwrap_or_default()
+    }
+    fn set_keyboard_language(&mut self, lang: &str) -> Result<()> {
+        crate::keymap::set_keyboard_language(lang)?;
+        self.layout_dirty.store(true, Ordering::Release);
+        self.languages_dirty.store(true, Ordering::Release);
+        Ok(())
+    }
     fn screens(&self) -> Vec<ScreenRect> {
         let current = displays::active().map(|list| {
             list.active
@@ -126,7 +155,12 @@ impl ScreenSystem for MacScreens {
         // One lifecycle thread, no polling when idle. Replacing callback joins
         // the old observer before installing the new one.
         self.monitor.take();
-        match Monitor::start(self.notices.clone(), cb, self.layout_dirty.clone()) {
+        match Monitor::start(
+            self.notices.clone(),
+            cb,
+            self.layout_dirty.clone(),
+            self.languages_dirty.clone(),
+        ) {
             Ok(monitor) => self.monitor = Some(monitor),
             Err(_) => {
                 self.notices.send(MacNotice::NotificationSetupFailed);
@@ -168,7 +202,12 @@ struct Monitor {
     thread: Option<JoinHandle<()>>,
 }
 impl Monitor {
-    fn start(notices: Notices, mut callback: DisplayCallback, layout_dirty: Arc<AtomicBool>) -> Result<Self> {
+    fn start(
+        notices: Notices,
+        mut callback: DisplayCallback,
+        layout_dirty: Arc<AtomicBool>,
+        languages_dirty: Arc<AtomicBool>,
+    ) -> Result<Self> {
         let stopping = Arc::new(AtomicBool::new(false));
         let thread_stopping = stopping.clone();
         let (tx, rx) = mpsc::sync_channel(1);
@@ -192,6 +231,7 @@ impl Monitor {
                         notifier: 0,
                         display_registered: false,
                         layout_dirty,
+                        languages_dirty,
                     });
                     let user = (&mut *state as *mut ObserverState).cast();
                     // Safety: stable ObserverState outlives all registered callbacks.
@@ -225,6 +265,14 @@ impl Monitor {
                             user,
                             keyboard_layout_changed,
                             ffi::kTISNotifySelectedKeyboardInputSourceChanged,
+                            ffi::null(),
+                            4,
+                        );
+                        ffi::CFNotificationCenterAddObserver(
+                            center,
+                            user,
+                            keyboard_layout_changed,
+                            ffi::kTISNotifyEnabledKeyboardInputSourcesChanged,
                             ffi::null(),
                             4,
                         );
@@ -322,6 +370,7 @@ struct ObserverState {
     notifier: u32,
     display_registered: bool,
     layout_dirty: Arc<AtomicBool>,
+    languages_dirty: Arc<AtomicBool>,
 }
 impl Drop for ObserverState {
     fn drop(&mut self) {
@@ -411,8 +460,9 @@ unsafe extern "C" fn keyboard_layout_changed(
 ) {
     if !observer.is_null() {
         // Safety: observer is the registered stable ObserverState until removal.
-        unsafe { &*observer.cast::<ObserverState>() }
-            .layout_dirty
-            .store(true, Ordering::Release);
+        let state = unsafe { &*observer.cast::<ObserverState>() };
+        state.layout_dirty.store(true, Ordering::Release);
+        state.languages_dirty.store(true, Ordering::Release);
+        state.notices.send(MacNotice::KeyboardLanguagesChanged);
     }
 }

@@ -1,0 +1,233 @@
+# SER-215: default-on language sync, ordered before the first key, and both local opt-outs.
+name = "S30-language-sync"
+requirement = "Default-true sync selects one installed language before injection, coalesces repeats, honors both local flags, and preserves typing with one installed layout."
+timeout_ms = 5000
+[[node]]
+id = "server"
+role = "server"
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "virtual.inject"
+params = {"keyboard_languages" = {"available" = ["en", "de"], "current" = "de"}}
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "virtual.inject"
+params = {"keyboard_languages" = {"available" = ["en", "de"], "current" = "en"}}
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 1919, "y" = 540}, {"type" = "mouse_move_rel", "dx" = 20, "dy" = 0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "client"}
+
+[[step]]
+do = "ledger_mark"
+node = "client"
+audit = true
+save = "mark"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "key_down", "key" = 97, "modifiers" = 0, "button" = 97}, {"type" = "key_repeat", "key" = 97, "modifiers" = 0, "button" = 97, "count" = 1}, {"type" = "key_up", "key" = 97, "modifiers" = 0, "button" = 97}]
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+audit = true
+since = "${mark.sequence}"
+exact = true
+expect = [{"detail" = {"kind" = "language", "language" = "de"}}, {"event" = {"type" = "key_down", "key" = 97}}, {"event" = {"type" = "key_repeat"}}, {"event" = {"type" = "key_up"}}]
+
+[[step]]
+do = "assert_status"
+node = "client"
+fields = {"peers.0.active_language" = "de"}
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "virtual.inject"
+params = {"keyboard_languages" = {"available" = ["en", "de"], "current" = "en"}}
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "key_down", "key" = 98, "modifiers" = 0, "button" = 98}, {"type" = "key_repeat", "key" = 98, "modifiers" = 0, "button" = 98, "count" = 1}, {"type" = "key_up", "key" = 98, "modifiers" = 0, "button" = 98}]
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+audit = true
+expect = [{"detail" = {"kind" = "language", "language" = "en"}}, {"event" = {"type" = "key_down", "key" = 98}}]
+
+[[step]]
+do = "config_patch"
+node = "server"
+patch = {"input" = {"sync_language" = false}}
+[[step]]
+do = "wait_status"
+node = "client"
+fields = {"active_screen" = {"$null" = true}}
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{type = "mouse_move_abs", x = 1919, y = 540}, {type = "mouse_move_rel", dx = 20, dy = 0}]
+
+[[step]]
+do = "wait_status"
+node = "client"
+fields = {"active_screen" = "client"}
+
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "virtual.inject"
+params = {"keyboard_languages" = {"available" = ["en", "de"], "current" = "de"}}
+
+[[step]]
+do = "ledger_mark"
+node = "client"
+audit = true
+save = "off"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "key_down", "key" = 99, "modifiers" = 0, "button" = 99}, {"type" = "key_repeat", "key" = 99, "modifiers" = 0, "button" = 99, "count" = 1}, {"type" = "key_up", "key" = 99, "modifiers" = 0, "button" = 99}]
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+audit = true
+since = "${off.sequence}"
+exact = true
+expect = [{"event" = {"type" = "key_down", "key" = 99}}, {"event" = {"type" = "key_repeat"}}, {"event" = {"type" = "key_up"}}]
+
+[[step]]
+do = "config_patch"
+node = "server"
+patch = {"input" = {"sync_language" = true}}
+[[step]]
+do = "wait_status"
+node = "client"
+fields = {"active_screen" = {"$null" = true}}
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{type = "mouse_move_abs", x = 1919, y = 540}, {type = "mouse_move_rel", dx = 20, dy = 0}]
+
+[[step]]
+do = "wait_status"
+node = "client"
+fields = {"active_screen" = "client"}
+
+
+[[step]]
+do = "config_patch"
+node = "client"
+patch = {"input" = {"sync_language" = false}}
+
+[[step]]
+do = "ledger_mark"
+node = "client"
+audit = true
+save = "off2"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "key_down", "key" = 100, "modifiers" = 0, "button" = 100}, {"type" = "key_repeat", "key" = 100, "modifiers" = 0, "button" = 100, "count" = 1}, {"type" = "key_up", "key" = 100, "modifiers" = 0, "button" = 100}]
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+audit = true
+since = "${off2.sequence}"
+exact = true
+expect = [{"event" = {"type" = "key_down", "key" = 100}}, {"event" = {"type" = "key_repeat"}}, {"event" = {"type" = "key_up"}}]
+
+[[step]]
+do = "config_patch"
+node = "client"
+patch = {"input" = {"sync_language" = true}}
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "virtual.inject"
+params = {"keyboard_languages" = {"available" = ["en"], "current" = "en"}}
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "virtual.inject"
+params = {"keyboard_languages" = {"available" = ["en"], "current" = "en"}}
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "connection.restart"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 1919, "y" = 540}, {"type" = "mouse_move_rel", "dx" = 20, "dy" = 0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "client"}
+
+[[step]]
+do = "ledger_mark"
+node = "client"
+audit = true
+save = "single"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "key_down", "key" = 101, "modifiers" = 0, "button" = 101}, {"type" = "key_repeat", "key" = 101, "modifiers" = 0, "button" = 101, "count" = 1}, {"type" = "key_up", "key" = 101, "modifiers" = 0, "button" = 101}]
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+audit = true
+since = "${single.sequence}"
+exact = true
+expect = [{"detail" = {"kind" = "language", "language" = "en"}}, {"event" = {"type" = "key_down", "key" = 101}}, {"event" = {"type" = "key_repeat"}}, {"event" = {"type" = "key_up"}}]
+
+[[step]]
+do = "assert_status"
+node = "client"
+fields = {"peers.0.languages" = ["en"], "peers.0.active_language" = "en"}
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "virtual.recorded"
+fields = {"keyboard_languages.available" = ["en"], "keyboard_languages.current" = "en", "stats.pressed_keys" = 0}

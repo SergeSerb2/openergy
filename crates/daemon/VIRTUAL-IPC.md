@@ -45,3 +45,14 @@ measured the diagnostic overhead separately from clipboard transfers.
 `port`. It requires TLS and pins that address through retries for the daemon's
 lifetime. A mismatch yields `status.last_error.code = tls_pin_mismatch` and no
 application data. Normal TOFU approval continues to use the role's trust file.
+
+SER-215 language controls use the existing `virtual.inject` method:
+`{"keyboard_languages":{"available":["en","de"],"current":"de"}}`.
+Codes must be exactly two ASCII letters; case is normalized. `current:null`
+means unknown. This scripts local metadata without changing any native layout.
+The daemon refreshes session metadata before it processes the next input batch.
+`virtual.recorded` adds a `keyboard_languages` snapshot with string codes.
+With `audit:true`, a `detail:{"kind":"language","language":"de"}` record
+precedes the sink key that requested it. Successful virtual switches update
+current; unsupported requests still have an audit record. Repeats of the same
+peer language make no second request. The default sink-only view stays unchanged.

@@ -47,6 +47,7 @@ pub enum ServerEvent {
         reason: DisconnectReason,
     },
     LocalInput(InputEvent),
+    LocalLanguages(openergy_platform::KeyboardLanguages),
     LocalClipboardChanged {
         id: ClipboardId,
     },
@@ -84,6 +85,7 @@ pub enum ServerEvent {
 }
 #[derive(Debug)]
 pub enum ClientEvent {
+    LocalLanguages(openergy_platform::KeyboardLanguages),
     ServerConnected {
         conn: ConnId,
     },
@@ -147,6 +149,7 @@ pub enum Action {
         new: ConnId,
     },
     Inject(InputEvent),
+    SetKeyboardLanguage([u8; 2]),
     SetClipboardShared {
         id: ClipboardId,
         data: Arc<ClipboardData>,

@@ -73,6 +73,7 @@ mod probe {
             "clipboard-cancel" => clipboard_cancel()?,
             "primary-sync" => primary_sync()?,
             "primary-loop" => primary_loop()?,
+            "language-group" => language_group()?,
             "resources" => resources()?,
             "all" => {
                 inject()?;
@@ -114,6 +115,126 @@ mod probe {
         }
         pause();
         Ok((child, path))
+    }
+    fn language_group() -> Result<()> {
+        use x11rb::connection::Connection;
+        let (c, _) = x11rb::connect(None)?;
+        let setup = c.setup();
+        // This mode has the same isolated :99 guard as every native probe.
+        // Restore the entire original map even if an assertion fails.
+        let original = command("xkbcomp", &["-xkb", ":99", "-"])?;
+        let original_map = c
+            .get_keyboard_mapping(setup.min_keycode, setup.max_keycode - setup.min_keycode + 1)?
+            .reply()?
+            .keysyms;
+        let restore_path = "/tmp/oe-language-original.xkb";
+        fs::write(restore_path, original)?;
+        struct Restore;
+        impl Drop for Restore {
+            fn drop(&mut self) {
+                let _ = command("xkbcomp", &["/tmp/oe-language-original.xkb", ":99"]);
+            }
+        }
+        let restore = Restore;
+        let (_xev, path) = xev("language")?;
+        command(
+            "setxkbmap",
+            &["-layout", "us,de", "-option", "", "-option", "grp:menu_toggle"],
+        )?;
+        let mut b = create(X11Options::default())?;
+        let language_notices = Arc::new(AtomicUsize::new(0));
+        let notices = language_notices.clone();
+        b.screens.on_display_changed(Box::new(move || {
+            notices.fetch_add(1, Ordering::Relaxed);
+        }));
+        let initial = b.screens.keyboard_languages();
+        if initial.available != [*b"en", *b"de"] || initial.current != Some(*b"en") {
+            return Err(format!("unexpected XKB languages: {initial:?}").into());
+        }
+        command("xdotool", &["key", "ISO_Next_Group"])?;
+        // xdotool 3.20160805 restores the prior XKB group after each XTEST
+        // key. Also send the real configured group-toggle key directly, as a
+        // physical keyboard would, without that tool's group restoration.
+        use x11rb::protocol::xtest::ConnectionExt as _;
+        let mapping = c
+            .get_keyboard_mapping(setup.min_keycode, setup.max_keycode - setup.min_keycode + 1)?
+            .reply()?;
+        let toggle = mapping
+            .keysyms
+            .chunks(usize::from(mapping.keysyms_per_keycode))
+            .position(|row| row.first() == Some(&0xfe08))
+            .ok_or("missing ISO_Next_Group key")? as u8
+            + setup.min_keycode;
+        for kind in [
+            x11rb::protocol::xproto::KEY_PRESS_EVENT,
+            x11rb::protocol::xproto::KEY_RELEASE_EVENT,
+        ] {
+            c.xtest_fake_input(kind, toggle, x11rb::CURRENT_TIME, setup.roots[0].root, 0, 0, 0)?
+                .check()?;
+        }
+        pause();
+        if b.screens.keyboard_languages().current != Some(*b"de") {
+            return Err(format!(
+                "XKB current did not follow group change: {:?}",
+                b.screens.keyboard_languages()
+            )
+            .into());
+        }
+        b.screens.set_keyboard_language("en")?;
+        if b.screens.keyboard_languages().current != Some(*b"en") {
+            return Err("XKB en selection failed".into());
+        }
+        b.screens.set_keyboard_language("de")?;
+        if b.screens.keyboard_languages().current != Some(*b"de") {
+            return Err("XKB de selection failed".into());
+        }
+        b.sink.inject(&InputEvent::KeyDown {
+            key: b'z' as u16,
+            modifiers: Modifiers::NONE,
+            button: 52,
+        })?;
+        b.sink.inject(&InputEvent::KeyUp {
+            key: b'z' as u16,
+            modifiers: Modifiers::NONE,
+            button: 52,
+        })?;
+        pause();
+        if !fs::read_to_string(&path)?.contains("keysym 0x79, y") {
+            return Err("sink z did not reach xev as QWERTZ y".into());
+        }
+        if b.screens.set_keyboard_language("ru").is_ok() || b.screens.keyboard_languages().current != Some(*b"de") {
+            return Err("uninstalled language changed the XKB group".into());
+        }
+        let deadline = Instant::now() + Duration::from_secs(3);
+        while language_notices.load(Ordering::Relaxed) == 0 && Instant::now() < deadline {
+            pause();
+        }
+        if language_notices.load(Ordering::Relaxed) == 0 {
+            return Err("group changes did not notify the health sampler".into());
+        }
+        command("setxkbmap", &["-layout", "gb,us,de", "-option", ""])?;
+        b.screens.set_keyboard_language("de")?;
+        b.screens.set_keyboard_language("en")?;
+        use x11rb::protocol::xkb::{ConnectionExt as _, ID};
+        c.xkb_use_extension(1, 0)?.reply()?;
+        if u8::from(c.xkb_get_state(ID::USE_CORE_KBD.into())?.reply()?.group) != 0
+            || b.screens.keyboard_languages().available != [*b"en", *b"de"]
+        {
+            return Err("English did not select the first installed group or deduplicate languages".into());
+        }
+        b.sink.release_all();
+        drop(b);
+        command("setxkbmap", &["-layout", "us", "-option", ""])?;
+        drop(restore);
+        let restored = c
+            .get_keyboard_mapping(setup.min_keycode, setup.max_keycode - setup.min_keycode + 1)?
+            .reply()?
+            .keysyms;
+        if restored != original_map {
+            return Err("language probe did not restore original keymap".into());
+        }
+        println!("language groups: report, external change, select, QWERTZ sink delivery, no-match, restore passed");
+        Ok(())
     }
     fn inject() -> Result<()> {
         let (_xev, path) = xev("inject")?;

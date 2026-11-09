@@ -115,6 +115,13 @@ impl Machine {
             _ => {}
         }
     }
+    fn languages(&mut self, languages: openergy_platform::KeyboardLanguages, out: &mut Vec<Action>) {
+        match self {
+            Self::Server(s) => s.handle(ServerEvent::LocalLanguages(languages), out),
+            Self::Client(c) => c.handle(ClientEvent::LocalLanguages(languages), out),
+            Self::Off => {}
+        }
+    }
     fn clipboard_changed(&mut self, id: ClipboardId, out: &mut Vec<Action>) {
         match self {
             Self::Server(s) => s.handle(ServerEvent::LocalClipboardChanged { id }, out),
@@ -195,6 +202,8 @@ struct Runtime {
     last_status: Value,
     last_status_ms: u64,
     last_health: u64,
+    languages: openergy_platform::KeyboardLanguages,
+    language_unsupported_logged: bool,
     last_network_sample: u64,
     network_set: Option<crate::interfaces::Addresses>,
     permissions: Permissions,
@@ -513,6 +522,8 @@ impl Runtime {
                         trusted: conn.filter(|c| c.tls).map(|c| c.certificate_verified),
                     },
                     secure_input_app: p.secure_input_app.clone(),
+                    languages: p.languages.clone(),
+                    active_language: p.active_language.clone(),
                 }
             })
             .collect();
@@ -583,6 +594,27 @@ impl Runtime {
                     } => self.send_clipboard(conn, id, sequence, chunk),
                     Action::Close { conn, .. } => self.execute(NetCommand::Close { conn }),
                     Action::ReplaceConnection { .. } => {}
+                    Action::SetKeyboardLanguage(code) => {
+                        let lang = String::from_utf8_lossy(&code);
+                        let result = match self.screens.set_keyboard_language(&lang) {
+                            Ok(()) => "applied",
+                            Err(openergy_platform::PlatformError::NotImplemented) => {
+                                if !self.language_unsupported_logged {
+                                    self.language_unsupported_logged = true;
+                                    log::info!("keyboard language sync unsupported");
+                                }
+                                "unsupported"
+                            }
+                            Err(e) => {
+                                self.error("language_sync_failed", e.to_string());
+                                "unsupported"
+                            }
+                        };
+                        self.publish(
+                            ipc::events::LANGUAGE_SYNC,
+                            json!({"language":lang,"result":result,"attempted":self.platform == "windows"}),
+                        );
+                    }
                     Action::Inject(ev) => {
                         if let Err(e) = self.sink.inject(&ev) {
                             self.error("injection_failed", e.to_string());
@@ -701,6 +733,7 @@ impl Runtime {
         let is_sleep = matches!(notice, Notice::Sleep);
         let is_wake = matches!(notice, Notice::Wake);
         match notice {
+            Notice::Languages => self.refresh_health(),
             Notice::Sleep | Notice::Lock => {
                 let was_suspended = self.suspended();
                 if is_sleep {
@@ -814,6 +847,8 @@ impl Runtime {
         log::warn!("{reason}: reconnect attempt={} delay_ms={delay}", self.attempt);
     }
     fn start_connection(&mut self) {
+        self.languages = self.screens.keyboard_languages();
+        self.machine.languages(self.languages.clone(), &mut self.actions);
         // Connecting is idempotent, including a TLS connection waiting for approval.
         if (self.cfg.role == Role::Client
             && (matches!(self.state.as_str(), "connecting" | "connected")
@@ -920,6 +955,7 @@ impl Runtime {
                         tls_version,
                     } => {
                         self.pending.remove(&conn);
+                        self.language_unsupported_logged = false;
                         self.connections.insert(
                             conn,
                             Connection {
@@ -1032,6 +1068,11 @@ impl Runtime {
         }
     }
     fn refresh_health(&mut self) {
+        let languages = self.screens.keyboard_languages();
+        if languages != self.languages {
+            self.languages = languages.clone();
+            self.machine.languages(languages, &mut self.actions);
+        }
         let secure = self.screens.secure_input_app();
         if secure != self.local_secure {
             self.status_dirty = true;
@@ -1426,7 +1467,10 @@ impl Runtime {
             .as_ref()
             .ok_or_else(|| IpcError::new("virtual_unavailable", "virtual.* requires --platform virtual"))?;
         let result = crate::adapter::virtual_request(control, method, params);
-        if result.is_ok() && matches!(method, m::VIRTUAL_SET_SCREENS | m::VIRTUAL_SET_PERMISSIONS) {
+        if result.is_ok()
+            && (matches!(method, m::VIRTUAL_SET_SCREENS | m::VIRTUAL_SET_PERMISSIONS)
+                || (method == m::VIRTUAL_INJECT && params.get("keyboard_languages").is_some()))
+        {
             self.refresh_health();
         }
         result
@@ -1656,6 +1700,8 @@ pub fn run_daemon(
         last_status: Value::Null,
         last_status_ms: 0,
         last_health: 0,
+        languages: openergy_platform::KeyboardLanguages::default(),
+        language_unsupported_logged: false,
         last_network_sample: 0,
         network_set: None,
         permissions,

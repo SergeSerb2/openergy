@@ -99,6 +99,9 @@ pub enum RecordedDecision {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum RecordKind {
+    Language {
+        language: String,
+    },
     Sink,
     Capture {
         decision: RecordedDecision,
@@ -306,6 +309,7 @@ struct State {
     permissions: Permissions,
     permission_request_results: [Option<Grant>; 3],
     secure_input: Option<String>,
+    languages: crate::KeyboardLanguages,
     cursor: [i32; 2],
     cursor_captured: bool,
     cursor_visible: bool,
@@ -682,6 +686,7 @@ impl VirtualPlatform {
                 permissions: Permissions::not_required(),
                 permission_request_results: [None; 3],
                 secure_input: None,
+                languages: crate::KeyboardLanguages::default(),
                 cursor: [0, 0],
                 cursor_captured: false,
                 cursor_visible: true,
@@ -735,6 +740,12 @@ impl Drop for VirtualPlatform {
 }
 
 impl VirtualControl {
+    pub fn keyboard_languages(&self) -> crate::KeyboardLanguages {
+        lock(&self.shared.state).languages.clone()
+    }
+    pub fn set_keyboard_languages(&self, available: Vec<[u8; 2]>, current: Option<[u8; 2]>) {
+        lock(&self.shared.state).languages = crate::KeyboardLanguages { available, current };
+    }
     /// Synchronous completion barrier: all callbacks and capture audit records
     /// for this batch exist when this returns. Never call from a capture callback.
     pub fn inject(&self, events: Vec<InputEvent>) -> Result<CaptureReport, PlatformError> {
@@ -1154,6 +1165,19 @@ impl ClipboardBackend for VirtualPlatform {
     }
 }
 impl ScreenSystem for VirtualPlatform {
+    fn keyboard_languages(&self) -> crate::KeyboardLanguages {
+        lock(&self.shared.state).languages.clone()
+    }
+    fn set_keyboard_language(&mut self, lang: &str) -> Result<(), PlatformError> {
+        let mut state = lock(&self.shared.state);
+        state.record(None, RecordKind::Language { language: lang.into() }, None);
+        let code = crate::keyboard_language(lang).ok_or(PlatformError::NotImplemented)?;
+        if !state.languages.available.contains(&code) {
+            return Err(PlatformError::NotImplemented);
+        }
+        state.languages.current = Some(code);
+        Ok(())
+    }
     fn screens(&self) -> Vec<ScreenRect> {
         lock(&self.shared.state).screens.clone()
     }

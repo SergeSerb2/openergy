@@ -1,8 +1,28 @@
 # Version 1 option limits
 
-`input.sync_language` is retained for config compatibility but is not yet
-implemented. Clients ignore peer language strings. The server sends ordinary
-DKDN key downs and retains the required Synergy 1.8 LSYN setup message.
+`input.sync_language` is implemented and still defaults to `true`. **Upgrade
+behavior change:** an Openergy server now sends its available languages and
+current language to compatible peers. Existing Deskflow/Synergy clients may
+start switching their keyboard layout. Set `input.sync_language = false` on
+the sender or receiver to opt out locally.
+
+Sync selects the first installed keyboard layout matching a two-letter
+lowercase language code. It cannot sync variants, dead-key tables, or IME
+state (`en` cannot distinguish US from GB). X11 selects an already configured
+XKB group; macOS selects an enabled TIS keyboard-layout source (not an input
+method); Windows activates our thread's HKL and posts a best-effort request
+to the foreground app, which may ignore it or override it on focus changes.
+On Windows, `language.sync` result `applied` means **request posted**, not
+confirmed OS/app selection; `attempted: true` makes this explicit.
+Unsupported platforms, invalid or empty codes and missing installed layouts
+keep typing unchanged. Same-language repeats do not request another switch.
+
+The server uses only existing LSYN (setup before DSOP), DKDL (wire >= 1.8),
+and DKRP suffix fields. Older peers get DKDN and can still receive the repeat
+suffix. Hello and DSOP are unchanged. The client applies a new valid language
+before the triggering key. Peer status exposes setup `languages` and the last
+valid requested `active_language`; the latter does not confirm platform success.
+`language.sync` reports `applied`, `no_match`, or `unsupported` on changes.
 
 Half-duplex lock options (`half_duplex_{caps,num,scroll}_lock`) are
 implemented in the session layer: for a flagged lock the server forwards only

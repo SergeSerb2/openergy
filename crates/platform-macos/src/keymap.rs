@@ -447,3 +447,88 @@ fn printable(text: &[u16]) -> Option<KeyId> {
     let ch = char::from_u32(u32::from(key))?;
     (!ch.is_control() && !(0xE000..=0xF8FF).contains(&key)).then_some(key)
 }
+
+/// Enabled keyboard layouts only. TIS's enabled-source order is the tie breaker.
+fn with_keyboard_layouts<T>(f: impl FnOnce(&[(ffi::Ref, Vec<[u8; 2]>)]) -> Result<T>) -> Result<T> {
+    let _pool = ffi::Pool::new();
+    // Safety: create owns the list; borrowed sources/properties remain live through f.
+    unsafe {
+        let list = OwnedCf::new(ffi::TISCreateInputSourceList(ffi::null(), false), "keyboard layouts")?;
+        let mut layouts = Vec::new();
+        for i in 0..ffi::CFArrayGetCount(list.0) {
+            let source = ffi::CFArrayGetValueAtIndex(list.0, i);
+            let kind = ffi::TISGetInputSourceProperty(source, ffi::kTISPropertyInputSourceType);
+            if kind.is_null() || !ffi::CFEqual(kind, ffi::kTISTypeKeyboardLayout) {
+                continue;
+            }
+            let langs = ffi::TISGetInputSourceProperty(source, ffi::kTISPropertyInputSourceLanguages);
+            if langs.is_null() {
+                continue;
+            }
+            let mut codes = Vec::new();
+            for j in 0..ffi::CFArrayGetCount(langs) {
+                if let Ok(lang) = ffi::cf_string(ffi::CFArrayGetValueAtIndex(langs, j)) {
+                    if let Some(code) = openergy_platform::keyboard_language(&lang) {
+                        if !codes.contains(&code) {
+                            codes.push(code);
+                        }
+                    }
+                }
+            }
+            layouts.push((source, codes));
+        }
+        f(&layouts)
+    }
+}
+pub fn keyboard_languages() -> Result<openergy_platform::KeyboardLanguages> {
+    with_keyboard_layouts(|layouts| {
+        // Safety: copy is owned; ID properties are borrowed while sources remain live.
+        unsafe {
+            let current = OwnedCf::new(
+                ffi::TISCopyCurrentKeyboardLayoutInputSource(),
+                "current keyboard layout",
+            )?;
+            let id = ffi::TISGetInputSourceProperty(current.0, ffi::kTISPropertyInputSourceID);
+            let mut result = openergy_platform::KeyboardLanguages::default();
+            for (source, codes) in layouts {
+                for code in codes {
+                    if !result.available.contains(code) {
+                        result.available.push(*code);
+                    }
+                }
+                let source_id = ffi::TISGetInputSourceProperty(*source, ffi::kTISPropertyInputSourceID);
+                if !id.is_null() && !source_id.is_null() && ffi::CFEqual(id, source_id) {
+                    result.current = codes.first().copied();
+                }
+            }
+            Ok(result)
+        }
+    })
+}
+pub fn set_keyboard_language(lang: &str) -> Result<()> {
+    let code = openergy_platform::keyboard_language(lang).ok_or(openergy_platform::PlatformError::NotImplemented)?;
+    with_keyboard_layouts(|layouts| {
+        let (source, _) = layouts
+            .iter()
+            .find(|(_, codes)| codes.contains(&code))
+            .ok_or(openergy_platform::PlatformError::NotImplemented)?;
+        // Safety: source is borrowed from the enabled keyboard-layout list, live through this call.
+        let status = unsafe { ffi::TISSelectInputSource(*source) };
+        if status == 0 {
+            Ok(())
+        } else {
+            Err(error(format!("TISSelectInputSource: {status}")))
+        }
+    })
+}
+
+pub fn current_layout_id() -> Result<String> {
+    // Safety: the copy reference owns the layout through the property query.
+    unsafe {
+        let source = OwnedCf::new(
+            ffi::TISCopyCurrentKeyboardLayoutInputSource(),
+            "current keyboard layout",
+        )?;
+        ffi::cf_string(ffi::TISGetInputSourceProperty(source.0, ffi::kTISPropertyInputSourceID))
+    }
+}

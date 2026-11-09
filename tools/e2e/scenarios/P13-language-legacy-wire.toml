@@ -1,0 +1,111 @@
+# SER-215: real wire bytes; no protocol codec is used by this runner.
+name = "P13-language-legacy-wire"
+requirement = "Language setup order, DKDL version guard, and DKRP suffix; no hello or DSOP extension."
+timeout_ms = 5000
+[[node]]
+id = "server"
+role = "server"
+config = { screen = [{name = "server", rect = {x = 0, y = 0, w = 1920, h = 1080}}, {name = "client", rect = {x = 1920, y = 0, w = 1920, h = 1080}}], input = { sync_language = true } }
+[[node]]
+id = "probe"
+kind = "raw"
+role = "client"
+remote = "server"
+name = "client"
+autostart = false
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "virtual.inject"
+params = {"keyboard_languages" = {"available" = ["en", "de", "en"], "current" = "de"}}
+
+[[step]]
+do = "start"
+node = "probe"
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "hello_back"
+name = "client"
+minor = 6
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "QINF"
+
+[[step]]
+do = "raw_expect_absent"
+node = "probe"
+codes = ["LSYN"]
+timeout_ms = 100
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "screen_info"
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "DSOP"
+framed = true
+payload_only = true
+scan = true
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+# No LSYN or unsolicited language-key data may appear after DSOP. This
+# observed quiet window also lets the asynchronous capture startup settle
+# after the raw peer's very short handshake.
+[[step]]
+do = "raw_expect_absent"
+node = "probe"
+codes = ["LSYN", "DKDL"]
+timeout_ms = 100
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 1919, "y" = 540}, {"type" = "mouse_move_rel", "dx" = 20, "dy" = 0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "client"}
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "key_down", "key" = 97, "modifiers" = 0, "button" = 97}, {"type" = "key_repeat", "key" = 97, "modifiers" = 0, "button" = 97, "count" = 1}, {"type" = "key_up", "key" = 97, "modifiers" = 0, "button" = 97}]
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "DKDN"
+payload_hex = "006100000061"
+scan = true
+framed = true
+payload_only = true
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "DKRP"
+payload_hex = "0061000000010061000000026465"
+scan = true
+framed = true
+payload_only = true

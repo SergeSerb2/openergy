@@ -186,3 +186,124 @@ impl Keymap {
         self.find(sym).map(|(code, _, _)| code)
     }
 }
+
+// XKB names can be layout ids or human-readable names (e.g. "English (US)").
+// Ignore the parenthesized variant. Only configured groups are ever selected.
+fn group_language(name: &str) -> Option<[u8; 2]> {
+    let name = name.split('(').next()?.trim().to_ascii_lowercase();
+    let code = match name.as_str() {
+        "us" | "gb" | "english" => "en",
+        "jp" | "japanese" => "ja",
+        "kr" | "korean" => "ko",
+        "cn" | "tw" | "chinese" => "zh",
+        "german" => "de",
+        "french" => "fr",
+        "russian" => "ru",
+        "spanish" => "es",
+        "italian" => "it",
+        "portuguese" => "pt",
+        "ukrainian" => "uk",
+        "polish" => "pl",
+        "czech" => "cs",
+        "dutch" => "nl",
+        "swedish" => "sv",
+        "danish" => "da",
+        "norwegian" => "no",
+        "finnish" => "fi",
+        "greek" => "el",
+        "turkish" => "tr",
+        "hebrew" => "he",
+        "arabic" => "ar",
+        "hungarian" => "hu",
+        "romanian" => "ro",
+        "bulgarian" => "bg",
+        "slovak" => "sk",
+        "croatian" => "hr",
+        "serbian" => "sr",
+        _ => &name,
+    };
+    openergy_platform::keyboard_language(code)
+}
+fn language_groups(c: &x11rb::rust_connection::RustConnection) -> Result<Vec<(u8, [u8; 2])>, PlatformError> {
+    use x11rb::protocol::{
+        xkb::{ConnectionExt as _, NameDetail, ID},
+        xproto::ConnectionExt as _,
+    };
+    c.xkb_use_extension(1, 0)
+        .map_err(crate::native::error)?
+        .reply()
+        .map_err(crate::native::error)?;
+    let names = c
+        .xkb_get_names(ID::USE_CORE_KBD.into(), NameDetail::GROUP_NAMES)
+        .map_err(crate::native::error)?
+        .reply()
+        .map_err(crate::native::error)?;
+    let mut atoms = names.value_list.groups.unwrap_or_default().into_iter();
+    let mut groups = Vec::new();
+    for group in 0..4 {
+        if u8::from(names.group_names) & (1 << group) == 0 {
+            continue;
+        }
+        if let Some(atom) = atoms.next() {
+            let reply = c
+                .get_atom_name(atom)
+                .map_err(crate::native::error)?
+                .reply()
+                .map_err(crate::native::error)?;
+            if let Some(code) = group_language(&String::from_utf8_lossy(&reply.name)) {
+                groups.push((group, code));
+            }
+        }
+    }
+    Ok(groups)
+}
+pub fn keyboard_languages(
+    c: &x11rb::rust_connection::RustConnection,
+) -> Result<openergy_platform::KeyboardLanguages, PlatformError> {
+    use x11rb::protocol::xkb::{ConnectionExt as _, ID};
+    let groups = language_groups(c)?;
+    let state = c
+        .xkb_get_state(ID::USE_CORE_KBD.into())
+        .map_err(crate::native::error)?
+        .reply()
+        .map_err(crate::native::error)?;
+    let mut available = Vec::new();
+    for (_, code) in &groups {
+        if !available.contains(code) {
+            available.push(*code);
+        }
+    }
+    Ok(openergy_platform::KeyboardLanguages {
+        available,
+        current: groups
+            .iter()
+            .find(|(g, _)| *g == u8::from(state.group))
+            .map(|(_, c)| *c),
+    })
+}
+pub fn set_keyboard_language(c: &x11rb::rust_connection::RustConnection, lang: &str) -> Result<(), PlatformError> {
+    use x11rb::protocol::{
+        xkb::{ConnectionExt as _, ID},
+        xproto::ModMask,
+    };
+    let code = openergy_platform::keyboard_language(lang).ok_or(PlatformError::NotImplemented)?;
+    let group = language_groups(c)?
+        .into_iter()
+        .find(|(_, c)| *c == code)
+        .ok_or(PlatformError::NotImplemented)?
+        .0;
+    // XkbLockGroup is the lock-group form of the XKB LatchLockState request.
+    c.xkb_latch_lock_state(
+        ID::USE_CORE_KBD.into(),
+        ModMask::default(),
+        ModMask::default(),
+        true,
+        group.into(),
+        ModMask::default(),
+        false,
+        0,
+    )
+    .map_err(crate::native::error)?
+    .check()
+    .map_err(crate::native::error)
+}

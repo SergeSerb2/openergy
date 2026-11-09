@@ -29,6 +29,7 @@ struct Slot {
 #[derive(Clone)]
 pub struct Server {
     config: Arc<Config>,
+    languages: openergy_platform::KeyboardLanguages,
     peers: BTreeMap<ConnId, Peer>,
     metadata: BTreeMap<ConnId, Option<String>>,
     layout: Layout,
@@ -62,6 +63,7 @@ impl Server {
         let hotkey = config.hotkeys.lock_to_screen.as_deref().and_then(Hotkey::parse);
         Self {
             config,
+            languages: openergy_platform::KeyboardLanguages::default(),
             peers: BTreeMap::new(),
             metadata: BTreeMap::new(),
             layout,
@@ -186,6 +188,7 @@ impl Server {
     }
     pub fn handle(&mut self, ev: ServerEvent, out: &mut Vec<Action>) {
         match ev {
+            ServerEvent::LocalLanguages(languages) => self.languages = languages,
             ServerEvent::ClientConnected { conn } => {
                 let mut p = Peer::new(self.now);
                 p.fingerprint = self.metadata.remove(&conn).flatten();
@@ -419,7 +422,6 @@ impl Server {
     fn message(&mut self, conn: ConnId, msg: Message, out: &mut Vec<Action>) {
         let Some(p) = self.peers.get_mut(&conn) else { return };
         p.last_rx = self.now;
-        p.observe_language(&msg);
         if let Message::Unknown { code, .. } = msg {
             p.unknown(code);
             return;
@@ -445,7 +447,20 @@ impl Server {
                     send(
                         conn,
                         Message::LanguageSync {
-                            languages: String::new(),
+                            languages: if self.config.input.sync_language {
+                                let mut codes = Vec::new();
+                                for code in &self.languages.available {
+                                    if code.iter().all(u8::is_ascii_lowercase)
+                                        && !codes.contains(code)
+                                        && codes.len() < openergy_protocol::MAX_LANGUAGE_LEN / 2
+                                    {
+                                        codes.push(*code);
+                                    }
+                                }
+                                codes.iter().map(|c| String::from_utf8_lossy(c)).collect()
+                            } else {
+                                String::new()
+                            },
                         },
                         out,
                     );
@@ -606,6 +621,11 @@ impl Server {
         }
     }
     fn input(&mut self, ev: InputEvent, out: &mut Vec<Action>) {
+        let language = self
+            .languages
+            .current
+            .filter(|c| self.config.input.sync_language && c.iter().all(u8::is_ascii_lowercase));
+        let language = language.as_ref().and_then(|c| std::str::from_utf8(c).ok());
         // Capture state still observes consumed triggers, so mouse-button and
         // modifier switch gates reflect the physical input until its release.
         self.local.observe(&ev);
@@ -685,10 +705,10 @@ impl Server {
                                     if p.ledger.has_key(key, button) {
                                         let up = InputEvent::KeyUp { key, modifiers, button };
                                         p.ledger.observe(&up);
-                                        send(c, wire_input(&up, p.version.minor, &self.config), out);
+                                        send(c, wire_input(&up, p.version.minor, language), out);
                                     }
                                     p.ledger.modifiers = modifiers.0;
-                                    send(c, wire_input(&ev, p.version.minor, &self.config), out);
+                                    send(c, wire_input(&ev, p.version.minor, language), out);
                                     return;
                                 }
                                 InputEvent::KeyUp { key, button, .. } | InputEvent::KeyRepeat { key, button, .. }
@@ -711,7 +731,7 @@ impl Server {
                             }
                         }
                         p.ledger.observe(&ev);
-                        send(c, wire_input(&ev, p.version.minor, &self.config), out);
+                        send(c, wire_input(&ev, p.version.minor, language), out);
                     }
                 }
             }
