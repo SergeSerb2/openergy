@@ -754,6 +754,14 @@ impl Server {
         }
     }
     fn push_slots(&mut self, conn: ConnId, out: &mut Vec<Action>) {
+        self.push_slots_only(conn, None, out);
+    }
+    /// Push slot contents to one peer. `only` restricts the push to a single
+    /// changed selection: re-grabbing an unchanged slot would make the
+    /// receiver cancel any in-flight transfer for it and re-queue a full
+    /// copy, so change broadcasts must name the changed id. Connection setup
+    /// and screen entry push every slot.
+    fn push_slots_only(&mut self, conn: ConnId, only: Option<ClipboardId>, out: &mut Vec<Action>) {
         let Some(p) = self.peers.get_mut(&conn) else { return };
         if p.phase != Phase::Ready
             || p.version.minor < 6
@@ -777,6 +785,9 @@ impl Server {
                 .and_then(|s| s.os.as_deref())
                 .is_some_and(|os| os.eq_ignore_ascii_case("linux"));
         for (i, s) in self.slots.iter_mut().enumerate() {
+            if only.is_some_and(|o| o.0 as usize != i) {
+                continue;
+            }
             if i == 1 && !(self.config.clipboard.share_primary_selection && primary_capable) {
                 continue;
             }
@@ -872,7 +883,7 @@ impl Server {
             .filter(|c| Some(*c) != owner)
             .collect::<Vec<_>>();
         for c in conns {
-            self.push_slots(c, out);
+            self.push_slots_only(c, Some(id), out);
         }
     }
 }

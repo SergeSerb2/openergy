@@ -39,6 +39,14 @@ text = "clipboard zero"
 
 # Server -> client PRIMARY. The client screen is configured os = "linux" on
 # the server, so the relay rule admits id 1 before the client ever sends one.
+# The PRIMARY change must not re-send the unchanged CLIPBOARD: the only
+# clipboard write the client records in this window is the id 1 write.
+[[step]]
+do = "ledger_mark"
+node = "client"
+audit = true
+save = "pre_primary"
+
 [[step]]
 do = "clipboard_set"
 node = "server"
@@ -50,6 +58,18 @@ do = "assert_clipboard"
 node = "client"
 selection = "primary"
 text = "primary from server"
+
+[[step]]
+do = "sleep"
+ms = 200
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+since = "${pre_primary.sequence}"
+exact = true
+audit = true
+expect = [{"detail" = {"kind" = "primary_clipboard_write"}}]
 
 [[step]]
 do = "assert_clipboard"

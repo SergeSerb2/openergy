@@ -125,6 +125,7 @@ impl Context {
                             since,
                             Duration::from_millis(250),
                             step.flag("exact") || expected.is_empty(),
+                            step.flag("audit"),
                         )?
                         .into_iter()
                         .filter(|r| since == 0 || r["sequence"].as_u64().is_some_and(|n| n > since))
@@ -135,7 +136,14 @@ impl Context {
                 })
             }
             "ledger_mark" => {
-                let ledger = self.ledger(&id, 0, timeout)?;
+                // With audit = true the mark is taken in the full-ledger
+                // sequence space, matching an audit assert_recorded window;
+                // the default sink-only mark would under-count sequences.
+                let ledger = if step.flag("audit") {
+                    self.ledger_checked(&id, 0, timeout, false, true)?
+                } else {
+                    self.ledger(&id, 0, timeout)?
+                };
                 Ok(
                     json!({"sequence":ledger.iter().filter_map(|r| r["sequence"].as_u64()).max().unwrap_or(0),"count":ledger.len()}),
                 )
