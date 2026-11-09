@@ -532,7 +532,8 @@ Session stays deterministic. New event and action types:
   peer }` (daemon → session after the worker hashed the file),
   `FileChunkReady { xfer, bytes }` (pull model, §6.1),
   `FileCredit { xfer, chunks }` (daemon downstream-capacity grant,
-  §6.1),
+  §6.1), `FileDrained { xfer }` (daemon: backlog and driver hold zero
+  bytes for this transfer; the classic ordering fence, §5.4),
   `FileStageResult { xfer, ok, reason }` (worker write outcome),
   `FileAnswerRequested` is not a session event: consent lives in the
   daemon (§7.1), and its decision enters as
@@ -766,9 +767,32 @@ for verified peer classes (§3.1), the send path swaps only its wire edge:
 2. On drop, stream `DFTR` marks 1/2/3 at `Bulk` priority with §6.2
    slicing and pacing. The file worker and pull model are unchanged.
 3. No accept, progress, completion, resume, or receiver cancel exists.
-   The sender reports "sent (unverified)" after the end frame is queued.
-   Local cancel before the end frame stops the stream; the receiver's
-   exact-size check then fails on its side, which is the classic outcome.
+   The sender reports "sent (unverified)" only after the **drain
+   fence** below. Local cancel before the end frame stops the stream;
+   the receiver's exact-size check then fails on its side, which is
+   the classic outcome.
+
+**Drain fence (classic only).** `DFTR` frames carry no transfer ID;
+the receiver matches bytes to the pending `DDRG` name (§2.2). Wire
+order is therefore part of the protocol, and this codebase does not
+provide it across priorities: `Queues::choose` in
+`crates/net/src/reactor.rs` selects Control before Bulk in every
+path, so a second drag's `DDRG` (Control) can overtake the first
+transfer's still-queued `DFTR` frames (Bulk) on a slow connection.
+The receiver would then store file 1's remaining bytes under file
+2's name and consume file 2's metadata. Serializing sends until
+their end frames are *queued* does not prevent this. Rule: session
+must not queue a classic `DDRG` on a connection until the daemon
+reports `FileDrained { xfer }` (§4.3) for the previous classic
+transfer on that connection — backlog and driver hold zero bytes
+tagged for it (per-stream `BulkTag` accounting, §6.2). "Sent
+(unverified)" is reported at that same drain point. A new drag armed
+while a fence is pending waits for it or, if the user drops back
+locally first, cancels with nothing sent. The Openergy path needs no
+fence: `OFOF` is also Control and can overtake `OFTR` Bulk, but every
+`OFTR` frame carries its originator-namespace transfer ID (§4.1) and
+receivers demultiplex by it, so reordering across transfers cannot
+cross names or bytes.
 4. Cap classic sends by `file.classic_max_bytes` (proposed default
    32 MiB): classic receivers assemble uncapped in memory (§2.1). The
    user's opt-in does not waive the cap.
@@ -1171,6 +1195,7 @@ F5), and both directions are exercised where the roles allow it.
 | F15 | Drag refusals (phase 4): two-file drag; folder drag; `drag_receive=false` | `file.blocked/multi_file_drag` or `disabled`; pointer input still flows; nothing staged |
 | F16 | Classic wire, raw peer (phase 5): hand-built `DDRG` + `DFTR` with 512 KiB chunks and with 32 KiB chunks | File stored, hash equal; declared-size lie ends in `file.failed`; `DFTR` without `DDRG` ends in `file.blocked` |
 | F17 | Overrun: raw peer offers a tiny file, wins accept, then streams mark-2 chunks past `total_len` without mark 3 | Transfer aborts with `file.failed/too_large` at the first overrunning chunk; staged bytes in `.parts/` never exceed `total_len`; partial deleted; connection and clipboard keep working; a following honest send succeeds |
+| F18 | Classic ordering (phase 5): two back-to-back drags to a slow raw reader that pauses mid-`DFTR` | Second `DDRG` never overtakes first transfer's `DFTR` frames on the wire (`raw_expect` order scan); both files store under their own names with matching hashes; no fence wait, no pass — this scenario fails if sends serialize only to end-frame-queued |
 
 Timeouts deserve care: scenario deadlines stay the runner's existing
 kind (bounded `timeout_ms`, `--slowdown` for CI). Do not add product test
