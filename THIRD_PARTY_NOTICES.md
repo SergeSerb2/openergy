@@ -118,8 +118,8 @@ python3 tools/release/notices/generate-notices.py
 | [time 0.3.55](https://crates.io/crates/time/0.3.55) | MIT OR Apache-2.0 | [2537228d9a1b](#text-2537228d9a1b) |
 | [time-core 0.1.9](https://crates.io/crates/time-core/0.1.9) | MIT OR Apache-2.0 | [2537228d9a1b](#text-2537228d9a1b) |
 | [time-macros 0.2.32](https://crates.io/crates/time-macros/0.2.32) | MIT OR Apache-2.0 | [2537228d9a1b](#text-2537228d9a1b) |
-| [toml 0.9.12+spec-1.1.0](https://crates.io/crates/toml/0.9.12+spec-1.1.0) | MIT OR Apache-2.0 | [6efb0476a1cc](#text-6efb0476a1cc) |
-| [toml_datetime 0.7.5+spec-1.1.0](https://crates.io/crates/toml_datetime/0.7.5+spec-1.1.0) | MIT OR Apache-2.0 | [6efb0476a1cc](#text-6efb0476a1cc) |
+| [toml 1.1.8+spec-1.1.0](https://crates.io/crates/toml/1.1.8+spec-1.1.0) | MIT OR Apache-2.0 | [6efb0476a1cc](#text-6efb0476a1cc) |
+| [toml_datetime 1.1.2+spec-1.1.0](https://crates.io/crates/toml_datetime/1.1.2+spec-1.1.0) | MIT OR Apache-2.0 | [6efb0476a1cc](#text-6efb0476a1cc) |
 | [toml_parser 1.1.5+spec-1.1.0](https://crates.io/crates/toml_parser/1.1.5+spec-1.1.0) | MIT OR Apache-2.0 | [6efb0476a1cc](#text-6efb0476a1cc) |
 | [toml_writer 1.1.3+spec-1.1.0](https://crates.io/crates/toml_writer/1.1.3+spec-1.1.0) | MIT OR Apache-2.0 | [6efb0476a1cc](#text-6efb0476a1cc) |
 | [typenum 1.20.1](https://crates.io/crates/typenum/1.20.1) | MIT OR Apache-2.0 | [a825bd853ab7](#text-a825bd853ab7) |
@@ -138,10 +138,9 @@ python3 tools/release/notices/generate-notices.py
 | [windows_x86_64_gnu 0.52.6](https://crates.io/crates/windows_x86_64_gnu/0.52.6) | MIT OR Apache-2.0 | [c2cfccb812fe](#text-c2cfccb812fe) |
 | [windows_x86_64_gnullvm 0.52.6](https://crates.io/crates/windows_x86_64_gnullvm/0.52.6) | MIT OR Apache-2.0 | [c2cfccb812fe](#text-c2cfccb812fe) |
 | [windows_x86_64_msvc 0.52.6](https://crates.io/crates/windows_x86_64_msvc/0.52.6) | MIT OR Apache-2.0 | [c2cfccb812fe](#text-c2cfccb812fe) |
-| [winnow 0.7.15](https://crates.io/crates/winnow/0.7.15) | MIT | [cb5aedb296c5](#text-cb5aedb296c5) |
 | [winnow 1.0.4](https://crates.io/crates/winnow/1.0.4) | MIT | [cb5aedb296c5](#text-cb5aedb296c5) |
-| [x11rb 0.13.2](https://crates.io/crates/x11rb/0.13.2) | MIT OR Apache-2.0 | [a72561f47c1f](#text-a72561f47c1f) |
-| [x11rb-protocol 0.13.2](https://crates.io/crates/x11rb-protocol/0.13.2) | MIT OR Apache-2.0 | [a72561f47c1f](#text-a72561f47c1f) |
+| [x11rb 0.14.0](https://crates.io/crates/x11rb/0.14.0) | MIT OR Apache-2.0 | [a72561f47c1f](#text-a72561f47c1f) |
+| [x11rb-protocol 0.14.0](https://crates.io/crates/x11rb-protocol/0.14.0) | MIT OR Apache-2.0 | [a72561f47c1f](#text-a72561f47c1f) |
 | [x509-parser 0.18.1](https://crates.io/crates/x509-parser/0.18.1) | MIT OR Apache-2.0 | [a5c61b93b6ee](#text-a5c61b93b6ee) |
 | [yasna 0.6.0](https://crates.io/crates/yasna/0.6.0) | MIT OR Apache-2.0 | [2a7df90e60fd](#text-2a7df90e60fd) |
 | [zeroize 1.9.1](https://crates.io/crates/zeroize/1.9.1) | Apache-2.0 OR MIT | [8c7516d4b27b](#text-8c7516d4b27b) |
