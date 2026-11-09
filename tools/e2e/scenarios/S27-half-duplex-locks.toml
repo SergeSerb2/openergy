@@ -1,0 +1,511 @@
+# Requirement: A half-duplex lock screen receives each lock press as one atomic down/up pair with no held tail, repeats and ups are suppressed, leaving releases nothing for the lock, and the same lock with the flag off keeps the full-duplex held sequence.
+name = "S27-half-duplex-locks"
+requirement = "For half_duplex_caps_lock the server forwards only the Caps down edge and the client injects it as a down/up pair (mask carries the toggle both ways, no held key, no stray release on leave); with the flag off Caps stays held across the next key exactly as before."
+blocked_by = []
+timeout_ms = 5000
+
+[[node]]
+id = "server"
+kind = "openergy"
+role = "server"
+platform = "virtual"
+tls = false
+config = {"screen" = [{"name" = "server", "rect" = {"x" = 0, "y" = 0, "w" = 1920, "h" = 1080}}, {"name" = "client", "rect" = {"x" = 1920, "y" = 0, "w" = 1920, "h" = 1080}, "options" = {"half_duplex_caps_lock" = true}}]}
+
+[[node]]
+id = "client"
+kind = "openergy"
+role = "client"
+platform = "virtual"
+remote = "server"
+tls = false
+
+# Phase 2: a raw peer in the "client" screen observes the server's wire
+# stream directly, so server-side suppression is proven without the
+# openergy client's own dropping in front of it.
+[[node]]
+id = "probe"
+kind = "raw"
+role = "client"
+remote = "server"
+autostart = false
+
+# Phase 3: a raw server that does not suppress anything drives a second
+# openergy client, so the client-side pair rewrite and up/repeat drop are
+# proven without the openergy server in front of them.
+[[node]]
+id = "rawserver"
+kind = "raw"
+role = "server"
+autostart = false
+
+[[node]]
+id = "client2"
+kind = "openergy"
+role = "client"
+platform = "virtual"
+remote = "rawserver"
+tls = false
+autostart = false
+
+[[step]]
+do = "wait_connected"
+node = "client"
+peer = "server"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+peer = "client"
+
+[[step]]
+do = "set_screens"
+node = "server"
+rects = [{"x" = 0, "y" = 0, "w" = 1920, "h" = 1080, "scale" = 1.0}]
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 1919, "y" = 540}, {"type" = "mouse_move_rel", "dx" = 20, "dy" = 0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "client"}
+
+[[step]]
+do = "ledger_mark"
+node = "client"
+save = "entered"
+
+# Caps press (mask 4096 = CAPS on), a repeat while physically held, then "a"
+# typed before the physical Caps release. Then a second Caps press toggles
+# the mask off and "a" is typed plain.
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "key_down", "key" = 61413, "modifiers" = 4096, "button" = 66}, {"type" = "key_repeat", "key" = 61413, "modifiers" = 4096, "button" = 66, "count" = 1}, {"type" = "key_down", "key" = 97, "modifiers" = 4096, "button" = 38}, {"type" = "key_up", "key" = 97, "modifiers" = 4096, "button" = 38}, {"type" = "key_up", "key" = 61413, "modifiers" = 4096, "button" = 66}, {"type" = "key_down", "key" = 61413, "modifiers" = 0, "button" = 66}, {"type" = "key_down", "key" = 97, "modifiers" = 0, "button" = 38}, {"type" = "key_up", "key" = 97, "modifiers" = 0, "button" = 38}, {"type" = "key_up", "key" = 61413, "modifiers" = 0, "button" = 66}]
+
+[[step]]
+do = "sleep"
+ms = 150
+
+# Each Caps press arrives as a down/up pair before the letter, the repeat and
+# the physical ups never reach the sink, and the letter carries the
+# post-toggle mask in both directions.
+[[step]]
+do = "assert_recorded"
+node = "client"
+since = "${entered.sequence}"
+exact = true
+input_only = true
+expect = [{"event" = {"type" = "key_down", "key" = 61413, "modifiers" = 4096, "button" = 66}}, {"event" = {"type" = "key_up", "key" = 61413, "modifiers" = 4096, "button" = 66}}, {"event" = {"type" = "key_down", "key" = 97, "modifiers" = 4096}}, {"event" = {"type" = "key_up", "key" = 97, "modifiers" = 4096}}, {"event" = {"type" = "key_down", "key" = 61413, "modifiers" = 0, "button" = 66}}, {"event" = {"type" = "key_up", "key" = 61413, "modifiers" = 0, "button" = 66}}, {"event" = {"type" = "key_down", "key" = 97, "modifiers" = 0}}, {"event" = {"type" = "key_up", "key" = 97, "modifiers" = 0}}]
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "virtual.recorded"
+params = {}
+fields = {"stats.pressed_keys" = 0}
+
+# Leaving the screen must not inject a stray Caps release: the lock was never
+# a held key on either side.
+[[step]]
+do = "ledger_mark"
+node = "client"
+save = "before_leave"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 0, "y" = 540}, {"type" = "mouse_move_rel", "dx" = -20, "dy" = 0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "server"}
+
+[[step]]
+do = "sleep"
+ms = 150
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+since = "${before_leave.sequence}"
+exact = true
+input_only = true
+expect = []
+
+# Control: the same screen with the flag off keeps today's stream. Caps
+# stays held across the letter and its repeat and release are forwarded.
+[[step]]
+do = "config_patch"
+node = "server"
+patch = {"screen" = [{"name" = "server", "rect" = {"x" = 0, "y" = 0, "w" = 1920, "h" = 1080}}, {"name" = "client", "rect" = {"x" = 1920, "y" = 0, "w" = 1920, "h" = 1080}, "options" = {"half_duplex_caps_lock" = false}}]}
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "server"}
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 1919, "y" = 540}, {"type" = "mouse_move_rel", "dx" = 20, "dy" = 0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "client"}
+
+[[step]]
+do = "ledger_mark"
+node = "client"
+save = "control_entered"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "key_down", "key" = 61413, "modifiers" = 4096, "button" = 66}, {"type" = "key_repeat", "key" = 61413, "modifiers" = 4096, "button" = 66, "count" = 1}, {"type" = "key_down", "key" = 97, "modifiers" = 4096, "button" = 38}, {"type" = "key_up", "key" = 97, "modifiers" = 4096, "button" = 38}, {"type" = "key_up", "key" = 61413, "modifiers" = 4096, "button" = 66}]
+
+[[step]]
+do = "sleep"
+ms = 150
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+since = "${control_entered.sequence}"
+exact = true
+input_only = true
+expect = [{"event" = {"type" = "key_down", "key" = 61413, "modifiers" = 4096, "button" = 66}}, {"event" = {"type" = "key_repeat", "key" = 61413, "modifiers" = 4096, "button" = 66}}, {"event" = {"type" = "key_down", "key" = 97, "modifiers" = 4096}}, {"event" = {"type" = "key_up", "key" = 97, "modifiers" = 4096}}, {"event" = {"type" = "key_up", "key" = 61413, "modifiers" = 4096, "button" = 66}}]
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "virtual.recorded"
+params = {}
+fields = {"stats.pressed_keys" = 0}
+
+# Phase 2: server-side suppression on the wire. Flag the screen again, stop
+# the openergy client, and let a raw peer take the "client" screen.
+[[step]]
+do = "config_patch"
+node = "server"
+patch = {"screen" = [{"name" = "server", "rect" = {"x" = 0, "y" = 0, "w" = 1920, "h" = 1080}}, {"name" = "client", "rect" = {"x" = 1920, "y" = 0, "w" = 1920, "h" = 1080}, "options" = {"half_duplex_caps_lock" = true}}]}
+
+[[step]]
+do = "stop"
+node = "client"
+
+[[step]]
+do = "start"
+node = "probe"
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "hello"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "hello_back"
+name = "client"
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "QINF"
+
+[[step]]
+do = "raw_send"
+node = "probe"
+builder = "screen_info"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+peer = "client"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 1919, "y" = 540}, {"type" = "mouse_move_rel", "dx" = 20, "dy" = 0}]
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "CINN"
+framed = true
+payload_only = true
+scan = true
+
+# Caps down, "a" down/up, then the Caps repeat and release. On the wire only
+# the Caps down and the letter may appear.
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "key_down", "key" = 61413, "modifiers" = 4096, "button" = 66}, {"type" = "key_down", "key" = 97, "modifiers" = 4096, "button" = 38}, {"type" = "key_up", "key" = 97, "modifiers" = 4096, "button" = 38}, {"type" = "key_repeat", "key" = 61413, "modifiers" = 4096, "button" = 66, "count" = 1}, {"type" = "key_up", "key" = 61413, "modifiers" = 4096, "button" = 66}]
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "DKDN"
+framed = true
+payload_only = true
+scan = true
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "DKDN"
+framed = true
+payload_only = true
+scan = true
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "DKUP"
+framed = true
+payload_only = true
+scan = true
+
+[[step]]
+do = "raw_expect_absent"
+node = "probe"
+codes = ["DKUP", "DKRP"]
+timeout_ms = 600
+
+# Phase 3: client-side rewriting against a non-suppressing raw server. The
+# raw server sends HDCL in DSOP, then a full Caps down/repeat/up stream
+# around a letter; the client sink must see one pair and the letter only.
+[[step]]
+do = "start"
+node = "rawserver"
+
+[[step]]
+do = "start"
+node = "client2"
+
+[[step]]
+do = "raw_send"
+node = "rawserver"
+builder = "hello"
+
+[[step]]
+do = "raw_expect"
+node = "rawserver"
+builder = "hello_back"
+name = "client2"
+minor = 8
+
+[[step]]
+do = "raw_send"
+node = "rawserver"
+builder = "code"
+code = "QINF"
+payload_hex = ""
+
+[[step]]
+do = "raw_expect"
+node = "rawserver"
+builder = "code"
+code = "DINF"
+payload_only = true
+framed = true
+scan = true
+
+[[step]]
+do = "raw_send"
+node = "rawserver"
+builder = "code"
+code = "CROP"
+payload_hex = ""
+
+# DSOP values are flat id/value pairs: HDCL (0x4844434C) = 1.
+[[step]]
+do = "raw_send"
+node = "rawserver"
+builder = "options"
+values = [1212433228, 1]
+
+[[step]]
+do = "raw_send"
+node = "rawserver"
+builder = "code"
+code = "CIAK"
+payload_hex = ""
+
+[[step]]
+do = "wait_connected"
+node = "client2"
+
+[[step]]
+do = "raw_send"
+node = "rawserver"
+builder = "code"
+code = "CINN"
+payload_hex = "0014001e0000004d0000"
+
+[[step]]
+do = "wait_status"
+node = "client2"
+fields = {"active_screen" = "client2"}
+
+[[step]]
+do = "sleep"
+ms = 100
+
+[[step]]
+do = "ledger_mark"
+node = "client2"
+save = "raw_entered"
+
+[[step]]
+do = "raw_send"
+node = "rawserver"
+builder = "code"
+code = "DKDN"
+payload_hex = "efe510000042"
+
+[[step]]
+do = "raw_send"
+node = "rawserver"
+builder = "code"
+code = "DKRP"
+payload_hex = "efe510000001004200000000"
+
+[[step]]
+do = "raw_send"
+node = "rawserver"
+builder = "code"
+code = "DKDN"
+payload_hex = "006110000026"
+
+[[step]]
+do = "raw_send"
+node = "rawserver"
+builder = "code"
+code = "DKUP"
+payload_hex = "006110000026"
+
+[[step]]
+do = "raw_send"
+node = "rawserver"
+builder = "code"
+code = "DKUP"
+payload_hex = "efe510000042"
+
+[[step]]
+do = "sleep"
+ms = 150
+
+[[step]]
+do = "assert_recorded"
+node = "client2"
+since = "${raw_entered.sequence}"
+exact = true
+input_only = true
+expect = [{"event" = {"type" = "key_down", "key" = 61413, "modifiers" = 4096, "button" = 66}}, {"event" = {"type" = "key_up", "key" = 61413, "modifiers" = 4096, "button" = 66}}, {"event" = {"type" = "key_down", "key" = 97, "modifiers" = 4096}}, {"event" = {"type" = "key_up", "key" = 97, "modifiers" = 4096}}]
+
+[[step]]
+do = "ctl"
+node = "client2"
+method = "virtual.recorded"
+params = {}
+fields = {"stats.pressed_keys" = 0}
+
+# Phase 4: enabling the flag while the lock is already held must not strand
+# the sink key. Clear HDCL (CROP + HART-only DSOP), hold Caps full-duplex,
+# enable HDCL mid-hold, then send the up: the client must inject the release.
+[[step]]
+do = "raw_send"
+node = "rawserver"
+builder = "code"
+code = "CROP"
+payload_hex = ""
+
+# HART (0x48415254) = 0 only; HDCL stays off after the reset.
+[[step]]
+do = "raw_send"
+node = "rawserver"
+builder = "options"
+values = [1212240468, 0]
+
+[[step]]
+do = "sleep"
+ms = 100
+
+[[step]]
+do = "ledger_mark"
+node = "client2"
+save = "flag_flip"
+
+[[step]]
+do = "raw_send"
+node = "rawserver"
+builder = "code"
+code = "DKDN"
+payload_hex = "efe510000042"
+
+[[step]]
+do = "sleep"
+ms = 150
+
+[[step]]
+do = "ctl"
+node = "client2"
+method = "virtual.recorded"
+params = {}
+fields = {"stats.pressed_keys" = 1}
+
+[[step]]
+do = "raw_send"
+node = "rawserver"
+builder = "code"
+code = "CROP"
+payload_hex = ""
+
+[[step]]
+do = "raw_send"
+node = "rawserver"
+builder = "options"
+values = [1212433228, 1]
+
+[[step]]
+do = "sleep"
+ms = 100
+
+[[step]]
+do = "raw_send"
+node = "rawserver"
+builder = "code"
+code = "DKUP"
+payload_hex = "efe510000042"
+
+[[step]]
+do = "sleep"
+ms = 150
+
+[[step]]
+do = "assert_recorded"
+node = "client2"
+since = "${flag_flip.sequence}"
+exact = true
+input_only = true
+expect = [{"event" = {"type" = "key_down", "key" = 61413, "modifiers" = 4096, "button" = 66}}, {"event" = {"type" = "key_up", "key" = 61413, "modifiers" = 4096, "button" = 66}}]
+
+[[step]]
+do = "ctl"
+node = "client2"
+method = "virtual.recorded"
+params = {}
+fields = {"stats.pressed_keys" = 0}

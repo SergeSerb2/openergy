@@ -345,14 +345,11 @@ impl Server {
                         p.transfers = Default::default();
                     }
                     if p.phase == Phase::Ready {
+                        let options = screen_options(&self.config, &p.name);
+                        p.options.half_duplex = [false; 3];
+                        p.options.apply(&options);
                         send(c, Message::ResetOptions, out);
-                        send(
-                            c,
-                            Message::SetOptions {
-                                options: screen_options(&self.config, &p.name),
-                            },
-                            out,
-                        );
+                        send(c, Message::SetOptions { options }, out);
                     }
                 }
                 if self.config.role != Role::Server {
@@ -478,19 +475,20 @@ impl Server {
                         return;
                     }
                 }
+                let options = screen_options(&self.config, &canonical);
                 if let Some(p) = self.peers.get_mut(&conn) {
                     p.name = canonical.clone();
                     p.phase = Phase::Ready;
+                    // Mirror the DSOP sent below so server-side edge rules
+                    // (half-duplex locks) read the same options as the
+                    // client. ResetOptions goes first on the wire, so an
+                    // unset flag must read as off here too.
+                    p.options.half_duplex = [false; 3];
+                    p.options.apply(&options);
                     self.layout.set_rect(screen, p.screen);
                 }
                 send(conn, Message::ResetOptions, out);
-                send(
-                    conn,
-                    Message::SetOptions {
-                        options: screen_options(&self.config, &canonical),
-                    },
-                    out,
-                );
+                send(conn, Message::SetOptions { options }, out);
                 notify("peer.connected", serde_json::json!({"name":canonical}), out);
                 self.push_slots(conn, out);
             } else if let Some(screen) = self.peers.get(&conn).and_then(|p| self.screen(&p.name)) {
@@ -624,6 +622,46 @@ impl Server {
             _ => {
                 if let Some(c) = self.connection(self.active) {
                     if let Some(p) = self.peers.get_mut(&c) {
+                        // Half-duplex locks: forward the down edge once, with
+                        // the post-toggle mask, and suppress the up and any
+                        // repeats. The lock is never newly held in the peer
+                        // ledger, so leaving the screen cannot release it with
+                        // a stray KeyUp; a hold from before the flag took
+                        // effect still gets its release forwarded. The
+                        // ScrollLock lock-to-screen toggle above has already
+                        // run, exactly as for a full-duplex screen.
+                        let lock_key = match ev {
+                            InputEvent::KeyDown { key, .. }
+                            | InputEvent::KeyUp { key, .. }
+                            | InputEvent::KeyRepeat { key, .. } => key,
+                            _ => 0,
+                        };
+                        if lock_key != 0 && p.options.is_half_duplex_lock(lock_key) {
+                            match ev {
+                                InputEvent::KeyDown { key, modifiers, button } => {
+                                    // Held since before the flag took effect:
+                                    // release it on the wire first so the peer
+                                    // is not left with a stuck lock key.
+                                    if p.ledger.has_key(key, button) {
+                                        let up = InputEvent::KeyUp { key, modifiers, button };
+                                        p.ledger.observe(&up);
+                                        send(c, wire_input(&up, p.version.minor, &self.config), out);
+                                    }
+                                    p.ledger.modifiers = modifiers.0;
+                                    send(c, wire_input(&ev, p.version.minor, &self.config), out);
+                                    return;
+                                }
+                                InputEvent::KeyUp { key, button, .. } | InputEvent::KeyRepeat { key, button, .. }
+                                    if !p.ledger.has_key(key, button) =>
+                                {
+                                    p.ledger.observe(&ev);
+                                    return;
+                                }
+                                // Held from before the flag took effect: fall
+                                // through so the release is forwarded.
+                                _ => {}
+                            }
+                        }
                         // A key held here before the switch auto-repeats, but
                         // the remote never saw it go down. Its up still goes,
                         // so the remote can drop modifiers from the enter mask.

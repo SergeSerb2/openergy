@@ -94,6 +94,9 @@ pub(crate) struct Options {
     pub locked: bool,
     pub disable_lock: bool,
     pub needs: u16,
+    /// Per-lock half-duplex flags for the receiving screen, in Caps, Num,
+    /// Scroll order (DSOP HDCL/HDNL/HDSL).
+    pub half_duplex: [bool; 3],
 }
 impl Default for Options {
     fn default() -> Self {
@@ -106,11 +109,13 @@ impl Default for Options {
             locked: false,
             disable_lock: false,
             needs: 0,
+            half_duplex: [false; 3],
         }
     }
 }
 impl Options {
     pub fn apply(&mut self, pairs: &[(u32, i32)]) {
+        let half_duplex_before = self.half_duplex;
         for &(id, v) in pairs {
             self.raw.insert(id, v);
             match id {
@@ -120,6 +125,9 @@ impl Options {
                 o::RELATIVE_MOUSE_MOVES => self.relative = v != 0,
                 o::DEFAULT_LOCK_TO_SCREEN_STATE => self.locked = v != 0,
                 o::DISABLE_LOCK_TO_SCREEN => self.disable_lock = v != 0,
+                o::HALF_DUPLEX_CAPS_LOCK => self.half_duplex[0] = v != 0,
+                o::HALF_DUPLEX_NUM_LOCK => self.half_duplex[1] = v != 0,
+                o::HALF_DUPLEX_SCROLL_LOCK => self.half_duplex[2] = v != 0,
                 o::SWITCH_NEEDS_SHIFT | o::SWITCH_NEEDS_CONTROL | o::SWITCH_NEEDS_ALT => {
                     let mask = match id {
                         o::SWITCH_NEEDS_SHIFT => Modifiers::SHIFT,
@@ -134,6 +142,24 @@ impl Options {
                 }
                 _ => {}
             }
+        }
+        if self.half_duplex != half_duplex_before {
+            log::info!(
+                "half-duplex locks: caps={} num={} scroll={}",
+                self.half_duplex[0],
+                self.half_duplex[1],
+                self.half_duplex[2]
+            );
+        }
+    }
+    /// True when `key` is a lock key whose receiving screen is half-duplex:
+    /// Caps Lock, Num Lock, or Scroll Lock with its flag set.
+    pub fn is_half_duplex_lock(&self, key: u16) -> bool {
+        match key {
+            0xefe5 => self.half_duplex[0],
+            0xef7f => self.half_duplex[1],
+            0xef14 => self.half_duplex[2],
+            _ => false,
         }
     }
     /// Target modifier (1 Shift .. 6 AltGr) for a source modifier, from the

@@ -68,6 +68,7 @@ mod probe {
             "clipboard-recovery" => clipboard_recovery()?,
             "keymap-recovery" => keymap_recovery(&mut create(X11Options::default())?)?,
             "lock-recovery" => lock_recovery()?,
+            "half-duplex-lock" => half_duplex_lock()?,
             "clipboard-stamp" => clipboard_stamp()?,
             "clipboard-cancel" => clipboard_cancel()?,
             "resources" => resources()?,
@@ -1161,6 +1162,117 @@ mod probe {
             return Err("Lock-state sync released a local lock key instead of refusing injection".into());
         }
         println!("recovery: lock sync refuses an already held local lock key without releasing it");
+        Ok(())
+    }
+    /// The session's half-duplex rewrite reaches this sink as an atomic
+    /// down/up pair for the lock key. That pair must toggle the real X lock
+    /// exactly once per pair and leave no physical key down, and a normal
+    /// held down/up must reach the same end states.
+    fn half_duplex_lock() -> Result<()> {
+        use x11rb::connection::Connection;
+        let (c, screen) = x11rb::connect(None)?;
+        let mut b = create(X11Options::default())?;
+        let setup = c.setup();
+        let root = setup.roots[screen].root;
+        let map = c
+            .get_keyboard_mapping(setup.min_keycode, setup.max_keycode - setup.min_keycode + 1)?
+            .reply()?;
+        let mods = c.get_modifier_mapping()?.reply()?;
+        fn pointer_mask<C: Connection>(c: &C, root: x11rb::protocol::xproto::Window) -> Result<u16> {
+            Ok(u16::from(c.query_pointer(root)?.reply()?.mask))
+        }
+        fn key_down<C: Connection>(c: &C, code: u8) -> Result<bool> {
+            let keys = c.query_keymap()?.reply()?.keys;
+            Ok(keys[usize::from(code) / 8] & (1 << (code % 8)) != 0)
+        }
+        for (name, keysym, wire_key, lock_bit, button) in [
+            ("Caps_Lock", 0xffe5u32, keys::CAPS_LOCK, Modifiers::CAPS_LOCK, 240u16),
+            ("Num_Lock", 0xff7fu32, keys::NUM_LOCK, Modifiers::NUM_LOCK, 241u16),
+        ] {
+            let index = map
+                .keysyms
+                .chunks(usize::from(map.keysyms_per_keycode))
+                .position(|row| row.contains(&keysym))
+                .ok_or_else(|| format!("X server has no {name}"))?;
+            let code = setup.min_keycode + index as u8;
+            let modifier = mods
+                .keycodes
+                .chunks(usize::from(mods.keycodes_per_modifier()))
+                .position(|row| row.contains(&code))
+                .ok_or_else(|| format!("{name} is not mapped to a modifier"))?;
+            let mask_bit = 1u16 << modifier;
+            // Start from a known off state without touching the sink.
+            if pointer_mask(&c, root)? & mask_bit != 0 {
+                command("xdotool", &["key", name])?;
+                pause();
+            }
+            if pointer_mask(&c, root)? & mask_bit != 0 || key_down(&c, code)? {
+                return Err(format!("{name} is not off and up before the probe").into());
+            }
+            // Two half-duplex pairs: on, then off. No key may remain down
+            // after either pair.
+            for (modifiers, want_on) in [(Modifiers(lock_bit), true), (Modifiers::NONE, false)] {
+                b.sink.inject(&InputEvent::KeyDown {
+                    key: wire_key,
+                    modifiers,
+                    button,
+                })?;
+                b.sink.inject(&InputEvent::KeyUp {
+                    key: wire_key,
+                    modifiers,
+                    button,
+                })?;
+                pause();
+                if (pointer_mask(&c, root)? & mask_bit != 0) != want_on {
+                    return Err(format!("half-duplex pair did not toggle {name} to on={want_on}").into());
+                }
+                if key_down(&c, code)? {
+                    return Err(format!("half-duplex pair left {name} physically down").into());
+                }
+            }
+            // A normal held down/up reaches the same end states. Between the
+            // edges the key really is down; after the up it is not.
+            b.sink.inject(&InputEvent::KeyDown {
+                key: wire_key,
+                modifiers: Modifiers(lock_bit),
+                button,
+            })?;
+            pause();
+            let held = key_down(&c, code)?;
+            b.sink.inject(&InputEvent::KeyUp {
+                key: wire_key,
+                modifiers: Modifiers(lock_bit),
+                button,
+            })?;
+            pause();
+            let on = pointer_mask(&c, root)? & mask_bit != 0;
+            let still_down = key_down(&c, code)?;
+            // Restore off even when an assertion below fails.
+            if on {
+                b.sink.inject(&InputEvent::KeyDown {
+                    key: wire_key,
+                    modifiers: Modifiers::NONE,
+                    button,
+                })?;
+                b.sink.inject(&InputEvent::KeyUp {
+                    key: wire_key,
+                    modifiers: Modifiers::NONE,
+                    button,
+                })?;
+                pause();
+            }
+            if !held {
+                return Err(format!("normal down did not hold {name}").into());
+            }
+            if !on || still_down {
+                return Err(format!("normal down/up end state differs for {name}: on={on} down={still_down}").into());
+            }
+            if pointer_mask(&c, root)? & mask_bit != 0 || key_down(&c, code)? {
+                return Err(format!("{name} was not restored to off and up").into());
+            }
+            println!("half-duplex: {name} pair toggles once with no held key; held down/up matches");
+        }
+        b.sink.release_all();
         Ok(())
     }
     fn keymap_recovery(b: &mut openergy_platform::Backend) -> Result<()> {
