@@ -255,12 +255,34 @@ impl Context {
                     .create(true)
                     .truncate(false)
                     .open(tls.join(".trust-lock"))?;
+                // Gate the writer on the lock instead of racing its startup.
+                // Sampling a free-running approval misses its whole locked
+                // interval whenever this thread is descheduled under load.
+                // Holding the lock across the spawn leaves the approval
+                // blocked in its acquire; freezing it there and only then
+                // releasing makes ownership observable after the CONT.
+                lock.try_lock()
+                    .map_err(|e| Failure::environment(format!("trust lock already held: {e}")))?;
                 let fingerprint = "ff".repeat(32);
                 let mut command = Command::new(&self.options.binary);
                 command.args(["trust", "approve", &fingerprint, "--dir"]).arg(&dir);
                 isolated_env(&mut command, &dir, &dir.join("unused.sock"));
                 let mut writer = crate::process::Process::spawn(&mut command, &dir, "interrupted-approve")?;
                 let deadline = Instant::now() + timeout;
+                if let Err(error) = writer.signal("STOP") {
+                    if let Some(status) = writer.poll()? {
+                        return Err(Failure::product(format!(
+                            "approval exited ({status}) instead of waiting for the trust lock"
+                        )));
+                    }
+                    return Err(error);
+                }
+                lock.unlock()?;
+                writer.signal("CONT")?;
+                // The writer can only take the lock after the CONT above,
+                // and its locked interval covers parsing and rewriting the
+                // seeded file. Yield instead of sleeping so scheduler
+                // jitter cannot hide that interval between two samples.
                 loop {
                     match lock.try_lock() {
                         Ok(()) => {
@@ -269,10 +291,17 @@ impl Context {
                         Err(std::fs::TryLockError::WouldBlock) => break,
                         Err(std::fs::TryLockError::Error(error)) => return Err(error.into()),
                     }
-                    if writer.poll()?.is_some() || Instant::now() >= deadline {
-                        return Err(Failure::product("could not observe approval lock ownership"));
+                    if let Some(status) = writer.poll()? {
+                        return Err(if status.success() {
+                            Failure::runner("approval completed without observed lock ownership")
+                        } else {
+                            Failure::product(format!("approval failed ({status}) before lock ownership was observed"))
+                        });
                     }
-                    std::thread::sleep(Duration::from_micros(100));
+                    if Instant::now() >= deadline {
+                        return Err(Failure::product("approval did not take the trust lock"));
+                    }
+                    std::thread::yield_now();
                 }
                 writer.signal("KILL")?;
                 writer.wait(Duration::from_secs(2))?;

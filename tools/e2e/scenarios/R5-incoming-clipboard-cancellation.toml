@@ -41,10 +41,15 @@ do = "raw_send"
 node = "host"
 hex = "000000044349414b"
 
+# DSOP with HART=0, as in R5-client-config-retains-clipboard: this raw host
+# cannot send CALV during the blocking 1000 ms measure below, and the
+# runner's 500 ms heartbeat gives the client only a 1500 ms dead-peer
+# window (3x heartbeat from DSOP). Liveness is covered by A3/Q12, not here.
 [[step]]
 do = "raw_send"
 node = "host"
-hex = "0000000844534f5000000000"
+builder = "options"
+values = [1212240468, 0]
 
 [[step]]
 do = "wait_connected"

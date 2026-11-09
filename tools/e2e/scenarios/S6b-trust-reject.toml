@@ -1,0 +1,100 @@
+# Requirement: Rejected unknown TLS identity clears the hold, persists no trust, delivers no input, and pends again on reconnect.
+name = "S6b-trust-reject"
+requirement = "Rejected unknown TLS identity clears the hold, persists no trust, delivers no input, and pends again on reconnect."
+blocked_by = []
+timeout_ms = 2500
+
+[[node]]
+id = "server"
+kind = "openergy"
+role = "server"
+platform = "virtual"
+tls = true
+# Start the server only after the client subscribes, so peer.untrusted cannot
+# fire before the subscription exists.
+autostart = false
+
+[[node]]
+id = "client"
+kind = "openergy"
+role = "client"
+platform = "virtual"
+remote = "server"
+tls = true
+
+[[step]]
+do = "subscribe"
+node = "client"
+
+[[step]]
+do = "start"
+node = "server"
+
+[[step]]
+do = "wait_status"
+node = "client"
+fields = {"pending_trust" = {"$len" = 1}}
+save = "pending"
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "peer.untrusted"
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+expect = []
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "trust.reject"
+params = {"fingerprint" = "${pending.pending_trust.0.fingerprint}"}
+
+[[step]]
+do = "wait_status"
+node = "client"
+fields = {"pending_trust" = {"$len" = 0}, "peers" = {"$len" = 0}}
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "trust.list"
+fields = {"servers" = []}
+
+[[step]]
+do = "assert_file"
+path = "${client.dir}/tls/trusted-servers"
+exists = false
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+input_only = true
+expect = []
+
+# The configured reconnect must hold the same identity again instead of
+# silently trusting it after the rejection.
+[[step]]
+do = "wait_status"
+node = "client"
+fields = {"pending_trust" = {"$len" = 1}, "pending_trust.0.fingerprint" = "${pending.pending_trust.0.fingerprint}", "peers" = {"$len" = 0}}
+timeout_ms = 5000
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "peer.untrusted"
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "trust.list"
+fields = {"servers" = []}
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+input_only = true
+expect = []
