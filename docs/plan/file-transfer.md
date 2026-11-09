@@ -766,6 +766,25 @@ Send side (pull, depth 1 plus the net queue):
    the driver's 256 KiB bulk window. File size does not change daemon
    memory. Scenario F2 asserts this with a `measure` step (§8.2).
 
+Worker scheduling (one thread, no starvation): the pre-offer hash is the
+only long job this thread ever runs, so it must never monopolize it.
+Hashing is a resumable background job — state `{file, offset, hasher}` —
+and the worker loop is strict about order: drain every pending
+active-transfer command first (chunk `pread` for accepted sends,
+`StageFileChunk`, `FinishFile`, `DropFile`), then run at most one 1 MiB
+hash slice, then look at the command channel again. The §4.6 checks
+before hashing are O(1) stats and stay inline. A transfer command
+therefore waits at most one hash slice (one 1 MiB read plus hash
+update) behind a hashing send, no matter how large that file is or how
+slow the storage is — far inside the §6.2 file stall and inbound-expiry
+budgets, which start at 30 s. At most one hash job runs at a time;
+further `file.send` calls still return their `xfer` immediately and
+queue their hash behind it, delaying only their own offers. The receive
+side needs no equivalent rule: its running hash updates per ≤ 32 KiB
+chunk append. Without this rule, one 16 GiB hash on slow storage would
+stall every live transfer in both directions until receivers abort
+healthy transfers as `stalled`.
+
 Receive side mirrors it: session hands each data chunk to the worker as
 `StageFileChunk`. Worker commands carry the daemon-unique `xfer` handle
 (§4.1), never a wire ID. The worker appends to
