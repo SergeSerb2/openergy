@@ -11,7 +11,7 @@ use mio::{
 use openergy_protocol::{Decoder, Message, MAX_FRAME_LEN};
 use openergy_session::{ConnId, DisconnectReason};
 use std::{
-    collections::{BTreeMap, HashMap, VecDeque},
+    collections::{BTreeMap, BTreeSet, HashMap, VecDeque},
     io::{self, Read, Write},
     net::{IpAddr, Shutdown, SocketAddr, ToSocketAddrs},
     path::PathBuf,
@@ -46,6 +46,10 @@ const CLOSE_RETRY: Duration = Duration::from_millis(10);
 // Yield after this many events, finishing the current <=16 KiB read so decoder
 // and TLS state stay intact. Large-frame throughput keeps the existing byte cap.
 const READ_EVENT_BATCH: usize = 1024;
+// getaddrinfo can block for seconds and cannot be cancelled. A small pool
+// keeps one stuck lookup from head-of-line blocking every hostname connect,
+// while total resolver threads and queued jobs stay bounded.
+const DNS_WORKERS: usize = 4;
 
 pub struct NetConfig {
     pub tls_enabled: bool,
@@ -813,7 +817,13 @@ pub struct NetDriver {
     resolved: Receiver<ResolveResult>,
     pending: BTreeMap<u64, Pending>,
     next_resolve: u64,
-    dns_outstanding: usize,
+    /// Resolve ids still holding a DNS admission slot. A slot is released
+    /// when its result is processed or when the pending request expires,
+    /// whichever comes first; removal is idempotent so a late completion
+    /// for an expired job cannot release another job's slot. Shutdown
+    /// cancellation deliberately keeps the slot until the worker drains
+    /// the job, because it still occupies the bounded resolver queue.
+    dns_slots: BTreeSet<u64>,
 }
 impl NetDriver {
     pub fn new(config: NetConfig) -> Result<(Self, NetHandle), NetError> {
@@ -863,7 +873,7 @@ impl NetDriver {
             resolved,
             pending: BTreeMap::new(),
             next_resolve: 0,
-            dns_outstanding: 0,
+            dns_slots: BTreeSet::new(),
         };
         Ok((driver, handle))
     }
@@ -1241,7 +1251,7 @@ impl NetDriver {
                     Instant::now() + self.connect_timeout,
                 );
             }
-            if self.dns_outstanding >= MAX_CONNECTIONS {
+            if self.dns_slots.len() >= MAX_CONNECTIONS {
                 return Err(failed("DNS request limit"));
             }
             self.start_resolver()?;
@@ -1262,7 +1272,12 @@ impl NetDriver {
                     deadline,
                     cancelled: cancelled.clone(),
                 })
-                .map_err(failed)?;
+                .map_err(|error| match error {
+                    // Expired jobs can still occupy the bounded queue until a
+                    // worker reaches them; report that as the DNS limit.
+                    mpsc::TrySendError::Full(_) => failed("DNS request limit"),
+                    mpsc::TrySendError::Disconnected(_) => failed("DNS worker unavailable"),
+                })?;
             self.pending.insert(
                 id,
                 Pending {
@@ -1273,7 +1288,7 @@ impl NetDriver {
                     cancelled,
                 },
             );
-            self.dns_outstanding += 1;
+            self.dns_slots.insert(id);
             Ok(())
         })();
         if let Err(e) = result {
@@ -1289,16 +1304,27 @@ impl NetDriver {
             return Ok(());
         }
         let (sender, receiver) = mpsc::sync_channel::<ResolveJob>(MAX_CONNECTIONS);
-        let results = self.resolved_sender.clone();
-        let waker = self.waker();
-        // getaddrinfo can block. One lazy, bounded worker keeps it off the io loop.
-        // Cancelled/expired queued jobs still send one completion to release their
-        // outstanding slot. An active OS lookup cannot be cancelled and keeps its
-        // slot until it returns. Dropping the driver also cancels queued work.
-        std::thread::Builder::new()
-            .name("openergy-dns".into())
-            .spawn(move || {
-                while let Ok(job) = receiver.recv() {
+        // getaddrinfo can block and cannot be cancelled, so a small lazy pool
+        // keeps it off the io loop without one stuck lookup stalling the rest.
+        // Cancelled/expired queued jobs still send one completion; releasing
+        // their slot is idempotent (expiry may already have released it).
+        // Dropping the sender ends every worker. If any spawn fails the
+        // sender is dropped here, so already-started workers exit as well.
+        let receiver = Arc::new(Mutex::new(receiver));
+        for worker in 0..DNS_WORKERS {
+            let receiver = receiver.clone();
+            let results = self.resolved_sender.clone();
+            let waker = self.waker();
+            std::thread::Builder::new()
+                .name(format!("openergy-dns-{worker}"))
+                .spawn(move || loop {
+                    let job = {
+                        let receiver = receiver.lock().unwrap_or_else(|error| error.into_inner());
+                        receiver.recv()
+                    };
+                    let Ok(job) = job else {
+                        break;
+                    };
                     let addresses = if job.cancelled.load(Ordering::Acquire) {
                         Err("shutdown".into())
                     } else if job.deadline <= Instant::now() {
@@ -1313,9 +1339,9 @@ impl NetDriver {
                         break;
                     }
                     let _ = waker.wake();
-                }
-            })
-            .map_err(failed)?;
+                })
+                .map_err(failed)?;
+        }
         self.resolver = Some(sender);
         Ok(())
     }
@@ -1503,6 +1529,10 @@ impl NetDriver {
             }
         }
     }
+    /// Persists trust for `fp`, then closes every held connection with that
+    /// fingerprint instead of resuming it: plaintext staged in the TLS layer
+    /// before the trust decision must never be delivered. The peer reconnects
+    /// (now trusted at handshake) with a clean stream.
     pub fn approve_held(&mut self, fp: &Fingerprint, out: &mut Vec<NetEvent>) -> Result<(), NetError> {
         let ids: Vec<_> = self
             .conns
@@ -1511,20 +1541,24 @@ impl NetDriver {
             .map(|(id, _)| *id)
             .collect();
         for id in ids {
-            if let Some(c) = self.conns.get_mut(&id) {
-                if c.held.is_some_and(|deadline| deadline <= Instant::now()) {
-                    self.remove(id, DisconnectReason::TlsFailure, out);
-                    continue;
-                }
-                let mut store = TrustStore::load(&c.trust_dir).map_err(failed)?;
-                if c.outbound {
+            let Some((trust_dir, outbound, expired)) = self.conns.get(&id).map(|c| {
+                (
+                    c.trust_dir.clone(),
+                    c.outbound,
+                    c.held.is_some_and(|deadline| deadline <= Instant::now()),
+                )
+            }) else {
+                continue;
+            };
+            if !expired {
+                let mut store = TrustStore::load(&trust_dir).map_err(failed)?;
+                if outbound {
                     store.try_trust_server(*fp).map_err(failed)?;
                 } else {
                     store.try_trust_client(*fp).map_err(failed)?;
                 }
-                c.announce(out);
-                c.read_ready = true;
             }
+            self.remove(id, DisconnectReason::TlsFailure, out);
         }
         self.trust.reload().map_err(failed)?;
         Ok(())
@@ -1588,10 +1622,10 @@ impl NetDriver {
             let Some(c) = self.conns.get_mut(&id) else { continue };
             if c.held.is_some() && c.held.is_some_and(|d| d > Instant::now()) {
                 match trusted {
-                    Ok(true) => {
-                        c.announce(out);
-                        c.read_ready = true;
-                    }
+                    // Approved via the store: close rather than resume, so
+                    // plaintext staged before the decision is discarded with
+                    // the connection. The reconnect is trusted at handshake.
+                    Ok(true) => failures.push(id),
                     Ok(false) => {}
                     Err(e) => {
                         out.push(NetEvent::Error {
@@ -1623,7 +1657,7 @@ impl NetDriver {
     }
     fn maintenance(&mut self, out: &mut Vec<NetEvent>) {
         while let Ok(result) = self.resolved.try_recv() {
-            self.dns_outstanding = self.dns_outstanding.saturating_sub(1);
+            self.dns_slots.remove(&result.id);
             let Some(p) = self.pending.remove(&result.id) else {
                 continue;
             };
@@ -1668,6 +1702,12 @@ impl NetDriver {
             .collect();
         for id in expired {
             if let Some(p) = self.pending.remove(&id) {
+                // Expiry frees the admission slot now. The job may still sit
+                // in the resolver queue behind a stuck lookup, but holding
+                // the slot until then would block every later hostname
+                // connect for that whole time; its late completion finds
+                // no slot and no pending entry, so it is dropped silently.
+                self.dns_slots.remove(&id);
                 p.cancelled.store(true, Ordering::Release);
                 out.push(NetEvent::ConnectFailed {
                     host: p.host,
@@ -1678,6 +1718,7 @@ impl NetDriver {
         }
         let now = Instant::now();
         let mut expired = Vec::new();
+        let mut retries = Vec::new();
         for (id, c) in &mut self.conns {
             if c.rate_start.elapsed() >= Duration::from_secs(1) {
                 if c.rate_count as f64 / c.rate_start.elapsed().as_secs_f64() > 20_000.0 {
@@ -1696,8 +1737,16 @@ impl NetDriver {
             } else if c.slow.is_some_and(|d| now >= d) {
                 Some(DisconnectReason::SlowPeer)
             } else if !c.established && c.held.is_none() && now >= c.deadline {
-                c.failure = Some("connect_timeout: no response before deadline".into());
-                Some(DisconnectReason::Other)
+                // A still-connecting TCP attempt (e.g. a blackholed first
+                // address) falls through to the next queued address; only
+                // this phase can retry because TLS has not touched the socket.
+                if c.connecting && !c.alternate_addresses.is_empty() {
+                    retries.push(*id);
+                    None
+                } else {
+                    c.failure = Some("connect_timeout: no response before deadline".into());
+                    Some(DisconnectReason::Other)
+                }
             } else if c.held.is_some_and(|d| now >= d) {
                 Some(DisconnectReason::TlsFailure)
             } else if c.close_at.is_some_and(|d| now >= d) {
@@ -1707,6 +1756,25 @@ impl NetDriver {
             };
             if let Some(reason) = reason {
                 expired.push((*id, reason));
+            }
+        }
+        // Each retried address gets a fresh per-attempt deadline; the
+        // connection fails only once every queued address is exhausted.
+        let timeout = self.connect_timeout;
+        for id in retries {
+            let Some(c) = self.conns.get_mut(&id) else {
+                continue;
+            };
+            match c.retry_address(self.poll.registry()) {
+                Ok(true) => c.deadline = Instant::now() + timeout,
+                Ok(false) => {
+                    c.failure = Some("connect_timeout: no response before deadline".into());
+                    expired.push((id, DisconnectReason::Other));
+                }
+                Err(error) => {
+                    c.failure = Some(error.to_string());
+                    expired.push((id, DisconnectReason::Other));
+                }
             }
         }
         for (id, reason) in expired {

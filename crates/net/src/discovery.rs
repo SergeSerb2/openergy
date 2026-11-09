@@ -10,6 +10,7 @@ use std::{
 
 pub const SERVICE_TYPE: &str = "_openergy._tcp.local.";
 const BROWSE_RETRY: Duration = Duration::from_secs(1);
+const BROWSE_RETRY_MAX: Duration = Duration::from_secs(60);
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum DiscoveryScope {
     Loopback,
@@ -26,6 +27,7 @@ pub struct Discovery {
     dirty: bool,
     last_snapshot: Instant,
     browse_retry: Option<Instant>,
+    browse_delay: Duration,
 }
 impl Discovery {
     /// Loopback excludes all interfaces before browsing or advertising. A custom
@@ -68,6 +70,7 @@ impl Discovery {
             dirty: false,
             last_snapshot: Instant::now() - Duration::from_secs(1),
             browse_retry: None,
+            browse_delay: BROWSE_RETRY,
         })
     }
     pub fn advertise(&mut self, name: &str, port: u16, fp: Fingerprint) -> Result<(), NetError> {
@@ -96,20 +99,25 @@ impl Discovery {
     pub fn poll(&mut self) -> Option<Vec<DiscoveredPeer>> {
         if self.browse_retry.is_some_and(|deadline| Instant::now() >= deadline) {
             // A closed subscription can be recreated on the existing worker.
-            // Back off even if its bounded command queue is still full.
-            self.browse_retry = Some(Instant::now() + BROWSE_RETRY);
+            // Retry with exponential backoff (even if its bounded command
+            // queue is still full) so a dead daemon cannot warn every second.
             match self.daemon.browse_limited(SERVICE_TYPE, 64) {
                 Ok(events) => {
                     self.events = Some(events);
                     self.browse_retry = None;
+                    self.browse_delay = BROWSE_RETRY;
                 }
-                Err(error) => log::warn!("mDNS discovery browse retry failed: {error}"),
+                Err(error) => {
+                    log::warn!("mDNS discovery browse retry failed: {error}");
+                    self.browse_delay = (self.browse_delay * 2).min(BROWSE_RETRY_MAX);
+                    self.browse_retry = Some(Instant::now() + self.browse_delay);
+                }
             }
         }
         if let Some(events) = &self.events {
             if events.is_closed() {
                 self.events = None;
-                self.browse_retry = Some(Instant::now() + BROWSE_RETRY);
+                self.browse_retry = Some(Instant::now() + self.browse_delay);
                 log::warn!("mDNS discovery subscription closed; retrying");
                 self.dirty |= !self.peers.is_empty();
                 self.peers.clear();

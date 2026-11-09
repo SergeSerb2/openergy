@@ -10,6 +10,17 @@ use std::sync::Arc;
 pub const CHUNK_BYTES: usize = 32 * 1024 - 18;
 pub const HARD_CAP: usize = 64 * 1024 * 1024;
 
+/// Wire bytes of one DCLP frame, for queue-depth gating by the sender's
+/// driver owner. The Start length is a decimal string of at most 10 digits.
+pub fn chunk_wire_bytes(chunk: &Chunk) -> usize {
+    let payload = match chunk {
+        Chunk::Start { .. } => 10,
+        Chunk::Data(bytes) => bytes.len(),
+        Chunk::End => 0,
+    };
+    payload.saturating_add(18)
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ClipboardError {
     TooLarge,
@@ -166,6 +177,9 @@ impl Transfers {
             });
         }
     }
+    // Emission is paced open-loop; queue-depth feedback lives with the
+    // driver owner, which holds and retries chunks the Bulk queue cannot
+    // admit yet instead of aborting the transfer.
     pub fn tick(&mut self, conn: ConnId, now: u64, out: &mut Vec<Action>) {
         if self
             .incoming

@@ -62,6 +62,7 @@ mod probe {
             "clipboard-contract" => clipboard_contract()?,
             "r5-clipboard-expansion" => clipboard_expansion()?,
             "capture" => capture()?,
+            "reconnect" => reconnect()?,
             "recovery" => recovery()?,
             "inject-recovery" => inject_recovery()?,
             "clipboard-recovery" => clipboard_recovery()?,
@@ -75,12 +76,12 @@ mod probe {
                 clipboard()?;
                 capture()?;
                 recovery()?;
+                reconnect()?;
             }
-            _ => {
-                return Err(
-                    "Mode must be inject, clipboard, capture, recovery, resources, all, or a recovery sub-probe".into(),
-                )
-            }
+            _ => return Err(
+                "Mode must be inject, clipboard, capture, reconnect, recovery, resources, all, or a recovery sub-probe"
+                    .into(),
+            ),
         }
         println!("PASS {mode}");
         Ok(())
@@ -758,6 +759,212 @@ mod probe {
         println!("capture: XI2 observation, active keyboard/pointer grabs, CaptureDecision transitions and PassOnce release passed");
         Ok(())
     }
+    fn x_up() -> bool {
+        Command::new("xdpyinfo")
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .status()
+            .is_ok_and(|s| s.success())
+    }
+    fn wait_x(up: bool) -> Result<()> {
+        let deadline = Instant::now() + Duration::from_secs(10);
+        while x_up() != up {
+            if Instant::now() >= deadline {
+                return Err(format!("X server did not reach up={up}").into());
+            }
+            std::thread::sleep(Duration::from_millis(50));
+        }
+        Ok(())
+    }
+    fn spawn_xvfb() -> Result<Child> {
+        Ok(Command::new("Xvfb")
+            .args([
+                ":99",
+                "-screen",
+                "0",
+                "1280x800x24",
+                "-noreset",
+                "-nolisten",
+                "tcp",
+                "+extension",
+                "XTEST",
+                "+extension",
+                "XInputExtension",
+                "+extension",
+                "RANDR",
+                "+extension",
+                "XFIXES",
+            ])
+            .stdout(fs::File::create("/tmp/oe-xvfb-reconnect.log")?)
+            .stderr(Stdio::null())
+            .spawn()?)
+    }
+    fn kill_xvfb() -> Result<()> {
+        let _ = Command::new("pkill").args(["-f", "Xvfb :99"]).status();
+        if wait_x(false).is_err() {
+            let _ = Command::new("pkill").args(["-9", "-f", "Xvfb :99"]).status();
+            wait_x(false)?;
+        }
+        let _ = fs::remove_file("/tmp/.X99-lock");
+        let _ = fs::remove_file("/tmp/.X11-unix/X99");
+        Ok(())
+    }
+    // Kill the harness Xvfb under a live Backend, assert the outage is
+    // reported honestly (stale screens/cursor, failing inject/clipboard,
+    // no hangs), then restart Xvfb and assert inject, capture (with
+    // re-grab), clipboard (with re-own), screens/cursor and the display
+    // monitor all recover without recreating the Backend.
+    fn reconnect() -> Result<()> {
+        use x11rb::{connection::Connection, protocol::xproto, CURRENT_TIME};
+        let text = |bytes: &[u8]| ClipboardData {
+            formats: vec![ClipboardFormat {
+                kind: FormatKind::TextUtf8,
+                bytes: bytes.to_vec(),
+            }],
+        };
+        let (_xev, _path) = xev("reconnect")?;
+        let mut b = create(X11Options::default())?;
+        let mut clip = X11Clipboard::connect(None, Selection::Clipboard)?;
+        let notified = Arc::new(AtomicUsize::new(0));
+        let seen = notified.clone();
+        b.screens.on_display_changed(Box::new(move || {
+            seen.fetch_add(1, Ordering::Relaxed);
+        }));
+        let screens_before = b.screens.screens();
+        if screens_before.is_empty() {
+            return Err("No screens before restart".into());
+        }
+        b.sink.inject(&InputEvent::MouseMoveAbs { x: 100, y: 120 })?;
+        pause();
+        if b.screens.cursor_pos() != (100, 120) {
+            return Err("Cursor seed before restart failed".into());
+        }
+        b.clipboard.write(&text(b"pre-restart clipboard"))?;
+        if clip_out("clipboard", "UTF8_STRING")? != b"pre-restart clipboard" {
+            return Err("Clipboard seed before restart failed".into());
+        }
+        let count = Arc::new(AtomicUsize::new(0));
+        let events = count.clone();
+        b.source.start(Box::new(move |ev| {
+            if matches!(ev, InputEvent::KeyDown { .. } | InputEvent::KeyUp { .. }) {
+                events.fetch_add(1, Ordering::Relaxed);
+            }
+            CaptureDecision::Swallow
+        }))?;
+        b.source.set_cursor_captured(true)?;
+        command("xdotool", &["key", "a"])?;
+        pause();
+        if count.load(Ordering::Relaxed) == 0 {
+            return Err("Capture did not observe a key before restart".into());
+        }
+        println!("reconnect: live Backend seeded (cursor, grabbed capture, clipboard owner)");
+        kill_xvfb()?;
+        std::thread::sleep(Duration::from_millis(300));
+        // A dead server must not pose as an empty display set or (0, 0).
+        if b.screens.screens() != screens_before {
+            return Err("Dead server was masked as a changed/empty screen set".into());
+        }
+        if b.screens.cursor_pos() != (100, 120) {
+            return Err("Dead server was masked as a moved cursor".into());
+        }
+        if b.sink.inject(&InputEvent::MouseMoveAbs { x: 1, y: 1 }).is_ok() {
+            return Err("Sink inject succeeded while X was down".into());
+        }
+        if b.source.warp_cursor(5, 5).is_ok() {
+            return Err("Capture warp succeeded while X was down".into());
+        }
+        if b.clipboard.write(&text(b"while down")).is_ok() {
+            return Err("Clipboard write succeeded while X was down".into());
+        }
+        if b.clipboard.read(1024).is_ok() {
+            return Err("Clipboard read succeeded while X was down".into());
+        }
+        println!("reconnect: outage is honest stale screens/cursor plus errors, no hangs");
+        let xvfb = Process(spawn_xvfb()?);
+        wait_x(true)?;
+        let deadline = Instant::now() + Duration::from_secs(15);
+        let retry = |what: &str, ok: &mut dyn FnMut() -> bool| -> Result<()> {
+            while !ok() {
+                if Instant::now() >= deadline {
+                    return Err(format!("{what} did not recover after X restart").into());
+                }
+                std::thread::sleep(Duration::from_millis(100));
+            }
+            Ok(())
+        };
+        command("xdotool", &["mousemove", "321", "222"])?;
+        retry("screens/cursor", &mut || {
+            b.screens.cursor_pos() == (321, 222) && b.screens.screens() == screens_before
+        })?;
+        retry("display monitor", &mut || notified.load(Ordering::Relaxed) > 0)?;
+        retry("sink inject", &mut || {
+            b.sink.inject(&InputEvent::MouseMoveAbs { x: 117, y: 133 }).is_ok()
+        })?;
+        pause();
+        let pos = String::from_utf8(command("xdotool", &["getmouselocation", "--shell"])?)?;
+        if !pos.contains("X=117\nY=133") {
+            return Err(format!("Recovered sink pointer position mismatch: {pos}").into());
+        }
+        // The pre-restart selection is re-owned without a rewrite.
+        retry("clipboard re-own", &mut || {
+            clip_out("clipboard", "UTF8_STRING").is_ok_and(|v| v == b"pre-restart clipboard")
+        })?;
+        retry("clipboard write", &mut || {
+            b.clipboard.write(&text(b"post-restart")).is_ok()
+        })?;
+        if clip_out("clipboard", "UTF8_STRING")? != b"post-restart" {
+            return Err("Recovered clipboard write is not readable by xclip".into());
+        }
+        retry("second clipboard worker", &mut || {
+            clip.write(&text(b"clip recovered")).is_ok()
+        })?;
+        {
+            let _owner = clip_in(&clip, "clipboard", "UTF8_STRING", b"external post-restart")?;
+            equal_format(&b.clipboard.read(1024)?, FormatKind::TextUtf8, b"external post-restart")?;
+        }
+        println!("reconnect: screens/cursor, monitor, sink and clipboard (re-own + both directions) recovered");
+        // The grab held at kill time must be re-taken on the new server.
+        let (c, screen) = x11rb::connect(None)?;
+        let root = c.setup().roots[screen].root;
+        retry("capture re-grab", &mut || {
+            let Ok(cookie) = c.grab_keyboard(
+                false,
+                root,
+                CURRENT_TIME,
+                xproto::GrabMode::ASYNC,
+                xproto::GrabMode::ASYNC,
+            ) else {
+                return false;
+            };
+            let Ok(reply) = cookie.reply() else {
+                return false;
+            };
+            if reply.status == xproto::GrabStatus::SUCCESS {
+                let _ = c.ungrab_keyboard(CURRENT_TIME).map(|k| k.check());
+                return false;
+            }
+            true
+        })?;
+        let (_xev2, path2) = xev("reconnect2")?;
+        let before = count.load(Ordering::Relaxed);
+        command("xdotool", &["key", "b"])?;
+        retry("capture events", &mut || count.load(Ordering::Relaxed) > before)?;
+        pause();
+        if fs::read_to_string(&path2)?.contains("KeyPress event") {
+            return Err("Re-grabbed capture leaked a key to the focused window".into());
+        }
+        b.source.set_cursor_captured(false)?;
+        b.source.stop();
+        println!("reconnect: capture re-grabbed and swallowed on the new server");
+        // Restore a harness X server for whatever runs after this mode.
+        drop(b);
+        drop(clip);
+        drop(xvfb);
+        let _detached = spawn_xvfb()?;
+        wait_x(true)?;
+        println!("reconnect: Xvfb restored for the harness");
+        Ok(())
+    }
     fn recovery() -> Result<()> {
         capture_recovery()?;
         inject_recovery()?;
@@ -776,6 +983,23 @@ mod probe {
             )
         };
         let original = mapping()?;
+        // A previous sub-probe's worker can still be in kernel teardown
+        // after its Backend dropped; counting it inflates the baseline.
+        // Wait (bounded) until no oe-x11-* worker remains before counting.
+        let settle_deadline = Instant::now() + Duration::from_secs(5);
+        loop {
+            let workers = fs::read_dir("/proc/self/task")?
+                .filter_map(|entry| entry.ok())
+                .filter(|entry| {
+                    fs::read_to_string(entry.path().join("comm"))
+                        .is_ok_and(|name| name.trim_start().starts_with("oe-x11-"))
+                })
+                .count();
+            if workers == 0 || Instant::now() >= settle_deadline {
+                break;
+            }
+            std::thread::sleep(Duration::from_millis(10));
+        }
         let fds = fs::read_dir("/proc/self/fd")?.count();
         let threads = fs::read_dir("/proc/self/task")?.count();
         for _ in 0..32 {

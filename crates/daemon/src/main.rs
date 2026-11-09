@@ -206,16 +206,34 @@ fn cmd_daemon(cmd: &str, args: &[String]) -> Result<i32, String> {
     }
     let socket_path = opts.map.get("socket").map(PathBuf::from).unwrap_or_else(default_socket);
     let config_path = opts.map.get("config").map(PathBuf::from);
-    let mut config = load_config(config_path.as_deref())?;
-    match cmd {
-        "server" => config.role = openergy_config::Role::Server,
-        "client" => {
-            config.role = openergy_config::Role::Client;
-            if let Some(r) = opts.map.get("remote") {
-                config.client.remote = r.clone();
+    // An empty path is a usage error with no repair target, not a bad config.
+    if config_path
+        .clone()
+        .unwrap_or_else(default_config_path)
+        .as_os_str()
+        .is_empty()
+    {
+        return Err("config path must not be empty".into());
+    }
+    // A bad config must not brick the daemon: start off (no listen/connect)
+    // so config.set/config.patch via ctl can repair the file live. The
+    // server/client aliases do not force a role onto the fallback config.
+    let (mut config, config_error) = load_config_or_off(config_path.as_deref());
+    if let Some(error) = &config_error {
+        eprintln!(
+            "openergy: {error}; starting with role=off, repair it with ctl config.set or config.patch (no restart needed)"
+        );
+    } else {
+        match cmd {
+            "server" => config.role = openergy_config::Role::Server,
+            "client" => {
+                config.role = openergy_config::Role::Client;
+                if let Some(r) = opts.map.get("remote") {
+                    config.client.remote = r.clone();
+                }
             }
+            _ => {}
         }
-        _ => {}
     }
     let parent_pid: Option<i64> = match opts.map.get("parent-pid") {
         Some(v) => Some(
@@ -233,7 +251,18 @@ fn cmd_daemon(cmd: &str, args: &[String]) -> Result<i32, String> {
         config_path,
         platform_name(opts.map.get("platform").map(String::as_str)),
         parent_pid,
+        config_error,
     )
+}
+
+/// Daemon-startup load: any failure yields the default (role=off) config
+/// plus the error text, instead of exiting. Strict `load_config` remains
+/// the single read/parse implementation.
+fn load_config_or_off(path: Option<&Path>) -> (Config, Option<String>) {
+    match load_config(path) {
+        Ok(config) => (config, None),
+        Err(error) => (Config::default(), Some(error)),
+    }
 }
 
 fn load_config(path: Option<&Path>) -> Result<Config, String> {
