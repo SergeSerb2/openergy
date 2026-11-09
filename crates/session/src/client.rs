@@ -176,7 +176,14 @@ impl Client {
                             if let Some(v) = self.clip_sequences.get_mut(id.0 as usize) {
                                 *v = self.sequence;
                             }
-                            p.transfers.cancel(id);
+                            // PRIMARY: defer the cancel until payload()
+                            // has a non-empty replacement to send. An
+                            // owner-exit read is empty or unavailable,
+                            // and cancelling now would abandon a live
+                            // transfer for no replacement.
+                            if id.0 != 1 {
+                                p.transfers.cancel(id);
+                            }
                             out.push(Action::ReadClipboard {
                                 id,
                                 max_bytes: self.config.clipboard.max_bytes.min(clipboard::HARD_CAP),
@@ -567,6 +574,11 @@ impl Client {
             Ok(bytes) if bytes.len() < limit => {
                 // A blocked payload must not take ownership from a peer that
                 // still has a useful clipboard.
+                if id.0 == 1 {
+                    // Deferred from LocalClipboardChanged: only a real
+                    // replacement supersedes the previous transfer.
+                    p.transfers.cancel(id);
+                }
                 send(
                     *conn,
                     Message::ClipboardGrab {

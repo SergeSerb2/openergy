@@ -6,13 +6,22 @@ timeout_ms = 8000
 [[node]]
 id = "server"
 role = "server"
-config = { clipboard = { share_primary_selection = true }, screen = [{ name = "server", rect = { x = 0, y = 0, w = 1920, h = 1080 } }, { name = "client", os = "linux", rect = { x = 1920, y = 0, w = 1920, h = 1080 } }] }
+config = { clipboard = { share_primary_selection = true }, screen = [{ name = "server", rect = { x = 0, y = 0, w = 1920, h = 1080 } }, { name = "client", os = "linux", rect = { x = 1920, y = 0, w = 1920, h = 1080 } }, { name = "client3", os = "linux", rect = { x = 1920, y = 1080, w = 1920, h = 1080 } }] }
 
 [[node]]
 id = "client"
 role = "client"
 remote = "server"
 config = { clipboard = { share_primary_selection = true } }
+
+# Late joiner for the owner-exit phase: starts only after the server's
+# PRIMARY owner has exited, proving the server kept the last selection.
+[[node]]
+id = "client3"
+role = "client"
+remote = "server"
+config = { clipboard = { share_primary_selection = true } }
+autostart = false
 
 [[step]]
 do = "wait_connected"
@@ -92,6 +101,52 @@ text = "primary from client"
 [[step]]
 do = "assert_clipboard"
 node = "server"
+text = "clipboard zero"
+
+# Owner exit on the server: the local PRIMARY read comes back empty.
+# That is not a clear — nothing may be sent, and the server must keep
+# the peer-owned selection it is relaying for peers that connect later.
+[[step]]
+do = "ledger_mark"
+node = "client"
+audit = true
+save = "pre_exit"
+
+[[step]]
+do = "clipboard_set"
+node = "server"
+selection = "primary"
+formats = []
+
+[[step]]
+do = "sleep"
+ms = 300
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+since = "${pre_exit.sequence}"
+exact = true
+audit = true
+expect = []
+
+[[step]]
+do = "start"
+node = "client3"
+
+[[step]]
+do = "wait_connected"
+node = "client3"
+
+[[step]]
+do = "assert_clipboard"
+node = "client3"
+selection = "primary"
+text = "primary from client"
+
+[[step]]
+do = "assert_clipboard"
+node = "client3"
 text = "clipboard zero"
 
 # Flag off on the server: its local PRIMARY must not leave, and PRIMARY

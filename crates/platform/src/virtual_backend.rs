@@ -603,6 +603,21 @@ impl State {
             last_own_write_stamp: own,
         })
     }
+    /// Summary metadata read through the slot's `Arc`: no payload clone.
+    fn clipboard_summary_for(&self, id: u8) -> Option<ClipboardSummary> {
+        let (data, stamp, own) = match id {
+            0 => (&self.clipboard, self.clipboard_stamp, self.own_write_stamp),
+            1 => (&self.primary, self.primary_stamp, self.primary_own_write_stamp),
+            _ => return None,
+        };
+        Some(ClipboardSummary {
+            stamp,
+            own_write: own == Some(stamp),
+            last_own_write_stamp: own,
+            bytes: data.total_bytes(),
+            formats: data.formats.iter().map(|f| f.kind.as_str().to_string()).collect(),
+        })
+    }
     fn clipboard_read_for(&self, id: u8, max_bytes: usize) -> Result<ClipboardData, PlatformError> {
         if id > 1 {
             return Err(PlatformError::NotImplemented);
@@ -798,20 +813,7 @@ impl VirtualControl {
         })
     }
     pub fn clipboard_summary_for(&self, id: u8) -> Option<ClipboardSummary> {
-        let state = lock(&self.shared.state);
-        let snapshot = state.clipboard_snapshot_for(id)?;
-        Some(ClipboardSummary {
-            stamp: snapshot.stamp,
-            own_write: snapshot.own_write,
-            last_own_write_stamp: snapshot.last_own_write_stamp,
-            bytes: snapshot.data.total_bytes(),
-            formats: snapshot
-                .data
-                .formats
-                .iter()
-                .map(|f| f.kind.as_str().to_string())
-                .collect(),
-        })
+        lock(&self.shared.state).clipboard_summary_for(id)
     }
     pub fn clipboard_get(&self) -> ClipboardSnapshot {
         self.clipboard_get_for(0).unwrap_or(ClipboardSnapshot {

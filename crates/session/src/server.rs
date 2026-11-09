@@ -21,6 +21,10 @@ struct Slot {
     available: bool,
     readback: bool,
     remote_payload: Option<Arc<ClipboardData>>,
+    /// PRIMARY only: a local change read is in flight. Slot state and
+    /// transfers stay untouched until a non-empty replacement lands,
+    /// because an empty or unavailable PRIMARY read is not a clear.
+    local_pending: bool,
 }
 #[derive(Clone)]
 pub struct Server {
@@ -239,16 +243,28 @@ impl Server {
                     && self.config.clipboard.send
                     && primary_allowed(&self.config, id)
                 {
-                    if let Some(slot) = self.slots.get_mut(id.0 as usize) {
-                        slot.sequence = self.sequence;
-                        slot.owner = None;
-                        slot.data = None;
-                        slot.available = false;
-                        slot.readback = false;
-                        slot.remote_payload = None;
-                    }
-                    for p in self.peers.values_mut() {
-                        p.transfers.cancel(id);
+                    if id.0 == 1 {
+                        // Defer the invalidation below until payload()
+                        // sees a non-empty replacement: PRIMARY owners
+                        // die whenever an app exits, and the read that
+                        // follows is then empty or unavailable, which is
+                        // not a clear. Wiping now would drop the last
+                        // valid selection and cancel live transfers.
+                        if let Some(slot) = self.slots.get_mut(1) {
+                            slot.local_pending = true;
+                        }
+                    } else {
+                        if let Some(slot) = self.slots.get_mut(id.0 as usize) {
+                            slot.sequence = self.sequence;
+                            slot.owner = None;
+                            slot.data = None;
+                            slot.available = false;
+                            slot.readback = false;
+                            slot.remote_payload = None;
+                        }
+                        for p in self.peers.values_mut() {
+                            p.transfers.cancel(id);
+                        }
                     }
                     out.push(Action::ReadClipboard {
                         id,
@@ -260,6 +276,8 @@ impl Server {
             ServerEvent::ClipboardReadFailed { id } => {
                 if let Some(slot) = self.slots.get_mut(id.0 as usize) {
                     slot.readback = false;
+                    // Unavailable PRIMARY read: preserve prior state.
+                    slot.local_pending = false;
                 }
             }
             ServerEvent::TimerTick { now_ms } => {
@@ -841,6 +859,30 @@ impl Server {
             || !primary_allowed(&self.config, id)
         {
             return;
+        }
+        if owner.is_none() && id.0 == 1 && self.slots.get(1).is_some_and(|s| s.local_pending) {
+            if let Some(slot) = self.slots.get_mut(1) {
+                slot.local_pending = false;
+            }
+            if data.formats.is_empty() {
+                // Owner-exit read: not a clear. Prior slot state and
+                // in-flight transfers stand.
+                return;
+            }
+            // A real replacement: run the ownership takeover that
+            // LocalClipboardChanged deferred, cancelling superseded
+            // transfers only now that new data exists.
+            if let Some(slot) = self.slots.get_mut(1) {
+                slot.sequence = self.sequence;
+                slot.owner = None;
+                slot.data = None;
+                slot.available = false;
+                slot.readback = false;
+                slot.remote_payload = None;
+            }
+            for p in self.peers.values_mut() {
+                p.transfers.cancel(id);
+            }
         }
         let Some(slot) = self.slots.get_mut(id.0 as usize) else {
             return;
