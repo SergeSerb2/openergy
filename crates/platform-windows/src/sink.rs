@@ -48,6 +48,7 @@ impl Stroke {
         }
     }
 }
+#[derive(Clone)]
 struct Held {
     stroke: Stroke,
     modifiers: Vec<(u16, Stroke)>,
@@ -188,15 +189,22 @@ impl Sink {
         send(stroke.input(true))
     }
     fn up(&mut self, button: u16) -> Result<(), PlatformError> {
-        if let Some(held) = self.keys.get(&button) {
+        // Attempt every release even when one fails, but retain the failed
+        // strokes in the ledger so a later release_all() retries them: a
+        // rejected key-up (e.g. focus moved to a higher-integrity window)
+        // leaves the physical key down, and forgetting it would strand it.
+        let mut failed: Option<PlatformError> = None;
+        if let Some(held) = self.keys.get(&button).cloned() {
             if !self.keys.iter().any(|(id, h)| {
                 *id != button && (h.stroke == held.stroke || h.modifiers.iter().any(|(_, s)| *s == held.stroke))
             }) {
                 if let Err(e) = send(held.stroke.input(false)) {
                     log::error!("Windows key release failed: {e}");
+                    failed = Some(e);
                 }
             }
-            for (_, s) in held.modifiers.iter().rev() {
+            let mut failed_modifiers = Vec::new();
+            for (vk, s) in held.modifiers.iter().rev() {
                 if !self
                     .keys
                     .iter()
@@ -204,17 +212,31 @@ impl Sink {
                 {
                     if let Err(e) = send(s.input(false)) {
                         log::error!("Windows modifier release failed: {e}");
+                        failed_modifiers.push((*vk, *s));
+                        if failed.is_none() {
+                            failed = Some(e);
+                        }
                     }
                 }
             }
-            self.keys.remove(&button);
+            if failed.is_none() && failed_modifiers.is_empty() {
+                self.keys.remove(&button);
+            } else if let Some(entry) = self.keys.get_mut(&button) {
+                // Keep only the releases that failed; a retried up() resends
+                // the key stroke, which is harmless if it already went up.
+                failed_modifiers.reverse();
+                entry.modifiers = failed_modifiers;
+            }
             self.owned_modifiers.retain(|_, s| {
                 self.keys
                     .values()
                     .any(|h| h.stroke == *s || h.modifiers.iter().any(|(_, m)| m == s))
             });
         }
-        Ok(())
+        match failed {
+            Some(e) => Err(e),
+            None => Ok(()),
+        }
     }
 }
 impl InputSink for Sink {
@@ -270,11 +292,17 @@ impl InputSink for Sink {
                     self.buttons.insert(button);
                     mouse(flags, data, 0, 0)
                 } else {
-                    self.buttons.remove(&button);
-                    if let Err(e) = mouse(flags, data, 0, 0) {
-                        log::error!("Windows button release failed: {e}");
+                    // Retain a failed release so release_all() retries it.
+                    match mouse(flags, data, 0, 0) {
+                        Ok(()) => {
+                            self.buttons.remove(&button);
+                            Ok(())
+                        }
+                        Err(e) => {
+                            log::error!("Windows button release failed: {e}");
+                            Err(e)
+                        }
                     }
-                    Ok(())
                 }
             }
             InputEvent::MouseWheel { dx, dy } => {
@@ -312,10 +340,13 @@ impl InputSink for Sink {
             }
         }
         for (vk, stroke) in self.pending_toggles.clone() {
-            if let Err(e) = send(stroke.input(false)) {
-                log::error!("Windows toggle release failed: {e}");
+            // Retain a failed toggle release for the next release_all().
+            match send(stroke.input(false)) {
+                Ok(()) => {
+                    self.pending_toggles.remove(&vk);
+                }
+                Err(e) => log::error!("Windows toggle release failed: {e}"),
             }
-            self.pending_toggles.remove(&vk);
         }
         self.wheel = [0; 2];
     }
