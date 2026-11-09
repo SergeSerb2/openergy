@@ -436,12 +436,23 @@ Field rules:
 - `transfer`: sender-chosen, nonzero, unique per connection and direction.
   The daemon picks a random start value at connection setup and then
   increments, skipping zero. Random starts make resume matching (§4.5)
-  safe against a restarted peer reusing small IDs.
+  safe against a restarted peer reusing small IDs. **Namespace rule:**
+  in every `OF**` frame — offer, answer, data, and cancel alike —
+  `transfer` is in the offer *originator's* namespace, no matter which
+  peer sends the frame. Both endpoints therefore resolve a frame as
+  `(connection, originator direction, transfer)`: the originator finds
+  its outbound record, the receiver its inbound record. Without this
+  rule, simultaneous opposite-direction sends that happen to pick the
+  same ID make a cancel ambiguous — frame direction alone cannot say
+  whether the sender of the cancel means "stop sending to me" or
+  "I stop sending to you".
 - Identity outside the wire codec: a wire `transfer` ID alone identifies
   nothing. Two clients can offer the same ID at once, as can opposite
   directions on one connection, and inbound IDs are peer-chosen. Every
   consumer past decode therefore uses a qualified key,
-  `(ConnId, direction, transfer)`. On top of that, the daemon assigns
+  `(ConnId, originator direction, transfer)`, where originator
+  direction is offer-sender → receiver, independent of who sent the
+  frame being decoded. On top of that, the daemon assigns
   each transfer a daemon-unique handle, `xfer` (monotonic `u64` from a
   random start, never reused within a daemon run), when the offer or
   send is created. Session maps `xfer` ↔ qualified key. Worker commands
@@ -563,16 +574,23 @@ in the IPC call itself. Neither case sends a single data chunk.
 ### 4.5 Resume and cancel
 
 - **Cancel, both sides, any time:** send `OFTR` mark 4 at `Control`
-  priority so it passes queued bulk. The sender stops pulling chunks,
-  purges deferred and net bulk for that transfer (§6.2), and reports
-  `file.failed/cancelled`. The receiver stops staging. User-initiated
-  cancel deletes the partial file. Network or stall abort keeps it (§6.2).
+  priority so it passes queued bulk. Either side may send it, and the
+  §4.1 namespace rule keeps it unambiguous: the ID is the originator's,
+  so the originator cancels its outbound record and the receiver
+  cancels its inbound record for that ID — an opposite-direction
+  transfer with the same numeric ID is a different record and is never
+  touched. The sender stops pulling chunks, purges deferred and net
+  bulk for that transfer (§6.2), and reports `file.failed/cancelled`.
+  The receiver stops staging. User-initiated cancel deletes the
+  partial file. Network or stall abort keeps it (§6.2).
 - **Resume is a later phase (§8.1 phase 3), but the wire carries it from
   day one.** The accept answer includes `resume_offset`. In milestone 1
   the receiver always answers `0` and deletes partials on disconnect.
-  The resume phase keeps
-  `name.part` plus a sidecar record `{sha256, total_len}` for 24 h; a new
-  offer with the same hash and size resumes at the staged length. Hash of
+  The resume phase keeps the `.parts/<xfer>` partial plus a sidecar
+  record `{peer, sha256, total_len}` for 24 h (startup cleanup keeps
+  sidecar-backed partials inside that window); a new offer from the
+  same peer with the same hash and size adopts the partial under its
+  new `xfer` and resumes at the staged length. Hash of
   the staged prefix is checked by re-hashing the partial on resume
   accept, then streaming continues into the final whole-file hash.
   Any mismatch restarts at offset `0`. Classic peers get no resume: no
@@ -586,8 +604,8 @@ in the IPC call itself. Neither case sends a single data chunk.
 
 - The IPC call takes one path. "Send these 5 files" is 5 calls. The
   daemon queues them per peer and runs one at a time. Progress events
-  carry the transfer ID, so a future GUI can group them itself. No batch
-  wire concept in version 1.
+  carry the `xfer` handle, so a future GUI can group them itself. No
+  batch wire concept in version 1.
 - Directories are rejected with `is_directory`. No archive creation, no
   recursive walk. A future phase may add "send folder as `.tar`" as an
   app-side action; the daemon stays out of archiving.
