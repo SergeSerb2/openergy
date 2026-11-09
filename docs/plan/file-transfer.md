@@ -591,17 +591,29 @@ in the IPC call itself. Neither case sends a single data chunk.
   The resume phase keeps the `.parts/<xfer>` partial plus a sidecar
   record `{peer, sha256, total_len, staged_len, prefix_sha256}` for
   24 h (startup cleanup keeps sidecar-backed partials inside that
-  window). `prefix_sha256` is the receiver's running SHA-256 finalized
-  over exactly the staged bytes at abort time; the worker writes it
-  with the sidecar in the same step that fsyncs the partial. A new
+  window). The sidecar is **checkpointed during staging**, not written
+  at abort time — an orderly abort may never run (SIGKILL, power
+  loss; the e2e `kill` step defaults to `KILL`). Checkpoint rule:
+  every 8 MiB staged and at most every 5 s, the worker fsyncs the
+  partial, finalizes a copy of the running SHA-256 over exactly the
+  committed prefix as `prefix_sha256`, and commits the sidecar
+  atomically (write temp file, rename over the sidecar, fsync the
+  directory). An orderly abort ends with one final checkpoint.
+  Recovery uses the last committed checkpoint only: bytes appended
+  after it — including a possibly torn tail write — are discarded by
+  truncating the partial to `staged_len` before validation. A new
   offer from the same peer with the same whole-file hash and size may
   adopt the partial under its new `xfer`, but only after validation:
-  the worker re-reads the staged bytes, hashes them (rebuilding the
-  streaming hasher state in the same pass), and compares against
-  `prefix_sha256` **before** answering a nonzero `resume_offset`.
-  Match → answer `resume_offset = staged_len` and continue streaming
-  into the final whole-file comparison. Mismatch, missing sidecar, or
-  length disagreement → delete partial and sidecar, answer `0`. No
+  the worker truncates to `staged_len`, re-reads and hashes those
+  bytes (rebuilding the streaming hasher state in the same pass), and
+  compares against `prefix_sha256` **before** answering a nonzero
+  `resume_offset`.
+  Match → answer `resume_offset = staged_len` (a checkpoint boundary,
+  at most one checkpoint interval behind the kill point) and continue
+  streaming into the final whole-file comparison. Mismatch, missing
+  or unparseable sidecar, or length disagreement → delete partial and
+  sidecar, answer `0`. A partial killed before its first checkpoint
+  has no sidecar and is deleted by startup cleanup as today. No
   sender-assisted prefix check is needed: the offer's whole-file
   SHA-256 equality already proves the sender's bytes are the same
   file, so its prefix is the staged prefix by definition; the sidecar
@@ -821,7 +833,9 @@ Receive side mirrors it: session hands each data chunk to the worker as
 `StageFileChunk`. Worker commands carry the daemon-unique `xfer` handle
 (§4.1), never a wire ID. The worker appends to
 `<receive_dir>/.parts/<xfer>` in arrival order (single active inbound
-per peer keeps this trivial) and streams a running SHA-256. `FinishFile`
+per peer keeps this trivial) and streams a running SHA-256, with the
+§4.5 crash-consistent sidecar checkpoints during staging (phase 3).
+`FinishFile`
 makes the worker compare size and hash, `fsync` the file, then
 atomically rename it from `.parts/` into place (§7.2). A
 failed finish deletes or keeps the partial per §4.5 and reports the
@@ -1131,7 +1145,7 @@ F5), and both directions are exercised where the roles allow it.
 | F8 | Stall/backpressure: raw stopped reader (A6 pattern) plus a concurrent clipboard send and key stream to a second, healthy client | File abort is visible (`file.failed`), IPC stays responsive, healthy client input and clipboard are unaffected; clipboard abort does not kill a file transfer in the mirrored run (per-stream purge, §6.2) |
 | F9 | Kill mid-transfer: `kill` the receiver, restart, resend | Sender fails cleanly; restart starts with no staged state (milestone 1); resend hash-matches |
 | F10 | TLS gate: plaintext pair; TLS pair with untrusted (held) peer | `file.send` returns `tls_required` in both cases; no offer bytes on the wire (`raw_expect` absence pattern); clipboard behavior unchanged |
-| F11 | Resume (phase 3): kill at ~50% (progress-gated), restart, resend same file | Accept carries `resume_offset > 0`; transferred bytes shrink accordingly (progress totals); final hash equal; changed-content retry restarts at 0 |
+| F11 | Resume (phase 3): SIGKILL receiver at ~50% (progress-gated), restart, resend same file | Accept carries `resume_offset > 0` equal to the last §4.5 checkpoint (≤ one checkpoint interval behind the kill point); transferred bytes shrink accordingly (progress totals); final hash equal; changed-content retry restarts at 0 |
 | F12 | Conflict: pre-place same-name file, send twice | Original bytes intact (`sha256` unchanged); received copies land as ` (1)`, ` (2)`; `on_conflict = reject` variant fails with `name_conflict` |
 | F13 | Virtual drag (phase 4): scripted drag start, edge cross, release | File lands with matching hash; recorded ledger shows no stuck button after release |
 | F14 | Kill mid-drag (phase 4): connection cut while drag armed | Remote buttons released on the survivor's next input; no partial file; no stuck drag state after reconnect |
