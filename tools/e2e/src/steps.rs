@@ -54,7 +54,27 @@ impl Context {
             "inject_burst" => {
                 let batch_size = step.number("batch_size", 512).min(512) as usize;
                 let repeats = step.number("repeat", 1000).min(1000);
-                let events = vec![step.value("event"); batch_size];
+                // Tail events ride every batch, so the tail release is applied
+                // in the same daemon pass as the repeats that fill the queue:
+                // no socket flush can intervene and un-fill it first. Success
+                // then needs `until` status fields, not the sticky last_error
+                // (an earlier burst may already have set network_queue_full).
+                let empty = Vec::new();
+                let tail = match step.fields.get("tail") {
+                    Some(tail) => tail
+                        .as_array()
+                        .ok_or_else(|| Failure::runner("inject_burst tail must be an array"))?,
+                    None => &empty,
+                };
+                let until = step.fields.get("until");
+                if !tail.is_empty() && until.is_none() {
+                    return Err(Failure::runner("inject_burst tail requires until status fields"));
+                }
+                if batch_size + tail.len() > 1024 {
+                    return Err(Failure::runner("inject_burst batch plus tail exceeds 1024 events"));
+                }
+                let mut events = vec![step.value("event"); batch_size];
+                events.extend(tail.iter().cloned());
                 let deadline = Instant::now() + timeout;
                 // Each call is a runner bound, not a product timer, so it
                 // stretches with --slowdown like every other deadline.
@@ -66,7 +86,12 @@ impl Context {
                     std::thread::sleep(Duration::from_millis(1));
                     let status = self.ipc(&id, "status.get", json!({}), call)?;
                     slowest = slowest.max(started.elapsed());
-                    if status["last_error"]["code"] == "network_queue_full" {
+                    let done = if let Some(until) = until {
+                        fields_match(&status, until)?
+                    } else {
+                        status["last_error"]["code"] == "network_queue_full"
+                    };
+                    if done {
                         return Ok(json!({
                             "queue_full_after_batches": batch + 1,
                             "slowest_batch_ms": slowest.as_millis() as u64,

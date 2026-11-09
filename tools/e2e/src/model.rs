@@ -117,7 +117,7 @@ impl Step {
             "wait_status" | "assert_status" => "node fields",
             "wait_connected" => "node peer",
             "inject" => "node events seed hid_seed now_ms click_interval_ms click_distance",
-            "inject_burst" => "node event batch_size repeat",
+            "inject_burst" => "node event batch_size repeat tail until",
             "assert_recorded" | "assert_recorded_tail" => "node expect expect_tail since exact input_only",
             "assert_numbering" => "node since seed min_downs states allow_held",
             "ledger_mark" | "clipboard_get" | "pause" | "resume" | "start" | "subscribe" | "parent_exit" | "trust_crash_recovery" => "node",
@@ -171,11 +171,11 @@ impl Step {
                 "click_distance" | "p99_ms" | "cpu_percent" => {
                     value.as_f64().is_some_and(|n| n.is_finite() && n >= 0.0)
                 }
-                "fields" | "params" | "permissions" | "toml_expect" => value.is_object(),
+                "fields" | "params" | "permissions" | "toml_expect" | "until" => value.is_object(),
                 "expect" | "expect_tail" if matches!(self.op.as_str(), "assert_recorded" | "assert_recorded_tail") => {
                     value.is_array()
                 }
-                "events" | "args" | "codes" | "states" | "rects" | "formats" => value.is_array(),
+                "events" | "args" | "codes" | "states" | "rects" | "formats" | "tail" => value.is_array(),
                 "node" | "peer" | "source" | "method" | "save" | "expect_error" | "text" | "sha256" | "kind"
                 | "encoding" | "fixture" | "path" | "mode" | "regex" | "output_regex" | "stdout_path" | "signal"
                 | "builder" | "product" | "name" | "payload_hex" | "hex" | "action" | "expect_text" | "receiver"
@@ -186,7 +186,12 @@ impl Step {
                 return Err(Failure::runner(format!("{}: invalid value for {key}", self.op)));
             }
         }
-        if let Some(fields) = self.fields.get("fields").and_then(Value::as_object) {
+        if let Some(fields) = self
+            .fields
+            .get("fields")
+            .or_else(|| self.fields.get("until"))
+            .and_then(Value::as_object)
+        {
             for expected in fields.values().filter_map(Value::as_object) {
                 if expected.keys().any(|key| key.starts_with('$')) {
                     for (op, rhs) in expected {

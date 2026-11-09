@@ -80,13 +80,22 @@ scan = true
 [[step]]
 do = "inject"
 node = "server"
-events = [{"type" = "key_down", "key" = 97, "modifiers" = 0, "button" = 4}, {"type" = "mouse_down", "button" = 1}]
+events = [{"type" = "key_down", "key" = 97, "modifiers" = 0, "button" = 4}, {"type" = "mouse_down", "button" = 1}, {"type" = "mouse_down", "button" = 2}]
 
 [[step]]
 do = "raw_expect"
 node = "probe"
 builder = "code"
 code = "DKDN"
+payload_only = true
+framed = true
+scan = true
+
+[[step]]
+do = "raw_expect"
+node = "probe"
+builder = "code"
+code = "DMDN"
 payload_only = true
 framed = true
 scan = true
@@ -113,10 +122,20 @@ do = "assert_status"
 node = "server"
 fields = {"peers" = {"$len" = 2}, "last_error.code" = "network_queue_full"}
 
+# The lost up must be applied in the same daemon pass as the repeats that
+# refill the queue, or a socket flush between steps can drain it first and
+# the up is accepted normally. The tail release of button 2 rides every
+# batch and re-arms; the batch that crosses the queue limit loses it, which
+# drops only this peer and flushes the held key/button ups and COUT.
 [[step]]
-do = "inject"
+do = "inject_burst"
 node = "server"
-events = [{"type" = "key_up", "key" = 97, "modifiers" = 0, "button" = 4}]
+event = {"type" = "key_repeat", "key" = 97, "modifiers" = 0, "button" = 4, "count" = 1}
+repeat = 1000
+batch_size = 512
+timeout_ms = 15000
+tail = [{"type" = "mouse_up", "button" = 2}, {"type" = "mouse_down", "button" = 2}]
+until = {"peers" = {"$len" = 1}}
 
 [[step]]
 do = "raw_expect"
