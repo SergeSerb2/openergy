@@ -550,6 +550,12 @@ impl Server {
                         slot.available = false;
                         slot.readback = false;
                         slot.remote_payload = None;
+                        // A pending local PRIMARY read is superseded by
+                        // this grab: when it completes, payload() must
+                        // not run its deferred takeover over the peer's
+                        // newer selection. Clearing the flag routes the
+                        // stale payload into the owner-mismatch drop.
+                        slot.local_pending = false;
                         for peer in self.peers.values_mut() {
                             peer.transfers.cancel(id);
                         }
