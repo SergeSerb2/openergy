@@ -266,7 +266,9 @@ impl Runtime {
         backlog.bytes = backlog.bytes.saturating_add(wire);
         backlog.chunks.push_back((id, msg, wire));
     }
-    fn abort_bulk(&mut self, conn: ConnId, id: ClipboardId) {
+    /// Drop deferred chunks for one clipboard transfer without touching
+    /// session state (the session already cancelled or superseded it).
+    fn drop_deferred(&mut self, conn: ConnId, id: ClipboardId) {
         let empty = if let Some(backlog) = self.deferred_bulk.get_mut(&conn) {
             backlog.chunks.retain(|(queued, _, _)| *queued != id);
             backlog.bytes = backlog.chunks.iter().map(|(_, _, wire)| *wire).sum();
@@ -277,6 +279,9 @@ impl Runtime {
         if empty {
             self.deferred_bulk.remove(&conn);
         }
+    }
+    fn abort_bulk(&mut self, conn: ConnId, id: ClipboardId) {
+        self.drop_deferred(conn, id);
         match &mut self.machine {
             Machine::Server(s) => s.abort_clipboard(conn, id),
             Machine::Client(c) => c.abort_clipboard(conn, id),
@@ -304,6 +309,12 @@ impl Runtime {
         self.abort_bulk(conn, id);
     }
     fn send_clipboard(&mut self, conn: ConnId, id: ClipboardId, sequence: u32, chunk: Chunk) {
+        // A Start supersedes any transfer the session cancelled for this
+        // clipboard (newer grab/local change): drop its unsent chunks so
+        // megabytes of obsolete data cannot drain ahead of the fresh one.
+        if matches!(chunk, Chunk::Start { .. }) {
+            self.drop_deferred(conn, id);
+        }
         let wire = openergy_session::clipboard::chunk_wire_bytes(&chunk);
         let msg = Message::ClipboardData { id, sequence, chunk };
         // Chunk order is load-bearing: behind a backlog nothing overtakes.

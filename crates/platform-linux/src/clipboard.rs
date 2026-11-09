@@ -1,7 +1,7 @@
 //! ICCCM selections with a hidden owner window and bidirectional INCR transfers.
 use crate::{
     image,
-    native::{connect, drain, error, wait, wait_wake, wake, Backoff},
+    native::{conn_fatal, connect, drain, error, wait, wait_wake, wake, Backoff},
 };
 use openergy_platform::{ClipboardBackend, ClipboardData, ClipboardFormat, FormatKind, PlatformError};
 use std::{
@@ -121,8 +121,11 @@ impl X11Clipboard {
                             break true;
                         }
                         // Contain per-event X errors like the capture
-                        // worker: only wait() below ends this connection's
-                        // loop, on a closed X connection.
+                        // worker. A fatal connection error ends this
+                        // connection's loop so the supervised reconnect
+                        // below runs; wait() alone cannot see a dead TCP
+                        // DISPLAY that stays readable with EOF.
+                        let mut dead = false;
                         loop {
                             match worker.c.poll_for_event() {
                                 Ok(Some(ev)) => {
@@ -134,17 +137,23 @@ impl X11Clipboard {
                                 Err(e) => {
                                     // A parse error consumed one bad event,
                                     // so keep draining the queued ones.
-                                    let consumed = matches!(&e, x11rb::errors::ConnectionError::ParseError(_));
                                     log::warn!("X11 clipboard poll failed: {e}");
-                                    if !consumed {
+                                    if conn_fatal(&e) {
+                                        dead = true;
                                         break;
                                     }
                                 }
                             }
                         }
+                        if dead {
+                            break false;
+                        }
                         worker.expire_transfers();
                         if let Err(e) = worker.c.flush() {
                             log::warn!("X11 clipboard flush failed: {e}");
+                            if conn_fatal(&e) {
+                                break false;
+                            }
                         }
                         if wait(&worker.c, &r, if worker.outgoing.is_empty() { -1 } else { 1000 }).is_err() {
                             break false;

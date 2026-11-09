@@ -1,6 +1,6 @@
 use crate::{
     keymap::Keymap,
-    native::{connect, drain, error, wait, wait_wake, wake, Backoff},
+    native::{conn_fatal, connect, drain, error, wait, wait_wake, wake, Backoff},
 };
 use openergy_platform::{CaptureDecision, InputEvent, InputSource, PlatformError};
 use std::{
@@ -187,8 +187,11 @@ impl InputSource for Source {
                         }
                         // Contain per-event X errors (a vanished window,
                         // a refused grab, an unparsable event): log and
-                        // move to the next event. Only wait() below ends
-                        // this connection's loop, on a closed X connection.
+                        // move to the next event. A fatal connection error
+                        // ends this connection's loop so the supervised
+                        // reconnect below runs; wait() alone cannot see a
+                        // dead TCP DISPLAY that stays readable with EOF.
+                        let mut dead = false;
                         loop {
                             match capture.c.poll_for_event() {
                                 Ok(Some(event)) => {
@@ -200,16 +203,22 @@ impl InputSource for Source {
                                 Err(e) => {
                                     // A parse error consumed one bad event,
                                     // so keep draining the queued ones.
-                                    let consumed = matches!(&e, x11rb::errors::ConnectionError::ParseError(_));
                                     log::warn!("X11 capture poll failed: {e}");
-                                    if !consumed {
+                                    if conn_fatal(&e) {
+                                        dead = true;
                                         break;
                                     }
                                 }
                             }
                         }
+                        if dead {
+                            break false;
+                        }
                         if let Err(e) = capture.c.flush() {
                             log::warn!("X11 capture flush failed: {e}");
+                            if conn_fatal(&e) {
+                                break false;
+                            }
                         }
                         if wait(&capture.c, &r, -1).is_err() {
                             break false;

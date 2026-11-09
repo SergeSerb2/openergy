@@ -41,6 +41,15 @@ pub fn drain(w: &mut UnixStream) {
     let mut b = [0; 64];
     while w.read(&mut b).is_ok_and(|n| n > 0) {}
 }
+/// Every x11rb connection error except a parse error means the server
+/// connection itself is closed (the `XCB_CONN_CLOSED_*` family plus I/O).
+/// A parse error consumed one bad event and the stream stays usable.
+/// Workers must route fatal errors into reconnect handling: a dead
+/// TCP-backed DISPLAY can stay readable with EOF, so `wait()` below may
+/// never observe POLLHUP for it.
+pub fn conn_fatal(e: &x11rb::errors::ConnectionError) -> bool {
+    !matches!(e, x11rb::errors::ConnectionError::ParseError(_))
+}
 pub fn wait(c: &RustConnection, w: &UnixStream, timeout: i32) -> Result<(), PlatformError> {
     let mut fds = [
         libc::pollfd {
@@ -331,9 +340,14 @@ impl ScreenSystem for Screens {
                                         }
                                     }
                                     Ok(None) => break,
-                                    Err(_) => {
-                                        dead = true;
-                                        break;
+                                    Err(e) => {
+                                        // A parse error consumed one bad
+                                        // event; anything else is a dead
+                                        // connection (see conn_fatal).
+                                        if conn_fatal(&e) {
+                                            dead = true;
+                                            break;
+                                        }
                                     }
                                 }
                             }
