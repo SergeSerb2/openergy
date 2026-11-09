@@ -129,6 +129,23 @@ progress supplies no pass.
   provenance sidecar. Release/tag metadata links its intended source, but does
   not independently establish binary-to-source provenance. SER-213 remains open.
 
+## November 8 candidate follow-up
+
+- The [stability-wave record](../verification/stability-wave-2026-11-08/README.md)
+  covers a candidate tree on branch `t3/stability-wave-2` (base
+  `fdd1d694bc40b5b0eda5327e29c276123bf1702f` plus an uncommitted diff). On a
+  Linux aarch64 VM: notices, format, strict Clippy, locked build, CLI smoke,
+  **95/95** virtual scenarios (30 Docker excluded), the isolated Xvfb probe
+  suite including a new X-server kill/restart reconnect mode, pixel checks,
+  and Windows/macOS cross-target checks passed. It fixes load flakes in A7/R5
+  at their runner/scenario root causes and records the first loaded 90/95 run
+  separately from the strict 95/95 repeats. This is not the x86_64 release
+  gate and grants no native desktop acceptance; hosted CI must repeat it.
+- The live Sparkle feed was re-fetched on 2026-11-08: HTTP 200, zero releases,
+  byte-identical to the signed bootstrap feed in the repo. The Python
+  verifier's 403 is fixed in the candidate (it sent no user agent).
+  Signed-app feed acceptance and a full update install remain open.
+
 ## Historical pre-release verification — 2026-10-25
 
 The former readiness snapshot reported the following results on its recorded

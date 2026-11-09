@@ -3,6 +3,48 @@
 All notable changes to Openergy are listed here. A version heading marked
 "unreleased" has no published release artifacts.
 
+## Unreleased
+
+Candidate work on branch `t3/stability-wave-2`; no published artifacts. See
+[the verification record](docs/verification/stability-wave-2026-11-08/README.md).
+
+### Added
+
+- Linux X11 backends reconnect after X server death and report the outage
+  instead of silently stopping capture or clipboard.
+- Windows sleep/wake and session lock/unlock notices reach the daemon
+  runtime (compile-verified; native acceptance pending).
+- Release drafts attest build provenance for validated archives, and
+  `release.py download-check` re-downloads and validates a published release.
+- E2E scenarios for trust rejection (`S6b`) and SIGTERM held-key release
+  (`S26`), plus an X11 probe mode that kills and restarts the X server.
+
+### Changed
+
+- Approving a previously untrusted peer now closes its held connection; the
+  trusted reconnect starts from a clean stream, so input sent before approval
+  is never delivered.
+- Dependencies: `toml` 1.1.8, `x11rb` 0.14.0, and GitHub actions
+  checkout v7.0.1 / upload-artifact v7.0.2 / download-artifact v8.0.2
+  (commit-pinned), superseding the open Dependabot PRs.
+
+### Fixed
+
+- Connect attempts fall through to alternate resolved addresses when the
+  first address stalls; DNS admission slots are released on expiry and
+  lookups use a small worker pool; mDNS browse retries back off.
+- Large clipboard transfers survive slow links instead of aborting when the
+  network queue fills.
+- A malformed config no longer stops daemon startup: it starts `off`,
+  reports the error in status, and accepts a live repair.
+- Waking a machine no longer resumes a session while its screen is locked.
+- Windows key/button releases cannot strand stuck input when injection
+  fails; macOS permission revocation can now be detected.
+- Transient X11 errors no longer kill Linux capture/clipboard workers.
+- `deploy_updates.py verify` no longer fails with HTTP 403.
+- E2E flakes in `A7-trust-lock-crash` and
+  `R5-incoming-clipboard-cancellation` fixed at their timing root causes.
+
 ## 0.1.0-alpha — 2026-11-02
 
 First public source release.

@@ -30,6 +30,7 @@ does not supply a pass. None establishes native desktop acceptance.
 | [macos-candidate-2026-11-03](macos-candidate-2026-11-03/README.md) | Published signed universal app on M1 macOS 27.0.1: artifact/signature/staple/Gatekeeper checks and 25/25 headless virtual app checks. No quarantine/first-user install proof. The unchanged app refuses the private updater harness before a feed request. |
 | [windows-candidate-2026-11-03](windows-candidate-2026-11-03/README.md) | Published unsigned x86-64 package on Windows build 26340, session 0: 23 control checks, 19 IPC deadlines, pipe identity and mutual-TLS virtual smoke passed. Lifecycle/limited-token migration and Synergy checks remain blocked; no interactive acceptance. |
 | [linux-candidate-2026-11-03](linux-candidate-2026-11-03/README.md) | Pinned build/audit passed; strict Linux repeat 93/93 and separate Docker interop 30/30 cover all 123 cases. Initial 91/93 and passing retries remain recorded. Xvfb and emulated Linux package TLS smoke passed; no physical X11 acceptance. |
+| [stability-wave-2026-11-08](stability-wave-2026-11-08/README.md) | Candidate branch `t3/stability-wave-2` on Linux aarch64: full virtual gate 95/95 (30 Docker excluded), Xvfb probe incl. X-server reconnect, cross-target checks, live feed recheck. First loaded 90/95 run and flake root causes retained. No native desktop acceptance; x86_64 hosted repeat still required. |
 
 ## Historical records
 
