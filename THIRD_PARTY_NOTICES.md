@@ -57,6 +57,7 @@ python3 tools/release/notices/generate-notices.py
 | [deranged 0.5.9](https://crates.io/crates/deranged/0.5.9) | MIT OR Apache-2.0 | [231c837c45eb](#text-231c837c45eb) |
 | [digest 0.11.3](https://crates.io/crates/digest/0.11.3) | MIT OR Apache-2.0 | [af59cea35d7f](#text-af59cea35d7f) |
 | [displaydoc 0.2.7](https://crates.io/crates/displaydoc/0.2.7) | MIT OR Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
+| [downcast-rs 1.2.1](https://crates.io/crates/downcast-rs/1.2.1) | MIT/Apache-2.0 | [fb252fecf98d](#text-fb252fecf98d) |
 | [equivalent 1.0.3](https://crates.io/crates/equivalent/1.0.3) | Apache-2.0 OR MIT | [7365cc8878a1](#text-7365cc8878a1) |
 | [errno 0.3.14](https://crates.io/crates/errno/0.3.14) | MIT OR Apache-2.0 | [8764a5976757](#text-8764a5976757) |
 | [fastrand 2.5.0](https://crates.io/crates/fastrand/2.5.0) | Apache-2.0 OR MIT | [23f18e03dc49](#text-23f18e03dc49) |
@@ -88,11 +89,14 @@ python3 tools/release/notices/generate-notices.py
 | [oid-registry 0.8.1](https://crates.io/crates/oid-registry/0.8.1) | MIT OR Apache-2.0 | [a5c61b93b6ee](#text-a5c61b93b6ee) |
 | [once_cell 1.21.4](https://crates.io/crates/once_cell/1.21.4) | MIT OR Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
 | [pem 4.0.0](https://crates.io/crates/pem/4.0.0) | MIT | [b7c76ff4466a](#text-b7c76ff4466a) |
+| [pkg-config 0.3.34](https://crates.io/crates/pkg-config/0.3.34) | MIT OR Apache-2.0 | [378f5840b258](#text-378f5840b258) |
 | [powerfmt 0.2.1](https://crates.io/crates/powerfmt/0.2.1) | MIT OR Apache-2.0 | [070dbc7dda03](#text-070dbc7dda03) |
 | [proc-macro2 1.0.107](https://crates.io/crates/proc-macro2/1.0.107) | MIT OR Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
+| [quick-xml 0.41.0](https://crates.io/crates/quick-xml/0.41.0) | MIT | [5b2c207dcf57](#text-5b2c207dcf57) |
 | [quote 1.0.47](https://crates.io/crates/quote/1.0.47) | MIT OR Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
 | [rcgen 0.14.10](https://crates.io/crates/rcgen/0.14.10) | MIT OR Apache-2.0 | [debe6fed7ac1](#text-debe6fed7ac1) |
 | [ring 0.17.14](https://crates.io/crates/ring/0.17.14) | Apache-2.0 AND ISC | [b3d734001a94](#text-b3d734001a94), [005fc765ddc5](#text-005fc765ddc5), [f025ccfb7dfb](#text-f025ccfb7dfb), [a60eea817514](#text-a60eea817514), [6ee2ed6c7771](#text-6ee2ed6c7771), [9eacbcb81be6](#text-9eacbcb81be6) |
+| [roxmltree 0.21.1](https://crates.io/crates/roxmltree/0.21.1) | MIT OR Apache-2.0 | [fffe218c1e34](#text-fffe218c1e34) |
 | [rusticata-macros 4.1.0](https://crates.io/crates/rusticata-macros/4.1.0) | MIT/Apache-2.0 | [a5c61b93b6ee](#text-a5c61b93b6ee) |
 | [rustix 1.1.5](https://crates.io/crates/rustix/1.1.5) | Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT | [23f18e03dc49](#text-23f18e03dc49) |
 | [rustls 0.23.46](https://crates.io/crates/rustls/0.23.46) | Apache-2.0 OR ISC OR MIT | [709e3175b421](#text-709e3175b421) |
@@ -106,6 +110,7 @@ python3 tools/release/notices/generate-notices.py
 | [serde_spanned 1.1.2](https://crates.io/crates/serde_spanned/1.1.2) | MIT OR Apache-2.0 | [6efb0476a1cc](#text-6efb0476a1cc) |
 | [sha2 0.11.1](https://crates.io/crates/sha2/0.11.1) | MIT OR Apache-2.0 | [831e0f43ad0b](#text-831e0f43ad0b) |
 | [shlex 2.0.1](https://crates.io/crates/shlex/2.0.1) | MIT OR Apache-2.0 | [4455bf75a911](#text-4455bf75a911) |
+| [smallvec 1.16.5](https://crates.io/crates/smallvec/1.16.5) | MIT OR Apache-2.0 | [0b28172679e0](#text-0b28172679e0) |
 | [socket-pktinfo 0.4.1](https://crates.io/crates/socket-pktinfo/0.4.1) | MIT | [1ea20122ffdd](#text-1ea20122ffdd) |
 | [socket2 0.6.5](https://crates.io/crates/socket2/0.6.5) | MIT OR Apache-2.0 | [378f5840b258](#text-378f5840b258) |
 | [spin 0.9.9](https://crates.io/crates/spin/0.9.9) | MIT | [6ac8711fb340](#text-6ac8711fb340) |
@@ -126,6 +131,11 @@ python3 tools/release/notices/generate-notices.py
 | [unicode-ident 1.0.27](https://crates.io/crates/unicode-ident/1.0.27) | (MIT OR Apache-2.0) AND Unicode-3.0 | [23f18e03dc49](#text-23f18e03dc49), [f7db81051789](#text-f7db81051789) |
 | [untrusted 0.9.0](https://crates.io/crates/untrusted/0.9.0) | ISC | [7abd9b6960dc](#text-7abd9b6960dc) |
 | [wasi 0.11.1+wasi-snapshot-preview1](https://crates.io/crates/wasi/0.11.1+wasi-snapshot-preview1) | Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT | [23f18e03dc49](#text-23f18e03dc49) |
+| [wayland-backend 0.3.17](https://crates.io/crates/wayland-backend/0.3.17) | MIT | [1cb6f4dee8c6](#text-1cb6f4dee8c6) |
+| [wayland-client 0.31.15](https://crates.io/crates/wayland-client/0.31.15) | MIT | [1cb6f4dee8c6](#text-1cb6f4dee8c6), [b606ea4bd785](#text-b606ea4bd785) |
+| [wayland-protocols 0.32.13](https://crates.io/crates/wayland-protocols/0.32.13) | MIT | [1cb6f4dee8c6](#text-1cb6f4dee8c6), [42cec6c6efbf](#text-42cec6c6efbf) |
+| [wayland-scanner 0.31.11](https://crates.io/crates/wayland-scanner/0.31.11) | MIT | [1cb6f4dee8c6](#text-1cb6f4dee8c6) |
+| [wayland-sys 0.31.11](https://crates.io/crates/wayland-sys/0.31.11) | MIT | [1cb6f4dee8c6](#text-1cb6f4dee8c6) |
 | [windows-link 0.2.1](https://crates.io/crates/windows-link/0.2.1) | MIT OR Apache-2.0 | [c2cfccb812fe](#text-c2cfccb812fe) |
 | [windows-sys 0.52.0](https://crates.io/crates/windows-sys/0.52.0) | MIT OR Apache-2.0 | [c2cfccb812fe](#text-c2cfccb812fe) |
 | [windows-sys 0.61.2](https://crates.io/crates/windows-sys/0.61.2) | MIT OR Apache-2.0 | [c2cfccb812fe](#text-c2cfccb812fe) |
@@ -162,7 +172,8 @@ https://github.com/freedesktop-unofficial-mirror/xorg__proto__x11proto/blob/6d4a
 ## License texts
 
 Texts with identical SHA-256 are included once. The machine-readable
-inventory records the source filename and full hash of its original bytes.
+inventory records the source filename and full hash of the retained notice bytes.
+Wayland XML copyright fragments are extracted and dedented as UTF-8 text.
 Only trailing whitespace is removed from the Markdown text rendering.
 
 ### text-005fc765ddc5
@@ -490,6 +501,36 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
+### text-0b28172679e0
+
+```text
+Copyright (c) 2018 The Servo Project Developers
+
+Permission is hereby granted, free of charge, to any
+person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the
+Software without restriction, including without
+limitation the rights to use, copy, modify, merge,
+publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software
+is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice
+shall be included in all copies or substantial portions
+of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
+ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+```
+
 ### text-0f96a83840e1
 
 ```text
@@ -544,6 +585,30 @@ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
 IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
+```
+
+### text-1cb6f4dee8c6
+
+```text
+Copyright (c) 2015 Elinor Berger
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
 ```
 
 ### text-1ea20122ffdd
@@ -912,6 +977,31 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
+### text-42cec6c6efbf
+
+```text
+Copyright © 2017 Red Hat Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice (including the next
+paragraph) shall be included in all copies or substantial portions of the
+Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+```
+
 ### text-42fa16951ce7
 
 ```text
@@ -992,6 +1082,34 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+
+### text-5b2c207dcf57
+
+```text
+The MIT License (MIT)
+
+Copyright (c) 2016 Johann Tuffe
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
 ```
 
 ### text-5b698ca13897
@@ -1883,6 +2001,35 @@ See src/polyfill/once_cell/LICENSE-APACHE and src/polyfill/once_cell/LICENSE-MIT
 for the license to code that was sourced from the once_cell project.
 ```
 
+### text-b606ea4bd785
+
+```text
+Copyright © 2008-2011 Kristian Høgsberg
+Copyright © 2010-2011 Intel Corporation
+Copyright © 2012-2013 Collabora, Ltd.
+
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation files
+(the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge,
+publish, distribute, sublicense, and/or sell copies of the Software,
+and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice (including the
+next paragraph) shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
 ### text-b68ad1a3367b
 
 ```text
@@ -2470,6 +2617,36 @@ dealings in these Data Files or Software without prior written
 authorization of the copyright holder.
 ```
 
+### text-fb252fecf98d
+
+```text
+Copyright (c) 2020 Ashish Myles and contributors
+
+Permission is hereby granted, free of charge, to any
+person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the
+Software without restriction, including without
+limitation the rights to use, copy, modify, merge,
+publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software
+is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice
+shall be included in all copies or substantial portions
+of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
+ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+```
+
 ### text-fb77f0a9c53e
 
 ```text
@@ -2528,4 +2705,30 @@ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
 IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
+```
+
+### text-fffe218c1e34
+
+```text
+The MIT License (MIT)
+
+Copyright (c) 2018 Yevhenii Reizner
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 ```

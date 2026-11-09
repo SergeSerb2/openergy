@@ -1,0 +1,76 @@
+{
+  "source_sha": "d1e27a46f29228e6b66659b51da4f86ac15ba8cf",
+  "dirty_worktree": true,
+  "toolchain": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "compositor": "weston 13.0.0",
+  "architecture": "aarch64",
+  "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+  "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+  "probe_sha256": "97770b0c684186f940284c17fd854b29cb330e63b38070d1667cacf35adb8c06",
+  "image_digest": null,
+  "image_note": "native host lane, no container image; see package versions",
+  "packages": "coreutils\t9.4-3ubuntu6.3\ndbus-daemon\t1.14.10-4ubuntu4.1\nlibweston-13-0:arm64\t13.0.0-4build3\nsystemd\t255.4-1ubuntu8.18\nweston\t13.0.0-4build3\nxdg-desktop-portal\t1.18.4-1ubuntu2.24.04.3\n",
+  "build_command": [
+    "cargo",
+    "build",
+    "--release",
+    "--locked",
+    "-p",
+    "openergy-platform-linux",
+    "--example",
+    "wayland_probe"
+  ],
+  "compositor_command": [
+    "weston",
+    "-B",
+    "headless",
+    "--renderer=pixman",
+    "--no-config",
+    "--socket=wayland-probe-0",
+    "--idle-time=0",
+    "--width=1280",
+    "--height=720"
+  ],
+  "probe_command": [
+    "<probe>",
+    "discover"
+  ],
+  "results": {
+    "no-wayland": {
+      "exit": 1,
+      "seconds": 0.005
+    },
+    "guard-refusal": {
+      "exit": 1,
+      "seconds": 0.041
+    },
+    "bus-refusal": {
+      "exit": 1,
+      "seconds": 0.022
+    },
+    "weston-discover": {
+      "exit": 0,
+      "seconds": 0.046
+    },
+    "portal-frontend-discover": {
+      "exit": 0,
+      "seconds": 0.041
+    },
+    "compositor-stalled": {
+      "exit": 1,
+      "seconds": 5.011
+    },
+    "compositor-removed": {
+      "exit": 1,
+      "seconds": 0.007
+    },
+    "bus-removed": {
+      "exit": 1,
+      "seconds": 0.008
+    }
+  },
+  "portal_command": [
+    "/usr/libexec/xdg-desktop-portal"
+  ],
+  "mutter_kwin": "not installed; GNOME/Plasma portal session not provisioned; not verified"
+}

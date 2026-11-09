@@ -31,6 +31,7 @@ does not supply a pass. None establishes native desktop acceptance.
 | [windows-candidate-2026-11-03](windows-candidate-2026-11-03/README.md) | Published unsigned x86-64 package on Windows build 26340, session 0: 23 control checks, 19 IPC deadlines, pipe identity and mutual-TLS virtual smoke passed. Lifecycle/limited-token migration and Synergy checks remain blocked; no interactive acceptance. |
 | [linux-candidate-2026-11-03](linux-candidate-2026-11-03/README.md) | Pinned build/audit passed; strict Linux repeat 93/93 and separate Docker interop 30/30 cover all 123 cases. Initial 91/93 and passing retries remain recorded. Xvfb and emulated Linux package TLS smoke passed; no physical X11 acceptance. |
 | [stability-wave-2026-11-08](stability-wave-2026-11-08/README.md) | Candidate branch `t3/stability-wave-2` on Linux aarch64: full virtual gate 95/95 (30 Docker excluded), Xvfb probe incl. X-server reconnect, cross-target checks, live feed recheck. First loaded 90/95 run and flake root causes retained. No native desktop acceptance; x86_64 hosted repeat still required. |
+| [wayland-discovery-2026-11-09](wayland-discovery-2026-11-09/README.md) | Read-only Wayland discovery probe (design M1): honest no-session exit, guarded headless Weston lane with structured capability facts, portal introspection without sessions. Both roles correctly report unsupported on Weston; Mutter/KWin lanes unverified. No backend or daemon behavior change. |
 
 ## Historical records
 
