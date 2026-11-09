@@ -1,0 +1,115 @@
+# Requirement: Opt-in PRIMARY (clipboard id 1) travels independently of CLIPBOARD (id 0) in both directions.
+name = "S28-primary-selection"
+requirement = "With share_primary_selection on, PRIMARY text moves server->client and client->server without touching id 0; with the flag patched off on the server, PRIMARY stops moving in both directions."
+timeout_ms = 8000
+
+[[node]]
+id = "server"
+role = "server"
+config = { clipboard = { share_primary_selection = true }, screen = [{ name = "server", rect = { x = 0, y = 0, w = 1920, h = 1080 } }, { name = "client", os = "linux", rect = { x = 1920, y = 0, w = 1920, h = 1080 } }] }
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+config = { clipboard = { share_primary_selection = true } }
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "clipboard.primary_enabled" = true }
+
+[[step]]
+do = "clipboard_set"
+node = "server"
+text = "clipboard zero"
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+text = "clipboard zero"
+
+# Server -> client PRIMARY. The client screen is configured os = "linux" on
+# the server, so the relay rule admits id 1 before the client ever sends one.
+[[step]]
+do = "clipboard_set"
+node = "server"
+selection = "primary"
+text = "primary from server"
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+selection = "primary"
+text = "primary from server"
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+text = "clipboard zero"
+
+# Client -> server PRIMARY, again leaving id 0 untouched.
+[[step]]
+do = "clipboard_set"
+node = "client"
+selection = "primary"
+text = "primary from client"
+
+[[step]]
+do = "assert_clipboard"
+node = "server"
+selection = "primary"
+text = "primary from client"
+
+[[step]]
+do = "assert_clipboard"
+node = "server"
+text = "clipboard zero"
+
+# Flag off on the server: its local PRIMARY must not leave, and PRIMARY
+# arriving from the still-enabled client must be dropped at the server.
+[[step]]
+do = "config_patch"
+node = "server"
+patch = { clipboard = { share_primary_selection = false } }
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "clipboard.primary_enabled" = false }
+
+[[step]]
+do = "clipboard_set"
+node = "server"
+selection = "primary"
+text = "must not travel"
+
+[[step]]
+do = "clipboard_set"
+node = "client"
+selection = "primary"
+text = "must be dropped"
+
+[[step]]
+do = "sleep"
+ms = 800
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+selection = "primary"
+text = "must be dropped"
+
+[[step]]
+do = "assert_clipboard"
+node = "server"
+selection = "primary"
+text = "must not travel"

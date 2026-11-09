@@ -163,7 +163,11 @@ impl Client {
                 }
             }
             ClientEvent::LocalClipboardChanged { id } => {
-                if id.0 < 2 && self.config.clipboard.enabled && self.config.clipboard.send {
+                if id.0 < 2
+                    && self.config.clipboard.enabled
+                    && self.config.clipboard.send
+                    && primary_allowed(&self.config, id)
+                {
                     if let Some((_, p)) = &mut self.peer {
                         if p.phase == Phase::Ready && p.version.minor >= 6 {
                             if let Some(v) = self.local_owner.get_mut(id.0 as usize) {
@@ -338,21 +342,31 @@ impl Client {
                 }
             }
             Message::Leave => self.leave(out),
-            Message::ClipboardGrab { id, sequence: _ } if id.0 == 0 && p.phase == Phase::Ready => {
-                if let Some(v) = self.local_owner.get_mut(id.0 as usize) {
-                    *v = false;
+            Message::ClipboardGrab { id, sequence: _ } if id.0 < 2 && p.phase == Phase::Ready => {
+                if id.0 == 1 && !primary_allowed(&self.config, id) {
+                    // Drop at the receiver: PRIMARY must never land on a
+                    // single system clipboard/pasteboard.
+                    p.drop_primary();
+                } else {
+                    if let Some(v) = self.local_owner.get_mut(id.0 as usize) {
+                        *v = false;
+                    }
+                    if let Some(v) = self.clip_sequences.get_mut(id.0 as usize) {
+                        *v = 0;
+                    }
+                    p.transfers.cancel(id);
                 }
-                if let Some(v) = self.clip_sequences.get_mut(id.0 as usize) {
-                    *v = 0;
-                }
-                p.transfers.cancel(id);
             }
             Message::ClipboardData { id, sequence, chunk }
-                if id.0 == 0
+                if id.0 < 2
                     && p.phase == Phase::Ready
                     && self.config.clipboard.enabled
                     && self.config.clipboard.receive =>
             {
+                if id.0 == 1 && !primary_allowed(&self.config, id) {
+                    p.drop_primary();
+                    return;
+                }
                 let declared = if let openergy_protocol::Chunk::Start { total_len } = &chunk {
                     Some(*total_len as usize)
                 } else {
@@ -368,13 +382,15 @@ impl Client {
                         }
                         // The platform clipboard is shared on macOS. An empty
                         // X11 selection must not erase a populated normal clip.
+                        // Empty PRIMARY is not a clear on any platform.
                         if id.0 == 0 || !data.formats.is_empty() {
-                            clipboard::transferred(&data, "in", out);
+                            clipboard::transferred(id, &data, "in", out);
                             out.push(Action::SetClipboard { id, data });
                         }
                     }
                     Ok(None) => {}
                     Err(clipboard::ClipboardError::TooLarge) => clipboard::blocked(
+                        id,
                         declared.unwrap_or(0),
                         self.config.clipboard.max_bytes.min(clipboard::HARD_CAP),
                         &p.name,
@@ -530,8 +546,16 @@ impl Client {
         if id.0 > 1
             || !self.config.clipboard.enabled
             || !self.config.clipboard.send
+            || !primary_allowed(&self.config, id)
             || !self.local_owner.get(id.0 as usize).copied().unwrap_or(false)
         {
+            return;
+        }
+        // Empty PRIMARY is not a clear: send nothing, keep ownership state.
+        if id.0 == 1 && data.formats.is_empty() {
+            if let Some(owner) = self.local_owner.get_mut(id.0 as usize) {
+                *owner = false;
+            }
             return;
         }
         let Some((conn, p)) = &mut self.peer else { return };
@@ -552,10 +576,10 @@ impl Client {
                     out,
                 );
                 p.transfers.enqueue(id, self.sequence, Arc::new(bytes));
-                clipboard::transferred(&data, "out", out);
+                clipboard::transferred(id, &data, "out", out);
             }
-            Ok(bytes) => clipboard::blocked(bytes.len(), limit, &p.name, out),
-            Err(_) => clipboard::blocked(data.total_bytes(), limit, &p.name, out),
+            Ok(bytes) => clipboard::blocked(id, bytes.len(), limit, &p.name, out),
+            Err(_) => clipboard::blocked(id, data.total_bytes(), limit, &p.name, out),
         }
     }
 }

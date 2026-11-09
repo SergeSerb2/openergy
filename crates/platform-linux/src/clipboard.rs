@@ -36,9 +36,10 @@ const IMAGE_LIMIT: usize = 64 * 1024 * 1024;
 const CHUNK: usize = 64 * 1024;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Selection {
-    /// The only selection routed through the v1 shared Backend (clipboard id 0).
+    /// X11 CLIPBOARD selection, wire clipboard id 0.
     Clipboard,
-    /// Compiled local support for a post-v1 extension; v1 does not route clipboard id 1.
+    /// X11 PRIMARY selection, wire clipboard id 1. Routed only when the
+    /// daemon enables `clipboard.share_primary_selection`.
     Primary,
 }
 impl Selection {
@@ -47,6 +48,13 @@ impl Selection {
             0
         } else {
             1
+        }
+    }
+    fn from_id(id: u8) -> Option<Self> {
+        match id {
+            0 => Some(Self::Clipboard),
+            1 => Some(Self::Primary),
+            _ => None,
         }
     }
 }
@@ -193,8 +201,9 @@ impl X11Clipboard {
             selection,
         })
     }
-    /// Select a local selection without opening another worker.
-    /// PRIMARY is a post-v1 extension; `create` routes only CLIPBOARD through the shared backend.
+    /// Select a local selection without opening another worker. The shared
+    /// backend handle stays bound to CLIPBOARD for the single-selection
+    /// methods; PRIMARY is reached through the `*_for` trait methods.
     pub fn for_selection(&self, selection: Selection) -> Self {
         Self {
             inner: self.inner.clone(),
@@ -235,6 +244,21 @@ impl ClipboardBackend for X11Clipboard {
     }
     fn write(&mut self, data: &ClipboardData) -> Result<(), PlatformError> {
         self.write_selection(self.selection, data)
+    }
+    fn change_stamp_for(&self, id: u8) -> u64 {
+        Selection::from_id(id).map_or(0, |selection| {
+            self.inner.stamps[selection.index()].load(Ordering::Acquire)
+        })
+    }
+    fn read_for(&mut self, id: u8, max_bytes: usize) -> Result<ClipboardData, PlatformError> {
+        Selection::from_id(id)
+            .ok_or(PlatformError::NotImplemented)
+            .and_then(|selection| self.read_selection(selection, max_bytes))
+    }
+    fn write_for(&mut self, id: u8, data: &ClipboardData) -> Result<(), PlatformError> {
+        Selection::from_id(id)
+            .ok_or(PlatformError::NotImplemented)
+            .and_then(|selection| self.write_selection(selection, data))
     }
 }
 impl Drop for Inner {

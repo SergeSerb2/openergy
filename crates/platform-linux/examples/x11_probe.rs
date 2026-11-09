@@ -71,16 +71,20 @@ mod probe {
             "half-duplex-lock" => half_duplex_lock()?,
             "clipboard-stamp" => clipboard_stamp()?,
             "clipboard-cancel" => clipboard_cancel()?,
+            "primary-sync" => primary_sync()?,
+            "primary-loop" => primary_loop()?,
             "resources" => resources()?,
             "all" => {
                 inject()?;
                 clipboard()?;
+                primary_sync()?;
+                primary_loop()?;
                 capture()?;
                 recovery()?;
                 reconnect()?;
             }
             _ => return Err(
-                "Mode must be inject, clipboard, capture, reconnect, recovery, resources, all, or a recovery sub-probe"
+                "Mode must be inject, clipboard, capture, reconnect, recovery, resources, all, primary-sync, primary-loop, or a recovery sub-probe"
                     .into(),
             ),
         }
@@ -542,6 +546,123 @@ mod probe {
         }
         println!("clipboard PRIMARY, XFixes change stamp, empty selection, invalid PNG: passed");
         clipboard_contract()?;
+        Ok(())
+    }
+    // PRIMARY (clipboard id 1) through the shared *_for trait methods, with
+    // CLIPBOARD bytes and stamp proven untouched in both directions.
+    fn primary_sync() -> Result<()> {
+        fn text(bytes: &[u8]) -> ClipboardData {
+            ClipboardData {
+                formats: vec![ClipboardFormat {
+                    kind: FormatKind::TextUtf8,
+                    bytes: bytes.to_vec(),
+                }],
+            }
+        }
+        let mut shared: openergy_platform::Backend = create(X11Options::default())?;
+        let h1 = X11Clipboard::connect(None, Selection::Clipboard)?;
+        let mut h2 = X11Clipboard::connect(None, Selection::Clipboard)?;
+        shared.clipboard.write_for(0, &text(b"clip stays"))?;
+        if clip_out("clipboard", "UTF8_STRING")? != b"clip stays" {
+            return Err("primary-sync CLIPBOARD seed is not readable by xclip".into());
+        }
+        pause();
+        let stamp0 = shared.clipboard.change_stamp_for(0);
+        if stamp0 != shared.clipboard.change_stamp() {
+            return Err("change_stamp_for(0) differs from the bound CLIPBOARD stamp".into());
+        }
+        // xclip -> PRIMARY -> backend read_for(1) on both handles.
+        {
+            let _owner = clip_in(&h1, "primary", "UTF8_STRING", b"external primary in")?;
+            equal_format(&h2.read_for(1, 1024)?, FormatKind::TextUtf8, b"external primary in")?;
+            equal_format(
+                &shared.clipboard.read_for(1, 1024)?,
+                FormatKind::TextUtf8,
+                b"external primary in",
+            )?;
+        }
+        if clip_out("clipboard", "UTF8_STRING")? != b"clip stays" || shared.clipboard.change_stamp_for(0) != stamp0 {
+            return Err("external PRIMARY changed CLIPBOARD data or stamp".into());
+        }
+        println!("primary-sync xclip -> backend: PRIMARY read via id 1; CLIPBOARD untouched");
+        // Backend write_for(1) -> xclip PRIMARY, CLIPBOARD still untouched.
+        shared.clipboard.write_for(1, &text(b"primary from backend"))?;
+        if clip_out("primary", "UTF8_STRING")? != b"primary from backend" {
+            return Err("backend PRIMARY write is not readable by xclip".into());
+        }
+        equal_format(&h2.read_for(1, 1024)?, FormatKind::TextUtf8, b"primary from backend")?;
+        if clip_out("clipboard", "UTF8_STRING")? != b"clip stays" || shared.clipboard.change_stamp_for(0) != stamp0 {
+            return Err("backend PRIMARY write changed CLIPBOARD data or stamp".into());
+        }
+        println!("primary-sync backend -> xclip: PRIMARY write via id 1; CLIPBOARD untouched");
+        // Unknown ids stay honestly unimplemented.
+        if shared.clipboard.read_for(7, 16).is_ok() || shared.clipboard.change_stamp_for(7) != 0 {
+            return Err("unknown clipboard id did not fail closed".into());
+        }
+        // Middle-click delivery: button 2 reaches the xev window, and the
+        // PRIMARY conversion a paste would request is still served after
+        // it. xev itself issues no selection request, so the xclip
+        // conversion below is the selection-request evidence.
+        let (_xev, path) = xev("primary")?;
+        shared.sink.inject(&InputEvent::MouseMoveAbs { x: 120, y: 120 })?;
+        shared.sink.inject(&InputEvent::MouseDown { button: 2 })?;
+        shared.sink.inject(&InputEvent::MouseUp { button: 2 })?;
+        pause();
+        if !fs::read_to_string(&path)?.contains("button 2") {
+            return Err("xev did not receive middle-click (button 2)".into());
+        }
+        if clip_out("primary", "UTF8_STRING")? != b"primary from backend" {
+            return Err("PRIMARY conversion after middle-click differs".into());
+        }
+        println!("primary-sync middle-click: button 2 delivered; PRIMARY conversion served");
+        Ok(())
+    }
+    // Daemon-worker stamp discipline for id 1: an own PRIMARY write refreshes
+    // only stamp 1, never re-fires, and never looks like a CLIPBOARD change.
+    fn primary_loop() -> Result<()> {
+        fn text(bytes: &[u8]) -> ClipboardData {
+            ClipboardData {
+                formats: vec![ClipboardFormat {
+                    kind: FormatKind::TextUtf8,
+                    bytes: bytes.to_vec(),
+                }],
+            }
+        }
+        let mut h = X11Clipboard::connect(None, Selection::Clipboard)?;
+        let mut stamps = [h.change_stamp_for(0), h.change_stamp_for(1)];
+        h.write_for(1, &text(b"loop primary"))?;
+        // The worker re-reads only the written id's stamp after a write.
+        stamps[1] = h.change_stamp_for(1);
+        for _ in 0..3 {
+            pause();
+            if h.change_stamp_for(0) != stamps[0] {
+                return Err("own PRIMARY write produced a phantom CLIPBOARD change".into());
+            }
+            if h.change_stamp_for(1) != stamps[1] {
+                return Err("own PRIMARY write re-fired after its stamp refresh".into());
+            }
+        }
+        println!("primary-loop: own id 1 write suppressed; no phantom id 0 change");
+        // An external PRIMARY change moves only stamp 1, then stays stable
+        // across the worker's second poll (its emit point).
+        let _owner = clip_in(&h, "primary", "UTF8_STRING", b"loop external")?;
+        let candidate = h.change_stamp_for(1);
+        if candidate == stamps[1] || h.change_stamp_for(0) != stamps[0] {
+            return Err("external PRIMARY did not move stamp 1 alone".into());
+        }
+        pause();
+        if h.change_stamp_for(1) != candidate {
+            return Err("external PRIMARY stamp did not stay stable for the second poll".into());
+        }
+        stamps[1] = candidate;
+        // The other direction: an own CLIPBOARD write leaves stamp 1 alone.
+        h.write_for(0, &text(b"loop clipboard"))?;
+        stamps[0] = h.change_stamp_for(0);
+        pause();
+        if h.change_stamp_for(1) != stamps[1] || h.change_stamp_for(0) != stamps[0] {
+            return Err("own CLIPBOARD write disturbed PRIMARY stamp discipline".into());
+        }
+        println!("primary-loop: external id 1 change stable across two polls; id 0 write isolated");
         Ok(())
     }
     fn clipboard_contract() -> Result<()> {

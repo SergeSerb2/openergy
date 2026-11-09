@@ -1,7 +1,7 @@
 use crate::{clipboard::Transfers, layout::Rect, notify, Action, CloseReason, ConnId};
 use openergy_config::{Config, Corner};
 use openergy_platform::{InputEvent, Modifiers};
-use openergy_protocol::{options as o, Message, ProtocolVersion};
+use openergy_protocol::{options as o, ClipboardId, Message, ProtocolVersion};
 use std::collections::{BTreeMap, BTreeSet};
 
 #[derive(Clone, Debug)]
@@ -260,6 +260,10 @@ pub(crate) struct Peer {
     unknown_saturated: bool,
     pub language_warned: bool,
     language_logged: bool,
+    /// This peer sent a CCLP for clipboard id 1 on this connection, which
+    /// marks it PRIMARY-capable for the server relay rule.
+    pub sent_primary_grab: bool,
+    pub primary_drop_logged: bool,
 }
 impl Peer {
     pub fn new(now: u64) -> Self {
@@ -287,6 +291,8 @@ impl Peer {
             unknown_saturated: false,
             language_warned: false,
             language_logged: false,
+            sent_primary_grab: false,
+            primary_drop_logged: false,
         }
     }
     pub fn next_deadline(&self, now: u64, server: bool) -> u64 {
@@ -323,6 +329,14 @@ impl Peer {
         self.last_alive = now;
         if let Some(sent) = self.ping.take() {
             self.rtt = Some(now.saturating_sub(sent) as f64);
+        }
+    }
+    /// PRIMARY traffic arrives where it cannot be applied (flag off or a
+    /// single-clipboard receiver). Drop it; note it once per connection.
+    pub fn drop_primary(&mut self) {
+        if !self.primary_drop_logged {
+            self.primary_drop_logged = true;
+            log::info!("PRIMARY selection (clipboard id 1) dropped; sharing is off or unsupported here");
         }
     }
     pub fn decline(&mut self, bytes: usize, out: &mut Vec<Action>) {
@@ -375,6 +389,11 @@ impl Peer {
         self.transfers.tick(conn, now, out);
         false
     }
+}
+/// Clipboard id 1 (PRIMARY) moves only under the opt-in config flag;
+/// id 0 is always allowed by this check (enabled/send/receive gate it).
+pub(crate) fn primary_allowed(cfg: &Config, id: ClipboardId) -> bool {
+    id.0 == 0 || cfg.clipboard.share_primary_selection
 }
 pub(crate) fn send(conn: ConnId, msg: Message, out: &mut Vec<Action>) {
     out.push(Action::Send { conn, msg });

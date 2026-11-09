@@ -3,6 +3,14 @@
 This report supersedes the Step 0 report. Its original whole-workspace evidence
 remains in commit `8fa0b9df967a2e62edba6e36d2363708d5ec13c0`.
 
+Addendum (SER-221): the "V1 routes only clipboard id 0 / PRIMARY unrouted / no
+shared API change" statements below describe the state at that verification.
+PRIMARY (id 1) is now routed through defaulted `ClipboardBackend::*_for`
+methods and shared only under `clipboard.share_primary_selection` (default
+off). The probe gained `primary-sync` and `primary-loop` modes (included in
+`all`); the id 0 isolation assertions in `clipboard` mode are unchanged. See
+`README.md` in this directory for the current contract.
+
 ## Integration changes
 
 The single authorized merge of `t3/synergy-open-source-reimplementation` completed

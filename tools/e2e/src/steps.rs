@@ -147,16 +147,25 @@ impl Context {
             }
             "clipboard_set" => {
                 let data = self.clipboard_payload(step)?;
-                self.ipc(&id, "virtual.clipboard", json!({"set":data}), timeout)
+                let mut params = json!({"set":data});
+                if let Some(selection) = step.fields.get("selection") {
+                    params["selection"] = selection.clone();
+                }
+                self.ipc(&id, "virtual.clipboard", params, timeout)
             }
-            "clipboard_get" => self.ipc(&id, "virtual.clipboard", json!({"get":true}), timeout),
+            "clipboard_get" => {
+                let mut params = json!({"get":true});
+                if let Some(selection) = step.fields.get("selection") {
+                    params["selection"] = selection.clone();
+                }
+                self.ipc(&id, "virtual.clipboard", params, timeout)
+            }
             "assert_clipboard" => self.poll_value(timeout, || {
-                let data = self.ipc(
-                    &id,
-                    "virtual.clipboard",
-                    json!({"get":true}),
-                    timeout.min(Duration::from_secs(5)),
-                )?;
+                let mut params = json!({"get":true});
+                if let Some(selection) = step.fields.get("selection") {
+                    params["selection"] = selection.clone();
+                }
+                let data = self.ipc(&id, "virtual.clipboard", params, timeout.min(Duration::from_secs(5)))?;
                 Ok((clipboard_matches(&data, step)?, clipboard_summary(&data)))
             }),
             "set_screens" => self.ipc(

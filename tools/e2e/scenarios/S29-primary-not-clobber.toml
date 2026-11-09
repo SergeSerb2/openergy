@@ -1,0 +1,155 @@
+# Requirement: An empty PRIMARY container from a raw peer never clears CLIPBOARD.
+name = "S29-primary-not-clobber"
+requirement = "With PRIMARY sharing on, a raw server's empty id 1 container leaves the client id 0 clipboard and the connection intact; a non-empty id 1 then lands only in PRIMARY."
+timeout_ms = 4000
+
+[[node]]
+id = "server"
+kind = "raw"
+role = "server"
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+config = { clipboard = { share_primary_selection = true } }
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "hello"
+
+[[step]]
+do = "raw_expect"
+node = "server"
+builder = "hello_back"
+name = "client"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "QINF"
+
+[[step]]
+do = "raw_expect"
+node = "server"
+builder = "code"
+code = "DINF"
+payload_only = true
+framed = true
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "CIAK"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "options"
+values = []
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "clipboard_set"
+node = "client"
+text = "keep me"
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+text = "keep me"
+
+# CCLP id 1, sequence 0.
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "CCLP"
+payload_hex = "0100000000"
+
+# DCLP id 1 Start, total 4 (a count-zero container).
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "0100000000010000000134"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "0100000000020000000400000000"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "01000000000300000000"
+
+[[step]]
+do = "sleep"
+ms = 200
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+text = "keep me"
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+selection = "primary"
+empty = true
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+# A non-empty id 1 ("sel") must land in PRIMARY only.
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "CCLP"
+payload_hex = "0100000001"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "010000000101000000023135"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "0100000001020000000f00000001000000000000000373656c"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DCLP"
+payload_hex = "01000000010300000000"
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+selection = "primary"
+text = "sel"
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+text = "keep me"

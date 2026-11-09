@@ -210,6 +210,16 @@ pub fn virtual_request(
             serde_json::to_value(ledger).map_err(|e| invalid(e.to_string()))
         }
         m::VIRTUAL_CLIPBOARD => {
+            // Optional "selection": "primary" drives clipboard id 1;
+            // absent or "clipboard" keeps today's id 0 behavior.
+            let selection_id: u8 = match params.get("selection") {
+                None => 0,
+                Some(value) => match value.as_str() {
+                    Some("clipboard") => 0,
+                    Some("primary") => 1,
+                    _ => return Err(invalid("selection must be \"clipboard\" or \"primary\"".into())),
+                },
+            };
             if let Some(available) = params.get("read_available").and_then(Value::as_bool) {
                 control.set_clipboard_read_available(available);
             }
@@ -221,27 +231,33 @@ pub fn virtual_request(
             }
             if let Some(data) = params.get("set") {
                 let data = crate::clipboard_json::decode(data)?;
-                control.clipboard_set(data).map_err(failed)?;
+                control.clipboard_set_for(selection_id, data).map_err(failed)?;
             } else if let Some(text) = params.get("text").and_then(Value::as_str) {
                 control
-                    .clipboard_set(openergy_platform::ClipboardData {
-                        formats: vec![openergy_platform::ClipboardFormat {
-                            kind: openergy_platform::FormatKind::TextUtf8,
-                            bytes: text.as_bytes().to_vec(),
-                        }],
-                    })
+                    .clipboard_set_for(
+                        selection_id,
+                        openergy_platform::ClipboardData {
+                            formats: vec![openergy_platform::ClipboardFormat {
+                                kind: openergy_platform::FormatKind::TextUtf8,
+                                bytes: text.as_bytes().to_vec(),
+                            }],
+                        },
+                    )
                     .map_err(failed)?;
             } else if let Some(size) = params.get("dib_bytes").and_then(Value::as_u64) {
                 if size > 64 * 1024 * 1024 {
                     return Err(invalid("dib_bytes exceeds 64 MiB".into()));
                 }
                 control
-                    .clipboard_set(openergy_platform::ClipboardData {
-                        formats: vec![openergy_platform::ClipboardFormat {
-                            kind: openergy_platform::FormatKind::Dib,
-                            bytes: vec![0; size as usize],
-                        }],
-                    })
+                    .clipboard_set_for(
+                        selection_id,
+                        openergy_platform::ClipboardData {
+                            formats: vec![openergy_platform::ClipboardFormat {
+                                kind: openergy_platform::FormatKind::Dib,
+                                bytes: vec![0; size as usize],
+                            }],
+                        },
+                    )
                     .map_err(failed)?;
             }
             let wrote =
@@ -249,9 +265,15 @@ pub fn virtual_request(
             if params.get("summary").and_then(Value::as_bool) == Some(true)
                 || (wrote && params.get("get").and_then(Value::as_bool) != Some(true))
             {
-                serde_json::to_value(control.clipboard_summary()).map_err(|e| invalid(e.to_string()))
+                let summary = control
+                    .clipboard_summary_for(selection_id)
+                    .ok_or_else(|| invalid("unknown clipboard selection".into()))?;
+                serde_json::to_value(summary).map_err(|e| invalid(e.to_string()))
             } else {
-                Ok(crate::clipboard_json::encode(control.clipboard_get()))
+                let snapshot = control
+                    .clipboard_get_for(selection_id)
+                    .ok_or_else(|| invalid("unknown clipboard selection".into()))?;
+                Ok(crate::clipboard_json::encode(snapshot))
             }
         }
         m::VIRTUAL_SET_SCREENS => {
