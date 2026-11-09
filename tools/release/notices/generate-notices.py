@@ -11,6 +11,8 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import textwrap
+import xml.etree.ElementTree as ET
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
@@ -28,7 +30,7 @@ def sha(data):
 def package_notices(package):
     root = Path(package['manifest_path']).parent
     files = sorted(p for p in root.iterdir() if p.is_file())
-    mit = [p for p in files if p.name.lower() in ('license-mit', 'license-mit.txt')]
+    mit = [p for p in files if p.name.lower() in ('license-mit', 'license-mit.txt', 'license-mit.md')]
     if package['name'] == 'ring':
         # ring's root LICENSE delegates to BoringSSL, fiat, and once_cell.
         selected = sorted(p for p in root.rglob('*') if p.is_file()
@@ -51,7 +53,20 @@ def package_notices(package):
     selected = sorted(set(selected))
     if not selected:
         raise ValueError('manual license review required: ' + package['name'])
-    return [(p.relative_to(root).as_posix(), p.read_bytes(), None) for p in selected]
+    notices = [(p.relative_to(root).as_posix(), p.read_bytes(), None) for p in selected]
+    # The probe's generated core/xdg-output bindings retain their protocol
+    # authors' notices as well as the Rust bindings' package-level MIT notice.
+    protocol = {
+        'wayland-client': 'wayland.xml',
+        'wayland-protocols': 'protocols/unstable/xdg-output/xdg-output-unstable-v1.xml',
+    }.get(package['name'])
+    if protocol:
+        copyright_text = ET.parse(root / protocol).findtext('copyright')
+        if not copyright_text:
+            raise ValueError('missing protocol copyright: ' + protocol)
+        data = (textwrap.dedent(copyright_text).strip() + '\n').encode('utf-8')
+        notices.append((protocol + '#copyright', data, None))
+    return notices
 
 
 def swift_notices():
@@ -194,7 +209,8 @@ python3 tools/release/notices/generate-notices.py
              + X11_URL + '\n\n[License text](#text-' + sha(x11)[:12] + ').\n\n'
              '## License texts\n\n'
              'Texts with identical SHA-256 are included once. The machine-readable\n'
-             'inventory records the source filename and full hash of its original bytes.\n'
+             'inventory records the source filename and full hash of the retained notice bytes.\n'
+             'Wayland XML copyright fragments are extracted and dedented as UTF-8 text.\n'
              'Only trailing whitespace is removed from the Markdown text rendering.\n\n')
     for digest, text in sorted(texts.items()):
         rendered = '\n'.join(line.rstrip() for line in text.splitlines()).rstrip('\n')

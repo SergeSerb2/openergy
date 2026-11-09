@@ -69,3 +69,9 @@ exercised as a post-v1 extension; its updates must not change the shared
 CLIPBOARD data or stamp. The image is independent of `openergy-interop:latest`.
 See [the recorded verification](../../crates/platform-linux/AUDIT-2026-10-21.md)
 for commands, failure evidence and remaining limits.
+
+For the separate read-only Wayland discovery milestone, use
+`python3 tools/linux-dev/wayland-discover.py` on a disposable Linux host with
+Weston 13 installed. See [probe usage and output](../../crates/platform-linux/README.md#read-only-wayland-discovery-m1).
+This native lane creates its own compositor and bus; it does not change the
+Xvfb image or enable Wayland in the daemon.

@@ -1,0 +1,33 @@
+{
+  "binary": "/tmp/oe-target-impl-wayland/release/openergy",
+  "excluded": [],
+  "excluded_count": 0,
+  "failed": 0,
+  "format_version": 1,
+  "lab_port_range": [
+    25730,
+    25749
+  ],
+  "no_docker": false,
+  "passed": 1,
+  "port_range": [
+    25710,
+    25729
+  ],
+  "scenarios": [
+    {
+      "artifact_dir": null,
+      "blocked_by": [],
+      "cleanup_failures": [],
+      "elapsed_ms": 354,
+      "failed_step": null,
+      "failure": null,
+      "measurements": [],
+      "outcome": "PASS",
+      "requirement": "Isolated virtual IPC status has all frozen fields; daemon.stop exits zero.",
+      "scenario": "S0-smoke",
+      "stderr_tails": {}
+    }
+  ],
+  "slowdown": 1.0
+}

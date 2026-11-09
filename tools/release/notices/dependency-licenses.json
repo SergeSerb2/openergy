@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "cargo_lock_sha256": "11436d53d637444b5f455a74498a62ff2bc7448ece5b804e7c5d2faee2ef7170",
+  "cargo_lock_sha256": "0dbce30ffee80b06533cb652aec20f724d73d5784e147bd7c0f3167620baa915",
   "swift_package_resolved_sha256": "c797ae9a0970d8225f66f11736f94a1a8337d68a55f65bb34e5a47d4edc94282",
   "packages": [
     {
@@ -235,6 +235,19 @@
         {
           "path": "LICENSE-MIT",
           "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+        }
+      ]
+    },
+    {
+      "name": "downcast-rs",
+      "version": "1.2.1",
+      "declared_license": "MIT/Apache-2.0",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "url": "https://crates.io/crates/downcast-rs/1.2.1",
+      "license_files": [
+        {
+          "path": "LICENSE-MIT",
+          "sha256": "fb252fecf98d9af8f1d9201c5860319a514f5a8a24700dc84fc6ea287a7a4958"
         }
       ]
     },
@@ -645,6 +658,19 @@
       ]
     },
     {
+      "name": "pkg-config",
+      "version": "0.3.34",
+      "declared_license": "MIT OR Apache-2.0",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "url": "https://crates.io/crates/pkg-config/0.3.34",
+      "license_files": [
+        {
+          "path": "LICENSE-MIT",
+          "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397"
+        }
+      ]
+    },
+    {
       "name": "powerfmt",
       "version": "0.2.1",
       "declared_license": "MIT OR Apache-2.0",
@@ -667,6 +693,19 @@
         {
           "path": "LICENSE-MIT",
           "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+        }
+      ]
+    },
+    {
+      "name": "quick-xml",
+      "version": "0.41.0",
+      "declared_license": "MIT",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "url": "https://crates.io/crates/quick-xml/0.41.0",
+      "license_files": [
+        {
+          "path": "LICENSE-MIT.md",
+          "sha256": "5b2c207dcf571267ebe0bbdd5bf321f561ddc22ff597e7b363e96f4539507a29"
         }
       ]
     },
@@ -726,6 +765,19 @@
         {
           "path": "third_party/fiat/LICENSE",
           "sha256": "9eacbcb81be660840c714a560a9d65ba07913db98dd4baf969f78dd499fdd60f"
+        }
+      ]
+    },
+    {
+      "name": "roxmltree",
+      "version": "0.21.1",
+      "declared_license": "MIT OR Apache-2.0",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "url": "https://crates.io/crates/roxmltree/0.21.1",
+      "license_files": [
+        {
+          "path": "LICENSE-MIT",
+          "sha256": "fffe218c1e349e1d482a05677f2ce850502f88298174d77f6ac7c04821db7899"
         }
       ]
     },
@@ -895,6 +947,19 @@
         {
           "path": "LICENSE-MIT",
           "sha256": "4455bf75a91154108304cb283e0fea9948c14f13e20d60887cf2552449dea3b1"
+        }
+      ]
+    },
+    {
+      "name": "smallvec",
+      "version": "1.16.5",
+      "declared_license": "MIT OR Apache-2.0",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "url": "https://crates.io/crates/smallvec/1.16.5",
+      "license_files": [
+        {
+          "path": "LICENSE-MIT",
+          "sha256": "0b28172679e0009b655da42797c03fd163a3379d5cfa67ba1f1655e974a2a1a9"
         }
       ]
     },
@@ -1159,6 +1224,79 @@
         {
           "path": "LICENSE-MIT",
           "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+        }
+      ]
+    },
+    {
+      "name": "wayland-backend",
+      "version": "0.3.17",
+      "declared_license": "MIT",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "url": "https://crates.io/crates/wayland-backend/0.3.17",
+      "license_files": [
+        {
+          "path": "LICENSE.txt",
+          "sha256": "1cb6f4dee8c649f175736380495f0af0c753c87f22d50931692968bb24bf2161"
+        }
+      ]
+    },
+    {
+      "name": "wayland-client",
+      "version": "0.31.15",
+      "declared_license": "MIT",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "url": "https://crates.io/crates/wayland-client/0.31.15",
+      "license_files": [
+        {
+          "path": "LICENSE.txt",
+          "sha256": "1cb6f4dee8c649f175736380495f0af0c753c87f22d50931692968bb24bf2161"
+        },
+        {
+          "path": "wayland.xml#copyright",
+          "sha256": "b606ea4bd785bfa51c1bc333313af31fe846d481ea8da2502673cf8a2335c773"
+        }
+      ]
+    },
+    {
+      "name": "wayland-protocols",
+      "version": "0.32.13",
+      "declared_license": "MIT",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "url": "https://crates.io/crates/wayland-protocols/0.32.13",
+      "license_files": [
+        {
+          "path": "LICENSE.txt",
+          "sha256": "1cb6f4dee8c649f175736380495f0af0c753c87f22d50931692968bb24bf2161"
+        },
+        {
+          "path": "protocols/unstable/xdg-output/xdg-output-unstable-v1.xml#copyright",
+          "sha256": "42cec6c6efbf2c47a2c086d46f34bd2b67e111c2253960e5c755c7cd8e77cb3a"
+        }
+      ]
+    },
+    {
+      "name": "wayland-scanner",
+      "version": "0.31.11",
+      "declared_license": "MIT",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "url": "https://crates.io/crates/wayland-scanner/0.31.11",
+      "license_files": [
+        {
+          "path": "LICENSE.txt",
+          "sha256": "1cb6f4dee8c649f175736380495f0af0c753c87f22d50931692968bb24bf2161"
+        }
+      ]
+    },
+    {
+      "name": "wayland-sys",
+      "version": "0.31.11",
+      "declared_license": "MIT",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "url": "https://crates.io/crates/wayland-sys/0.31.11",
+      "license_files": [
+        {
+          "path": "LICENSE.txt",
+          "sha256": "1cb6f4dee8c649f175736380495f0af0c753c87f22d50931692968bb24bf2161"
         }
       ]
     },
