@@ -922,6 +922,15 @@ impl Server {
             slot.remote_payload = Some(data.clone());
             out.push(Action::SetClipboardShared { id, data });
         } else {
+            if id.0 == 1 {
+                // Retain locally sourced PRIMARY in the payload cache
+                // too. TimerTick evicts the marshalled `data` once
+                // transfers drain, and after the local owner exits the
+                // platform read comes back empty — without this cache
+                // the preserved slot would have nothing left to give a
+                // late-joining peer or a screen re-entry.
+                slot.remote_payload = Some(Arc::new(data.clone()));
+            }
             clipboard::transferred(id, &data, "out", out);
         }
         let conns = self

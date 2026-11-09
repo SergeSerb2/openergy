@@ -6,7 +6,7 @@ timeout_ms = 8000
 [[node]]
 id = "server"
 role = "server"
-config = { clipboard = { share_primary_selection = true }, screen = [{ name = "server", rect = { x = 0, y = 0, w = 1920, h = 1080 } }, { name = "client", os = "linux", rect = { x = 1920, y = 0, w = 1920, h = 1080 } }, { name = "client3", os = "linux", rect = { x = 1920, y = 1080, w = 1920, h = 1080 } }] }
+config = { clipboard = { share_primary_selection = true }, screen = [{ name = "server", rect = { x = 0, y = 0, w = 1920, h = 1080 } }, { name = "client", os = "linux", rect = { x = 1920, y = 0, w = 1920, h = 1080 } }, { name = "client3", os = "linux", rect = { x = 1920, y = 1080, w = 1920, h = 1080 } }, { name = "client4", os = "linux", rect = { x = 3840, y = 1080, w = 1920, h = 1080 } }] }
 
 [[node]]
 id = "client"
@@ -18,6 +18,13 @@ config = { clipboard = { share_primary_selection = true } }
 # PRIMARY owner has exited, proving the server kept the last selection.
 [[node]]
 id = "client3"
+role = "client"
+remote = "server"
+config = { clipboard = { share_primary_selection = true } }
+autostart = false
+
+[[node]]
+id = "client4"
 role = "client"
 remote = "server"
 config = { clipboard = { share_primary_selection = true } }
@@ -85,6 +92,52 @@ do = "assert_clipboard"
 node = "client"
 text = "clipboard zero"
 
+# Owner exit with a locally sourced PRIMARY: the transfer has finished
+# (marshalled cache evicted), the local read now comes back empty, and
+# a late joiner must still receive the last valid selection.
+[[step]]
+do = "ledger_mark"
+node = "client"
+audit = true
+save = "pre_exit_local"
+
+[[step]]
+do = "clipboard_set"
+node = "server"
+selection = "primary"
+formats = []
+
+[[step]]
+do = "sleep"
+ms = 300
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+since = "${pre_exit_local.sequence}"
+exact = true
+audit = true
+expect = []
+
+[[step]]
+do = "start"
+node = "client3"
+
+[[step]]
+do = "wait_connected"
+node = "client3"
+
+[[step]]
+do = "assert_clipboard"
+node = "client3"
+selection = "primary"
+text = "primary from server"
+
+[[step]]
+do = "assert_clipboard"
+node = "client3"
+text = "clipboard zero"
+
 # Client -> server PRIMARY, again leaving id 0 untouched.
 [[step]]
 do = "clipboard_set"
@@ -132,21 +185,21 @@ expect = []
 
 [[step]]
 do = "start"
-node = "client3"
+node = "client4"
 
 [[step]]
 do = "wait_connected"
-node = "client3"
+node = "client4"
 
 [[step]]
 do = "assert_clipboard"
-node = "client3"
+node = "client4"
 selection = "primary"
 text = "primary from client"
 
 [[step]]
 do = "assert_clipboard"
-node = "client3"
+node = "client4"
 text = "clipboard zero"
 
 # Flag off on the server: its local PRIMARY must not leave, and PRIMARY
