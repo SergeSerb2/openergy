@@ -531,6 +531,8 @@ Session stays deterministic. New event and action types:
 - Events in: `FileSendRequested { xfer, kind, name, total_len, sha256,
   peer }` (daemon → session after the worker hashed the file),
   `FileChunkReady { xfer, bytes }` (pull model, §6.1),
+  `FileCredit { xfer, chunks }` (daemon downstream-capacity grant,
+  §6.1),
   `FileStageResult { xfer, ok, reason }` (worker write outcome),
   `FileAnswerRequested` is not a session event: consent lives in the
   daemon (§7.1), and its decision enters as
@@ -751,19 +753,35 @@ Files must stream. Add a file worker beside the clipboard worker in
 channel in, a bounded event channel out, one thread, a `Waker` to wake the
 I/O loop. It is the only component that touches file bytes on disk.
 
-Send side (pull, depth 1 plus the net queue):
+Send side (pull, gated on downstream credit):
 
 1. IPC `file.send` hands the worker `{ path, peer }`. The worker checks
    the file (§4.6), hashes it in 1 MiB reads, then raises
    `FileSendRequested` to session (§4.3).
 2. After `OFAN` accept, session emits `SendFileChunk` only for chunk data
-   it already holds. It holds at most one chunk ahead: each
-   `FileChunkReady` refill is requested when the previous chunk leaves
-   session. The worker `pread`s at the session-given offset, so session
-   remains the single owner of progress. Session never blocks on disk;
-   the worker never decides order.
-3. Memory per active send: one ≤ 32 KiB chunk in session or backlog, plus
-   the driver's 256 KiB bulk window. File size does not change daemon
+   it already holds, and it requests a refill (`FileChunkReady`) only
+   against downstream **credit** — never merely because the previous
+   chunk left session. Leaving session only enters the daemon's
+   deferred backlog; it does not mean the driver admitted the chunk
+   into its 256 KiB bulk window. Session keeps a per-transfer credit
+   count. The daemon grants credit with `FileCredit { xfer, chunks }`
+   (§4.3): an initial grant at accept time, then one chunk of credit
+   each time `drain_bulk` admits a file chunk for that connection
+   (the same `bulk_has_room` / `queued_bytes` check that gates
+   clipboard bulk today). The daemon's invariant: file bytes in the
+   driver plus backlog, plus outstanding credit, never exceed the
+   bulk window for that connection. A slow-but-healthy receiver
+   therefore pauses disk pulls — chunks stay un-read on disk — instead
+   of piling file data into the 16 MiB deferred cap until the §6.2
+   stall abort kills a progressing transfer. (At the §6.2 emission
+   rate of ~31 MiB/s against a 1 MiB/s link, the naive
+   refill-on-leave rule would exhaust that cap in well under a second.)
+   The worker `pread`s at the session-given offset, so session remains
+   the single owner of progress. Session never blocks on disk; the
+   worker never decides order; the daemon never decides file content.
+3. Memory per active send: at most one ≤ 32 KiB chunk held in session,
+   plus at most the driver's 256 KiB bulk window downstream (credit
+   bounds the sum, backlog included). File size does not change daemon
    memory. Scenario F2 asserts this with a `measure` step (§8.2).
 
 Worker scheduling (one thread, no starvation): the pre-offer hash is the
@@ -827,10 +845,13 @@ Fixed budgets (arithmetic in Appendix A):
 Daemon backlog changes (the §1.4 mechanism, generalized):
 
 - Tag deferred entries by stream: replace the tuple's `ClipboardId` with
-  `enum BulkTag { Clipboard(ClipboardId), File(u32) }`. Abort, drain, and
-  cap accounting stay per connection. The pull model keeps file depth
-  near zero, so the 16 MiB deferred cap remains a clipboard-scale guard,
-  not a file buffer.
+  `enum BulkTag { Clipboard(ClipboardId), File(u64) }` (the `xfer`
+  handle). Abort, drain, and cap accounting stay per connection. The
+  credit-gated pull model (§6.1) keeps file depth in the backlog near
+  zero — un-admitted chunks are never read from disk — so the 16 MiB
+  deferred cap remains a clipboard-scale guard, not a file buffer.
+  `drain_bulk` admitting a `File` entry is also the credit hook: it
+  raises `FileCredit` for that `xfer` in the same pass.
 - Split the stall rule: clipboard keeps 2 s. File streams abort after
   `max(30 s, 3 × heartbeat)` with no driver-accepted bulk chunk. Note the
   heartbeat death rule (3 × heartbeat of no peer traffic) usually fires
