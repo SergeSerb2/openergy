@@ -27,12 +27,14 @@ enum Command {
 }
 #[derive(Default)]
 pub struct Source {
+    pub(crate) language_notifier: Option<SyncSender<crate::WinNotice>>,
     thread: Option<MessageThread>,
     tx: Option<SyncSender<Command>>,
     captured: bool,
 }
 thread_local! { static STATE: RefCell<Option<Capture>> = const { RefCell::new(None) }; }
 struct Capture {
+    language_notifier: Option<SyncSender<crate::WinNotice>>,
     callback: Callback,
     captured: bool,
     pressed: BTreeMap<u16, u16>,
@@ -301,6 +303,15 @@ unsafe extern "system" fn mouse(code: i32, w: WPARAM, l: LPARAM) -> LRESULT {
     unsafe { CallNextHookEx(null_mut(), code, w, l) }
 }
 unsafe extern "system" fn window_proc(hwnd: HWND, msg: u32, w: WPARAM, l: LPARAM) -> LRESULT {
+    if msg == WM_INPUTLANGCHANGE {
+        STATE.with(|s| {
+            if let Ok(state) = s.try_borrow() {
+                if let Some(tx) = state.as_ref().and_then(|s| s.language_notifier.as_ref()) {
+                    let _ = tx.try_send(crate::WinNotice::KeyboardLanguagesChanged);
+                }
+            }
+        });
+    }
     if msg == WM_INPUT {
         let mut input = Input::RAWINPUT::default();
         let mut size = std::mem::size_of::<Input::RAWINPUT>() as u32;
@@ -337,6 +348,12 @@ unsafe extern "system" fn window_proc(hwnd: HWND, msg: u32, w: WPARAM, l: LPARAM
     unsafe { DefWindowProcW(hwnd, msg, w, l) }
 }
 impl Source {
+    pub(crate) fn with_language_notifier(language_notifier: Option<SyncSender<crate::WinNotice>>) -> Self {
+        Self {
+            language_notifier,
+            ..Self::default()
+        }
+    }
     fn command(
         &self,
         build: impl FnOnce(SyncSender<Result<(), PlatformError>>) -> Command,
@@ -364,6 +381,7 @@ impl InputSource for Source {
         let (ready, rx) = mpsc::sync_channel(1);
         let (tx, commands) = mpsc::sync_channel(32);
         let captured = self.captured;
+        let language_notifier = self.language_notifier.clone();
         let h = std::thread::Builder::new()
             .name("oe-win-capture".into())
             .spawn(move || {
@@ -371,6 +389,7 @@ impl InputSource for Source {
                 STATE.with(|s| {
                     *s.borrow_mut() = Some(Capture {
                         callback,
+                        language_notifier,
                         captured: false,
                         pressed: BTreeMap::new(),
                         key_state: keymap::initial_state(),

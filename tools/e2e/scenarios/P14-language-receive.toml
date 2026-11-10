@@ -1,0 +1,231 @@
+# SER-215: input remains live on malformed language units and unsupported layouts.
+name = "P14-language-receive"
+requirement = "Legacy DKRP suffix sync, case normalization, invalid code no-ops, and unsupported platform requests preserve injection."
+timeout_ms = 5000
+[[node]]
+id = "server"
+kind = "raw"
+role = "server"
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "virtual.inject"
+params = {"keyboard_languages" = {"available" = ["en", "de"], "current" = "en"}}
+
+[[step]]
+do = "subscribe"
+node = "client"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "hello"
+minor = 6
+
+[[step]]
+do = "raw_expect"
+node = "server"
+builder = "hello_back"
+name = "client"
+minor = 6
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "QINF"
+
+[[step]]
+do = "raw_expect"
+node = "server"
+builder = "code"
+code = "DINF"
+payload_only = true
+framed = true
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "CIAK"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "options"
+values = []
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "CINN"
+payload_hex = "00010001000000010000"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "ledger_mark"
+node = "client"
+audit = true
+save = "legacy"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DKDN"
+payload_hex = "006100000001"
+
+# Pre-1.8 DKDL is not a language-sync trigger; its key still injects.
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DKDL"
+payload_hex = "006200000002000000026465"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DKUP"
+payload_hex = "006200000002"
+
+[[step]]
+do = "assert_status"
+node = "client"
+fields = {"peers.0.active_language" = {"$null" = true}}
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DKRP"
+payload_hex = "0061000000010001000000024445"
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "language.sync"
+expect = {"language" = "de", "result" = "applied"}
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+audit = true
+since = "${legacy.sequence}"
+exact = true
+expect = [{"event" = {"type" = "key_down", "key" = 97}}, {"event" = {"type" = "key_down", "key" = 98}}, {"event" = {"type" = "key_up", "key" = 98}}, {"detail" = {"kind" = "language", "language" = "de"}}, {"event" = {"type" = "key_repeat"}}]
+
+[[step]]
+do = "ledger_mark"
+node = "client"
+audit = true
+save = "invalid"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DKRP"
+payload_hex = "006100000001000100000000"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DKRP"
+payload_hex = "00610000000100010000000164"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DKRP"
+payload_hex = "006100000001000100000003646575"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DKRP"
+payload_hex = "0061000000010001000000026431"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DKRP"
+payload_hex = "006100000001000100000002c3a9"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DKRP"
+payload_hex = "00610000000100010000000570742d4252"
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+audit = true
+since = "${invalid.sequence}"
+exact = true
+expect = [{"event" = {"type" = "key_repeat"}}, {"event" = {"type" = "key_repeat"}}, {"event" = {"type" = "key_repeat"}}, {"event" = {"type" = "key_repeat"}}, {"event" = {"type" = "key_repeat"}}, {"event" = {"type" = "key_repeat"}}]
+
+[[step]]
+do = "assert_status"
+node = "client"
+fields = {"peers.0.active_language" = "de", "peers.0.connected" = true}
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "virtual.inject"
+params = {"keyboard_languages" = {"available" = []}}
+
+[[step]]
+do = "ledger_mark"
+node = "client"
+audit = true
+save = "unsupported"
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DKRP"
+payload_hex = "006100000001000100000002656e"
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "language.sync"
+expect = {"language" = "en", "result" = "unsupported"}
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+audit = true
+since = "${unsupported.sequence}"
+exact = true
+expect = [{"detail" = {"kind" = "language", "language" = "en"}}, {"event" = {"type" = "key_repeat"}}]
+
+[[step]]
+do = "raw_send"
+node = "server"
+builder = "code"
+code = "DKUP"
+payload_hex = "006100000001"
+
+[[step]]
+do = "wait_connected"
+node = "client"

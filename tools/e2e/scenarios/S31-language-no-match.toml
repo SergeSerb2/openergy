@@ -1,0 +1,71 @@
+# SER-215: no installed match never blocks typing or retries for each repeat.
+name = "S31-language-no-match"
+requirement = "An unavailable language emits no_match once, injects every key, and keeps the connection."
+timeout_ms = 5000
+[[node]]
+id = "server"
+role = "server"
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "virtual.inject"
+params = {"keyboard_languages" = {"available" = ["en", "ru"], "current" = "ru"}}
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "virtual.inject"
+params = {"keyboard_languages" = {"available" = ["en"], "current" = "en"}}
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "mouse_move_abs", "x" = 1919, "y" = 540}, {"type" = "mouse_move_rel", "dx" = 20, "dy" = 0}]
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = {"active_screen" = "client"}
+
+[[step]]
+do = "subscribe"
+node = "client"
+
+[[step]]
+do = "ledger_mark"
+node = "client"
+audit = true
+save = "mark"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "key_down", "key" = 97, "modifiers" = 0, "button" = 97}, {"type" = "key_repeat", "key" = 97, "modifiers" = 0, "button" = 97, "count" = 1}, {"type" = "key_up", "key" = 97, "modifiers" = 0, "button" = 97}]
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "language.sync"
+expect = {"language" = "ru", "result" = "no_match"}
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+audit = true
+since = "${mark.sequence}"
+exact = true
+expect = [{"event" = {"type" = "key_down", "key" = 97}}, {"event" = {"type" = "key_repeat"}}, {"event" = {"type" = "key_up"}}]
+
+[[step]]
+do = "assert_status"
+node = "client"
+fields = {"peers.0.active_language" = "ru", "peers.0.connected" = true}

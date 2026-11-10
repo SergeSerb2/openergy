@@ -180,3 +180,9 @@ To also check introspection against an installed real portal frontend, add
 that run-owned service after the missing-service check, then removes it. A
 frontend without a GNOME/KDE backend still cannot supply input capabilities.
 The default lane does not need the portal package.
+
+Keyboard language sync reports configured XKB groups and selects the first
+matching group. It never installs a layout. Language codes cannot distinguish
+variants; e.g. `en` matches English US or GB in group order. The guarded
+`x11_probe language-group` mode checks reporting, external group changes,
+selection before sink input, missing-layout no-op, and original map restoration.

@@ -21,6 +21,12 @@ Candidate work on branch `t3/stability-wave-2`; no published artifacts. See
 
 ### Changed
 
+- Keyboard language sync is now active under the existing default
+  `input.sync_language = true`. Upgrading an Openergy server can make existing
+  Deskflow/Synergy clients switch layouts. Set it to `false` to opt out.
+  Sync chooses the receiver's first installed layout matching the two-letter
+  language, not an exact variant or IME. Windows requests are best effort.
+
 - Approving a previously untrusted peer now closes its held connection; the
   trusted reconnect starts from a clean stream, so input sent before approval
   is never delivered.

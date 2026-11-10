@@ -65,6 +65,20 @@ pub struct Keymap {
     pub symbols: Vec<u32>,
     pub masks: [u16; 8],
     pub modifier_codes: Vec<u8>,
+    /// Effective XKB group at load time. The sink reloads the map on
+    /// every key down, so this tracks group locks (including language
+    /// sync) without extra plumbing.
+    pub group: usize,
+    /// Number of XKB groups in the map; only used by the core-map
+    /// fallback in `find`. Falls back to the historical two-group
+    /// assumption when XKB is unavailable.
+    pub num_groups: usize,
+    /// Per-key XKB symbol maps from GetMap, indexed by
+    /// `keycode - first`. `find` prefers these: the core map packs
+    /// levels 1/2 of groups 1-2 first and then appends the remaining
+    /// levels group by group at per-key widths, so core columns do
+    /// not locate groups 3-4 (or level 3+) exactly.
+    xkb_syms: Option<Vec<x11rb::protocol::xkb::KeySymMap>>,
 }
 impl Keymap {
     pub fn load(c: &RustConnection) -> Result<Self, PlatformError> {
@@ -79,12 +93,21 @@ impl Keymap {
         if width == 0 {
             return Err(error("X server returned an empty keymap"));
         }
+        // Best-effort XKB state: effective group + group count, so find()
+        // can translate logical keys through the group the server will
+        // actually apply to injected keycodes. Absent XKB, keep the
+        // historical group-1 view of the core map.
+        let (group, num_groups) = xkb_group_state(c).unwrap_or((0, if width >= 4 { 2 } else { 1 }));
+        let count = setup.max_keycode - setup.min_keycode + 1;
         let mut map = Self {
             first: setup.min_keycode,
             width,
             symbols: reply.keysyms,
             masks: [0; 8],
             modifier_codes: mods.keycodes.clone(),
+            group,
+            num_groups: num_groups.clamp(1, 4),
+            xkb_syms: xkb_sym_maps(c, setup.min_keycode, count),
         };
         for (index, codes) in mods
             .keycodes
@@ -158,16 +181,49 @@ impl Keymap {
             && ((0xffb0..=0xffb9).contains(&b) || b == 0xffae);
         keyid(if shift ^ caps ^ keypad_num { b } else { a })
     }
+    /// Core-protocol columns searched when no XKB map is available.
+    /// Only levels 1/2 have fixed slots (groups 1-2 at [0,1] and
+    /// [2,3]); the server appends further levels group by group at
+    /// per-key widths, so for groups 2+ and levels 3+ this fallback
+    /// reports a miss and lets the sink remap a spare keycode with
+    /// the exact keysym rather than risk a wrong-column hit. Group
+    /// 1 keeps the historical [4,5] level-3/4 slots, which are exact
+    /// for single-group maps (group 2 slots wrap to group 1 there).
+    fn core_columns(&self, group: usize) -> [Option<usize>; 4] {
+        match group {
+            0 => [Some(0), Some(1), Some(4), Some(5)],
+            1 => [Some(2), Some(3), None, None],
+            _ => [None, None, None, None],
+        }
+    }
     pub fn find(&self, sym: u32) -> Option<(u8, bool, bool)> {
+        // Search the group the server will apply to the injected
+        // keycode. Searching group 1 while another group is locked
+        // (language sync) would deliver that group's character for
+        // the keycode instead of the logical key (z/y on QWERTZ).
+        let hit = |s: u32| s == sym || (keyid(s).is_some() && keyid(s) == keyid(sym));
+        if let Some(maps) = &self.xkb_syms {
+            // Authoritative per-key data: syms are group-major with a
+            // per-key width, and each key wraps/clamps an out-of-range
+            // state group by its own group_info. A miss here is final;
+            // the core map could only add wrong-group hits.
+            return maps.iter().enumerate().find_map(|(i, m)| {
+                let groups = usize::from(m.group_info & 0x0f).max(1);
+                let width = usize::from(m.width).max(1);
+                let start = effective_group(self.group, groups, m.group_info) * width;
+                (0..width.min(4))
+                    .find(|level| m.syms.get(start + level).is_some_and(|s| hit(*s)))
+                    .map(|level| (self.first + i as u8, level & 1 != 0, level >= 2))
+            });
+        }
+        let group = self.group.min(self.num_groups - 1);
+        let columns = self.core_columns(group);
         self.symbols.chunks(self.width).enumerate().find_map(|(i, row)| {
-            // Core XKB compatibility mapping: levels 3/4 of group 1 occupy columns 4/5.
-            [0usize, 1, 4, 5]
+            columns
                 .into_iter()
-                .find(|column| {
-                    row.get(*column)
-                        .is_some_and(|s| *s == sym || (keyid(*s).is_some() && keyid(*s) == keyid(sym)))
-                })
-                .map(|column| (self.first + i as u8, column & 1 != 0, column >= 4))
+                .enumerate()
+                .find(|(_, column)| column.and_then(|c| row.get(c)).is_some_and(|s| hit(*s)))
+                .map(|(level, _)| (self.first + i as u8, level & 1 != 0, level >= 2))
         })
     }
     pub fn modifier_code(&self, mask: u16) -> Option<u8> {
@@ -185,4 +241,186 @@ impl Keymap {
         };
         self.find(sym).map(|(code, _, _)| code)
     }
+}
+
+/// Per-key XKB symbol maps for `count` keycodes from `first`, if XKB answers.
+fn xkb_sym_maps(c: &RustConnection, first: u8, count: u8) -> Option<Vec<x11rb::protocol::xkb::KeySymMap>> {
+    use x11rb::protocol::xkb::{ConnectionExt as _, MapPart, VMod, ID};
+    c.xkb_use_extension(1, 0).ok()?.reply().ok()?;
+    let reply = c
+        .xkb_get_map(
+            ID::USE_CORE_KBD.into(),
+            MapPart::default(),
+            MapPart::KEY_SYMS,
+            0,
+            0,
+            first,
+            count,
+            0,
+            0,
+            0,
+            0,
+            VMod::default(),
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+        )
+        .ok()?
+        .reply()
+        .ok()?;
+    if reply.first_key_sym != first {
+        return None;
+    }
+    reply.map.syms_rtrn.filter(|maps| maps.len() == usize::from(count))
+}
+/// The group a key with `groups` groups uses when the state group is
+/// out of range, per the key's group_info action bits (wrap 0x00,
+/// clamp 0x40, redirect 0x80 with target in bits 4-5).
+fn effective_group(state: usize, groups: usize, group_info: u8) -> usize {
+    if state < groups {
+        return state;
+    }
+    match group_info & 0xc0 {
+        0x40 => groups - 1,
+        0x80 => {
+            let target = usize::from((group_info >> 4) & 0x3);
+            if target < groups {
+                target
+            } else {
+                0
+            }
+        }
+        _ => state % groups,
+    }
+}
+/// Effective XKB group and total group count, if XKB answers.
+fn xkb_group_state(c: &RustConnection) -> Option<(usize, usize)> {
+    use x11rb::protocol::xkb::{ConnectionExt as _, ID};
+    c.xkb_use_extension(1, 0).ok()?.reply().ok()?;
+    let state = c.xkb_get_state(ID::USE_CORE_KBD.into()).ok()?.reply().ok()?;
+    let controls = c.xkb_get_controls(ID::USE_CORE_KBD.into()).ok()?.reply().ok()?;
+    Some((usize::from(u8::from(state.group)), usize::from(controls.num_groups)))
+}
+// XKB names can be layout ids or human-readable names (e.g. "English (US)").
+// Ignore the parenthesized variant. Only configured groups are ever selected.
+fn group_language(name: &str) -> Option<[u8; 2]> {
+    let name = name.split('(').next()?.trim().to_ascii_lowercase();
+    let code = match name.as_str() {
+        "us" | "gb" | "english" => "en",
+        "jp" | "japanese" => "ja",
+        "kr" | "korean" => "ko",
+        "cn" | "tw" | "chinese" => "zh",
+        "german" => "de",
+        "french" => "fr",
+        "russian" => "ru",
+        "spanish" => "es",
+        "italian" => "it",
+        "portuguese" => "pt",
+        "ukrainian" => "uk",
+        "polish" => "pl",
+        "czech" => "cs",
+        "dutch" => "nl",
+        "swedish" => "sv",
+        "danish" => "da",
+        "norwegian" => "no",
+        "finnish" => "fi",
+        "greek" => "el",
+        "turkish" => "tr",
+        "hebrew" => "he",
+        "arabic" => "ar",
+        "hungarian" => "hu",
+        "romanian" => "ro",
+        "bulgarian" => "bg",
+        "slovak" => "sk",
+        "croatian" => "hr",
+        "serbian" => "sr",
+        _ => &name,
+    };
+    openergy_platform::keyboard_language(code)
+}
+fn language_groups(c: &x11rb::rust_connection::RustConnection) -> Result<Vec<(u8, [u8; 2])>, PlatformError> {
+    use x11rb::protocol::{
+        xkb::{ConnectionExt as _, NameDetail, ID},
+        xproto::ConnectionExt as _,
+    };
+    c.xkb_use_extension(1, 0)
+        .map_err(crate::native::error)?
+        .reply()
+        .map_err(crate::native::error)?;
+    let names = c
+        .xkb_get_names(ID::USE_CORE_KBD.into(), NameDetail::GROUP_NAMES)
+        .map_err(crate::native::error)?
+        .reply()
+        .map_err(crate::native::error)?;
+    let mut atoms = names.value_list.groups.unwrap_or_default().into_iter();
+    let mut groups = Vec::new();
+    for group in 0..4 {
+        if u8::from(names.group_names) & (1 << group) == 0 {
+            continue;
+        }
+        if let Some(atom) = atoms.next() {
+            let reply = c
+                .get_atom_name(atom)
+                .map_err(crate::native::error)?
+                .reply()
+                .map_err(crate::native::error)?;
+            if let Some(code) = group_language(&String::from_utf8_lossy(&reply.name)) {
+                groups.push((group, code));
+            }
+        }
+    }
+    Ok(groups)
+}
+pub fn keyboard_languages(
+    c: &x11rb::rust_connection::RustConnection,
+) -> Result<openergy_platform::KeyboardLanguages, PlatformError> {
+    use x11rb::protocol::xkb::{ConnectionExt as _, ID};
+    let groups = language_groups(c)?;
+    let state = c
+        .xkb_get_state(ID::USE_CORE_KBD.into())
+        .map_err(crate::native::error)?
+        .reply()
+        .map_err(crate::native::error)?;
+    let mut available = Vec::new();
+    for (_, code) in &groups {
+        if !available.contains(code) {
+            available.push(*code);
+        }
+    }
+    Ok(openergy_platform::KeyboardLanguages {
+        available,
+        current: groups
+            .iter()
+            .find(|(g, _)| *g == u8::from(state.group))
+            .map(|(_, c)| *c),
+    })
+}
+pub fn set_keyboard_language(c: &x11rb::rust_connection::RustConnection, lang: &str) -> Result<(), PlatformError> {
+    use x11rb::protocol::{
+        xkb::{ConnectionExt as _, ID},
+        xproto::ModMask,
+    };
+    let code = openergy_platform::keyboard_language(lang).ok_or(PlatformError::NotImplemented)?;
+    let group = language_groups(c)?
+        .into_iter()
+        .find(|(_, c)| *c == code)
+        .ok_or(PlatformError::NotImplemented)?
+        .0;
+    // XkbLockGroup is the lock-group form of the XKB LatchLockState request.
+    c.xkb_latch_lock_state(
+        ID::USE_CORE_KBD.into(),
+        ModMask::default(),
+        ModMask::default(),
+        true,
+        group.into(),
+        ModMask::default(),
+        false,
+        0,
+    )
+    .map_err(crate::native::error)?
+    .check()
+    .map_err(crate::native::error)
 }

@@ -51,6 +51,7 @@ pub enum MacNotice {
     CaptureTranslationProblem,
     CaptureStopped,
     DisplaysChanged,
+    KeyboardLanguagesChanged,
     Sleeping,
     Woke,
     ScreenLocked,

@@ -51,6 +51,9 @@ impl Drop for OwnedCf {
 #[link(name = "CoreFoundation", kind = "framework")]
 unsafe extern "C" {
     pub fn CFRelease(value: Ref);
+    pub fn CFArrayGetCount(array: Ref) -> isize;
+    pub fn CFArrayGetValueAtIndex(array: Ref, index: isize) -> Ref;
+    pub fn CFEqual(a: Ref, b: Ref) -> bool;
     pub fn CFRetain(value: Ref) -> Ref;
     pub fn CFDataGetBytePtr(data: Ref) -> *const u8;
     pub fn CFDataGetLength(data: Ref) -> isize;
@@ -104,6 +107,11 @@ pub fn cf_string(value: Ref) -> Result<String> {
 #[link(name = "Carbon", kind = "framework")]
 unsafe extern "C" {
     pub fn TISCopyCurrentKeyboardLayoutInputSource() -> Ref;
+    pub fn TISCreateInputSourceList(properties: Ref, include_all_installed: bool) -> Ref;
+    pub fn TISSelectInputSource(source: Ref) -> i32;
+    pub static kTISPropertyInputSourceLanguages: Ref;
+    pub static kTISPropertyInputSourceType: Ref;
+    pub static kTISTypeKeyboardLayout: Ref;
     pub fn TISGetInputSourceProperty(source: Ref, key: Ref) -> Ref;
     pub static kTISPropertyInputSourceID: Ref;
     pub static kTISPropertyUnicodeKeyLayoutData: Ref;
@@ -409,6 +417,7 @@ unsafe extern "C" {
 #[link(name = "Carbon", kind = "framework")]
 unsafe extern "C" {
     pub static kTISNotifySelectedKeyboardInputSourceChanged: Ref;
+    pub static kTISNotifyEnabledKeyboardInputSourcesChanged: Ref;
 }
 #[link(name = "CoreGraphics", kind = "framework")]
 unsafe extern "C" {

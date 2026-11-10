@@ -260,7 +260,27 @@ pub trait ClipboardBackend: Send {
         }
     }
 }
+/// Languages of installed keyboard layouts, in platform order. No variant or IME state.
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct KeyboardLanguages {
+    pub available: Vec<[u8; 2]>,
+    pub current: Option<[u8; 2]>,
+}
+/// Accept exactly one two-byte ASCII language, normalizing case.
+pub fn keyboard_language(lang: &str) -> Option<[u8; 2]> {
+    let bytes: [u8; 2] = lang.as_bytes().try_into().ok()?;
+    bytes
+        .iter()
+        .all(u8::is_ascii_alphabetic)
+        .then(|| bytes.map(|b| b.to_ascii_lowercase()))
+}
 pub trait ScreenSystem: Send {
+    fn keyboard_languages(&self) -> KeyboardLanguages {
+        KeyboardLanguages::default()
+    }
+    fn set_keyboard_language(&mut self, _lang: &str) -> Result<(), PlatformError> {
+        Err(PlatformError::NotImplemented)
+    }
     fn screens(&self) -> Vec<ScreenRect>;
     fn cursor_pos(&self) -> (i32, i32);
     fn clipboard(&mut self) -> &mut dyn ClipboardBackend;

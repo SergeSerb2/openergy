@@ -73,6 +73,7 @@ mod probe {
             "clipboard-cancel" => clipboard_cancel()?,
             "primary-sync" => primary_sync()?,
             "primary-loop" => primary_loop()?,
+            "language-group" => language_group()?,
             "resources" => resources()?,
             "all" => {
                 inject()?;
@@ -114,6 +115,246 @@ mod probe {
         }
         pause();
         Ok((child, path))
+    }
+    fn language_group() -> Result<()> {
+        use x11rb::connection::Connection;
+        let (c, _) = x11rb::connect(None)?;
+        let setup = c.setup();
+        // This mode has the same isolated :99 guard as every native probe.
+        // Restore the entire original map even if an assertion fails.
+        let original = command("xkbcomp", &["-xkb", ":99", "-"])?;
+        let original_map = c
+            .get_keyboard_mapping(setup.min_keycode, setup.max_keycode - setup.min_keycode + 1)?
+            .reply()?
+            .keysyms;
+        let restore_path = "/tmp/oe-language-original.xkb";
+        fs::write(restore_path, original)?;
+        struct Restore;
+        impl Drop for Restore {
+            fn drop(&mut self) {
+                let _ = command("xkbcomp", &["/tmp/oe-language-original.xkb", ":99"]);
+            }
+        }
+        let restore = Restore;
+        let (_xev, path) = xev("language")?;
+        command(
+            "setxkbmap",
+            &["-layout", "us,de", "-option", "", "-option", "grp:menu_toggle"],
+        )?;
+        let mut b = create(X11Options::default())?;
+        let language_notices = Arc::new(AtomicUsize::new(0));
+        let notices = language_notices.clone();
+        b.screens.on_display_changed(Box::new(move || {
+            notices.fetch_add(1, Ordering::Relaxed);
+        }));
+        let initial = b.screens.keyboard_languages();
+        if initial.available != [*b"en", *b"de"] || initial.current != Some(*b"en") {
+            return Err(format!("unexpected XKB languages: {initial:?}").into());
+        }
+        command("xdotool", &["key", "ISO_Next_Group"])?;
+        // xdotool 3.20160805 restores the prior XKB group after each XTEST
+        // key. Also send the real configured group-toggle key directly, as a
+        // physical keyboard would, without that tool's group restoration.
+        use x11rb::protocol::xtest::ConnectionExt as _;
+        let mapping = c
+            .get_keyboard_mapping(setup.min_keycode, setup.max_keycode - setup.min_keycode + 1)?
+            .reply()?;
+        let toggle = mapping
+            .keysyms
+            .chunks(usize::from(mapping.keysyms_per_keycode))
+            .position(|row| row.first() == Some(&0xfe08))
+            .ok_or("missing ISO_Next_Group key")? as u8
+            + setup.min_keycode;
+        for kind in [
+            x11rb::protocol::xproto::KEY_PRESS_EVENT,
+            x11rb::protocol::xproto::KEY_RELEASE_EVENT,
+        ] {
+            c.xtest_fake_input(kind, toggle, x11rb::CURRENT_TIME, setup.roots[0].root, 0, 0, 0)?
+                .check()?;
+        }
+        pause();
+        if b.screens.keyboard_languages().current != Some(*b"de") {
+            return Err(format!(
+                "XKB current did not follow group change: {:?}",
+                b.screens.keyboard_languages()
+            )
+            .into());
+        }
+        b.screens.set_keyboard_language("en")?;
+        if b.screens.keyboard_languages().current != Some(*b"en") {
+            return Err("XKB en selection failed".into());
+        }
+        b.screens.set_keyboard_language("de")?;
+        if b.screens.keyboard_languages().current != Some(*b"de") {
+            return Err("XKB de selection failed".into());
+        }
+        // Wire keys are logical, not physical positions: with the German
+        // group locked, logical z must still arrive as z (not QWERTZ y),
+        // logical y as y, and ü — absent from the US group — must arrive
+        // as ü now that the German group provides it.
+        for (key, button) in [(b'z' as u16, 52), (b'y' as u16, 53), (0xfcu16, 54)] {
+            b.sink.inject(&InputEvent::KeyDown {
+                key,
+                modifiers: Modifiers::NONE,
+                button,
+            })?;
+            b.sink.inject(&InputEvent::KeyUp {
+                key,
+                modifiers: Modifiers::NONE,
+                button,
+            })?;
+        }
+        pause();
+        // Ordered press keysyms: presence alone cannot distinguish a
+        // swapped delivery, because a group-1 mapping under the German
+        // group emits the same set with z and y exchanged. The final
+        // three KeyPress records must be exactly z, y, ü in order.
+        let read_presses = |path: &str| -> Result<Vec<String>> {
+            let seen = fs::read_to_string(path)?;
+            let mut presses = Vec::new();
+            let mut in_press = false;
+            for line in seen.lines() {
+                if line.contains("KeyPress event") {
+                    in_press = true;
+                } else if in_press && line.contains("keycode") {
+                    in_press = false;
+                    if let Some(start) = line.find("(keysym ") {
+                        let rest = &line[start + "(keysym ".len()..];
+                        if let Some(end) = rest.find(',') {
+                            presses.push(rest[..end].to_string());
+                        }
+                    }
+                }
+            }
+            Ok(presses)
+        };
+        let presses = read_presses(&path)?;
+        let last3: Vec<&str> = presses.iter().rev().take(3).rev().map(String::as_str).collect();
+        if last3 != ["0x7a", "0x79", "0xfc"] {
+            return Err(format!(
+                "sink keys did not reach xev as logical z, y, ü under German group (last presses: {presses:?})"
+            )
+            .into());
+        }
+        if b.screens.set_keyboard_language("ru").is_ok() || b.screens.keyboard_languages().current != Some(*b"de") {
+            return Err("uninstalled language changed the XKB group".into());
+        }
+        let deadline = Instant::now() + Duration::from_secs(3);
+        while language_notices.load(Ordering::Relaxed) == 0 && Instant::now() < deadline {
+            pause();
+        }
+        if language_notices.load(Ordering::Relaxed) == 0 {
+            return Err("group changes did not notify the health sampler".into());
+        }
+        command("setxkbmap", &["-layout", "gb,us,de", "-option", ""])?;
+        b.screens.set_keyboard_language("de")?;
+        b.screens.set_keyboard_language("en")?;
+        use x11rb::protocol::xkb::{ConnectionExt as _, ID};
+        c.xkb_use_extension(1, 0)?.reply()?;
+        if u8::from(c.xkb_get_state(ID::USE_CORE_KBD.into())?.reply()?.group) != 0
+            || b.screens.keyboard_languages().available != [*b"en", *b"de"]
+        {
+            return Err("English did not select the first installed group or deduplicate languages".into());
+        }
+        // Three-group injection: de is group index 2 under gb,us,de.
+        // Logical keys must resolve natively through that group. A lookup
+        // miss remaps a spare keycode, visible as a core-map change while
+        // the key is held; a wrong-column hit delivers another group's
+        // character. The core map's columns pack per-key group widths,
+        // so only the XKB map locates group 3 exactly.
+        let map_now = |c: &x11rb::rust_connection::RustConnection| -> Result<Vec<u32>> {
+            Ok(
+                c.get_keyboard_mapping(setup.min_keycode, setup.max_keycode - setup.min_keycode + 1)?
+                    .reply()?
+                    .keysyms,
+            )
+        };
+        b.screens.set_keyboard_language("de")?;
+        if u8::from(c.xkb_get_state(ID::USE_CORE_KBD.into())?.reply()?.group) != 2 {
+            return Err("German did not select the third XKB group".into());
+        }
+        let before = map_now(&c)?;
+        for (key, button) in [(b'z' as u16, 62), (b'y' as u16, 63), (0xfcu16, 64)] {
+            b.sink.inject(&InputEvent::KeyDown {
+                key,
+                modifiers: Modifiers::NONE,
+                button,
+            })?;
+            if map_now(&c)? != before {
+                return Err(format!("key {key:#x} under the third group used the keycode-remap fallback").into());
+            }
+            b.sink.inject(&InputEvent::KeyUp {
+                key,
+                modifiers: Modifiers::NONE,
+                button,
+            })?;
+        }
+        pause();
+        let presses = read_presses(&path)?;
+        let last3: Vec<&str> = presses.iter().rev().take(3).rev().map(String::as_str).collect();
+        if last3 != ["0x7a", "0x79", "0xfc"] {
+            return Err(format!(
+                "sink keys did not reach xev as logical z, y, ü under the third group (last presses: {presses:?})"
+            )
+            .into());
+        }
+        // Single-group AltGr: @ is level 3 of Q on de alone. It must be
+        // delivered natively with the level-3 modifier, not remapped.
+        command("setxkbmap", &["-layout", "de", "-option", ""])?;
+        // The three-group phase left group 2 locked; a real
+        // single-layout session sits locked at group 0.
+        c.xkb_latch_lock_state(
+            ID::USE_CORE_KBD.into(),
+            x11rb::protocol::xproto::ModMask::default(),
+            x11rb::protocol::xproto::ModMask::default(),
+            true,
+            0.into(),
+            x11rb::protocol::xproto::ModMask::default(),
+            false,
+            0,
+        )?
+        .check()?;
+        // A single group may carry no group name, so check raw state.
+        if u8::from(c.xkb_get_state(ID::USE_CORE_KBD.into())?.reply()?.group) != 0 {
+            return Err("single German layout not at group 0".into());
+        }
+        let before = map_now(&c)?;
+        for (key, button) in [(0x40u16, 65), (0xdfu16, 66)] {
+            b.sink.inject(&InputEvent::KeyDown {
+                key,
+                modifiers: Modifiers::NONE,
+                button,
+            })?;
+            if map_now(&c)? != before {
+                return Err(format!("key {key:#x} on single-group de used the keycode-remap fallback").into());
+            }
+            b.sink.inject(&InputEvent::KeyUp {
+                key,
+                modifiers: Modifiers::NONE,
+                button,
+            })?;
+        }
+        pause();
+        let presses = read_presses(&path)?;
+        let last2: Vec<&str> = presses.iter().rev().take(2).rev().map(String::as_str).collect();
+        if last2 != ["0x40", "0xdf"] {
+            return Err(
+                format!("sink keys did not reach xev as @, ß on single-group de (last presses: {presses:?})").into(),
+            );
+        }
+        b.sink.release_all();
+        drop(b);
+        command("setxkbmap", &["-layout", "us", "-option", ""])?;
+        drop(restore);
+        let restored = c
+            .get_keyboard_mapping(setup.min_keycode, setup.max_keycode - setup.min_keycode + 1)?
+            .reply()?
+            .keysyms;
+        if restored != original_map {
+            return Err("language probe did not restore original keymap".into());
+        }
+        println!("language groups: report, external change, select, QWERTZ + three-group + single-group AltGr sink delivery, no-match, restore passed");
+        Ok(())
     }
     fn inject() -> Result<()> {
         let (_xev, path) = xev("inject")?;

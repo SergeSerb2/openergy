@@ -28,6 +28,7 @@ pub enum Notice {
     CaptureError,
     CaptureStopped,
     Displays,
+    Languages,
     Sleep,
     Wake,
     Lock,
@@ -76,6 +77,7 @@ pub fn platform(name: &str, _cfg: &Config) -> Result<Platform, PlatformError> {
                         MacNotice::CaptureTranslationProblem => Notice::CaptureError,
                         MacNotice::CaptureStopped => Notice::CaptureStopped,
                         MacNotice::DisplaysChanged => Notice::Displays,
+                        MacNotice::KeyboardLanguagesChanged => Notice::Languages,
                         MacNotice::Sleeping => Notice::Sleep,
                         MacNotice::Woke => Notice::Wake,
                         MacNotice::ScreenLocked => Notice::Lock,
@@ -103,6 +105,7 @@ pub fn platform(name: &str, _cfg: &Config) -> Result<Platform, PlatformError> {
             let notices: Notices = Box::new(move || {
                 rx.try_iter()
                     .map(|n| match n {
+                        WinNotice::KeyboardLanguagesChanged => Notice::Languages,
                         WinNotice::Sleeping => Notice::Sleep,
                         WinNotice::Woke => Notice::Wake,
                         WinNotice::SessionLocked => Notice::Lock,
@@ -140,6 +143,7 @@ pub fn virtual_request(
             if object.keys().any(|k| {
                 ![
                     "events",
+                    "keyboard_languages",
                     "seed",
                     "hid_seed",
                     "now_ms",
@@ -149,6 +153,29 @@ pub fn virtual_request(
                 .contains(&k.as_str())
             }) {
                 return Err(invalid("unknown virtual injection parameter".into()));
+            }
+            if let Some(languages) = params.get("keyboard_languages") {
+                let parse = |v: &Value| {
+                    v.as_str()
+                        .and_then(openergy_platform::keyboard_language)
+                        .ok_or_else(|| invalid("expected two-letter ASCII language".into()))
+                };
+                let available = languages
+                    .get("available")
+                    .and_then(Value::as_array)
+                    .ok_or_else(|| invalid("expected available language array".into()))?
+                    .iter()
+                    .map(parse)
+                    .collect::<Result<Vec<_>, _>>()?;
+                if available.len() > 32 {
+                    return Err(invalid("at most 32 languages".into()));
+                }
+                let current = languages
+                    .get("current")
+                    .filter(|v| !v.is_null())
+                    .map(parse)
+                    .transpose()?;
+                control.set_keyboard_languages(available, current);
             }
             let request: openergy_platform::InjectRequest =
                 serde_json::from_value(json!({"events":params.get("events").cloned().unwrap_or(json!([]))}))
@@ -207,7 +234,13 @@ pub fn virtual_request(
                     )
                 });
             }
-            serde_json::to_value(ledger).map_err(|e| invalid(e.to_string()))
+            let mut value = serde_json::to_value(ledger).map_err(|e| invalid(e.to_string()))?;
+            let languages = control.keyboard_languages();
+            value["keyboard_languages"] = json!({
+                "available": languages.available.iter().map(|c| String::from_utf8_lossy(c).into_owned()).collect::<Vec<_>>(),
+                "current": languages.current.map(|c| String::from_utf8_lossy(&c).into_owned())
+            });
+            Ok(value)
         }
         m::VIRTUAL_CLIPBOARD => {
             // Optional "selection": "primary" drives clipboard id 1;

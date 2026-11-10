@@ -92,6 +92,7 @@ pub struct Screens {
     clipboard: Clipboard,
     monitor: Option<MessageThread>,
     notices: Option<MessageThread>,
+    pub(crate) language_notifier: Option<mpsc::SyncSender<WinNotice>>,
 }
 impl Screens {
     pub fn new(clipboard: Clipboard) -> Self {
@@ -99,11 +100,13 @@ impl Screens {
             clipboard,
             monitor: None,
             notices: None,
+            language_notifier: None,
         }
     }
     pub fn new_with_notices(clipboard: Clipboard) -> (Self, mpsc::Receiver<WinNotice>) {
         let mut screens = Self::new(clipboard);
         let (tx, rx) = mpsc::sync_channel(64);
+        screens.language_notifier = Some(tx.clone());
         let failure = tx.clone();
         let (ready, ready_rx) = mpsc::sync_channel(1);
         let handle = std::thread::Builder::new()
@@ -242,6 +245,11 @@ fn send_notice(notice: WinNotice) {
 }
 unsafe extern "system" fn notice_proc(hwnd: HWND, msg: u32, w: WPARAM, l: LPARAM) -> LRESULT {
     match msg {
+        WM_INPUTLANGCHANGE => {
+            send_notice(WinNotice::KeyboardLanguagesChanged);
+            // Safety: preserve normal input-language notification handling.
+            unsafe { DefWindowProcW(hwnd, msg, w, l) }
+        }
         WM_POWERBROADCAST => {
             match w as u32 {
                 PBT_APMSUSPEND => send_notice(WinNotice::Sleeping),
@@ -306,6 +314,66 @@ unsafe extern "system" fn display_proc(hwnd: HWND, msg: u32, w: WPARAM, l: LPARA
     unsafe { DefWindowProcW(hwnd, msg, w, l) }
 }
 impl ScreenSystem for Screens {
+    fn keyboard_languages(&self) -> openergy_platform::KeyboardLanguages {
+        let mut available = Vec::new();
+        for code in keyboard_layouts().into_iter().filter_map(layout_language) {
+            if !available.contains(&code) {
+                available.push(code);
+            }
+        }
+        openergy_platform::KeyboardLanguages {
+            available,
+            current: layout_language(keyboard_layout()),
+        }
+    }
+    fn set_keyboard_language(&mut self, lang: &str) -> Result<(), PlatformError> {
+        use windows_sys::Win32::UI::Input::KeyboardAndMouse::ActivateKeyboardLayout;
+        let code = openergy_platform::keyboard_language(lang).ok_or(PlatformError::NotImplemented)?;
+        let layout = keyboard_layouts()
+            .into_iter()
+            .find(|l| layout_language(*l) == Some(code))
+            .ok_or(PlatformError::NotImplemented)?;
+        // Safety: select an installed HKL on our thread and request it on the
+        // foreground window synchronously with a bound. A posted request would
+        // race the next injected key: the sink translates through the
+        // foreground HKL it reads at injection time, while the application
+        // may apply the switch only after that read, delivering the new
+        // layout's character for the scan code. SendMessageTimeoutW returns
+        // once the foreground thread has processed the request, so the
+        // sink's next HKL read is ordered after the switch (or its refusal).
+        unsafe {
+            ActivateKeyboardLayout(layout, 0);
+            let hwnd = GetForegroundWindow();
+            if hwnd.is_null() {
+                return Err(error("keyboard language request had no foreground window"));
+            }
+            let thread = GetWindowThreadProcessId(hwnd, null_mut());
+            let get_layout = windows_sys::Win32::UI::Input::KeyboardAndMouse::GetKeyboardLayout;
+            if get_layout(thread) != layout {
+                let mut result: usize = 0;
+                if SendMessageTimeoutW(
+                    hwnd,
+                    WM_INPUTLANGCHANGEREQUEST,
+                    0,
+                    layout as isize,
+                    SMTO_ABORTIFHUNG,
+                    100,
+                    &mut result,
+                ) == 0
+                {
+                    log::warn!("Windows keyboard language request timed out; layout switch unconfirmed");
+                }
+            }
+            if get_layout(thread) == layout {
+                log::info!("Windows keyboard language switch confirmed on the foreground thread");
+            } else {
+                log::info!(
+                    "Windows keyboard language switch not accepted; keys keep translating under the active layout"
+                );
+            }
+        }
+        Ok(())
+    }
     fn screens(&self) -> Vec<ScreenRect> {
         dpi_awareness();
         let mut values = Vec::new();
@@ -391,5 +459,49 @@ impl ScreenSystem for Screens {
                     },
             );
         }
+    }
+}
+
+fn layout_language(layout: windows_sys::Win32::UI::Input::KeyboardAndMouse::HKL) -> Option<[u8; 2]> {
+    use windows_sys::Win32::Globalization::{GetLocaleInfoEx, LCIDToLocaleName, LOCALE_SISO639LANGNAME};
+    // The low word is the LANGID, including its sublanguage. ISO639 removes
+    // the regional distinction without guessing from a layout's variant id.
+    let mut locale = [0u16; 85];
+    let mut code = [0u16; 9];
+    // Safety: both APIs receive writable, bounded UTF-16 buffers.
+    unsafe {
+        if LCIDToLocaleName(
+            (layout as usize & 0xffff) as u32,
+            locale.as_mut_ptr(),
+            locale.len() as i32,
+            0,
+        ) == 0
+        {
+            return None;
+        }
+        let n = GetLocaleInfoEx(
+            locale.as_ptr(),
+            LOCALE_SISO639LANGNAME,
+            code.as_mut_ptr(),
+            code.len() as i32,
+        );
+        if n <= 1 {
+            return None;
+        }
+        openergy_platform::keyboard_language(&String::from_utf16_lossy(&code[..n as usize - 1]))
+    }
+}
+fn keyboard_layouts() -> Vec<windows_sys::Win32::UI::Input::KeyboardAndMouse::HKL> {
+    use windows_sys::Win32::UI::Input::KeyboardAndMouse::GetKeyboardLayoutList;
+    // Safety: first query is sizing only; second fills at most count handles.
+    unsafe {
+        let count = GetKeyboardLayoutList(0, null_mut());
+        if count <= 0 {
+            return Vec::new();
+        }
+        let mut layouts = vec![null_mut(); count as usize];
+        let n = GetKeyboardLayoutList(count, layouts.as_mut_ptr());
+        layouts.truncate(n.max(0) as usize);
+        layouts
     }
 }

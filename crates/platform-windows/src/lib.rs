@@ -20,6 +20,7 @@ pub enum WinNotice {
     SessionLocked,
     SessionUnlocked,
     NotificationSetupFailed,
+    KeyboardLanguagesChanged,
 }
 pub fn create(options: WindowsOptions) -> Result<Backend, PlatformError> {
     create_with_notices(options).map(|(backend, _)| backend)
@@ -36,10 +37,11 @@ pub fn create_with_notices(
         native::dpi_awareness();
         let clipboard = clipboard::Clipboard::new()?;
         let (screens, notices) = native::Screens::new_with_notices(clipboard.clone());
+        let source = source::Source::with_language_notifier(screens.language_notifier.clone());
         Ok((
             Backend {
                 name: "windows",
-                source: Box::new(source::Source::default()),
+                source: Box::new(source),
                 sink: Box::new(sink::Sink::default()),
                 screens: Box::new(screens),
                 clipboard: Box::new(clipboard),

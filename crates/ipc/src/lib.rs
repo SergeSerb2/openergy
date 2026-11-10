@@ -36,6 +36,7 @@ pub mod events {
     pub const PEER_CONNECTED: &str = "peer.connected";
     pub const PEER_DISCONNECTED: &str = "peer.disconnected";
     pub const PEER_UNTRUSTED: &str = "peer.untrusted";
+    pub const LANGUAGE_SYNC: &str = "language.sync";
     pub const CLIPBOARD_BLOCKED: &str = "clipboard.blocked";
     pub const PERMISSIONS_CHANGED: &str = "permissions.changed";
     pub const LOG_LINE: &str = "log.line";
@@ -159,6 +160,10 @@ pub struct PeerInfo {
     pub screen: PeerScreen,
     pub tls: PeerTls,
     pub secure_input_app: Option<String>,
+    #[serde(default)]
+    pub languages: Vec<String>,
+    #[serde(default)]
+    pub active_language: Option<String>,
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct TlsInfo {

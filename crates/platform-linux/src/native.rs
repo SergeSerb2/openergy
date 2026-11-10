@@ -267,10 +267,35 @@ fn monitor_connect(display: Option<&str>) -> Result<(RustConnection, u32), Platf
     .map_err(error)?
     .check()
     .map_err(error)?;
+    use x11rb::protocol::xkb::{
+        ConnectionExt as _, EventType, MapPart, SelectEventsAux, SelectEventsAuxStateNotify, StatePart, ID,
+    };
+    c.xkb_use_extension(1, 0).map_err(error)?.reply().map_err(error)?;
+    c.xkb_select_events(
+        ID::USE_CORE_KBD.into(),
+        EventType::default(),
+        EventType::NEW_KEYBOARD_NOTIFY | EventType::NAMES_NOTIFY,
+        MapPart::default(),
+        MapPart::default(),
+        &SelectEventsAux::default().state_notify(SelectEventsAuxStateNotify {
+            affect_state: StatePart::GROUP_STATE,
+            state_details: StatePart::GROUP_STATE,
+        }),
+    )
+    .map_err(error)?
+    .check()
+    .map_err(error)?;
     c.flush().map_err(error)?;
     Ok((c, root))
 }
 impl ScreenSystem for Screens {
+    fn keyboard_languages(&self) -> openergy_platform::KeyboardLanguages {
+        let state = self.lock();
+        crate::keymap::keyboard_languages(&state.c).unwrap_or_default()
+    }
+    fn set_keyboard_language(&mut self, lang: &str) -> Result<(), PlatformError> {
+        crate::keymap::set_keyboard_language(&self.lock().c, lang)
+    }
     fn screens(&self) -> Vec<ScreenRect> {
         let mut state = self.lock();
         if let Some(screens) = query_screens(&state.c, state.root) {
@@ -335,7 +360,15 @@ impl ScreenSystem for Screens {
                             loop {
                                 match c.poll_for_event() {
                                     Ok(Some(ev)) => {
-                                        if matches!(ev, Event::RandrScreenChangeNotify(_) | Event::RandrNotify(_)) {
+                                        if matches!(
+                                            ev,
+                                            Event::RandrScreenChangeNotify(_)
+                                                | Event::RandrNotify(_)
+                                                | Event::MappingNotify(_)
+                                                | Event::XkbNamesNotify(_)
+                                                | Event::XkbNewKeyboardNotify(_)
+                                                | Event::XkbStateNotify(_)
+                                        ) {
                                             cb();
                                         }
                                     }
