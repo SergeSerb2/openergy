@@ -742,7 +742,10 @@ pub fn file_worker(root: std::path::PathBuf, waker: Arc<mio::Waker>) -> FileWork
                                 let _ = std::fs::remove_file(&recv.part_path);
                                 return Err(FileReason::HashMismatch);
                             }
-                            recv.file.sync_all().map_err(|_| FileReason::IoError)?;
+                            if recv.file.sync_all().is_err() {
+                                let _ = std::fs::remove_file(&recv.part_path);
+                                return Err(FileReason::IoError);
+                            }
                             drop(recv.file);
                             // No-replace publish: hard link fails on
                             // conflict, then the staging name is dropped.
@@ -771,7 +774,13 @@ pub fn file_worker(root: std::path::PathBuf, waker: Arc<mio::Waker>) -> FileWork
                                             return Err(FileReason::NameConflict);
                                         }
                                     }
-                                    Err(_) => return Err(FileReason::IoError),
+                                    Err(_) => {
+                                        // The receive record is already
+                                        // removed, so nobody else can clean
+                                        // the staged file up.
+                                        let _ = std::fs::remove_file(&recv.part_path);
+                                        return Err(FileReason::IoError);
+                                    }
                                 }
                             }
                             if !published {

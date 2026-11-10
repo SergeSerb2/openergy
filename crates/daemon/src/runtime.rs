@@ -222,6 +222,10 @@ struct PendingOffer {
 #[derive(Default)]
 struct FileRuntime {
     receive_dir: PathBuf,
+    /// False when the configured receive_dir could not be created or
+    /// resolved: offers are rejected instead of landing in a fallback
+    /// directory the user did not select.
+    receive_dir_ok: bool,
     sends: BTreeMap<u64, SendRec>,
     send_queue: BTreeMap<ConnId, VecDeque<u64>>,
     active_send: BTreeMap<ConnId, u64>,
@@ -507,6 +511,12 @@ impl Runtime {
         let Some(offer) = self.files.pending_offers.get_mut(&xfer) else {
             return;
         };
+        // A duplicate accept while staging initializes must not enqueue
+        // a second BeginReceive: the worker would answer Busy for it,
+        // and handling that result would drop the live transfer record.
+        if offer.accepting {
+            return;
+        }
         offer.accepting = true;
         let cmd = FileCommand::BeginReceive {
             xfer,
@@ -522,6 +532,10 @@ impl Runtime {
         }
     }
     fn handle_offered(&mut self, xfer: u64, conn: ConnId, kind: u8, name: String, total_len: u64, sha256: [u8; 32]) {
+        if !self.files.receive_dir_ok {
+            self.decide_offer(xfer, false, FileReason::IoError);
+            return;
+        }
         let peer_name = self.peer_name_for(conn);
         self.files.recvs.insert(xfer, (conn, total_len));
         let expires_ms = self.now().saturating_add(self.cfg.file.offer_timeout());
@@ -1899,6 +1913,7 @@ impl Runtime {
         }
         if let Some(root) = new_receive_dir {
             self.files.receive_dir = root.clone();
+            self.files.receive_dir_ok = true;
             let _ = self.worker_file(FileCommand::SetRoot { root });
         }
         self.machine
@@ -2255,6 +2270,12 @@ impl Runtime {
                     .and_then(Value::as_bool)
                     .ok_or_else(|| invalid("accept is required"))?;
                 if !self.files.pending_offers.contains_key(&xfer) {
+                    // An accept for a transfer that already left the
+                    // pending state because an earlier accept landed is
+                    // a benign retry: the chosen resolution stands.
+                    if accept && self.files.recvs.contains_key(&xfer) {
+                        return Ok(json!({"ok": true}));
+                    }
                     return Err(IpcError::new("unknown_xfer", "No pending offer with that handle"));
                 }
                 if accept {
@@ -2522,12 +2543,16 @@ pub fn run_daemon(
     }));
     let capture = workers::capture(backend.source, waker.clone());
     let clipboard = workers::clipboard(backend.clipboard, waker.clone());
-    let receive_dir = resolve_receive_dir(&config, &dir).unwrap_or_else(|error| {
-        // Startup keeps running off-role style: file receive fails
-        // closed in the worker until the directory resolves.
-        log::warn!("{error}");
-        dir.join("Received")
-    });
+    let (receive_dir, receive_dir_ok) = match resolve_receive_dir(&config, &dir) {
+        Ok(dir) => (dir, true),
+        Err(error) => {
+            // Startup keeps running off-role style, but receiving
+            // fails closed: offers are rejected until the configured
+            // directory resolves, never redirected to a fallback.
+            log::warn!("{error}; file receiving disabled until file.receive_dir is usable");
+            (dir.join("Received"), false)
+        }
+    };
     let file_worker = workers::file_worker(receive_dir.clone(), waker.clone());
     let stop = Arc::new(AtomicBool::new(false));
     let (tx, rx) = mpsc::sync_channel(128);
@@ -2557,6 +2582,7 @@ pub fn run_daemon(
         file_worker,
         files: FileRuntime {
             receive_dir,
+            receive_dir_ok,
             ..FileRuntime::default()
         },
         bus,

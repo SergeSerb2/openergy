@@ -128,6 +128,67 @@ do = "assert_file"
 path = "${client.dir}/received/ask.bin"
 sha256 = "${f.sha256}"
 
+# Duplicate accept: a second accept while staging initialization is
+# pending must not lose the transfer record. The transfer stays
+# visible and cancellable by its handle.
+[[step]]
+do = "fixture_file"
+path = "${server.dir}/dup.bin"
+bytes = 16777216
+
+[[step]]
+do = "file_send"
+node = "server"
+peer = "client"
+path = "${server.dir}/dup.bin"
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "file.offered"
+expect = { name = "dup.bin" }
+save = "offer3"
+
+[[step]]
+do = "file_answer"
+node = "client"
+xfer = "${offer3.data.xfer}"
+accept = true
+
+[[step]]
+do = "file_answer"
+node = "client"
+xfer = "${offer3.data.xfer}"
+accept = true
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "file.progress"
+expect = { direction = "in" }
+
+[[step]]
+do = "file_cancel"
+node = "client"
+xfer = "${offer3.data.xfer}"
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "file.failed"
+expect = { reason = "cancelled", direction = "in" }
+
+[[step]]
+do = "wait_event"
+node = "server"
+event = "file.failed"
+expect = { reason = "cancelled", direction = "out" }
+
+[[step]]
+do = "assert_file"
+path = "${client.dir}/received/dup.bin"
+exists = false
+
 [[step]]
 do = "file_send"
 node = "server"
