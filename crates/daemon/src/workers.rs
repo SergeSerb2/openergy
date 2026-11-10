@@ -1,6 +1,10 @@
 use openergy_platform::{CaptureDecision, ClipboardBackend, ClipboardData, InputEvent, InputSource};
 use openergy_protocol::ClipboardId;
+use openergy_session::file::Reason as FileReason;
+use sha2::Digest;
 use std::{
+    collections::{BTreeMap, VecDeque},
+    io::Write,
     sync::{
         atomic::{AtomicBool, AtomicU8, Ordering},
         mpsc::{self, Receiver, SyncSender},
@@ -310,6 +314,594 @@ pub fn clipboard(mut backend: Box<dyn ClipboardBackend>, waker: Arc<mio::Waker>)
         commands,
         events,
         failed_reads,
+        thread,
+    }
+}
+
+// ---------------------------------------------------------------------
+// File worker (design §6.1): the only component that touches file
+// bytes on disk. One thread; hashing is a resumable background job
+// that yields to every active-transfer command first.
+
+pub enum FileCommand {
+    HashFile {
+        xfer: u64,
+        path: std::path::PathBuf,
+    },
+    ReadChunk {
+        xfer: u64,
+        offset: u64,
+        len: u32,
+    },
+    DropSend {
+        xfer: u64,
+    },
+    BeginReceive {
+        xfer: u64,
+        name: String,
+        total_len: u64,
+        sha256: [u8; 32],
+        on_conflict_reject: bool,
+    },
+    Stage {
+        xfer: u64,
+        offset: u64,
+        bytes: Vec<u8>,
+    },
+    Finish {
+        xfer: u64,
+    },
+    DropReceive {
+        xfer: u64,
+        keep_part: bool,
+    },
+    SetRoot {
+        root: std::path::PathBuf,
+    },
+    Stop,
+}
+pub enum FileEvent {
+    Hashed {
+        xfer: u64,
+        name: String,
+        total_len: u64,
+        sha256: [u8; 32],
+    },
+    HashFailed {
+        xfer: u64,
+        /// Local failure names: io_error / changed_during_read / bad_name.
+        reason: &'static str,
+    },
+    ChunkReady {
+        xfer: u64,
+        bytes: Vec<u8>,
+    },
+    ChunkFailed {
+        xfer: u64,
+    },
+    ReceiveReady {
+        xfer: u64,
+        ok: bool,
+        reason: openergy_session::file::Reason,
+    },
+    StageResult {
+        xfer: u64,
+        ok: bool,
+        reason: openergy_session::file::Reason,
+    },
+    FinishResult {
+        xfer: u64,
+        ok: bool,
+        reason: openergy_session::file::Reason,
+    },
+}
+pub struct FileWorker {
+    pub commands: SyncSender<FileCommand>,
+    pub events: Receiver<FileEvent>,
+    pub thread: std::thread::JoinHandle<()>,
+}
+
+struct SendFile {
+    file: std::fs::File,
+    len: u64,
+    modified: Option<std::time::SystemTime>,
+    checked: bool,
+}
+struct HashJob {
+    xfer: u64,
+    name: String,
+    file: std::fs::File,
+    len: u64,
+    modified: Option<std::time::SystemTime>,
+    offset: u64,
+    hasher: sha2::Sha256,
+}
+struct RecvFile {
+    file: std::fs::File,
+    part_path: std::path::PathBuf,
+    name: String,
+    total_len: u64,
+    sha256: [u8; 32],
+    staged: u64,
+    hasher: sha2::Sha256,
+    on_conflict_reject: bool,
+}
+
+fn read_at(file: &std::fs::File, buf: &mut [u8], offset: u64) -> std::io::Result<usize> {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::FileExt;
+        file.read_at(buf, offset)
+    }
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::FileExt;
+        file.seek_read(buf, offset)
+    }
+    #[cfg(not(any(unix, windows)))]
+    {
+        let _ = (file, buf, offset);
+        Err(std::io::Error::new(
+            std::io::ErrorKind::Unsupported,
+            "pread unsupported",
+        ))
+    }
+}
+
+#[cfg(unix)]
+fn free_bytes(path: &std::path::Path) -> Option<u64> {
+    use std::os::unix::ffi::OsStrExt;
+    let cpath = std::ffi::CString::new(path.as_os_str().as_bytes()).ok()?;
+    // Safety: statvfs reads filesystem counters for a NUL-terminated path.
+    unsafe {
+        let mut stat: libc::statvfs = std::mem::zeroed();
+        if libc::statvfs(cpath.as_ptr(), &mut stat) != 0 {
+            return None;
+        }
+        let free = (stat.f_bavail as u128).saturating_mul(stat.f_frsize as u128);
+        u64::try_from(free).ok()
+    }
+}
+#[cfg(not(unix))]
+fn free_bytes(_path: &std::path::Path) -> Option<u64> {
+    None
+}
+
+fn ensure_parts(root: &std::path::Path) -> std::io::Result<std::path::PathBuf> {
+    let parts = root.join(".parts");
+    std::fs::create_dir_all(&parts)?;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let _ = std::fs::set_permissions(root, std::fs::Permissions::from_mode(0o700));
+        let _ = std::fs::set_permissions(&parts, std::fs::Permissions::from_mode(0o700));
+    }
+    Ok(parts)
+}
+
+/// Milestone 1 startup sweep: delete every staged partial (resume is
+/// off). Completed files in the root are never candidates.
+fn sweep_parts(root: &std::path::Path) {
+    let parts = root.join(".parts");
+    let Ok(entries) = std::fs::read_dir(&parts) else { return };
+    let (mut count, mut bytes) = (0u64, 0u64);
+    for entry in entries.flatten() {
+        if let Ok(meta) = entry.metadata() {
+            if meta.is_file() {
+                bytes = bytes.saturating_add(meta.len());
+                if std::fs::remove_file(entry.path()).is_ok() {
+                    count += 1;
+                }
+            }
+        }
+    }
+    if count > 0 {
+        log::info!("file partials swept: count={count} bytes={bytes}");
+    }
+}
+
+fn begin_hash(
+    xfer: u64,
+    path: &std::path::Path,
+    tx: &SyncSender<FileEvent>,
+    waker: &Arc<mio::Waker>,
+) -> Option<HashJob> {
+    let fail = |reason: &'static str| {
+        let _ = tx.try_send(FileEvent::HashFailed { xfer, reason });
+        let _ = waker.wake();
+        None
+    };
+    let Ok(link_meta) = std::fs::symlink_metadata(path) else {
+        return fail("io_error");
+    };
+    if link_meta.file_type().is_symlink() || !link_meta.is_file() {
+        return fail("io_error");
+    }
+    let Some(name) = path.file_name().and_then(|n| n.to_str()).map(str::to_owned) else {
+        return fail("bad_name");
+    };
+    // Send under the validated (trimmed) name when it differs.
+    let Ok(name) = openergy_session::file::validate_name(&name) else {
+        return fail("bad_name");
+    };
+    let Ok(file) = std::fs::File::open(path) else {
+        return fail("io_error");
+    };
+    let Ok(meta) = file.metadata() else {
+        return fail("io_error");
+    };
+    if !meta.is_file() {
+        return fail("io_error");
+    }
+    if meta.len() > openergy_session::file::FILE_HARD_CAP {
+        return fail("io_error");
+    }
+    Some(HashJob {
+        xfer,
+        name,
+        file,
+        len: meta.len(),
+        modified: meta.modified().ok(),
+        offset: 0,
+        hasher: sha2::Sha256::new(),
+    })
+}
+
+pub fn file_worker(root: std::path::PathBuf, waker: Arc<mio::Waker>) -> FileWorker {
+    let (commands, rx) = mpsc::sync_channel::<FileCommand>(256);
+    let (tx, events) = mpsc::sync_channel::<FileEvent>(256);
+    let thread = std::thread::spawn(move || {
+        let emit = |tx: &SyncSender<FileEvent>, waker: &Arc<mio::Waker>, ev: FileEvent| {
+            if tx.try_send(ev).is_err() {
+                log::warn!("file event queue full");
+            }
+            let _ = waker.wake();
+        };
+        let mut root = root;
+        let _ = ensure_parts(&root);
+        sweep_parts(&root);
+        let mut sends: BTreeMap<u64, SendFile> = BTreeMap::new();
+        let mut recvs: BTreeMap<u64, RecvFile> = BTreeMap::new();
+        let mut hash: Option<HashJob> = None;
+        let mut hash_queue: VecDeque<(u64, std::path::PathBuf)> = VecDeque::new();
+        let mut buf = vec![0u8; 1024 * 1024];
+        'outer: loop {
+            // Drain every pending command first; hash slices run last.
+            let first = if hash.is_some() {
+                rx.try_recv().ok()
+            } else {
+                match rx.recv_timeout(Duration::from_secs(60)) {
+                    Ok(cmd) => Some(cmd),
+                    Err(mpsc::RecvTimeoutError::Disconnected) => break 'outer,
+                    Err(mpsc::RecvTimeoutError::Timeout) => None,
+                }
+            };
+            let mut pending: VecDeque<FileCommand> = VecDeque::new();
+            if let Some(cmd) = first {
+                pending.push_back(cmd);
+            }
+            while let Ok(cmd) = rx.try_recv() {
+                pending.push_back(cmd);
+            }
+            for cmd in pending {
+                match cmd {
+                    FileCommand::Stop => break 'outer,
+                    FileCommand::SetRoot { root: new_root } => {
+                        root = new_root;
+                        let _ = ensure_parts(&root);
+                    }
+                    FileCommand::HashFile { xfer, path } => {
+                        if hash.is_none() {
+                            hash = begin_hash(xfer, &path, &tx, &waker);
+                        } else {
+                            hash_queue.push_back((xfer, path));
+                        }
+                    }
+                    FileCommand::DropSend { xfer } => {
+                        sends.remove(&xfer);
+                        hash_queue.retain(|(queued, _)| *queued != xfer);
+                        if hash.as_ref().is_some_and(|job| job.xfer == xfer) {
+                            hash = None;
+                        }
+                    }
+                    FileCommand::ReadChunk { xfer, offset, len } => {
+                        let result = (|| -> Result<Vec<u8>, ()> {
+                            let send = sends.get_mut(&xfer).ok_or(())?;
+                            if !send.checked {
+                                // Recheck size and mtime before the
+                                // first chunk (§4.6).
+                                send.checked = true;
+                                let meta = send.file.metadata().map_err(|_| ())?;
+                                if meta.len() != send.len || meta.modified().ok() != send.modified {
+                                    return Err(());
+                                }
+                            }
+                            let mut bytes = vec![0u8; len as usize];
+                            let mut done = 0usize;
+                            while done < bytes.len() {
+                                let n = read_at(
+                                    &send.file,
+                                    bytes.get_mut(done..).unwrap_or(&mut []),
+                                    offset.saturating_add(done as u64),
+                                )
+                                .map_err(|_| ())?;
+                                if n == 0 {
+                                    return Err(());
+                                }
+                                done += n;
+                            }
+                            Ok(bytes)
+                        })();
+                        match result {
+                            Ok(bytes) => emit(&tx, &waker, FileEvent::ChunkReady { xfer, bytes }),
+                            Err(()) => {
+                                sends.remove(&xfer);
+                                emit(&tx, &waker, FileEvent::ChunkFailed { xfer });
+                            }
+                        }
+                    }
+                    FileCommand::BeginReceive {
+                        xfer,
+                        name,
+                        total_len,
+                        sha256,
+                        on_conflict_reject,
+                    } => {
+                        let result = (|| -> Result<RecvFile, FileReason> {
+                            if recvs.contains_key(&xfer) {
+                                return Err(FileReason::Busy);
+                            }
+                            let parts = ensure_parts(&root).map_err(|_| FileReason::IoError)?;
+                            if let Some(free) = free_bytes(&root) {
+                                if free <= total_len.saturating_add(64 * 1024 * 1024) {
+                                    return Err(FileReason::NoSpace);
+                                }
+                            }
+                            let part_path = parts.join(xfer.to_string());
+                            let mut options = std::fs::OpenOptions::new();
+                            options.create_new(true).write(true);
+                            #[cfg(unix)]
+                            {
+                                use std::os::unix::fs::OpenOptionsExt;
+                                options.mode(0o644);
+                            }
+                            let file = options.open(&part_path).map_err(|e| {
+                                if e.kind() == std::io::ErrorKind::AlreadyExists {
+                                    FileReason::Busy
+                                } else {
+                                    FileReason::IoError
+                                }
+                            })?;
+                            Ok(RecvFile {
+                                file,
+                                part_path,
+                                name,
+                                total_len,
+                                sha256,
+                                staged: 0,
+                                hasher: sha2::Sha256::new(),
+                                on_conflict_reject,
+                            })
+                        })();
+                        match result {
+                            Ok(recv) => {
+                                recvs.insert(xfer, recv);
+                                emit(
+                                    &tx,
+                                    &waker,
+                                    FileEvent::ReceiveReady {
+                                        xfer,
+                                        ok: true,
+                                        reason: FileReason::None,
+                                    },
+                                );
+                            }
+                            Err(reason) => emit(
+                                &tx,
+                                &waker,
+                                FileEvent::ReceiveReady {
+                                    xfer,
+                                    ok: false,
+                                    reason,
+                                },
+                            ),
+                        }
+                    }
+                    FileCommand::Stage { xfer, offset, bytes } => {
+                        let result = (|| -> Result<(), FileReason> {
+                            let recv = recvs.get_mut(&xfer).ok_or(FileReason::IoError)?;
+                            if offset != recv.staged {
+                                return Err(FileReason::IoError);
+                            }
+                            recv.file.write_all(&bytes).map_err(|_| FileReason::IoError)?;
+                            recv.hasher.update(&bytes);
+                            recv.staged = recv.staged.saturating_add(bytes.len() as u64);
+                            Ok(())
+                        })();
+                        if let Err(reason) = result {
+                            emit(
+                                &tx,
+                                &waker,
+                                FileEvent::StageResult {
+                                    xfer,
+                                    ok: false,
+                                    reason,
+                                },
+                            );
+                        }
+                    }
+                    FileCommand::Finish { xfer } => {
+                        let result = (|| -> Result<(), FileReason> {
+                            let recv = recvs.remove(&xfer).ok_or(FileReason::IoError)?;
+                            let digest: [u8; 32] = recv.hasher.finalize().into();
+                            if recv.staged != recv.total_len {
+                                let _ = std::fs::remove_file(&recv.part_path);
+                                return Err(FileReason::IoError);
+                            }
+                            if digest != recv.sha256 {
+                                let _ = std::fs::remove_file(&recv.part_path);
+                                return Err(FileReason::HashMismatch);
+                            }
+                            recv.file.sync_all().map_err(|_| FileReason::IoError)?;
+                            drop(recv.file);
+                            // No-replace publish: hard link fails on
+                            // conflict, then the staging name is dropped.
+                            let (stem, ext) = match recv.name.rfind('.') {
+                                Some(dot) if dot > 0 => (
+                                    recv.name.get(..dot).unwrap_or(&recv.name),
+                                    recv.name.get(dot..).unwrap_or(""),
+                                ),
+                                _ => (recv.name.as_str(), ""),
+                            };
+                            let mut published = false;
+                            for attempt in 0..100u32 {
+                                let candidate = if attempt == 0 {
+                                    recv.name.clone()
+                                } else {
+                                    format!("{stem} ({attempt}){ext}")
+                                };
+                                match std::fs::hard_link(&recv.part_path, root.join(&candidate)) {
+                                    Ok(()) => {
+                                        published = true;
+                                        break;
+                                    }
+                                    Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => {
+                                        if recv.on_conflict_reject {
+                                            let _ = std::fs::remove_file(&recv.part_path);
+                                            return Err(FileReason::NameConflict);
+                                        }
+                                    }
+                                    Err(_) => return Err(FileReason::IoError),
+                                }
+                            }
+                            if !published {
+                                let _ = std::fs::remove_file(&recv.part_path);
+                                return Err(FileReason::NameConflict);
+                            }
+                            let _ = std::fs::remove_file(&recv.part_path);
+                            #[cfg(unix)]
+                            {
+                                if let Ok(dir) = std::fs::File::open(&root) {
+                                    let _ = dir.sync_all();
+                                }
+                            }
+                            Ok(())
+                        })();
+                        match result {
+                            Ok(()) => emit(
+                                &tx,
+                                &waker,
+                                FileEvent::FinishResult {
+                                    xfer,
+                                    ok: true,
+                                    reason: FileReason::None,
+                                },
+                            ),
+                            Err(reason) => emit(
+                                &tx,
+                                &waker,
+                                FileEvent::FinishResult {
+                                    xfer,
+                                    ok: false,
+                                    reason,
+                                },
+                            ),
+                        }
+                    }
+                    FileCommand::DropReceive { xfer, keep_part } => {
+                        if let Some(recv) = recvs.remove(&xfer) {
+                            drop(recv.file);
+                            if !keep_part {
+                                let _ = std::fs::remove_file(&recv.part_path);
+                            }
+                        }
+                    }
+                }
+            }
+            // At most one 1 MiB hash slice per loop turn.
+            if hash.is_none() {
+                if let Some((xfer, path)) = hash_queue.pop_front() {
+                    hash = begin_hash(xfer, &path, &tx, &waker);
+                }
+            }
+            if let Some(job) = &mut hash {
+                let remaining = job.len.saturating_sub(job.offset);
+                let want = remaining.min(buf.len() as u64) as usize;
+                let mut failure: Option<&'static str> = None;
+                if want > 0 {
+                    let mut done = 0usize;
+                    while done < want && failure.is_none() {
+                        match read_at(
+                            &job.file,
+                            buf.get_mut(done..want).unwrap_or(&mut []),
+                            job.offset.saturating_add(done as u64),
+                        ) {
+                            Ok(0) => failure = Some("changed_during_read"),
+                            Ok(n) => done += n,
+                            Err(_) => failure = Some("io_error"),
+                        }
+                    }
+                    if failure.is_none() {
+                        if let Some(slice) = buf.get(..want) {
+                            job.hasher.update(slice);
+                        }
+                        job.offset = job.offset.saturating_add(want as u64);
+                    }
+                }
+                let finished = failure.is_none() && job.offset >= job.len;
+                if failure.is_some() || finished {
+                    let job = hash.take();
+                    if let Some(job) = job {
+                        if let Some(reason) = failure {
+                            emit(&tx, &waker, FileEvent::HashFailed { xfer: job.xfer, reason });
+                        } else {
+                            // A file that grew during the hash pass
+                            // fails instead of sending a live tail.
+                            let changed = job
+                                .file
+                                .metadata()
+                                .map(|m| m.len() != job.len || m.modified().ok() != job.modified)
+                                .unwrap_or(true);
+                            if changed {
+                                emit(
+                                    &tx,
+                                    &waker,
+                                    FileEvent::HashFailed {
+                                        xfer: job.xfer,
+                                        reason: "changed_during_read",
+                                    },
+                                );
+                            } else {
+                                let digest: [u8; 32] = job.hasher.finalize().into();
+                                sends.insert(
+                                    job.xfer,
+                                    SendFile {
+                                        file: job.file,
+                                        len: job.len,
+                                        modified: job.modified,
+                                        checked: false,
+                                    },
+                                );
+                                emit(
+                                    &tx,
+                                    &waker,
+                                    FileEvent::Hashed {
+                                        xfer: job.xfer,
+                                        name: job.name,
+                                        total_len: job.len,
+                                        sha256: digest,
+                                    },
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    });
+    FileWorker {
+        commands,
+        events,
         thread,
     }
 }

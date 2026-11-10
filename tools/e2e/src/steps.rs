@@ -524,6 +524,64 @@ impl Context {
                 write_private(&path, &bytes)?;
                 Ok(json!({"bytes":bytes.len(),"sha256":digest(&bytes),"path":path}))
             }
+            "fixture_file" => {
+                use sha2::Digest;
+                use std::io::Write;
+                let total = step.number("bytes", 0);
+                if total > 512 * 1024 * 1024 {
+                    return Err(Failure::runner("fixture_file exceeds 512 MiB"));
+                }
+                let path = self.confined(step.text("path")?)?;
+                if let Some(parent) = path.parent() {
+                    crate::util::private_dir(parent)?;
+                }
+                let mut options = std::fs::OpenOptions::new();
+                options.write(true).create(true).truncate(true);
+                #[cfg(unix)]
+                {
+                    use std::os::unix::fs::OpenOptionsExt;
+                    options.mode(0o600);
+                }
+                let mut file = options.open(&path)?;
+                let mut hasher = sha2::Sha256::new();
+                // Offset-varying bytes: swapped or repeated chunks
+                // change the digest.
+                let mut chunk = vec![0u8; 64 * 1024];
+                let mut offset = 0u64;
+                while offset < total {
+                    let n = ((total - offset) as usize).min(chunk.len());
+                    for (i, byte) in chunk.iter_mut().take(n).enumerate() {
+                        let at = offset + i as u64;
+                        *byte = ((at.wrapping_mul(31) ^ (at >> 8) ^ 0x5a) & 0xff) as u8;
+                    }
+                    let slice = chunk.get(..n).unwrap_or(&[]);
+                    file.write_all(slice)?;
+                    hasher.update(slice);
+                    offset += n as u64;
+                }
+                file.sync_all()?;
+                let digest = hasher.finalize().iter().map(|b| format!("{b:02x}")).collect::<String>();
+                Ok(json!({"bytes":total,"sha256":digest,"path":path}))
+            }
+            "file_send" => {
+                let path = self.confined(step.text("path")?)?;
+                self.control(
+                    &id,
+                    "file.send",
+                    json!({"peer": step.text("peer")?, "path": path.to_string_lossy()}),
+                    step,
+                )
+            }
+            "file_answer" => {
+                let accept = step.fields.get("accept").and_then(Value::as_bool).unwrap_or(true);
+                self.control(
+                    &id,
+                    "file.answer",
+                    json!({"xfer": step.value("xfer"), "accept": accept}),
+                    step,
+                )
+            }
+            "file_cancel" => self.control(&id, "file.cancel", json!({"xfer": step.value("xfer")}), step),
             "sleep" => {
                 let ms = step.number("ms", 1);
                 if ms > 60_000 {

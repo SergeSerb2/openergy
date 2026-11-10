@@ -15,7 +15,7 @@ mod windows_permissions;
 pub use identity::{default_config_dir, Identity};
 use openergy_protocol::Message;
 use openergy_session::{ConnId, DisconnectReason};
-pub use reactor::{ConnInfo, MdnsConfig, NetConfig, NetDriver, TransportMode, BULK_SLICE};
+pub use reactor::{ConnInfo, MdnsConfig, NetConfig, NetDriver, TransportMode, BULK_SLICE, BULK_WINDOW};
 use std::{fmt, net::SocketAddr, path::PathBuf};
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]

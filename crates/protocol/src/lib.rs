@@ -25,6 +25,7 @@ pub const MAX_HELLO_BACK_LEN: usize = 1024;
 pub const MAX_VECTOR_LEN: u32 = 1_048_576;
 pub const MAX_LANGUAGE_LEN: usize = 64;
 pub const MAX_SECURE_INPUT_LEN: usize = 255;
+pub const MAX_FILE_NAME_LEN: usize = 255;
 pub const CLIPBOARD_CHUNK_LEN: usize = 32 * 1024;
 pub const WIRE_MAJOR: u16 = 1;
 pub const WIRE_MINOR: u16 = 8;
@@ -57,6 +58,8 @@ pub mod options {
     pub const MMFR: u32 = MOD_SUPER;
     pub const XTXU: u32 = XTEST_XINERAMA_UNAWARE;
     pub const SFOC: u32 = PRESERVE_FOCUS;
+    pub const OFIL: u32 = FILE_CAPABILITY;
+    pub const OFSZ: u32 = FILE_SIZE;
 
     pub const HEARTBEAT: u32 = 0x4841_5254;
     pub const SWITCH_CORNERS: u32 = 0x5353_434D;
@@ -83,6 +86,10 @@ pub mod options {
     pub const MOD_SUPER: u32 = 0x4D4D_4652;
     pub const XTEST_XINERAMA_UNAWARE: u32 = 0x5854_5855;
     pub const PRESERVE_FOCUS: u32 = 0x5346_4F43;
+    /// Openergy-only file capability mask, server to client in `DSOP`.
+    pub const FILE_CAPABILITY: u32 = 0x4F46_494C;
+    /// Openergy-only receive cap in KiB, server to client in `DSOP`.
+    pub const FILE_SIZE: u32 = 0x4F46_535A;
     pub const CORNER_TOP_LEFT: i32 = 1;
     pub const CORNER_TOP_RIGHT: i32 = 2;
     pub const CORNER_BOTTOM_LEFT: i32 = 4;
@@ -110,6 +117,33 @@ pub enum Chunk {
     Start { total_len: u32 },
     Data(Vec<u8>),
     End,
+}
+
+/// One `OFTR` chunk. Marks on the wire: 1 start, 2 data, 3 end, 4 cancel.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum FileDataChunk {
+    Start { total_len: u64 },
+    Data(Vec<u8>),
+    End,
+    Cancel { reason: u8 },
+}
+impl FileDataChunk {
+    pub fn mark(&self) -> u8 {
+        match self {
+            Self::Start { .. } => 1,
+            Self::Data(_) => 2,
+            Self::End => 3,
+            Self::Cancel { .. } => 4,
+        }
+    }
+    pub fn payload_len(&self) -> usize {
+        match self {
+            Self::Start { .. } => 8,
+            Self::Data(bytes) => bytes.len(),
+            Self::End => 0,
+            Self::Cancel { .. } => 1,
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -209,6 +243,31 @@ pub enum Message {
     DragInfo {
         count: i16,
         payload: String,
+    },
+    /// `OFCP`: client-to-server Openergy file capability answer.
+    FileCapability {
+        mask: u32,
+        max_kib: u32,
+    },
+    /// `OFOF`: one file offer in the originator's transfer namespace.
+    FileOffer {
+        transfer: u32,
+        kind: u8,
+        name: String,
+        total_len: u64,
+        sha256: [u8; 32],
+    },
+    /// `OFAN`: offer answer and final stored/failed result.
+    FileAnswer {
+        transfer: u32,
+        accept: u8,
+        reason: u8,
+        resume_offset: u64,
+    },
+    /// `OFTR`: chunked file bytes (and the control-priority cancel mark).
+    FileData {
+        transfer: u32,
+        chunk: FileDataChunk,
     },
     ErrorIncompatible {
         major: u16,

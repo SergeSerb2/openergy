@@ -18,6 +18,9 @@ pub const MAX_CONFIG_FILE_LEN: usize = 16 * 1024 * 1024;
 /// Maximum clipboard payload supported by the session's transfer implementation.
 pub const MAX_CLIPBOARD_BYTES: usize = 64 * 1024 * 1024;
 
+/// Hard cap for one received or sent file (16 GiB).
+pub const MAX_FILE_BYTES: u64 = 16 * 1024 * 1024 * 1024;
+
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Role {
@@ -184,6 +187,80 @@ impl Default for ClipboardCfg {
         }
     }
 }
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum FileReceiveMode {
+    Prompt,
+    Auto,
+}
+impl FileReceiveMode {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Prompt => "prompt",
+            Self::Auto => "auto",
+        }
+    }
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum FileConflict {
+    Suffix,
+    Reject,
+}
+impl FileConflict {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Suffix => "suffix",
+            Self::Reject => "reject",
+        }
+    }
+}
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
+pub struct FileCfg {
+    pub enabled: bool,
+    pub send: bool,
+    pub receive: bool,
+    pub receive_mode: FileReceiveMode,
+    /// Empty means `<state dir>/Received`, resolved by the daemon.
+    pub receive_dir: String,
+    pub max_bytes: u64,
+    pub on_conflict: FileConflict,
+    pub drag_send: bool,
+    pub drag_receive: bool,
+    pub classic_send: bool,
+    pub classic_max_bytes: u64,
+    /// Offer expiry. Default 60 s. Zero selects the default.
+    pub offer_timeout_ms: u64,
+}
+impl Default for FileCfg {
+    fn default() -> Self {
+        Self {
+            enabled: true,
+            send: true,
+            receive: true,
+            receive_mode: FileReceiveMode::Prompt,
+            receive_dir: String::new(),
+            max_bytes: 1024 * 1024 * 1024,
+            on_conflict: FileConflict::Suffix,
+            drag_send: false,
+            drag_receive: false,
+            classic_send: false,
+            classic_max_bytes: 32 * 1024 * 1024,
+            offer_timeout_ms: 60_000,
+        }
+    }
+}
+impl FileCfg {
+    /// Effective offer timeout; zero or absurd values fall back to 60 s.
+    pub fn offer_timeout(&self) -> u64 {
+        if self.offer_timeout_ms == 0 || self.offer_timeout_ms > 600_000 {
+            60_000
+        } else {
+            self.offer_timeout_ms
+        }
+    }
+}
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct InputCfg {
@@ -256,6 +333,8 @@ pub struct Config {
     #[serde(default)]
     pub clipboard: ClipboardCfg,
     #[serde(default)]
+    pub file: FileCfg,
+    #[serde(default)]
     pub input: InputCfg,
     #[serde(default, rename = "switch")]
     pub switch: SwitchCfg,
@@ -277,6 +356,7 @@ impl Default for Config {
             client: ClientCfg::default(),
             tls: TlsCfg::default(),
             clipboard: ClipboardCfg::default(),
+            file: FileCfg::default(),
             input: InputCfg::default(),
             switch: SwitchCfg::default(),
             hotkeys: HotkeysCfg::default(),

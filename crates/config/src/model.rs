@@ -60,6 +60,20 @@ impl Config {
                 "clipboard.max_bytes: exceeds supported maximum of 64 MiB (67108864 bytes)",
             ));
         }
+        if self.file.max_bytes > MAX_FILE_BYTES {
+            return Err(invalid(
+                "file.max_bytes: exceeds supported maximum of 16 GiB (17179869184 bytes)",
+            ));
+        }
+        if self.file.classic_max_bytes > MAX_FILE_BYTES {
+            return Err(invalid("file.classic_max_bytes: exceeds supported maximum of 16 GiB"));
+        }
+        if self.file.receive_dir.chars().any(|c| c.is_control() || c == '\0') {
+            return Err(invalid("file.receive_dir: contains control characters"));
+        }
+        if self.file.offer_timeout_ms > 600_000 {
+            return Err(invalid("file.offer_timeout_ms: exceeds 600000 ms"));
+        }
         if !self.input.scroll_sensitivity.is_finite() || self.input.scroll_sensitivity <= 0.0 {
             return Err(invalid("input.scroll_sensitivity: must be finite and positive"));
         }
@@ -181,6 +195,9 @@ impl Config {
         }
         if !self.tls.enabled {
             warnings.push("TLS is disabled; traffic is plaintext".into());
+        }
+        if self.file.enabled && !self.tls.enabled {
+            warnings.push("file transfer requires TLS; it will stay off".into());
         }
         if self.server.heartbeat_ms == 0 || self.client.heartbeat_ms == 0 {
             warnings.push("A zero heartbeat disables liveness timers".into());

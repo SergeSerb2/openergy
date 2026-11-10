@@ -1,6 +1,7 @@
 use crate::{
     clipboard,
     common::*,
+    file,
     layout::{nearest_on_display, Rect},
     notify, Action, ClientEvent, CloseReason, ConnId,
 };
@@ -15,6 +16,8 @@ pub struct Client {
     languages: openergy_platform::KeyboardLanguages,
     screen_name: String,
     peer: Option<(ConnId, Peer)>,
+    pending_meta: Option<(Option<String>, bool)>,
+    next_xfer: u64,
     now: u64,
     screen: Rect,
     displays: Vec<Rect>,
@@ -34,6 +37,8 @@ impl Client {
             languages: openergy_platform::KeyboardLanguages::default(),
             screen_name,
             peer: None,
+            pending_meta: None,
+            next_xfer: 1,
             now: 0,
             screen: Rect::default(),
             displays: Vec::new(),
@@ -54,10 +59,21 @@ impl Client {
             }
         }
     }
+    pub fn alloc_xfer(&mut self) -> u64 {
+        let xfer = self.next_xfer.max(1);
+        self.next_xfer = xfer.saturating_add(1);
+        xfer
+    }
+    pub fn next_xfer(&self) -> u64 {
+        self.next_xfer
+    }
+    pub fn set_next_xfer(&mut self, next: u64) {
+        self.next_xfer = next.max(1);
+    }
     pub fn next_deadline_ms(&self) -> u64 {
         self.peer
             .as_ref()
-            .map(|(_, p)| p.next_deadline(self.now, false))
+            .map(|(_, p)| p.next_deadline(self.now, false, &self.config))
             .unwrap_or(self.now + 1000)
     }
     pub fn config(&self) -> &Config {
@@ -93,6 +109,10 @@ impl Client {
     }
     fn disconnect(&mut self, out: &mut Vec<Action>) {
         self.leave(out);
+        if let Some((_, p)) = &mut self.peer {
+            let name = p.name.clone();
+            p.files.drop_all(&name, out);
+        }
         if let Some((c, _)) = self.peer.take() {
             close(c, CloseReason::Normal, out);
             notify("peer.disconnected", serde_json::json!({}), out);
@@ -110,6 +130,10 @@ impl Client {
                 self.local_owner = [false; 2];
                 let mut p = Peer::new(self.now);
                 p.name = "server".into();
+                if let Some((fingerprint, verified)) = self.pending_meta.take() {
+                    p.fingerprint = fingerprint;
+                    p.cert_verified = verified;
+                }
                 p.options.heartbeat = self.config.client.heartbeat_ms;
                 self.peer = Some((conn, p));
                 self.ignore_mouse = true;
@@ -122,8 +146,114 @@ impl Client {
             ClientEvent::ServerDisconnected { conn, .. } => {
                 if self.peer.as_ref().is_some_and(|(c, _)| *c == conn) {
                     self.leave(out);
+                    if let Some((_, p)) = &mut self.peer {
+                        let name = p.name.clone();
+                        p.files.drop_all(&name, out);
+                    }
                     self.peer = None;
                     notify("peer.disconnected", serde_json::json!({}), out);
+                }
+            }
+            ClientEvent::ConnectionMetadata {
+                conn,
+                fingerprint,
+                certificate_verified,
+            } => {
+                if let Some((c, p)) = &mut self.peer {
+                    if *c == conn {
+                        p.fingerprint = fingerprint;
+                        p.cert_verified = certificate_verified;
+                    }
+                } else {
+                    self.pending_meta = Some((fingerprint, certificate_verified));
+                }
+            }
+            ClientEvent::FileSendRequested {
+                xfer,
+                conn,
+                transfer,
+                peer_name,
+                fingerprint,
+                kind,
+                name,
+                total_len,
+                sha256,
+            } => {
+                let bound = self.peer.as_ref().is_some_and(|(c, p)| {
+                    *c == conn && p.phase == Phase::Ready && p.name == peer_name && p.fingerprint == fingerprint
+                });
+                if !bound {
+                    file::failed(xfer, &peer_name, "out", file::Reason::PeerChanged, out);
+                } else {
+                    let cfg = self.config.clone();
+                    if let Some((_, p)) = &mut self.peer {
+                        let ctx = p.file_ctx(&cfg);
+                        let now = self.now;
+                        p.files.send_requested(
+                            conn, &peer_name, now, &cfg, ctx, xfer, transfer, kind, name, total_len, sha256, out,
+                        );
+                    }
+                }
+            }
+            ClientEvent::FileChunkReady { xfer, bytes } => {
+                if let Some((c, p)) = &mut self.peer {
+                    let conn = *c;
+                    let name = p.name.clone();
+                    p.files.on_chunk_ready(conn, &name, xfer, bytes, out);
+                }
+            }
+            ClientEvent::FileChunkFailed { xfer, reason } => {
+                if let Some((c, p)) = &mut self.peer {
+                    let conn = *c;
+                    let name = p.name.clone();
+                    p.files.on_chunk_failed(conn, &name, xfer, reason, out);
+                }
+            }
+            ClientEvent::FileCredit { xfer, chunks } => {
+                if let Some((_, p)) = &mut self.peer {
+                    p.files.on_credit(xfer, chunks, out);
+                }
+            }
+            ClientEvent::FileOfferDecided {
+                xfer,
+                accept,
+                reason,
+                resume_offset,
+            } => {
+                if let Some((c, p)) = &mut self.peer {
+                    let conn = *c;
+                    let name = p.name.clone();
+                    let now = self.now;
+                    p.files
+                        .on_decided(conn, &name, now, xfer, accept, reason, resume_offset, out);
+                }
+            }
+            ClientEvent::FileStageResult { xfer, ok, reason } => {
+                if let Some((c, p)) = &mut self.peer {
+                    let conn = *c;
+                    let name = p.name.clone();
+                    p.files.on_stage_result(conn, &name, xfer, ok, reason, out);
+                }
+            }
+            ClientEvent::FileFinishResult { xfer, ok, reason } => {
+                if let Some((c, p)) = &mut self.peer {
+                    let conn = *c;
+                    let name = p.name.clone();
+                    p.files.on_finish_result(conn, &name, xfer, ok, reason, out);
+                }
+            }
+            ClientEvent::FileCancelRequested { xfer } => {
+                if let Some((c, p)) = &mut self.peer {
+                    let conn = *c;
+                    let name = p.name.clone();
+                    p.files.on_cancel_requested(conn, &name, xfer, out);
+                }
+            }
+            ClientEvent::FileBulkAborted { xfer } => {
+                if let Some((c, p)) = &mut self.peer {
+                    let conn = *c;
+                    let name = p.name.clone();
+                    p.files.on_bulk_aborted(conn, &name, xfer, out);
                 }
             }
             ClientEvent::LocalScreen { rect, cursor, displays } => {
@@ -145,8 +275,9 @@ impl Client {
             }
             ClientEvent::TimerTick { now_ms } => {
                 self.now = now_ms;
+                let cfg = self.config.clone();
                 if let Some((c, p)) = &mut self.peer {
-                    if p.tick(*c, now_ms, false, out) {
+                    if p.tick(*c, now_ms, false, &cfg, out) {
                         log::warn!("server heartbeat/setup timeout");
                         self.disconnect(out);
                     }
@@ -154,6 +285,7 @@ impl Client {
             }
             ClientEvent::ConfigChanged(cfg) => {
                 let clipboard_changed = self.config.clipboard != cfg.clipboard;
+                let file_changed = self.config.file != cfg.file;
                 let was_active = self.active;
                 self.leave(out);
                 self.active = was_active;
@@ -162,6 +294,23 @@ impl Client {
                 if clipboard_changed {
                     if let Some((_, p)) = &mut self.peer {
                         p.transfers = Default::default();
+                    }
+                }
+                if file_changed {
+                    if let Some((c, p)) = &mut self.peer {
+                        let conn = *c;
+                        let name = p.name.clone();
+                        p.files.reset(conn, &name, out);
+                        if p.phase == Phase::Ready && p.options.file_seen {
+                            send(
+                                conn,
+                                Message::FileCapability {
+                                    mask: file::local_cap_mask(&self.config),
+                                    max_kib: file::local_max_kib(&self.config),
+                                },
+                                out,
+                            );
+                        }
                     }
                 }
             }
@@ -313,6 +462,57 @@ impl Client {
                     p.phase = Phase::Ready;
                     notify("peer.connected", serde_json::json!({"name":"server"}), out);
                 }
+                // Answer the server's `OFIL` bootstrap with our own
+                // capability. A third-party server never sends `OFIL`,
+                // so no Openergy code ever reaches it (design §3.3).
+                if p.options.file_seen {
+                    send(
+                        c,
+                        Message::FileCapability {
+                            mask: file::local_cap_mask(&self.config),
+                            max_kib: file::local_max_kib(&self.config),
+                        },
+                        out,
+                    );
+                }
+            }
+            Message::FileCapability { .. } => {
+                // Servers announce through `DSOP`; `OFCP` here is a
+                // protocol slip by the peer and is ignored.
+            }
+            Message::FileOffer {
+                transfer,
+                kind,
+                name,
+                total_len,
+                sha256,
+            } if p.phase == Phase::Ready => {
+                let xfer = self.next_xfer.max(1);
+                self.next_xfer = xfer.saturating_add(1);
+                let cfg = self.config.clone();
+                let ctx = p.file_ctx(&cfg);
+                let peer_name = p.name.clone();
+                let now = self.now;
+                p.files.on_offer(
+                    c, &peer_name, now, &cfg, ctx, xfer, transfer, kind, name, total_len, sha256, out,
+                );
+            }
+            Message::FileAnswer {
+                transfer,
+                accept,
+                reason,
+                resume_offset,
+            } if p.phase == Phase::Ready => {
+                let peer_name = p.name.clone();
+                let now = self.now;
+                p.files
+                    .on_answer(c, &peer_name, now, transfer, accept, reason, resume_offset, out);
+            }
+            Message::FileData { transfer, chunk } if p.phase == Phase::Ready => {
+                let cfg = self.config.clone();
+                let peer_name = p.name.clone();
+                let now = self.now;
+                p.files.on_data(c, &peer_name, now, &cfg, transfer, chunk, out);
             }
             Message::Enter {
                 x,

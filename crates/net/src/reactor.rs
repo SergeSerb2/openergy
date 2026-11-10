@@ -34,7 +34,7 @@ const HIGH_WATER: usize = 512 * 1024;
 // Without a cap, macOS and Linux can grow it to several MiB.
 const SOCKET_SEND_BUFFER: i32 = 256 * 1024;
 const MAILBOX_BYTES: usize = 8 * 1024 * 1024;
-const BULK_WINDOW: usize = 256 * 1024;
+pub const BULK_WINDOW: usize = 256 * 1024;
 const WAKE: Token = Token(0);
 const LISTENER: Token = Token(1);
 const TRUST_POLL: Duration = Duration::from_millis(500);
@@ -331,6 +331,17 @@ impl Queues {
         self.high_bytes -= self.input.iter().map(Packet::queued_cost).sum::<usize>();
         self.input.clear();
         self.bulk.clear();
+    }
+    /// Drop queued bulk frames for one wire code. The four-byte code sits
+    /// at offset 4, after the length prefix. An unsent active frame for
+    /// the code goes too; a partially written one cannot be recalled.
+    fn purge_bulk(&mut self, code: &[u8; 4]) {
+        self.bulk.retain(|p| p.bytes.get(4..8) != Some(code.as_slice()));
+        if self.active.as_ref().is_some_and(|p| {
+            p.priority == Priority::Bulk && p.offset == 0 && p.bytes.get(4..8) == Some(code.as_slice())
+        }) {
+            self.active = None;
+        }
     }
 }
 struct Connection {
@@ -1091,8 +1102,16 @@ impl NetDriver {
         Ok(())
     }
     pub fn cancel_clipboard(&mut self, conn: ConnId) {
+        self.purge_bulk(conn, b"DCLP");
+    }
+    pub fn cancel_file(&mut self, conn: ConnId) {
+        self.purge_bulk(conn, b"OFTR");
+    }
+    /// Per-stream bulk purge by wire code. Clipboard and file chunks share
+    /// one bulk queue; aborting one stream must not drop the other.
+    pub fn purge_bulk(&mut self, conn: ConnId, code: &[u8; 4]) {
         if let Some(connection) = self.conns.get_mut(&conn) {
-            connection.queues.bulk.clear();
+            connection.queues.purge_bulk(code);
         }
     }
 

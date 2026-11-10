@@ -357,6 +357,39 @@ fn extra_messages() -> Result {
             count: -1,
             payload: "raw\0metadata".into(),
         },
+        FileCapability {
+            mask: 7,
+            max_kib: 1_048_576,
+        },
+        FileOffer {
+            transfer: 42,
+            kind: 0,
+            name: "a,b.txt".into(),
+            total_len: u64::MAX - 1,
+            sha256: [0xAB; 32],
+        },
+        FileAnswer {
+            transfer: 42,
+            accept: 2,
+            reason: 0,
+            resume_offset: 123_456_789,
+        },
+        FileData {
+            transfer: 42,
+            chunk: openergy_protocol::FileDataChunk::Start { total_len: 4096 },
+        },
+        FileData {
+            transfer: 42,
+            chunk: openergy_protocol::FileDataChunk::Data(vec![1, 2, 3]),
+        },
+        FileData {
+            transfer: 42,
+            chunk: openergy_protocol::FileDataChunk::End,
+        },
+        FileData {
+            transfer: 42,
+            chunk: openergy_protocol::FileDataChunk::Cancel { reason: 7 },
+        },
         SecureInputNotification {
             name: "application".into(),
         },
@@ -956,6 +989,10 @@ fn kind(message: &Message) -> &'static str {
         Message::ClipboardData { .. } => "DCLP",
         Message::FileTransfer { .. } => "DFTR",
         Message::DragInfo { .. } => "DDRG",
+        Message::FileCapability { .. } => "OFCP",
+        Message::FileOffer { .. } => "OFOF",
+        Message::FileAnswer { .. } => "OFAN",
+        Message::FileData { .. } => "OFTR",
         Message::ErrorIncompatible { .. } => "EICV",
         Message::ErrorBusy => "EBSY",
         Message::ErrorUnknown => "EUNK",

@@ -1,0 +1,33 @@
+# Requirement: F10 held (untrusted) peer is not addressable for sends.
+name = "F10-held-peer"
+requirement = "A held untrusted connection holds no Ready name; file.send fails at call time."
+timeout_ms = 8000
+
+[[node]]
+id = "server"
+role = "server"
+tls = true
+require_client_trust = true
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+tls = true
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "pending_trust" = { "$len" = 1 } }
+
+[[step]]
+do = "fixture_file"
+path = "${server.dir}/held.bin"
+bytes = 32
+
+[[step]]
+do = "file_send"
+node = "server"
+peer = "client"
+path = "${server.dir}/held.bin"
+expect_error = "peer_unknown"

@@ -1,4 +1,9 @@
-use crate::{clipboard::Transfers, layout::Rect, notify, Action, CloseReason, ConnId};
+use crate::{
+    clipboard::Transfers,
+    file::{self, FileTransfers},
+    layout::Rect,
+    notify, Action, CloseReason, ConnId,
+};
 use openergy_config::{Config, Corner};
 use openergy_platform::{InputEvent, Modifiers};
 use openergy_protocol::{options as o, ClipboardId, Message, ProtocolVersion};
@@ -16,6 +21,9 @@ pub struct PeerSnapshot {
     pub secure_input_app: Option<String>,
     pub languages: Vec<String>,
     pub active_language: Option<String>,
+    /// "none" or "openergy" in milestone 1.
+    pub file_capability: String,
+    pub file_max_bytes: Option<u64>,
 }
 #[derive(Clone, Debug, Default)]
 pub struct SessionSnapshot {
@@ -99,6 +107,10 @@ pub(crate) struct Options {
     /// Per-lock half-duplex flags for the receiving screen, in Caps, Num,
     /// Scroll order (DSOP HDCL/HDNL/HDSL).
     pub half_duplex: [bool; 3],
+    /// Openergy file capability from `DSOP` `OFIL`/`OFSZ` (client side).
+    pub file_seen: bool,
+    pub file_mask: u32,
+    pub file_max_kib: u32,
 }
 impl Default for Options {
     fn default() -> Self {
@@ -112,6 +124,9 @@ impl Default for Options {
             disable_lock: false,
             needs: 0,
             half_duplex: [false; 3],
+            file_seen: false,
+            file_mask: 0,
+            file_max_kib: 0,
         }
     }
 }
@@ -124,6 +139,14 @@ impl Options {
                 o::HEARTBEAT => self.heartbeat = (v.max(0) as u64).min(3_600_000),
                 o::CLIPBOARD_SHARING => self.clipboard = v != 0,
                 o::CLIPBOARD_SHARING_SIZE => self.limit = (v.max(0) as usize).saturating_mul(1024),
+                o::FILE_CAPABILITY => {
+                    self.file_seen = true;
+                    self.file_mask = v as u32;
+                }
+                o::FILE_SIZE => {
+                    self.file_seen = true;
+                    self.file_max_kib = v.max(0) as u32;
+                }
                 o::RELATIVE_MOUSE_MOVES => self.relative = v != 0,
                 o::DEFAULT_LOCK_TO_SCREEN_STATE => self.locked = v != 0,
                 o::DISABLE_LOCK_TO_SCREEN => self.disable_lock = v != 0,
@@ -254,6 +277,10 @@ pub(crate) struct Peer {
     pub options: Options,
     pub ledger: Ledger,
     pub transfers: Transfers,
+    // Boxed so the common `Peer` stays small; file state is cold
+    // next to the input path.
+    pub files: Box<FileTransfers>,
+    pub cert_verified: bool,
     pub unknown: BTreeSet<[u8; 4]>,
     pub secure_input: Option<String>,
     pub warned: bool,
@@ -289,6 +316,8 @@ impl Peer {
             options: Options::default(),
             ledger: Ledger::default(),
             transfers: Transfers::default(),
+            files: Box::<FileTransfers>::default(),
+            cert_verified: false,
             unknown: BTreeSet::new(),
             secure_input: None,
             warned: false,
@@ -303,25 +332,56 @@ impl Peer {
             primary_drop_logged: false,
         }
     }
-    pub fn next_deadline(&self, now: u64, server: bool) -> u64 {
-        if self.transfers.pending() {
-            return self.transfers.deadline(now);
+    /// Peer's receive capability: `OFCP` wins, else `DSOP` pairs.
+    pub fn file_cap(&self) -> (Option<u32>, Option<u64>) {
+        if let Some(mask) = self.files.cap_mask {
+            return (
+                Some(mask),
+                self.files.cap_max_kib.map(|k| (k as u64).saturating_mul(1024)),
+            );
         }
-        if self.phase != Phase::Ready {
-            return self.since.saturating_add(2001).max(now.saturating_add(100));
+        if self.options.file_seen {
+            return (
+                Some(self.options.file_mask),
+                Some((self.options.file_max_kib as u64).saturating_mul(1024)),
+            );
         }
-        if self.options.heartbeat == 0 {
-            return now.saturating_add(1000);
+        (None, None)
+    }
+    pub fn file_ctx(&self, cfg: &Config) -> file::Ctx {
+        let (mask, cap) = self.file_cap();
+        file::Ctx {
+            tls_ok: cfg.tls.enabled && self.cert_verified,
+            peer_cap: cap,
+            peer_explicit: mask.is_some_and(|m| m & file::CAP_EXPLICIT != 0),
         }
-        let last = if server { self.last_rx } else { self.last_alive };
-        let dead = last.saturating_add(self.options.heartbeat.saturating_mul(3));
-        if server {
-            self.last_sent.saturating_add(self.options.heartbeat).min(dead)
+    }
+    pub fn next_deadline(&self, now: u64, server: bool, cfg: &Config) -> u64 {
+        let base = if self.transfers.pending() {
+            self.transfers.deadline(now)
+        } else if self.phase != Phase::Ready {
+            self.since.saturating_add(2001).max(now.saturating_add(100))
+        } else if self.options.heartbeat == 0 {
+            now.saturating_add(1000)
         } else {
-            dead
+            let last = if server { self.last_rx } else { self.last_alive };
+            let dead = last.saturating_add(self.options.heartbeat.saturating_mul(3));
+            if server {
+                self.last_sent.saturating_add(self.options.heartbeat).min(dead)
+            } else {
+                dead
+            }
+        };
+        match self
+            .files
+            .deadline(now, cfg, self.transfers.bulk_ready_at(), self.options.heartbeat)
+        {
+            Some(file_deadline) => base.min(file_deadline),
+            None => base,
         }
     }
     pub fn snapshot(&self, conn: ConnId) -> PeerSnapshot {
+        let (mask, cap) = self.file_cap();
         PeerSnapshot {
             conn,
             name: self.name.clone(),
@@ -337,6 +397,12 @@ impl Peer {
                 .map(|l| String::from_utf8_lossy(l).into_owned())
                 .collect(),
             active_language: self.active_language.map(|l| String::from_utf8_lossy(&l).into_owned()),
+            file_capability: if mask.is_some_and(|m| m & file::CAP_EXPLICIT != 0) {
+                "openergy".into()
+            } else {
+                "none".into()
+            },
+            file_max_bytes: cap,
         }
     }
     pub fn alive(&mut self, now: u64) {
@@ -425,7 +491,7 @@ impl Peer {
             log::warn!("unknown-code log limit reached; further unknown frames are skipped");
         }
     }
-    pub fn tick(&mut self, conn: ConnId, now: u64, server: bool, out: &mut Vec<Action>) -> bool {
+    pub fn tick(&mut self, conn: ConnId, now: u64, server: bool, cfg: &Config, out: &mut Vec<Action>) -> bool {
         if self.phase != Phase::Ready {
             if now.saturating_sub(self.since) > 2000 && !self.warned {
                 self.warned = true;
@@ -446,6 +512,14 @@ impl Peer {
             }
         }
         self.transfers.tick(conn, now, out);
+        // Shared pacing, clipboard first (§6.2): the file tick may emit
+        // only when the shared bulk gate is open for this millisecond.
+        let bulk_ready = now >= self.transfers.bulk_ready_at();
+        let name = self.name.clone();
+        let heartbeat = self.options.heartbeat;
+        if self.files.tick(conn, &name, now, cfg, heartbeat, bulk_ready, out) {
+            self.transfers.note_bulk_sent(now);
+        }
         false
     }
 }
@@ -490,7 +564,7 @@ pub(crate) fn config_options(cfg: &Config, server: bool) -> Vec<(u32, i32)> {
             Corner::BottomRight => 8,
         }
     });
-    vec![
+    let mut options = vec![
         (
             o::DEFAULT_LOCK_TO_SCREEN_STATE,
             i32::from(cfg.options.default_lock_to_screen),
@@ -525,7 +599,15 @@ pub(crate) fn config_options(cfg: &Config, server: bool) -> Vec<(u32, i32)> {
             o::SWITCH_DOUBLE_TAP,
             cfg.switch.double_tap_ms.min(i32::MAX as u64) as i32,
         ),
-    ]
+    ];
+    // Private Openergy file pairs ride `DSOP` only while the feature is
+    // enabled and TLS is on (design §3.3, §7.1: plaintext peers get no
+    // capability). Unknown IDs are ignored as complete pairs.
+    if cfg.file.enabled && cfg.tls.enabled {
+        options.push((o::FILE_CAPABILITY, file::local_cap_mask(cfg) as i32));
+        options.push((o::FILE_SIZE, file::local_max_kib(cfg).min(i32::MAX as u32) as i32));
+    }
+    options
 }
 pub(crate) fn wire_input(ev: &InputEvent, minor: u16, lang: Option<&str>) -> Message {
     match *ev {

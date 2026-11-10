@@ -1,0 +1,128 @@
+# Requirement: F1 small round-trip: 1 KiB and 0-byte files both directions.
+name = "F1-file-roundtrip"
+requirement = "Explicit send stores hash-verified files server-to-client and client-to-server."
+timeout_ms = 8000
+
+[[node]]
+id = "server"
+role = "server"
+tls = true
+require_client_trust = true
+config = { file = { receive_mode = "auto", receive_dir = "${server.dir}/received", offer_timeout_ms = 5000 } }
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+tls = true
+config = { file = { receive_mode = "auto", receive_dir = "${client.dir}/received", offer_timeout_ms = 5000 } }
+
+[[step]]
+do = "subscribe"
+node = "server"
+
+[[step]]
+do = "subscribe"
+node = "client"
+
+[[step]]
+do = "wait_status"
+node = "client"
+fields = { "pending_trust" = { "$len" = 1 } }
+save = "pc"
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "trust.approve"
+params = { fingerprint = "${pc.pending_trust.0.fingerprint}" }
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "pending_trust" = { "$len" = 1 } }
+save = "ps"
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "trust.approve"
+params = { fingerprint = "${ps.pending_trust.0.fingerprint}" }
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "peers.0.tls.trusted" = true, "peers.0.file.capability" = "openergy" }
+
+[[step]]
+do = "wait_status"
+node = "client"
+fields = { "peers.0.tls.trusted" = true, "peers.0.file.capability" = "openergy" }
+
+[[step]]
+do = "fixture_file"
+path = "${server.dir}/hello,world.bin"
+bytes = 1024
+save = "f1"
+
+[[step]]
+do = "file_send"
+node = "server"
+peer = "client"
+path = "${server.dir}/hello,world.bin"
+save = "sent1"
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "file.completed"
+expect = { verified = true, bytes = 1024, direction = "in" }
+
+[[step]]
+do = "wait_event"
+node = "server"
+event = "file.completed"
+expect = { verified = true, bytes = 1024, direction = "out" }
+
+[[step]]
+do = "assert_file"
+path = "${client.dir}/received/hello,world.bin"
+sha256 = "${f1.sha256}"
+
+[[step]]
+do = "fixture_file"
+path = "${client.dir}/empty.bin"
+bytes = 0
+save = "f2"
+
+[[step]]
+do = "file_send"
+node = "client"
+peer = "server"
+path = "${client.dir}/empty.bin"
+save = "sent2"
+
+[[step]]
+do = "wait_event"
+node = "server"
+event = "file.completed"
+expect = { verified = true, bytes = 0, direction = "in" }
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "file.completed"
+expect = { verified = true, bytes = 0, direction = "out" }
+
+[[step]]
+do = "assert_file"
+path = "${server.dir}/received/empty.bin"
+sha256 = "${f2.sha256}"

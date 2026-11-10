@@ -1,0 +1,52 @@
+# Requirement: F10 plaintext peers get no file capability and tls_required.
+name = "F10-plaintext-gate"
+requirement = "Plaintext peers have no file capability; sends fail tls_required."
+timeout_ms = 8000
+
+[[node]]
+id = "server"
+role = "server"
+tls = false
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+tls = false
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "peers.0.file.capability" = "none" }
+
+[[step]]
+do = "wait_status"
+node = "client"
+fields = { "peers.0.file.capability" = "none" }
+
+[[step]]
+do = "fixture_file"
+path = "${server.dir}/plain.bin"
+bytes = 32
+
+[[step]]
+do = "file_send"
+node = "server"
+peer = "client"
+path = "${server.dir}/plain.bin"
+expect_error = "tls_required"
+
+[[step]]
+do = "file_send"
+node = "client"
+peer = "server"
+path = "${server.dir}/plain.bin"
+expect_error = "tls_required"
