@@ -518,6 +518,19 @@ impl Context {
                 write_private(&path, &bytes)?;
                 Ok(json!({"bytes":bytes.len(),"sha256":digest(&bytes)}))
             }
+            "symlink" => {
+                let path = self.confined(step.text("path")?)?;
+                let target = self.confined(step.text("target")?)?;
+                if let Some(parent) = path.parent() {
+                    std::fs::create_dir_all(parent)?;
+                }
+                #[cfg(unix)]
+                std::os::unix::fs::symlink(&target, &path)?;
+                #[cfg(not(unix))]
+                return Err(Failure::runner("symlink step requires unix"));
+                #[cfg(unix)]
+                Ok(json!({"linked":true}))
+            }
             "fixture_dib" => {
                 let bytes = dib8();
                 let path = self.confined(step.text("path")?)?;

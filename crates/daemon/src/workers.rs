@@ -467,14 +467,31 @@ fn free_bytes(_path: &std::path::Path) -> Option<u64> {
     None
 }
 
+fn is_symlink(path: &std::path::Path) -> bool {
+    std::fs::symlink_metadata(path).is_ok_and(|meta| meta.file_type().is_symlink())
+}
+
 fn ensure_parts(root: &std::path::Path) -> std::io::Result<std::path::PathBuf> {
     let parts = root.join(".parts");
+    if is_symlink(root) || is_symlink(&parts) {
+        // A planted link must never steer staging into another directory.
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::PermissionDenied,
+            "staging directory is a symlink",
+        ));
+    }
+    let root_existed = root.exists();
+    let parts_existed = parts.exists();
     std::fs::create_dir_all(&parts)?;
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
-        let _ = std::fs::set_permissions(root, std::fs::Permissions::from_mode(0o700));
-        let _ = std::fs::set_permissions(&parts, std::fs::Permissions::from_mode(0o700));
+        if !root_existed {
+            let _ = std::fs::set_permissions(root, std::fs::Permissions::from_mode(0o700));
+        }
+        if !parts_existed {
+            let _ = std::fs::set_permissions(&parts, std::fs::Permissions::from_mode(0o700));
+        }
     }
     Ok(parts)
 }
@@ -483,11 +500,16 @@ fn ensure_parts(root: &std::path::Path) -> std::io::Result<std::path::PathBuf> {
 /// off). Completed files in the root are never candidates.
 fn sweep_parts(root: &std::path::Path) {
     let parts = root.join(".parts");
+    if is_symlink(root) || is_symlink(&parts) {
+        log::warn!("file partials sweep skipped: staging directory is a symlink");
+        return;
+    }
     let Ok(entries) = std::fs::read_dir(&parts) else { return };
     let (mut count, mut bytes) = (0u64, 0u64);
     for entry in entries.flatten() {
-        if let Ok(meta) = entry.metadata() {
-            if meta.is_file() {
+        // file_type does not follow links; only real staged files are removed.
+        if entry.file_type().is_ok_and(|kind| kind.is_file()) {
+            if let Ok(meta) = entry.metadata() {
                 bytes = bytes.saturating_add(meta.len());
                 if std::fs::remove_file(entry.path()).is_ok() {
                     count += 1;
@@ -567,7 +589,9 @@ pub fn file_worker(root: std::path::PathBuf, waker: Arc<mio::Waker>) -> FileWork
         let mut buf = vec![0u8; 1024 * 1024];
         'outer: loop {
             // Drain every pending command first; hash slices run last.
-            let first = if hash.is_some() {
+            // A queued hash job must be promoted before the blocking wait,
+            // or it stalls until the 60 s timeout.
+            let first = if hash.is_some() || !hash_queue.is_empty() {
                 rx.try_recv().ok()
             } else {
                 match rx.recv_timeout(Duration::from_secs(60)) {

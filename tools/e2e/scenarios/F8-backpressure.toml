@@ -65,8 +65,20 @@ fields = { "peers.0.file.capability" = "openergy" }
 [[step]]
 do = "fixture_file"
 path = "${server.dir}/big.bin"
-bytes = 8388608
+bytes = 134217728
 save = "f"
+
+[[step]]
+do = "file_send"
+node = "server"
+peer = "client"
+path = "${server.dir}/big.bin"
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "file.progress"
+expect = { direction = "in" }
 
 [[step]]
 do = "ctl"
@@ -79,14 +91,15 @@ do = "pause"
 node = "client"
 
 [[step]]
-do = "file_send"
-node = "server"
-peer = "client"
-path = "${server.dir}/big.bin"
-
-[[step]]
 do = "sleep"
 ms = 4000
+
+# A clipboard-only config change must drop held clipboard chunks but
+# preserve the deferred file chunks queued behind them.
+[[step]]
+do = "config_patch"
+node = "server"
+patch = { clipboard = { share_primary_selection = true } }
 
 [[step]]
 do = "resume"

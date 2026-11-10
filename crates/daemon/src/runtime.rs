@@ -296,6 +296,9 @@ struct Runtime {
     actions: Vec<Action>,
     net_events: Vec<NetEvent>,
     deferred_bulk: BTreeMap<ConnId, BulkBacklog>,
+    /// Staged-file drops the bounded file-worker channel refused; retried
+    /// on every loop pass so a full channel never loses cleanup.
+    pending_file_drops: Vec<(u64, bool)>,
 }
 impl Runtime {
     fn now(&self) -> u64 {
@@ -426,6 +429,23 @@ impl Runtime {
     }
     fn worker_file(&mut self, cmd: FileCommand) -> bool {
         self.file_worker.commands.try_send(cmd).is_ok()
+    }
+    /// Drop one staged receive. Cleanup must not be lost when the bounded
+    /// worker channel is full, so a refused drop is kept and retried.
+    fn drop_receive(&mut self, xfer: u64, keep_part: bool) {
+        if !self.worker_file(FileCommand::DropReceive { xfer, keep_part }) {
+            self.pending_file_drops.push((xfer, keep_part));
+        }
+    }
+    fn flush_file_drops(&mut self) {
+        if self.pending_file_drops.is_empty() {
+            return;
+        }
+        let pending = std::mem::take(&mut self.pending_file_drops);
+        self.pending_file_drops = pending
+            .into_iter()
+            .filter(|&(xfer, keep_part)| !self.worker_file(FileCommand::DropReceive { xfer, keep_part }))
+            .collect();
     }
     /// Start the next queued send for one connection, if idle.
     fn start_next_send(&mut self, conn: ConnId) {
@@ -686,7 +706,7 @@ impl Runtime {
         }
         let recvs = self.files.recvs.keys().copied().collect::<Vec<_>>();
         for xfer in recvs {
-            let _ = self.worker_file(FileCommand::DropReceive { xfer, keep_part: false });
+            self.drop_receive(xfer, false);
         }
         self.files.sends.clear();
         self.files.send_queue.clear();
@@ -1081,6 +1101,7 @@ impl Runtime {
         s
     }
     fn apply_actions(&mut self) {
+        self.flush_file_drops();
         self.status_dirty |= !self.actions.is_empty();
         let mut count = 0;
         while !self.actions.is_empty() && count < 1024 {
@@ -1192,7 +1213,7 @@ impl Runtime {
                         }
                     }
                     Action::DropFile { xfer, keep_part } => {
-                        let _ = self.worker_file(FileCommand::DropReceive { xfer, keep_part });
+                        self.drop_receive(xfer, keep_part);
                     }
                     Action::PurgeFileBulk { conn, xfer } => {
                         self.drop_deferred_tag(conn, BulkTag::File(xfer));
@@ -1878,10 +1899,18 @@ impl Runtime {
                     return Err(error);
                 }
             }
-            // The session dropped its transfers on a clipboard policy
-            // change; held chunks must not resurrect them.
+            // The session dropped its clipboard transfers on a clipboard
+            // policy change; held clipboard chunks must not resurrect them.
+            // Held file chunks belong to live transfers and stay.
             if cfg.clipboard != self.cfg.clipboard {
-                self.deferred_bulk.clear();
+                let conns = self.deferred_bulk.keys().copied().collect::<Vec<_>>();
+                for conn in conns {
+                    if let Some(backlog) = self.deferred_bulk.get_mut(&conn) {
+                        backlog.chunks.retain(|(tag, _, _)| matches!(tag, BulkTag::File(_)));
+                        backlog.bytes = backlog.chunks.iter().map(|(_, _, wire)| *wire).sum();
+                    }
+                }
+                self.deferred_bulk.retain(|_, backlog| !backlog.chunks.is_empty());
             }
             if cfg.file != self.cfg.file {
                 // Session reset already cancelled live transfers.
@@ -2401,9 +2430,12 @@ fn resolve_receive_dir(cfg: &Config, state_dir: &Path) -> Result<PathBuf, String
             state_dir.join(p)
         }
     };
+    let existed = path.exists();
     std::fs::create_dir_all(&path).map_err(|e| format!("file.receive_dir: {e}"))?;
     #[cfg(unix)]
-    {
+    if !existed {
+        // A directory the user already has keeps its permissions; only a
+        // directory this call created is tightened to 0700.
         use std::os::unix::fs::PermissionsExt;
         let _ = std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o700));
     }
@@ -2622,6 +2654,7 @@ pub fn run_daemon(
         actions: Vec::new(),
         net_events: Vec::new(),
         deferred_bulk: BTreeMap::new(),
+        pending_file_drops: Vec::new(),
     };
     lifetime::install_signals();
     let parent = lifetime::ParentWatch::new(parent_pid);
