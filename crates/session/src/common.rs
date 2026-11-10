@@ -263,6 +263,9 @@ pub(crate) struct Peer {
     unknown_saturated: bool,
     pub language_warned: bool,
     language_logged: bool,
+    /// Local language snapshot at the last sync decision. A later local
+    /// change (layout switch, newly installed layout) re-arms the sync.
+    language_local: openergy_platform::KeyboardLanguages,
     /// This peer sent a CCLP for clipboard id 1 on this connection, which
     /// marks it PRIMARY-capable for the server relay rule.
     pub sent_primary_grab: bool,
@@ -295,6 +298,7 @@ impl Peer {
             unknown_saturated: false,
             language_warned: false,
             language_logged: false,
+            language_local: openergy_platform::KeyboardLanguages::default(),
             sent_primary_grab: false,
             primary_drop_logged: false,
         }
@@ -385,7 +389,13 @@ impl Peer {
             }
             return;
         };
-        if self.active_language == Some(code) {
+        // Dedup only while the peer code is unchanged and the local side
+        // still matches what the last decision saw. A local layout switch
+        // away from the code, or a changed installed set, re-applies once.
+        let peer_changed = self.active_language != Some(code);
+        let local_changed = self.language_local != *local;
+        self.language_local = local.clone();
+        if !peer_changed && !(local_changed && local.current != Some(code)) {
             return;
         }
         self.active_language = Some(code);

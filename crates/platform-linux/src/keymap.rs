@@ -65,6 +65,14 @@ pub struct Keymap {
     pub symbols: Vec<u32>,
     pub masks: [u16; 8],
     pub modifier_codes: Vec<u8>,
+    /// Effective XKB group at load time. The sink reloads the map on
+    /// every key down, so this tracks group locks (including language
+    /// sync) without extra plumbing.
+    pub group: usize,
+    /// Number of XKB groups in the map; drives the core-protocol
+    /// column layout used by `find`. Falls back to the historical
+    /// two-group assumption when XKB is unavailable.
+    pub num_groups: usize,
 }
 impl Keymap {
     pub fn load(c: &RustConnection) -> Result<Self, PlatformError> {
@@ -79,12 +87,19 @@ impl Keymap {
         if width == 0 {
             return Err(error("X server returned an empty keymap"));
         }
+        // Best-effort XKB state: effective group + group count, so find()
+        // can translate logical keys through the group the server will
+        // actually apply to injected keycodes. Absent XKB, keep the
+        // historical group-1 view of the core map.
+        let (group, num_groups) = xkb_group_state(c).unwrap_or((0, if width >= 4 { 2 } else { 1 }));
         let mut map = Self {
             first: setup.min_keycode,
             width,
             symbols: reply.keysyms,
             masks: [0; 8],
             modifier_codes: mods.keycodes.clone(),
+            group,
+            num_groups: num_groups.clamp(1, 4),
         };
         for (index, codes) in mods
             .keycodes
@@ -158,16 +173,30 @@ impl Keymap {
             && ((0xffb0..=0xffb9).contains(&b) || b == 0xffae);
         keyid(if shift ^ caps ^ keypad_num { b } else { a })
     }
+    /// Core-protocol columns for levels 1..4 of one group. The XKB
+    /// compatibility map lists levels 1/2 of every group first
+    /// (2 * num_groups entries), then levels 3/4 group by group.
+    fn group_columns(&self, group: usize) -> [usize; 4] {
+        let base = group * 2;
+        let high = self.num_groups * 2 + base;
+        [base, base + 1, high, high + 1]
+    }
     pub fn find(&self, sym: u32) -> Option<(u8, bool, bool)> {
+        // Search the columns of the group the server will apply to the
+        // injected keycode. Searching group 1 while another group is
+        // locked (language sync) would deliver that group's character
+        // for the keycode instead of the logical key (z/y on QWERTZ).
+        let group = self.group.min(self.num_groups - 1);
+        let columns = self.group_columns(group);
         self.symbols.chunks(self.width).enumerate().find_map(|(i, row)| {
-            // Core XKB compatibility mapping: levels 3/4 of group 1 occupy columns 4/5.
-            [0usize, 1, 4, 5]
+            columns
                 .into_iter()
-                .find(|column| {
+                .enumerate()
+                .find(|(_, column)| {
                     row.get(*column)
                         .is_some_and(|s| *s == sym || (keyid(*s).is_some() && keyid(*s) == keyid(sym)))
                 })
-                .map(|column| (self.first + i as u8, column & 1 != 0, column >= 4))
+                .map(|(level, _)| (self.first + i as u8, level & 1 != 0, level >= 2))
         })
     }
     pub fn modifier_code(&self, mask: u16) -> Option<u8> {
@@ -187,6 +216,14 @@ impl Keymap {
     }
 }
 
+/// Effective XKB group and total group count, if XKB answers.
+fn xkb_group_state(c: &RustConnection) -> Option<(usize, usize)> {
+    use x11rb::protocol::xkb::{ConnectionExt as _, ID};
+    c.xkb_use_extension(1, 0).ok()?.reply().ok()?;
+    let state = c.xkb_get_state(ID::USE_CORE_KBD.into()).ok()?.reply().ok()?;
+    let controls = c.xkb_get_controls(ID::USE_CORE_KBD.into()).ok()?.reply().ok()?;
+    Some((usize::from(u8::from(state.group)), usize::from(controls.num_groups)))
+}
 // XKB names can be layout ids or human-readable names (e.g. "English (US)").
 // Ignore the parenthesized variant. Only configured groups are ever selected.
 fn group_language(name: &str) -> Option<[u8; 2]> {

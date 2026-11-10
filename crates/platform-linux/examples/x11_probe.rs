@@ -188,19 +188,49 @@ mod probe {
         if b.screens.keyboard_languages().current != Some(*b"de") {
             return Err("XKB de selection failed".into());
         }
-        b.sink.inject(&InputEvent::KeyDown {
-            key: b'z' as u16,
-            modifiers: Modifiers::NONE,
-            button: 52,
-        })?;
-        b.sink.inject(&InputEvent::KeyUp {
-            key: b'z' as u16,
-            modifiers: Modifiers::NONE,
-            button: 52,
-        })?;
+        // Wire keys are logical, not physical positions: with the German
+        // group locked, logical z must still arrive as z (not QWERTZ y),
+        // logical y as y, and ü — absent from the US group — must arrive
+        // as ü now that the German group provides it.
+        for (key, button) in [(b'z' as u16, 52), (b'y' as u16, 53), (0xfcu16, 54)] {
+            b.sink.inject(&InputEvent::KeyDown {
+                key,
+                modifiers: Modifiers::NONE,
+                button,
+            })?;
+            b.sink.inject(&InputEvent::KeyUp {
+                key,
+                modifiers: Modifiers::NONE,
+                button,
+            })?;
+        }
         pause();
-        if !fs::read_to_string(&path)?.contains("keysym 0x79, y") {
-            return Err("sink z did not reach xev as QWERTZ y".into());
+        let seen = fs::read_to_string(&path)?;
+        // Ordered press keysyms: presence alone cannot distinguish a
+        // swapped delivery, because a group-1 mapping under the German
+        // group emits the same set with z and y exchanged. The final
+        // three KeyPress records must be exactly z, y, ü in order.
+        let mut presses: Vec<&str> = Vec::new();
+        let mut in_press = false;
+        for line in seen.lines() {
+            if line.contains("KeyPress event") {
+                in_press = true;
+            } else if in_press && line.contains("keycode") {
+                in_press = false;
+                if let Some(start) = line.find("(keysym ") {
+                    let rest = &line[start + "(keysym ".len()..];
+                    if let Some(end) = rest.find(',') {
+                        presses.push(&rest[..end]);
+                    }
+                }
+            }
+        }
+        let last3: Vec<&str> = presses.iter().rev().take(3).rev().copied().collect();
+        if last3 != ["0x7a", "0x79", "0xfc"] {
+            return Err(format!(
+                "sink keys did not reach xev as logical z, y, ü under German group (last presses: {presses:?})"
+            )
+            .into());
         }
         if b.screens.set_keyboard_language("ru").is_ok() || b.screens.keyboard_languages().current != Some(*b"de") {
             return Err("uninstalled language changed the XKB group".into());

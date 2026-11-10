@@ -77,6 +77,33 @@ node = "client"
 audit = true
 expect = [{"detail" = {"kind" = "language", "language" = "en"}}, {"event" = {"type" = "key_down", "key" = 98}}]
 
+# The client user switches the local layout away from the synced language;
+# the next peer key must re-apply the peer language, not stay deduped.
+[[step]]
+do = "ctl"
+node = "client"
+method = "virtual.inject"
+params = {"keyboard_languages" = {"available" = ["en", "de"], "current" = "de"}}
+
+[[step]]
+do = "ledger_mark"
+node = "client"
+audit = true
+save = "drift"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{"type" = "key_down", "key" = 103, "modifiers" = 0, "button" = 103}, {"type" = "key_up", "key" = 103, "modifiers" = 0, "button" = 103}]
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+audit = true
+since = "${drift.sequence}"
+exact = true
+expect = [{"detail" = {"kind" = "language", "language" = "en"}}, {"event" = {"type" = "key_down", "key" = 103}}, {"event" = {"type" = "key_up"}}]
+
 [[step]]
 do = "config_patch"
 node = "server"
