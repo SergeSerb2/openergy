@@ -1,0 +1,120 @@
+# Requirement: F3 oversize offer refused before bytes; at-limit file succeeds.
+name = "F3-oversize"
+requirement = "Oversize is blocked with no staged bytes; clipboard keeps working on the same connection."
+timeout_ms = 10000
+
+[[node]]
+id = "server"
+role = "server"
+tls = true
+require_client_trust = true
+config = { file = { receive_mode = "auto", receive_dir = "${server.dir}/received", offer_timeout_ms = 5000 } }
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+tls = true
+config = { file = { receive_mode = "auto", receive_dir = "${client.dir}/received", offer_timeout_ms = 5000, max_bytes = 1048576 } }
+
+[[step]]
+do = "subscribe"
+node = "server"
+
+[[step]]
+do = "subscribe"
+node = "client"
+
+[[step]]
+do = "wait_status"
+node = "client"
+fields = { "pending_trust" = { "$len" = 1 } }
+save = "pc"
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "trust.approve"
+params = { fingerprint = "${pc.pending_trust.0.fingerprint}" }
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "pending_trust" = { "$len" = 1 } }
+save = "ps"
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "trust.approve"
+params = { fingerprint = "${ps.pending_trust.0.fingerprint}" }
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "peers.0.file.capability" = "openergy", "peers.0.file.max_bytes" = 1048576 }
+
+[[step]]
+do = "fixture_file"
+path = "${server.dir}/over.bin"
+bytes = 2097152
+save = "fo"
+
+[[step]]
+do = "file_send"
+node = "server"
+peer = "client"
+path = "${server.dir}/over.bin"
+expect_error = "too_large"
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "file.last_blocked.reason" = "too_large" }
+
+[[step]]
+do = "assert_file"
+path = "${client.dir}/received/over.bin"
+exists = false
+
+[[step]]
+do = "fixture_file"
+path = "${server.dir}/limit.bin"
+bytes = 1048576
+save = "fl"
+
+[[step]]
+do = "file_send"
+node = "server"
+peer = "client"
+path = "${server.dir}/limit.bin"
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "file.completed"
+expect = { verified = true, bytes = 1048576 }
+timeout_ms = 20000
+
+[[step]]
+do = "assert_file"
+path = "${client.dir}/received/limit.bin"
+sha256 = "${fl.sha256}"
+
+[[step]]
+do = "clipboard_set"
+node = "server"
+text = "still-sharing"
+
+[[step]]
+do = "assert_clipboard"
+node = "client"
+text = "still-sharing"

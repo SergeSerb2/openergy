@@ -1,6 +1,7 @@
 use crate::{
-    Chunk, ClipboardId, DecodeError, EncodeError, Message, ProtocolVersion, MAX_FRAME_LEN, MAX_HELLO_BACK_LEN,
-    MAX_LANGUAGE_LEN, MAX_SECURE_INPUT_LEN, MAX_STRING_LEN, MAX_VECTOR_LEN, PRODUCT_BARRIER, PRODUCT_SYNERGY,
+    Chunk, ClipboardId, DecodeError, EncodeError, FileDataChunk, Message, ProtocolVersion, MAX_FILE_NAME_LEN,
+    MAX_FRAME_LEN, MAX_HELLO_BACK_LEN, MAX_LANGUAGE_LEN, MAX_SECURE_INPUT_LEN, MAX_STRING_LEN, MAX_VECTOR_LEN,
+    PRODUCT_BARRIER, PRODUCT_SYNERGY,
 };
 use std::collections::VecDeque;
 
@@ -161,6 +162,10 @@ impl<'a> Reader<'a> {
 
     pub(crate) fn u32(&mut self) -> Result<u32, DecodeError> {
         Ok(u32::from_be_bytes(self.array()?))
+    }
+
+    fn u64(&mut self) -> Result<u64, DecodeError> {
+        Ok(u64::from_be_bytes(self.array()?))
     }
 
     fn blob(&mut self) -> Result<&'a [u8], DecodeError> {
@@ -359,6 +364,73 @@ fn decode_frame(frame: &[u8], first_frame: bool, legacy_key_repeat: bool) -> Res
             };
             Message::ClipboardData { id, sequence, chunk }
         }
+        b"OFCP" => Message::FileCapability {
+            mask: r.u32()?,
+            max_kib: r.u32()?,
+        },
+        b"OFOF" => {
+            let transfer = r.u32()?;
+            if transfer == 0 {
+                return Err(DecodeError::BadValue("zero file transfer id"));
+            }
+            let kind = r.u8()?;
+            if kind > 1 {
+                return Err(DecodeError::BadValue("file offer kind"));
+            }
+            let name = r.text(MAX_FILE_NAME_LEN, true)?;
+            let total_len = r.u64()?;
+            let sha256 = r.array::<32>()?;
+            Message::FileOffer {
+                transfer,
+                kind,
+                name,
+                total_len,
+                sha256,
+            }
+        }
+        b"OFAN" => {
+            let transfer = r.u32()?;
+            if transfer == 0 {
+                return Err(DecodeError::BadValue("zero file transfer id"));
+            }
+            Message::FileAnswer {
+                transfer,
+                accept: r.u8()?,
+                reason: r.u8()?,
+                resume_offset: r.u64()?,
+            }
+        }
+        b"OFTR" => {
+            let transfer = r.u32()?;
+            if transfer == 0 {
+                return Err(DecodeError::BadValue("zero file transfer id"));
+            }
+            let mark = r.u8()?;
+            let bytes = r.blob()?;
+            let chunk = match mark {
+                1 => {
+                    let total: [u8; 8] = bytes
+                        .try_into()
+                        .map_err(|_| DecodeError::BadValue("file start total"))?;
+                    FileDataChunk::Start {
+                        total_len: u64::from_be_bytes(total),
+                    }
+                }
+                2 => FileDataChunk::Data(bytes.to_vec()),
+                3 if bytes.is_empty() => FileDataChunk::End,
+                3 => return Err(DecodeError::BadValue("nonempty file end")),
+                4 => {
+                    let reason = bytes
+                        .first()
+                        .copied()
+                        .filter(|_| bytes.len() == 1)
+                        .ok_or(DecodeError::BadValue("file cancel reason"))?;
+                    FileDataChunk::Cancel { reason }
+                }
+                _ => return Err(DecodeError::BadValue("file chunk mark")),
+            };
+            Message::FileData { transfer, chunk }
+        }
         b"DFTR" => Message::FileTransfer {
             mark: r.u8()?,
             payload: r.blob()?.to_vec(),
@@ -481,6 +553,33 @@ pub fn encode(msg: &Message, out: &mut Vec<u8>) -> Result<(), EncodeError> {
         }
         Message::FileTransfer { payload, .. } => 5 + blob_size(payload)?,
         Message::DragInfo { payload, .. } => 6 + text_size(payload, MAX_STRING_LEN as usize, false)?,
+        Message::FileCapability { .. } => 12,
+        Message::FileOffer {
+            transfer, kind, name, ..
+        } => {
+            if *transfer == 0 {
+                return Err(EncodeError::BadValue("zero file transfer id"));
+            }
+            if *kind > 1 {
+                return Err(EncodeError::BadValue("file offer kind"));
+            }
+            4 + 4 + 1 + text_size(name, MAX_FILE_NAME_LEN, true)? + 8 + 32
+        }
+        Message::FileAnswer { transfer, .. } => {
+            if *transfer == 0 {
+                return Err(EncodeError::BadValue("zero file transfer id"));
+            }
+            18
+        }
+        Message::FileData { transfer, chunk } => {
+            if *transfer == 0 {
+                return Err(EncodeError::BadValue("zero file transfer id"));
+            }
+            9 + match chunk {
+                FileDataChunk::Data(bytes) => blob_size(bytes)?,
+                _ => 4 + chunk.payload_len(),
+            }
+        }
         Message::Unknown { .. } => return Err(EncodeError::BadValue("unknown frame has no payload bytes")),
     };
     if len > MAX_FRAME_LEN as usize {
@@ -634,6 +733,59 @@ pub fn encode(msg: &Message, out: &mut Vec<u8>) -> Result<(), EncodeError> {
                 }
             }
         }
+        Message::FileCapability { mask, max_kib } => {
+            w.code(b"OFCP");
+            w.u32(*mask);
+            w.u32(*max_kib);
+        }
+        Message::FileOffer {
+            transfer,
+            kind,
+            name,
+            total_len,
+            sha256,
+        } => {
+            w.code(b"OFOF");
+            w.u32(*transfer);
+            w.u8(*kind);
+            w.blob(name.as_bytes());
+            w.u64(*total_len);
+            w.0.extend_from_slice(sha256);
+        }
+        Message::FileAnswer {
+            transfer,
+            accept,
+            reason,
+            resume_offset,
+        } => {
+            w.code(b"OFAN");
+            w.u32(*transfer);
+            w.u8(*accept);
+            w.u8(*reason);
+            w.u64(*resume_offset);
+        }
+        Message::FileData { transfer, chunk } => {
+            w.code(b"OFTR");
+            w.u32(*transfer);
+            match chunk {
+                FileDataChunk::Start { total_len } => {
+                    w.u8(1);
+                    w.blob(&total_len.to_be_bytes());
+                }
+                FileDataChunk::Data(bytes) => {
+                    w.u8(2);
+                    w.blob(bytes);
+                }
+                FileDataChunk::End => {
+                    w.u8(3);
+                    w.u32(0);
+                }
+                FileDataChunk::Cancel { reason } => {
+                    w.u8(4);
+                    w.blob(&[*reason]);
+                }
+            }
+        }
         Message::FileTransfer { mark, payload } => {
             w.code(b"DFTR");
             w.u8(*mark);
@@ -680,6 +832,9 @@ impl Writer<'_> {
         self.0.extend_from_slice(&n.to_be_bytes());
     }
     fn u32(&mut self, n: u32) {
+        self.0.extend_from_slice(&n.to_be_bytes());
+    }
+    fn u64(&mut self, n: u64) {
         self.0.extend_from_slice(&n.to_be_bytes());
     }
     fn blob(&mut self, bytes: &[u8]) {

@@ -24,6 +24,8 @@ pub struct State {
     pub raw: Option<Raw>,
     pub lab: Option<String>,
     pub pid: Option<u32>,
+    /// (cert DER, key DER, trust-file pin line) for TLS raw clients.
+    pub raw_tls: Option<(Vec<u8>, Vec<u8>, String)>,
 }
 pub struct Context {
     pub options: Options,
@@ -100,6 +102,36 @@ impl Context {
             ] {
                 context.vars.insert(format!("{}.{key}", spec.id), value);
             }
+            // TLS raw probes get a self-signed identity up front so
+            // the target daemon's trust store can be seeded with its
+            // pin before anything starts.
+            let raw_tls = if spec.kind == "raw" && spec.tls {
+                let key = rcgen::KeyPair::generate_for(&rcgen::PKCS_ECDSA_P256_SHA256)
+                    .map_err(|e| Failure::runner(format!("raw tls identity: {e}")))?;
+                let mut params = rcgen::CertificateParams::default();
+                params.distinguished_name = rcgen::DistinguishedName::new();
+                params
+                    .distinguished_name
+                    .push(rcgen::DnType::CommonName, "Openergy e2e raw");
+                let now = std::time::SystemTime::now();
+                params.not_before = (now - Duration::from_secs(300)).into();
+                params.not_after = (now + Duration::from_secs(86400)).into();
+                let cert = params
+                    .self_signed(&key)
+                    .map_err(|e| Failure::runner(format!("raw tls identity: {e}")))?;
+                let cert_der = cert.der().to_vec();
+                let key_der = key.serialize_der();
+                let digest = crate::util::digest(&cert_der);
+                let colon = digest
+                    .as_bytes()
+                    .chunks(2)
+                    .map(|pair| std::str::from_utf8(pair).unwrap_or_default())
+                    .collect::<Vec<_>>()
+                    .join(":");
+                Some((cert_der, key_der, format!("v2:sha256:{colon}")))
+            } else {
+                None
+            };
             context.nodes.insert(
                 spec.id.clone(),
                 State {
@@ -113,6 +145,7 @@ impl Context {
                     raw: None,
                     lab: None,
                     pid: None,
+                    raw_tls,
                 },
             );
         }
@@ -229,6 +262,23 @@ impl Context {
                 }
                 write_private(&state.dir.join("tls").join(file), pins.join("\n").as_bytes())?;
             }
+            // Seed pins for TLS raw probes that target this daemon, so
+            // their connections count as certificate-verified.
+            let raw_pins = self
+                .nodes
+                .values()
+                .filter(|node| node.spec.kind == "raw" && node.spec.remote.as_deref() == Some(id))
+                .filter_map(|node| node.raw_tls.as_ref().map(|(_, _, pin)| pin.clone()))
+                .collect::<Vec<_>>();
+            if !raw_pins.is_empty() {
+                let path = state.dir.join("tls").join("trusted-clients");
+                let existing = std::fs::read_to_string(&path).unwrap_or_default();
+                let mut lines = raw_pins.join("\n");
+                if !existing.is_empty() {
+                    lines = format!("{}\n{lines}", existing.trim_end());
+                }
+                write_private(&path, lines.as_bytes())?;
+            }
         } else if state.spec.kind == "lab" {
             for file in ["lab.sh", "container.sh", "session.sh"] {
                 std::fs::copy(
@@ -269,6 +319,23 @@ impl Context {
             .filter(|s| !s.is_empty())
         {
             self.safe_address(remote, true)?;
+        }
+        if let Some(dir) = value
+            .pointer("/file/receive_dir")
+            .and_then(Value::as_str)
+            .filter(|s| !s.is_empty())
+        {
+            // Received files must stay inside this scenario directory,
+            // like every other artifact path.
+            let path = std::path::Path::new(dir);
+            if !path.is_absolute()
+                || !path.starts_with(&self.dir)
+                || path.components().any(|c| matches!(c, std::path::Component::ParentDir))
+            {
+                return Err(Failure::runner(
+                    "file.receive_dir must stay inside this scenario directory",
+                ));
+            }
         }
         Ok(())
     }
@@ -332,6 +399,9 @@ impl Context {
             return Err(Failure::runner(format!("node {id} is already started")));
         }
         if spec.kind == "raw" && spec.role == "server" {
+            if spec.tls {
+                return Err(Failure::runner("TLS raw listeners are not supported"));
+            }
             let port = self.state(id)?.port;
             let listener = match self.state_mut(id)?.reservation.take() {
                 Some(listener) => listener,
@@ -362,9 +432,21 @@ impl Context {
                 }
             };
             stream.set_nodelay(true)?;
+            let transport = if spec.tls {
+                let (cert, key, _) = self
+                    .state(id)?
+                    .raw_tls
+                    .clone()
+                    .ok_or_else(|| Failure::runner("TLS raw node has no identity"))?;
+                let mut transport = crate::wire::tls_client(stream, &cert, &key)?;
+                transport.set_nodelay(true)?;
+                transport
+            } else {
+                crate::wire::Transport::Plain(stream)
+            };
             self.state_mut(id)?.raw = Some(Raw {
                 listener: None,
-                stream: Some(stream),
+                stream: Some(transport),
                 pending: Default::default(),
             });
         } else if spec.kind == "openergy" {

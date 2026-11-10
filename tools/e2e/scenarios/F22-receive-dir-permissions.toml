@@ -1,0 +1,101 @@
+# Requirement: F22 an existing custom receive directory keeps its permissions.
+name = "F22-receive-dir-permissions"
+requirement = "Selecting an existing directory as file.receive_dir does not chmod it to 0700; the restrictive mode applies only to directories the daemon creates."
+timeout_ms = 10000
+
+[[node]]
+id = "server"
+role = "server"
+tls = true
+require_client_trust = true
+config = { file = { receive_mode = "auto", receive_dir = "${server.dir}/received", offer_timeout_ms = 5000 } }
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+tls = true
+autostart = false
+config = { file = { receive_mode = "auto", receive_dir = "${client.dir}/shared", offer_timeout_ms = 5000 } }
+
+[[step]]
+do = "write_file"
+path = "${client.dir}/shared/keep.txt"
+text = "keep"
+
+[[step]]
+do = "start"
+node = "client"
+
+[[step]]
+do = "subscribe"
+node = "server"
+
+[[step]]
+do = "subscribe"
+node = "client"
+
+[[step]]
+do = "wait_status"
+node = "client"
+fields = { "pending_trust" = { "$len" = 1 } }
+save = "pc"
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "trust.approve"
+params = { fingerprint = "${pc.pending_trust.0.fingerprint}" }
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "pending_trust" = { "$len" = 1 } }
+save = "ps"
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "trust.approve"
+params = { fingerprint = "${ps.pending_trust.0.fingerprint}" }
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "peers.0.file.capability" = "openergy" }
+
+[[step]]
+do = "fixture_file"
+path = "${server.dir}/perm.bin"
+bytes = 128
+save = "f"
+
+[[step]]
+do = "file_send"
+node = "server"
+peer = "client"
+path = "${server.dir}/perm.bin"
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "file.completed"
+expect = { verified = true, bytes = 128 }
+
+[[step]]
+do = "assert_file"
+path = "${client.dir}/shared/perm.bin"
+sha256 = "${f.sha256}"
+
+[[step]]
+do = "assert_file"
+path = "${client.dir}/shared"
+mode = "0755"

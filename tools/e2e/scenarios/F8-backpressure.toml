@@ -1,0 +1,142 @@
+# Requirement: F8 backpressure: clipboard abort on one stream keeps the file stream alive.
+name = "F8-backpressure"
+requirement = "A stalled bulk queue aborts only the clipboard stream; the file completes after resume."
+timeout_ms = 20000
+
+[[node]]
+id = "server"
+role = "server"
+tls = true
+require_client_trust = true
+config = { server = { heartbeat_ms = 3000 }, file = { receive_mode = "auto", receive_dir = "${server.dir}/received", offer_timeout_ms = 15000 } }
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+tls = true
+config = { client = { heartbeat_ms = 3000 }, file = { receive_mode = "auto", receive_dir = "${client.dir}/received", offer_timeout_ms = 15000 } }
+
+[[step]]
+do = "subscribe"
+node = "server"
+
+[[step]]
+do = "subscribe"
+node = "client"
+
+[[step]]
+do = "wait_status"
+node = "client"
+fields = { "pending_trust" = { "$len" = 1 } }
+save = "pc"
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "trust.approve"
+params = { fingerprint = "${pc.pending_trust.0.fingerprint}" }
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "pending_trust" = { "$len" = 1 } }
+save = "ps"
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "trust.approve"
+params = { fingerprint = "${ps.pending_trust.0.fingerprint}" }
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "peers.0.file.capability" = "openergy" }
+
+[[step]]
+do = "fixture_file"
+path = "${server.dir}/big.bin"
+bytes = 134217728
+save = "f"
+
+[[step]]
+do = "file_send"
+node = "server"
+peer = "client"
+path = "${server.dir}/big.bin"
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "file.progress"
+expect = { direction = "in" }
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "virtual.clipboard"
+params = { dib_bytes = 8388608 }
+
+[[step]]
+do = "pause"
+node = "client"
+
+[[step]]
+do = "sleep"
+ms = 4000
+
+# A clipboard-only config change must drop held clipboard chunks but
+# preserve the deferred file chunks queued behind them.
+[[step]]
+do = "config_patch"
+node = "server"
+patch = { clipboard = { share_primary_selection = true } }
+
+[[step]]
+do = "resume"
+node = "client"
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "clipboard.last_blocked" = { "$exists" = true } }
+timeout_ms = 15000
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "file.completed"
+expect = { verified = true, bytes = 8388608, direction = "in" }
+timeout_ms = 60000
+
+[[step]]
+do = "wait_event"
+node = "server"
+event = "file.completed"
+expect = { verified = true, bytes = 8388608, direction = "out" }
+timeout_ms = 60000
+
+[[step]]
+do = "assert_file"
+path = "${client.dir}/received/big.bin"
+sha256 = "${f.sha256}"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "mouse_move_abs", x = 1919, y = 540 }, { type = "mouse_move_rel", dx = 20, dy = 0 }, { type = "key_down", key = 99, modifiers = 0, button = 1 }, { type = "key_up", key = 99, modifiers = 0, button = 1 }]
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+input_only = true
+expect = [{ event = { type = "key_down", key = 99, modifiers = 0, button = 1 } }, { event = { type = "key_up", key = 99, modifiers = 0, button = 1 } }]

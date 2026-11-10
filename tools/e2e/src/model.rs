@@ -144,7 +144,12 @@ impl Step {
             "cli" => "node args code regex output_regex stdout_path",
             "assert_file" => "path exists mode sha256 regex toml_expect",
             "write_file" => "path fixture text",
+            "symlink" => "path target",
             "fixture_dib" => "path",
+            "fixture_file" => "path bytes pattern",
+            "file_send" => "node peer path expect expect_error fields",
+            "file_answer" => "node xfer accept expect expect_error fields",
+            "file_cancel" => "node xfer expect expect_error fields",
             "copy_identity" => "node source",
             "set_lab_trust" => "node fingerprint",
             "set_lab_screens" => "node path",
@@ -163,7 +168,9 @@ impl Step {
             }
             let valid = match key.as_str() {
                 "exact" | "input_only" | "allow_held" | "empty" | "force" | "payload_only" | "allow_closed"
-                | "shutdown_write" | "framed" | "scan" | "reject_bytes" | "nonempty" | "exists" => value.is_boolean(),
+                | "shutdown_write" | "framed" | "scan" | "reject_bytes" | "nonempty" | "exists" | "accept" => {
+                    value.is_boolean()
+                }
                 "timeout_ms" => value.as_u64().is_some_and(|v| (1..=180_000).contains(&v)),
                 "since" | "now_ms" | "click_interval_ms" | "repeat" | "ms" | "window_ms" | "rss_bytes" | "count"
                 | "min_downs" | "batch_size" | "bytes" => value.as_u64().is_some(),
@@ -322,6 +329,11 @@ impl Scenario {
                 "lab_drive" | "lab_ctl" | "cli" => &["node", "args"],
                 "lab_clipboard" => &["node"],
                 "assert_file" | "write_file" | "fixture_dib" => &["path"],
+                "symlink" => &["path", "target"],
+                "fixture_file" => &["path", "bytes"],
+                "file_send" => &["node", "peer", "path"],
+                "file_answer" => &["node", "xfer"],
+                "file_cancel" => &["node", "xfer"],
                 "copy_identity" => &["node", "source"],
                 "set_lab_trust" => &["node", "fingerprint"],
                 "set_lab_screens" => &["node", "path"],

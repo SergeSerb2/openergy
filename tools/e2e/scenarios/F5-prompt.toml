@@ -1,0 +1,209 @@
+# Requirement: F5 prompt mode reject, accept, and timeout.
+name = "F5-prompt"
+requirement = "Prompt receive mode publishes file.offered; answers and timeout resolve the offer once."
+timeout_ms = 10000
+
+[[node]]
+id = "server"
+role = "server"
+tls = true
+require_client_trust = true
+config = { file = { receive_mode = "auto", receive_dir = "${server.dir}/received", offer_timeout_ms = 8000 } }
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+tls = true
+config = { file = { receive_mode = "prompt", receive_dir = "${client.dir}/received", offer_timeout_ms = 8000 } }
+
+[[step]]
+do = "subscribe"
+node = "server"
+
+[[step]]
+do = "subscribe"
+node = "client"
+
+[[step]]
+do = "wait_status"
+node = "client"
+fields = { "pending_trust" = { "$len" = 1 } }
+save = "pc"
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "trust.approve"
+params = { fingerprint = "${pc.pending_trust.0.fingerprint}" }
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "pending_trust" = { "$len" = 1 } }
+save = "ps"
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "trust.approve"
+params = { fingerprint = "${ps.pending_trust.0.fingerprint}" }
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "peers.0.file.capability" = "openergy" }
+
+[[step]]
+do = "fixture_file"
+path = "${server.dir}/ask.bin"
+bytes = 512
+save = "f"
+
+[[step]]
+do = "file_send"
+node = "server"
+peer = "client"
+path = "${server.dir}/ask.bin"
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "file.offered"
+expect = { name = "ask.bin", bytes = 512 }
+save = "offer1"
+
+[[step]]
+do = "file_answer"
+node = "client"
+xfer = "${offer1.data.xfer}"
+accept = false
+
+[[step]]
+do = "wait_event"
+node = "server"
+event = "file.failed"
+expect = { reason = "user_rejected", direction = "out" }
+
+[[step]]
+do = "assert_file"
+path = "${client.dir}/received/ask.bin"
+exists = false
+
+[[step]]
+do = "file_send"
+node = "server"
+peer = "client"
+path = "${server.dir}/ask.bin"
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "file.offered"
+expect = { name = "ask.bin" }
+save = "offer2"
+
+[[step]]
+do = "file_answer"
+node = "client"
+xfer = "${offer2.data.xfer}"
+accept = true
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "file.completed"
+expect = { verified = true, bytes = 512 }
+
+[[step]]
+do = "assert_file"
+path = "${client.dir}/received/ask.bin"
+sha256 = "${f.sha256}"
+
+# Duplicate accept: a second accept while staging initialization is
+# pending must not lose the transfer record. The transfer stays
+# visible and cancellable by its handle.
+[[step]]
+do = "fixture_file"
+path = "${server.dir}/dup.bin"
+bytes = 16777216
+
+[[step]]
+do = "file_send"
+node = "server"
+peer = "client"
+path = "${server.dir}/dup.bin"
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "file.offered"
+expect = { name = "dup.bin" }
+save = "offer3"
+
+[[step]]
+do = "file_answer"
+node = "client"
+xfer = "${offer3.data.xfer}"
+accept = true
+
+[[step]]
+do = "file_answer"
+node = "client"
+xfer = "${offer3.data.xfer}"
+accept = true
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "file.progress"
+expect = { direction = "in" }
+
+[[step]]
+do = "file_cancel"
+node = "client"
+xfer = "${offer3.data.xfer}"
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "file.failed"
+expect = { reason = "cancelled", direction = "in" }
+
+[[step]]
+do = "wait_event"
+node = "server"
+event = "file.failed"
+expect = { reason = "cancelled", direction = "out" }
+
+[[step]]
+do = "assert_file"
+path = "${client.dir}/received/dup.bin"
+exists = false
+
+[[step]]
+do = "file_send"
+node = "server"
+peer = "client"
+path = "${server.dir}/ask.bin"
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "file.offered"
+expect = { name = "ask.bin" }
+
+[[step]]
+do = "wait_event"
+node = "server"
+event = "file.failed"
+expect = { reason = "timeout", direction = "out" }
+timeout_ms = 20000

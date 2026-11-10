@@ -3,15 +3,19 @@ use crate::{
     events::{EventBus, EventQueue},
     ipc_server, lifetime,
     logger::{unix_ms, Logger},
-    workers::{self, CaptureCommand, ClipboardCommand, ClipboardEvent},
+    workers::{self, CaptureCommand, ClipboardCommand, ClipboardEvent, FileCommand, FileEvent},
     VERSION,
 };
-use openergy_config::{Config, Role};
+use openergy_config::{Config, FileConflict, FileReceiveMode, Role};
 use openergy_ipc::{self as ipc, methods as m, Event, IpcError, Request, Response, Status};
 use openergy_net::{Fingerprint, NetCommand, NetDriver, NetEvent, Priority};
 use openergy_platform::{ClipboardData, Grant, InputEvent, InputSink, Permissions, ScreenRect, ScreenSystem};
-use openergy_protocol::{Chunk, ClipboardId, Message};
-use openergy_session::{layout::Rect, Action, Client, ClientEvent, ConnId, Server, ServerEvent, SessionSnapshot};
+use openergy_protocol::{Chunk, ClipboardId, FileDataChunk, Message};
+use openergy_session::{
+    file::{self as sfile, Reason as FileReason},
+    layout::Rect,
+    Action, Client, ClientEvent, ConnId, Server, ServerEvent, SessionSnapshot,
+};
 use serde_json::{json, Value};
 use std::{
     collections::{BTreeMap, VecDeque},
@@ -143,23 +147,94 @@ impl Machine {
             Self::Off => {}
         }
     }
+    fn alloc_xfer(&mut self) -> u64 {
+        match self {
+            Self::Server(s) => s.alloc_xfer(),
+            Self::Client(c) => c.alloc_xfer(),
+            Self::Off => 0,
+        }
+    }
+    fn next_xfer(&self) -> u64 {
+        match self {
+            Self::Server(s) => s.next_xfer(),
+            Self::Client(c) => c.next_xfer(),
+            Self::Off => 1,
+        }
+    }
+    fn set_next_xfer(&mut self, next: u64) {
+        match self {
+            Self::Server(s) => s.set_next_xfer(next),
+            Self::Client(c) => c.set_next_xfer(next),
+            Self::Off => {}
+        }
+    }
 }
-// The driver admits 256 KiB of Bulk wire bytes per connection (BULK_WINDOW
-// in crates/net/src/reactor.rs, not exported). Clipboard chunks the queue
-// cannot admit yet wait here, gated on the driver's queued-bytes accessor,
-// instead of aborting the transfer. A connection that makes no Bulk
-// progress for BULK_STALL_MS, or piles up more than BULK_DEFERRED_CAP,
-// still aborts visibly as before.
-const BULK_GATE_BYTES: usize = 256 * 1024;
+// The driver admits `BULK_WINDOW` of Bulk wire bytes per connection.
+// Chunks the queue cannot admit yet wait here, gated on the driver's
+// queued-bytes accessor, instead of aborting the transfer. Clipboard
+// aborts after BULK_STALL_MS without progress; file streams get the
+// longer max(30 s, 3 x heartbeat) rule (design §6.2). Entries are
+// tagged per stream so one abort never drops the other stream.
+const BULK_GATE_BYTES: usize = openergy_net::BULK_WINDOW;
 const BULK_STALL_MS: u64 = 2_000;
 const BULK_DEFERRED_CAP: usize = 16 * 1024 * 1024;
+/// Initial file chunks of downstream credit (design §6.1): one bulk
+/// window of 32 KiB slices.
+const FILE_INITIAL_CREDIT: u32 = (openergy_net::BULK_WINDOW / (32 * 1024)) as u32;
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum BulkTag {
+    Clipboard(ClipboardId),
+    File(u64),
+}
 
 #[derive(Default)]
 struct BulkBacklog {
-    chunks: VecDeque<(ClipboardId, Message, usize)>,
+    chunks: VecDeque<(BulkTag, Message, usize)>,
     bytes: usize,
     /// Last chunk the driver accepted, or the first defer if none yet.
     progress_ms: u64,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum SendStage {
+    Queued,
+    Hashing,
+    Active,
+}
+struct SendRec {
+    conn: ConnId,
+    peer_name: String,
+    fingerprint: Option<String>,
+    path: PathBuf,
+    total_len: u64,
+    wire: u32,
+    stage: SendStage,
+}
+struct PendingOffer {
+    conn: ConnId,
+    name: String,
+    total_len: u64,
+    sha256: [u8; 32],
+    expires_ms: u64,
+    accepting: bool,
+}
+#[derive(Default)]
+struct FileRuntime {
+    receive_dir: PathBuf,
+    /// False when the configured receive_dir could not be created or
+    /// resolved: offers are rejected instead of landing in a fallback
+    /// directory the user did not select.
+    receive_dir_ok: bool,
+    sends: BTreeMap<u64, SendRec>,
+    send_queue: BTreeMap<ConnId, VecDeque<u64>>,
+    active_send: BTreeMap<ConnId, u64>,
+    pending_offers: BTreeMap<u64, PendingOffer>,
+    /// Inbound transfers the session created: xfer -> (conn, total).
+    recvs: BTreeMap<u64, (ConnId, u64)>,
+    wire_alloc: BTreeMap<ConnId, u32>,
+    progress: BTreeMap<u64, u64>,
+    progress_sent_ms: BTreeMap<u64, u64>,
 }
 
 struct Runtime {
@@ -182,6 +257,8 @@ struct Runtime {
     close_at: Option<u64>,
     capture: workers::Capture,
     clipboard: workers::ClipboardWorker,
+    file_worker: workers::FileWorker,
+    files: FileRuntime,
     bus: Arc<EventBus>,
     logger: Arc<Logger>,
     state: String,
@@ -192,6 +269,9 @@ struct Runtime {
     last_error: Option<ipc::LastError>,
     last_transfer: Option<ipc::ClipboardTransfer>,
     last_blocked: Option<ipc::ClipboardBlocked>,
+    last_file_completed: Option<ipc::FileCompleted>,
+    last_file_blocked: Option<ipc::FileBlocked>,
+    next_xfer: u64,
     events_in: u64,
     events_out: u64,
     attempt: u64,
@@ -216,6 +296,9 @@ struct Runtime {
     actions: Vec<Action>,
     net_events: Vec<NetEvent>,
     deferred_bulk: BTreeMap<ConnId, BulkBacklog>,
+    /// Staged-file drops the bounded file-worker channel refused; retried
+    /// on every loop pass so a full channel never loses cleanup.
+    pending_file_drops: Vec<(u64, bool)>,
 }
 impl Runtime {
     fn now(&self) -> u64 {
@@ -253,14 +336,11 @@ impl Runtime {
             .conn_info(conn)
             .is_none_or(|info| info.queued_bytes.saturating_add(wire) <= BULK_GATE_BYTES)
     }
-    fn defer_bulk(&mut self, conn: ConnId, id: ClipboardId, msg: Message, wire: usize) {
+    fn defer_bulk(&mut self, conn: ConnId, tag: BulkTag, msg: Message, wire: usize) {
         let queued = self.deferred_bulk.get(&conn).map_or(0, |backlog| backlog.bytes);
         if queued.saturating_add(wire) > BULK_DEFERRED_CAP {
-            log::warn!(
-                "clipboard backlog over cap for connection {}; aborting transfer",
-                conn.0
-            );
-            self.abort_bulk(conn, id);
+            log::warn!("bulk backlog over cap for connection {}; aborting transfer", conn.0);
+            self.abort_tagged(conn, tag);
             return;
         }
         let now = self.now();
@@ -269,13 +349,13 @@ impl Runtime {
             ..BulkBacklog::default()
         });
         backlog.bytes = backlog.bytes.saturating_add(wire);
-        backlog.chunks.push_back((id, msg, wire));
+        backlog.chunks.push_back((tag, msg, wire));
     }
-    /// Drop deferred chunks for one clipboard transfer without touching
-    /// session state (the session already cancelled or superseded it).
-    fn drop_deferred(&mut self, conn: ConnId, id: ClipboardId) {
+    /// Drop deferred chunks for one stream without touching session
+    /// state (the session already cancelled or superseded it).
+    fn drop_deferred_tag(&mut self, conn: ConnId, tag: BulkTag) {
         let empty = if let Some(backlog) = self.deferred_bulk.get_mut(&conn) {
-            backlog.chunks.retain(|(queued, _, _)| *queued != id);
+            backlog.chunks.retain(|(queued, _, _)| *queued != tag);
             backlog.bytes = backlog.chunks.iter().map(|(_, _, wire)| *wire).sum();
             backlog.chunks.is_empty()
         } else {
@@ -284,6 +364,374 @@ impl Runtime {
         if empty {
             self.deferred_bulk.remove(&conn);
         }
+    }
+    fn drop_deferred(&mut self, conn: ConnId, id: ClipboardId) {
+        self.drop_deferred_tag(conn, BulkTag::Clipboard(id));
+    }
+    fn drop_deferred_file(&mut self, xfer: u64) {
+        let conns = self.deferred_bulk.keys().copied().collect::<Vec<_>>();
+        for conn in conns {
+            self.drop_deferred_tag(conn, BulkTag::File(xfer));
+        }
+    }
+    fn abort_tagged(&mut self, conn: ConnId, tag: BulkTag) {
+        match tag {
+            BulkTag::Clipboard(id) => self.abort_bulk(conn, id),
+            BulkTag::File(xfer) => self.abort_file_bulk(conn, xfer),
+        }
+    }
+    fn abort_file_bulk(&mut self, conn: ConnId, xfer: u64) {
+        self.drop_deferred_tag(conn, BulkTag::File(xfer));
+        self.driver.cancel_file(conn);
+        self.error(
+            "file_queue_full",
+            "File transfer stopped because the network queue is full.",
+        );
+        match &mut self.machine {
+            Machine::Server(s) => s.handle(ServerEvent::FileBulkAborted { xfer }, &mut self.actions),
+            Machine::Client(c) => c.handle(ClientEvent::FileBulkAborted { xfer }, &mut self.actions),
+            Machine::Off => {}
+        }
+    }
+    fn grant_file_credit(&mut self, xfer: u64, chunks: u32) {
+        match &mut self.machine {
+            Machine::Server(s) => s.handle(ServerEvent::FileCredit { xfer, chunks }, &mut self.actions),
+            Machine::Client(c) => c.handle(ClientEvent::FileCredit { xfer, chunks }, &mut self.actions),
+            Machine::Off => {}
+        }
+    }
+    fn peer_name_for(&self, conn: ConnId) -> String {
+        self.machine
+            .snapshot()
+            .peers
+            .into_iter()
+            .find(|p| p.conn == conn)
+            .map(|p| p.name)
+            .unwrap_or_else(|| "server".into())
+    }
+    fn next_rand_u32(&mut self) -> u32 {
+        self.rng ^= self.rng << 13;
+        self.rng ^= self.rng >> 7;
+        self.rng ^= self.rng << 17;
+        (self.rng >> 16) as u32
+    }
+    fn alloc_wire(&mut self, conn: ConnId) -> u32 {
+        if !self.files.wire_alloc.contains_key(&conn) {
+            // Random start per connection (design §4.1), skipping zero.
+            let seed = self.next_rand_u32() ^ (unix_ms() as u32);
+            self.files.wire_alloc.insert(conn, if seed == 0 { 1 } else { seed });
+        }
+        let entry = self.files.wire_alloc.get_mut(&conn).map_or(1, |v| *v);
+        let wire = if entry == 0 { 1 } else { entry };
+        let next = wire.wrapping_add(1);
+        self.files.wire_alloc.insert(conn, if next == 0 { 1 } else { next });
+        wire
+    }
+    fn worker_file(&mut self, cmd: FileCommand) -> bool {
+        self.file_worker.commands.try_send(cmd).is_ok()
+    }
+    /// Drop one staged receive. Cleanup must not be lost when the bounded
+    /// worker channel is full, so a refused drop is kept and retried.
+    fn drop_receive(&mut self, xfer: u64, keep_part: bool) {
+        if !self.worker_file(FileCommand::DropReceive { xfer, keep_part }) {
+            self.pending_file_drops.push((xfer, keep_part));
+        }
+    }
+    fn flush_file_drops(&mut self) {
+        if self.pending_file_drops.is_empty() {
+            return;
+        }
+        let pending = std::mem::take(&mut self.pending_file_drops);
+        self.pending_file_drops = pending
+            .into_iter()
+            .filter(|&(xfer, keep_part)| !self.worker_file(FileCommand::DropReceive { xfer, keep_part }))
+            .collect();
+    }
+    /// Start the next queued send for one connection, if idle.
+    fn start_next_send(&mut self, conn: ConnId) {
+        if self.files.active_send.contains_key(&conn) {
+            return;
+        }
+        loop {
+            let next = self.files.send_queue.get_mut(&conn).and_then(|queue| queue.pop_front());
+            let Some(xfer) = next else { return };
+            let Some(rec) = self.files.sends.get_mut(&xfer) else {
+                continue;
+            };
+            rec.stage = SendStage::Hashing;
+            let path = rec.path.clone();
+            self.files.active_send.insert(conn, xfer);
+            if !self.worker_file(FileCommand::HashFile { xfer, path }) {
+                self.fail_send_local(xfer, "io_error");
+            }
+            return;
+        }
+    }
+    /// Terminal cleanup for one outbound transfer.
+    fn finish_send(&mut self, xfer: u64) {
+        let Some(rec) = self.files.sends.remove(&xfer) else {
+            return;
+        };
+        self.files.progress.remove(&xfer);
+        self.files.progress_sent_ms.remove(&xfer);
+        self.drop_deferred_file(xfer);
+        let _ = self.worker_file(FileCommand::DropSend { xfer });
+        if let Some(queue) = self.files.send_queue.get_mut(&rec.conn) {
+            queue.retain(|queued| *queued != xfer);
+        }
+        if self.files.active_send.get(&rec.conn) == Some(&xfer) {
+            self.files.active_send.remove(&rec.conn);
+            self.start_next_send(rec.conn);
+        }
+    }
+    fn fail_send_local(&mut self, xfer: u64, reason: &str) {
+        let peer = self
+            .files
+            .sends
+            .get(&xfer)
+            .map(|rec| rec.peer_name.clone())
+            .unwrap_or_default();
+        self.publish(
+            "file.failed",
+            json!({"xfer":xfer,"peer":peer,"direction":"out","reason":reason,"unix_ms":unix_ms()}),
+        );
+        self.finish_send(xfer);
+    }
+    fn decide_offer(&mut self, xfer: u64, accept: bool, reason: FileReason) {
+        match &mut self.machine {
+            Machine::Server(s) => s.handle(
+                ServerEvent::FileOfferDecided {
+                    xfer,
+                    accept,
+                    reason,
+                    resume_offset: 0,
+                },
+                &mut self.actions,
+            ),
+            Machine::Client(c) => c.handle(
+                ClientEvent::FileOfferDecided {
+                    xfer,
+                    accept,
+                    reason,
+                    resume_offset: 0,
+                },
+                &mut self.actions,
+            ),
+            Machine::Off => {}
+        }
+    }
+    fn cancel_session_file(&mut self, xfer: u64) {
+        match &mut self.machine {
+            Machine::Server(s) => s.handle(ServerEvent::FileCancelRequested { xfer }, &mut self.actions),
+            Machine::Client(c) => c.handle(ClientEvent::FileCancelRequested { xfer }, &mut self.actions),
+            Machine::Off => {}
+        }
+    }
+    fn begin_receive(&mut self, xfer: u64) {
+        let Some(offer) = self.files.pending_offers.get_mut(&xfer) else {
+            return;
+        };
+        // A duplicate accept while staging initializes must not enqueue
+        // a second BeginReceive: the worker would answer Busy for it,
+        // and handling that result would drop the live transfer record.
+        if offer.accepting {
+            return;
+        }
+        offer.accepting = true;
+        let cmd = FileCommand::BeginReceive {
+            xfer,
+            name: offer.name.clone(),
+            total_len: offer.total_len,
+            sha256: offer.sha256,
+            on_conflict_reject: self.cfg.file.on_conflict == FileConflict::Reject,
+        };
+        if !self.worker_file(cmd) {
+            self.files.pending_offers.remove(&xfer);
+            self.files.recvs.remove(&xfer);
+            self.decide_offer(xfer, false, FileReason::IoError);
+        }
+    }
+    fn handle_offered(&mut self, xfer: u64, conn: ConnId, kind: u8, name: String, total_len: u64, sha256: [u8; 32]) {
+        if !self.files.receive_dir_ok {
+            self.decide_offer(xfer, false, FileReason::IoError);
+            return;
+        }
+        let peer_name = self.peer_name_for(conn);
+        self.files.recvs.insert(xfer, (conn, total_len));
+        let expires_ms = self.now().saturating_add(self.cfg.file.offer_timeout());
+        self.files.pending_offers.insert(
+            xfer,
+            PendingOffer {
+                conn,
+                name: name.clone(),
+                total_len,
+                sha256,
+                expires_ms,
+                accepting: false,
+            },
+        );
+        if self.cfg.file.receive_mode == FileReceiveMode::Auto {
+            self.begin_receive(xfer);
+        } else {
+            self.publish(
+                "file.offered",
+                json!({
+                    "xfer": xfer,
+                    "peer": peer_name,
+                    "name": name,
+                    "bytes": total_len,
+                    "kind": kind,
+                    "expires_unix_ms": unix_ms().saturating_add(self.cfg.file.offer_timeout()),
+                }),
+            );
+        }
+    }
+    fn expire_offers(&mut self) {
+        let now = self.now();
+        let expired = self
+            .files
+            .pending_offers
+            .iter()
+            .filter(|(_, offer)| !offer.accepting && now >= offer.expires_ms)
+            .map(|(xfer, _)| *xfer)
+            .collect::<Vec<_>>();
+        for xfer in expired {
+            self.files.pending_offers.remove(&xfer);
+            self.files.recvs.remove(&xfer);
+            self.decide_offer(xfer, false, FileReason::Timeout);
+        }
+    }
+    fn handle_file_event(&mut self, event: FileEvent) {
+        match event {
+            FileEvent::Hashed {
+                xfer,
+                name,
+                total_len,
+                sha256,
+            } => {
+                let Some(rec) = self.files.sends.get(&xfer) else { return };
+                let (conn, peer_name, fingerprint) = (rec.conn, rec.peer_name.clone(), rec.fingerprint.clone());
+                let wire = self.alloc_wire(conn);
+                if let Some(rec) = self.files.sends.get_mut(&xfer) {
+                    rec.wire = wire;
+                    rec.total_len = total_len;
+                    rec.stage = SendStage::Active;
+                }
+                match &mut self.machine {
+                    Machine::Server(s) => s.handle(
+                        ServerEvent::FileSendRequested {
+                            xfer,
+                            conn,
+                            transfer: wire,
+                            peer_name,
+                            fingerprint,
+                            kind: 0,
+                            name,
+                            total_len,
+                            sha256,
+                        },
+                        &mut self.actions,
+                    ),
+                    Machine::Client(c) => c.handle(
+                        ClientEvent::FileSendRequested {
+                            xfer,
+                            conn,
+                            transfer: wire,
+                            peer_name,
+                            fingerprint,
+                            kind: 0,
+                            name,
+                            total_len,
+                            sha256,
+                        },
+                        &mut self.actions,
+                    ),
+                    Machine::Off => {}
+                }
+                self.grant_file_credit(xfer, FILE_INITIAL_CREDIT);
+            }
+            FileEvent::HashFailed { xfer, reason } => {
+                if self.files.sends.contains_key(&xfer) {
+                    self.fail_send_local(xfer, reason);
+                }
+            }
+            FileEvent::ChunkReady { xfer, bytes } => match &mut self.machine {
+                Machine::Server(s) => s.handle(ServerEvent::FileChunkReady { xfer, bytes }, &mut self.actions),
+                Machine::Client(c) => c.handle(ClientEvent::FileChunkReady { xfer, bytes }, &mut self.actions),
+                Machine::Off => {}
+            },
+            FileEvent::ChunkFailed { xfer } => match &mut self.machine {
+                Machine::Server(s) => s.handle(
+                    ServerEvent::FileChunkFailed {
+                        xfer,
+                        reason: FileReason::IoError,
+                    },
+                    &mut self.actions,
+                ),
+                Machine::Client(c) => c.handle(
+                    ClientEvent::FileChunkFailed {
+                        xfer,
+                        reason: FileReason::IoError,
+                    },
+                    &mut self.actions,
+                ),
+                Machine::Off => {}
+            },
+            FileEvent::ReceiveReady { xfer, ok, reason } => {
+                self.files.pending_offers.remove(&xfer);
+                if !ok {
+                    self.files.recvs.remove(&xfer);
+                }
+                self.decide_offer(xfer, ok, reason);
+            }
+            FileEvent::StageResult { xfer, ok, reason } => match &mut self.machine {
+                Machine::Server(s) => s.handle(ServerEvent::FileStageResult { xfer, ok, reason }, &mut self.actions),
+                Machine::Client(c) => c.handle(ClientEvent::FileStageResult { xfer, ok, reason }, &mut self.actions),
+                Machine::Off => {}
+            },
+            FileEvent::FinishResult { xfer, ok, reason } => match &mut self.machine {
+                Machine::Server(s) => s.handle(ServerEvent::FileFinishResult { xfer, ok, reason }, &mut self.actions),
+                Machine::Client(c) => c.handle(ClientEvent::FileFinishResult { xfer, ok, reason }, &mut self.actions),
+                Machine::Off => {}
+            },
+        }
+    }
+    /// Drop every daemon-side file record. Used when the session
+    /// machine is recreated or the connection stack resets, where
+    /// session-side terminal notices may never arrive.
+    fn reset_file_state(&mut self, reason: &str) {
+        let sends = self.files.sends.keys().copied().collect::<Vec<_>>();
+        for xfer in sends {
+            self.fail_send_local(xfer, reason);
+        }
+        let recvs = self.files.recvs.keys().copied().collect::<Vec<_>>();
+        for xfer in recvs {
+            self.drop_receive(xfer, false);
+        }
+        self.files.sends.clear();
+        self.files.send_queue.clear();
+        self.files.active_send.clear();
+        self.files.pending_offers.clear();
+        self.files.recvs.clear();
+        self.files.progress.clear();
+        self.files.progress_sent_ms.clear();
+        let conns = self.deferred_bulk.keys().copied().collect::<Vec<_>>();
+        for conn in conns {
+            if let Some(backlog) = self.deferred_bulk.get_mut(&conn) {
+                backlog
+                    .chunks
+                    .retain(|(tag, _, _)| matches!(tag, BulkTag::Clipboard(_)));
+                backlog.bytes = backlog.chunks.iter().map(|(_, _, wire)| *wire).sum();
+            }
+        }
+        self.deferred_bulk.retain(|_, backlog| !backlog.chunks.is_empty());
+    }
+    fn save_xfer_counter(&mut self) {
+        self.next_xfer = self.machine.next_xfer();
+    }
+    fn seed_xfer_counter(&mut self) {
+        let next = self.next_xfer;
+        self.machine.set_next_xfer(next);
     }
     fn abort_bulk(&mut self, conn: ConnId, id: ClipboardId) {
         self.drop_deferred(conn, id);
@@ -314,6 +762,10 @@ impl Runtime {
         self.error("network_failed", format!("Can't send data: {error}."));
         self.abort_bulk(conn, id);
     }
+    fn fail_tagged(&mut self, conn: ConnId, tag: BulkTag, error: openergy_net::NetError) {
+        self.error("network_failed", format!("Can't send data: {error}."));
+        self.abort_tagged(conn, tag);
+    }
     fn send_clipboard(&mut self, conn: ConnId, id: ClipboardId, sequence: u32, chunk: Chunk) {
         // A Start supersedes any transfer the session cancelled for this
         // clipboard (newer grab/local change): drop its unsent chunks so
@@ -325,7 +777,7 @@ impl Runtime {
         let msg = Message::ClipboardData { id, sequence, chunk };
         // Chunk order is load-bearing: behind a backlog nothing overtakes.
         if self.deferred_bulk.contains_key(&conn) || !self.bulk_has_room(conn, wire) {
-            self.defer_bulk(conn, id, msg, wire);
+            self.defer_bulk(conn, BulkTag::Clipboard(id), msg, wire);
             return;
         }
         let retry = msg.clone();
@@ -340,8 +792,43 @@ impl Runtime {
             Ok(()) => {}
             // WouldBlock, not failure: the head chunk stays queued and the
             // next loop tick retries it once the queue drains.
-            Err(openergy_net::NetError::QueueFull) => self.defer_bulk(conn, id, retry, wire),
+            Err(openergy_net::NetError::QueueFull) => self.defer_bulk(conn, BulkTag::Clipboard(id), retry, wire),
             Err(error) => self.fail_bulk(conn, id, error),
+        }
+    }
+    fn send_file_chunk(&mut self, conn: ConnId, transfer: u32, chunk: FileDataChunk) {
+        let Some(&xfer) = self
+            .files
+            .active_send
+            .get(&conn)
+            .filter(|xfer| self.files.sends.get(xfer).is_some_and(|rec| rec.wire == transfer))
+        else {
+            log::warn!("file chunk for unknown active send dropped");
+            return;
+        };
+        let is_data = matches!(chunk, FileDataChunk::Data(_));
+        let wire = sfile::file_chunk_wire_bytes(&chunk);
+        let msg = Message::FileData { transfer, chunk };
+        if self.deferred_bulk.contains_key(&conn) || !self.bulk_has_room(conn, wire) {
+            self.defer_bulk(conn, BulkTag::File(xfer), msg, wire);
+            return;
+        }
+        let retry = msg.clone();
+        match self.driver.execute_checked(
+            NetCommand::Send {
+                conn,
+                msg,
+                priority: Priority::Bulk,
+            },
+            &mut self.net_events,
+        ) {
+            Ok(()) => {
+                if is_data {
+                    self.grant_file_credit(xfer, 1);
+                }
+            }
+            Err(openergy_net::NetError::QueueFull) => self.defer_bulk(conn, BulkTag::File(xfer), retry, wire),
+            Err(error) => self.fail_tagged(conn, BulkTag::File(xfer), error),
         }
     }
     fn drain_bulk(&mut self) {
@@ -349,21 +836,31 @@ impl Runtime {
             return;
         }
         let now = self.now();
+        let heartbeat = if self.cfg.role == Role::Server {
+            self.cfg.server.heartbeat_ms
+        } else {
+            self.cfg.client.heartbeat_ms
+        };
+        let file_stall_ms = sfile::inbound_expiry_ms(heartbeat);
         let stalled = self
             .deferred_bulk
             .iter()
-            .filter(|(_, backlog)| {
-                !backlog.chunks.is_empty() && now.saturating_sub(backlog.progress_ms) >= BULK_STALL_MS
+            .filter_map(|(conn, backlog)| {
+                let (tag, _, _) = backlog.chunks.front()?;
+                let limit = match tag {
+                    BulkTag::Clipboard(_) => BULK_STALL_MS,
+                    BulkTag::File(_) => file_stall_ms,
+                };
+                (now.saturating_sub(backlog.progress_ms) >= limit).then_some((*conn, *tag))
             })
-            .filter_map(|(conn, backlog)| backlog.chunks.front().map(|(id, _, _)| (*conn, *id)))
             .collect::<Vec<_>>();
-        for (conn, id) in stalled {
-            log::warn!("clipboard queue stalled for connection {}; aborting transfer", conn.0);
-            self.abort_bulk(conn, id);
+        for (conn, tag) in stalled {
+            log::warn!("bulk queue stalled for connection {}; aborting transfer", conn.0);
+            self.abort_tagged(conn, tag);
         }
         let conns = self.deferred_bulk.keys().copied().collect::<Vec<_>>();
         for conn in conns {
-            while let Some((id, msg, wire)) = self
+            while let Some((tag, msg, wire)) = self
                 .deferred_bulk
                 .get(&conn)
                 .and_then(|backlog| backlog.chunks.front().cloned())
@@ -371,6 +868,16 @@ impl Runtime {
                 if !self.bulk_has_room(conn, wire) {
                     break;
                 }
+                let file_data_xfer = match (&tag, &msg) {
+                    (
+                        BulkTag::File(xfer),
+                        Message::FileData {
+                            chunk: FileDataChunk::Data(_),
+                            ..
+                        },
+                    ) => Some(*xfer),
+                    _ => None,
+                };
                 match self.driver.execute_checked(
                     NetCommand::Send {
                         conn,
@@ -391,10 +898,14 @@ impl Runtime {
                         if empty {
                             self.deferred_bulk.remove(&conn);
                         }
+                        // Admission returns one chunk of file credit.
+                        if let Some(xfer) = file_data_xfer {
+                            self.grant_file_credit(xfer, 1);
+                        }
                     }
                     Err(openergy_net::NetError::QueueFull) => break,
                     Err(error) => {
-                        self.fail_bulk(conn, id, error);
+                        self.fail_tagged(conn, tag, error);
                         break;
                     }
                 }
@@ -524,6 +1035,10 @@ impl Runtime {
                     secure_input_app: p.secure_input_app.clone(),
                     languages: p.languages.clone(),
                     active_language: p.active_language.clone(),
+                    file: ipc::PeerFile {
+                        capability: p.file_capability.clone(),
+                        max_bytes: p.file_max_bytes,
+                    },
                 }
             })
             .collect();
@@ -542,6 +1057,42 @@ impl Runtime {
             && matches!(self.platform.as_str(), "x11" | "virtual");
         s.clipboard.last_transfer = self.last_transfer.clone();
         s.clipboard.last_blocked = self.last_blocked.clone();
+        s.file.enabled = self.cfg.file.enabled;
+        s.file.receive_dir = self.files.receive_dir.to_string_lossy().into_owned();
+        s.file.last_completed = self.last_file_completed.clone();
+        s.file.last_blocked = self.last_file_blocked.clone();
+        for (&xfer, rec) in &self.files.sends {
+            s.file.active.push(ipc::FileActive {
+                xfer,
+                peer: rec.peer_name.clone(),
+                direction: "out".into(),
+                kind: 0,
+                bytes_done: self.files.progress.get(&xfer).copied().unwrap_or(0),
+                bytes_total: rec.total_len,
+                state: match rec.stage {
+                    SendStage::Queued => "queued",
+                    SendStage::Hashing => "hashing",
+                    SendStage::Active => "sending",
+                }
+                .into(),
+            });
+        }
+        for (&xfer, (conn, total)) in &self.files.recvs {
+            s.file.active.push(ipc::FileActive {
+                xfer,
+                peer: self.peer_name_for(*conn),
+                direction: "in".into(),
+                kind: 0,
+                bytes_done: self.files.progress.get(&xfer).copied().unwrap_or(0),
+                bytes_total: *total,
+                state: if self.files.pending_offers.contains_key(&xfer) {
+                    "offered".into()
+                } else {
+                    "receiving".into()
+                },
+            });
+        }
+        s.file.active.sort_by_key(|a| a.xfer);
         s.pending_trust = self.pending.values().cloned().collect();
         s.last_error = self.last_error.clone();
         s.stats.rss_bytes = lifetime::rss_bytes();
@@ -550,6 +1101,7 @@ impl Runtime {
         s
     }
     fn apply_actions(&mut self) {
+        self.flush_file_drops();
         self.status_dirty |= !self.actions.is_empty();
         let mut count = 0;
         while !self.actions.is_empty() && count < 1024 {
@@ -592,6 +1144,89 @@ impl Runtime {
                         sequence,
                         chunk,
                     } => self.send_clipboard(conn, id, sequence, chunk),
+                    Action::SendFileChunk { conn, transfer, chunk } => self.send_file_chunk(conn, transfer, chunk),
+                    Action::ReadFileChunk { xfer, offset, len } => {
+                        if !self.worker_file(FileCommand::ReadChunk { xfer, offset, len }) {
+                            match &mut self.machine {
+                                Machine::Server(s) => s.handle(
+                                    ServerEvent::FileChunkFailed {
+                                        xfer,
+                                        reason: FileReason::IoError,
+                                    },
+                                    &mut self.actions,
+                                ),
+                                Machine::Client(c) => c.handle(
+                                    ClientEvent::FileChunkFailed {
+                                        xfer,
+                                        reason: FileReason::IoError,
+                                    },
+                                    &mut self.actions,
+                                ),
+                                Machine::Off => {}
+                            }
+                        }
+                    }
+                    Action::StageFileChunk { xfer, offset, bytes } => {
+                        if !self.worker_file(FileCommand::Stage { xfer, offset, bytes }) {
+                            match &mut self.machine {
+                                Machine::Server(s) => s.handle(
+                                    ServerEvent::FileStageResult {
+                                        xfer,
+                                        ok: false,
+                                        reason: FileReason::IoError,
+                                    },
+                                    &mut self.actions,
+                                ),
+                                Machine::Client(c) => c.handle(
+                                    ClientEvent::FileStageResult {
+                                        xfer,
+                                        ok: false,
+                                        reason: FileReason::IoError,
+                                    },
+                                    &mut self.actions,
+                                ),
+                                Machine::Off => {}
+                            }
+                        }
+                    }
+                    Action::FinishFile { xfer } => {
+                        if !self.worker_file(FileCommand::Finish { xfer }) {
+                            match &mut self.machine {
+                                Machine::Server(s) => s.handle(
+                                    ServerEvent::FileFinishResult {
+                                        xfer,
+                                        ok: false,
+                                        reason: FileReason::IoError,
+                                    },
+                                    &mut self.actions,
+                                ),
+                                Machine::Client(c) => c.handle(
+                                    ClientEvent::FileFinishResult {
+                                        xfer,
+                                        ok: false,
+                                        reason: FileReason::IoError,
+                                    },
+                                    &mut self.actions,
+                                ),
+                                Machine::Off => {}
+                            }
+                        }
+                    }
+                    Action::DropFile { xfer, keep_part } => {
+                        self.drop_receive(xfer, keep_part);
+                    }
+                    Action::PurgeFileBulk { conn, xfer } => {
+                        self.drop_deferred_tag(conn, BulkTag::File(xfer));
+                        self.driver.cancel_file(conn);
+                    }
+                    Action::FileOffered {
+                        xfer,
+                        conn,
+                        kind,
+                        name,
+                        total_len,
+                        sha256,
+                    } => self.handle_offered(xfer, conn, kind, name, total_len, sha256),
                     Action::Close { conn, .. } => self.execute(NetCommand::Close { conn }),
                     Action::ReplaceConnection { .. } => {}
                     Action::SetKeyboardLanguage(code) => {
@@ -669,12 +1304,54 @@ impl Runtime {
                                 object.insert("unix_ms".into(), json!(unix_ms()));
                             }
                         }
+                        let mut publish_event = true;
                         match event.event.as_str() {
                             "clipboard.blocked" => {
                                 self.last_blocked = serde_json::from_value(event.data.clone()).ok();
                             }
                             "clipboard.transfer" => {
                                 self.last_transfer = serde_json::from_value(event.data.clone()).ok();
+                            }
+                            "file.progress" => {
+                                // Coalesce to at most 4 per second per
+                                // transfer; status keeps every update.
+                                if let Some(xfer) = event.data.get("xfer").and_then(Value::as_u64) {
+                                    if let Some(done) = event.data.get("bytes_done").and_then(Value::as_u64) {
+                                        self.files.progress.insert(xfer, done);
+                                    }
+                                    let now = self.now();
+                                    let last = self.files.progress_sent_ms.get(&xfer).copied().unwrap_or(0);
+                                    if now.saturating_sub(last) >= 250 || last == 0 {
+                                        self.files.progress_sent_ms.insert(xfer, now);
+                                    } else {
+                                        publish_event = false;
+                                    }
+                                }
+                            }
+                            "file.completed" => {
+                                self.last_file_completed = serde_json::from_value(event.data.clone()).ok();
+                                if let Some(xfer) = event.data.get("xfer").and_then(Value::as_u64) {
+                                    self.files.recvs.remove(&xfer);
+                                    self.files.progress.remove(&xfer);
+                                    self.files.progress_sent_ms.remove(&xfer);
+                                    if self.files.sends.contains_key(&xfer) {
+                                        self.finish_send(xfer);
+                                    }
+                                }
+                            }
+                            "file.failed" => {
+                                if let Some(xfer) = event.data.get("xfer").and_then(Value::as_u64) {
+                                    self.files.recvs.remove(&xfer);
+                                    self.files.pending_offers.remove(&xfer);
+                                    self.files.progress.remove(&xfer);
+                                    self.files.progress_sent_ms.remove(&xfer);
+                                    if self.files.sends.contains_key(&xfer) {
+                                        self.finish_send(xfer);
+                                    }
+                                }
+                            }
+                            "file.blocked" => {
+                                self.last_file_blocked = serde_json::from_value(event.data.clone()).ok();
                             }
                             "error" => {
                                 let mut error: Option<ipc::LastError> = serde_json::from_value(event.data.clone()).ok();
@@ -702,7 +1379,9 @@ impl Runtime {
                             }
                             _ => {}
                         }
-                        self.bus.publish(event);
+                        if publish_event {
+                            self.bus.publish(event);
+                        }
                     }
                 }
             }
@@ -779,7 +1458,10 @@ impl Runtime {
                     self.process_net();
                     self.attempt = 0;
                     self.retry = None;
+                    self.save_xfer_counter();
+                    self.reset_file_state("io_error");
                     self.machine = Machine::new(Arc::new(self.cfg.clone()));
+                    self.seed_xfer_counter();
                     self.machine
                         .geometry(&self.displays, self.screens.cursor_pos(), false, &mut self.actions);
                     self.start_connection();
@@ -973,18 +1655,30 @@ impl Runtime {
                         if !tls {
                             log::warn!("plaintext connection: {peer}");
                         }
+                        let verified = self.connections.get(&conn).is_some_and(|c| c.certificate_verified);
                         match &mut self.machine {
                             Machine::Server(s) => {
                                 s.handle(
                                     ServerEvent::ConnectionMetadata {
                                         conn,
                                         fingerprint: fingerprint.map(|f| f.to_colon_hex()),
+                                        certificate_verified: verified,
                                     },
                                     &mut self.actions,
                                 );
                                 s.handle(ServerEvent::ClientConnected { conn }, &mut self.actions);
                             }
-                            Machine::Client(c) => c.handle(ClientEvent::ServerConnected { conn }, &mut self.actions),
+                            Machine::Client(c) => {
+                                c.handle(
+                                    ClientEvent::ConnectionMetadata {
+                                        conn,
+                                        fingerprint: fingerprint.map(|f| f.to_colon_hex()),
+                                        certificate_verified: verified,
+                                    },
+                                    &mut self.actions,
+                                );
+                                c.handle(ClientEvent::ServerConnected { conn }, &mut self.actions);
+                            }
                             Machine::Off => self.execute(NetCommand::Close { conn }),
                         }
                     }
@@ -1000,6 +1694,9 @@ impl Runtime {
                         self.pending.remove(&conn);
                         self.connections.remove(&conn);
                         self.deferred_bulk.remove(&conn);
+                        self.files.wire_alloc.remove(&conn);
+                        self.files.pending_offers.retain(|_, offer| offer.conn != conn);
+                        self.files.recvs.retain(|_, (c, _)| *c != conn);
                         match &mut self.machine {
                             Machine::Server(s) => {
                                 s.handle(ServerEvent::ClientDisconnected { conn, reason }, &mut self.actions)
@@ -1135,6 +1832,11 @@ impl Runtime {
         if self.platform == "macos" && cfg.macos != self.cfg.macos {
             return Err("Changing macos.click_numbering requires a daemon restart; stop the daemon, edit the config, then start it again".into());
         }
+        let new_receive_dir = if cfg.file.receive_dir != self.cfg.file.receive_dir {
+            Some(resolve_receive_dir(&cfg, &self.dir)?)
+        } else {
+            None
+        };
         let reconnect = force_reconnect
             || cfg.role != self.cfg.role
             || cfg.server != self.cfg.server
@@ -1165,8 +1867,11 @@ impl Runtime {
             self.connections.clear();
             self.pending.clear();
             self.deferred_bulk.clear();
+            self.save_xfer_counter();
+            self.reset_file_state("io_error");
             self.cfg = cfg;
             self.machine = Machine::new(Arc::new(self.cfg.clone()));
+            self.seed_xfer_counter();
             self.enabled = self.cfg.role != Role::Off && (self.cfg.role != Role::Client || self.cfg.client.autoconnect);
             self.attempt = 0;
             self.retry = None;
@@ -1194,12 +1899,51 @@ impl Runtime {
                     return Err(error);
                 }
             }
-            // The session dropped its transfers on a clipboard policy
-            // change; held chunks must not resurrect them.
+            // The session dropped its clipboard transfers on a clipboard
+            // policy change; held clipboard chunks must not resurrect them.
+            // Held file chunks belong to live transfers and stay.
             if cfg.clipboard != self.cfg.clipboard {
-                self.deferred_bulk.clear();
+                let conns = self.deferred_bulk.keys().copied().collect::<Vec<_>>();
+                for conn in conns {
+                    if let Some(backlog) = self.deferred_bulk.get_mut(&conn) {
+                        backlog.chunks.retain(|(tag, _, _)| matches!(tag, BulkTag::File(_)));
+                        backlog.bytes = backlog.chunks.iter().map(|(_, _, wire)| *wire).sum();
+                    }
+                }
+                self.deferred_bulk.retain(|_, backlog| !backlog.chunks.is_empty());
+            }
+            if cfg.file != self.cfg.file {
+                // Session reset already cancelled live transfers.
+                // Fail sends that never reached the session and drop
+                // held file chunks plus pending offers (§7.3).
+                let queued = self
+                    .files
+                    .sends
+                    .iter()
+                    .filter(|(_, rec)| rec.stage != SendStage::Active)
+                    .map(|(xfer, _)| *xfer)
+                    .collect::<Vec<_>>();
+                for xfer in queued {
+                    self.fail_send_local(xfer, "disabled");
+                }
+                self.files.pending_offers.clear();
+                let conns = self.deferred_bulk.keys().copied().collect::<Vec<_>>();
+                for conn in conns {
+                    if let Some(backlog) = self.deferred_bulk.get_mut(&conn) {
+                        backlog
+                            .chunks
+                            .retain(|(tag, _, _)| matches!(tag, BulkTag::Clipboard(_)));
+                        backlog.bytes = backlog.chunks.iter().map(|(_, _, wire)| *wire).sum();
+                    }
+                }
+                self.deferred_bulk.retain(|_, backlog| !backlog.chunks.is_empty());
             }
             self.cfg = Arc::unwrap_or_clone(cfg);
+        }
+        if let Some(root) = new_receive_dir {
+            self.files.receive_dir = root.clone();
+            self.files.receive_dir_ok = true;
+            let _ = self.worker_file(FileCommand::SetRoot { root });
         }
         self.machine
             .geometry(&self.displays, self.screens.cursor_pos(), false, &mut self.actions);
@@ -1317,6 +2061,7 @@ impl Runtime {
                 self.enabled = false;
                 self.retry = None;
                 self.deferred_bulk.clear();
+                self.reset_file_state("io_error");
                 self.machine.shutdown(&mut self.actions);
                 self.apply_actions();
                 self.execute(NetCommand::Shutdown);
@@ -1334,7 +2079,10 @@ impl Runtime {
                 self.apply_actions();
                 self.execute(NetCommand::Shutdown);
                 self.process_net();
+                self.save_xfer_counter();
+                self.reset_file_state("io_error");
                 self.machine = Machine::new(Arc::new(self.cfg.clone()));
+                self.seed_xfer_counter();
                 self.machine
                     .geometry(&self.displays, self.screens.cursor_pos(), false, &mut self.actions);
                 self.enabled = true;
@@ -1454,6 +2202,146 @@ impl Runtime {
                 self.stop.store(true, Ordering::Relaxed);
                 Ok(json!({"stopping":true}))
             }
+            m::FILE_SEND => {
+                let peer = req
+                    .params
+                    .get("peer")
+                    .and_then(Value::as_str)
+                    .ok_or_else(|| invalid("peer is required"))?;
+                let path = req
+                    .params
+                    .get("path")
+                    .and_then(Value::as_str)
+                    .ok_or_else(|| invalid("path is required"))?;
+                if !self.cfg.file.enabled || !self.cfg.file.send {
+                    return Err(IpcError::new("file_disabled", "File sending is disabled"));
+                }
+                // Resolve the screen name ONCE, now. The binding
+                // (connection + certificate) travels with the xfer
+                // and is re-validated before any offer.
+                let snapshot = self.machine.snapshot();
+                let Some(found) = snapshot.peers.iter().find(|p| p.connected && p.name == peer) else {
+                    return Err(IpcError::new("peer_unknown", "No connected peer with that name"));
+                };
+                let conn = found.conn;
+                let peer_cap = found.file_max_bytes.unwrap_or(sfile::FILE_HARD_CAP);
+                let verified = self
+                    .connections
+                    .get(&conn)
+                    .is_some_and(|c| c.tls && c.certificate_verified);
+                if !self.cfg.tls.enabled || !verified {
+                    return Err(IpcError::new(
+                        "tls_required",
+                        "File transfer requires a verified TLS peer",
+                    ));
+                }
+                if found.file_capability != "openergy" {
+                    return Err(IpcError::new(
+                        "peer_no_file_support",
+                        "That peer cannot receive Openergy files",
+                    ));
+                }
+                let fingerprint = self.connections.get(&conn).and_then(|c| c.fingerprint.clone());
+                let path_buf = PathBuf::from(path);
+                let link_meta =
+                    std::fs::symlink_metadata(&path_buf).map_err(|e| IpcError::new("io_error", e.to_string()))?;
+                if link_meta.file_type().is_symlink() {
+                    return Err(IpcError::new("is_symlink", "Symlinks cannot be sent"));
+                }
+                if link_meta.is_dir() {
+                    return Err(IpcError::new("is_directory", "Folders cannot be sent"));
+                }
+                if !link_meta.is_file() {
+                    return Err(IpcError::new("not_a_file", "Only regular files can be sent"));
+                }
+                let limit = self.cfg.file.max_bytes.min(sfile::FILE_HARD_CAP).min(peer_cap);
+                if link_meta.len() > limit {
+                    let blocked = ipc::FileBlocked {
+                        peer: Some(peer.into()),
+                        bytes: Some(link_meta.len()),
+                        limit: Some(limit),
+                        reason: "too_large".into(),
+                        unix_ms: Some(unix_ms()),
+                    };
+                    self.publish("file.blocked", serde_json::to_value(&blocked).unwrap_or(Value::Null));
+                    self.last_file_blocked = Some(blocked);
+                    return Err(IpcError::new("too_large", "File exceeds the size limit"));
+                }
+                let xfer = self.machine.alloc_xfer();
+                if xfer == 0 {
+                    return Err(IpcError::new("peer_unknown", "No session is running"));
+                }
+                self.files.sends.insert(
+                    xfer,
+                    SendRec {
+                        conn,
+                        peer_name: peer.into(),
+                        fingerprint,
+                        path: path_buf,
+                        total_len: link_meta.len(),
+                        wire: 0,
+                        stage: SendStage::Queued,
+                    },
+                );
+                self.files.send_queue.entry(conn).or_default().push_back(xfer);
+                self.start_next_send(conn);
+                Ok(json!({"xfer": xfer}))
+            }
+            m::FILE_ANSWER => {
+                let xfer = req
+                    .params
+                    .get("xfer")
+                    .and_then(Value::as_u64)
+                    .ok_or_else(|| invalid("xfer is required"))?;
+                let accept = req
+                    .params
+                    .get("accept")
+                    .and_then(Value::as_bool)
+                    .ok_or_else(|| invalid("accept is required"))?;
+                if !self.files.pending_offers.contains_key(&xfer) {
+                    // An accept for a transfer that already left the
+                    // pending state because an earlier accept landed is
+                    // a benign retry: the chosen resolution stands.
+                    if accept && self.files.recvs.contains_key(&xfer) {
+                        return Ok(json!({"ok": true}));
+                    }
+                    return Err(IpcError::new("unknown_xfer", "No pending offer with that handle"));
+                }
+                if accept {
+                    self.begin_receive(xfer);
+                } else {
+                    self.files.pending_offers.remove(&xfer);
+                    self.files.recvs.remove(&xfer);
+                    self.decide_offer(xfer, false, FileReason::UserRejected);
+                }
+                Ok(json!({"ok": true}))
+            }
+            m::FILE_CANCEL => {
+                let xfer = req
+                    .params
+                    .get("xfer")
+                    .and_then(Value::as_u64)
+                    .ok_or_else(|| invalid("xfer is required"))?;
+                if let Some(rec) = self.files.sends.get(&xfer) {
+                    if rec.stage == SendStage::Active {
+                        self.cancel_session_file(xfer);
+                    } else {
+                        self.fail_send_local(xfer, "cancelled");
+                    }
+                    return Ok(json!({"ok": true}));
+                }
+                if self.files.pending_offers.contains_key(&xfer) {
+                    self.files.pending_offers.remove(&xfer);
+                    self.files.recvs.remove(&xfer);
+                    self.decide_offer(xfer, false, FileReason::Cancelled);
+                    return Ok(json!({"ok": true}));
+                }
+                if self.files.recvs.contains_key(&xfer) {
+                    self.cancel_session_file(xfer);
+                    return Ok(json!({"ok": true}));
+                }
+                Err(IpcError::new("unknown_xfer", "No transfer with that handle"))
+            }
             method if method.starts_with("virtual.") => self.virtual_request(method, &req.params),
             _ => Err(IpcError::new(
                 "unknown_method",
@@ -1522,6 +2410,38 @@ fn remote(text: &str, override_port: Option<u16>) -> Result<(String, u16), Strin
     }
     Ok((text.into(), override_port.unwrap_or(24800)))
 }
+/// Resolve `file.receive_dir` once per config apply (design §7.2):
+/// expand `~`, require an absolute result, create `0700`, canonicalize.
+fn resolve_receive_dir(cfg: &Config, state_dir: &Path) -> Result<PathBuf, String> {
+    let raw = cfg.file.receive_dir.trim();
+    let path = if raw.is_empty() {
+        state_dir.join("Received")
+    } else if let Some(rest) = raw
+        .strip_prefix("~/")
+        .or_else(|| if raw == "~" { Some("") } else { None })
+    {
+        let home = std::env::var_os("HOME").ok_or("file.receive_dir uses ~ but HOME is unset")?;
+        PathBuf::from(home).join(rest)
+    } else {
+        let p = PathBuf::from(raw);
+        if p.is_absolute() {
+            p
+        } else {
+            state_dir.join(p)
+        }
+    };
+    let existed = path.exists();
+    std::fs::create_dir_all(&path).map_err(|e| format!("file.receive_dir: {e}"))?;
+    #[cfg(unix)]
+    if !existed {
+        // A directory the user already has keeps its permissions; only a
+        // directory this call created is tightened to 0700.
+        use std::os::unix::fs::PermissionsExt;
+        let _ = std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o700));
+    }
+    Ok(path.canonicalize().unwrap_or(path))
+}
+
 fn normalize(cfg: &mut Config) {
     let listen = &cfg.server.listen;
     let host = if let Ok(addr) = listen.parse::<std::net::SocketAddr>() {
@@ -1655,6 +2575,17 @@ pub fn run_daemon(
     }));
     let capture = workers::capture(backend.source, waker.clone());
     let clipboard = workers::clipboard(backend.clipboard, waker.clone());
+    let (receive_dir, receive_dir_ok) = match resolve_receive_dir(&config, &dir) {
+        Ok(dir) => (dir, true),
+        Err(error) => {
+            // Startup keeps running off-role style, but receiving
+            // fails closed: offers are rejected until the configured
+            // directory resolves, never redirected to a fallback.
+            log::warn!("{error}; file receiving disabled until file.receive_dir is usable");
+            (dir.join("Received"), false)
+        }
+    };
+    let file_worker = workers::file_worker(receive_dir.clone(), waker.clone());
     let stop = Arc::new(AtomicBool::new(false));
     let (tx, rx) = mpsc::sync_channel(128);
     let accept = ipc_server::serve(listener, socket_path.clone(), tx, waker, bus.clone(), stop.clone());
@@ -1680,6 +2611,12 @@ pub fn run_daemon(
         close_at: None,
         capture,
         clipboard,
+        file_worker,
+        files: FileRuntime {
+            receive_dir,
+            receive_dir_ok,
+            ..FileRuntime::default()
+        },
         bus,
         logger,
         state: "idle".into(),
@@ -1690,6 +2627,9 @@ pub fn run_daemon(
         last_error: None,
         last_transfer: None,
         last_blocked: None,
+        last_file_completed: None,
+        last_file_blocked: None,
+        next_xfer: (unix_ms() ^ (u64::from(std::process::id()) << 32) ^ 0x5EED_u64).max(1),
         events_in: 0,
         events_out: 0,
         attempt: 0,
@@ -1714,6 +2654,7 @@ pub fn run_daemon(
         actions: Vec::new(),
         net_events: Vec::new(),
         deferred_bulk: BTreeMap::new(),
+        pending_file_drops: Vec::new(),
     };
     lifetime::install_signals();
     let parent = lifetime::ParentWatch::new(parent_pid);
@@ -1721,6 +2662,7 @@ pub fn run_daemon(
     if let Some(error) = startup_error {
         rt.error("invalid_config", error);
     }
+    rt.seed_xfer_counter();
     rt.machine
         .geometry(&rt.displays, rt.screens.cursor_pos(), false, &mut rt.actions);
     let _ = rt
@@ -1809,6 +2751,10 @@ pub fn run_daemon(
             }
         }
         let now = rt.now();
+        while let Ok(event) = rt.file_worker.events.try_recv() {
+            rt.handle_file_event(event);
+        }
+        rt.expire_offers();
         rt.machine.tick(now, &mut rt.actions);
         rt.apply_actions();
         rt.process_net();
@@ -1847,8 +2793,19 @@ pub fn run_daemon(
         }
         if rt.status_dirty && now.saturating_sub(rt.last_status_ms) >= 100 {
             let status = rt.status().to_json();
-            if status != rt.last_status {
-                rt.last_status = status.clone();
+            // File progress bytes change on every sample; they have a
+            // dedicated coalesced event, so they must not republish the
+            // whole status (and flood slow subscribers) by themselves.
+            let mut fingerprint = status.clone();
+            if let Some(active) = fingerprint.pointer_mut("/file/active").and_then(Value::as_array_mut) {
+                for entry in active {
+                    if let Some(done) = entry.get_mut("bytes_done") {
+                        *done = json!(0);
+                    }
+                }
+            }
+            if fingerprint != rt.last_status {
+                rt.last_status = fingerprint;
                 rt.publish("status.changed", status);
             }
             rt.last_status_ms = now;
@@ -1869,6 +2826,16 @@ pub fn run_daemon(
         }
         if !rt.deferred_bulk.is_empty() {
             deadline = deadline.min(now.saturating_add(5));
+        }
+        if let Some(expires) = rt
+            .files
+            .pending_offers
+            .values()
+            .filter(|offer| !offer.accepting)
+            .map(|offer| offer.expires_ms)
+            .min()
+        {
+            deadline = deadline.min(expires);
         }
         let timeout = Duration::from_millis(deadline.saturating_sub(now).clamp(1, 2000));
         if let Err(e) = rt.driver.poll(Some(timeout), &mut rt.net_events) {
@@ -1893,9 +2860,11 @@ pub fn run_daemon(
     stop.store(true, Ordering::Relaxed);
     let _ = rt.capture.commands.send(CaptureCommand::Stop);
     let _ = rt.clipboard.commands.send(ClipboardCommand::Stop);
+    let _ = rt.file_worker.commands.send(FileCommand::Stop);
     let _ = accept.join();
     let _ = rt.capture.thread.join();
     let _ = rt.clipboard.thread.join();
+    let _ = rt.file_worker.thread.join();
     log::info!("daemon stopped");
     #[cfg(windows)]
     lifetime::SHUTDOWN_COMPLETE.store(true, Ordering::Release);

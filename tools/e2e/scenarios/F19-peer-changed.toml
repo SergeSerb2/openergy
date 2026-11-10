@@ -1,0 +1,159 @@
+# Requirement: F19 sends bind to the connection resolved at call time.
+name = "F19-peer-changed"
+requirement = "A same-name replacement peer never receives a send bound to its predecessor."
+timeout_ms = 15000
+
+[[node]]
+id = "server"
+role = "server"
+tls = true
+require_client_trust = true
+config = { file = { receive_mode = "auto", receive_dir = "${server.dir}/received", offer_timeout_ms = 10000 } }
+
+[[node]]
+id = "alpha"
+name = "peerx"
+role = "client"
+remote = "server"
+tls = true
+config = { file = { receive_mode = "auto", receive_dir = "${alpha.dir}/received", offer_timeout_ms = 10000 } }
+
+[[node]]
+id = "beta"
+name = "peerx"
+role = "client"
+remote = "server"
+tls = true
+autostart = false
+config = { file = { receive_mode = "auto", receive_dir = "${beta.dir}/received", offer_timeout_ms = 10000 } }
+
+[[step]]
+do = "subscribe"
+node = "server"
+
+[[step]]
+do = "wait_status"
+node = "alpha"
+fields = { "pending_trust" = { "$len" = 1 } }
+save = "pa"
+
+[[step]]
+do = "ctl"
+node = "alpha"
+method = "trust.approve"
+params = { fingerprint = "${pa.pending_trust.0.fingerprint}" }
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "pending_trust" = { "$len" = 1 } }
+save = "psa"
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "trust.approve"
+params = { fingerprint = "${psa.pending_trust.0.fingerprint}" }
+
+[[step]]
+do = "wait_connected"
+node = "alpha"
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "peers.0.file.capability" = "openergy" }
+
+[[step]]
+do = "fixture_file"
+path = "${server.dir}/huge.bin"
+bytes = 402653184
+save = "fh"
+
+[[step]]
+do = "file_send"
+node = "server"
+peer = "peerx"
+path = "${server.dir}/huge.bin"
+save = "sent"
+
+[[step]]
+do = "kill"
+node = "alpha"
+signal = "KILL"
+
+[[step]]
+do = "start"
+node = "beta"
+
+[[step]]
+do = "wait_status"
+node = "beta"
+fields = { "pending_trust" = { "$len" = 1 } }
+save = "pb"
+
+[[step]]
+do = "ctl"
+node = "beta"
+method = "trust.approve"
+params = { fingerprint = "${pb.pending_trust.0.fingerprint}" }
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "pending_trust" = { "$len" = 1 } }
+save = "psb"
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "trust.approve"
+params = { fingerprint = "${psb.pending_trust.0.fingerprint}" }
+
+[[step]]
+do = "wait_connected"
+node = "beta"
+
+[[step]]
+do = "wait_event"
+node = "server"
+event = "file.failed"
+expect = { reason = "peer_changed", direction = "out" }
+timeout_ms = 30000
+
+[[step]]
+do = "wait_status"
+node = "beta"
+fields = { "file.active" = { "$len" = 0 } }
+
+[[step]]
+do = "assert_file"
+path = "${beta.dir}/received/huge.bin"
+exists = false
+
+[[step]]
+do = "subscribe"
+node = "beta"
+
+[[step]]
+do = "fixture_file"
+path = "${server.dir}/fresh.bin"
+bytes = 2048
+save = "ff"
+
+[[step]]
+do = "file_send"
+node = "server"
+peer = "peerx"
+path = "${server.dir}/fresh.bin"
+
+[[step]]
+do = "wait_event"
+node = "beta"
+event = "file.completed"
+expect = { verified = true, bytes = 2048 }
+
+[[step]]
+do = "assert_file"
+path = "${beta.dir}/received/fresh.bin"
+sha256 = "${ff.sha256}"

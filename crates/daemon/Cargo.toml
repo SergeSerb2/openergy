@@ -18,6 +18,7 @@ openergy-session = { version = "0.1.0", path = "../session" }
 openergy-net = { version = "0.1.0", path = "../net" }
 serde = { workspace = true }
 serde_json = { workspace = true }
+sha2 = { workspace = true }
 log = { version = "0.4", features = ["std"] }
 libc = { workspace = true }
 mio = { version = "1.2", features = ["os-poll", "net", "os-ext"] }

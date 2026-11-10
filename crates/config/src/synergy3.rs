@@ -373,6 +373,12 @@ fn import_db(
     if bool_at(data, "developers.shouldSwitchDoubleTap")? == Some(true) {
         cfg.switch.double_tap_ms = uint_at(data, "developers.switchDoubleTap")?.unwrap_or(0);
     }
+    if bool_at(data, "developers.dragAndDrop")? == Some(true) {
+        report.warnings.push(
+            "data.developers.dragAndDrop: drag-drop needs explicit file.drag_send/file.drag_receive; left disabled"
+                .into(),
+        );
+    }
     cfg.options.disable_lock_to_screen = bool_at(data, "keyboard.lock_to_screen")?.is_some_and(|v| !v);
     if let Some(enabled) = bool_at(data, "local-network.keep_alive")? {
         let heartbeat = if enabled {
@@ -410,7 +416,13 @@ fn import_db(
         ("security", vec!["encryption"]),
         (
             "developers",
-            vec!["corePort", "switchDelay", "shouldSwitchDoubleTap", "switchDoubleTap"],
+            vec![
+                "corePort",
+                "switchDelay",
+                "shouldSwitchDoubleTap",
+                "switchDoubleTap",
+                "dragAndDrop",
+            ],
         ),
         ("local-network", vec!["keep_alive", "interval"]),
     ] {

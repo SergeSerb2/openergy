@@ -1,0 +1,157 @@
+# Requirement: F21 queued hash jobs run without waiting for a new command.
+name = "F21-hash-queue"
+requirement = "A second peer send queued behind a long hash starts hashing when the first job finishes, even while the first peer's prompt offer is still unanswered."
+timeout_ms = 15000
+
+[[node]]
+id = "server"
+role = "server"
+tls = true
+require_client_trust = true
+config = { file = { receive_mode = "auto", receive_dir = "${server.dir}/received", offer_timeout_ms = 30000 } }
+
+[[node]]
+id = "clienta"
+role = "client"
+remote = "server"
+tls = true
+config = { file = { receive_mode = "prompt", receive_dir = "${clienta.dir}/received", offer_timeout_ms = 30000 } }
+
+[[node]]
+id = "clientb"
+role = "client"
+remote = "server"
+tls = true
+autostart = false
+config = { file = { receive_mode = "auto", receive_dir = "${clientb.dir}/received", offer_timeout_ms = 30000 } }
+
+[[step]]
+do = "subscribe"
+node = "server"
+
+[[step]]
+do = "subscribe"
+node = "clienta"
+
+[[step]]
+do = "wait_status"
+node = "clienta"
+fields = { "pending_trust" = { "$len" = 1 } }
+save = "pa"
+
+[[step]]
+do = "ctl"
+node = "clienta"
+method = "trust.approve"
+params = { fingerprint = "${pa.pending_trust.0.fingerprint}" }
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "pending_trust" = { "$len" = 1 } }
+save = "psa"
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "trust.approve"
+params = { fingerprint = "${psa.pending_trust.0.fingerprint}" }
+
+[[step]]
+do = "wait_connected"
+node = "clienta"
+
+[[step]]
+do = "start"
+node = "clientb"
+
+[[step]]
+do = "subscribe"
+node = "clientb"
+
+[[step]]
+do = "wait_status"
+node = "clientb"
+fields = { "pending_trust" = { "$len" = 1 } }
+save = "pb"
+
+[[step]]
+do = "ctl"
+node = "clientb"
+method = "trust.approve"
+params = { fingerprint = "${pb.pending_trust.0.fingerprint}" }
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "pending_trust" = { "$len" = 1 } }
+save = "psb"
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "trust.approve"
+params = { fingerprint = "${psb.pending_trust.0.fingerprint}" }
+
+[[step]]
+do = "wait_connected"
+node = "clientb"
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "peers.0.file.capability" = "openergy", "peers.1.file.capability" = "openergy" }
+
+[[step]]
+do = "fixture_file"
+path = "${server.dir}/biga.bin"
+bytes = 268435456
+
+[[step]]
+do = "fixture_file"
+path = "${server.dir}/smallb.bin"
+bytes = 256
+save = "fb"
+
+[[step]]
+do = "file_send"
+node = "server"
+peer = "clienta"
+path = "${server.dir}/biga.bin"
+
+[[step]]
+do = "file_send"
+node = "server"
+peer = "clientb"
+path = "${server.dir}/smallb.bin"
+
+[[step]]
+do = "wait_event"
+node = "clientb"
+event = "file.completed"
+expect = { verified = true, bytes = 256, direction = "in" }
+timeout_ms = 30000
+
+[[step]]
+do = "assert_file"
+path = "${clientb.dir}/received/smallb.bin"
+sha256 = "${fb.sha256}"
+
+[[step]]
+do = "wait_event"
+node = "clienta"
+event = "file.offered"
+expect = { name = "biga.bin" }
+save = "offa"
+
+[[step]]
+do = "file_answer"
+node = "clienta"
+xfer = "${offa.data.xfer}"
+accept = false
+
+[[step]]
+do = "wait_event"
+node = "server"
+event = "file.failed"
+expect = { reason = "user_rejected", direction = "out" }

@@ -1,0 +1,119 @@
+# Requirement: F2 8 MiB round-trip with input during transfer and bounded resources.
+name = "F2-file-input-resources"
+requirement = "An 8 MiB file streams without whole-file buffering while input stays ordered."
+timeout_ms = 15000
+
+[[node]]
+id = "server"
+role = "server"
+tls = true
+require_client_trust = true
+config = { file = { receive_mode = "auto", receive_dir = "${server.dir}/received", offer_timeout_ms = 5000 } }
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+tls = true
+config = { file = { receive_mode = "auto", receive_dir = "${client.dir}/received", offer_timeout_ms = 5000 } }
+
+[[step]]
+do = "subscribe"
+node = "server"
+
+[[step]]
+do = "subscribe"
+node = "client"
+
+[[step]]
+do = "wait_status"
+node = "client"
+fields = { "pending_trust" = { "$len" = 1 } }
+save = "pc"
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "trust.approve"
+params = { fingerprint = "${pc.pending_trust.0.fingerprint}" }
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "pending_trust" = { "$len" = 1 } }
+save = "ps"
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "trust.approve"
+params = { fingerprint = "${ps.pending_trust.0.fingerprint}" }
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "peers.0.file.capability" = "openergy" }
+
+[[step]]
+do = "fixture_file"
+path = "${server.dir}/big.bin"
+bytes = 8388608
+save = "f"
+
+[[step]]
+do = "file_send"
+node = "server"
+peer = "client"
+path = "${server.dir}/big.bin"
+save = "sent"
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "mouse_move_abs", x = 1919, y = 540 }, { type = "mouse_move_rel", dx = 20, dy = 0 }]
+
+[[step]]
+do = "inject"
+node = "server"
+events = [{ type = "key_down", key = 97, modifiers = 0, button = 1 }, { type = "key_up", key = 97, modifiers = 0, button = 1 }, { type = "key_down", key = 98, modifiers = 0, button = 2 }, { type = "key_up", key = 98, modifiers = 0, button = 2 }]
+
+[[step]]
+do = "measure"
+node = "server"
+kind = "resources"
+window_ms = 2000
+rss_bytes = 48000000
+cpu_percent = 90.0
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "file.completed"
+expect = { verified = true, bytes = 8388608, direction = "in" }
+timeout_ms = 30000
+
+[[step]]
+do = "wait_event"
+node = "server"
+event = "file.completed"
+expect = { verified = true, bytes = 8388608, direction = "out" }
+timeout_ms = 30000
+
+[[step]]
+do = "assert_recorded"
+node = "client"
+input_only = true
+expect = [{ event = { type = "key_down", key = 97, modifiers = 0, button = 1 } }, { event = { type = "key_up", key = 97, modifiers = 0, button = 1 } }, { event = { type = "key_down", key = 98, modifiers = 0, button = 2 } }, { event = { type = "key_up", key = 98, modifiers = 0, button = 2 } }]
+
+[[step]]
+do = "assert_file"
+path = "${client.dir}/received/big.bin"
+sha256 = "${f.sha256}"

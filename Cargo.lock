@@ -441,6 +441,7 @@ dependencies = [
  "openergy-session",
  "serde",
  "serde_json",
+ "sha2",
  "windows-sys 0.61.2",
 ]
 
@@ -450,6 +451,8 @@ version = "0.1.0"
 dependencies = [
  "libc",
  "openergy-ipc",
+ "rcgen",
+ "rustls",
  "serde",
  "serde_json",
  "sha2",

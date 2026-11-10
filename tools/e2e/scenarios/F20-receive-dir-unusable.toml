@@ -1,0 +1,118 @@
+# Requirement: F20 unusable configured receive_dir fails closed.
+name = "F20-receive-dir-unusable"
+requirement = "A configured receive_dir that cannot be created disables receiving (offers rejected) instead of silently redirecting files to a fallback directory; fixing the config re-enables receiving."
+timeout_ms = 10000
+
+[[node]]
+id = "server"
+role = "server"
+tls = true
+require_client_trust = true
+config = { file = { receive_mode = "auto", receive_dir = "${server.dir}/received", offer_timeout_ms = 5000 } }
+
+[[node]]
+id = "client"
+role = "client"
+remote = "server"
+tls = true
+autostart = false
+config = { file = { receive_mode = "auto", receive_dir = "${client.dir}/blocker/sub", offer_timeout_ms = 5000 } }
+
+[[step]]
+do = "fixture_file"
+path = "${client.dir}/blocker"
+bytes = 16
+
+[[step]]
+do = "start"
+node = "client"
+
+[[step]]
+do = "subscribe"
+node = "server"
+
+[[step]]
+do = "subscribe"
+node = "client"
+
+[[step]]
+do = "wait_status"
+node = "client"
+fields = { "pending_trust" = { "$len" = 1 } }
+save = "pc"
+
+[[step]]
+do = "ctl"
+node = "client"
+method = "trust.approve"
+params = { fingerprint = "${pc.pending_trust.0.fingerprint}" }
+
+[[step]]
+do = "wait_status"
+node = "server"
+fields = { "pending_trust" = { "$len" = 1 } }
+save = "ps"
+
+[[step]]
+do = "ctl"
+node = "server"
+method = "trust.approve"
+params = { fingerprint = "${ps.pending_trust.0.fingerprint}" }
+
+[[step]]
+do = "wait_connected"
+node = "client"
+
+[[step]]
+do = "wait_connected"
+node = "server"
+
+[[step]]
+do = "fixture_file"
+path = "${server.dir}/dirblock.bin"
+bytes = 256
+save = "f"
+
+[[step]]
+do = "file_send"
+node = "server"
+peer = "client"
+path = "${server.dir}/dirblock.bin"
+
+[[step]]
+do = "wait_event"
+node = "server"
+event = "file.failed"
+expect = { reason = "io_error", direction = "out" }
+
+[[step]]
+do = "assert_file"
+path = "${client.dir}/Received/dirblock.bin"
+exists = false
+
+[[step]]
+do = "assert_file"
+path = "${client.dir}/blocker/sub/dirblock.bin"
+exists = false
+
+[[step]]
+do = "config_patch"
+node = "client"
+patch = { file = { receive_dir = "${client.dir}/received" } }
+
+[[step]]
+do = "file_send"
+node = "server"
+peer = "client"
+path = "${server.dir}/dirblock.bin"
+
+[[step]]
+do = "wait_event"
+node = "client"
+event = "file.completed"
+expect = { verified = true, bytes = 256 }
+
+[[step]]
+do = "assert_file"
+path = "${client.dir}/received/dirblock.bin"
+sha256 = "${f.sha256}"

@@ -3,7 +3,7 @@
 use openergy_config::Config;
 use openergy_ipc::Event as IpcEvent;
 use openergy_platform::{ClipboardData, InputEvent};
-use openergy_protocol::{Chunk, ClipboardId, Message};
+use openergy_protocol::{Chunk, ClipboardId, FileDataChunk, Message};
 use std::{fmt, sync::Arc};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
@@ -72,6 +72,52 @@ pub enum ServerEvent {
     ConnectionMetadata {
         conn: ConnId,
         fingerprint: Option<String>,
+        certificate_verified: bool,
+    },
+    FileSendRequested {
+        xfer: u64,
+        conn: ConnId,
+        transfer: u32,
+        peer_name: String,
+        fingerprint: Option<String>,
+        kind: u8,
+        name: String,
+        total_len: u64,
+        sha256: [u8; 32],
+    },
+    FileChunkReady {
+        xfer: u64,
+        bytes: Vec<u8>,
+    },
+    FileChunkFailed {
+        xfer: u64,
+        reason: file::Reason,
+    },
+    FileCredit {
+        xfer: u64,
+        chunks: u32,
+    },
+    FileOfferDecided {
+        xfer: u64,
+        accept: bool,
+        reason: file::Reason,
+        resume_offset: u64,
+    },
+    FileStageResult {
+        xfer: u64,
+        ok: bool,
+        reason: file::Reason,
+    },
+    FileFinishResult {
+        xfer: u64,
+        ok: bool,
+        reason: file::Reason,
+    },
+    FileCancelRequested {
+        xfer: u64,
+    },
+    FileBulkAborted {
+        xfer: u64,
     },
     PermissionLost,
     CaptureOverflow,
@@ -121,6 +167,56 @@ pub enum ClientEvent {
     PermissionLost,
     ReconnectTimer,
     Shutdown,
+    ConnectionMetadata {
+        conn: ConnId,
+        fingerprint: Option<String>,
+        certificate_verified: bool,
+    },
+    FileSendRequested {
+        xfer: u64,
+        conn: ConnId,
+        transfer: u32,
+        peer_name: String,
+        fingerprint: Option<String>,
+        kind: u8,
+        name: String,
+        total_len: u64,
+        sha256: [u8; 32],
+    },
+    FileChunkReady {
+        xfer: u64,
+        bytes: Vec<u8>,
+    },
+    FileChunkFailed {
+        xfer: u64,
+        reason: file::Reason,
+    },
+    FileCredit {
+        xfer: u64,
+        chunks: u32,
+    },
+    FileOfferDecided {
+        xfer: u64,
+        accept: bool,
+        reason: file::Reason,
+        resume_offset: u64,
+    },
+    FileStageResult {
+        xfer: u64,
+        ok: bool,
+        reason: file::Reason,
+    },
+    FileFinishResult {
+        xfer: u64,
+        ok: bool,
+        reason: file::Reason,
+    },
+    FileCancelRequested {
+        xfer: u64,
+    },
+    FileBulkAborted {
+        xfer: u64,
+    },
 }
 
 #[derive(Debug)]
@@ -139,6 +235,40 @@ pub enum Action {
         id: ClipboardId,
         sequence: u32,
         chunk: Chunk,
+    },
+    SendFileChunk {
+        conn: ConnId,
+        transfer: u32,
+        chunk: FileDataChunk,
+    },
+    ReadFileChunk {
+        xfer: u64,
+        offset: u64,
+        len: u32,
+    },
+    StageFileChunk {
+        xfer: u64,
+        offset: u64,
+        bytes: Vec<u8>,
+    },
+    FinishFile {
+        xfer: u64,
+    },
+    DropFile {
+        xfer: u64,
+        keep_part: bool,
+    },
+    PurgeFileBulk {
+        conn: ConnId,
+        xfer: u64,
+    },
+    FileOffered {
+        xfer: u64,
+        conn: ConnId,
+        kind: u8,
+        name: String,
+        total_len: u64,
+        sha256: [u8; 32],
     },
     Close {
         conn: ConnId,
@@ -185,6 +315,7 @@ impl std::error::Error for SessionError {}
 mod client;
 pub mod clipboard;
 mod common;
+pub mod file;
 mod hotkey;
 pub mod layout;
 mod server;

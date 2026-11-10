@@ -28,6 +28,9 @@ pub mod methods {
     pub const VIRTUAL_CLIPBOARD: &str = "virtual.clipboard";
     pub const VIRTUAL_SET_SCREENS: &str = "virtual.set_screens";
     pub const VIRTUAL_SET_PERMISSIONS: &str = "virtual.set_permissions";
+    pub const FILE_SEND: &str = "file.send";
+    pub const FILE_ANSWER: &str = "file.answer";
+    pub const FILE_CANCEL: &str = "file.cancel";
 }
 pub mod events {
     pub const STATUS_CHANGED: &str = "status.changed";
@@ -38,6 +41,11 @@ pub mod events {
     pub const PEER_UNTRUSTED: &str = "peer.untrusted";
     pub const LANGUAGE_SYNC: &str = "language.sync";
     pub const CLIPBOARD_BLOCKED: &str = "clipboard.blocked";
+    pub const FILE_OFFERED: &str = "file.offered";
+    pub const FILE_PROGRESS: &str = "file.progress";
+    pub const FILE_COMPLETED: &str = "file.completed";
+    pub const FILE_BLOCKED: &str = "file.blocked";
+    pub const FILE_FAILED: &str = "file.failed";
     pub const PERMISSIONS_CHANGED: &str = "permissions.changed";
     pub const LOG_LINE: &str = "log.line";
     pub const ERROR: &str = "error";
@@ -149,6 +157,20 @@ pub struct PeerTls {
     pub trusted: Option<bool>,
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct PeerFile {
+    /// "none", "openergy", or "classic-unverified".
+    pub capability: String,
+    pub max_bytes: Option<u64>,
+}
+impl Default for PeerFile {
+    fn default() -> Self {
+        Self {
+            capability: "none".into(),
+            max_bytes: None,
+        }
+    }
+}
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct PeerInfo {
     pub name: String,
     pub address: Option<String>,
@@ -164,6 +186,8 @@ pub struct PeerInfo {
     pub languages: Vec<String>,
     #[serde(default)]
     pub active_language: Option<String>,
+    #[serde(default)]
+    pub file: PeerFile,
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct TlsInfo {
@@ -210,6 +234,43 @@ pub struct ClipboardInfo {
     pub last_blocked: Option<ClipboardBlocked>,
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct FileActive {
+    pub xfer: u64,
+    pub peer: String,
+    pub direction: String,
+    pub kind: u8,
+    pub bytes_done: u64,
+    pub bytes_total: u64,
+    pub state: String,
+}
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct FileCompleted {
+    pub xfer: u64,
+    pub peer: String,
+    pub direction: String,
+    pub bytes: u64,
+    pub kind: u8,
+    pub verified: bool,
+    pub unix_ms: Option<u64>,
+}
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct FileBlocked {
+    pub peer: Option<String>,
+    pub bytes: Option<u64>,
+    pub limit: Option<u64>,
+    pub reason: String,
+    pub unix_ms: Option<u64>,
+}
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+pub struct FileInfo {
+    pub enabled: bool,
+    pub receive_dir: String,
+    #[serde(default)]
+    pub active: Vec<FileActive>,
+    pub last_completed: Option<FileCompleted>,
+    pub last_blocked: Option<FileBlocked>,
+}
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct PendingTrust {
     pub fingerprint: String,
     pub address: Option<String>,
@@ -245,6 +306,8 @@ pub struct Status {
     pub permissions: PermissionsInfo,
     pub secure_input: SecureInputInfo,
     pub clipboard: ClipboardInfo,
+    #[serde(default)]
+    pub file: FileInfo,
     pub pending_trust: Vec<PendingTrust>,
     pub last_error: Option<LastError>,
     pub stats: StatsInfo,
@@ -295,6 +358,7 @@ impl Status {
                 last_transfer: None,
                 last_blocked: None,
             },
+            file: FileInfo::default(),
             pending_trust: Vec::new(),
             last_error: None,
             stats: StatsInfo {

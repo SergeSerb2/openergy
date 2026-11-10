@@ -157,6 +157,13 @@ impl Transfers {
     pub fn pending(&self) -> bool {
         !self.outgoing.is_empty()
     }
+    /// Shared bulk pacing gate: next millisecond any bulk chunk may go.
+    pub fn bulk_ready_at(&self) -> u64 {
+        self.next_chunk_ms
+    }
+    pub fn note_bulk_sent(&mut self, now: u64) {
+        self.next_chunk_ms = now.saturating_add(1);
+    }
     pub fn cancel(&mut self, id: ClipboardId) {
         if self.incoming.as_ref().is_some_and(|i| i.id == id) {
             self.incoming = None;
