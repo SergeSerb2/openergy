@@ -69,10 +69,16 @@ pub struct Keymap {
     /// every key down, so this tracks group locks (including language
     /// sync) without extra plumbing.
     pub group: usize,
-    /// Number of XKB groups in the map; drives the core-protocol
-    /// column layout used by `find`. Falls back to the historical
-    /// two-group assumption when XKB is unavailable.
+    /// Number of XKB groups in the map; only used by the core-map
+    /// fallback in `find`. Falls back to the historical two-group
+    /// assumption when XKB is unavailable.
     pub num_groups: usize,
+    /// Per-key XKB symbol maps from GetMap, indexed by
+    /// `keycode - first`. `find` prefers these: the core map packs
+    /// levels 1/2 of groups 1-2 first and then appends the remaining
+    /// levels group by group at per-key widths, so core columns do
+    /// not locate groups 3-4 (or level 3+) exactly.
+    xkb_syms: Option<Vec<x11rb::protocol::xkb::KeySymMap>>,
 }
 impl Keymap {
     pub fn load(c: &RustConnection) -> Result<Self, PlatformError> {
@@ -92,6 +98,7 @@ impl Keymap {
         // actually apply to injected keycodes. Absent XKB, keep the
         // historical group-1 view of the core map.
         let (group, num_groups) = xkb_group_state(c).unwrap_or((0, if width >= 4 { 2 } else { 1 }));
+        let count = setup.max_keycode - setup.min_keycode + 1;
         let mut map = Self {
             first: setup.min_keycode,
             width,
@@ -100,6 +107,7 @@ impl Keymap {
             modifier_codes: mods.keycodes.clone(),
             group,
             num_groups: num_groups.clamp(1, 4),
+            xkb_syms: xkb_sym_maps(c, setup.min_keycode, count),
         };
         for (index, codes) in mods
             .keycodes
@@ -173,29 +181,48 @@ impl Keymap {
             && ((0xffb0..=0xffb9).contains(&b) || b == 0xffae);
         keyid(if shift ^ caps ^ keypad_num { b } else { a })
     }
-    /// Core-protocol columns for levels 1..4 of one group. The XKB
-    /// compatibility map lists levels 1/2 of every group first
-    /// (2 * num_groups entries), then levels 3/4 group by group.
-    fn group_columns(&self, group: usize) -> [usize; 4] {
-        let base = group * 2;
-        let high = self.num_groups * 2 + base;
-        [base, base + 1, high, high + 1]
+    /// Core-protocol columns searched when no XKB map is available.
+    /// Only levels 1/2 have fixed slots (groups 1-2 at [0,1] and
+    /// [2,3]); the server appends further levels group by group at
+    /// per-key widths, so for groups 2+ and levels 3+ this fallback
+    /// reports a miss and lets the sink remap a spare keycode with
+    /// the exact keysym rather than risk a wrong-column hit. Group
+    /// 1 keeps the historical [4,5] level-3/4 slots, which are exact
+    /// for single-group maps (group 2 slots wrap to group 1 there).
+    fn core_columns(&self, group: usize) -> [Option<usize>; 4] {
+        match group {
+            0 => [Some(0), Some(1), Some(4), Some(5)],
+            1 => [Some(2), Some(3), None, None],
+            _ => [None, None, None, None],
+        }
     }
     pub fn find(&self, sym: u32) -> Option<(u8, bool, bool)> {
-        // Search the columns of the group the server will apply to the
-        // injected keycode. Searching group 1 while another group is
-        // locked (language sync) would deliver that group's character
-        // for the keycode instead of the logical key (z/y on QWERTZ).
+        // Search the group the server will apply to the injected
+        // keycode. Searching group 1 while another group is locked
+        // (language sync) would deliver that group's character for
+        // the keycode instead of the logical key (z/y on QWERTZ).
+        let hit = |s: u32| s == sym || (keyid(s).is_some() && keyid(s) == keyid(sym));
+        if let Some(maps) = &self.xkb_syms {
+            // Authoritative per-key data: syms are group-major with a
+            // per-key width, and each key wraps/clamps an out-of-range
+            // state group by its own group_info. A miss here is final;
+            // the core map could only add wrong-group hits.
+            return maps.iter().enumerate().find_map(|(i, m)| {
+                let groups = usize::from(m.group_info & 0x0f).max(1);
+                let width = usize::from(m.width).max(1);
+                let start = effective_group(self.group, groups, m.group_info) * width;
+                (0..width.min(4))
+                    .find(|level| m.syms.get(start + level).is_some_and(|s| hit(*s)))
+                    .map(|level| (self.first + i as u8, level & 1 != 0, level >= 2))
+            });
+        }
         let group = self.group.min(self.num_groups - 1);
-        let columns = self.group_columns(group);
+        let columns = self.core_columns(group);
         self.symbols.chunks(self.width).enumerate().find_map(|(i, row)| {
             columns
                 .into_iter()
                 .enumerate()
-                .find(|(_, column)| {
-                    row.get(*column)
-                        .is_some_and(|s| *s == sym || (keyid(*s).is_some() && keyid(*s) == keyid(sym)))
-                })
+                .find(|(_, column)| column.and_then(|c| row.get(c)).is_some_and(|s| hit(*s)))
                 .map(|(level, _)| (self.first + i as u8, level & 1 != 0, level >= 2))
         })
     }
@@ -216,6 +243,59 @@ impl Keymap {
     }
 }
 
+/// Per-key XKB symbol maps for `count` keycodes from `first`, if XKB answers.
+fn xkb_sym_maps(c: &RustConnection, first: u8, count: u8) -> Option<Vec<x11rb::protocol::xkb::KeySymMap>> {
+    use x11rb::protocol::xkb::{ConnectionExt as _, MapPart, VMod, ID};
+    c.xkb_use_extension(1, 0).ok()?.reply().ok()?;
+    let reply = c
+        .xkb_get_map(
+            ID::USE_CORE_KBD.into(),
+            MapPart::default(),
+            MapPart::KEY_SYMS,
+            0,
+            0,
+            first,
+            count,
+            0,
+            0,
+            0,
+            0,
+            VMod::default(),
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+        )
+        .ok()?
+        .reply()
+        .ok()?;
+    if reply.first_key_sym != first {
+        return None;
+    }
+    reply.map.syms_rtrn.filter(|maps| maps.len() == usize::from(count))
+}
+/// The group a key with `groups` groups uses when the state group is
+/// out of range, per the key's group_info action bits (wrap 0x00,
+/// clamp 0x40, redirect 0x80 with target in bits 4-5).
+fn effective_group(state: usize, groups: usize, group_info: u8) -> usize {
+    if state < groups {
+        return state;
+    }
+    match group_info & 0xc0 {
+        0x40 => groups - 1,
+        0x80 => {
+            let target = usize::from((group_info >> 4) & 0x3);
+            if target < groups {
+                target
+            } else {
+                0
+            }
+        }
+        _ => state % groups,
+    }
+}
 /// Effective XKB group and total group count, if XKB answers.
 fn xkb_group_state(c: &RustConnection) -> Option<(usize, usize)> {
     use x11rb::protocol::xkb::{ConnectionExt as _, ID};

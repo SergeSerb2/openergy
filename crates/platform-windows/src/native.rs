@@ -334,15 +334,44 @@ impl ScreenSystem for Screens {
             .find(|l| layout_language(*l) == Some(code))
             .ok_or(PlatformError::NotImplemented)?;
         // Safety: select an installed HKL on our thread and request it on the
-        // foreground window. Posting succeeds without confirming application acceptance.
+        // foreground window synchronously with a bound. A posted request would
+        // race the next injected key: the sink translates through the
+        // foreground HKL it reads at injection time, while the application
+        // may apply the switch only after that read, delivering the new
+        // layout's character for the scan code. SendMessageTimeoutW returns
+        // once the foreground thread has processed the request, so the
+        // sink's next HKL read is ordered after the switch (or its refusal).
         unsafe {
             ActivateKeyboardLayout(layout, 0);
             let hwnd = GetForegroundWindow();
-            if hwnd.is_null() || PostMessageW(hwnd, WM_INPUTLANGCHANGEREQUEST, 0, layout as isize) == 0 {
-                return Err(error("keyboard language request could not be posted"));
+            if hwnd.is_null() {
+                return Err(error("keyboard language request had no foreground window"));
+            }
+            let thread = GetWindowThreadProcessId(hwnd, null_mut());
+            let get_layout = windows_sys::Win32::UI::Input::KeyboardAndMouse::GetKeyboardLayout;
+            if get_layout(thread) != layout {
+                let mut result: usize = 0;
+                if SendMessageTimeoutW(
+                    hwnd,
+                    WM_INPUTLANGCHANGEREQUEST,
+                    0,
+                    layout as isize,
+                    SMTO_ABORTIFHUNG,
+                    100,
+                    &mut result,
+                ) == 0
+                {
+                    log::warn!("Windows keyboard language request timed out; layout switch unconfirmed");
+                }
+            }
+            if get_layout(thread) == layout {
+                log::info!("Windows keyboard language switch confirmed on the foreground thread");
+            } else {
+                log::info!(
+                    "Windows keyboard language switch not accepted; keys keep translating under the active layout"
+                );
             }
         }
-        log::info!("Windows keyboard language switch attempted; foreground application may ignore it");
         Ok(())
     }
     fn screens(&self) -> Vec<ScreenRect> {
