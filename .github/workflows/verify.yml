@@ -42,6 +42,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      - name: Install Linux audio build dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y pkg-config libasound2-dev
       # Hosted VMs are slower than a developer machine for timer- and IPC-heavy
       # work, so deadlines and latency/CPU budgets are stretched 3x. Memory
       # budgets are not. Local runs keep the strict defaults.

@@ -104,6 +104,9 @@ impl Server {
     pub fn is_connected(&self) -> bool {
         self.peers.values().any(|p| p.phase == Phase::Ready)
     }
+    pub fn peer_ready(&self, conn: ConnId) -> bool {
+        self.peers.get(&conn).is_some_and(|peer| peer.phase == Phase::Ready)
+    }
     pub fn snapshot(&self) -> SessionSnapshot {
         SessionSnapshot {
             active_screen: Some(self.name(self.active).into()),

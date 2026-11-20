@@ -88,6 +88,7 @@ pub struct DiscoveredPeer {
 pub enum Priority {
     Input,
     Control,
+    Audio,
     Bulk,
 }
 

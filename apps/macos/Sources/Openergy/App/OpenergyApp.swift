@@ -118,7 +118,13 @@ struct MenuBarLabel: View {
     @AppStorage("didCompleteFirstRun") private var didCompleteFirstRun = false
 
     var body: some View {
-        Image(nsImage: MenuBarIcon.image(for: model.tone, role: model.role, headline: model.headline))
+        Group {
+            if model.status.microphone?.inputState == "sharing" {
+                Image(systemName: "mic.fill").accessibilityLabel("Openergy microphone sharing")
+            } else {
+                Image(nsImage: MenuBarIcon.image(for: model.tone, role: model.role, headline: model.headline))
+            }
+        }
             .task {
                 model.start()
                 if !didCompleteFirstRun {

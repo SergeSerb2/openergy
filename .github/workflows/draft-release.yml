@@ -99,6 +99,9 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
           path: candidate
+      - name: Install Linux audio build dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y pkg-config libasound2-dev
       - name: Assert the native worker architecture
         run: |
           ${{ matrix.python }} -I -c 'import os,platform; machine={"AMD64":"x86_64","aarch64":"arm64"}.get(platform.machine(),platform.machine()); assert platform.system()==os.environ["OE_SYSTEM"] and machine==os.environ["OE_MACHINE"], "unexpected native worker architecture"'

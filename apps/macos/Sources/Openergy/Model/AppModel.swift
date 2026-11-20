@@ -1,4 +1,5 @@
 import AppKit
+import AVFoundation
 import Observation
 import OSLog
 import ServiceManagement
@@ -294,6 +295,23 @@ final class AppModel {
         mutateDemoConfig(path, value)
         perform("config.patch", ["patch": JSONValue.patch(path, value)])
     }
+
+    func startMicrophone(inputDevice: String, peerFingerprint: String) {
+        guard allowsSystemIntegration else { return }
+        enqueueAction { [self] current in
+            guard await AVCaptureDevice.requestAccess(for: .audio) else {
+                throw IPCError.remote(code: "permission_denied",
+                                      message: "Allow Openergy in System Settings → Privacy & Security → Microphone.")
+            }
+            try checkSession(current)
+            try await client.call("microphone.start", [
+                "input_device": .string(inputDevice), "peer_fingerprint": .string(peerFingerprint),
+            ])
+            try checkSession(current)
+        }
+    }
+
+    func stopMicrophone() { perform("microphone.stop") }
 
     /// Join a server. Works again after Disconnect, also with the same address.
     func join(_ address: String) {

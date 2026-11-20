@@ -10,6 +10,9 @@ Candidate work on branch `t3/stability-wave-2`; no published artifacts. See
 
 ### Added
 
+- Opt-in microphone sharing between two trusted Openergy computers.
+  Either role can send, and the receiving app uses a virtual audio cable.
+  [Microphone setup](docs/plan/microphone.md).
 - Linux X11 backends reconnect after X server death and report the outage
   instead of silently stopping capture or clipboard.
 - Windows sleep/wake and session lock/unlock notices reach the daemon

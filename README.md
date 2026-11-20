@@ -12,6 +12,9 @@ Clipboard sharing supports text, HTML, and images. Openergy speaks the classic
 Synergy-family protocol, so it can also work with Deskflow, Barrier, and
 Synergy peers.
 
+Two Openergy computers can also share a microphone over their trusted
+connection. [Set up microphone sharing](docs/plan/microphone.md).
+
 > [!WARNING]
 > **Alpha software, version 0.1.0.** Configuration and packaging can still
 > change. Keep another way to control each computer while you try it.

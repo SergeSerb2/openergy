@@ -8,6 +8,9 @@ refused. Build jobs use two compiler workers and low process priority on Unix.
 
 ## Toolchain and version
 
+Linux daemon builds require `pkg-config` and `libasound2-dev`. Linux release
+binaries use the system ALSA library at runtime.
+
 Use the Rust version in `rust-toolchain.toml` (currently 1.99.1), with `clippy`
 and `rustfmt`. Each workspace crate inherits that same `rust-version` and the
 workspace version. The previous 1.85 declaration did not cover the locked

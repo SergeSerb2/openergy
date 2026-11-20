@@ -107,6 +107,15 @@ and bitmap data can contain secrets. Disable `[clipboard] enabled`, `send`, or
 `receive` as appropriate. Disabling future sharing does not erase data already
 delivered to a peer or held by clipboard history software.
 
+[Microphone sharing](docs/plan/microphone.md) is off by default. Each end must
+select the other's verified certificate fingerprint. The sender opens its
+selected input only when the receiver advertises an open playback device on
+that TLS connection. On macOS the app asks you to confirm the route and
+requests the system microphone permission. A standalone daemon requires
+explicit startup authorization for the configured route. Screen focus does
+not start or stop audio. Stopping capture drops unsent audio. Openergy does not
+store audio, but an application on the receiver can record the virtual microphone.
+
 Normal logs describe state and errors rather than input/clipboard payloads.
 They can contain names, IP addresses, paths, certificate fingerprints, transfer
 sizes, and application names. Daemon logs rotate locally; the macOS app also

@@ -5,6 +5,8 @@ struct MenuBarPanel: View {
     let model: AppModel
     var updater: AppUpdater? = nil
     @Environment(\.openWindow) private var openWindow
+    @State private var microphoneRequest: OpenergyConfig.Microphone?
+    @State private var confirmMicrophone = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -24,6 +26,26 @@ struct MenuBarPanel: View {
                     .controlSize(.small)
             }
             .padding(.horizontal, 8)
+            if let state = model.status.microphone?.inputState, state != "disabled" {
+                HStack {
+                    Label(state == "sharing" ? "Microphone sharing" : "Microphone configured",
+                          systemImage: state == "sharing" ? "mic.fill" : "mic")
+                        .font(.callout)
+                    Spacer()
+                    if state == "needs_consent" {
+                        Button("Start Sharing") {
+                            microphoneRequest = model.config.microphone
+                            confirmMicrophone = true
+                        }
+                        .disabled(model.role == .off || model.config.microphone?.inputDevice == nil)
+                        .controlSize(.small)
+                    } else {
+                        Button("Stop Sharing") { model.stopMicrophone() }
+                            .controlSize(.small)
+                    }
+                }
+                .padding(.horizontal, 8)
+            }
             Divider().padding(.vertical, 2)
             VStack(spacing: 0) {
                 MenuRowButton(title: "Open Openergy…", shortcut: "⌘,") { openMain() }
@@ -36,6 +58,18 @@ struct MenuBarPanel: View {
         .padding(12)
         .frame(width: 320)
         .tint(Brand.accent)
+        .alert("Share your microphone?", isPresented: $confirmMicrophone, presenting: microphoneRequest) { route in
+            Button("Start Sharing") {
+                if let device = route.inputDevice, let fingerprint = route.peerFingerprint {
+                    model.startMicrophone(inputDevice: device, peerFingerprint: fingerprint)
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: { route in
+            if let device = route.inputDevice, let peer = route.peerFingerprint {
+                Text("Send audio from \(device) to the computer with fingerprint \(peer). Audio continues when you switch screens.")
+            }
+        }
     }
 
     private var header: some View {

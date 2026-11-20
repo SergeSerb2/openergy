@@ -239,6 +239,22 @@ pub struct MacosCfg {
     pub click_numbering: ClickNumbering,
 }
 
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
+pub struct MicrophoneCfg {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub peer_fingerprint: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub input_device: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub output_device: Option<String>,
+}
+impl MicrophoneCfg {
+    fn is_default(&self) -> bool {
+        self == &Self::default()
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct Config {
@@ -255,6 +271,8 @@ pub struct Config {
     pub tls: TlsCfg,
     #[serde(default)]
     pub clipboard: ClipboardCfg,
+    #[serde(default, skip_serializing_if = "MicrophoneCfg::is_default")]
+    pub microphone: MicrophoneCfg,
     #[serde(default)]
     pub input: InputCfg,
     #[serde(default, rename = "switch")]
@@ -277,6 +295,7 @@ impl Default for Config {
             client: ClientCfg::default(),
             tls: TlsCfg::default(),
             clipboard: ClipboardCfg::default(),
+            microphone: MicrophoneCfg::default(),
             input: InputCfg::default(),
             switch: SwitchCfg::default(),
             hotkeys: HotkeysCfg::default(),

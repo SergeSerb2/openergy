@@ -14,6 +14,7 @@ use openergy_ipc::{methods, read_frame, write_frame, Request, Response};
 mod adapter;
 #[cfg(target_os = "macos")]
 mod allocator;
+mod audio;
 mod clipboard_json;
 mod events;
 mod interfaces;
@@ -48,7 +49,7 @@ fn main() {
 }
 
 fn usage() -> &'static str {
-    "usage: openergy daemon|server|client [--config <path>] [--platform macos|x11|windows|virtual|auto] [--socket <path>] [--parent-pid <pid>] [--foreground] [--remote host:port]\n       openergy ctl <method> [--socket <path>] [--json '{...}'] [--raw]\n       openergy connect [host:port] [--socket <path>]\n       openergy status|disconnect|restart [--socket <path>]\n       openergy trust list|approve <fp>|reject <fp>|revoke <fp>\n       openergy fingerprint [--synergy]\n       openergy import-synergy --from <dir> [--out <path>] [--apply]\n       openergy export-synergy-conf [--out <path>]\n       openergy version"
+    "usage: openergy daemon|server|client [--config <path>] [--platform macos|x11|windows|virtual|auto] [--socket <path>] [--parent-pid <pid>] [--foreground] [--enable-microphone-capture] [--remote host:port]\n       openergy ctl <method> [--socket <path>] [--json '{...}'] [--raw]\n       openergy connect [host:port] [--socket <path>]\n       openergy status|disconnect|restart [--socket <path>]\n       openergy trust list|approve <fp>|reject <fp>|revoke <fp>\n       openergy fingerprint [--synergy]\n       openergy import-synergy --from <dir> [--out <path>] [--apply]\n       openergy export-synergy-conf [--out <path>]\n       openergy microphone devices\n       openergy version"
 }
 
 fn run(args: &[String]) -> Result<i32, String> {
@@ -66,6 +67,11 @@ fn run(args: &[String]) -> Result<i32, String> {
         "daemon" | "server" | "client" => cmd_daemon(cmd, &args[1..]),
         #[cfg(target_os = "macos")]
         openergy_platform_macos::permissions::PROBE_ARG => Ok(openergy_platform_macos::permissions::probe_main()),
+        "microphone" if args.len() == 2 && args[1] == "devices" => {
+            audio::list_devices()?;
+            Ok(0)
+        }
+        "microphone" => Err("usage: openergy microphone devices".into()),
         "ctl" => cmd_ctl(&args[1..]),
         "status" => ctl_call(&args[1..], methods::STATUS_GET, serde_json::json!({}), false),
         "connect" => cmd_connect(&args[1..]),
@@ -196,7 +202,7 @@ fn cmd_daemon(cmd: &str, args: &[String]) -> Result<i32, String> {
     let opts = parse_opts(
         args,
         &["config", "platform", "socket", "parent-pid", "remote"],
-        &["foreground"],
+        &["foreground", "enable-microphone-capture"],
     )?;
     if !opts.positional.is_empty() {
         return Err(format!("usage: unexpected daemon argument {:?}", opts.positional[0]));
@@ -251,6 +257,7 @@ fn cmd_daemon(cmd: &str, args: &[String]) -> Result<i32, String> {
         config_path,
         platform_name(opts.map.get("platform").map(String::as_str)),
         parent_pid,
+        opts.flags.iter().any(|flag| flag == "enable-microphone-capture"),
         config_error,
     )
 }

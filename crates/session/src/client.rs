@@ -72,6 +72,11 @@ impl Client {
     pub fn is_connected(&self) -> bool {
         self.peer.as_ref().is_some_and(|(_, p)| p.phase == Phase::Ready)
     }
+    pub fn peer_ready(&self, conn: ConnId) -> bool {
+        self.peer
+            .as_ref()
+            .is_some_and(|(id, peer)| *id == conn && peer.phase == Phase::Ready)
+    }
     pub fn snapshot(&self) -> SessionSnapshot {
         SessionSnapshot {
             active_screen: self.active.then(|| self.screen_name.clone()),

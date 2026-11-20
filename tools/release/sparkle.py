@@ -237,8 +237,11 @@ def sign(args):
     for path in nested_code(args.app):
         # Downloader's sandbox/network entitlements must survive re-signing.
         run("codesign", *flags, "--preserve-metadata=identifier,entitlements", path)
-    run("codesign", *flags, "--identifier", "dev.openergy.daemon", args.app / "Contents/Helpers/openergy")
-    run("codesign", *flags, args.app)
+    audio_entitlements = ROOT / "apps/macos/Support/Microphone.entitlements"
+    run("codesign", *flags, "--identifier", "dev.openergy.daemon",
+        "--entitlements", audio_entitlements,
+        args.app / "Contents/Helpers/openergy")
+    run("codesign", *flags, "--entitlements", audio_entitlements, args.app)
     verify_app(args.app, args.arch)
 
 

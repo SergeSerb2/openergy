@@ -24,6 +24,7 @@ use std::{
 };
 
 pub const BULK_SLICE: usize = 32 * 1024;
+const AUDIO_FRAMES: usize = 3;
 const MAX_CONNECTIONS: usize = 16;
 // Input and control frames are about 20 bytes. 512 KiB is tens of thousands
 // of events, seconds of backlog: more would replay stale motion after a
@@ -254,6 +255,7 @@ impl Mailbox {
 struct Queues {
     input: VecDeque<Packet>,
     control: VecDeque<Packet>,
+    audio: VecDeque<Packet>,
     bulk: VecDeque<Packet>,
     active: Option<Packet>,
     high_bytes: usize,
@@ -262,6 +264,15 @@ struct Queues {
 }
 impl Queues {
     fn push(&mut self, mut packet: Packet) {
+        if packet.priority == Priority::Audio {
+            // Keep a few frames for backends that deliver multiple 20 ms
+            // frames at once. Under backpressure drop the oldest unsent frame.
+            if self.audio.len() == AUDIO_FRAMES {
+                self.audio.pop_front();
+            }
+            self.audio.push_back(packet);
+            return;
+        }
         packet.order = self.next_order;
         self.next_order = self.next_order.wrapping_add(1);
         if packet.input_barrier {
@@ -270,6 +281,7 @@ impl Queues {
         let queue = match packet.priority {
             Priority::Input => &mut self.input,
             Priority::Control => &mut self.control,
+            Priority::Audio => unreachable!(),
             Priority::Bulk => &mut self.bulk,
         };
         if packet.priority == Priority::Input && packet.absolute && queue.back().is_some_and(|p| p.absolute) {
@@ -300,6 +312,7 @@ impl Queues {
             self.input
                 .pop_front()
                 .or_else(|| self.pop_control())
+                .or_else(|| self.audio.pop_front())
                 .or_else(|| self.bulk.pop_front())
         };
     }
@@ -314,6 +327,7 @@ impl Queues {
         self.input
             .iter()
             .chain(&self.control)
+            .chain(&self.audio)
             .chain(&self.bulk)
             .map(|p| p.bytes.len() - p.offset)
             .sum::<usize>()
@@ -322,15 +336,31 @@ impl Queues {
     fn can_write(&self, handshake_done: bool, slow: bool) -> bool {
         self.active.is_some()
             || !self.control.is_empty()
-            || (handshake_done && !slow && (!self.input.is_empty() || !self.bulk.is_empty()))
+            || (handshake_done && !slow && (!self.input.is_empty() || !self.audio.is_empty() || !self.bulk.is_empty()))
     }
     fn has_data(&self) -> bool {
-        self.active.is_some() || !self.input.is_empty() || !self.control.is_empty() || !self.bulk.is_empty()
+        self.active.is_some()
+            || !self.input.is_empty()
+            || !self.control.is_empty()
+            || !self.audio.is_empty()
+            || !self.bulk.is_empty()
     }
     fn discard_low(&mut self) {
         self.high_bytes -= self.input.iter().map(Packet::queued_cost).sum::<usize>();
         self.input.clear();
+        self.discard_audio();
         self.bulk.clear();
+    }
+    fn discard_audio(&mut self) {
+        self.audio.clear();
+        // Once any bytes are written, completing the frame preserves framing.
+        if self
+            .active
+            .as_ref()
+            .is_some_and(|packet| packet.priority == Priority::Audio && packet.offset == 0)
+        {
+            self.active = None;
+        }
     }
 }
 struct Connection {
@@ -704,6 +734,7 @@ impl Connection {
                 && self.queues.active.is_none()
                 && self.queues.input.is_empty()
                 && self.queues.control.is_empty()
+                && self.queues.audio.is_empty()
             {
                 break;
             }
@@ -725,12 +756,12 @@ impl Connection {
                 Ok(n) => {
                     packet.offset += n;
                     budget -= n;
-                    if packet.priority != Priority::Bulk {
+                    if matches!(packet.priority, Priority::Input | Priority::Control) {
                         self.queues.high_bytes -= n;
                     }
                     let done = packet.offset == packet.bytes.len();
                     if done {
-                        if packet.priority != Priority::Bulk {
+                        if matches!(packet.priority, Priority::Input | Priority::Control) {
                             self.queues.high_bytes -= PACKET_OVERHEAD;
                         }
                         bulk_done |= packet.priority == Priority::Bulk;
@@ -1096,6 +1127,12 @@ impl NetDriver {
         }
     }
 
+    pub fn cancel_audio(&mut self, conn: ConnId) {
+        if let Some(connection) = self.conns.get_mut(&conn) {
+            connection.queues.discard_audio();
+        }
+    }
+
     fn command(&mut self, command: Command, out: &mut Vec<NetEvent>) {
         match command {
             Command::Packet(id, packet) => {
@@ -1121,6 +1158,9 @@ impl NetDriver {
                     return;
                 }
                 if packet.priority != Priority::Control && (c.close_at.is_some() || c.slow.is_some()) {
+                    if packet.priority == Priority::Audio {
+                        return;
+                    }
                     out.push(NetEvent::Error {
                         conn: Some(id),
                         message: "connection is closing or unhealthy".into(),

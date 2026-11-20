@@ -17,11 +17,16 @@ struct DaemonStatus: Codable, Equatable, Sendable {
     var permissions: Permissions?
     var secureInput: SecureInput?
     var clipboard: ClipboardStatus?
+    var microphone: MicrophoneStatus?
     var pendingTrust: [PendingTrust]?
     var lastError: DaemonError?
     var stats: Stats?
 
     static let empty = DaemonStatus()
+}
+
+struct MicrophoneStatus: Codable, Equatable, Sendable {
+    var inputState: String?
 }
 
 enum Role: String, Codable, Sendable, CaseIterable, Identifiable {

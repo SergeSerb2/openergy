@@ -9,6 +9,7 @@ struct OpenergyConfig: Codable, Equatable, Sendable {
     var client: Client?
     var tls: TLS?
     var clipboard: Clipboard?
+    var microphone: Microphone?
     var input: Input?
     var `switch`: Switch?
     var hotkeys: Hotkeys?
@@ -22,7 +23,7 @@ struct OpenergyConfig: Codable, Equatable, Sendable {
     var rawScreens: [JSONValue] = []
 
     private enum CodingKeys: String, CodingKey {
-        case role, name, server, client, tls, clipboard, input, `switch`, hotkeys, screen, derivedLinks, macos
+        case role, name, server, client, tls, clipboard, microphone, input, `switch`, hotkeys, screen, derivedLinks, macos
     }
 
     var screens: [Screen]? {
@@ -60,6 +61,11 @@ struct OpenergyConfig: Codable, Equatable, Sendable {
     struct Clipboard: Codable, Equatable, Sendable {
         var enabled: Bool?
         var maxBytes: Double?
+    }
+
+    struct Microphone: Codable, Equatable, Sendable {
+        var peerFingerprint: String?
+        var inputDevice: String?
     }
 
     struct Input: Codable, Equatable, Sendable {

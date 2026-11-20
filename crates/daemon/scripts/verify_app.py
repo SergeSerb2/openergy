@@ -95,12 +95,12 @@ def run_app(app, output, env, peer_port, host_port, processes, label):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--app', type=Path, default=ROOT / 'apps/macos/.build/release/Openergy')
+    parser.add_argument('--app', type=Path, default=ROOT / 'dist/Openergy.app/Contents/MacOS/Openergy')
     parser.add_argument('--daemon', type=Path, default=ROOT / 'target/release/openergy')
     parser.add_argument('--port-base', type=int, choices=range(25760, 25778), default=25760)
     args = parser.parse_args()
     app, daemon = args.app.resolve(), args.daemon.resolve()
-    require(app.is_file() and os.access(app, os.X_OK), 'build the release app with swift build -c release --jobs 2')
+    require(app.is_file() and os.access(app, os.X_OK), 'build the signed app bundle with apps/macos/scripts/bundle.sh')
     require(daemon.is_file() and os.access(daemon, os.X_OK), 'build the release daemon first')
     os.umask(0o077)
     base = Path(tempfile.mkdtemp(prefix='oe-app-', dir='/tmp')).resolve()

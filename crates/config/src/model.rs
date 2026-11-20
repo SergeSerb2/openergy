@@ -60,6 +60,29 @@ impl Config {
                 "clipboard.max_bytes: exceeds supported maximum of 64 MiB (67108864 bytes)",
             ));
         }
+        let mic = &self.microphone;
+        if let Some(fingerprint) = &mic.peer_fingerprint {
+            if fingerprint.len() != 95
+                || !fingerprint
+                    .split(':')
+                    .all(|octet| octet.len() == 2 && octet.bytes().all(|b| b.is_ascii_hexdigit()))
+            {
+                return Err(invalid(
+                    "microphone.peer_fingerprint: expected a colon-separated SHA-256 fingerprint",
+                ));
+            }
+        }
+        for device in [&mic.input_device, &mic.output_device].into_iter().flatten() {
+            if device.trim().is_empty() || device.len() > 1024 || device.chars().any(char::is_control) {
+                return Err(invalid("microphone: invalid audio device ID"));
+            }
+            if mic.peer_fingerprint.is_none() {
+                return Err(invalid("microphone: device selection requires peer_fingerprint"));
+            }
+        }
+        if mic.input_device.is_some() && mic.input_device == mic.output_device {
+            return Err(invalid("microphone: use separate devices for capture and playback"));
+        }
         if !self.input.scroll_sensitivity.is_finite() || self.input.scroll_sensitivity <= 0.0 {
             return Err(invalid("input.scroll_sensitivity: must be finite and positive"));
         }
