@@ -117,7 +117,7 @@ impl Runtime {
                     Role::Off => false,
                 })
             });
-        if self.microphone.peer_trusted && !trusted {
+        if !trusted {
             self.microphone.disarm();
         }
         self.microphone.peer_trusted = trusted;

@@ -1199,6 +1199,9 @@ impl Runtime {
             self.pending.clear();
             self.deferred_bulk.clear();
             self.microphone.invalidate_trust();
+            if cfg.role != self.cfg.role || (cfg.role == Role::Client && !cfg.client.autoconnect) {
+                self.microphone.disarm();
+            }
             self.cfg = cfg;
             self.machine = Machine::new(Arc::new(self.cfg.clone()));
             self.enabled = self.cfg.role != Role::Off && (self.cfg.role != Role::Client || self.cfg.client.autoconnect);

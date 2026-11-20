@@ -16,8 +16,9 @@ final class DaemonSupervisor {
     /// Called after the supervisor (re)starts the daemon.
     var onSpawn: () -> Void = {}
 
-    // AppEndToEnd enables this only after validating fresh private paths.
+    // Both fixtures enable this only after validating their private paths.
     static var isolatedEndToEnd = false
+    static var privateFixtureHome: String?
 
     private static var pathOverrides: [String: String] {
         #if DEBUG
@@ -76,9 +77,10 @@ final class DaemonSupervisor {
     var processIdentifier: Int32? { isRunning ? process?.processIdentifier : nil }
     /// After the first start, only the supervisor restarts the daemon (with its own backoff).
     private(set) var hasStarted = false
+    private(set) var launchRefusal: String?
 
     func start() {
-        guard process == nil, restartTask == nil else { return }
+        guard process == nil, restartTask == nil, launchRefusal == nil else { return }
         guard let executable = Self.executableURL else {
             log.error("No openergy daemon binary found next to the app")
             return
@@ -87,6 +89,7 @@ final class DaemonSupervisor {
         // Validate the app seal and its nested helper before inheriting this
         // app's privacy identity into another executable.
         guard Self.bundleSignatureValid() else {
+            launchRefusal = "Openergy could not verify the app bundle. Reinstall Openergy and open it again."
             log.error("Refusing to start an Openergy daemon from an invalid app bundle")
             return
         }
@@ -103,7 +106,7 @@ final class DaemonSupervisor {
         process.environment = ProcessInfo.processInfo.environment
         #else
         let extra = Self.isolatedEndToEnd ? ["--platform", "virtual"] : []
-        var environment = ["HOME": FileManager.default.homeDirectoryForCurrentUser.path]
+        var environment = ["HOME": Self.privateFixtureHome ?? FileManager.default.homeDirectoryForCurrentUser.path]
         if Self.isolatedEndToEnd {
             environment["OPENERGY_ALLOW_PORT_24800"] = "0"
             environment["OPENERGY_DISABLE_DISCOVERY"] = "1"

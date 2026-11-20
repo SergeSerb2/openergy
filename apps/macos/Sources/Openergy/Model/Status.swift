@@ -27,6 +27,7 @@ struct DaemonStatus: Codable, Equatable, Sendable {
 
 struct MicrophoneStatus: Codable, Equatable, Sendable {
     var inputState: String?
+    var inputError: String?
 }
 
 enum Role: String, Codable, Sendable, CaseIterable, Identifiable {

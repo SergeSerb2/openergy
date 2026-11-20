@@ -234,7 +234,11 @@ def route(root, env, stack, exe):
     client_dir = endpoints["client"][0]
     run([exe, "trust", "revoke", fingerprints["host"], "--dir", client_dir])
     wait_for(lambda: state("client", "input_state", "needs_consent"), "offline revocation disarms capture")
+    stop(daemons["client"])
+    start("client", enable_capture=True)
+    wait_for(lambda: state("client", "input_state", "needs_consent"), "startup requires an already trusted peer")
     run([exe, "trust", "approve", fingerprints["host"], "--dir", client_dir])
+    ctl("client", "connection.restart")
     wait_for(lambda: ctl("client")["microphone"]["peer_connected"], "trust approval restores audio route")
     assert state("client", "input_state", "needs_consent")
 

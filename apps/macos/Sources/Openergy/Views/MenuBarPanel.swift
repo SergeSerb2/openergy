@@ -5,8 +5,6 @@ struct MenuBarPanel: View {
     let model: AppModel
     var updater: AppUpdater? = nil
     @Environment(\.openWindow) private var openWindow
-    @State private var microphoneRequest: OpenergyConfig.Microphone?
-    @State private var confirmMicrophone = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -15,6 +13,9 @@ struct MenuBarPanel: View {
             RolePicker(model: model)
             peers
             attention
+            if let error = model.lastActionError {
+                Text(error).font(.caption).foregroundStyle(.red).padding(.horizontal, 8)
+            }
             Divider().padding(.vertical, 2)
             HStack {
                 Label("Share clipboard", systemImage: "doc.on.clipboard")
@@ -28,16 +29,20 @@ struct MenuBarPanel: View {
             .padding(.horizontal, 8)
             if let state = model.status.microphone?.inputState, state != "disabled" {
                 HStack {
-                    Label(state == "sharing" ? "Microphone sharing" : "Microphone configured",
+                    Label(state == "sharing" ? "Microphone sharing" :
+                              (state == "error" ? "Microphone unavailable" : "Microphone configured"),
                           systemImage: state == "sharing" ? "mic.fill" : "mic")
                         .font(.callout)
                     Spacer()
                     if state == "needs_consent" {
                         Button("Start Sharing") {
-                            microphoneRequest = model.config.microphone
-                            confirmMicrophone = true
+                            if let device = model.config.microphone?.inputDevice,
+                               let peer = model.config.microphone?.peerFingerprint {
+                                model.startMicrophone(inputDevice: device, peerFingerprint: peer)
+                            }
                         }
-                        .disabled(model.role == .off || model.config.microphone?.inputDevice == nil)
+                        .disabled(model.role == .off || model.config.microphone?.inputDevice == nil ||
+                                  model.isRequestingMicrophonePermission)
                         .controlSize(.small)
                     } else {
                         Button("Stop Sharing") { model.stopMicrophone() }
@@ -45,6 +50,9 @@ struct MenuBarPanel: View {
                     }
                 }
                 .padding(.horizontal, 8)
+                if let error = model.status.microphone?.inputError {
+                    Text(error).font(.caption).foregroundStyle(.red).padding(.horizontal, 8)
+                }
             }
             Divider().padding(.vertical, 2)
             VStack(spacing: 0) {
@@ -58,18 +66,6 @@ struct MenuBarPanel: View {
         .padding(12)
         .frame(width: 320)
         .tint(Brand.accent)
-        .alert("Share your microphone?", isPresented: $confirmMicrophone, presenting: microphoneRequest) { route in
-            Button("Start Sharing") {
-                if let device = route.inputDevice, let fingerprint = route.peerFingerprint {
-                    model.startMicrophone(inputDevice: device, peerFingerprint: fingerprint)
-                }
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: { route in
-            if let device = route.inputDevice, let peer = route.peerFingerprint {
-                Text("Send audio from \(device) to the computer with fingerprint \(peer). Audio continues when you switch screens.")
-            }
-        }
     }
 
     private var header: some View {
