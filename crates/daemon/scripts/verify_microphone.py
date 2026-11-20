@@ -237,8 +237,9 @@ def route(root, env, stack, exe):
     stop(daemons["client"])
     start("client", enable_capture=True)
     wait_for(lambda: state("client", "input_state", "needs_consent"), "startup requires an already trusted peer")
-    run([exe, "trust", "approve", fingerprints["host"], "--dir", client_dir])
-    ctl("client", "connection.restart")
+    wait_for(lambda: any(peer["fingerprint"] == fingerprints["host"]
+                         for peer in ctl("client")["pending_trust"]), "client asks for trust")
+    ctl("client", "trust.approve", fingerprint=fingerprints["host"])
     wait_for(lambda: ctl("client")["microphone"]["peer_connected"], "trust approval restores audio route")
     assert state("client", "input_state", "needs_consent")
 
