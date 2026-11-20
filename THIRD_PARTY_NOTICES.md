@@ -39,6 +39,8 @@ python3 tools/release/notices/generate-notices.py
 
 | Package | Declared license | License text SHA-256 prefixes |
 | --- | --- | --- |
+| [alsa 0.11.0](https://crates.io/crates/alsa/0.11.0) | Apache-2.0/MIT | [3cc33f8e7668](#text-3cc33f8e7668) |
+| [alsa-sys 0.4.0](https://crates.io/crates/alsa-sys/0.4.0) | MIT | [219766b3420f](#text-219766b3420f) |
 | [asn1-rs 0.7.2](https://crates.io/crates/asn1-rs/0.7.2) | MIT OR Apache-2.0 | [a5c61b93b6ee](#text-a5c61b93b6ee) |
 | [asn1-rs-derive 0.6.0](https://crates.io/crates/asn1-rs-derive/0.6.0) | MIT OR Apache-2.0 | [a5c61b93b6ee](#text-a5c61b93b6ee) |
 | [asn1-rs-impl 0.2.0](https://crates.io/crates/asn1-rs-impl/0.2.0) | MIT/Apache-2.0 | [a5c61b93b6ee](#text-a5c61b93b6ee) |
@@ -47,24 +49,41 @@ python3 tools/release/notices/generate-notices.py
 | [bit-vec 0.9.1](https://crates.io/crates/bit-vec/0.9.1) | Apache-2.0 OR MIT | [f51ac2c59a22](#text-f51ac2c59a22) |
 | [bitflags 2.13.2](https://crates.io/crates/bitflags/2.13.2) | MIT OR Apache-2.0 | [6485b8ed310d](#text-6485b8ed310d) |
 | [block-buffer 0.12.1](https://crates.io/crates/block-buffer/0.12.1) | MIT OR Apache-2.0 | [98181e7249d0](#text-98181e7249d0) |
+| [block2 0.6.2](https://crates.io/crates/block2/0.6.2) | MIT | [7f976f7e9cb2](#text-7f976f7e9cb2) |
+| [bumpalo 3.20.4](https://crates.io/crates/bumpalo/3.20.4) | MIT OR Apache-2.0 | [65f94e99ddaf](#text-65f94e99ddaf) |
+| [byteorder 1.5.0](https://crates.io/crates/byteorder/1.5.0) | Unlicense OR MIT | [0f96a83840e1](#text-0f96a83840e1) |
+| [bytes 1.12.2](https://crates.io/crates/bytes/1.12.2) | MIT | [45f522cacecb](#text-45f522cacecb) |
 | [cc 1.9.0](https://crates.io/crates/cc/1.9.0) | MIT OR Apache-2.0 | [378f5840b258](#text-378f5840b258) |
 | [cfg-if 1.0.5](https://crates.io/crates/cfg-if/1.0.5) | MIT OR Apache-2.0 | [378f5840b258](#text-378f5840b258) |
+| [combine 4.6.9](https://crates.io/crates/combine/4.6.9) | MIT | [9bbc1b3dc467](#text-9bbc1b3dc467) |
 | [const-oid 0.10.2](https://crates.io/crates/const-oid/0.10.2) | Apache-2.0 OR MIT | [73b9dc2e79c7](#text-73b9dc2e79c7) |
+| [coreaudio-rs 0.14.2](https://crates.io/crates/coreaudio-rs/0.14.2) | MIT/Apache-2.0 | [7576269ea71f](#text-7576269ea71f) |
+| [cpal 0.18.2](https://crates.io/crates/cpal/0.18.2) | Apache-2.0 | [c71d239df917](#text-c71d239df917) |
 | [cpufeatures 0.3.1](https://crates.io/crates/cpufeatures/0.3.1) | MIT OR Apache-2.0 | [73b9dc2e79c7](#text-73b9dc2e79c7) |
 | [crypto-common 0.2.2](https://crates.io/crates/crypto-common/0.2.2) | MIT OR Apache-2.0 | [d2e7ec5355c9](#text-d2e7ec5355c9) |
+| [dasp_sample 0.11.0](https://crates.io/crates/dasp_sample/0.11.0) | MIT OR Apache-2.0 | [b1d6df41ed3a](#text-b1d6df41ed3a) |
 | [data-encoding 2.11.1](https://crates.io/crates/data-encoding/2.11.1) | MIT | [b68ad1a3367b](#text-b68ad1a3367b) |
 | [der-parser 10.0.0](https://crates.io/crates/der-parser/10.0.0) | MIT OR Apache-2.0 | [a5c61b93b6ee](#text-a5c61b93b6ee) |
 | [deranged 0.5.9](https://crates.io/crates/deranged/0.5.9) | MIT OR Apache-2.0 | [231c837c45eb](#text-231c837c45eb) |
 | [digest 0.11.3](https://crates.io/crates/digest/0.11.3) | MIT OR Apache-2.0 | [af59cea35d7f](#text-af59cea35d7f) |
+| [dispatch2 0.3.1](https://crates.io/crates/dispatch2/0.3.1) | Zlib OR Apache-2.0 OR MIT | [7f976f7e9cb2](#text-7f976f7e9cb2) |
 | [displaydoc 0.2.7](https://crates.io/crates/displaydoc/0.2.7) | MIT OR Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
 | [downcast-rs 1.2.1](https://crates.io/crates/downcast-rs/1.2.1) | MIT/Apache-2.0 | [fb252fecf98d](#text-fb252fecf98d) |
+| [enum-primitive-derive 0.3.0](https://crates.io/crates/enum-primitive-derive/0.3.0) | MIT | [819e0555b295](#text-819e0555b295) |
 | [equivalent 1.0.3](https://crates.io/crates/equivalent/1.0.3) | Apache-2.0 OR MIT | [7365cc8878a1](#text-7365cc8878a1) |
 | [errno 0.3.14](https://crates.io/crates/errno/0.3.14) | MIT OR Apache-2.0 | [8764a5976757](#text-8764a5976757) |
 | [fastrand 2.5.0](https://crates.io/crates/fastrand/2.5.0) | Apache-2.0 OR MIT | [23f18e03dc49](#text-23f18e03dc49) |
 | [find-msvc-tools 0.1.15](https://crates.io/crates/find-msvc-tools/0.1.15) | MIT OR Apache-2.0 | [378f5840b258](#text-378f5840b258) |
 | [flume 0.12.0](https://crates.io/crates/flume/0.12.0) | Apache-2.0/MIT | [30fefc3a7d6a](#text-30fefc3a7d6a) |
+| [futures 0.3.34](https://crates.io/crates/futures/0.3.34) | MIT OR Apache-2.0 | [6652c868f35d](#text-6652c868f35d) |
+| [futures-channel 0.3.34](https://crates.io/crates/futures-channel/0.3.34) | MIT OR Apache-2.0 | [6652c868f35d](#text-6652c868f35d) |
 | [futures-core 0.3.34](https://crates.io/crates/futures-core/0.3.34) | MIT OR Apache-2.0 | [6652c868f35d](#text-6652c868f35d) |
+| [futures-executor 0.3.34](https://crates.io/crates/futures-executor/0.3.34) | MIT OR Apache-2.0 | [6652c868f35d](#text-6652c868f35d) |
+| [futures-io 0.3.34](https://crates.io/crates/futures-io/0.3.34) | MIT OR Apache-2.0 | [6652c868f35d](#text-6652c868f35d) |
+| [futures-macro 0.3.34](https://crates.io/crates/futures-macro/0.3.34) | MIT OR Apache-2.0 | [6652c868f35d](#text-6652c868f35d) |
 | [futures-sink 0.3.34](https://crates.io/crates/futures-sink/0.3.34) | MIT OR Apache-2.0 | [6652c868f35d](#text-6652c868f35d) |
+| [futures-task 0.3.34](https://crates.io/crates/futures-task/0.3.34) | MIT OR Apache-2.0 | [6652c868f35d](#text-6652c868f35d) |
+| [futures-util 0.3.34](https://crates.io/crates/futures-util/0.3.34) | MIT OR Apache-2.0 | [6652c868f35d](#text-6652c868f35d) |
 | [gethostname 1.1.0](https://crates.io/crates/gethostname/1.1.0) | Apache-2.0 | [a60eea817514](#text-a60eea817514) |
 | [getrandom 0.2.17](https://crates.io/crates/getrandom/0.2.17) | MIT OR Apache-2.0 | [42fa16951ce7](#text-42fa16951ce7) |
 | [hashbrown 0.17.1](https://crates.io/crates/hashbrown/0.17.1) | MIT OR Apache-2.0 | [ff8f68cb076c](#text-ff8f68cb076c) |
@@ -72,37 +91,66 @@ python3 tools/release/notices/generate-notices.py
 | [if-addrs 0.15.0](https://crates.io/crates/if-addrs/0.15.0) | MIT OR BSD-3-Clause | [3990ddb78a5a](#text-3990ddb78a5a) |
 | [indexmap 2.14.2](https://crates.io/crates/indexmap/2.14.2) | Apache-2.0 OR MIT | [ecc269ef87fd](#text-ecc269ef87fd) |
 | [itoa 1.0.18](https://crates.io/crates/itoa/1.0.18) | MIT OR Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
+| [jni 0.22.4](https://crates.io/crates/jni/0.22.4) | MIT OR Apache-2.0 | [fea1d5bf3dd7](#text-fea1d5bf3dd7) |
+| [jni-macros 0.22.4](https://crates.io/crates/jni-macros/0.22.4) | MIT OR Apache-2.0 | [fea1d5bf3dd7](#text-fea1d5bf3dd7) |
+| [jni-sys 0.3.1](https://crates.io/crates/jni-sys/0.3.1) | MIT OR Apache-2.0 | [1d85bd754b04](#text-1d85bd754b04) |
+| [jni-sys 0.4.1](https://crates.io/crates/jni-sys/0.4.1) | MIT OR Apache-2.0 | [1d85bd754b04](#text-1d85bd754b04) |
+| [jni-sys-macros 0.4.1](https://crates.io/crates/jni-sys-macros/0.4.1) | MIT OR Apache-2.0 | [1d85bd754b04](#text-1d85bd754b04) |
+| [js-sys 0.3.107](https://crates.io/crates/js-sys/0.3.107) | MIT OR Apache-2.0 | [378f5840b258](#text-378f5840b258) |
 | [lazy_static 1.5.1](https://crates.io/crates/lazy_static/1.5.1) | MIT OR Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
 | [libc 0.2.191](https://crates.io/crates/libc/0.2.191) | MIT OR Apache-2.0 | [123a331b5dbf](#text-123a331b5dbf) |
 | [linux-raw-sys 0.12.1](https://crates.io/crates/linux-raw-sys/0.12.1) | Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT | [23f18e03dc49](#text-23f18e03dc49) |
 | [lock_api 0.4.14](https://crates.io/crates/lock_api/0.4.14) | MIT OR Apache-2.0 | [c9a75f18b9ab](#text-c9a75f18b9ab) |
 | [log 0.4.34](https://crates.io/crates/log/0.4.34) | MIT OR Apache-2.0 | [6485b8ed310d](#text-6485b8ed310d) |
+| [mach2 0.6.0](https://crates.io/crates/mach2/0.6.0) | BSD-2-Clause OR MIT OR Apache-2.0 | [3f9f0f7e5a59](#text-3f9f0f7e5a59) |
 | [mdns-sd 0.21.6](vendor/mdns-sd/OPENERGY-PATCH.md) | Apache-2.0 OR MIT | [cf0547f95d22](#text-cf0547f95d22) |
 | [memchr 2.8.3](https://crates.io/crates/memchr/2.8.3) | Unlicense OR MIT | [0f96a83840e1](#text-0f96a83840e1) |
 | [minimal-lexical 0.2.1](https://crates.io/crates/minimal-lexical/0.2.1) | MIT/Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
 | [mio 1.2.4](https://crates.io/crates/mio/1.2.4) | MIT | [07919255c7e0](#text-07919255c7e0) |
+| [ndk 0.9.0](https://crates.io/crates/ndk/0.9.0) | MIT OR Apache-2.0 | [508a77d2e7b5](#text-508a77d2e7b5) |
+| [ndk-context 0.1.1](https://crates.io/crates/ndk-context/0.1.1) | MIT OR Apache-2.0 | [508a77d2e7b5](#text-508a77d2e7b5) |
+| [ndk-sys 0.6.0+11769913](https://crates.io/crates/ndk-sys/0.6.0+11769913) | MIT OR Apache-2.0 | [508a77d2e7b5](#text-508a77d2e7b5) |
 | [nom 7.1.3](https://crates.io/crates/nom/7.1.3) | MIT | [4dbda0434445](#text-4dbda0434445) |
 | [num-bigint 0.4.8](https://crates.io/crates/num-bigint/0.4.8) | MIT OR Apache-2.0 | [6485b8ed310d](#text-6485b8ed310d) |
 | [num-conv 0.2.2](https://crates.io/crates/num-conv/0.2.2) | MIT OR Apache-2.0 | [e2e245f2b566](#text-e2e245f2b566) |
+| [num-derive 0.4.2](https://crates.io/crates/num-derive/0.4.2) | MIT OR Apache-2.0 | [6485b8ed310d](#text-6485b8ed310d) |
 | [num-integer 0.1.47](https://crates.io/crates/num-integer/0.1.47) | MIT OR Apache-2.0 | [6485b8ed310d](#text-6485b8ed310d) |
 | [num-traits 0.2.19](https://crates.io/crates/num-traits/0.2.19) | MIT OR Apache-2.0 | [6485b8ed310d](#text-6485b8ed310d) |
+| [num_enum 0.7.6](https://crates.io/crates/num_enum/0.7.6) | BSD-3-Clause OR MIT OR Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
+| [num_enum_derive 0.7.6](https://crates.io/crates/num_enum_derive/0.7.6) | BSD-3-Clause OR MIT OR Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
+| [objc2 0.6.5](https://crates.io/crates/objc2/0.6.5) | MIT | [7f976f7e9cb2](#text-7f976f7e9cb2) |
+| [objc2-audio-toolbox 0.3.2](https://crates.io/crates/objc2-audio-toolbox/0.3.2) | Zlib OR Apache-2.0 OR MIT | [7f976f7e9cb2](#text-7f976f7e9cb2) |
+| [objc2-avf-audio 0.3.2](https://crates.io/crates/objc2-avf-audio/0.3.2) | Zlib OR Apache-2.0 OR MIT | [7f976f7e9cb2](#text-7f976f7e9cb2) |
+| [objc2-core-audio 0.3.2](https://crates.io/crates/objc2-core-audio/0.3.2) | Zlib OR Apache-2.0 OR MIT | [7f976f7e9cb2](#text-7f976f7e9cb2) |
+| [objc2-core-audio-types 0.3.2](https://crates.io/crates/objc2-core-audio-types/0.3.2) | Zlib OR Apache-2.0 OR MIT | [7f976f7e9cb2](#text-7f976f7e9cb2) |
+| [objc2-core-foundation 0.3.2](https://crates.io/crates/objc2-core-foundation/0.3.2) | Zlib OR Apache-2.0 OR MIT | [7f976f7e9cb2](#text-7f976f7e9cb2) |
+| [objc2-encode 4.1.0](https://crates.io/crates/objc2-encode/4.1.0) | MIT | [7f976f7e9cb2](#text-7f976f7e9cb2) |
+| [objc2-foundation 0.3.2](https://crates.io/crates/objc2-foundation/0.3.2) | MIT | [7f976f7e9cb2](#text-7f976f7e9cb2) |
 | [oid-registry 0.8.1](https://crates.io/crates/oid-registry/0.8.1) | MIT OR Apache-2.0 | [a5c61b93b6ee](#text-a5c61b93b6ee) |
 | [once_cell 1.21.4](https://crates.io/crates/once_cell/1.21.4) | MIT OR Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
 | [pem 4.0.0](https://crates.io/crates/pem/4.0.0) | MIT | [b7c76ff4466a](#text-b7c76ff4466a) |
+| [pin-project-lite 0.2.18](https://crates.io/crates/pin-project-lite/0.2.18) | Apache-2.0 OR MIT | [23f18e03dc49](#text-23f18e03dc49) |
 | [pkg-config 0.3.34](https://crates.io/crates/pkg-config/0.3.34) | MIT OR Apache-2.0 | [378f5840b258](#text-378f5840b258) |
+| [portable-atomic 1.15.0](https://crates.io/crates/portable-atomic/1.15.0) | Apache-2.0 OR MIT | [23f18e03dc49](#text-23f18e03dc49) |
 | [powerfmt 0.2.1](https://crates.io/crates/powerfmt/0.2.1) | MIT OR Apache-2.0 | [070dbc7dda03](#text-070dbc7dda03) |
+| [proc-macro-crate 3.5.0](https://crates.io/crates/proc-macro-crate/3.5.0) | MIT OR Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
 | [proc-macro2 1.0.107](https://crates.io/crates/proc-macro2/1.0.107) | MIT OR Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
+| [pulseaudio 0.3.2](https://crates.io/crates/pulseaudio/0.3.2) | MIT | [fb9e808c9dd5](#text-fb9e808c9dd5) |
 | [quick-xml 0.41.0](https://crates.io/crates/quick-xml/0.41.0) | MIT | [5b2c207dcf57](#text-5b2c207dcf57) |
 | [quote 1.0.47](https://crates.io/crates/quote/1.0.47) | MIT OR Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
 | [rcgen 0.14.10](https://crates.io/crates/rcgen/0.14.10) | MIT OR Apache-2.0 | [debe6fed7ac1](#text-debe6fed7ac1) |
 | [ring 0.17.14](https://crates.io/crates/ring/0.17.14) | Apache-2.0 AND ISC | [b3d734001a94](#text-b3d734001a94), [005fc765ddc5](#text-005fc765ddc5), [f025ccfb7dfb](#text-f025ccfb7dfb), [a60eea817514](#text-a60eea817514), [6ee2ed6c7771](#text-6ee2ed6c7771), [9eacbcb81be6](#text-9eacbcb81be6) |
 | [roxmltree 0.21.1](https://crates.io/crates/roxmltree/0.21.1) | MIT OR Apache-2.0 | [fffe218c1e34](#text-fffe218c1e34) |
+| [rustc_version 0.4.1](https://crates.io/crates/rustc_version/0.4.1) | MIT OR Apache-2.0 | [c9a75f18b9ab](#text-c9a75f18b9ab) |
 | [rusticata-macros 4.1.0](https://crates.io/crates/rusticata-macros/4.1.0) | MIT/Apache-2.0 | [a5c61b93b6ee](#text-a5c61b93b6ee) |
 | [rustix 1.1.5](https://crates.io/crates/rustix/1.1.5) | Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT | [23f18e03dc49](#text-23f18e03dc49) |
 | [rustls 0.23.46](https://crates.io/crates/rustls/0.23.46) | Apache-2.0 OR ISC OR MIT | [709e3175b421](#text-709e3175b421) |
 | [rustls-pki-types 1.15.1](https://crates.io/crates/rustls-pki-types/1.15.1) | MIT OR Apache-2.0 | [9117d922e667](#text-9117d922e667) |
 | [rustls-webpki 0.103.16](https://crates.io/crates/rustls-webpki/0.103.16) | ISC | [5b698ca13897](#text-5b698ca13897) |
+| [rustversion 1.0.23](https://crates.io/crates/rustversion/1.0.23) | MIT OR Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
+| [same-file 1.0.6](https://crates.io/crates/same-file/1.0.6) | Unlicense/MIT | [cb3c929a05e6](#text-cb3c929a05e6) |
 | [scopeguard 1.2.0](https://crates.io/crates/scopeguard/1.2.0) | MIT OR Apache-2.0 | [fb77f0a9c53e](#text-fb77f0a9c53e) |
+| [semver 1.0.28](https://crates.io/crates/semver/1.0.28) | MIT OR Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
 | [serde 1.0.229](https://crates.io/crates/serde/1.0.229) | MIT OR Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
 | [serde_core 1.0.229](https://crates.io/crates/serde_core/1.0.229) | MIT OR Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
 | [serde_derive 1.0.229](https://crates.io/crates/serde_derive/1.0.229) | MIT OR Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
@@ -110,6 +158,9 @@ python3 tools/release/notices/generate-notices.py
 | [serde_spanned 1.1.2](https://crates.io/crates/serde_spanned/1.1.2) | MIT OR Apache-2.0 | [6efb0476a1cc](#text-6efb0476a1cc) |
 | [sha2 0.11.1](https://crates.io/crates/sha2/0.11.1) | MIT OR Apache-2.0 | [831e0f43ad0b](#text-831e0f43ad0b) |
 | [shlex 2.0.1](https://crates.io/crates/shlex/2.0.1) | MIT OR Apache-2.0 | [4455bf75a911](#text-4455bf75a911) |
+| [simd_cesu8 1.2.0](https://crates.io/crates/simd_cesu8/1.2.0) | Apache-2.0 OR MIT | [23f18e03dc49](#text-23f18e03dc49) |
+| [simdutf8 0.1.5](https://crates.io/crates/simdutf8/0.1.5) | MIT OR Apache-2.0 | [1847e0e06981](#text-1847e0e06981) |
+| [slab 0.4.12](https://crates.io/crates/slab/0.4.12) | MIT | [8ce0830173fd](#text-8ce0830173fd) |
 | [smallvec 1.16.5](https://crates.io/crates/smallvec/1.16.5) | MIT OR Apache-2.0 | [0b28172679e0](#text-0b28172679e0) |
 | [socket-pktinfo 0.4.1](https://crates.io/crates/socket-pktinfo/0.4.1) | MIT | [1ea20122ffdd](#text-1ea20122ffdd) |
 | [socket2 0.6.5](https://crates.io/crates/socket2/0.6.5) | MIT OR Apache-2.0 | [378f5840b258](#text-378f5840b258) |
@@ -118,28 +169,48 @@ python3 tools/release/notices/generate-notices.py
 | [syn 2.0.119](https://crates.io/crates/syn/2.0.119) | MIT OR Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
 | [syn 3.0.9](https://crates.io/crates/syn/3.0.9) | MIT OR Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
 | [synstructure 0.13.2](https://crates.io/crates/synstructure/0.13.2) | MIT | [219920e865ee](#text-219920e865ee) |
+| [thiserror 1.0.69](https://crates.io/crates/thiserror/1.0.69) | MIT OR Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
 | [thiserror 2.0.21](https://crates.io/crates/thiserror/2.0.21) | MIT OR Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
+| [thiserror-impl 1.0.69](https://crates.io/crates/thiserror-impl/1.0.69) | MIT OR Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
 | [thiserror-impl 2.0.21](https://crates.io/crates/thiserror-impl/2.0.21) | MIT OR Apache-2.0 | [23f18e03dc49](#text-23f18e03dc49) |
 | [time 0.3.55](https://crates.io/crates/time/0.3.55) | MIT OR Apache-2.0 | [2537228d9a1b](#text-2537228d9a1b) |
 | [time-core 0.1.9](https://crates.io/crates/time-core/0.1.9) | MIT OR Apache-2.0 | [2537228d9a1b](#text-2537228d9a1b) |
 | [time-macros 0.2.32](https://crates.io/crates/time-macros/0.2.32) | MIT OR Apache-2.0 | [2537228d9a1b](#text-2537228d9a1b) |
 | [toml 1.1.8+spec-1.1.0](https://crates.io/crates/toml/1.1.8+spec-1.1.0) | MIT OR Apache-2.0 | [6efb0476a1cc](#text-6efb0476a1cc) |
 | [toml_datetime 1.1.2+spec-1.1.0](https://crates.io/crates/toml_datetime/1.1.2+spec-1.1.0) | MIT OR Apache-2.0 | [6efb0476a1cc](#text-6efb0476a1cc) |
+| [toml_edit 0.25.18+spec-1.1.0](https://crates.io/crates/toml_edit/0.25.18+spec-1.1.0) | MIT OR Apache-2.0 | [6efb0476a1cc](#text-6efb0476a1cc) |
 | [toml_parser 1.1.5+spec-1.1.0](https://crates.io/crates/toml_parser/1.1.5+spec-1.1.0) | MIT OR Apache-2.0 | [6efb0476a1cc](#text-6efb0476a1cc) |
 | [toml_writer 1.1.3+spec-1.1.0](https://crates.io/crates/toml_writer/1.1.3+spec-1.1.0) | MIT OR Apache-2.0 | [6efb0476a1cc](#text-6efb0476a1cc) |
 | [typenum 1.20.1](https://crates.io/crates/typenum/1.20.1) | MIT OR Apache-2.0 | [a825bd853ab7](#text-a825bd853ab7) |
 | [unicode-ident 1.0.27](https://crates.io/crates/unicode-ident/1.0.27) | (MIT OR Apache-2.0) AND Unicode-3.0 | [23f18e03dc49](#text-23f18e03dc49), [f7db81051789](#text-f7db81051789) |
 | [untrusted 0.9.0](https://crates.io/crates/untrusted/0.9.0) | ISC | [7abd9b6960dc](#text-7abd9b6960dc) |
+| [walkdir 2.5.0](https://crates.io/crates/walkdir/2.5.0) | Unlicense/MIT | [0f96a83840e1](#text-0f96a83840e1) |
 | [wasi 0.11.1+wasi-snapshot-preview1](https://crates.io/crates/wasi/0.11.1+wasi-snapshot-preview1) | Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT | [23f18e03dc49](#text-23f18e03dc49) |
+| [wasm-bindgen 0.2.130](https://crates.io/crates/wasm-bindgen/0.2.130) | MIT OR Apache-2.0 | [378f5840b258](#text-378f5840b258) |
+| [wasm-bindgen-macro 0.2.130](https://crates.io/crates/wasm-bindgen-macro/0.2.130) | MIT OR Apache-2.0 | [378f5840b258](#text-378f5840b258) |
+| [wasm-bindgen-macro-support 0.2.130](https://crates.io/crates/wasm-bindgen-macro-support/0.2.130) | MIT OR Apache-2.0 | [378f5840b258](#text-378f5840b258) |
+| [wasm-bindgen-shared 0.2.130](https://crates.io/crates/wasm-bindgen-shared/0.2.130) | MIT OR Apache-2.0 | [378f5840b258](#text-378f5840b258) |
 | [wayland-backend 0.3.17](https://crates.io/crates/wayland-backend/0.3.17) | MIT | [1cb6f4dee8c6](#text-1cb6f4dee8c6) |
 | [wayland-client 0.31.15](https://crates.io/crates/wayland-client/0.31.15) | MIT | [1cb6f4dee8c6](#text-1cb6f4dee8c6), [b606ea4bd785](#text-b606ea4bd785) |
 | [wayland-protocols 0.32.13](https://crates.io/crates/wayland-protocols/0.32.13) | MIT | [1cb6f4dee8c6](#text-1cb6f4dee8c6), [42cec6c6efbf](#text-42cec6c6efbf) |
 | [wayland-scanner 0.31.11](https://crates.io/crates/wayland-scanner/0.31.11) | MIT | [1cb6f4dee8c6](#text-1cb6f4dee8c6) |
 | [wayland-sys 0.31.11](https://crates.io/crates/wayland-sys/0.31.11) | MIT | [1cb6f4dee8c6](#text-1cb6f4dee8c6) |
+| [web-sys 0.3.107](https://crates.io/crates/web-sys/0.3.107) | MIT OR Apache-2.0 | [378f5840b258](#text-378f5840b258) |
+| [winapi-util 0.1.11](https://crates.io/crates/winapi-util/0.1.11) | Unlicense OR MIT | [cb3c929a05e6](#text-cb3c929a05e6) |
+| [windows 0.62.2](https://crates.io/crates/windows/0.62.2) | MIT OR Apache-2.0 | [c2cfccb812fe](#text-c2cfccb812fe) |
+| [windows-collections 0.3.2](https://crates.io/crates/windows-collections/0.3.2) | MIT OR Apache-2.0 | [c2cfccb812fe](#text-c2cfccb812fe) |
+| [windows-core 0.62.2](https://crates.io/crates/windows-core/0.62.2) | MIT OR Apache-2.0 | [c2cfccb812fe](#text-c2cfccb812fe) |
+| [windows-future 0.3.2](https://crates.io/crates/windows-future/0.3.2) | MIT OR Apache-2.0 | [c2cfccb812fe](#text-c2cfccb812fe) |
+| [windows-implement 0.60.2](https://crates.io/crates/windows-implement/0.60.2) | MIT OR Apache-2.0 | [c2cfccb812fe](#text-c2cfccb812fe) |
+| [windows-interface 0.59.3](https://crates.io/crates/windows-interface/0.59.3) | MIT OR Apache-2.0 | [c2cfccb812fe](#text-c2cfccb812fe) |
 | [windows-link 0.2.1](https://crates.io/crates/windows-link/0.2.1) | MIT OR Apache-2.0 | [c2cfccb812fe](#text-c2cfccb812fe) |
+| [windows-numerics 0.3.1](https://crates.io/crates/windows-numerics/0.3.1) | MIT OR Apache-2.0 | [c2cfccb812fe](#text-c2cfccb812fe) |
+| [windows-result 0.4.1](https://crates.io/crates/windows-result/0.4.1) | MIT OR Apache-2.0 | [c2cfccb812fe](#text-c2cfccb812fe) |
+| [windows-strings 0.5.1](https://crates.io/crates/windows-strings/0.5.1) | MIT OR Apache-2.0 | [c2cfccb812fe](#text-c2cfccb812fe) |
 | [windows-sys 0.52.0](https://crates.io/crates/windows-sys/0.52.0) | MIT OR Apache-2.0 | [c2cfccb812fe](#text-c2cfccb812fe) |
 | [windows-sys 0.61.2](https://crates.io/crates/windows-sys/0.61.2) | MIT OR Apache-2.0 | [c2cfccb812fe](#text-c2cfccb812fe) |
 | [windows-targets 0.52.6](https://crates.io/crates/windows-targets/0.52.6) | MIT OR Apache-2.0 | [c2cfccb812fe](#text-c2cfccb812fe) |
+| [windows-threading 0.2.1](https://crates.io/crates/windows-threading/0.2.1) | MIT OR Apache-2.0 | [c2cfccb812fe](#text-c2cfccb812fe) |
 | [windows_aarch64_gnullvm 0.52.6](https://crates.io/crates/windows_aarch64_gnullvm/0.52.6) | MIT OR Apache-2.0 | [c2cfccb812fe](#text-c2cfccb812fe) |
 | [windows_aarch64_msvc 0.52.6](https://crates.io/crates/windows_aarch64_msvc/0.52.6) | MIT OR Apache-2.0 | [c2cfccb812fe](#text-c2cfccb812fe) |
 | [windows_i686_gnu 0.52.6](https://crates.io/crates/windows_i686_gnu/0.52.6) | MIT OR Apache-2.0 | [c2cfccb812fe](#text-c2cfccb812fe) |
@@ -587,6 +658,30 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
+### text-1847e0e06981
+
+```text
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
 ### text-1cb6f4dee8c6
 
 ```text
@@ -611,12 +706,62 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
+### text-1d85bd754b04
+
+```text
+Copyright (c) 2015 The rust-jni-sys Developers
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
 ### text-1ea20122ffdd
 
 ```text
 MIT License
 
 Copyright (c) 2025 Pixsper
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+### text-219766b3420f
+
+```text
+MIT License
+
+Copyright (c) 2018 diwic
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -977,6 +1122,62 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
+### text-3cc33f8e7668
+
+```text
+MIT License
+
+Copyright (c) 2015-2021 David Henningsson, and other contributors.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+### text-3f9f0f7e5a59
+
+```text
+Copyright (c) 2019 Nick Fitzgerald, 2021 Yuki Okushi
+
+Permission is hereby granted, free of charge, to any
+person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the
+Software without restriction, including without
+limitation the rights to use, copy, modify, merge,
+publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software
+is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice
+shall be included in all copies or substantial portions
+of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
+ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+```
+
 ### text-42cec6c6efbf
 
 ```text
@@ -1059,6 +1260,36 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
+### text-45f522cacecb
+
+```text
+Copyright (c) 2018 Carl Lerche
+
+Permission is hereby granted, free of charge, to any
+person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the
+Software without restriction, including without
+limitation the rights to use, copy, modify, merge,
+publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software
+is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice
+shall be included in all copies or substantial portions
+of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
+ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+```
+
 ### text-4dbda0434445
 
 ```text
@@ -1082,6 +1313,30 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+
+### text-508a77d2e7b5
+
+```text
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 ```
 
 ### text-5b2c207dcf57
@@ -1140,6 +1395,36 @@ third-party/chromium/LICENSE.
 
 ```text
 Copyright (c) 2014 The Rust Project Developers
+
+Permission is hereby granted, free of charge, to any
+person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the
+Software without restriction, including without
+limitation the rights to use, copy, modify, merge,
+publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software
+is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice
+shall be included in all copies or substantial portions
+of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
+ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+```
+
+### text-65f94e99ddaf
+
+```text
+Copyright (c) 2019 Nick Fitzgerald
 
 Permission is hereby granted, free of charge, to any
 person obtaining a copy of this software and associated
@@ -1447,6 +1732,36 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
+### text-7576269ea71f
+
+```text
+Copyright (c) 2015
+
+Permission is hereby granted, free of charge, to any
+person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the
+Software without restriction, including without
+limitation the rights to use, copy, modify, merge,
+publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software
+is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice
+shall be included in all copies or substantial portions
+of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
+ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+```
+
 ### text-7abd9b6960dc
 
 ```text
@@ -1463,6 +1778,70 @@ DEALINGS IN THE SOFTWARE.
 // WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 // ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+```
+
+### text-7f976f7e9cb2
+
+```text
+# License
+
+The licensing of these crates is a bit complicated:
+- The crates `objc2`, `block2`, `objc2-foundation` and `objc2-encode` are
+  [currently][#23] licensed under [the MIT license][MIT].
+- All other crates are trio-licensed under the [Zlib], [Apache-2.0] or [MIT]
+  license, at your option.
+
+Furthermore, the crates are (usually automatically) derived from Apple SDKs,
+and that may have implications for licensing, see below for details.
+
+[#23]: https://github.com/madsmtm/objc2/issues/23
+[MIT]: https://opensource.org/license/MIT
+[Zlib]: https://zlib.net/zlib_license.html
+[Apache-2.0]: https://www.apache.org/licenses/LICENSE-2.0
+
+
+## Apple SDKs
+
+These crates are derived from Apple SDKs shipped with Xcode. You can obtain a
+copy of the Xcode license at:
+
+https://www.apple.com/legal/sla/docs/xcode.pdf
+
+Or by typing `xcodebuild -license` in your terminal.
+
+From reading the license, it is unclear whether distributing derived works
+such as these crates are allowed?
+
+But in any case, to practically use these crates, you will have to link, and
+that only works when you have the correct Xcode SDK available to provide the
+required `.tbd` files, which is why we choose to still use the normal SPDX
+identifiers in the crates (Xcode is required to use the crates, and when using
+Xcode you have already agreed to the Xcode license).
+```
+
+### text-819e0555b295
+
+```text
+Copyright (c) 2017 Doug Goldstein <cardoe@cardoe.com>
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+“Software”), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
 ### text-831e0f43ad0b
@@ -1558,6 +1937,36 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
+### text-8ce0830173fd
+
+```text
+Copyright (c) 2019 Carl Lerche
+
+Permission is hereby granted, free of charge, to any
+person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the
+Software without restriction, including without
+limitation the rights to use, copy, modify, merge,
+publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software
+is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice
+shall be included in all copies or substantial portions
+of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
+ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+```
+
 ### text-9117d922e667
 
 ```text
@@ -1616,6 +2025,32 @@ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
 IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
+```
+
+### text-9bbc1b3dc467
+
+```text
+The MIT License (MIT)
+
+Copyright (c) 2015 Markus Westerlind
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
 ```
 
 ### text-9eacbcb81be6
@@ -1987,6 +2422,32 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
+### text-b1d6df41ed3a
+
+```text
+The MIT License (MIT)
+
+Copyright (c) 2016 RustAudio Developers
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
 ### text-b3d734001a94
 
 ```text
@@ -2109,6 +2570,212 @@ SOFTWARE.
     SOFTWARE
 ```
 
+### text-c71d239df917
+
+```text
+                                 Apache License
+                           Version 2.0, January 2004
+                        http://www.apache.org/licenses/
+
+   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+
+   1. Definitions.
+
+      "License" shall mean the terms and conditions for use, reproduction,
+      and distribution as defined by Sections 1 through 9 of this document.
+
+      "Licensor" shall mean the copyright owner or entity authorized by
+      the copyright owner that is granting the License.
+
+      "Legal Entity" shall mean the union of the acting entity and all
+      other entities that control, are controlled by, or are under common
+      control with that entity. For the purposes of this definition,
+      "control" means (i) the power, direct or indirect, to cause the
+      direction or management of such entity, whether by contract or
+      otherwise, or (ii) ownership of fifty percent (50%) or more of the
+      outstanding shares, or (iii) beneficial ownership of such entity.
+
+      "You" (or "Your") shall mean an individual or Legal Entity
+      exercising permissions granted by this License.
+
+      "Source" form shall mean the preferred form for making modifications,
+      including but not limited to software source code, documentation
+      source, and configuration files.
+
+      "Object" form shall mean any form resulting from mechanical
+      transformation or translation of a Source form, including but
+      not limited to compiled object code, generated documentation,
+      and conversions to other media types.
+
+      "Work" shall mean the work of authorship, whether in Source or
+      Object form, made available under the License, as indicated by a
+      copyright notice that is included in or attached to the work
+      (an example is provided in the Appendix below).
+
+      "Derivative Works" shall mean any work, whether in Source or Object
+      form, that is based on (or derived from) the Work and for which the
+      editorial revisions, annotations, elaborations, or other modifications
+      represent, as a whole, an original work of authorship. For the purposes
+      of this License, Derivative Works shall not include works that remain
+      separable from, or merely link (or bind by name) to the interfaces of,
+      the Work and Derivative Works thereof.
+
+      "Contribution" shall mean any work of authorship, including
+      the original version of the Work and any modifications or additions
+      to that Work or Derivative Works thereof, that is intentionally
+      submitted to Licensor for inclusion in the Work by the copyright owner
+      or by an individual or Legal Entity authorized to submit on behalf of
+      the copyright owner. For the purposes of this definition, "submitted"
+      means any form of electronic, verbal, or written communication sent
+      to the Licensor or its representatives, including but not limited to
+      communication on electronic mailing lists, source code control systems,
+      and issue tracking systems that are managed by, or on behalf of, the
+      Licensor for the purpose of discussing and improving the Work, but
+      excluding communication that is conspicuously marked or otherwise
+      designated in writing by the copyright owner as "Not a Contribution."
+
+      "Contributor" shall mean Licensor and any individual or Legal Entity
+      on behalf of whom a Contribution has been received by Licensor and
+      subsequently incorporated within the Work.
+
+   2. Grant of Copyright License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      copyright license to reproduce, prepare Derivative Works of,
+      publicly display, publicly perform, sublicense, and distribute the
+      Work and such Derivative Works in Source or Object form.
+
+   3. Grant of Patent License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      (except as stated in this section) patent license to make, have made,
+      use, offer to sell, sell, import, and otherwise transfer the Work,
+      where such license applies only to those patent claims licensable
+      by such Contributor that are necessarily infringed by their
+      Contribution(s) alone or by combination of their Contribution(s)
+      with the Work to which such Contribution(s) was submitted. If You
+      institute patent litigation against any entity (including a
+      cross-claim or counterclaim in a lawsuit) alleging that the Work
+      or a Contribution incorporated within the Work constitutes direct
+      or contributory patent infringement, then any patent licenses
+      granted to You under this License for that Work shall terminate
+      as of the date such litigation is filed.
+
+   4. Redistribution. You may reproduce and distribute copies of the
+      Work or Derivative Works thereof in any medium, with or without
+      modifications, and in Source or Object form, provided that You
+      meet the following conditions:
+
+      (a) You must give any other recipients of the Work or
+          Derivative Works a copy of this License; and
+
+      (b) You must cause any modified files to carry prominent notices
+          stating that You changed the files; and
+
+      (c) You must retain, in the Source form of any Derivative Works
+          that You distribute, all copyright, patent, trademark, and
+          attribution notices from the Source form of the Work,
+          excluding those notices that do not pertain to any part of
+          the Derivative Works; and
+
+      (d) If the Work includes a "NOTICE" text file as part of its
+          distribution, then any Derivative Works that You distribute must
+          include a readable copy of the attribution notices contained
+          within such NOTICE file, excluding those notices that do not
+          pertain to any part of the Derivative Works, in at least one
+          of the following places: within a NOTICE text file distributed
+          as part of the Derivative Works; within the Source form or
+          documentation, if provided along with the Derivative Works; or,
+          within a display generated by the Derivative Works, if and
+          wherever such third-party notices normally appear. The contents
+          of the NOTICE file are for informational purposes only and
+          do not modify the License. You may add Your own attribution
+          notices within Derivative Works that You distribute, alongside
+          or as an addendum to the NOTICE text from the Work, provided
+          that such additional attribution notices cannot be construed
+          as modifying the License.
+
+      You may add Your own copyright statement to Your modifications and
+      may provide additional or different license terms and conditions
+      for use, reproduction, or distribution of Your modifications, or
+      for any such Derivative Works as a whole, provided Your use,
+      reproduction, and distribution of the Work otherwise complies with
+      the conditions stated in this License.
+
+   5. Submission of Contributions. Unless You explicitly state otherwise,
+      any Contribution intentionally submitted for inclusion in the Work
+      by You to the Licensor shall be under the terms and conditions of
+      this License, without any additional terms or conditions.
+      Notwithstanding the above, nothing herein shall supersede or modify
+      the terms of any separate license agreement you may have executed
+      with Licensor regarding such Contributions.
+
+   6. Trademarks. This License does not grant permission to use the trade
+      names, trademarks, service marks, or product names of the Licensor,
+      except as required for reasonable and customary use in describing the
+      origin of the Work and reproducing the content of the NOTICE file.
+
+   7. Disclaimer of Warranty. Unless required by applicable law or
+      agreed to in writing, Licensor provides the Work (and each
+      Contributor provides its Contributions) on an "AS IS" BASIS,
+      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+      implied, including, without limitation, any warranties or conditions
+      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+      PARTICULAR PURPOSE. You are solely responsible for determining the
+      appropriateness of using or redistributing the Work and assume any
+      risks associated with Your exercise of permissions under this License.
+
+   8. Limitation of Liability. In no event and under no legal theory,
+      whether in tort (including negligence), contract, or otherwise,
+      unless required by applicable law (such as deliberate and grossly
+      negligent acts) or agreed to in writing, shall any Contributor be
+      liable to You for damages, including any direct, indirect, special,
+      incidental, or consequential damages of any character arising as a
+      result of this License or out of the use or inability to use the
+      Work (including but not limited to damages for loss of goodwill,
+      work stoppage, computer failure or malfunction, or any and all
+      other commercial damages or losses), even if such Contributor
+      has been advised of the possibility of such damages.
+
+   9. Accepting Warranty or Additional Liability. While redistributing
+      the Work or Derivative Works thereof, You may choose to offer,
+      and charge a fee for, acceptance of support, warranty, indemnity,
+      or other liability obligations and/or rights consistent with this
+      License. However, in accepting such obligations, You may act only
+      on Your own behalf and on Your sole responsibility, not on behalf
+      of any other Contributor, and only if You agree to indemnify,
+      defend, and hold each Contributor harmless for any liability
+      incurred by, or claims asserted against, such Contributor by reason
+      of your accepting any such warranty or additional liability.
+
+   END OF TERMS AND CONDITIONS
+
+   APPENDIX: How to apply the Apache License to your work.
+
+      To apply the Apache License to your work, attach the following
+      boilerplate notice, with the fields enclosed by brackets "[]"
+      replaced with your own identifying information. (Don't include
+      the brackets!)  The text should be enclosed in the appropriate
+      comment syntax for the file format. We also recommend that a
+      file or class name and description of purpose be included on the
+      same "printed page" as the copyright notice for easier
+      identification within third-party archives.
+
+   Copyright [yyyy] [name of copyright owner]
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+```
+
 ### text-c9a75f18b9ab
 
 ```text
@@ -2137,6 +2804,32 @@ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
 IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
+```
+
+### text-cb3c929a05e6
+
+```text
+The MIT License (MIT)
+
+Copyright (c) 2017 Andrew Gallant
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
 ```
 
 ### text-cb5aedb296c5
@@ -2675,6 +3368,44 @@ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
 IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
+```
+
+### text-fb9e808c9dd5
+
+```text
+Copyright 2023 Colin Marc <hi@colinmarc.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+
+### text-fea1d5bf3dd7
+
+```text
+The MIT License (MIT)
+
+Copyright (c) 2016 Prevoty, Inc. and jni-rs contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 ```
 
 ### text-ff8f68cb076c

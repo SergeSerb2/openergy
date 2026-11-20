@@ -74,6 +74,11 @@ node = "server"
 events = [{"type" = "mouse_move_abs", "x" = 100, "y" = 100}, {"type" = "mouse_down", "button" = 1}, {"type" = "mouse_move_abs", "x" = 101, "y" = 100}, {"type" = "mouse_up", "button" = 1}]
 
 [[step]]
+do = "assert_recorded_tail"
+node = "client"
+expect = [{"event" = {"type" = "mouse_move_abs", "x" = 101, "y" = 100}}, {"event" = {"type" = "mouse_up", "button" = 1}}]
+
+[[step]]
 do = "inject"
 node = "client"
 events = []
@@ -84,6 +89,11 @@ now_ms = 1100
 do = "inject"
 node = "server"
 events = [{"type" = "mouse_move_abs", "x" = 101, "y" = 100}, {"type" = "mouse_down", "button" = 1}, {"type" = "mouse_move_abs", "x" = 102, "y" = 100}, {"type" = "mouse_up", "button" = 1}]
+
+[[step]]
+do = "assert_recorded_tail"
+node = "client"
+expect = [{"event" = {"type" = "mouse_move_abs", "x" = 102, "y" = 100}}, {"event" = {"type" = "mouse_up", "button" = 1}}]
 
 [[step]]
 do = "inject"
@@ -98,6 +108,11 @@ node = "server"
 events = [{"type" = "mouse_move_abs", "x" = 100, "y" = 101}, {"type" = "mouse_down", "button" = 1}, {"type" = "mouse_move_abs", "x" = 101, "y" = 101}, {"type" = "mouse_up", "button" = 1}]
 
 [[step]]
+do = "assert_recorded_tail"
+node = "client"
+expect = [{"event" = {"type" = "mouse_move_abs", "x" = 101, "y" = 101}}, {"event" = {"type" = "mouse_up", "button" = 1}}]
+
+[[step]]
 do = "inject"
 node = "client"
 events = []
@@ -110,6 +125,11 @@ node = "server"
 events = [{"type" = "mouse_move_abs", "x" = 200, "y" = 200}, {"type" = "mouse_down", "button" = 1}, {"type" = "mouse_move_abs", "x" = 201, "y" = 200}, {"type" = "mouse_up", "button" = 1}]
 
 [[step]]
+do = "assert_recorded_tail"
+node = "client"
+expect = [{"event" = {"type" = "mouse_move_abs", "x" = 201, "y" = 200}}, {"event" = {"type" = "mouse_up", "button" = 1}}]
+
+[[step]]
 do = "inject"
 node = "client"
 events = []
@@ -120,6 +140,11 @@ now_ms = 3000
 do = "inject"
 node = "server"
 events = [{"type" = "mouse_move_abs", "x" = 200, "y" = 200}, {"type" = "mouse_down", "button" = 1}, {"type" = "mouse_move_abs", "x" = 201, "y" = 200}, {"type" = "mouse_up", "button" = 1}]
+
+[[step]]
+do = "assert_recorded_tail"
+node = "client"
+expect = [{"event" = {"type" = "mouse_move_abs", "x" = 200, "y" = 200}}, {"event" = {"type" = "mouse_down", "button" = 1}}, {"event" = {"type" = "mouse_move_abs", "x" = 201, "y" = 200}}, {"event" = {"type" = "mouse_up", "button" = 1}}, {"event" = {"type" = "mouse_move_abs", "x" = 200, "y" = 200}}, {"event" = {"type" = "mouse_down", "button" = 1}}, {"event" = {"type" = "mouse_move_abs", "x" = 201, "y" = 200}}, {"event" = {"type" = "mouse_up", "button" = 1}}]
 
 [[step]]
 do = "inject"

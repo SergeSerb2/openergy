@@ -21,11 +21,13 @@ serde_json = { workspace = true }
 log = { version = "0.4", features = ["std"] }
 libc = { workspace = true }
 mio = { version = "1.2", features = ["os-poll", "net", "os-ext"] }
+cpal = "0.18.2"
 
 [target.'cfg(target_os = "macos")'.dependencies]
 openergy-platform-macos = { version = "0.1.0", path = "../platform-macos" }
 
 [target.'cfg(target_os = "linux")'.dependencies]
+cpal = { version = "0.18.2", features = ["pulseaudio"] }
 openergy-platform-linux = { version = "0.1.0", path = "../platform-linux" }
 
 [target.'cfg(target_os = "windows")'.dependencies]

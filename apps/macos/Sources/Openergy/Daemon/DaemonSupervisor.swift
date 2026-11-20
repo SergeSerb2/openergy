@@ -1,5 +1,6 @@
 import Foundation
 import OSLog
+import Security
 
 /// Starts the bundled `openergy` daemon as a child process and restarts it if it crashes.
 /// A child of the app shares the app's macOS privacy permissions, so the user grants
@@ -15,11 +16,23 @@ final class DaemonSupervisor {
     /// Called after the supervisor (re)starts the daemon.
     var onSpawn: () -> Void = {}
 
+    // Both fixtures enable this only after validating their private paths.
+    static var isolatedEndToEnd = false
+    static var privateFixtureHome: String?
+
+    private static var pathOverrides: [String: String] {
+        #if DEBUG
+        ProcessInfo.processInfo.environment
+        #else
+        isolatedEndToEnd ? ProcessInfo.processInfo.environment : [:]
+        #endif
+    }
+
     static var supportDirectory: URL {
-        if let config = ProcessInfo.processInfo.environment["OPENERGY_CONFIG"] {
+        if let config = pathOverrides["OPENERGY_CONFIG"] {
             return URL(fileURLWithPath: config).deletingLastPathComponent()
         }
-        if let directory = ProcessInfo.processInfo.environment["OPENERGY_CONFIG_DIR"] {
+        if let directory = pathOverrides["OPENERGY_CONFIG_DIR"] {
             return URL(fileURLWithPath: directory, isDirectory: true)
         }
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
@@ -28,50 +41,80 @@ final class DaemonSupervisor {
 
     static var configURL: URL {
         supportDirectory.appendingPathComponent(
-            ProcessInfo.processInfo.environment["OPENERGY_CONFIG"].map { URL(fileURLWithPath: $0).lastPathComponent }
+            pathOverrides["OPENERGY_CONFIG"].map { URL(fileURLWithPath: $0).lastPathComponent }
                 ?? "config.toml")
     }
 
     static var socketPath: String {
-        if let override = ProcessInfo.processInfo.environment["OPENERGY_SOCKET"] { return override }
+        if let override = pathOverrides["OPENERGY_SOCKET"] { return override }
         return supportDirectory.appendingPathComponent("openergy.sock").path
     }
 
     /// The daemon binary: `Contents/Helpers/openergy` in the app bundle, or `OPENERGY_DAEMON`
-    /// for development. (Not Contents/MacOS: on case-insensitive volumes `openergy` would
+    /// in debug builds. (Not Contents/MacOS: on case-insensitive volumes `openergy` would
     /// collide with the app's own `Openergy` executable.)
     static var executableURL: URL? {
+        #if DEBUG
         if let override = ProcessInfo.processInfo.environment["OPENERGY_DAEMON"] {
             return URL(fileURLWithPath: override)
         }
+        #endif
         let bundled = Bundle.main.bundleURL.appendingPathComponent("Contents/Helpers/openergy")
         return FileManager.default.isExecutableFile(atPath: bundled.path) ? bundled : nil
+    }
+
+    private static func bundleSignatureValid() -> Bool {
+        var code: SecStaticCode?
+        let bundle = Bundle.main.bundleURL
+        let flags = SecCSFlags(rawValue: kSecCSCheckNestedCode | kSecCSStrictValidate)
+        guard SecStaticCodeCreateWithPath(bundle as CFURL, [], &code) == errSecSuccess, let code else {
+            return false
+        }
+        return SecStaticCodeCheckValidity(code, flags, nil) == errSecSuccess
     }
 
     var isRunning: Bool { process?.isRunning ?? false }
     var processIdentifier: Int32? { isRunning ? process?.processIdentifier : nil }
     /// After the first start, only the supervisor restarts the daemon (with its own backoff).
     private(set) var hasStarted = false
+    private(set) var launchRefusal: String?
 
     func start() {
-        guard process == nil, restartTask == nil else { return }
+        guard process == nil, restartTask == nil, launchRefusal == nil else { return }
         guard let executable = Self.executableURL else {
             log.error("No openergy daemon binary found next to the app")
             return
         }
+        #if !DEBUG
+        // Validate the app seal and its nested helper before inheriting this
+        // app's privacy identity into another executable.
+        guard Self.bundleSignatureValid() else {
+            launchRefusal = "Openergy could not verify the app bundle. Reinstall Openergy and open it again."
+            log.error("Refusing to start an Openergy daemon from an invalid app bundle")
+            return
+        }
+        #endif
         stopping = false
         hasStarted = true
 
         let process = Process()
         process.executableURL = executable
-        // OPENERGY_DAEMON_ARGS adds flags for development and E2E, e.g. "--platform virtual".
-        let extra = ProcessInfo.processInfo.environment["OPENERGY_DAEMON_ARGS"]?
+        #if DEBUG
+        let extra = Self.isolatedEndToEnd ? ["--platform", "virtual"] :
+            ProcessInfo.processInfo.environment["OPENERGY_DAEMON_ARGS"]?
             .split(separator: " ").map(String.init) ?? []
+        process.environment = ProcessInfo.processInfo.environment
+        #else
+        let extra = Self.isolatedEndToEnd ? ["--platform", "virtual"] : []
+        var environment = ["HOME": Self.privateFixtureHome ?? FileManager.default.homeDirectoryForCurrentUser.path]
+        if Self.isolatedEndToEnd {
+            environment["OPENERGY_ALLOW_PORT_24800"] = "0"
+            environment["OPENERGY_DISABLE_DISCOVERY"] = "1"
+        }
+        process.environment = environment
+        #endif
         process.arguments = ["daemon", "--parent-pid", String(getpid()), "--socket", Self.socketPath,
                              "--config", Self.configURL.path] + extra
-        // Native daemon startup owns the default-port policy. Preserve explicit
-        // overrides and leave the guard active for virtual development runs.
-        process.environment = ProcessInfo.processInfo.environment
         process.standardInput = FileHandle.nullDevice
         process.standardOutput = FileHandle.nullDevice
         // Keep the daemon's stderr (startup failures, aborts) next to its own log files.

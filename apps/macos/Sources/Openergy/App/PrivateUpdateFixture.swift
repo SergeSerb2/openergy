@@ -447,6 +447,8 @@ enum PrivateUpdateFixture {
         // No AppEndToEnd, AppUpdater, SwiftUI scene, or login command is invoked.
         let application = NSApplication.shared
         guard application.setActivationPolicy(.prohibited) else { refuse("headless activation policy failed") }
+        DaemonSupervisor.isolatedEndToEnd = true
+        DaemonSupervisor.privateFixtureHome = context.root + "/home"
         let lifecycle = Lifecycle(context)
         guard lifecycle.model.isEndToEnd && !lifecycle.model.allowsSystemIntegration else {
             refuse("system integration guard failed")

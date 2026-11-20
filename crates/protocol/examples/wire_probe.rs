@@ -961,6 +961,8 @@ fn kind(message: &Message) -> &'static str {
         Message::ErrorUnknown => "EUNK",
         Message::ErrorBad => "EBAD",
         Message::Unknown { .. } => "Unknown",
+        Message::MicrophoneReady { .. } => "MicrophoneReady",
+        Message::MicrophoneAudio { .. } => "MicrophoneAudio",
     }
 }
 

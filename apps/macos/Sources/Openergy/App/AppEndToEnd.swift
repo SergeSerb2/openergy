@@ -37,10 +37,12 @@ enum AppEndToEnd {
         guard let joinAddress = value("--join"), let hostPort = value("--host-port").flatMap(Int.init),
               validPort(hostPort), let remotePort = joinAddress.split(separator: ":").last.flatMap({ Int($0) }),
               joinAddress == "127.0.0.1:\(remotePort)", validPort(remotePort),
-              isolatedPaths(under: outputDirectory), initializeConfig(hostPort: hostPort) else {
+              isolatedPaths(under: outputDirectory) else {
             FileHandle.standardError.write(Data("E2E requires a private temporary output directory, explicit isolated config/socket/TLS paths, --platform virtual, and explicit loopback --join and --host-port (never 24800).\n".utf8))
             exit(64)
         }
+        DaemonSupervisor.isolatedEndToEnd = true
+        guard initializeConfig(hostPort: hostPort) else { exit(64) }
         let noRender = ProcessInfo.processInfo.environment["OPENERGY_E2E_NO_RENDER"] == "1"
         if !noRender { NSApplication.shared.setActivationPolicy(.prohibited) }
         do { try FileManager.default.createDirectory(at: outputDirectory, withIntermediateDirectories: true, attributes: [.posixPermissions: 0o700]) }

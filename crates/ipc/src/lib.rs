@@ -23,6 +23,8 @@ pub mod methods {
     pub const LOGS_UNSUBSCRIBE: &str = "logs.unsubscribe";
     pub const EVENTS_SUBSCRIBE: &str = "events.subscribe";
     pub const DAEMON_STOP: &str = "daemon.stop";
+    pub const MICROPHONE_START: &str = "microphone.start";
+    pub const MICROPHONE_STOP: &str = "microphone.stop";
     pub const VIRTUAL_INJECT: &str = "virtual.inject";
     pub const VIRTUAL_RECORDED: &str = "virtual.recorded";
     pub const VIRTUAL_CLIPBOARD: &str = "virtual.clipboard";
@@ -229,6 +231,15 @@ pub struct StatsInfo {
     pub events_out: u64,
 }
 
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+pub struct MicrophoneInfo {
+    pub peer_connected: bool,
+    pub input_state: String,
+    pub output_state: String,
+    pub input_error: Option<String>,
+    pub output_error: Option<String>,
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Status {
     pub daemon: DaemonInfo,
@@ -245,6 +256,8 @@ pub struct Status {
     pub permissions: PermissionsInfo,
     pub secure_input: SecureInputInfo,
     pub clipboard: ClipboardInfo,
+    #[serde(default)]
+    pub microphone: MicrophoneInfo,
     pub pending_trust: Vec<PendingTrust>,
     pub last_error: Option<LastError>,
     pub stats: StatsInfo,
@@ -295,6 +308,7 @@ impl Status {
                 last_transfer: None,
                 last_blocked: None,
             },
+            microphone: MicrophoneInfo::default(),
             pending_trust: Vec::new(),
             last_error: None,
             stats: StatsInfo {

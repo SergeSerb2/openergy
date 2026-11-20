@@ -13,6 +13,9 @@ struct MenuBarPanel: View {
             RolePicker(model: model)
             peers
             attention
+            if let error = model.lastActionError {
+                Text(error).font(.caption).foregroundStyle(.red).padding(.horizontal, 8)
+            }
             Divider().padding(.vertical, 2)
             HStack {
                 Label("Share clipboard", systemImage: "doc.on.clipboard")
@@ -24,6 +27,33 @@ struct MenuBarPanel: View {
                     .controlSize(.small)
             }
             .padding(.horizontal, 8)
+            if let state = model.status.microphone?.inputState, state != "disabled" {
+                HStack {
+                    Label(state == "sharing" ? "Microphone sharing" :
+                              (state == "error" ? "Microphone unavailable" : "Microphone configured"),
+                          systemImage: state == "sharing" ? "mic.fill" : "mic")
+                        .font(.callout)
+                    Spacer()
+                    if state == "needs_consent" {
+                        Button("Start Sharing") {
+                            if let device = model.config.microphone?.inputDevice,
+                               let peer = model.config.microphone?.peerFingerprint {
+                                model.startMicrophone(inputDevice: device, peerFingerprint: peer)
+                            }
+                        }
+                        .disabled(model.role == .off || model.config.microphone?.inputDevice == nil ||
+                                  model.isRequestingMicrophonePermission)
+                        .controlSize(.small)
+                    } else {
+                        Button("Stop Sharing") { model.stopMicrophone() }
+                            .controlSize(.small)
+                    }
+                }
+                .padding(.horizontal, 8)
+                if let error = model.status.microphone?.inputError {
+                    Text(error).font(.caption).foregroundStyle(.red).padding(.horizontal, 8)
+                }
+            }
             Divider().padding(.vertical, 2)
             VStack(spacing: 0) {
                 MenuRowButton(title: "Open Openergy…", shortcut: "⌘,") { openMain() }

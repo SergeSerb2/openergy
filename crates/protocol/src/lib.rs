@@ -26,6 +26,12 @@ pub const MAX_VECTOR_LEN: u32 = 1_048_576;
 pub const MAX_LANGUAGE_LEN: usize = 64;
 pub const MAX_SECURE_INPUT_LEN: usize = 255;
 pub const CLIPBOARD_CHUNK_LEN: usize = 32 * 1024;
+
+/// Openergy microphone extension v1. Each frame carries 20 ms of little-endian mono PCM.
+pub const MICROPHONE_OPTION: u32 = u32::from_be_bytes(*b"OMV1");
+pub const MICROPHONE_RATE: u32 = 48_000;
+pub const MICROPHONE_SAMPLES: usize = MICROPHONE_RATE as usize / 50;
+pub const MICROPHONE_BYTES: usize = MICROPHONE_SAMPLES * 2;
 pub const WIRE_MAJOR: u16 = 1;
 pub const WIRE_MINOR: u16 = 8;
 pub const PRODUCT_SYNERGY: &str = "Synergy";
@@ -145,6 +151,13 @@ pub enum Message {
     },
     SetOptions {
         options: Vec<(u32, i32)>,
+    },
+    MicrophoneReady {
+        stream: u32,
+    },
+    MicrophoneAudio {
+        stream: u32,
+        pcm: Vec<u8>,
     },
     LanguageSync {
         languages: String,

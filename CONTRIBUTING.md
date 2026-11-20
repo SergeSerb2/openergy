@@ -25,6 +25,8 @@ release prerequisites. macOS app work also needs Swift 6 and the macOS SDK.
 Windows native builds need the MSVC C/C++ build tools and Windows SDK. X11
 verification needs an isolated X server; Docker lab prerequisites are listed
 in the respective lab README files.
+Linux builds need `pkg-config` and the ALSA development library
+(`libasound2-dev` on Debian and Ubuntu).
 
 ```sh
 git clone https://github.com/SergeSerb2/openergy.git
@@ -82,6 +84,11 @@ your change as well as the smoke flow. The full catalogue also needs the
 interop image and Docker; follow [tools/e2e](tools/e2e/README.md) and
 [tools/interop-lab](tools/interop-lab/README.md). Do not call an unavailable lab a
 pass. Report skipped or blocked checks and the reason.
+
+For microphone changes on Linux, install Xvfb, PulseAudio, and `pacat`, then run
+`python3 crates/daemon/scripts/verify_microphone.py target/release/openergy`.
+The script owns its X servers, audio server, and two loopback daemons. It uses
+synthetic tones and the reserved port range 25680–25699.
 
 For macOS app changes, build the real app and run its existing E2E flow in
 isolated state. UI, permission, focus, and native input claims need separate

@@ -16,8 +16,37 @@ import xml.etree.ElementTree as ET
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
-ASN1_URL = ('https://raw.githubusercontent.com/rusticata/asn1-rs/'
-            'a20e5f7319c896737ad0f2557037817b91ad854f/LICENSE-MIT')
+# Published crate archives that omit their upstream license notice. Match the
+# recorded source revision before using the corresponding checked-in notice.
+UPSTREAM_NOTICES = {
+    ('asn1-rs-impl', '0.2.0'): ('rusticata/asn1-rs', 'a20e5f7319c896737ad0f2557037817b91ad854f',
+                             'LICENSE-MIT', 'asn1-rs-impl-0.2.0-MIT.txt'),
+    ('dasp_sample', '0.11.0'): ('rustaudio/sample', '97c3bb9b2363c0b46ac1633858bf1054fd02a980',
+                              'LICENSE-MIT', 'dasp_sample-0.11.0-MIT.txt'),
+    ('jni', '0.22.4'): ('jni-rs/jni-rs', '5ae9458a4ec44c5318f37ddc7569c1d4ae8a69e7',
+                      'LICENSE-MIT', 'jni-0.22.4-MIT.txt'),
+    ('jni-macros', '0.22.4'): ('jni-rs/jni-rs', '33045a124105c939d1e2cbdcb5a39e5d868ffa03',
+                             'LICENSE-MIT', 'jni-0.22.4-MIT.txt'),
+    ('jni-sys-macros', '0.4.1'): ('jni-rs/jni-sys', '64d77b7a5f119d7b55b4e2c169a4668067ff59e6',
+                                'LICENSE-MIT', 'jni-sys-macros-0.4.1-MIT.txt'),
+    ('ndk', '0.9.0'): ('rust-mobile/ndk', '49bbbba16c58ff63cb8a0ad0eca5a9fb7ecaec25',
+                     'LICENSE-MIT', 'ndk-MIT.txt'),
+    ('ndk-context', '0.1.1'): ('rust-windowing/android-ndk-rs', '10f2ba388fca20f7349996ebae26ccda7a6fda5c',
+                             'LICENSE-MIT', 'ndk-MIT.txt'),
+    ('ndk-sys', '0.6.0+11769913'): ('rust-mobile/ndk', '49bbbba16c58ff63cb8a0ad0eca5a9fb7ecaec25',
+                                  'LICENSE-MIT', 'ndk-MIT.txt'),
+}
+OBJC2_NOTICES = {
+    ('block2', '0.6.2'): 'b4167b582b2f75f9a1be75495c41b765344fd03c',
+    ('dispatch2', '0.3.1'): '8852b424193ca41602281b3d7540d7c8ed51e49a',
+    ('objc2', '0.6.5'): 'd7d2fa23ceaa5e6096c923b081040e5d81b3b9df',
+    ('objc2-encode', '4.1.0'): '8d214f5477365ffcbcbb7de058c86ed9a518efb7',
+    **{('objc2-' + name, '0.3.2'): '7b1abfd750a2cacaea71d6a56ecfb83cb7de560b'
+       for name in ('audio-toolbox', 'avf-audio', 'core-audio', 'core-audio-types', 'core-foundation', 'foundation')},
+}
+for package, revision in OBJC2_NOTICES.items():
+    UPSTREAM_NOTICES[package] = ('madsmtm/objc2', revision, 'LICENSE.md', 'objc2-LICENSE.md')
+
 X11_URL = ('https://github.com/freedesktop-unofficial-mirror/'
            'xorg__proto__x11proto/blob/'
            '6d4acb0e3a6568a8faaa651d4e3d32f917b9067b/keysymdef.h')
@@ -39,13 +68,13 @@ def package_notices(package):
         selected = mit
         if 'Unicode-3.0' in package['license']:
             selected += [root / 'LICENSE-UNICODE']
-    elif package['name'] == 'asn1-rs-impl' and package['version'] == '0.2.0':
-        # This .crate omitted the license files. Use its recorded VCS revision.
+    elif (key := (package['name'], package['version'])) in UPSTREAM_NOTICES:
+        repo, revision, name, local = UPSTREAM_NOTICES[key]
         vcs = json.loads((root / '.cargo_vcs_info.json').read_text())
-        if vcs['git']['sha1'] != 'a20e5f7319c896737ad0f2557037817b91ad854f':
-            raise ValueError('asn1-rs-impl source revision changed')
-        p = HERE / 'licenses/asn1-rs-impl-0.2.0-MIT.txt'
-        return [('upstream LICENSE-MIT', p.read_bytes(), ASN1_URL)]
+        if vcs['git']['sha1'] != revision:
+            raise ValueError('upstream notice source revision changed: ' + package['name'])
+        url = f'https://raw.githubusercontent.com/{repo}/{revision}/{name}'
+        return [('upstream ' + name, (HERE / 'licenses' / local).read_bytes(), url)]
     else:
         selected = [p for p in files if p.name.lower() in
                     ('license', 'license.md', 'license.txt', 'copying')]

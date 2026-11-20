@@ -1,4 +1,5 @@
 import AppKit
+import AVFoundation
 import Observation
 import OSLog
 import ServiceManagement
@@ -42,6 +43,8 @@ final class AppModel {
     private let log = Logger(subsystem: "dev.openergy.app", category: "model")
     private var connectTask: Task<Void, Never>?
     private var actionTask: Task<Void, Never>?
+    private var microphonePermissionTask: Task<Void, Never>?
+    var isRequestingMicrophonePermission: Bool { microphonePermissionTask != nil }
     private var logSubscriptionTask: Task<Void, Never>?
     private var running = false
     private var session = UUID()
@@ -167,6 +170,7 @@ final class AppModel {
         session = UUID()
         connectTask?.cancel()
         actionTask?.cancel()
+        microphonePermissionTask?.cancel()
         logSubscriptionTask?.cancel()
         client.disconnect()
         supervisor.stop()
@@ -208,6 +212,10 @@ final class AppModel {
                 } else if DaemonSupervisor.executableURL == nil {
                     link = .unavailable("The openergy service binary is missing from the app.")
                 }
+                if let refusal = supervisor.launchRefusal {
+                    link = .unavailable(refusal)
+                    return
+                }
                 if waited > .seconds(8) {
                     let reason = (lastError as? IPCError)?.errorDescription ?? "The Openergy service is not responding."
                     link = .unavailable("\(reason) Retrying…")
@@ -229,6 +237,7 @@ final class AppModel {
     }
 
     private func invalidateLiveState() {
+        microphonePermissionTask?.cancel()
         session = UUID()
         status = .empty
         discovered = []
@@ -295,6 +304,38 @@ final class AppModel {
         perform("config.patch", ["patch": JSONValue.patch(path, value)])
     }
 
+    func startMicrophone(inputDevice: String, peerFingerprint: String) {
+        guard allowsSystemIntegration, microphonePermissionTask == nil else { return }
+        let current = session
+        let revision = configRevision
+        microphonePermissionTask = Task { [self] in
+            defer { microphonePermissionTask = nil }
+            NSApp.activate()
+            let confirmation = NSAlert()
+            confirmation.messageText = "Share your microphone?"
+            confirmation.informativeText =
+                "Send audio from \(inputDevice) to the computer with fingerprint \(peerFingerprint). Audio continues when you switch screens."
+            confirmation.addButton(withTitle: "Start Sharing")
+            confirmation.addButton(withTitle: "Cancel")
+            guard confirmation.runModal() == .alertFirstButtonReturn, !Task.isCancelled,
+                  session == current, configRevision == revision else { return }
+            let granted = await AVCaptureDevice.requestAccess(for: .audio)
+            guard !Task.isCancelled, session == current, configRevision == revision else { return }
+            guard granted else {
+                lastActionError = "Allow Openergy in System Settings → Privacy & Security → Microphone."
+                return
+            }
+            perform("microphone.start", [
+                "input_device": .string(inputDevice), "peer_fingerprint": .string(peerFingerprint),
+            ])
+        }
+    }
+
+    func stopMicrophone() {
+        microphonePermissionTask?.cancel()
+        perform("microphone.stop")
+    }
+
     /// Join a server. Works again after Disconnect, also with the same address.
     func join(_ address: String) {
         let trimmed = address.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -315,8 +356,14 @@ final class AppModel {
         }
     }
 
-    func reconnect() { perform("connection.restart") }
-    func disconnect() { perform("connection.disconnect", refresh: true) }
+    func reconnect() {
+        microphonePermissionTask?.cancel()
+        perform("connection.restart")
+    }
+    func disconnect() {
+        microphonePermissionTask?.cancel()
+        perform("connection.disconnect", refresh: true)
+    }
 
     func approve(_ fingerprint: String) {
         mutateDemo { $0.status.pendingTrust?.removeAll { $0.fingerprint == fingerprint } }

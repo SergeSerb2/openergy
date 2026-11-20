@@ -1,6 +1,7 @@
 use crate::{
     Chunk, ClipboardId, DecodeError, EncodeError, Message, ProtocolVersion, MAX_FRAME_LEN, MAX_HELLO_BACK_LEN,
-    MAX_LANGUAGE_LEN, MAX_SECURE_INPUT_LEN, MAX_STRING_LEN, MAX_VECTOR_LEN, PRODUCT_BARRIER, PRODUCT_SYNERGY,
+    MAX_LANGUAGE_LEN, MAX_SECURE_INPUT_LEN, MAX_STRING_LEN, MAX_VECTOR_LEN, MICROPHONE_BYTES, PRODUCT_BARRIER,
+    PRODUCT_SYNERGY,
 };
 use std::collections::VecDeque;
 
@@ -336,6 +337,11 @@ fn decode_frame(frame: &[u8], first_frame: bool, legacy_key_repeat: bool) -> Res
             }
             Message::SetOptions { options }
         }
+        b"OMRD" => Message::MicrophoneReady { stream: r.u32()? },
+        b"OMAU" => Message::MicrophoneAudio {
+            stream: r.u32()?,
+            pcm: r.take(MICROPHONE_BYTES)?.to_vec(),
+        },
         b"DCLP" => {
             let id = ClipboardId(r.u8()?);
             let sequence = r.u32()?;
@@ -441,6 +447,13 @@ pub fn encode(msg: &Message, out: &mut Vec<u8>) -> Result<(), EncodeError> {
             }
             8 + 8 * options.len()
         }
+        Message::MicrophoneReady { .. } => 8,
+        Message::MicrophoneAudio { pcm, .. } => {
+            if pcm.len() != MICROPHONE_BYTES {
+                return Err(EncodeError::BadValue("invalid microphone frame length"));
+            }
+            8 + MICROPHONE_BYTES
+        }
         Message::LanguageSync { languages } => {
             if languages.len() % 2 != 0 {
                 return Err(EncodeError::BadValue("odd language bytes"));
@@ -534,6 +547,15 @@ pub fn encode(msg: &Message, out: &mut Vec<u8>) -> Result<(), EncodeError> {
                 w.u32(*id);
                 w.u32(*value as u32);
             }
+        }
+        Message::MicrophoneReady { stream } => {
+            w.code(b"OMRD");
+            w.u32(*stream);
+        }
+        Message::MicrophoneAudio { stream, pcm } => {
+            w.code(b"OMAU");
+            w.u32(*stream);
+            w.0.extend_from_slice(pcm);
         }
         Message::LanguageSync { languages } => {
             w.code(b"LSYN");

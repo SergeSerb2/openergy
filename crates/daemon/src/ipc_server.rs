@@ -271,6 +271,25 @@ fn client(
     bus: Arc<EventBus>,
     stop: Arc<AtomicBool>,
 ) {
+    #[cfg(target_os = "macos")]
+    let caller_pid = {
+        let mut pid: libc::pid_t = 0;
+        let mut size = std::mem::size_of_val(&pid) as libc::socklen_t;
+        // The kernel fills the PID of the process that opened this socket.
+        // The output buffer and size remain live for the synchronous call.
+        let result = unsafe {
+            libc::getsockopt(
+                stream.as_raw_fd(),
+                libc::SOL_LOCAL,
+                libc::LOCAL_PEERPID,
+                (&mut pid as *mut libc::pid_t).cast(),
+                &mut size,
+            )
+        };
+        (result == 0 && size as usize == std::mem::size_of_val(&pid) && pid > 1).then_some(i64::from(pid))
+    };
+    #[cfg(not(target_os = "macos"))]
+    let caller_pid = None;
     #[cfg(unix)]
     {
         if stream.set_nonblocking(false).is_err() {
@@ -321,6 +340,7 @@ fn client(
                     req,
                     reply,
                     events: queue.clone(),
+                    caller_pid,
                 })
                 .is_err()
             {

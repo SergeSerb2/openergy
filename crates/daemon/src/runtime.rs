@@ -24,11 +24,14 @@ use std::{
     time::{Duration, Instant},
 };
 
+mod microphone;
+
 pub enum IoCommand {
     Ipc {
         req: Request,
         reply: Sender<Response>,
         events: Arc<EventQueue>,
+        caller_pid: Option<i64>,
     },
 }
 struct Connection {
@@ -37,6 +40,7 @@ struct Connection {
     tls: bool,
     tls_version: Option<String>,
     certificate_verified: bool,
+    microphone: microphone::Peer,
     since: u64,
 }
 #[derive(Clone)]
@@ -57,6 +61,13 @@ impl Machine {
         match self {
             Self::Server(s) => s.is_connected(),
             Self::Client(c) => c.is_connected(),
+            Self::Off => false,
+        }
+    }
+    fn peer_ready(&self, conn: ConnId) -> bool {
+        match self {
+            Self::Server(server) => server.peer_ready(conn),
+            Self::Client(client) => client.peer_ready(conn),
             Self::Off => false,
         }
     }
@@ -216,6 +227,7 @@ struct Runtime {
     actions: Vec<Action>,
     net_events: Vec<NetEvent>,
     deferred_bulk: BTreeMap<ConnId, BulkBacklog>,
+    microphone: microphone::Sharing,
 }
 impl Runtime {
     fn now(&self) -> u64 {
@@ -542,6 +554,7 @@ impl Runtime {
             && matches!(self.platform.as_str(), "x11" | "virtual");
         s.clipboard.last_transfer = self.last_transfer.clone();
         s.clipboard.last_blocked = self.last_blocked.clone();
+        s.microphone = self.microphone_status();
         s.pending_trust = self.pending.values().cloned().collect();
         s.last_error = self.last_error.clone();
         s.stats.rss_bytes = lifetime::rss_bytes();
@@ -565,7 +578,8 @@ impl Runtime {
                             priority: Priority::Control,
                         });
                     }
-                    Action::Send { conn, msg } => {
+                    Action::Send { conn, mut msg } => {
+                        self.offer_microphone(conn, &mut msg);
                         let priority = if matches!(
                             msg,
                             Message::KeyDown { .. }
@@ -748,6 +762,9 @@ impl Runtime {
                 }
                 self.resume_enabled = self.enabled;
                 self.enabled = false;
+                // Wake or unlock may be the next notice in this same batch.
+                self.microphone.disarm();
+                self.update_microphone();
                 self.retry = None;
                 self.deferred_bulk.clear();
                 self.machine.shutdown(&mut self.actions);
@@ -909,7 +926,13 @@ impl Runtime {
             rounds += 1;
             let events = std::mem::take(&mut self.net_events);
             for event in events {
-                self.status_dirty = true;
+                self.status_dirty |= !matches!(
+                    event,
+                    NetEvent::Message {
+                        msg: Message::MicrophoneAudio { .. },
+                        ..
+                    }
+                );
                 match event {
                     NetEvent::Listening { addr } => {
                         self.state = "listening".into();
@@ -967,6 +990,7 @@ impl Runtime {
                                     .driver
                                     .conn_info(conn)
                                     .is_some_and(|c| c.certificate_verified),
+                                microphone: microphone::Peer::default(),
                                 since: unix_ms(),
                             },
                         );
@@ -989,6 +1013,9 @@ impl Runtime {
                         }
                     }
                     NetEvent::Message { conn, msg } => {
+                        let Some(msg) = self.handle_microphone_message(conn, msg) else {
+                            continue;
+                        };
                         self.events_in += 1;
                         match &mut self.machine {
                             Machine::Server(s) => s.handle(ServerEvent::ClientMessage { conn, msg }, &mut self.actions),
@@ -1140,7 +1167,13 @@ impl Runtime {
             || cfg.server != self.cfg.server
             || cfg.client.remote != self.cfg.client.remote
             || cfg.tls != self.cfg.tls
+            || cfg.microphone.peer_fingerprint != self.cfg.microphone.peer_fingerprint
             || cfg.name != self.cfg.name;
+        let refresh_session = reconnect || cfg.microphone == self.cfg.microphone || {
+            let mut previous = self.cfg.clone();
+            previous.microphone = cfg.microphone.clone();
+            cfg != previous
+        };
         let mut durability_warning = None;
         if reconnect {
             let listen = if cfg.role == Role::Server {
@@ -1165,6 +1198,10 @@ impl Runtime {
             self.connections.clear();
             self.pending.clear();
             self.deferred_bulk.clear();
+            self.microphone.invalidate_trust();
+            if cfg.role != self.cfg.role || (cfg.role == Role::Client && !cfg.client.autoconnect) {
+                self.microphone.disarm();
+            }
             self.cfg = cfg;
             self.machine = Machine::new(Arc::new(self.cfg.clone()));
             self.enabled = self.cfg.role != Role::Off && (self.cfg.role != Role::Client || self.cfg.client.autoconnect);
@@ -1179,10 +1216,12 @@ impl Runtime {
             let previous = self.machine.clone();
             let action_count = self.actions.len();
             let cfg = Arc::new(cfg);
-            match &mut self.machine {
-                Machine::Server(s) => s.handle(ServerEvent::ConfigChanged(cfg.clone()), &mut self.actions),
-                Machine::Client(c) => c.handle(ClientEvent::ConfigChanged(cfg.clone()), &mut self.actions),
-                Machine::Off => {}
+            if refresh_session {
+                match &mut self.machine {
+                    Machine::Server(s) => s.handle(ServerEvent::ConfigChanged(cfg.clone()), &mut self.actions),
+                    Machine::Client(c) => c.handle(ClientEvent::ConfigChanged(cfg.clone()), &mut self.actions),
+                    Machine::Off => {}
+                }
             }
             // Apply to the live state before saving. Platform/network effects
             // remain queued until persistence commits; rollback preserves peers.
@@ -1201,17 +1240,19 @@ impl Runtime {
             }
             self.cfg = Arc::unwrap_or_clone(cfg);
         }
-        self.machine
-            .geometry(&self.displays, self.screens.cursor_pos(), false, &mut self.actions);
-        let _ = self
-            .capture
-            .commands
-            .try_send(CaptureCommand::Enable(self.enabled && self.cfg.role == Role::Server));
-        let _ = self
-            .clipboard
-            .commands
-            .try_send(self.clip_enabled(self.enabled && self.cfg.clipboard.enabled));
-        self.update_sleep_assertion();
+        if refresh_session {
+            self.machine
+                .geometry(&self.displays, self.screens.cursor_pos(), false, &mut self.actions);
+            let _ = self
+                .capture
+                .commands
+                .try_send(CaptureCommand::Enable(self.enabled && self.cfg.role == Role::Server));
+            let _ = self
+                .clipboard
+                .commands
+                .try_send(self.clip_enabled(self.enabled && self.cfg.clipboard.enabled));
+            self.update_sleep_assertion();
+        }
         if let Some(warning) = durability_warning {
             // Rename has committed. Keep disk and live state aligned and report
             // uncertain crash durability instead of rolling back only live state.
@@ -1223,10 +1264,15 @@ impl Runtime {
         );
         Ok(())
     }
-    fn dispatch(&mut self, req: &Request, queue: &Arc<EventQueue>) -> Result<Value, IpcError> {
+    fn dispatch(&mut self, req: &Request, queue: &Arc<EventQueue>, caller_pid: Option<i64>) -> Result<Value, IpcError> {
         self.status_dirty |= req.method != m::STATUS_GET;
         let invalid = |msg: &str| IpcError::new("invalid_params", msg);
         match req.method.as_str() {
+            m::MICROPHONE_START => self.arm_microphone(caller_pid, &req.params),
+            m::MICROPHONE_STOP => {
+                self.microphone.disarm();
+                Ok(json!({"stopped": true}))
+            }
             m::STATUS_GET => Ok(self.status().to_json()),
             m::CONFIG_GET => Ok(
                 json!({"config":self.cfg.to_json(),"derived_links":openergy_config::derive_links(&self.cfg.screens)}),
@@ -1315,6 +1361,7 @@ impl Runtime {
             }
             m::CONNECTION_DISCONNECT => {
                 self.enabled = false;
+                self.microphone.disarm();
                 self.retry = None;
                 self.deferred_bulk.clear();
                 self.machine.shutdown(&mut self.actions);
@@ -1386,6 +1433,16 @@ impl Runtime {
                         if self.expected_pin.as_ref().is_some_and(|(_, pin)| *pin == fp) {
                             self.expected_pin = None;
                         }
+                        if self
+                            .cfg
+                            .microphone
+                            .peer_fingerprint
+                            .as_deref()
+                            .and_then(Fingerprint::parse)
+                            == Some(fp)
+                        {
+                            self.microphone.disarm();
+                        }
                         self.driver.reject_held(&fp, &mut self.net_events);
                         let conns = self
                             .connections
@@ -1403,6 +1460,7 @@ impl Runtime {
                     }
                 }
                 self.pending.retain(|_, p| p.fingerprint != fp.to_colon_hex());
+                self.microphone.invalidate_trust();
                 Ok(json!({"ok":true}))
             }
             m::DISCOVERY_LIST => Ok(self.discovery.clone()),
@@ -1619,6 +1677,7 @@ pub fn run_daemon(
     config_path: Option<PathBuf>,
     platform: String,
     parent_pid: Option<i64>,
+    enable_microphone_capture: bool,
     startup_error: Option<String>,
 ) -> Result<i32, String> {
     normalize(&mut config);
@@ -1662,6 +1721,14 @@ pub fn run_daemon(
     let permissions = backend.screens.permissions();
     let machine = Machine::new(Arc::new(config.clone()));
     let enabled = config.role != Role::Off && (config.role != Role::Client || config.client.autoconnect);
+    #[cfg(target_os = "macos")]
+    let microphone_controller = parent_pid.filter(|&pid| {
+        // Only our actual launch parent can authorize capture over the socket.
+        platform == "macos" && i64::from(unsafe { libc::getppid() }) == pid
+    });
+    #[cfg(not(target_os = "macos"))]
+    let microphone_controller = None;
+    let microphone = microphone::Sharing::new(&config.microphone, microphone_controller, enable_microphone_capture);
     let mut rt = Runtime {
         cfg: config,
         path,
@@ -1714,6 +1781,7 @@ pub fn run_daemon(
         actions: Vec::new(),
         net_events: Vec::new(),
         deferred_bulk: BTreeMap::new(),
+        microphone,
     };
     lifetime::install_signals();
     let parent = lifetime::ParentWatch::new(parent_pid);
@@ -1732,6 +1800,7 @@ pub fn run_daemon(
         primary: rt.cfg.clipboard.share_primary_selection,
     });
     rt.update_sleep_assertion();
+    rt.update_microphone();
     rt.start_connection();
     log::info!("openergy {VERSION} daemon listening on {}", socket_path.display());
     'running: while !stop.load(Ordering::Relaxed) && !lifetime::SIGNALLED.load(Ordering::Relaxed) && !parent.exited() {
@@ -1757,15 +1826,22 @@ pub fn run_daemon(
         // Input gets the first turn. A busy IPC observer must not keep a
         // captured move behind an unbounded request drain.
         for _ in 0..8 {
-            let Ok(IoCommand::Ipc { req, reply, events }) = rx.try_recv() else {
+            let Ok(IoCommand::Ipc {
+                req,
+                reply,
+                events,
+                caller_pid,
+            }) = rx.try_recv()
+            else {
                 break;
             };
-            let response = match rt.dispatch(&req, &events) {
+            let response = match rt.dispatch(&req, &events, caller_pid) {
                 Ok(value) => Response::ok(req.id, value),
                 Err(error) => Response::err(req.id, error),
             };
             rt.apply_actions();
             rt.process_net();
+            rt.update_microphone();
             let _ = reply.send(response);
             // Acknowledge public stop before entering the full shutdown path.
             // Its request wake may already be consumed; do not poll again first.
@@ -1813,6 +1889,7 @@ pub fn run_daemon(
         rt.apply_actions();
         rt.process_net();
         rt.drain_bulk();
+        rt.update_microphone();
         let health_interval = if matches!(rt.permissions.accessibility, Grant::Denied | Grant::Unknown)
             || matches!(rt.permissions.input_monitoring, Grant::Denied | Grant::Unknown)
             || matches!(rt.permissions.post_events, Grant::Denied | Grant::Unknown)
@@ -1870,6 +1947,9 @@ pub fn run_daemon(
         if !rt.deferred_bulk.is_empty() {
             deadline = deadline.min(now.saturating_add(5));
         }
+        if rt.cfg.microphone.peer_fingerprint.is_some() && rt.enabled && !rt.suspended() {
+            deadline = deadline.min(now.saturating_add(1000));
+        }
         let timeout = Duration::from_millis(deadline.saturating_sub(now).clamp(1, 2000));
         if let Err(e) = rt.driver.poll(Some(timeout), &mut rt.net_events) {
             rt.error("network_failed", e.to_string());
@@ -1879,6 +1959,7 @@ pub fn run_daemon(
     }
     log::info!("shutdown: leave and goodbye");
     rt.enabled = false;
+    rt.update_microphone();
     rt.machine.shutdown(&mut rt.actions);
     rt.apply_actions();
     let flush = Instant::now();
@@ -1896,6 +1977,7 @@ pub fn run_daemon(
     let _ = accept.join();
     let _ = rt.capture.thread.join();
     let _ = rt.clipboard.thread.join();
+    rt.microphone.shutdown();
     log::info!("daemon stopped");
     #[cfg(windows)]
     lifetime::SHUTDOWN_COMPLETE.store(true, Ordering::Release);
