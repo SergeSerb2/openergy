@@ -762,6 +762,9 @@ impl Runtime {
                 }
                 self.resume_enabled = self.enabled;
                 self.enabled = false;
+                // Wake or unlock may be the next notice in this same batch.
+                self.microphone.disarm();
+                self.update_microphone();
                 self.retry = None;
                 self.deferred_bulk.clear();
                 self.machine.shutdown(&mut self.actions);
